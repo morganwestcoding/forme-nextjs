@@ -9,11 +9,9 @@ export default function Home() {
   return (
     <>
     <Tabs/>
-    <div className="homeContainer">
     <Sidebar/>
     <Feed/>
     <Rightbar/>
-    </div>
     </>
   )
 };
