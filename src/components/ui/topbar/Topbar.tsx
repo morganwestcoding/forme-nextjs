@@ -8,6 +8,7 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import Logo from "./Logo";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../../auth";
+import UserButton from "@/components/UserButton";
 
 async function Topbar() {
   const session = await getServerSession(authOptions);
@@ -26,25 +27,12 @@ async function Topbar() {
         </div>
        <div className="topbarRight">
           <div className="topbarIcons">
-            <div className="topbarIconItem">
-              <AddCircleIcon/>
-            </div>
-            <div className="topbarIconItem">
+        
               <HomeIcon/>
-            </div>
-            <div className="topbarIconItem">
               <PersonIcon />
-            </div>
-            <div className="topbarIconItem">
               <ChatIcon/>
-            </div>
-            <div className="topbarIconItem">
               <CircleNotificationsIcon/>
-            </div>
-            <div className="topbarIconItem">
-            <img src={process.env.PUBLIC_URL + "/assets/person/1.jpeg"} alt="" className="topbarImg" />
-            </div>
-            
+              <UserButton/>
           </div>
          
         </div>
