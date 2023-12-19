@@ -1,8 +1,9 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import Topbar from '../components/ui/topbar/Topbar'
+import Header from '../components/ui/header/Header'
 import ClientProviders from '@/components/ClientProviders';
+import { ThemeProvider } from '@/components/ThemeProvider';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -20,9 +21,16 @@ export default function RootLayout({
     <ClientProviders>
     <html lang="en">
       <body className={inter.className}>
-        <Topbar/>
+        <ThemeProvider
+        attribute="class"
+        defaultTheme='system'
+        enableSystem
+        disableTransitionOnChange>
+        <Header/>
         
-        {children}</body>
+        {children}
+        </ThemeProvider>
+      </body>
     </html>
     </ClientProviders>
   )
