@@ -74,8 +74,3 @@
     @apply bg-background text-foreground;
   }
 }
-
-*{
-  margin: 0;
-  font-family: 'Roboto', sans-serif;
-}

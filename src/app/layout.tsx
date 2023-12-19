@@ -5,6 +5,7 @@ import Header from '../components/ui/header/Header'
 import ClientProviders from '@/components/ClientProviders';
 import { ThemeProvider } from '@/components/ThemeProvider';
 
+
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
@@ -22,10 +23,10 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <ThemeProvider
-        attribute="class"
-        defaultTheme='system'
-        enableSystem
-        disableTransitionOnChange>
+         attribute="class"
+         defaultTheme="system"
+         enableSystem
+         disableTransitionOnChange>
         <Header/>
         
         {children}

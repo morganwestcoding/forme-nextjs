@@ -4,12 +4,12 @@
 import Logo from "./Logo";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../../auth";
-import DarkModeToggle from "@/components/DarkModeToggle";
+import { DarkModeToggle } from "@/components/DarkModeToggle";
 
 async function Header() {
   const session = await getServerSession(authOptions);
   return (
-        <header className="sticky top-0 z-50 bg-white">
+        <header className="sticky top-0 z-50 bg-white h-14">
           <nav className="flex justify-between items-center">
             <Logo />
 
@@ -21,6 +21,7 @@ async function Header() {
              ) */}
 
              <DarkModeToggle/>
+            
             </div>
           </nav>
 
