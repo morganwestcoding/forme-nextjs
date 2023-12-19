@@ -1,0 +1,113 @@
+.topbarContainer{
+    height: 50px;
+    width: 100%;
+    background-color: #bb8f60;
+    display: flex;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 999;
+}
+
+.topbarLeft{
+    flex:4;
+}
+
+.logo img{
+width: 90px;
+height: 90px;
+object-fit: contain;
+margin-left: 20px;
+align-items: center; 
+}
+
+.searchbar{
+width: 70%;
+height: 30px;
+background-color: white;
+border-radius: 30px;
+display: flex;
+align-items: center;
+}
+
+.searchIcon{
+    font-size: 12px;
+    margin-left: 10px;
+    color: gray;
+}
+
+.searchInput{
+    border: none;
+    width: 70%;
+}
+
+.searchInput:focus{
+    outline: none;
+}
+
+.topbarCenter{
+    flex:6;
+}
+.topbarRight{
+    flex: 3;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    color:white;
+}
+
+.topbarLink{
+    margin-right: 7px;
+    font-size: 14px;
+    cursor: pointer;
+    color: white; /* Set icon color to white */
+    text-decoration: none; /* Remove underline */
+}
+
+.topbarLink:hover, .topbarLink:active, .topbarLink:focus {
+    text-decoration: none; /* Remove underline on hover, active, and focus states */
+    color: white; /* Maintain white color on hover, active, and focus states */
+}
+
+.topbarIcons{
+    display: flex;
+    align-items: center; 
+}
+
+.topbarIconItem{
+    color: white;
+    text-decoration: none; 
+    margin-right: 15px;
+    cursor: pointer;
+    position: relative;
+}
+
+.topbarIconItem a:hover, .topbarIconItem a:active, .topbarIconItem a:focus {
+    text-decoration: none; /* Remove underline on hover, active, and focus states */
+    color: white; /* Maintain white color on hover, active, and focus states */
+}
+
+.topbarIconBadge{
+    width: 15px;
+    height: 15px;
+    background-color: red;
+    border-radius: 50%;
+    color: white;
+    position:absolute;
+    top: -5px;
+    right: -5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    
+}
+
+.topbarImg{
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    cursor: pointer;
+    align-items: center; 
+}

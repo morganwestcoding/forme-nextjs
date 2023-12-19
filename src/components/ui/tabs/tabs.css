@@ -1,0 +1,146 @@
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
+
+:root {
+	--primary-color: #185ee0;
+	--secondary-color: #e6eef9;
+}
+
+*,
+*:after,
+*:before {
+  margin: 0;
+  padding: 0;
+	box-sizing: border-box;
+}
+.tabcontainer {
+  display: flex; /* Use flexbox to align children */
+  justify-content: center; /* Center the items horizontally */
+  align-items: center; /* Center the items vertically */
+  flex-wrap: wrap; /* Prevents the items from overflowing and allows wrapping if necessary */
+  width: 100%; /* Use 100% if you want it to take the full width of its parent */
+  margin: auto; /* Add padding to */
+  position: sticky; /* Add this line to make the tabs sticky */
+  top: 50px; /* Adjust this value as needed to be below your topbar */
+  z-index: 10;
+  transition: top 0.6s ease, opacity 0.6s ease; 
+  
+}
+
+.tabbed ul {
+  display: flex; /* Use flexbox */
+  justify-content: center; /* Center the items inside the UL */
+  list-style-type: none; /* Removes bullet points */
+  padding: 0; /* Reset padding */
+  margin: 0; /* Reset margin */
+  width: 100%; /* Ensures the UL takes the full width of its parent */
+  transform: rotateX(180deg);
+}
+  
+
+.tabbed ul li {
+  display: block;
+  float: right;
+  padding: 10px 24px 8px;
+  background-color: #FFF;
+  margin-right: 46px;
+  z-index: 2;
+  position: relative;
+  text-transform: uppercase;
+  font: 600 13px/20px roboto, "Open Sans", Helvetica, sans-serif;
+  transition: all 250ms ease;
+  display: flex;
+  justify-content: center;
+  align-items: center; /* This line is added to flip the text */
+  float: none;
+  
+}
+
+.tabbed ul li span {
+  transform: rotateX(180deg); /* Apply this transformation to the text */
+  display: block; 
+}
+
+.tabbed ul li:before,
+.tabbed ul li:after {
+  display: block;
+  content: " ";
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 44px;  
+  background-color: #FFF;
+  transition: all 250ms ease;
+}
+
+.tabbed ul li:before {
+  right: -24px;
+  transform: skew(30deg, 0deg);
+  box-shadow: rgba(0,0,0,.1) 3px 2px 5px, inset rgba(255,255,255,.09) -1px 0;
+}
+.tabbed ul li:after {
+  left: -24px;
+  transform: skew(-30deg, 0deg);
+  box-shadow: rgba(0,0,0,.1) -3px 2px 5px, inset rgba(255,255,255,.09) 1px 0;
+}
+.tabbed ul li:hover,
+.tabbed ul li:hover:before,
+.tabbed ul li:hover:after {
+  background-color: #F4F7F9;
+  color: #444;
+}
+.tabbed ul li.active {
+  z-index: 3;
+}
+.tabbed ul li.active,
+.tabbed ul li.active:before,
+.tabbed ul li.active:after {
+  background-color: #000;
+  color: #fff;
+}
+
+
+/*----- Round Tabs -----*/
+.tabbed.round ul li {
+  border-radius: 8px 8px 0 0;
+}
+.tabbed.round ul li:before {
+  border-radius: 0 8px 0 0;
+}
+.tabbed.round ul li:after {
+  border-radius: 8px 0 0 0;
+}
+
+.collapsed {
+  top: -100%; /* Or the required amount to hide the tabs */
+  opacity: 0; /* Makes the container fade out */
+  transition: top 0.6s ease, opacity 0.6s ease; /* Smooth transition for the collapsing action */
+}
+
+.collapsed ul {
+  display: none; /* Hide the tabs */
+}
+
+.collapse-button {
+  position: absolute;
+  top: -10px; /* Adjust as needed to move button above the tabs */
+  right: 10px; /* Adjust as needed */
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.arrow {
+  transition: transform 0.6s ease;
+}
+
+.arrow.up {
+  transform: rotate(180deg); /* Arrow pointing up */
+}
+
+.arrow.down{
+  /* Arrow pointing down, no transformation needed if the default is down */
+}
+
+
+
