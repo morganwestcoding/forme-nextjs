@@ -32,10 +32,12 @@ function UserButton({ session }: { session: Session | null}) {
     <DropdownMenuSeparator />
     <DropdownMenuItem>Profile</DropdownMenuItem>
     <DropdownMenuItem>Add Service</DropdownMenuItem>
+    <DropdownMenuItem>Manage Services</DropdownMenuItem>
     <DropdownMenuItem>Subscription</DropdownMenuItem>
     <DropdownMenuSeparator />
-  </DropdownMenuContent>
     <DropdownMenuLabel>Sign Out</DropdownMenuLabel>
+  </DropdownMenuContent>
+    
 </DropdownMenu>
   )
 }
