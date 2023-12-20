@@ -1,4 +1,3 @@
-
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
 
 :root {
@@ -138,9 +137,7 @@
   transform: rotate(180deg); /* Arrow pointing up */
 }
 
-.arrow.down{
-  /* Arrow pointing down, no transformation needed if the default is down */
-}
+
 
 
 

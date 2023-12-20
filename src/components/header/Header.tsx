@@ -1,6 +1,3 @@
-
-'use client'
-
 import Logo from "./Logo";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../auth";

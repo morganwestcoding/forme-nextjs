@@ -14,12 +14,8 @@ export default function Sidebar() {
     <div className="sidebarWrapper">
       <ul className="sidebarList">
         <li className="sidebarListItem">
-          <DynamicFeedIcon className="sidebarIcon"/>
-          <span className="sidebarListItemText">Feed</span>
-        </li>
-        <li className="sidebarListItem">
           <FeedIcon className="sidebarIcon"/>
-          <span className="sidebarListItemText">Chat</span>
+          <span className="sidebarListItemText">Feed</span>
         </li>
         <li className="sidebarListItem">
         <StoreIcon className="sidebarIcon"/>

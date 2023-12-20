@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+
 import './tabs.css';
-import ExpandCircleDownIcon from '@mui/icons-material/ExpandCircleDown';
 
 export default function Tabs() {
 
