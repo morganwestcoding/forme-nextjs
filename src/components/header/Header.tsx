@@ -1,8 +1,12 @@
+
+
 import Logo from "./Logo";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../auth";
 import DarkModeToggle from "@/components/DarkModeToggle";
 import UserButton from "../UserButton";
+import { MessageSquareIcon } from "lucide-react";
+import Link from "next/link";
 
 
 async function Header() {
@@ -16,11 +20,20 @@ async function Header() {
             <div className="flex-1 flex items-center justify-end space-x-4">
               {/* LanguageSelect */}
 
-              {/* Session && (
-                  
-             ) */}
+             {session ? (
+              <>
+              <Link href={'/chat'} prefetch={false}>
+              <MessageSquareIcon className="text-black dark:text-white" />
+              </Link>
+              </>
+             
+             ) : (
+              <Link href="/pricing">
+                Pricing
+              </Link>
+             )}
              <DarkModeToggle/>
-             <UserButton/>
+             <UserButton session={session}/>
             
             
             </div>
