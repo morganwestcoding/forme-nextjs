@@ -9,14 +9,13 @@ import UserButton from "../UserButton";
 
 
 async function Header() {
-  /*const session = await getServerSession(authOptions);*/
+  const session = await getServerSession(authOptions);
+  console.log(session);
   return (
         <header className="sticky top-0 z-50 bg-white dark:bg-gray-900">
-          <nav className="flex flex-col sm:flex-row items-centerjustify-between items-center p-5 pl-2 bg-white dark:bg-gray-900 max-w-7xl mx-auto">
+          <nav className="flex flex-col sm:flex-row items-centerjustify-between items-center p-2 pl-2 bg-white dark:bg-gray-900 max-w-7xl mx-auto">
             <Logo />
             
-            
-
             <div className="flex-1 flex items-center justify-end space-x-4">
               {/* LanguageSelect */}
 
