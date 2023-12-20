@@ -31,10 +31,11 @@ function UserButton({ session }: { session: Session | null}) {
     <DropdownMenuLabel>My Account</DropdownMenuLabel>
     <DropdownMenuSeparator />
     <DropdownMenuItem>Profile</DropdownMenuItem>
-    <DropdownMenuItem>Billing</DropdownMenuItem>
-    <DropdownMenuItem>Team</DropdownMenuItem>
+    <DropdownMenuItem>Add Service</DropdownMenuItem>
     <DropdownMenuItem>Subscription</DropdownMenuItem>
+    <DropdownMenuSeparator />
   </DropdownMenuContent>
+    <DropdownMenuLabel>Sign Out</DropdownMenuLabel>
 </DropdownMenu>
   )
 }
