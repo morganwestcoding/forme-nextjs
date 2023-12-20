@@ -1,12 +1,12 @@
 import LogoImage from '@logos/logo-black.svg';
 import Link from "next/link";
 import Image from 'next/image';
-import { AspectRatio } from '../aspect-ratio';
+import { AspectRatio } from '../ui/aspect-ratio';
 
 function Logo() {
   return (
     <Link href="/" prefetch={false} className='overflow-hidden'>
-      <div className='flex items-center w-24 h-7'>
+      <div className='flex items-center w-24 h-14'>
        
 
       <AspectRatio ratio={16 / 9}
@@ -15,6 +15,7 @@ function Logo() {
             priority
             src={LogoImage}
             alt="ForMe Logo"
+            className='dark:filter dark:invert'
             />
         </AspectRatio>
 

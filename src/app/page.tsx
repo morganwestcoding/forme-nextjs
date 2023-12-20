@@ -1,9 +1,9 @@
 import React from 'react';
 
-import Sidebar from '../components/ui/sidebar/Sidebar'
-import Rightbar from '../components/ui/rightbar/Rightbar';
-import Feed from '../components/ui/feed/Feed';
-import Tabs from '../components/ui/tabs/Tabs';
+import Sidebar from '../components/sidebar/Sidebar'
+import Rightbar from '../components/rightbar/Rightbar';
+import Feed from '../components/feed/Feed';
+import Tabs from '../components/tabs/Tabs';
 
 export default function Home() {
   return (

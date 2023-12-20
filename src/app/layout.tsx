@@ -1,7 +1,7 @@
-import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import Header from '../components/ui/header/Header'
+import './globals.css'
+import Header from '../components/header/Header'
 import ClientProviders from '@/components/ClientProviders';
 import { ThemeProvider } from '@/components/ThemeProvider';
 
