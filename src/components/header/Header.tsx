@@ -7,6 +7,7 @@ import DarkModeToggle from "@/components/DarkModeToggle";
 import UserButton from "../UserButton";
 import { MessageSquareIcon } from "lucide-react";
 import Link from "next/link";
+import CreateChatButton from "../CreateChatButton";
 
 
 async function Header() {
@@ -22,9 +23,7 @@ async function Header() {
 
              {session ? (
               <>
-              <Link href={'/chat'} prefetch={false}>
-              <MessageSquareIcon className="text-black dark:text-white" />
-              </Link>
+              <CreateChatButton />
               </>
              
              ) : (

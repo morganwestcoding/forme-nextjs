@@ -11,9 +11,10 @@ import {
 import UserAvatar from "./UserAvatar"
 import { Session } from "next-auth";
 import { Button } from "./ui/button";
-import { signIn } from "next-auth/react";
+import { signIn, signOut } from "next-auth/react";
 
 function UserButton({ session }: { session: Session | null}) {
+    // Subscription listener...
     if (!session)
     
     return (
@@ -28,14 +29,14 @@ function UserButton({ session }: { session: Session | null}) {
     <UserAvatar name={session.user?.name} image={session.user?.image}/>
   </DropdownMenuTrigger>
   <DropdownMenuContent>
-    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+    <DropdownMenuLabel>{session.user?.name}</DropdownMenuLabel>
     <DropdownMenuSeparator />
     <DropdownMenuItem>Profile</DropdownMenuItem>
     <DropdownMenuItem>Add Service</DropdownMenuItem>
     <DropdownMenuItem>Manage Services</DropdownMenuItem>
     <DropdownMenuItem>Subscription</DropdownMenuItem>
     <DropdownMenuSeparator />
-    <DropdownMenuLabel>Sign Out</DropdownMenuLabel>
+    <DropdownMenuItem onClick={() => signOut()}>Sign Out</DropdownMenuItem>
   </DropdownMenuContent>
     
 </DropdownMenu>
