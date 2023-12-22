@@ -1,3 +1,4 @@
+import Post from "./Post"
 import Share from "./Share"
 
 
@@ -6,6 +7,7 @@ export default function Feed() {
     <div className="bg-transparent pt-8">
       <div className="padding: 20px">
    <Share/>
+   <Post/>
       </div>
     </div>
   )

@@ -5,6 +5,7 @@ import Header from '../components/header/Header'
 import ClientProviders from '@/components/ClientProviders';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import Tabs from '@/components/tabs/Tabs';
+import Modal from '@/components/modals/Modal';
 
 
 const inter = Inter({ subsets: ['latin'] })
@@ -30,6 +31,7 @@ export default function RootLayout({
          disableTransitionOnChange>
         <Header/>
         <Tabs/>
+        <Modal title='hello world' isOpen/>
         
         {children}
         </ThemeProvider>

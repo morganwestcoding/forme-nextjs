@@ -1,7 +1,7 @@
 import React from 'react';
-import Sidebar from '../components/Sidebar'
-import Rightbar from '../components/Rightbar';
-import Feed from '../components/Feed';
+import Sidebar from '../components/sidebar/Sidebar'
+import Rightbar from '../components/rightbar/Rightbar';
+import Feed from '../components/feed/Feed';
 
 export default function Home() {
   return (
@@ -9,10 +9,10 @@ export default function Home() {
     <div className="flex-none w-[25%]">
     <Sidebar  /> {/* Adjust width as needed */}
     </div>
-    <div className="flex-none w-[45%]"> {/* Will grow more than Rightbar */}
+    <div className="flex-none w-[40%]"> {/* Will grow more than Rightbar */}
     <Feed />
     </div>
-    <div className="flex-grow w-[30%]" >
+    <div className="flex-grow w-[35%]" >
     <Rightbar />
     </div> {/* Will grow less than Feed */} 
     </div>

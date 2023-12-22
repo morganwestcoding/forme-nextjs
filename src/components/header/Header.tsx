@@ -3,11 +3,11 @@
 import Logo from "./Logo";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../auth";
-import DarkModeToggle from "@/components/DarkModeToggle";
+import DarkModeToggle from "@/components/header/DarkModeToggle";
 import UserButton from "../UserButton";
 import { MessageSquareIcon } from "lucide-react";
 import Link from "next/link";
-import CreateChatButton from "../CreateChatButton";
+import CreateChatButton from "./CreateChatButton";
 
 
 async function Header() {

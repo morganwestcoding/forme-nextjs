@@ -1,9 +1,11 @@
 import { Home, FolderHeart, FileQuestion, Briefcase, Store, CalendarCheck } from "lucide-react";
+import CloseFriends from "./CloseFriends";
+
 
 export default function Sidebar() {
   return (
-    <div className="sticky h-100vh top-50px bg-slate-400">
-      <div className="p-10">
+    <div className="sticky h-screen pt-8">
+      <div className="w-9/12 h-screen rounded-lg bg-white shadow-md dark:shadow-lg dark:border dark:border-gray-600 p-10">
         <ul className="list-none m-0 p-0">
           <li className="flex items-center mb-5">
             <Home className="mr-4"/>
@@ -30,6 +32,10 @@ export default function Sidebar() {
             <span>Events</span>
           </li>
         </ul>
+        <div className="list-none p-0 m-0">
+        <CloseFriends/>
+        </div>
+        
       </div>
     </div>
   )
