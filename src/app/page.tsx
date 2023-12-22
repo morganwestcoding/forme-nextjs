@@ -9,10 +9,10 @@ export default function Home() {
     <div className="flex-none w-[25%]">
     <Sidebar  /> {/* Adjust width as needed */}
     </div>
-    <div className="flex-none w-[40%]"> {/* Will grow more than Rightbar */}
+    <div className="flex-none w-[45%]"> {/* Will grow more than Rightbar */}
     <Feed />
     </div>
-    <div className="flex-grow w-[35%]" >
+    <div className="flex-grow w-[30%]" >
     <Rightbar />
     </div> {/* Will grow less than Feed */} 
     </div>
