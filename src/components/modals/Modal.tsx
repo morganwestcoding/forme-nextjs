@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { X } from "lucide-react";
 
 import { Button } from "../ui/button";
+import ModalButton from "./ModalButton";
 
 interface ModalProps {
   isOpen?: boolean;
@@ -133,20 +134,20 @@ const Modal: React.FC<ModalProps> = ({
                 border-b-[1px]
                 "
               >
-                <Button
+                <div
                   className="
                     p-1
                     border-0 
                     hover:opacity-70
                     transition
                     absolute
-                    left-9
+                    right-9
                    
                   "
                   onClick={handleClose}
                 >
-                  <X size={18} className=" text-white"/>
-                </Button>
+                  <X size={18} className=" text-black"/>
+                </div>
                 <div className="text-lg font-semibold">
                   {title}
                 </div>
@@ -167,18 +168,20 @@ const Modal: React.FC<ModalProps> = ({
                   "
                 >
                   {secondaryAction && secondaryActionLabel && (
-                    <Button 
-                      disabled={disabled} 
-                      
-                      onClick={handleSecondaryAction}
-                      
+                    <ModalButton
+                    outline
+                    label={secondaryActionLabel} // the secondary action label
+                    disabled={disabled} 
+                    onClick={handleSecondaryAction}
+                    category="secondary" // adding the category prop
                     />  
                   )}
-                  <Button 
+                  <ModalButton
+                    label={actionLabel} // Add the label prop here
                     disabled={disabled} 
-                    
                     onClick={handleSubmit}
-                  />
+                    category="primary"
+/>
                 </div>
                 {footer}
               </div>

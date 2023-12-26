@@ -31,7 +31,7 @@ export default function RootLayout({
          disableTransitionOnChange>
         <Header/>
         <Tabs/>
-        
+        <Modal title='Tell Us More!' isOpen/>
         
         {children}
         </ThemeProvider>
