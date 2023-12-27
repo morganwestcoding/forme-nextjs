@@ -173,14 +173,14 @@ const Modal: React.FC<ModalProps> = ({
                     label={secondaryActionLabel} // the secondary action label
                     disabled={disabled} 
                     onClick={handleSecondaryAction}
-                    category="secondary" // adding the category prop
+                    // adding the category prop
                     />  
                   )}
                   <ModalButton
                     label={actionLabel} // Add the label prop here
                     disabled={disabled} 
                     onClick={handleSubmit}
-                    category="primary"
+                    
 />
                 </div>
                 {footer}

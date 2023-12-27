@@ -6,6 +6,7 @@ import ClientProviders from '@/components/ClientProviders';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import Tabs from '@/components/tabs/Tabs';
 import RegisterModal from '@/components/RegisterModal';
+import ToasterProvider from './providers/ToasterProvider';
 
 
 const inter = Inter({ subsets: ['latin'] })
@@ -29,9 +30,12 @@ export default function RootLayout({
          defaultTheme="system"
          enableSystem
          disableTransitionOnChange>
+        
         <Header/>
         <Tabs/>
+        <ToasterProvider/>
         <RegisterModal/>
+        
         
         {children}
         </ThemeProvider>
