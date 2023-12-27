@@ -12,9 +12,8 @@ import UserAvatar from "./UserAvatar"
 import { Session } from "next-auth";
 import { Button } from "./ui/button";
 import { signIn, signOut } from "next-auth/react";
-import { useCallback } from "react";
+
 import useRegisterModal from "@/app/hooks/useRegisterModal";
-import { useState } from "react";
 
 
 function UserButton({ session }: { session: Session | null}) {
