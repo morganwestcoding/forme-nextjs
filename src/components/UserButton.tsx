@@ -12,16 +12,22 @@ import UserAvatar from "./UserAvatar"
 import { Session } from "next-auth";
 import { Button } from "./ui/button";
 import { signIn, signOut } from "next-auth/react";
+import { useCallback } from "react";
+import useRegisterModal from "@/app/hooks/useRegisterModal";
+import { useState } from "react";
+
 
 function UserButton({ session }: { session: Session | null}) {
+  const registerModal = useRegisterModal();
     // Subscription listener...
-    if (!session)
+    if (!session) {
     
     return (
     <Button variant={"outline"} onClick={() => signIn()}>
         Sign In
     </Button>
         );
+    }
 
     return session && (
     <DropdownMenu>
@@ -35,7 +41,7 @@ function UserButton({ session }: { session: Session | null}) {
     <DropdownMenuItem>Add Service</DropdownMenuItem>
     <DropdownMenuItem>Manage Services</DropdownMenuItem>
     <DropdownMenuItem>Subscription</DropdownMenuItem>
-    <DropdownMenuSeparator />
+    <DropdownMenuItem onClick={registerModal.onOpen}>Sign Up</DropdownMenuItem>
     <DropdownMenuItem onClick={() => signOut()}>Sign Out</DropdownMenuItem>
   </DropdownMenuContent>
     
