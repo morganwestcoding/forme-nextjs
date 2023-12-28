@@ -30,11 +30,10 @@ export default function RootLayout({
          defaultTheme="system"
          enableSystem
          disableTransitionOnChange>
-        
-        <Header/>
-        <Tabs/>
         <ToasterProvider/>
         <RegisterModal/>
+        <Header/>
+        <Tabs/>
         
         
         {children}
