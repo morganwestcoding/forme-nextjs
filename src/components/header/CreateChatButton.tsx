@@ -16,7 +16,7 @@ function CreateChatButton() {
 
     }
   return (
-    <Button onClick={createNewChat} variant={'outline'} size="icon"><MessageSquarePlusIcon className="h-[1.2rem] w-[1.2rem]"/></Button>
+    <Button className="bg-white" onClick={createNewChat} variant={'outline'} size="icon"><MessageSquarePlusIcon className="h-[1.2rem] w-[1.2rem]"/></Button>
   )
 }
 

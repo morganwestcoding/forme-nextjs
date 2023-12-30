@@ -1,5 +1,5 @@
 "use client";
-
+import { Session } from "next-auth";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -9,43 +9,55 @@ import {
     DropdownMenuTrigger,
   } from "@/components/ui/dropdown-menu"
 import UserAvatar from "./UserAvatar"
-import { Session } from "next-auth";
 import { Button } from "./ui/button";
 import { signIn, signOut } from "next-auth/react";
+import { useCallback, useState } from "react";
+import { User } from '@prisma/client'
 
 import useRegisterModal from "@/app/hooks/useRegisterModal";
+import useLoginModal from "@/app/hooks/useLoginModal";
 
+interface UserButtonProps {
+  currentUser?: User | null 
+}
 
-function UserButton({ session }: { session: Session | null}) {
+const UserButton: React.FC<UserButtonProps> = ({
+  currentUser
+}) => {
+
+  const loginModal = useLoginModal();
   const registerModal = useRegisterModal();
-    // Subscription listener...
-    if (!session) {
+  const [isOpen, setIsOpen] = useState(false);
+  const toggleOpen = useCallback(() => {
+    setIsOpen((value) => !value);
+  }, []);
     
-    return (
-    <Button variant={"outline"} onClick={() => signIn()}>
-        Sign In
-    </Button>
-        );
-    }
-
-    return session && (
+    return (   
     <DropdownMenu>
   <DropdownMenuTrigger>
-    <UserAvatar name={session.user?.name} image={session.user?.image}/>
+    <UserAvatar/>
   </DropdownMenuTrigger>
   <DropdownMenuContent>
-    <DropdownMenuLabel>{session.user?.name}</DropdownMenuLabel>
+  {currentUser ? (
+    <>
+    
     <DropdownMenuSeparator />
     <DropdownMenuItem>Profile</DropdownMenuItem>
     <DropdownMenuItem>Add Service</DropdownMenuItem>
     <DropdownMenuItem>Manage Services</DropdownMenuItem>
     <DropdownMenuItem>Subscription</DropdownMenuItem>
-    <DropdownMenuItem onClick={registerModal.onOpen}>Sign Up</DropdownMenuItem>
     <DropdownMenuItem onClick={() => signOut()}>Sign Out</DropdownMenuItem>
+    </>
+    ) : (
+      <>
+    <DropdownMenuItem onClick={loginModal.onOpen}>Login</DropdownMenuItem>
+    <DropdownMenuItem onClick={registerModal.onOpen}>Signup</DropdownMenuItem>
+    </>
+    )}
   </DropdownMenuContent>
-    
 </DropdownMenu>
-  )
-}
+    );
+  }
+
 
 export default UserButton

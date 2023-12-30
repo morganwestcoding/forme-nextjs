@@ -2,8 +2,6 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { X } from "lucide-react";
-
-import { Button } from "../ui/button";
 import ModalButton from "./ModalButton";
 
 interface ModalProps {
