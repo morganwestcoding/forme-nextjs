@@ -1,15 +1,13 @@
 "use client";
-import { Session } from "next-auth";
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
   } from "@/components/ui/dropdown-menu"
 import Avatar from "./ui/avatar";;
-import { signIn, signOut } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import { useCallback, useState } from "react";
 
 import useRegisterModal from "@/app/hooks/useRegisterModal";
