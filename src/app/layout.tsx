@@ -34,7 +34,7 @@ export default async function RootLayout({
          enableSystem
          disableTransitionOnChange>
         
-        <Header currentUser={currentUser}/>
+        <Header/>
         <Tabs/>
         <ToasterProvider/>
         <LoginModal/>

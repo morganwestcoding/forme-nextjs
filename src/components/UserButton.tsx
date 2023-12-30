@@ -8,17 +8,16 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
   } from "@/components/ui/dropdown-menu"
-import UserAvatar from "./UserAvatar"
-import { Button } from "./ui/button";
+import Avatar from "./ui/avatar";;
 import { signIn, signOut } from "next-auth/react";
 import { useCallback, useState } from "react";
-import { User } from '@prisma/client'
 
 import useRegisterModal from "@/app/hooks/useRegisterModal";
 import useLoginModal from "@/app/hooks/useLoginModal";
+import { SafeUser } from "@/app/types";
 
 interface UserButtonProps {
-  currentUser?: User | null 
+  currentUser?: SafeUser | null 
 }
 
 const UserButton: React.FC<UserButtonProps> = ({
@@ -34,13 +33,14 @@ const UserButton: React.FC<UserButtonProps> = ({
     
     return (   
     <DropdownMenu>
+        
   <DropdownMenuTrigger>
-    <UserAvatar/>
+    <Avatar src={currentUser?.image} />
+
   </DropdownMenuTrigger>
   <DropdownMenuContent>
   {currentUser ? (
     <>
-    
     <DropdownMenuSeparator />
     <DropdownMenuItem>Profile</DropdownMenuItem>
     <DropdownMenuItem>Add Service</DropdownMenuItem>

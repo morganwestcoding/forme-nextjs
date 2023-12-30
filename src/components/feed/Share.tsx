@@ -1,14 +1,24 @@
 import React from 'react';
-import UserAvatar from '../UserAvatar';
+import Avatar from '../ui/avatar';
 import { Image, MapPin, SmilePlus, Tags } from 'lucide-react';
 import { Button } from '../ui/button';
+import { SafeUser } from '@/app/types';
 
-export default function Share() {
+interface ShareProps {
+    currentUser?: SafeUser | null 
+  }
+  
+  const Share: React.FC<ShareProps> = ({
+    currentUser
+  }) => {
+
   return (
     <div className='w-full h-44 rounded-lg shadow-md bg-white dark:shadow-lg dark:border dark:border-gray-600'>
         <div className="p-2.5">
             <div className="flex items-center ml-5 mt-2.5">
-                <UserAvatar />
+            <Button className="bg-white" variant="outline" size="icon">
+                <Avatar src={currentUser?.image}/>
+            </Button>
             </div>
             <hr className='my-5 mx-5'/>
             <div className="flex items-center justify-between">
@@ -38,3 +48,5 @@ export default function Share() {
     </div>
   )
 }
+
+export default Share;
