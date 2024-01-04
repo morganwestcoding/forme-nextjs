@@ -6,9 +6,6 @@ import Feed from '../components/feed/Feed';
 export default function Home() {
   return (
     <div className="flex w-full">
-    <div className="flex-none w-[25%]">
-    <Sidebar  /> {/* Adjust width as needed */}
-    </div>
     <div className="flex-none w-[45%]"> {/* Will grow more than Rightbar */}
     <Feed />
     </div>

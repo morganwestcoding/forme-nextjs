@@ -5,7 +5,7 @@ function CloseFriends() {
     <div>Close Friends
     <ul>
         <li>
-            test2
+            
         </li>
     </ul>
      </div>

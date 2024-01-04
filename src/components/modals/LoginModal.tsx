@@ -102,7 +102,7 @@ const LoginModal = () => {
         icon={FcGoogle}
         onClick={() => signIn('google')}
       />
-      <ModalButton 
+      <ModalButton
         outline 
         label="Continue with Github"
         icon={AiFillGithub}

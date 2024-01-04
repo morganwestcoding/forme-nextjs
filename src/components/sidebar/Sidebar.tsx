@@ -1,35 +1,37 @@
 import { Home, FolderHeart, FileQuestion, Briefcase, Store, CalendarCheck } from "lucide-react";
 import CloseFriends from "./CloseFriends";
+import Logo from "../header/Logo";
 
 
 export default function Sidebar() {
   return (
-    <div className="sticky h-screen pt-8 ">
-      <div className="w-4/5 h-screen rounded-lg bg-white shadow-md dark:shadow-lg dark:border dark:border-gray-600 p-10" >
+    <div className="sticky top-0 flex h-screen">
+      <div className="flex flex-col items-center w-48 h-full rounded-l-2xl bg-[#ececec] bg-opacity-40 shadow-md dark:shadow-lg dark:border dark:border-gray-600 p-10" >
+        <Logo/>
         <ul className="list-none m-0 p-0">
-          <li className="flex items-center mb-5">
-            <Home className="mr-4" color="#C19065"/>
-            <span>Home</span>
+          <li className="flex items-center mb-5 pt-10">
+            <Home size={28} strokeWidth={1.5} color="#7d8085"/>
+          
           </li>
           <li className="flex items-center mb-5">
-            <Store className="mr-4" color="#C19065"/>
-            <span>Market</span>
+            <Store size={28} strokeWidth={1.5} color="#7d8085"/>
+            
           </li>
           <li className="flex items-center mb-5">
-            <FolderHeart className="mr-4" color="#C19065"/>
-            <span>Favorites</span>
+            <FolderHeart size={28} strokeWidth={1.5} color="#7d8085"/>
+          
           </li>
           <li className="flex items-center mb-5">
-            <FileQuestion className="mr-4" color="#C19065" />
-            <span>Questions</span>
+            <FileQuestion size={28} strokeWidth={1.5} color="#7d8085" />
+            
           </li>
           <li className="flex items-center mb-5">
-            <Briefcase className="mr-4" color="#C19065"/>
-            <span>Jobs</span>
+            <Briefcase size={28} strokeWidth={1.5} color="#7d8085"/>
+          
           </li>
           <li className="flex items-center mb-5">
-            <CalendarCheck className="mr-4" color="#C19065"/>
-            <span>Events</span>
+            <CalendarCheck size={28} strokeWidth={1.5} color="#7d8085"/>
+            
           </li>
         </ul>
         <div className="list-none p-0 m-0">
