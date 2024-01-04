@@ -3,6 +3,7 @@ import Avatar from '../ui/avatar';
 import { Image, MapPin, SmilePlus, Tags } from 'lucide-react';
 import { Button } from '../ui/button';
 import { SafeUser } from '@/app/types';
+import { IoMdPhotos } from "react-icons/io";
 
 interface ShareProps {
     currentUser?: SafeUser | null 
@@ -13,7 +14,7 @@ interface ShareProps {
   }) => {
 
   return (
-    <div className='w-full h-44 rounded-lg shadow-md bg-[#ececec] bg-opacity-40 dark:shadow-lg dark:border dark:border-gray-600'>
+    <div className='w-full h-44 rounded-lg shadow-md bg-[#F9FCFF] bg-opacity-40 dark:shadow-lg dark:border dark:border-gray-600'>
         <div className="p-2.5">
             <div className="flex items-center ml-5 mt-2.5">
             <Button className="bg-white" variant="outline" size="icon">

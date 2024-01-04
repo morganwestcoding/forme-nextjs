@@ -5,7 +5,7 @@ import React from 'react'
 
 export default function Post() {
   return (
-    <div className="w-full rounded-lg bg-[#ececec] bg-opacity-40 shadow-md my-6">
+    <div className="w-full rounded-lg bg-[#F9FCFF] bg-opacity-40 shadow-md my-6">
         <div className="p-2">
             <div className="flex items-center justify-between">
                 <div className="flex items-center">

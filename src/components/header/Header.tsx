@@ -20,7 +20,7 @@ const Header: React.FC<HeaderProps> = ({
   console.log({ currentUser});
   return (
         <header className="sticky top-0 z-50 dark:bg-gray-900 pr-10 pt-5">
-          <nav className="flex flex-col sm:flex-row items-centerjustify-between items-center pl-2 dark:bg-gray-900 max-w-7xl mx-auto">
+          <nav className="flex flex-col sm:flex-row items-centerjustify-between items-center dark:bg-gray-900 max-w-7xl mx-auto">
            
             <Search/>
             <div className="flex-1 flex items-center justify-end space-x-4">
@@ -37,7 +37,7 @@ const Header: React.FC<HeaderProps> = ({
             </div>
           </nav>
 
-          {/* Uprgrade */}
+         
         </header>
   );
 };
