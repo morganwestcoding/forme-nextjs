@@ -62,7 +62,7 @@ export default function Sidebar() {
         
       </div>
        {/* Category Bar */}
-       <div className={`relative flex flex-col ${isCollapsed ? 'w-0' : 'w-48'} overflow-hidden transition-width duration-300 h-full rounded-r-2xl bg-[#EFEFEF] border-l`}>
+       <div className={`relative flex flex-col ${isCollapsed ? 'w-0' : 'w-48'} overflow-hidden transition-width duration-300 h-full rounded-r-2xl bg-[#9fa2a6] bg-opacity-40 border-l`}>
         {/* Arrow button when expanded */}
         <button onClick={toggleCollapse} className={`absolute top-1/2 right-0 transform -translate-y-1/2 translate-x-1/2 rounded-full p-2 bg-white border shadow ${isCollapsed ? 'hidden' : ''}`}>
           <span className="text-xl">{'<'}</span>

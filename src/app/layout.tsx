@@ -50,7 +50,7 @@ export default async function RootLayout({
         <RegisterModal/>
         
         
-       
+        {children}
         </ThemeProvider>
       </body>
     </html>

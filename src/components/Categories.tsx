@@ -1,50 +1,56 @@
 'use client';
 
 import { usePathname, useSearchParams } from 'next/navigation';
-import {TbPool } from 'react-icons/tb';
 import CategoryChoice from './CategoryChoice';
 
 
 export const categories = [
   {
-    label: 'Beach',
-    color: 'bg-blue-400',
+    label: 'Nails',
+    color: 'bg-[#dac6be]',
     description: 'This property is close to the beach!',
+    gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
   },
   {
-    label: 'Windmills',
-    color: 'bg-blue-400',
+    label: 'Barber',
+    color: 'bg-[#cdb3a8]',
     description: 'This property is has windmills!',
+    gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
   },
   {
-    label: 'Modern',
-    color: 'bg-blue-400',
-    description: 'This property is modern!'
+    label: 'Salon',
+    color: 'bg-[#c1a093]',
+    description: 'This property is modern!',
+    gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
   },
   {
-    label: 'Countryside',
-    color: 'bg-blue-400',
+    label: 'Massage',
+    color: 'bg-[#b58d7d]',
     description: 'This property is in the countryside!'
   },
   {
-    label: 'Pools',
-    color: 'bg-blue-400',
-    description: 'This is property has a beautiful pool!'
+    label: 'Eyebrows',
+    color: 'bg-[#a87a67]',
+    description: 'This is property has a beautiful pool!',
+    gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
   },
   {
-    label: 'Islands',
-    color: 'bg-blue-400',
-    description: 'This property is on an island!'
+    label: 'Facial',
+    color: 'bg-[#9c6751]',
+    description: 'This property is on an island!',
+    gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
   },
   {
-    label: 'Lake',
-    color: 'bg-blue-400',
-    description: 'This property is near a lake!'
+    label: 'Trainor',
+    color: 'bg-[#8f543c]',
+    description: 'This property is near a lake!',
+    gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
   },
   {
-    label: 'Skiing',
-    color: 'bg-blue-400',
-    description: 'This property has skiing activies!'
+    label: 'Flex',
+    color: 'bg-[#834126]',
+    description: 'This property has skiing activies!',
+    gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
   }
 ]
 
@@ -61,7 +67,7 @@ const Categories = () => {
   return (
 <div>
    <div className='
-    pt-4
+    pt-14
     flex 
     flex-col 
     items-center 
