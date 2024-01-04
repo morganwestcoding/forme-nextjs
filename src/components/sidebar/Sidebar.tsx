@@ -28,28 +28,28 @@ export default function Sidebar() {
         <Logo/>
         <ul className="list-none m-0 p-0">
           <li className="flex items-center mb-5 pt-10">
-            <AiFillHome size={28} strokeWidth={1.5} color="#7d8085"/>
+            <AiFillHome size={26} strokeWidth={1.5} color="#7d8085"/>
           
           </li>
           <li className="flex items-center mb-5">
-            <MdStore size={28} color="#7d8085"/>
+            <MdStore size={26} color="#7d8085"/>
             
           </li>
           <li className="flex items-center mb-5">
             
-            <BiSolidBookmarks size={28} color="#7d8085" />
+            <BiSolidBookmarks size={26} color="#7d8085" />
           
           </li>
           <li className="flex items-center mb-5">
-            <BsFillQuestionCircleFill size={28} color="#7d8085" />
+            <BsFillQuestionCircleFill size={26} color="#7d8085" />
             
           </li>
           <li className="flex items-center mb-5">
-            <FaSuitcase size={28} color="#7d8085"/>
+            <FaSuitcase size={26} color="#7d8085"/>
           
           </li>
           <li className="flex items-center mb-5">
-            <IoCalendar size={28} strokeWidth={1.5} color="#7d8085"/>
+            <IoCalendar size={26} strokeWidth={1.5} color="#7d8085"/>
             
           </li>
         </ul>
@@ -62,7 +62,7 @@ export default function Sidebar() {
         
       </div>
        {/* Category Bar */}
-       <div className={`relative flex flex-col ${isCollapsed ? 'w-0' : 'w-48'} overflow-hidden transition-width duration-300 h-full rounded-r-2xl bg-[#9fa2a6] bg-opacity-40 border-l`}>
+       <div className={`relative flex flex-col ${isCollapsed ? 'w-0' : 'w-48'} overflow-hidden transition-width duration-300 h-full rounded-r-4xl bg-[#9fa2a6] bg-opacity-40 border-l`}>
         {/* Arrow button when expanded */}
         <button onClick={toggleCollapse} className={`absolute top-1/2 right-0 transform -translate-y-1/2 translate-x-1/2 rounded-full p-2 bg-white border shadow ${isCollapsed ? 'hidden' : ''}`}>
           <span className="text-xl">{'<'}</span>
