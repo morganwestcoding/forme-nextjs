@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect } from 'react';
+
 import { usePathname, useSearchParams } from 'next/navigation';
 import CategoryChoice from './CategoryChoice';
 
@@ -9,13 +11,13 @@ export const categories = [
     label: 'Nails',
     color: 'bg-[#dac6be]',
     description: 'This property is close to the beach!',
-    gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
+    gradient: 'bg-gradient-to-b from-[#dac6be] to-[#6d635f]'
   },
   {
     label: 'Barber',
     color: 'bg-[#cdb3a8]',
     description: 'This property is has windmills!',
-    gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
+    gradient: 'bg-gradient-to-b from-[#cdb3a8] to-[#907d76]'
   },
   {
     label: 'Salon',
@@ -26,7 +28,8 @@ export const categories = [
   {
     label: 'Massage',
     color: 'bg-[#b58d7d]',
-    description: 'This property is in the countryside!'
+    description: 'This property is in the countryside!',
+    gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
   },
   {
     label: 'Eyebrows',
@@ -54,11 +57,27 @@ export const categories = [
   }
 ]
 
+
+
+
 const Categories = () => {
   const params = useSearchParams();
   const category = params?.get('category');
   const pathname = usePathname();
   const isMainPage = pathname === '/';
+
+  const selectedCategory = categories.find(item => item.label === category);
+  const selectedGradient = selectedCategory?.gradient;
+
+  useEffect(() => {
+    if (selectedGradient) {
+      // Apply the gradient to the entire webpage
+      document.body.style.background = 'linear-gradient(to bottom, #dac6be, #6d635f)'
+    } else {
+      // Reset to default background if no category is selected or it doesn't have a gradient
+      document.body.style.background = 'linear-gradient(to bottom, #EDF1F4, #C3CBDC)'// Set to your default background
+    }
+  }, [selectedGradient]);
 
   if (!isMainPage) {
     return null;
