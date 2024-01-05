@@ -75,7 +75,7 @@ const Categories = () => {
       document.body.style.background = 'linear-gradient(to bottom, #dac6be, #6d635f)'
     } else {
       // Reset to default background if no category is selected or it doesn't have a gradient
-      document.body.style.background = 'linear-gradient(to bottom, #EDF1F4, #C3CBDC)'// Set to your default background
+      document.body.style.background = 'linear-gradient(to bottom, #EDF1F4, #a6aebf)'// Set to your default background
     }
   }, [selectedGradient]);
 

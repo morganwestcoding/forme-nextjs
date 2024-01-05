@@ -7,7 +7,6 @@ export default function Feed() {
     <div className="bg-transparent pt-8 pl-14">
       <div className="padding: 20px">
    <Share/>
-   <Post/>
       </div>
     </div>
   )

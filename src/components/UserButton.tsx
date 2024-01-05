@@ -25,15 +25,24 @@ const UserButton: React.FC<UserButtonProps> = ({
   const loginModal = useLoginModal();
   const registerModal = useRegisterModal();
   const [isOpen, setIsOpen] = useState(false);
+
   const toggleOpen = useCallback(() => {
     setIsOpen((value) => !value);
   }, []);
+
+  const onRent = useCallback(() => {
+    if (!currentUser) {
+      return loginModal.onOpen();
+    }
+  }, [currentUser, loginModal]);
     
-    return (   
-    <DropdownMenu>
-        
+    return (  
+      <div
+      onClick={onRent}>
+    <DropdownMenu>   
   <DropdownMenuTrigger>
-    <Avatar src={currentUser?.image} />
+    <Avatar src={currentUser?.image}
+     />
 
   </DropdownMenuTrigger>
   <DropdownMenuContent>
@@ -54,8 +63,10 @@ const UserButton: React.FC<UserButtonProps> = ({
     )}
   </DropdownMenuContent>
 </DropdownMenu>
+</div> 
     );
   }
+  
 
 
 export default UserButton
