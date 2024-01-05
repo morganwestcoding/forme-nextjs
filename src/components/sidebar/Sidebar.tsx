@@ -32,26 +32,27 @@ export default function Sidebar() {
         <ul className="list-none m-0 p-0">
 
           <li className="flex items-center mb-5 pt-5">
-            <IoHomeOutline size={26} color="#7d8085" opacity="75%"/>
+          <img src="/icons/house.svg" alt="Home" className="h-6 w-6 text-[#7d8085] opacity-75" />
           
           </li>
           <li className="flex items-center mb-5">
-            <IoStorefrontOutline size={26} strokeWidth={0.025} color="#7d8085" opacity="75%"/>
+          <img src="/icons/shop.svg" alt="Home" className="h-6 w-6 text-[#7d8085] opacity-75" />
             
           </li>
           <li className="flex items-center mb-5">
             
-            <BsBookmarks size={26} color="#7d8085" opacity="75%"/>
+          <img src="/icons/save-2.svg" alt="Home" className="h-6 w-6 text-[#7d8085] opacity-75" />
           
           </li>
           <li className="flex items-center mb-5">
-            <LiaSuitcaseSolid size={26} color="#7d8085" opacity="75%"/>
+          <img src="/icons/briefcase.svg" alt="Home" className="h-6 w-6 text-[#7d8085] opacity-75" />
           
           </li>
-          <li className="flex items-center mb-4">
-            <HiOutlineCalendarDays size={26} color="#7d8085" opacity="75%"/>
-            
+          <li className="flex items-center mb-5">
+          <img src="/icons/calendar-2.svg" alt="Home" className="h-6 w-6 text-[#7d8085] opacity-75" />
+          
           </li>
+          
         </ul>
         <div className="list-none p-0 m-0">
         <CloseFriends/>
@@ -67,7 +68,7 @@ export default function Sidebar() {
         </button>
         
          {/* Category Bar */}
-        <div className={`relative flex flex-col ${isCollapsed ? 'w-0' : 'w-48'} overflow-hidden transition-width duration-300 h-full rounded-r-4xl bg-[#9fa2a6] bg-opacity-40 border-l`}>
+        <div className={`relative flex flex-col ${isCollapsed ? 'w-0' : 'w-48'} overflow-hidden transition-width duration-300 h-full rounded-r-4xl bg-[#0c0c0d] bg-opacity-70 border-l `}>
         <Categories/>
       </div>
     </div>

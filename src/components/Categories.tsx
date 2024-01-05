@@ -9,49 +9,49 @@ import CategoryChoice from './CategoryChoice';
 export const categories = [
   {
     label: 'Nails',
-    color: 'bg-[#dac6be]',
+    color: 'bg-yellow-200',
     description: 'This property is close to the beach!',
     gradient: 'bg-gradient-to-b from-[#dac6be] to-[#6d635f]'
   },
   {
     label: 'Barber',
-    color: 'bg-[#cdb3a8]',
+    color: 'bg-rose-200',
     description: 'This property is has windmills!',
     gradient: 'bg-gradient-to-b from-[#cdb3a8] to-[#907d76]'
   },
   {
     label: 'Salon',
-    color: 'bg-[#c1a093]',
+    color: 'bg-orange-300',
     description: 'This property is modern!',
     gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
   },
   {
     label: 'Massage',
-    color: 'bg-[#b58d7d]',
+    color: 'bg-teal-500',
     description: 'This property is in the countryside!',
     gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
   },
   {
     label: 'Eyebrows',
-    color: 'bg-[#a87a67]',
+    color: 'bg-emerald-600',
     description: 'This is property has a beautiful pool!',
     gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
   },
   {
     label: 'Facial',
-    color: 'bg-[#9c6751]',
+    color: 'bg-cyan-600',
     description: 'This property is on an island!',
     gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
   },
   {
     label: 'Trainor',
-    color: 'bg-[#8f543c]',
+    color: 'bg-blue-800',
     description: 'This property is near a lake!',
     gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
   },
   {
     label: 'Flex',
-    color: 'bg-[#834126]',
+    color: 'bg-indigo-800',
     description: 'This property has skiing activies!',
     gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
   }

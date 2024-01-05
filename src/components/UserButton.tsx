@@ -13,6 +13,7 @@ import { useCallback, useState } from "react";
 import useRegisterModal from "@/app/hooks/useRegisterModal";
 import useLoginModal from "@/app/hooks/useLoginModal";
 import { SafeUser } from "@/app/types";
+import useRentModal from "@/app/hooks/useRentModal";
 
 interface UserButtonProps {
   currentUser?: SafeUser | null 
@@ -24,6 +25,7 @@ const UserButton: React.FC<UserButtonProps> = ({
 
   const loginModal = useLoginModal();
   const registerModal = useRegisterModal();
+  const rentModal = useRentModal();
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleOpen = useCallback(() => {
@@ -34,7 +36,9 @@ const UserButton: React.FC<UserButtonProps> = ({
     if (!currentUser) {
       return loginModal.onOpen();
     }
-  }, [currentUser, loginModal]);
+
+    rentModal.onOpen();
+  }, [currentUser, loginModal, rentModal]);
     
     return (  
       <div
@@ -50,7 +54,8 @@ const UserButton: React.FC<UserButtonProps> = ({
     <>
     <DropdownMenuSeparator />
     <DropdownMenuItem>Profile</DropdownMenuItem>
-    <DropdownMenuItem>Add Service</DropdownMenuItem>
+    <DropdownMenuItem
+    onClick={rentModal.onOpen}>Add Service</DropdownMenuItem>
     <DropdownMenuItem>Manage Services</DropdownMenuItem>
     <DropdownMenuItem>Subscription</DropdownMenuItem>
     <DropdownMenuItem onClick={() => signOut()}>Sign Out</DropdownMenuItem>

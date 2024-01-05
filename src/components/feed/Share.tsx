@@ -25,24 +25,23 @@ interface ShareProps {
             <div className="flex items-center justify-between">
                 <div className="flex ml-5">
                     <div className='flex items-center mr-3.5 cursor-pointer'>
-                        <Image className='mr-0.5' color="#7d8085"/>
-                        <span className="text-base font-medium"> Photos </span>
+                        <img src="/icons/gallery.svg" className='mr-0.5' color="#7d8085"/>
+                        <span className=" font-black text-xs"> Photos </span>
+                    </div>
+                
+                    <div className='flex items-center mr-3.5 cursor-pointer'>
+                    <img src="/icons/location-cross.svg" className='mr-0.5' color="#7d8085"/>
+                        <span className="font-bold text-xs"> Location </span>
                     </div>
                     <div className='flex items-center mr-3.5 cursor-pointer'>
-                        <Tags className='mr-0.5' color="#7d8085"/>
-                        <span className="text-base font-medium"> Tag </span>
+                    <img src="/icons/emoji-normal.svg" className='mr-0.5' color="#7d8085"/>
+                        <span className="font-bold text-xs"> Mood </span>
                     </div>
-                    <div className='flex items-center mr-3.5 cursor-pointer'>
-                        <MapPin className='mr-0.5' color="#7d8085"/>
-                        <span className="text-base font-medium"> Location</span>
-                    </div>
-                    <div className='flex items-center cursor-pointer'>
-                        <SmilePlus className='mr-1' color="#7d8085"/>
-                        <span className="text-base font-medium"> Mood</span>
-                    </div>
+                    
+                    
                 </div>
                 <div className="pr-4">
-                <Button className='rounded-sm bg-[#3d3f42]'>Share</Button>
+                <Button className='rounded-bold bg-[#3d3f42]'>Share</Button>
                 </div>
             </div>
         </div>

@@ -14,9 +14,9 @@ import { useMemo, useState } from "react";
 import useRentModal from '@/app/hooks/useRentModal';
 
 import Modal from "./Modal";
-/*import Counter from "../inputs/Counter";
+/*import Counter from "../inputs/Counter";*/
 import CategoryInput from '../inputs/CategoryInput';
-import CountrySelect from "../inputs/CountrySelect";*/
+/*import CountrySelect from "../inputs/CountrySelect";*/
 import { categories } from '../Categories';
 /*import ImageUpload from '../inputs/ImageUpload';*/
 import Input from '../inputs/Input';
@@ -146,13 +146,13 @@ const RentModal = () => {
       >
         {categories.map((item) => (
           <div key={item.label} className="col-span-1">
-          {/*<CategoryInput
+          <CategoryInput
               onClick={(category) => 
                 setCustomValue('category', category)}
               selected={category === item.label}
               label={item.label}
-              icon={item.icon}
-              />*/}
+              color={item.color}
+              />
           </div>
         ))}
       </div>

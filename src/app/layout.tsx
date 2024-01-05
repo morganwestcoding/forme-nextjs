@@ -9,6 +9,7 @@ import ToasterProvider from './providers/ToasterProvider';
 import LoginModal from '@/components/modals/LoginModal';
 import getCurrentUser from './actions/getCurrentUser';
 import Sidebar from '@/components/sidebar/Sidebar';
+import RentModal from '@/components/modals/RentModal';
 
 
 
@@ -46,6 +47,7 @@ export default async function RootLayout({
             </div>
             
         <ToasterProvider/>
+        <RentModal/>
         <LoginModal/>
         <RegisterModal/>
         
