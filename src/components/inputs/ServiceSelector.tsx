@@ -4,6 +4,7 @@ import { useState } from "react";
 import { FieldErrors, FieldValues, UseFormRegister, useFieldArray, Control } from "react-hook-form";
 import Input from './Input'; // Ensure this path is correct
 import { categories } from '../Categories'; // Ensure this path is correct
+import { useEffect } from "react";
 
 interface ServiceSelectorProps {
   register: UseFormRegister<FieldValues>;
@@ -22,6 +23,15 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
     control,
     name: "services"
   });
+
+  // Initialize with four rows by default
+  useEffect(() => {
+    if (fields.length === 0) {
+      for (let i = 0; i < 4; i++) {
+        append({ serviceName: "", price: "", category: "" });
+      }
+    }
+  }, [append, fields.length]);
 
   const handleAddService = () => {
     append({ serviceName: "", price: "", category: "" });
@@ -51,7 +61,7 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
             errors={errors}
             required
           />
-          <div>
+          <div className="col-span-1">
             <label htmlFor={`services[${index}].category`} className="block mb-2 text-sm font-medium text-gray-700">Category</label>
             <select
               id={`services[${index}].category`}
@@ -86,13 +96,14 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
         onClick={handleAddService}
         className="
           mt-4 
-          bg-blue-500 
-          hover:bg-blue-700 
-          text-white 
+         border
+          border-black
+          
+          bg-white
           font-bold 
           py-2 
           px-4 
-          rounded
+          rounded-lg
         "
         disabled={isLoading}
       >

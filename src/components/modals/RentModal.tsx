@@ -52,7 +52,7 @@ const RentModal = () => {
     reset,
   } = useForm<FieldValues>({
     defaultValues: {
-        services: [{ serviceName: "", price: "", category: "" }],
+        services: Array(4).fill({ serviceName: "", price: "", category: "" }),
       category: '',
       location: null,
       city: null,
@@ -167,13 +167,13 @@ const RentModal = () => {
           subtitle="Help guests find you!"
         />
         <StateSelect 
+        
           value={location} 
           onChange={(value) => setCustomValue('location', value)} 
         />
         <Input
         id="city"
         label="City"
-        placeholder="Enter your city"
         disabled={isLoading}
         register={register}
         errors={errors}
