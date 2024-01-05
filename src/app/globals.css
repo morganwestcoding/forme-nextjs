@@ -81,3 +81,10 @@
   margin: 0;
   font-family: 'Inter', sans-serif;
 }
+
+.leaflet-bottom,
+.leaflet-control,
+.leaflet-pane,
+.leaflet-top {
+  z-index: 0 !important;
+}

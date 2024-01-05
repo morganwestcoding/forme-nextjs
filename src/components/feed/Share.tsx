@@ -26,16 +26,16 @@ interface ShareProps {
                 <div className="flex ml-5">
                     <div className='flex items-center mr-3.5 cursor-pointer'>
                         <img src="/icons/gallery.svg" className='mr-0.5' color="#7d8085"/>
-                        <span className=" font-black text-xs"> Photos </span>
+                        <span className=" font-black text-xs">Photos</span>
                     </div>
                 
                     <div className='flex items-center mr-3.5 cursor-pointer'>
-                    <img src="/icons/location.svg" className='mr-0.5' color="#7d8085"/>
-                        <span className="font-bold text-xs"> Location </span>
+                    <img src="/icons/location.svg" className='mr-0.4' color="#7d8085"/>
+                        <span className="font-bold text-xs">Location</span>
                     </div>
                     <div className='flex items-center mr-3.5 cursor-pointer'>
                     <img src="/icons/emoji-normal.svg" className='mr-0.5' color="#7d8085"/>
-                        <span className="font-bold text-xs"> Mood </span>
+                        <span className="font-bold text-xs">Mood</span>
                     </div>
                     
                     

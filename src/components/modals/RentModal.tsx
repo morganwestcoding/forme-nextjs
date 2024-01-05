@@ -11,12 +11,13 @@ import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from "react";
 
+
 import useRentModal from '@/app/hooks/useRentModal';
 
 import Modal from "./Modal";
 /*import Counter from "../inputs/Counter";*/
 import CategoryInput from '../inputs/CategoryInput';
-/*import CountrySelect from "../inputs/CountrySelect";*/
+import StateSelect from "../inputs/StateSelect";
 import { categories } from '../Categories';
 /*import ImageUpload from '../inputs/ImageUpload';*/
 import Input from '../inputs/Input';
@@ -51,9 +52,7 @@ const RentModal = () => {
     defaultValues: {
       category: '',
       location: null,
-      guestCount: 1,
-      roomCount: 1,
-      bathroomCount: 1,
+      service: '',
       imageSrc: '',
       price: 1,
       title: '',
@@ -63,14 +62,11 @@ const RentModal = () => {
 
   const location = watch('location');
   const category = watch('category');
-  const guestCount = watch('guestCount');
-  const roomCount = watch('roomCount');
-  const bathroomCount = watch('bathroomCount');
   const imageSrc = watch('imageSrc');
 
- /* const Map = useMemo(() => dynamic(() => import('../Map'), { 
+ const Map = useMemo(() => dynamic(() => import('../Map'), { 
     ssr: false 
-  }), [location]);*/
+  }), [location]);
 
 
   const setCustomValue = (id: string, value: any) => {
@@ -166,11 +162,13 @@ const RentModal = () => {
           title="Where is your place located?"
           subtitle="Help guests find you!"
         />
-        {/*<CountrySelect 
+        <StateSelect 
           value={location} 
           onChange={(value) => setCustomValue('location', value)} 
         />
-    <Map center={location?.latlng} />*/}
+        <Map
+            center={location?.latlng} />
+            
       </div>
     );
   }
