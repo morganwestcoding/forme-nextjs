@@ -11,6 +11,7 @@ interface InputProps {
   id: string;
   label: string;
   type?: string;
+  placeholder?:string;
   disabled?: boolean;
   formatPrice?: boolean;
   required?: boolean;
@@ -21,7 +22,8 @@ interface InputProps {
 const Input: React.FC<InputProps> = ({
   id,
   label,
-  type = "text", 
+  type = "text",
+  placeholder = "",
   disabled, 
   formatPrice,
   register,
@@ -45,7 +47,7 @@ const Input: React.FC<InputProps> = ({
         id={id}
         disabled={disabled}
         {...register(id, { required })}
-        placeholder=" "
+        placeholder={placeholder} 
         type={type}
         className={`
           peer

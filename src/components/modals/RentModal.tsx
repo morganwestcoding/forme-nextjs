@@ -22,6 +22,7 @@ import { categories } from '../Categories';
 /*import ImageUpload from '../inputs/ImageUpload';*/
 import Input from '../inputs/Input';
 import Heading from '../Heading';
+import ServiceSelector from '../inputs/ServiceSelector';
 
 enum STEPS {
   CATEGORY = 0,
@@ -42,6 +43,7 @@ const RentModal = () => {
   const { 
     register, 
     handleSubmit,
+    control,
     setValue,
     watch,
     formState: {
@@ -50,8 +52,10 @@ const RentModal = () => {
     reset,
   } = useForm<FieldValues>({
     defaultValues: {
+        services: [{ serviceName: "", price: "", category: "" }],
       category: '',
       location: null,
+      city: null,
       service: '',
       imageSrc: '',
       price: 1,
@@ -166,6 +170,15 @@ const RentModal = () => {
           value={location} 
           onChange={(value) => setCustomValue('location', value)} 
         />
+        <Input
+        id="city"
+        label="City"
+        placeholder="Enter your city"
+        disabled={isLoading}
+        register={register}
+        errors={errors}
+        required
+      />
         <Map
             center={location?.latlng} />
             
@@ -180,26 +193,11 @@ const RentModal = () => {
           title="Share some basics about your place"
           subtitle="What amenitis do you have?"
         />
-        {/*<Counter 
-          onChange={(value) => setCustomValue('guestCount', value)}
-          value={guestCount}
-          title="Guests" 
-          subtitle="How many guests do you allow?"
-        />
-        <hr />
-        <Counter 
-          onChange={(value) => setCustomValue('roomCount', value)}
-          value={roomCount}
-          title="Rooms" 
-          subtitle="How many rooms do you have?"
-        />
-        <hr />
-        <Counter 
-          onChange={(value) => setCustomValue('bathroomCount', value)}
-          value={bathroomCount}
-          title="Bathrooms" 
-          subtitle="How many bathrooms do you have?"
-    />*/}
+        <ServiceSelector
+        control={control} 
+        register={register}
+        errors={errors}
+        isLoading={isLoading}/>
       </div>
     )
   }
