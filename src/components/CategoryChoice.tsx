@@ -57,7 +57,7 @@ const CategoryChoice: React.FC<CategoryChoiceProps> = ({
         transition
         cursor-pointer
         ${selected ? 'border-b-white' : 'border-transparent'}
-        ${selected ? 'text-white' : 'text-slate-300'}
+        ${selected ? 'text-white' : 'text-slate-200'}
       `}
     >
       <span className={`h-6 w-6 rounded-full ${color} inline-block`}></span>

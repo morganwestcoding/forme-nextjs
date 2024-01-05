@@ -29,7 +29,7 @@ export default function Sidebar() {
         <div className="flex flex-col item-center pt-9 text-xs font-bold text-[#7d8085] opacity-75">
           MENU
         </div>
-        <ul className="list-none m-0 p-0">
+        <ul className="list-none m-0 p-0 ">
 
           <li className="flex items-center mb-5 pt-5">
           <img src="/icons/house.svg" alt="Home" className="h-6 w-6 text-[#7d8085] opacity-75" />

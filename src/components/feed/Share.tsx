@@ -30,7 +30,7 @@ interface ShareProps {
                     </div>
                 
                     <div className='flex items-center mr-3.5 cursor-pointer'>
-                    <img src="/icons/location-cross.svg" className='mr-0.5' color="#7d8085"/>
+                    <img src="/icons/location.svg" className='mr-0.5' color="#7d8085"/>
                         <span className="font-bold text-xs"> Location </span>
                     </div>
                     <div className='flex items-center mr-3.5 cursor-pointer'>
@@ -41,7 +41,7 @@ interface ShareProps {
                     
                 </div>
                 <div className="pr-4">
-                <Button className='rounded-bold bg-[#3d3f42]'>Share</Button>
+                <Button className='rounded-xl bg-[#3d3f42]'>Share</Button>
                 </div>
             </div>
         </div>
