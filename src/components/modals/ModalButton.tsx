@@ -29,11 +29,12 @@ const ModalButton: React.FC<ModalButtonProps> = ({
         disabled:opacity-70
         disabled:cursor-not-allowed
         rounded-lg
+        border-transparent
         hover:opacity-80
         transition
         w-full
-        ${outline ? 'bg-white' : 'bg-yellow-900'}
-        ${outline ? 'border-black' : 'border-yellow-900'}
+        ${outline ? 'bg-white' : 'bg-[#3d3f42]'}
+        ${outline ? 'border-white' : 'bg-[#3d3f42]'}
         ${outline ? 'text-black' : 'text-white'}
         ${small ? 'text-sm' : 'text-md'}
         ${small ? 'py-1' : 'py-3'}

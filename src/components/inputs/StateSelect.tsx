@@ -6,11 +6,13 @@ import useStates from '@/app/hooks/useStates';
 
 export type StateSelectValue = {
   label: string;
- 
+  id:string;
   value: string
 }
 
 interface StateSelectProps {
+  label: string;
+  id:string;
   value?: StateSelectValue;
   onChange: (value: StateSelectValue) => void;
 }
@@ -22,27 +24,27 @@ const StateSelect: React.FC<StateSelectProps> = ({
   const { getAll } = useStates();
 
   return ( 
-    <div>
-      <Select
-        placeholder="Anywhere"
+    <div >
+      <Select 
+        
+        required
+        placeholder="Select State"
         isClearable
         options={getAll()}
         value={value}
         onChange={(value) => onChange(value as StateSelectValue)}
         formatOptionLabel={(option: any) => (
           <div className="
-          flex flex-row items-center gap-3">
+          flex flex-row items-center gap-3 ">
            
-            <div>
+            <div >
               {option.label}
-              <span className="text-neutral-500 ml-1">
-              
-              </span>
+            
             </div>
           </div>
         )}
         classNames={{
-          control: () => 'p-3 border-2',
+          control: () => ' border-2',
           input: () => 'text-lg',
           option: () => 'text-lg'
         }}
@@ -51,8 +53,12 @@ const StateSelect: React.FC<StateSelectProps> = ({
           borderRadius: 6,
           colors: {
             ...theme.colors,
-            primary: 'black',
-            primary25: '#ffe4e6'
+            primary: '#7d8085',
+            primary25: '#c9c9c9',
+            neutral0: '#F9FCFF', // Background color for the input and dropdown
+            neutral20: '#7d8085', // Border color
+            neutral30: '#ffffff',
+            neutral80: '#7d8085'
           }
         })}
       />

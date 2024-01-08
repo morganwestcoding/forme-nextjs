@@ -23,18 +23,20 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
         border-2
         p-4
         flex
-        
+        bg-[#F9FCFF] 
+        bg-opacity-40 
+        shadow-md 
         flex-col
         gap-3
-        hover:border-black
+        hover:border-white
         transition
         cursor-pointer
-        ${selected ? 'border-black' : 'border-gray-400'}
+        ${selected ? 'border-white' : 'border-[#7d8085]'}
       `}
     >
       
-      <div className="font-semibold">
-      <span className={`h-6 w-6 rounded-full ${color} inline-block`}></span>
+      <div className="flex items-center gap-2 font-semibold text-xs uppercase text-[#7d8085]">
+      <span className={`h-6 w-6 rounded-full ${color} inline-block `}></span>
         {label}
       </div>
     </div>

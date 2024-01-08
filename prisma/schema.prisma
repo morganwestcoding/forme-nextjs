@@ -17,7 +17,6 @@ model User {
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
   favoriteIds    String[]  @db.ObjectId
-
   accounts     Account[]
   listings     Listing[]
   reservations Reservation[]
@@ -51,11 +50,10 @@ model Listing {
   category      String
   locationValue String
   userId        String   @db.ObjectId
-  price         Int
-
+  services    Service[]
   user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   reservations Reservation[]
-  services     Service[]
+  
 }
 
 model Reservation {
@@ -72,10 +70,12 @@ model Reservation {
 }
 
 model Service {
-  id        String @id @default(auto()) @map("_id") @db.ObjectId
-  name      String
-  price     Int
-  listingId String @db.ObjectId
-
-  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  serviceName String
+  price       Int
+  category    String
+  listingId   String   @db.ObjectId
+  listing     Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
 }
+
+

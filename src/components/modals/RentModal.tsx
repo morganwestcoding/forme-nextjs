@@ -9,20 +9,19 @@ import {
 } from 'react-hook-form';
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation';
-import { useMemo, useState } from "react";
+import { useMemo, useState, useCallback} from "react";
 
 
 import useRentModal from '@/app/hooks/useRentModal';
 
 import Modal from "./Modal";
-/*import Counter from "../inputs/Counter";*/
 import CategoryInput from '../inputs/CategoryInput';
 import StateSelect from "../inputs/StateSelect";
 import { categories } from '../Categories';
-/*import ImageUpload from '../inputs/ImageUpload';*/
+import ImageUpload from '../inputs/ImageUpload';
 import Input from '../inputs/Input';
 import Heading from '../Heading';
-import ServiceSelector from '../inputs/ServiceSelector';
+import ServiceSelector, { Service } from '../inputs/ServiceSelector';
 
 enum STEPS {
   CATEGORY = 0,
@@ -30,7 +29,7 @@ enum STEPS {
   INFO = 2,
   IMAGES = 3,
   DESCRIPTION = 4,
-  PRICE = 5,
+ 
 }
 
 const RentModal = () => {
@@ -39,6 +38,11 @@ const RentModal = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState(STEPS.CATEGORY);
+  const [services, setServices] = useState([
+    { serviceName: '', price: 0, category: '' },
+    { serviceName: '', price: 0, category: '' },
+    { serviceName: '', price: 0, category: '' },
+  ]);
 
   const { 
     register, 
@@ -52,13 +56,10 @@ const RentModal = () => {
     reset,
   } = useForm<FieldValues>({
     defaultValues: {
-        services: Array(4).fill({ serviceName: "", price: "", category: "" }),
+    services: Array(3).fill({ serviceName: "", price: 0,category: "" }),
       category: '',
       location: null,
-      city: null,
-      service: '',
       imageSrc: '',
-      price: 1,
       title: '',
       description: '',
     }
@@ -89,13 +90,18 @@ const RentModal = () => {
     setStep((value) => value + 1);
   }
 
+  const handleServicesChange = useCallback((newServices: Service[]) => {
+    setServices(newServices);
+  }, []);
+
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
-    if (step !== STEPS.PRICE) {
+    if (step !== STEPS.DESCRIPTION) {
       return onNext();
     }
     
     setIsLoading(true);
 
+    console.log('Submitting data:', data, services);
     axios.post('/api/listings', data)
     .then(() => {
       toast.success('Listing created!');
@@ -104,7 +110,8 @@ const RentModal = () => {
       setStep(STEPS.CATEGORY)
       rentModal.onClose();
     })
-    .catch(() => {
+    .catch((error) => {
+      console.error('Error submitting listing:', error.response.data);
       toast.error('Something went wrong.');
     })
     .finally(() => {
@@ -113,7 +120,7 @@ const RentModal = () => {
   }
 
   const actionLabel = useMemo(() => {
-    if (step === STEPS.PRICE) {
+    if (step === STEPS.DESCRIPTION) {
       return 'Create'
     }
 
@@ -131,7 +138,7 @@ const RentModal = () => {
   let bodyContent = (
     <div className="flex flex-col gap-8">
       <Heading
-        title="Which of these best describes your place?"
+        title="Define your establishment"
         subtitle="Pick a category"
       />
       <div 
@@ -167,20 +174,14 @@ const RentModal = () => {
           subtitle="Help guests find you!"
         />
         <StateSelect 
-        
+         id="state"
+         label="State"
           value={location} 
           onChange={(value) => setCustomValue('location', value)} 
         />
-        <Input
-        id="city"
-        label="City"
-        disabled={isLoading}
-        register={register}
-        errors={errors}
-        required
-      />
-        <Map
-            center={location?.latlng} />
+    
+        {/*<Map
+            center={location?.latlng} />*/}
             
       </div>
     );
@@ -193,11 +194,7 @@ const RentModal = () => {
           title="Share some basics about your place"
           subtitle="What amenitis do you have?"
         />
-        <ServiceSelector
-        control={control} 
-        register={register}
-        errors={errors}
-        isLoading={isLoading}/>
+        <ServiceSelector onServicesChange={handleServicesChange} existingServices={services} />
       </div>
     )
   }
@@ -209,10 +206,10 @@ const RentModal = () => {
           title="Add a photo of your place"
           subtitle="Show guests what your place looks like!"
         />
-        {/*<ImageUpload
+        <ImageUpload
           onChange={(value) => setCustomValue('imageSrc', value)}
           value={imageSrc}
-    />*/}
+    />
       </div>
     )
   }
@@ -245,32 +242,12 @@ const RentModal = () => {
     )
   }
 
-  if (step === STEPS.PRICE) {
-    bodyContent = (
-      <div className="flex flex-col gap-8">
-        <Heading
-          title="Now, set your price"
-          subtitle="How much do you charge per night?"
-        />
-        <Input
-          id="price"
-          label="Price"
-          formatPrice 
-          type="number" 
-          disabled={isLoading}
-          register={register}
-          errors={errors}
-          required
-        />
-      </div>
-    )
-  }
 
   return (
     <Modal
       disabled={isLoading}
       isOpen={rentModal.isOpen}
-      title="Airbnb your home!"
+      title="Join the fun!"
       actionLabel={actionLabel}
       onSubmit={handleSubmit(onSubmit)}
       secondaryActionLabel={secondaryActionLabel}

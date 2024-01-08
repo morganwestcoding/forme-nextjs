@@ -116,7 +116,7 @@ const Modal: React.FC<ModalProps> = ({
               flex 
               flex-col 
               w-full 
-              bg-[#bec1c3]
+              bg-gradient-to-b from-[#EDF1F4] to-[#a4abba]
               
               outline-none 
               focus:outline-none

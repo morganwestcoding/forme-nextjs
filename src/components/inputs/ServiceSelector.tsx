@@ -1,116 +1,87 @@
-'use client';
+'use client'
+// ServiceSelector.tsx
+// ServiceSelector.tsx
 
-import { useState } from "react";
-import { FieldErrors, FieldValues, UseFormRegister, useFieldArray, Control } from "react-hook-form";
-import Input from './Input'; // Ensure this path is correct
-import { categories } from '../Categories'; // Ensure this path is correct
-import { useEffect } from "react";
+import React, { useState, useEffect } from 'react'; // Import useEffect
+import { categories } from '../Categories'; // Import the categories from Categories.tsx
 
-interface ServiceSelectorProps {
-  register: UseFormRegister<FieldValues>;
-  control: Control<FieldValues>; // Import Control from react-hook-form
-  errors: FieldErrors;
-  isLoading: boolean;
-}
+// Define the type for a single service
+export type Service = {
+  serviceName: string;
+  price: number;
+  category: string;
+};
 
-const ServiceSelector: React.FC<ServiceSelectorProps> = ({
-  register,
-  control,
-  errors,
-  isLoading
-}) => {
-  const { fields, append } = useFieldArray({
-    control,
-    name: "services"
-  });
+// Props type definition
+type ServiceSelectorProps = {
+  onServicesChange: (services: Service[]) => void; // Function to update the services in the parent component
+  existingServices: Service[]; // Existing services passed from the parent component
+};
 
-  // Initialize with four rows by default
+const ServiceSelector = ({ onServicesChange, existingServices }: ServiceSelectorProps) => {
+  // Initialize state for 3 rows of services using existingServices
+  const [services, setServices] = useState<Service[]>(existingServices);
+
+  // Effect to propagate changes to the parent component
   useEffect(() => {
-    if (fields.length === 0) {
-      for (let i = 0; i < 4; i++) {
-        append({ serviceName: "", price: "", category: "" });
-      }
-    }
-  }, [append, fields.length]);
+    onServicesChange(services); // Notify the parent component of the service changes
+  }, [services, onServicesChange]); // Depend on services and onServicesChange
 
-  const handleAddService = () => {
-    append({ serviceName: "", price: "", category: "" });
+  // Function to handle individual service changes
+  const handleServiceChange = (index: number, field: keyof Service, value: string | number) => {
+    const updatedServices = services.map((service, i) => {
+      if (i === index) {
+        if (field === 'price' && typeof value === 'number') {
+          return { ...service, [field]: value }; // Update price
+        } else if (typeof value === 'string') {
+          return { ...service, [field]: value }; // Update serviceName or category
+        }
+      }
+      return service;
+    });
+    setServices(updatedServices); // Update the local state
   };
 
+  // Render 3 rows of service inputs
   return (
     <div>
-      {fields.map((field, index) => (
-        <div key={field.id} className="grid grid-cols-3 gap-4 mb-4">
-          <Input
-            id={`services[${index}].serviceName`}
-            label="Service Name"
-            
-            disabled={isLoading}
-            register={register}
-            errors={errors}
-            required
+      {services.map((service, index) => (
+        <div key={index} className="flex flex-row justify-between mb-4">
+          {/* Service Name Input */}
+          <input
+            type="text"
+            placeholder="Service Name"
+            value={service.serviceName}
+            onChange={(e) => handleServiceChange(index, 'serviceName', e.target.value)}
+            className="border p-2"
           />
-          <Input
-            id={`services[${index}].price`}
-            label="Price"
-            formatPrice
+
+          {/* Price Input */}
+          <input
             type="number"
-            
-            disabled={isLoading}
-            register={register}
-            errors={errors}
-            required
+            placeholder="Price"
+            value={service.price}
+            onChange={(e) => handleServiceChange(index, 'price', parseFloat(e.target.value))}
+            className="border p-2"
           />
-          <div className="col-span-1">
-            <label htmlFor={`services[${index}].category`} className="block mb-2 text-sm font-medium text-gray-700">Category</label>
-            <select
-              id={`services[${index}].category`}
-              {...register(`services[${index}].category`, { required: true })}
-              className="
-                bg-gray-50 
-                border 
-                border-gray-300 
-                text-gray-900 
-                text-sm 
-                rounded-lg 
-                focus:ring-blue-500 
-                focus:border-blue-500 
-                block 
-                w-full 
-                p-2.5
-              "
-            >
-              {categories.map((cat) => (
-                <option key={cat.label} value={cat.label} className="flex items-center">
-                  <span className={`${cat.color} inline-block w-3 h-3 mr-2 rounded-full`} />
-                  {cat.label}
-                </option>
-              ))}
-            </select>
-          </div>
+
+          {/* Category Dropdown */}
+          <select
+            value={service.category}
+            onChange={(e) => handleServiceChange(index, 'category', e.target.value)}
+            className="border p-2"
+          >
+            <option value="">Select Category</option>
+            {categories.map((category) => (
+              <option key={category.label} value={category.label}>
+                {category.label}
+              </option>
+            ))}
+          </select>
         </div>
       ))}
-
-      <button 
-        type="button" 
-        onClick={handleAddService}
-        className="
-          mt-4 
-         border
-          border-black
-          
-          bg-white
-          font-bold 
-          py-2 
-          px-4 
-          rounded-lg
-        "
-        disabled={isLoading}
-      >
-        Add More
-      </button>
     </div>
   );
-}
+};
 
 export default ServiceSelector;
