@@ -14,12 +14,17 @@ interface ShareProps {
   }) => {
 
   return (
-    <div className='w-full h-44 rounded-lg shadow-md bg-[#F9FCFF] bg-opacity-40 dark:shadow-lg dark:border dark:border-gray-600'>
+    <div className='w-full h-44 rounded-lg shadow-md bg-[#ffffff] bg-opacity-70 dark:shadow-lg dark:border dark:border-gray-600'>
         <div className="p-2.5">
             <div className="flex items-center ml-5 mt-2.5">
             <Button className="bg-white" variant="outline" size="icon">
                 <Avatar src={currentUser?.image}/>
             </Button>
+            <input 
+                type="text" 
+                placeholder="What's on your mind?" 
+                className="ml-4 mr-4 py-2 px-3 border rounded-lg flex-1"
+              />
             </div>
             <hr className='my-5 mx-5'/>
             <div className="flex items-center justify-between">

@@ -19,7 +19,7 @@ const Header: React.FC<HeaderProps> = ({
 }) => {
   console.log({ currentUser});
   return (
-        <header className="sticky top-0 z-50 dark:bg-gray-900 pr-10 pt-7">
+        <header className="sticky top-0 z-50 dark:bg-gray-900 pr-16 pt-7">
           <nav className="flex flex-col sm:flex-row items-centerjustify-between items-center dark:bg-gray-900 max-w-7xl mx-auto">
            
             <Search/>

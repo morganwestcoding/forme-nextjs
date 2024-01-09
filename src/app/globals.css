@@ -73,7 +73,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-gradient-to-b from-[#EDF1F4] to-[#a4abba] text-foreground;
+    @apply bg-gradient-to-b from-[#D3D3D3] to-[#48DBFB] text-foreground;
   }
 }
 

@@ -7,14 +7,19 @@ import { BsBookmarks } from "react-icons/bs";
 import { BsFillQuestionCircleFill } from "react-icons/bs";
 import { LiaSuitcaseSolid } from "react-icons/lia";
 import { HiOutlineCalendarDays } from "react-icons/hi2"
+import { useRouter } from "next/navigation";
 
+import Link from "next/link";
 import CloseFriends from "./CloseFriends";
 import Logo from "../header/Logo";
 import Categories from "../Categories";
 import { useState } from "react";
 
 export default function Sidebar() {
+  const router = useRouter();
   const [isCollapsed, setIsCollapsed] = useState(false); // State to manage collapse
+  
+
 
   // Function to toggle collapse state
   const toggleCollapse = () => {
@@ -24,7 +29,7 @@ export default function Sidebar() {
 
   return (
     <div className="sticky top-0 flex h-screen">
-      <div className="flex flex-col items-center w-48 h-full rounded-l-2xl bg-[#F9FCFF] bg-opacity-40 shadow-md dark:shadow-lg dark:border dark:border-gray-600 p-10" >
+      <div className="flex flex-col items-center w-48 h-full rounded-l-2xl bg-[#ffffff] bg-opacity-70 shadow-md dark:shadow-lg dark:border dark:border-gray-600 p-10" >
         <Logo/>
         <div className="flex flex-col item-center pt-9 text-xs font-bold text-[#7d8085] opacity-75">
           MENU
@@ -32,13 +37,16 @@ export default function Sidebar() {
         <ul className="list-none m-0 p-0 ">
 
           <li className="flex items-center mb-5 pt-5">
-          <img src="/icons/house.svg" alt="Home" className="h-6 w-6 text-[#7d8085] opacity-75" />
+          <img src="/icons/house.svg" alt="Home" className="h-6 w-6 text-[#7d8085] opacity-75 cursor-pointer" onClick={() => router.push('/')}/>
           
           </li>
           <li className="flex items-center mb-5">
-          <img src="/icons/shop.svg" alt="Home" className="h-6 w-6 text-[#7d8085] opacity-75" />
+          
             
-          </li>
+            <img src="/icons/shop.svg" alt="Shop" className="h-6 w-6 text-[#7d8085] opacity-75 cursor-pointer" onClick={() => router.push('/market')}/>
+           
+      
+            </li>
           <li className="flex items-center mb-5">
             
           <img src="/icons/save-2.svg" alt="Home" className="h-6 w-6 text-[#7d8085] opacity-75" />

@@ -66,18 +66,7 @@ const Categories = () => {
   const pathname = usePathname();
   const isMainPage = pathname === '/';
 
-  const selectedCategory = categories.find(item => item.label === category);
-  const selectedGradient = selectedCategory?.gradient;
 
-  useEffect(() => {
-    if (selectedGradient) {
-      // Apply the gradient to the entire webpage
-      document.body.style.background = 'linear-gradient(to bottom, #dac6be, #6d635f)'
-    } else {
-      // Reset to default background if no category is selected or it doesn't have a gradient
-      document.body.style.background = 'linear-gradient(to bottom, #EDF1F4, #a6aebf)'// Set to your default background
-    }
-  }, [selectedGradient]);
 
   if (!isMainPage) {
     return null;
