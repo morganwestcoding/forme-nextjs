@@ -59,7 +59,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
   }, [listing.category]);
 
   const [isLoading, setIsLoading] = useState(false);
-
+  /*const [totalPrice, setTotalPrice] = useState(listing.price);*/
   const [dateRange, setDateRange] = useState<Range>(initialDateRange);
 
   const onCreateReservation = useCallback(() => {
@@ -69,7 +69,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
       setIsLoading(true);
 
       axios.post('/api/reservations', {
-        
+        /*totalPrice,*/
         startDate: dateRange.startDate,
         endDate: dateRange.endDate,
         listingId: listing?.id
@@ -87,7 +87,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
       })
   },
   [
-    
+    /*totalPrice, */
     dateRange, 
     listing?.id,
     router,
@@ -95,10 +95,23 @@ const ListingClient: React.FC<ListingClientProps> = ({
     loginModal
   ]);
 
-
+  /*useEffect(() => {
+    if (dateRange.startDate && dateRange.endDate) {
+      const dayCount = differenceInDays(
+        dateRange.endDate, 
+        dateRange.startDate
+      );
+      
+      if (dayCount && listing.price) {
+        setTotalPrice(dayCount * listing.price);
+      } else {
+        setTotalPrice(listing.price);
+      }
+    }
+  }, [dateRange, listing.price]);*/
 
   return ( 
-    
+    <>
       <div 
         className="
           max-w-screen-lg 
@@ -113,7 +126,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
             id={listing.id}
             currentUser={currentUser}
           />
-          <div 
+          {/*<div 
             className="
               grid 
               grid-cols-1 
@@ -122,7 +135,13 @@ const ListingClient: React.FC<ListingClientProps> = ({
               mt-6
             "
           >
+            <ListingInfo
+              user={listing.user}
+              category={category}
+              description={listing.description}
             
+              locationValue={listing.locationValue}
+            />
             <div 
               className="
                 order-first 
@@ -132,18 +151,18 @@ const ListingClient: React.FC<ListingClientProps> = ({
               "
             >
               <ListingReservation
-               
+                price={listing.price}
+                totalPrice={totalPrice}
                 onChangeDate={(value) => setDateRange(value)}
                 dateRange={dateRange}
                 onSubmit={onCreateReservation}
                 disabled={isLoading}
-                disabledDates={disabledDates}
-              />
+                disabledDates={disabledDates}/>
             </div>
-          </div>
+  </div>*/}
         </div>
       </div>
-  
+    </>
    );
 }
  

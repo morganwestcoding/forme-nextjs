@@ -118,8 +118,8 @@ const categoryColors = getColorByCategory(data.category);
 
   return (
     <div 
-      onClick={() => router.push(`/listings/${data.id}`)} 
-      className="col-span-1 cursor-pointer group"
+      
+      className="col-span-1 "
     >
       <div className="bg-[#ffffff] bg-opacity-90 rounded-xl flex flex-col gap-2 w-52 shadow-md">
         <div 
@@ -129,9 +129,11 @@ const categoryColors = getColorByCategory(data.category);
             relative 
             overflow-hidden 
             rounded-t-lg
+            cursor-pointer group
           "
         >
           <Image
+            onClick={() => router.push(`/listings/${data.id}`)} 
             fill
             className="
             
