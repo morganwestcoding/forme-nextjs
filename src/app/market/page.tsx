@@ -3,6 +3,7 @@ import ClientProviders from '@/components/ClientProviders'
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import EmptyState from '@/components/EmptyState';
 import ListingCard from '@/components/listings/ListingCard'
+import { categories } from '@/components/Categories';
 
 
 import getListings, { 
@@ -27,10 +28,10 @@ const Market = async ({ searchParams }: MarketProps) => {
 
   return (
   <ClientProviders>
-    <div className="pt-10 pl-16 pr-16 flex-1">
+    <div className="pt-4 pl-14 pr-20 flex-1">
     <div 
     className="
-      pt-10
+      pt-6
       grid 
       grid-cols-4 
       sm:grid-cols-2 
@@ -46,6 +47,7 @@ const Market = async ({ searchParams }: MarketProps) => {
         currentUser={currentUser}
         key={listing.id}
         data={listing}
+        categories={categories}
       />
     ))}
   </div>

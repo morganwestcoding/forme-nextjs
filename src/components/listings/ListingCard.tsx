@@ -14,6 +14,8 @@ import {
 
 import HeartButton from "../HeartButton";
 import ModalButton from "../modals/ModalButton";
+import { categories } from "../Categories";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 
 interface ListingCardProps {
@@ -24,11 +26,13 @@ interface ListingCardProps {
   actionLabel?: string;
   actionId?: string;
   currentUser?: SafeUser | null
+  categories: typeof categories;
   
 };
 
 const ListingCard: React.FC<ListingCardProps> = ({
   data,
+  categories,
   reservation,
   onAction,
   disabled,
@@ -36,6 +40,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
   actionId = '',
   currentUser,
 }) => {
+    console.log(data.services);
   const router = useRouter();
   const { getByValue } = useStates();
 
@@ -80,27 +85,39 @@ const ListingCard: React.FC<ListingCardProps> = ({
     return `${format(start, 'PP')} - ${format(end, 'PP')}`;
   }, [reservation]);
 
+
+  const getCategoryStyle = (categoryName) => {
+    const category = categories.find(cat => cat.label === categoryName);
+    if (!category) return { textColor: 'text-gray-200', borderColor: 'border-gray-200' };
+
+    const colorPart = category.color.split('-').slice(1).join('-'); // Extract color part from bg- class
+    return { textColor: `text-${colorPart}`, borderColor: `border-${colorPart}` };
+  };
+
+  const categoryStyle = getCategoryStyle(data.category);
+
   return (
     <div 
       onClick={() => router.push(`/listings/${data.id}`)} 
       className="col-span-1 cursor-pointer group"
     >
-      <div className="flex flex-col gap-2 w-48">
+      <div className="bg-[#ffffff] bg-opacity-90 rounded-xl flex flex-col gap-2 w-52 shadow-md">
         <div 
           className="
-            aspect-square 
-            w-full 
+            w-full
+            h-36
             relative 
             overflow-hidden 
-            rounded-xl
+            rounded-t-lg
           "
         >
           <Image
             fill
             className="
+            
               object-cover 
-              h-full 
-              w-full 
+                w-full
+                h-full
               group-hover:scale-110 
               transition
             "
@@ -118,12 +135,43 @@ const ListingCard: React.FC<ListingCardProps> = ({
             />
           </div>
         </div>
-        <div className="font-semibold text-lg">
-           {location?.label}
+        <div className={`inline-block ${categoryStyle.borderColor} rounded-lg px-2 py-0.5 mx-auto my-1 ml-3 text-xs font-light border-2`}>
+          <div className={categoryStyle.textColor}>
+        {data.category}
+        
         </div>
-        <div className="font-light text-neutral-500">
-          {reservationDate || data.category}
         </div>
+        
+        {/* Title */}
+        <div className="font-semibold text-sm capitalize px-4">
+          {data.title}
+        </div>
+{/* Location */}
+        <div className="font-light text-xs px-4 text-neutral-500 pb-2">
+          Los Angeles, {location?.label}
+        </div>
+         {/* Category */}
+        
+        <hr/>
+          {/* Service Navigation */}
+          {data.services && data.services.length > 0 && (
+      <div className="flex justify-between text-xs text-[#7d8085] font-medium capitalize items-center pb-3.5 pt-1 px-4">
+        <button onClick={handlePreviousService}><ChevronLeft size={26} strokeWidth={1.25}/></button>
+        <div className="flex items-center">
+          {/* Colored Circle */}
+          
+         
+           <span className="ml"> {/* Margin left for spacing */}
+          {data.services[currentServiceIndex].serviceName} ${data.services[currentServiceIndex].price}
+        </span>
+        </div>
+        <button onClick={handleNextService}>
+            <ChevronRight size={26} strokeWidth={1.25}/></button>
+            
+        
+      </div>
+      
+    )}
         {onAction && actionLabel && (
           <ModalButton
             disabled={disabled}

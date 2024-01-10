@@ -2,14 +2,14 @@
 
 
 
-interface CategoryBoxProps {
+interface CategoryInputProps {
   color: string;
   label: string;
   selected?: boolean;
   onClick: (value: string) => void;
 }
 
-const CategoryBox: React.FC<CategoryBoxProps> = ({
+const CategoryInput: React.FC<CategoryInputProps> = ({
   color,
   label,
   selected,
@@ -43,4 +43,4 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({
    );
 }
  
-export default CategoryBox;
+export default CategoryInput;

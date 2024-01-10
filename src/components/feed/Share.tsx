@@ -5,6 +5,7 @@ import { Button } from '../ui/button';
 import { SafeUser } from '@/app/types';
 import { IoMdPhotos } from "react-icons/io";
 
+
 interface ShareProps {
     currentUser?: SafeUser | null 
   }
@@ -23,7 +24,7 @@ interface ShareProps {
             <input 
                 type="text" 
                 placeholder="What's on your mind?" 
-                className="ml-4 mr-4 py-2 px-3 border rounded-lg flex-1"
+                className="ml-4 mr-4 text-sm py-2 px-3 border rounded-lg flex-1"
               />
             </div>
             <hr className='my-5 mx-5'/>
