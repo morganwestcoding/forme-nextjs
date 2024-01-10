@@ -85,16 +85,36 @@ const ListingCard: React.FC<ListingCardProps> = ({
     return `${format(start, 'PP')} - ${format(end, 'PP')}`;
   }, [reservation]);
 
-
-  const getCategoryStyle = (categoryName) => {
+  const getColorByCategory = (categoryName) => {
     const category = categories.find(cat => cat.label === categoryName);
-    if (!category) return { textColor: 'text-gray-200', borderColor: 'border-gray-200' };
+    if (!category) return { bgColorClass: 'bg-gray-200', textColorClass: 'text-gray-200', borderColorClass: 'border-gray-200' };
 
-    const colorPart = category.color.split('-').slice(1).join('-'); // Extract color part from bg- class
-    return { textColor: `text-${colorPart}`, borderColor: `border-${colorPart}` };
+    switch (category.color) {
+        case 'bg-yellow-200':
+            return { bgColorClass: 'bg-yellow-200', textColorClass: 'text-yellow-200', borderColorClass: 'border-yellow-200' };
+        case 'bg-rose-200':
+            return { bgColorClass: 'bg-rose-200', textColorClass: 'text-rose-200', borderColorClass: 'border-rose-200' };
+        case 'bg-orange-300':
+            return { bgColorClass: 'bg-orange-300', textColorClass: 'text-orange-300', borderColorClass: 'border-orange-300' };
+        case 'bg-teal-500':
+            return { bgColorClass: 'bg-teal-500', textColorClass: 'text-teal-500', borderColorClass: 'border-teal-500' };
+        case 'bg-emerald-600':
+            return { bgColorClass: 'bg-emerald-600', textColorClass: 'text-emerald-600', borderColorClass: 'border-emerald-600' };
+        case 'bg-cyan-600':
+            return { bgColorClass: 'bg-cyan-600', textColorClass: 'text-cyan-600', borderColorClass: 'border-cyan-600' };
+        case 'bg-blue-800':
+            return { bgColorClass: 'bg-blue-800', textColorClass: 'text-blue-800', borderColorClass: 'border-blue-800' };
+        case 'bg-indigo-800':
+            return { bgColorClass: 'bg-indigo-800', textColorClass: 'text-indigo-800', borderColorClass: 'border-indigo-800' };
+        default:
+            return { bgColorClass: 'bg-gray-200', textColorClass: 'text-gray-200', borderColorClass: 'border-gray-200' };
+    }
   };
 
-  const categoryStyle = getCategoryStyle(data.category);
+
+
+
+const categoryColors = getColorByCategory(data.category);
 
   return (
     <div 
@@ -135,8 +155,8 @@ const ListingCard: React.FC<ListingCardProps> = ({
             />
           </div>
         </div>
-        <div className={`inline-block ${categoryStyle.borderColor} rounded-lg px-2 py-0.5 mx-auto my-1 ml-3 text-xs font-light border-2`}>
-          <div className={categoryStyle.textColor}>
+        <div className={`inline-block ${categoryColors.borderColorClass} ${categoryColors.bgColorClass} bg-transparent border rounded-lg px-2 py-0.5 mx-auto my-1 ml-3 text-xs font-light shadow-sm`}>
+            <div className={categoryColors.textColorClass}>
         {data.category}
         
         </div>
@@ -155,12 +175,10 @@ const ListingCard: React.FC<ListingCardProps> = ({
         <hr/>
           {/* Service Navigation */}
           {data.services && data.services.length > 0 && (
-      <div className="flex justify-between text-xs text-[#7d8085] font-medium capitalize items-center pb-3.5 pt-1 px-4">
+      <div className="flex justify-between text-xs capitalize items-center pb-3.5 pt-1 px-4 text-[#7d8085]">
         <button onClick={handlePreviousService}><ChevronLeft size={26} strokeWidth={1.25}/></button>
-        <div className="flex items-center">
-          {/* Colored Circle */}
+        <div className="flex items-center text-[#7d8085] font-normal">
           
-         
            <span className="ml"> {/* Margin left for spacing */}
           {data.services[currentServiceIndex].serviceName} ${data.services[currentServiceIndex].price}
         </span>

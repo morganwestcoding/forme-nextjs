@@ -1,9 +1,10 @@
 'use client';
 
-import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
+import { GoBookmarkFill } from "react-icons/go";
 
 import useFavorite from "@/app/hooks/useFavorite";
 import { SafeUser } from "@/app/types";
+import { GoBookmark } from "react-icons/go";
 
 
 
@@ -31,7 +32,7 @@ const HeartButton: React.FC<HeartButtonProps> = ({
         cursor-pointer
       "
     >
-      <AiOutlineHeart
+      <GoBookmark
         size={28}
         className="
           fill-white
@@ -40,7 +41,7 @@ const HeartButton: React.FC<HeartButtonProps> = ({
           -right-[2px]
         "
       />
-      <AiFillHeart
+      <GoBookmarkFill
         size={24}
         className={
           hasFavorited ? 'fill-rose-500' : 'fill-neutral-500/70'
