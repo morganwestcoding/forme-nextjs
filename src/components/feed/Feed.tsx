@@ -19,7 +19,9 @@ export default function Feed() {
     <div className="bg-transparent pt-8 pl-16">
       <div className="padding: 20px">
         <Share />
-        {posts.map(post => <Post key={post.id} post={post} />)}
+        {posts.map((post, index) => (
+          <Post key={post.id || index} post={post} /> // Fallback to index if id is not present
+        ))}
       </div>
     </div>
   );
