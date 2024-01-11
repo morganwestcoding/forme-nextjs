@@ -9,16 +9,14 @@ import { SafeUser } from "@/app/types";
 import Avatar from "../ui/avatar";
 import ListingCategory from "./ListingCategory";
 
-const Map = dynamic(() => import('../Map'), { 
+/*const Map = dynamic(() => import('../Map'), { 
   ssr: false 
-});
+});*/
 
 interface ListingInfoProps {
   user: SafeUser,
   description: string;
-
   category: {
-    icon: IconType,
     label: string;
     description: string;
   } | undefined
@@ -28,12 +26,12 @@ interface ListingInfoProps {
 const ListingInfo: React.FC<ListingInfoProps> = ({
   user,
   description,
- 
   category,
+  locationValue,
 }) => {
+  const { getByValue } = useStates();
 
-
-
+  /*const coordinates = getByValue(locationValue)?.latlng*/
 
   return ( 
     <div className="col-span-4 flex flex-col gap-8">
@@ -60,13 +58,12 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
             text-neutral-500
           "
         >
-   
         </div>
       </div>
       <hr />
       {category && (
         <ListingCategory
-          icon={category.icon} 
+         
           label={category?.label}
           description={category?.description} 
         />
@@ -77,7 +74,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
         {description}
       </div>
       <hr />
-     
+      {/*<Map center={coordinates} />*/}
     </div>
    );
 }

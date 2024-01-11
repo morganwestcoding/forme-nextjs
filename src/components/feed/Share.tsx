@@ -15,10 +15,10 @@ interface ShareProps {
   }) => {
 
   return (
-    <div className='w-full h-44 rounded-lg shadow-md bg-[#ffffff] bg-opacity-70 dark:shadow-lg dark:border dark:border-gray-600'>
+    <div className='w-full h-44 rounded-lg shadow-md bg-[#ffffff] bg-opacity-80 dark:shadow-lg dark:border dark:border-gray-600'>
         <div className="p-2.5">
-            <div className="flex items-center ml-5 mt-2.5">
-            <Button className="bg-white" variant="outline" size="icon">
+            <div className="flex items-center ml-5 mt-2.5 ">
+            <Button   variant="outline" size="icon">
                 <Avatar src={currentUser?.image}/>
             </Button>
             <input 
@@ -31,7 +31,7 @@ interface ShareProps {
             <div className="flex items-center justify-between">
                 <div className="flex ml-5">
                     <div className='flex items-center mr-3.5 cursor-pointer'>
-                        <img src="/icons/gallery.svg" className='mr-0.5' color="#7d8085"/>
+                    <img src="/icons/camera.svg" className='mr-0.5' color="#7d8085"/>
                         <span className=" font-black text-sm">Photos</span>
                     </div>
                 
@@ -39,10 +39,7 @@ interface ShareProps {
                     <img src="/icons/location.svg" className='mr-0.4' color="#7d8085"/>
                         <span className="font-bold text-sm">Location</span>
                     </div>
-                    <div className='flex items-center mr-3.5 cursor-pointer'>
-                    <img src="/icons/emoji-normal.svg" className='mr-0.5' color="#7d8085"/>
-                        <span className="font-bold text-sm">Mood</span>
-                    </div>
+                
                     
                     
                 </div>

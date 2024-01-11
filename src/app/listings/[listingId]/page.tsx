@@ -21,7 +21,7 @@ const ListingPage = async ({ params }: { params: IParams }) => {
   if (!listing) {
     return (
       <ClientProviders>
-        <EmptyState />
+        <EmptyState/>
       </ClientProviders>
     );
   }
@@ -29,8 +29,8 @@ const ListingPage = async ({ params }: { params: IParams }) => {
   return (
     <ClientProviders>
       <ListingClient
-        /*listing={listing}
-  reservations={reservations}*/
+        listing={listing}
+        reservations={reservations}
         currentUser={currentUser}
       />
     </ClientProviders>

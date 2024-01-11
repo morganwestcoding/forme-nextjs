@@ -10,7 +10,6 @@ import { differenceInDays, eachDayOfInterval } from 'date-fns';
 import useLoginModal from "@/app/hooks/useLoginModal";
 import { SafeListing, SafeReservation, SafeUser } from "@/app/types";
 
-
 import { categories } from "@/components/Categories";
 import ListingHead from "@/components/listings/ListingHead";
 import ListingInfo from "@/components/listings/ListingInfo";
@@ -87,7 +86,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
       })
   },
   [
-    /*totalPrice, */
+    /*totalPrice,*/
     dateRange, 
     listing?.id,
     router,
@@ -108,10 +107,10 @@ const ListingClient: React.FC<ListingClientProps> = ({
         setTotalPrice(listing.price);
       }
     }
-  }, [dateRange, listing.price]);*/
+  },[dateRange, listing.price]);*/
 
   return ( 
-    <>
+    
       <div 
         className="
           max-w-screen-lg 
@@ -126,7 +125,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
             id={listing.id}
             currentUser={currentUser}
           />
-          {/*<div 
+          <div 
             className="
               grid 
               grid-cols-1 
@@ -139,7 +138,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
               user={listing.user}
               category={category}
               description={listing.description}
-            
+       
               locationValue={listing.locationValue}
             />
             <div 
@@ -151,18 +150,19 @@ const ListingClient: React.FC<ListingClientProps> = ({
               "
             >
               <ListingReservation
-                price={listing.price}
-                totalPrice={totalPrice}
+                /*price={listing.price}
+                totalPrice={totalPrice}*/
                 onChangeDate={(value) => setDateRange(value)}
                 dateRange={dateRange}
                 onSubmit={onCreateReservation}
                 disabled={isLoading}
-                disabledDates={disabledDates}/>
+                disabledDates={disabledDates}
+              />
             </div>
-  </div>*/}
+          </div>
         </div>
       </div>
-    </>
+    
    );
 }
  
