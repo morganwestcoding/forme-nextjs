@@ -12,6 +12,7 @@ const Share = ({ currentUser }) => {
   const [location, setLocation] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [imageSrc, setImageSrc] = useState('');
+  const [showDropdown, setShowDropdown] = useState(false);
   const fileInputRef = useRef(null);
   const [showLocationInput, setShowLocationInput] = useState(false);  // Create a ref for the file input
 
@@ -31,8 +32,10 @@ const Share = ({ currentUser }) => {
     // Process the file as needed
   };
 
-  const handleSubmit = async () => {
-    if (!content || !selectedCategory) {
+  const handleSubmit = async (category) => {
+    setSelectedCategory(category); // Update the selected category
+
+    if (!content || !category) {
       alert('Content and category are required');
       return;
     }
@@ -51,6 +54,7 @@ const Share = ({ currentUser }) => {
       setLocation('');
       setImageSrc('');
       setSelectedCategory('');
+      setShowDropdown(false); 
     } catch (error) {
       console.error('Error creating post:', error);
     }
@@ -99,19 +103,25 @@ const Share = ({ currentUser }) => {
         )}
           
         </div>
-        <select
-          value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
-          className="border p-2 rounded-lg"
-        >
-          <option value="">Select Category</option>
-          {categories.map((category) => (
-            <option key={category.label} value={category.label} style={{ color: category.color }}>
-              {category.label}
-            </option>
-          ))}
-        </select>
-        <Button className='rounded-xl bg-[#3d3f42]' onClick={handleSubmit}>Share</Button>
+        <div className="relative">
+        <Button className='rounded-xl bg-[#3d3f42]' onClick={() => setShowDropdown(!showDropdown)}>
+            Share
+          </Button>
+          {showDropdown && (
+            <div className="absolute right-0 bg-white border rounded-lg mt-1">
+              {categories.map((category) => (
+                <div 
+                  key={category.label} 
+                  className="p-2 hover:bg-gray-100 cursor-pointer" 
+                  style={{ color: category.color }}
+                  onClick={() => handleSubmit(category.label)}
+                >
+                  {category.label}
+                </div>
+              ))}
+              </div>
+          )}  
+          </div>
       </div>
     </div>
   );
