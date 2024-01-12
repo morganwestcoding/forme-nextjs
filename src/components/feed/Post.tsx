@@ -13,7 +13,6 @@ interface PostProps {
       content: string;
       photo?: string;
       location?: string;
-      mood?: string;
     };
   }
 
@@ -33,7 +32,7 @@ interface PostProps {
         <p>{post.content}</p>
         {post.photo && <img src={post.photo} alt="Post" className="mt-2 max-h-60 w-full object-cover rounded-lg" />}
         {post.location && <div className="text-sm mt-2">Location: {post.location}</div>}
-        {post.mood && <div className="text-sm">Mood: {post.mood}</div>}
+
       </div>
     </div>
   );

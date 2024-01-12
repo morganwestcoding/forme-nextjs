@@ -54,7 +54,7 @@ const UserButton: React.FC<UserButtonProps> = ({
   <DropdownMenuContent>
   {currentUser ? (
     <>
-    <DropdownMenuSeparator />
+    
     <DropdownMenuItem>Profile</DropdownMenuItem>
     <DropdownMenuItem
     onClick={rentModal.onOpen}>Add Service</DropdownMenuItem>

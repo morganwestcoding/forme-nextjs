@@ -83,7 +83,6 @@ model Service {
 model Post {
   id             String          @id @default(auto()) @map("_id") @db.ObjectId
   content        String
-  mood           String?
   location       String?
   photo          String?
   userId         String          @db.ObjectId

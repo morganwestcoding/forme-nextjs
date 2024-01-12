@@ -10,8 +10,11 @@ export default function Feed() {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    axios.get('/api/post') // Adjust the endpoint as needed
-      .then(response => setPosts(response.data))
+    axios.get('/api/post')
+      .then(response => {
+        console.log('Fetched Posts:', response.data); // Add this line
+        setPosts(response.data);
+      })
       .catch(error => console.error('Error fetching posts:', error));
   }, []);
 
