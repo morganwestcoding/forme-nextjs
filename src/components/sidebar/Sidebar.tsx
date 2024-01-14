@@ -22,7 +22,7 @@ import { useState } from "react";
 
 export default function Sidebar() {
   const router = useRouter();
-  const [isCollapsed, setIsCollapsed] = useState(false); // State to manage collapse
+  const [isCollapsed, setIsCollapsed] = useState(true); // State to manage collapse
   
 
 
@@ -35,9 +35,9 @@ export default function Sidebar() {
   return (
     
     <div className="sticky top-0 flex h-screen z-46">
-      <div className="flex flex-col items-center w-48 h-full rounded-l-2xl bg-[#ffffff] bg-opacity-75 shadow-md dark:shadow-lg dark:border dark:border-gray-600 p-10" >
+      <div className="flex flex-col items-center w-48 h-full  bg-[#ffffff] bg-opacity-75 shadow-md dark:shadow-lg dark:border dark:border-gray-600 p-10" >
         <Logo/>
-        <div className="flex flex-col item-center pt-9 text-xs font-bold text-[#7d8085] opacity-75">
+        <div className="flex flex-col item-center pt-9 text-xs font-bold text-[#4d4d4d] opacity-75">
           MENU
         </div>
 
@@ -128,7 +128,7 @@ export default function Sidebar() {
         </button>
         
          {/* Category Bar */}
-        <div className={`relative flex flex-col ${isCollapsed ? 'w-0' : 'w-48'} overflow-hidden transition-width duration-300 h-full rounded-r-4xl bg-[#0c0c0d] bg-opacity-80 z-48`}>
+        <div className={`relative flex flex-col ${isCollapsed ? 'w-0' : 'w-48'} overflow-hidden transition-width duration-300 h-full rounded-r-4xl bg-[#0c0c0d] bg-opacity-90 z-48`}>
         <Categories/>
       </div>
     </div>

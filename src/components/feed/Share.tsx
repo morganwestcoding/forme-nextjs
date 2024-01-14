@@ -2,10 +2,12 @@ import React, { useRef, useState } from 'react';
 import Avatar from '../ui/avatar';
 import { Button } from '../ui/button';
 import { SafeUser } from '@/app/types';
-import { MdAddPhotoAlternate, MdAddLocationAlt } from "react-icons/md";
+import { FaImage } from "react-icons/fa6";
+import { FaLocationDot } from "react-icons/fa6";
 import axios from 'axios';
 import { categories } from '../Categories';
-
+import { FaTag } from "react-icons/fa6";
+import { FaFaceSmile } from "react-icons/fa6";
 
 const Share = ({ currentUser }) => {
   const [content, setContent] = useState('');
@@ -61,7 +63,7 @@ const Share = ({ currentUser }) => {
   };
 
   return (
-    <div className='w-full h-auto rounded-lg shadow-md bg-[#ffffff] bg-opacity-80 p-4'>
+    <div className='w-full h-auto rounded-lg shadow-md bg-[#ffffff] bg-opacity-90 p-6 '>
       <div className="flex items-center">
         <Button variant="outline" size="icon">
           <Avatar src={currentUser?.image} />
@@ -74,11 +76,13 @@ const Share = ({ currentUser }) => {
           onChange={(e) => setContent(e.target.value)}
         />
       </div>
-      <div className="mt-4 flex items-center justify-between">
-        <div className="flex items-center">
-          <MdAddPhotoAlternate 
-            size={30} 
-            className='cursor-pointer text-[#7d8085]' 
+      
+      <div className="mt-4 flex items-center justify-between bg">
+        
+        <div className="flex items-center bg-white p-2 rounded-lg drop-shadow-sm">
+          <FaImage
+            size={21} 
+            className='cursor-pointer text-[#48AEFB] mr-2 drop-shadow' 
             onClick={handleIconClick} />
           <input 
             type="file" 
@@ -87,24 +91,28 @@ const Share = ({ currentUser }) => {
             onChange={handleImageUpload}
            
           />
-          <MdAddLocationAlt 
-          size={30} 
-          className='cursor-pointer text-[#7d8085]' 
-          onClick={toggleLocationInput} 
+          <FaLocationDot
+          size={21} 
+          className='cursor-pointer text-[#48AEFB] drop-shadow' 
+          onClick={toggleLocationInput}
         />
         {showLocationInput && (
           <input 
             type="text" 
             placeholder="Add a location"
-            className="ml-2 text-sm py-1 px-2 border rounded-lg"
+            className="ml-2 text-sm py-1 px-2 border rounded-lg drop-shadow"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
           />
         )}
-          
+        <FaFaceSmile
+        size={23} 
+        className='cursor-pointer text-[#48AEFB] ml-3 drop-shadow' />
+        
         </div>
+       
         <div className="relative">
-        <Button className='rounded-xl bg-[#3d3f42]' onClick={() => setShowDropdown(!showDropdown)}>
+        <Button className='rounded-xl bg-[#48AEFB]' onClick={() => setShowDropdown(!showDropdown)}>
             Share
           </Button>
           {showDropdown && (
