@@ -1,19 +1,30 @@
-import React from 'react';
-import Sidebar from '../components/sidebar/Sidebar'
-import Rightbar from '../components/rightbar/Rightbar';
-import Feed from '../components/feed/Feed';
 
-export default function Home() {
+import React from 'react';
+import Rightbar from '../components/rightbar/Rightbar';
+import Share from '@/components/feed/Share';
+import ClientProviders from '@/components/ClientProviders';
+import EmptyState from '@/components/EmptyState';
+import getCurrentUser from './actions/getCurrentUser';
+
+
+export default async function Home() {
+  const isEmpty = true;
+  const currentUser = await getCurrentUser(); // Fetch currentUser
+
+  
+  
   return (
-    
+    <ClientProviders>
     <div className="flex w-full">
-    <div className="flex-none w-[50%]"> {/* Will grow more than Rightbar */}
-    <Feed />
+    <div className="flex-none w-[45%] ml-16 mt-8"> {/* Will grow more than Rightbar */}
+    <Share currentUser={currentUser} /> {/* Pass currentUser to Share */}
+  {/*{isEmpty && <EmptyState currentUser={currentUser} />} {/* Pass currentUser to EmptyState */}
     </div>
-    <div className="flex-grow w-[50%]" >
-    <Rightbar />
+    <div className="flex-grow w-[5%]" >
+    <Rightbar/> {/*currentUser={currentUser} */}
     </div> {/* Will grow less than Feed */} 
     </div>
+    </ClientProviders>
   )
 };
 

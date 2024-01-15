@@ -27,18 +27,14 @@ export default async function RootLayout({
     <ClientProviders>
     <html lang="en">
       <body>
-        <ThemeProvider
-         attribute="class"
-         defaultTheme="system"
-         enableSystem
-         disableTransitionOnChange>
-        
+       
          {/* Flex container for Sidebar and Header */}
          <div className="flex h-screen"> {/* Full height container */}
               <Sidebar /> {/* Sidebar component, already styled with 'sticky top-0 w-48 h-screen' */}
               <div className="flex-1"> {/* Container for header and the rest of the content */}
                 <Header currentUser={currentUser}/> {/* Header component */}
                 {/* Rest of the content */}
+                
                 {children}
               </div>
             </div>
@@ -49,7 +45,7 @@ export default async function RootLayout({
         <RegisterModal/>
         
         
-        </ThemeProvider>
+
       </body>
     </html>
     </ClientProviders>
