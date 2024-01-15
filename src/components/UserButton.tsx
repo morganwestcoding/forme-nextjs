@@ -43,7 +43,7 @@ const UserButton: React.FC<UserButtonProps> = ({
     return (  
       <div 
       onClick={onRent}
-      className="inline-flex items-center border-[#ffffff] border-2 justify-center whitespace-nowrap rounded-full text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 shadow-md bg-[#ffffff] bg-opacity-75 hover:bg-accent hover:text-accent-foreground">
+      className="inline-flex items-center border-[#ffffff] border justify-center whitespace-nowrap rounded-full text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 shadow-md bg-[#ffffff] bg-opacity-75 hover:bg-accent hover:text-accent-foreground">
         
     <DropdownMenu>   
   <DropdownMenuTrigger>

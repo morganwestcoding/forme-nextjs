@@ -1,4 +1,4 @@
-import { Listing, Reservation, User, Service } from "@prisma/client";
+import { Listing, Reservation, User, Service, Post } from "@prisma/client";
 
 export type SafeService = {
   id: string;
@@ -30,4 +30,15 @@ export type SafeUser = Omit<
   createdAt: string;
   updatedAt: string;
   emailVerified: string | null;
+};
+
+export type SafePost = Omit<
+  Post,
+  "createdAt" | "updatedAt" | "userId" | "categoryId"
+> & {
+  createdAt: string;
+  updatedAt: string;
+  user?: SafeUser; // Assuming relation with User model
+  category?: string; // Assuming the category is a string or adjust according to your model
+  // Include any other relations or transformations here
 };

@@ -5,18 +5,14 @@ export default function Rightbar() {
               {/* Articles Section */}
               <div>
                   <h2 className="text-sm md:text-base font-semibold mb-4">Articles</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {[1, 2].map((article) => (
-                          <div key={article} className="flex items-center">
-                              <img 
-                                  src="https://via.placeholder.com/150" 
-                                  alt="Article" 
-                                  className="w-16 h-16 md:w-20 md:h-20 mr-4 object-cover rounded-lg"
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2 ">
+                      {[1, 2, 3].map((article) => (
+                          <div key={article} className="flex items-center ">
+                              <div
+                                  
+                                  className="w-66 h-66 md:w-24 md:h-24 mr-4 object-cover rounded-lg bg-gray-300"
                               />
-                              <div>
-                                  {/*<h3 className="font-semibold text-xs md:text-sm">Article Title {article}</h3>
-                                  <p className="text-xs md:text-sm text-gray-600">Brief description of the article...</p>*/}
-                              </div>
+                           
                           </div>
                       ))}
                   </div>
@@ -25,9 +21,9 @@ export default function Rightbar() {
               {/* Trending Topics Section */}
               <div>
                   <h2 className="text-sm md:text-base font-semibold mb-4">Trending Topics</h2>
-                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <ul className="grid grid-cols-1 md:grid-cols-3 gap-1">
                       {['Topic 1', 'Topic 2', 'Topic 3'].map((topic) => (
-                          <li key={topic} className="text-xs md:text-sm text-gray-600">{topic}</li>
+                          <li key={topic} className="text-xs md:text-sm text-gray-600 border rounded-lg inline-block px-2 mx-auto my-1 ml-1">{topic}</li>
                       ))}
                   </ul>
               </div>
@@ -35,13 +31,13 @@ export default function Rightbar() {
               {/* Who to Follow Section */}
               <div>
                   <h2 className="text-sm md:text-base font-semibold mb-4">Who to Follow</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       {[1, 2, 3].map((user) => (
                           <div key={user} className="flex items-center">
-                              <img 
-                                  src="https://via.placeholder.com/50" 
-                                  alt="User" 
-                                  className="w-10 h-10 md:w-12 md:h-12 mr-4 object-cover rounded-full"
+                              <div
+                                  
+                                  
+                                  className="w-20 bg-gray-300 h-20 md:w-16 md:h-16 mr-4 object-cover rounded-full"
                               />
                               <div>
                                   <h3 className="font-semibold text-xs md:text-sm">{user}</h3>

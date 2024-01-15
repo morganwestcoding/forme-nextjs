@@ -1,42 +1,23 @@
-"use client"
+'use client'
 
-import * as React from "react"
-import { Moon, Sun } from "lucide-react"
+import { useRouter } from "next/navigation";
+import { Button } from "../ui/button"
+import { MessageSquarePlusIcon } from "lucide-react"
+
+function CreateChatButton() {
+    const router = useRouter();
+
+    const createNewChat = async() => {
+
+        //logic for cchat
+
+        router.push(`/chat/abc`);
 
 
-import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
-export default function DarkModeToggle() {
-
-
-  
-
+    }
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button className=" shadow-md" variant="outline" size="icon">
-          <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 text-[#FFFFFF]" />
-          <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 text-[#FFFFFF]" />
-          <span className="sr-only">Toggle theme</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme("light")}>
-          Light
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")}>
-          Dark
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}>
-          System
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <Button className="bg-[#ffffff] text-[#FB6848] " onClick={createNewChat} variant={'outline'} size="icon"><img src="/icons/add.svg" className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 text-[#FFFFFF]"/></Button>
   )
-};
+}
+
+export default CreateChatButton

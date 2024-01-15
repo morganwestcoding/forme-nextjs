@@ -1,31 +1,36 @@
-// Feed.tsx
-'use client'
+'use client';
 
 import React, { useEffect, useState } from 'react';
 import Post from "./Post";
 import Share from "./Share";
-import axios from 'axios'; // Make sure axios is installed
+import axios from 'axios';
 
-export default function Feed() {
-  const [posts, setPosts] = useState([]);
+import { SafeUser } from '@/app/types';
+import ClientProviders from '../ClientProviders';
 
+interface FeedProps {
+  currentUser?: SafeUser | null;
+}
+
+const Feed = () => {
+  const [currentUser, setCurrentUser] = useState(null); // Adjust according to how you fetch currentUser
+  
   useEffect(() => {
-    axios.get('/api/post')
-      .then(response => {
-        console.log('Fetched Posts:', response.data); // Add this line
-        setPosts(response.data);
-      })
-      .catch(error => console.error('Error fetching posts:', error));
+  // Fetch currentUser logic here
+  // After fetching, update the currentUser state
   }, []);
 
   return (
+    
     <div className="bg-transparent pt-8 pl-16">
       <div className="padding: 20px">
-        <Share />
-        {posts.map((post, index) => (
-          <Post key={post.id || index} post={post} /> // Fallback to index if id is not present
-        ))}
+      <Share currentUser={currentUser} />
+        {/*{posts.map((post, index) => (
+          <Post key={post.id || index} post={post} />
+        ))}*/}
       </div>
     </div>
   );
 }
+
+export default Feed;
