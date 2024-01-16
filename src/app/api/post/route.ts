@@ -1,30 +1,41 @@
-// route.ts
+import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
-import type { NextApiRequest, NextApiResponse } from 'next';
+import getCurrentUser from "@/app/actions/getCurrentUser";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  try {
-    if (req.method === 'POST') {
-      const { content, mood, location, photo, userId, categoryId } = req.body;
-      const post = await prisma.post.create({
-        data: {
-          content,
-          location,
-          photo,
-          userId,
-          categoryId,
-        },
-      });
-      res.status(200).json(post);
-    } else if (req.method === 'GET') {
-      const posts = await prisma.post.findMany();
-      res.status(200).json(posts);
-    } else {
-      res.setHeader('Allow', ['POST', 'GET']);
-      res.status(405).end(`Method ${req.method} Not Allowed`);
+export async function POST(request: Request) {
+    // Get current user and validate
+    const currentUser = await getCurrentUser();
+    if (!currentUser) {
+        return new Response("Unauthorized", { status: 401 });
     }
-  } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ message: 'Internal Server Error' });
-  }
+
+    const body = await request.json();
+    const { content, imageSrc, location, tag, category , categoryId, } = body;
+   
+
+    console.log("Received fields:", { content, imageSrc, location, tag, category, categoryId,  });
+
+    // Validate required fields
+    if (!content || !category) {
+        return new Response(`Missing required fields: ${!content ? 'content' : ''} ${!category ? 'category' : ''}`, { status: 400 });
+    }
+
+    try {
+        const post = await prisma.post.create({
+            data: {
+                content,
+                imageSrc,
+                location,
+                tag,
+                category,
+                userId: currentUser.id,
+                categoryId, 
+            },
+        });
+
+        return NextResponse.json(post);
+    } catch (error) {
+        console.error("Error creating post:", error);
+        return new Response("Internal Server Error", { status: 500 });
+    }
 }

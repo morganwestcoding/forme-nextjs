@@ -1,0 +1,46 @@
+import React, { useState, useCallback } from 'react';
+import { CldUploadWidget } from "next-cloudinary";
+import Image from "next/image";
+import { TbPhotoPlus } from 'react-icons/tb';
+import { SafeUser } from '@/app/types';
+
+const uploadPreset = "pgc9ehd5";
+
+interface AddPostImageProps {
+    currentUser: SafeUser | null;
+    onImageUpload: (imageUrl: string) => void;
+}
+
+const AddPostImage: React.FC<AddPostImageProps> = ({ currentUser, onImageUpload }) => {
+    const [imageSrc, setImageSrc] = useState('');
+
+    const handleUpload = useCallback((result: any) => {
+        const url = result.info.secure_url;
+        setImageSrc(url);
+        onImageUpload(url);
+    }, [onImageUpload]);
+
+    return (
+        <CldUploadWidget 
+            onUpload={handleUpload} 
+            uploadPreset={uploadPreset}
+            options={{
+                maxFiles: 1
+            }}
+        >
+            {({ open }) => (
+                <div onClick={() => open?.()}>
+                    <img src="/icons/image.svg" className='mr-2 drop-shadow h-6 w-6'/>
+                    
+                    {imageSrc && (
+                        <div className="absolute inset-0 w-full h-full">
+                            <Image fill style={{ objectFit: 'cover' }} src={imageSrc} alt="Uploaded Image" />
+                        </div>
+                    )}
+                </div>
+            )}
+        </CldUploadWidget>
+    );
+};
+
+export default AddPostImage;
