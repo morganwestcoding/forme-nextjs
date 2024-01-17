@@ -2,7 +2,7 @@ import React from 'react';
 
 function Search() {
   return (
-    <div className="hidden mx-10 md:block ml-16 ">
+    <div className="hidden mx-10 md:block ml-20 ">
       <div className="relative">
         <span className="absolute inset-y-0 left-0 flex items-center pl-3">
           <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none">

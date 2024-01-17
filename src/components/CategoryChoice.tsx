@@ -60,7 +60,7 @@ const CategoryChoice: React.FC<CategoryChoiceProps> = ({
         ${selected ? 'text-white' : 'text-slate-300'}
       `}
     >
-      <span className={`h-6 w-6 border border-white rounded-full ${color} inline-block`}></span>
+      <span className={`h-8 w-8 border border-white rounded-full ${color} inline-block`}></span>
       <div className="font-medium text-xs  uppercase">
         {label}
       </div>

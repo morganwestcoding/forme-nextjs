@@ -1,40 +1,9 @@
+import React from 'react'
 
-import getCurrentUser from "@/app/actions/getCurrentUser";
-import getListingById from "@/app/actions/getListingById";
-import getReservations from "@/app/actions/getReservations";
-
-import ClientProviders from "@/components/ClientProviders";
-import EmptyState from "@/components/EmptyState";
-
-import ListingClient from "./ListingClient";
-
-interface IParams {
-  listingId?: string;
-}
-
-const ListingPage = async ({ params }: { params: IParams }) => {
-
-  const listing = await getListingById(params);
-  const reservations = await getReservations(params);
-  const currentUser = await getCurrentUser();
-
-  if (!listing) {
-    return (
-      <ClientProviders>
-        <EmptyState/>
-      </ClientProviders>
-    );
-  }
-
+function Page() {
   return (
-    <ClientProviders>
-      <ListingClient
-        listing={listing}
-        reservations={reservations}
-        currentUser={currentUser}
-      />
-    </ClientProviders>
-  );
+    <div>Page</div>
+  )
 }
- 
-export default ListingPage;
+
+export default Page

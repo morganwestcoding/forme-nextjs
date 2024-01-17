@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { SafeUser } from '@/app/types';
 import { MdCheckCircle } from 'react-icons/md'; // This is for the check mark icon, ensure you have react-icons installed
 
@@ -20,7 +21,7 @@ const AddPostLocation: React.FC<AddPostLocationProps> = ({ currentUser, onLocati
     return (
         <>
             <button onClick={() => setShowInput(true)}>
-            <img src="/icons/location-add.svg" className='h-6 w-6 cursor-pointer drop-shadow'/>
+            <Image src="/icons/location-add.svg" alt="location" width={24} height={24} className='cursor-pointer drop-shadow'/>
             </button>
 
             {showInput && (

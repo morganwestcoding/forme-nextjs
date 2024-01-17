@@ -85,7 +85,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
     return `${format(start, 'PP')} - ${format(end, 'PP')}`;
   }, [reservation]);
 
-  const getColorByCategory = (categoryName) => {
+  const getColorByCategory = (categoryName: string) => {
     const category = categories.find(cat => cat.label === categoryName);
     if (!category) return { bgColorClass: 'bg-gray-200', textColorClass: 'text-gray-200', borderColorClass: 'border-gray-200' };
 
@@ -121,7 +121,7 @@ const categoryColors = getColorByCategory(data.category);
       
       className="col-span-1 "
     >
-      <div className="bg-[#ffffff] bg-opacity-90 rounded-xl flex flex-col gap-2 w-52 shadow-md">
+      <div className="bg-[#ffffff] bg-opacity-90 rounded-xl flex flex-col gap-2 w-48 shadow-md">
         <div 
           className="
             w-full

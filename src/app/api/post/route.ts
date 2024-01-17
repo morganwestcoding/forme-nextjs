@@ -3,17 +3,18 @@ import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 
 export async function POST(request: Request) {
-    // Get current user and validate
+
     const currentUser = await getCurrentUser();
     if (!currentUser) {
         return new Response("Unauthorized", { status: 401 });
     }
 
     const body = await request.json();
-    const { content, imageSrc, location, tag, category , categoryId, } = body;
+    const { content, imageSrc, location, tag, category } = body;
+    console.log("Received fields in POST request:", { content, imageSrc, location, tag, category }); // Log here
    
 
-    console.log("Received fields:", { content, imageSrc, location, tag, category, categoryId,  });
+    console.log("Received fields:", { content, imageSrc, location, tag, category});
 
     // Validate required fields
     if (!content || !category) {
@@ -29,13 +30,14 @@ export async function POST(request: Request) {
                 tag,
                 category,
                 userId: currentUser.id,
-                categoryId, 
+            
             },
         });
 
         return NextResponse.json(post);
     } catch (error) {
         console.error("Error creating post:", error);
+        console.error("Detailed error information:", error);
         return new Response("Internal Server Error", { status: 500 });
-    }
+    } 
 }

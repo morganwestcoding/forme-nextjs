@@ -28,7 +28,7 @@ const Market = async ({ searchParams }: MarketProps) => {
 
   return (
   <ClientProviders>
-    <div className="pt-4 pl-16 mr-20 flex-1">
+    <div className="pt-2 pl-20 mr-24 flex-1">
     <div 
     className="
       pt-6

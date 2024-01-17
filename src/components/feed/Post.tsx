@@ -1,39 +1,35 @@
-// Post.tsx
 import React from 'react';
 import Avatar from '../ui/avatar'; // Adjust the import based on your project structure
+import { SafeUser } from '@/app/types';
+import { Button } from '../ui/button';
 
 interface PostProps {
-    post: {
-      id: string;
-      user?: {
-        name: string;
-        image: string;
-      };
-      createdAt: string;
-      content: string;
-      photo?: string;
-      location?: string;
-    };
-  }
+  currentUser: SafeUser | null;
+}
 
-  const Post: React.FC<PostProps> = ({ post }) => {
-    // ... rest of your component
- 
+const Post: React.FC<PostProps> = ({ currentUser }) => {
   return (
-    <div className='w-full rounded-lg shadow-md bg-[#ffffff] bg-opacity-70 dark:shadow-lg dark:border dark:border-gray-600 p-4'>
+    <div className='w-full h-auto rounded-lg shadow-md bg-[#ffffff] bg-opacity-70 p-6 mr-8 my-6 relative'>
       <div className="flex items-center">
-        <Avatar src={post.user?.image} /> {/* Adjust as per your user data structure */}
-        <div className="ml-4">
-          <div className="font-semibold">{post.user?.name}</div>
-          <div className="text-sm text-gray-500">{post.createdAt}</div>
+        <Button variant="outline" size="icon" className='bg-white drop-shadow-md bg-opacity-100'>
+          <Avatar src={currentUser?.image} />
+        </Button>
+        <div className="ml-2 flex flex-col">
+          <div className="ml-2 flex items-center">
+            <div className="font-semibold pr-2">User</div>
+            <div className="text-sm text-gray-500">Date</div> {/* Date on the right side of User */}
+          </div>
+          <div className="text-sm text-gray-500 ml-2">Location</div> {/* Location under User */}
         </div>
       </div>
-      <div className="mt-4">
-        <p>{post.content}</p>
-        {post.photo && <img src={post.photo} alt="Post" className="mt-2 max-h-60 w-full object-cover rounded-lg" />}
-        {post.location && <div className="text-sm mt-2">Location: {post.location}</div>}
-
+      <div className="ml-14 pl-1 mt-2">
+        <p>Content</p>
+        photo
+        <div className="absolute right-1">
+        <p className="text-sm text-gray-500 ">Genre</p>
       </div>
+      </div>
+     
     </div>
   );
 };

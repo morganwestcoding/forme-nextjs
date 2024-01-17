@@ -63,6 +63,7 @@ const handleSubmit = () => {
     categoryId,
     userId: currentUser?.id,
   };
+  console.log("Prepared Post Data for Submission:", postData); // Log here
 
   handlePostSubmit(postData);
 };
@@ -79,9 +80,9 @@ const handleTagSubmit = (newTag: string) => {
 
 
   return (
-    <div className='w-full h-auto rounded-lg shadow-md bg-[#ffffff] bg-opacity-90 p-6 '>
+    <div className='w-full h-auto rounded-lg shadow-md bg-[#ffffff] bg-opacity-70 p-6 mr-8 '>
       <div className="flex items-center">
-        <Button variant="outline" size="icon">
+        <Button variant="outline" size="icon" className='bg-white drop-shadow-md bg-opacity-100'>
         <Avatar src={currentUser?.image} />
         </Button>
       
@@ -112,18 +113,17 @@ const handleTagSubmit = (newTag: string) => {
        
         <div className="relative inline-block">
         <PostCategorySelect
-            currentUser={currentUser}
-            onPostSubmit={handlePostSubmit}
-            imageSrc={imageSrc}
-            location={location}
-            tag={tag}
-            content={content}
+         onCategorySelected={setCategory}
         />
+       {/*<Button onClick={handleSubmit} className="mt-4 rounded-xl bg-[#000000] hover:bg-blue-700 text-white font-bold py-2 px-4">
+        Submit
+  </Button>*/}
           
           </div>
       </div>
       
     </div>
+    
   );
 };
 

@@ -19,6 +19,7 @@ import CloseFriends from "./CloseFriends";
 import Logo from "../header/Logo";
 import Categories from "../Categories";
 import { useState } from "react";
+import Image from "next/image";
 
 export default function Sidebar() {
   const router = useRouter();
@@ -48,7 +49,7 @@ export default function Sidebar() {
           <li className="flex items-center mb-5 pt-5">
             <Tooltip >
                 <TooltipTrigger>
-          <img src="/icons/house.svg" alt="Home" className="h-6 w-6 text-[#7d8085] opacity-75 cursor-pointer" onClick={() => router.push('/')}/>
+          <Image src="/icons/house.svg" alt="Home" width={24} height={24} className=" text-[#7d8085] opacity-75 cursor-pointer" onClick={() => router.push('/')}/>
                 </TooltipTrigger>
                 
                 <TooltipContent side="right">
@@ -62,7 +63,7 @@ export default function Sidebar() {
           <li className="flex items-center mb-5">
             <Tooltip >
                 <TooltipTrigger>
-            <img src="/icons/shop.svg" alt="Shop" className="h-6 w-6 text-[#7d8085] opacity-75 cursor-pointer" onClick={() => router.push('/market')}/>
+            <Image src="/icons/shop.svg" alt="Shop" width={24} height={24} className=" text-[#7d8085] opacity-75 cursor-pointer" onClick={() => router.push('/market')}/>
                 </TooltipTrigger>
 
                 <TooltipContent side="right" >
@@ -77,7 +78,7 @@ export default function Sidebar() {
             <li className="flex items-center mb-5">
              <Tooltip >
                 <TooltipTrigger>
-          <img src="/icons/save-2.svg" alt="Home" className="h-6 w-6 text-[#7d8085] opacity-75" />
+          <Image src="/icons/save-2.svg" alt="Home" width={24} height={24} className=" text-[#7d8085] opacity-75" />
                 </TooltipTrigger>
                 <TooltipContent side="right" >
                   <p>Favorites</p>
@@ -91,7 +92,7 @@ export default function Sidebar() {
           <li className="flex items-center mb-5">
             <Tooltip >
                 <TooltipTrigger>
-          <img src="/icons/briefcase.svg" alt="Home" className="h-6 w-6 text-[#7d8085] opacity-75" />
+          <Image src="/icons/briefcase.svg" alt="Home" width={24} height={24} className="h-6 w-6 text-[#7d8085] opacity-75" />
                 </TooltipTrigger>
                 <TooltipContent side="right" >
                 <p>Jobs</p>
@@ -104,7 +105,7 @@ export default function Sidebar() {
           <li className="flex items-center mb-5">
           <Tooltip >
                 <TooltipTrigger>
-          <img src="/icons/calendar-2.svg" alt="Home" className="h-6 w-6 text-[#7d8085] opacity-75" />
+          <Image src="/icons/calendar-2.svg" alt="Home" width={24} height={24} className=" text-[#7d8085] opacity-75" />
                 </TooltipTrigger>
                 <TooltipContent side="right" >
                 <p>Bookings</p>

@@ -30,7 +30,7 @@ const AddPostImage: React.FC<AddPostImageProps> = ({ currentUser, onImageUpload 
         >
             {({ open }) => (
                 <div onClick={() => open?.()}>
-                    <img src="/icons/image.svg" className='mr-2 drop-shadow h-6 w-6'/>
+                    <Image src="/icons/image.svg" alt="camera" width={26} height={26} className='mr-2 drop-shadow'/>
                     
                     {imageSrc && (
                         <div className="absolute inset-0 w-full h-full">

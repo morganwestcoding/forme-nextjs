@@ -81,17 +81,15 @@ model Service {
 }
 
 model Post {
-  id             String          @id @default(auto()) @map("_id") @db.ObjectId
-  content        String
-  imageSrc        String?
-  location       String?
-  tag            String?
-  photo          String?
-  category      String
-  userId         String          @db.ObjectId
-  categoryId     String          @db.ObjectId
-  createdAt      DateTime        @default(now())
-  // ...
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  content    String
+  imageSrc   String?
+  location   String?
+  tag        String?
+  photo      String?
+  category   String
+  userId     String    @db.ObjectId
+  createdAt  DateTime  @default(now())
 }
 
 model Category {

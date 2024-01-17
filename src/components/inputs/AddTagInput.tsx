@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { SafeUser } from '@/app/types';
 import { MdCheckCircle } from 'react-icons/md'; // Check mark icon
+import Image from 'next/image';
 
 interface AddTagInputProps {
     currentUser: SafeUser | null;
@@ -20,7 +21,7 @@ const AddTagInput: React.FC<AddTagInputProps> = ({ currentUser, onTagSubmit }) =
     return (
         <>
             <button onClick={() => setShowInput(true)} className="tag-icon-style">
-            <img src="/icons/tag.svg" className='h-6.5 w-6.5 cursor-pointer drop-shadow ml-2'/>
+            <Image src="/icons/tag.svg" alt="tag" width={26} height={26} className='cursor-pointer drop-shadow ml-2'/>
             </button>
 
             {showInput && (
