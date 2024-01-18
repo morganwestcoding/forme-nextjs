@@ -1,35 +1,58 @@
+'use client'
 import React from 'react';
 import Avatar from '../ui/avatar'; // Adjust the import based on your project structure
 import { SafeUser } from '@/app/types';
 import { Button } from '../ui/button';
+import Image from 'next/image';
+
+interface PostData {
+  user: SafeUser; // Assuming SafeUser has a name or username field
+  createdAt: string; // Date string
+  content: string;
+  imageSrc?: string; // Optional image source
+  category: string; // Category name
+  location?:string
+}
 
 interface PostProps {
+  post: PostData;
   currentUser: SafeUser | null;
 }
 
-const Post: React.FC<PostProps> = ({ currentUser }) => {
+const Post: React.FC<PostProps> = ({ post, currentUser }) => {
   return (
-    <div className='w-full h-auto rounded-lg shadow-md bg-[#ffffff] bg-opacity-70 p-6 mr-8 my-6 relative'>
+    <div className='w-full h-auto rounded-lg shadow-md bg-[#ffffff] bg-opacity-80 p-6 mr-8 my-6 relative'>
       <div className="flex items-center">
         <Button variant="outline" size="icon" className='bg-white drop-shadow-md bg-opacity-100'>
-          <Avatar src={currentUser?.image} />
+          <Avatar src={post.user.image} />
         </Button>
         <div className="ml-2 flex flex-col">
           <div className="ml-2 flex items-center">
-            <div className="font-semibold pr-2">User</div>
-            <div className="text-sm text-gray-500">Date</div> {/* Date on the right side of User */}
+            <div className="font-semibold pr-2">{post.user.name}</div>
+            <div className="text-sm text-gray-500">{new Date(post.createdAt).toLocaleDateString()}</div>
           </div>
-          <div className="text-sm text-gray-500 ml-2">Location</div> {/* Location under User */}
+          <div className="text-sm text-gray-500 ml-2">{post.location}</div>
         </div>
       </div>
-      <div className="ml-14 pl-1 mt-2">
-        <p>Content</p>
-        photo
-        <div className="absolute right-1">
-        <p className="text-sm text-gray-500 ">Genre</p>
+      <div className=" pl-1 mt-2">
+        <p>{post.content}</p>
+        {post.imageSrc && (
+          <div className="my-2" style={{ width: '505px', height: '335px', position: 'relative' }}>
+          <Image src={post.imageSrc} alt="Post Image" layout='responsive' width={500} height={500} />
+        </div>
+        )}
+        <div className="flex justify-start items-center mt-2"> {/* Adjusted class here for left alignment */}
+          <div className="flex items-center bg-white p-2 rounded-lg drop-shadow-sm">
+            <Image src="/icons/arrow-up-3.svg" alt="camera" width={26} height={26} className='mr-2 drop-shadow'/>
+            <Image src="/icons/arrow-down-1.svg" alt="camera" width={26} height={26} className='mr-2 drop-shadow'/>
+          </div>
+          <div className="relative inline-block ml-4"> {/* Added margin left for spacing */}
+            <div className='rounded-xl border border-black p-3 py-1'>
+                {post.category}
+            </div>
+          </div>
+        </div>
       </div>
-      </div>
-     
     </div>
   );
 };

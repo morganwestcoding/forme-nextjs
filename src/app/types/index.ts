@@ -38,7 +38,8 @@ export type SafePost = Omit<
 > & {
   createdAt: string;
   updatedAt: string;
-  user?: SafeUser; // Assuming relation with User model
+  userId: string; 
+  user?: SafeUser;// Assuming relation with User model
   category?: string; // Assuming the category is a string or adjust according to your model
   // Include any other relations or transformations here
 };

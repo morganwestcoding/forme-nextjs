@@ -5,7 +5,7 @@ function CloseFriends() {
   return (
     <div className='pt-4'>
     <div className='pb-5 font-bold text-xs flex flex-col items-center justify-center text-[#4d4d4d] opacity-75'>
-      MESSAGES</div>
+      FRIENDS</div>
     <div className='w-20 rounded-xl flex-col items-center bg-white bg-opacity-70 h-60 drop-shadow-md'>
     <ul className='w-full h-full flex flex-col items-center justify-center'>
           {/* Circle 1 */}

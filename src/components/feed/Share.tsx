@@ -80,7 +80,7 @@ const handleTagSubmit = (newTag: string) => {
 
 
   return (
-    <div className='w-full h-auto rounded-lg shadow-md bg-[#ffffff] bg-opacity-70 p-6 mr-8 '>
+    <div className='w-full h-auto rounded-lg shadow-md bg-[#ffffff] bg-opacity-80 p-6'>
       <div className="flex items-center">
         <Button variant="outline" size="icon" className='bg-white drop-shadow-md bg-opacity-100'>
         <Avatar src={currentUser?.image} />

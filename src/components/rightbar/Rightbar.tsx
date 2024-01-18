@@ -8,7 +8,7 @@ export default function Rightbar() {
         </div>
 
 
-        <div className="w-full md:w-11/12 flex flex-col justify-start rounded-lg shadow-md border bg-[#F9FCFF] bg-opacity-85 p-0 mx-0 overflow-hidden ml-12">
+        <div className="w-full md:w-11/12 flex flex-col justify-start rounded-lg shadow-md border bg-[#F9FCFF] bg-opacity-90 p-0 mx-0 overflow-hidden ml-12">
         <div className="px-6 py-4 text-xl font-bold -mb-2">What&apos;s Happening</div>
           {[...Array(4)].map((_, index) => (
             <div key={index} className="flex justify-between items-center hover:bg-white rounded w-full px-6 py-4">

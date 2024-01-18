@@ -89,6 +89,7 @@ model Post {
   photo      String?
   category   String
   userId     String    @db.ObjectId
+  
   createdAt  DateTime  @default(now())
 }
 

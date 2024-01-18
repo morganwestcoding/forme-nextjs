@@ -35,8 +35,8 @@ export default function Sidebar() {
 
   return (
     
-    <div className="sticky top-0 flex h-screen z-46">
-      <div className="flex flex-col items-center w-48 h-full  bg-[#ffffff] bg-opacity-75 shadow-md dark:shadow-lg dark:border dark:border-gray-600 p-10" >
+    <div className="fixed top-0 flex h-screen z-46">
+      <div className="flex flex-col items-center w-48 h-full  bg-[#ffffff] bg-opacity-80 shadow-md dark:shadow-lg dark:border dark:border-gray-600 p-10" >
         <Logo/>
         <div className="flex flex-col item-center pt-9 text-xs font-bold text-[#4d4d4d] opacity-75">
           MENU
