@@ -61,27 +61,16 @@ const Market = ({ listings, currentUser }: MarketProps) => {
 }
 
 // getServerSideProps function to fetch data for each request
+// getServerSideProps function to fetch data for each request
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   try {
     const searchParams: IListingsParams = {
-      services: [],
       userId: context.query.userId as string,
       category: context.query.category as string,
+      // ... other searchParams ...
     };
 
-    // Fetch the session using the context
-    const session = await getServerSession(context.req, context.res, authOptions);
-
-    // If there's a session, find the user, else set currentUser to null
-    let currentUser = null;
-    if (session?.user?.email) {
-      currentUser = await prisma.user.findUnique({
-        where: {
-          email: session.user.email,
-        },
-      });
-    }
-
+    const currentUser = await getCurrentUser();
     const listings = await getListings(searchParams);
 
     return { props: { listings, currentUser } };
