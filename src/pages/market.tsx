@@ -1,24 +1,26 @@
 import React from 'react'
+
 import ClientProviders from '@/components/ClientProviders'
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/pages/api/auth/[...nextauth]"; 
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import EmptyState from '@/components/EmptyState';
 import ListingCard from '@/components/listings/ListingCard'
 import { categories } from '@/components/Categories';
 import { GetServerSidePropsContext } from 'next';
-
-
+import { SafeListing, SafeUser } from '@/app/types'; 
 import getListings, { 
   IListingsParams
 } from "@/app/actions/getListings";
 
 interface MarketProps {
-  searchParams: IListingsParams
+  listings: SafeListing[]; // Use SafeListing for the listings
+  currentUser: SafeUser;   // Use SafeUser for the currentUser
 };
 
-const Market = async ({ searchParams }: MarketProps) => {
-  const listings = await getListings(searchParams);
-  const currentUser = await getCurrentUser();
-
+const Market = ({ listings, currentUser }: MarketProps) => {
+  console.log('Received listings:', listings);
+  console.log('Received currentUser:', currentUser);
   if (listings.length === 0) {
     return (
       <ClientProviders>
@@ -49,6 +51,7 @@ const Market = async ({ searchParams }: MarketProps) => {
         key={listing.id}
         data={listing}
         categories={categories}
+        
       />
     ))}
   </div>
@@ -61,14 +64,24 @@ const Market = async ({ searchParams }: MarketProps) => {
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   try {
     const searchParams: IListingsParams = {
-      // Default values or values from context.query
-      services: [], // Assuming services is an array, adjust as needed
+      services: [],
       userId: context.query.userId as string,
       category: context.query.category as string,
-      // ... include other searchParams fields as needed
     };
 
-    const currentUser = await getCurrentUser();
+    // Fetch the session using the context
+    const session = await getServerSession(context.req, context.res, authOptions);
+
+    // If there's a session, find the user, else set currentUser to null
+    let currentUser = null;
+    if (session?.user?.email) {
+      currentUser = await prisma.user.findUnique({
+        where: {
+          email: session.user.email,
+        },
+      });
+    }
+
     const listings = await getListings(searchParams);
 
     return { props: { listings, currentUser } };

@@ -7,42 +7,24 @@ export interface IListingsParams {
   endDate?: string;
   locationValue?: string;
   category?: string;
-  services:  Service[]
+  services?: string[];  // Assuming services is an array of service IDs
 }
 
-export default async function getListings(
-  params: IListingsParams
-) {
+export default async function getListings(params: IListingsParams) {
   try {
-    const {
-      userId,
-      locationValue,
-      startDate,
-      endDate,
-      category,
-      services
-    } = params;
-
+    const { userId, locationValue, startDate, endDate, category, services } = params;
     let query: any = {};
 
-    if (userId) {
-      query.userId = userId;
+    if (userId) query.userId = userId;
+    if (category) query.category = category;
+    if (locationValue) query.locationValue = locationValue;
+
+    if (services && services.length > 0) {
+      // Adjust this query to match your schema, especially if the relationship is more complex
+      query.services = { some: { id: { in: services } } };
     }
 
-    if (category) {
-      query.category = category;
-    }
-
-
-
-    if (locationValue) {
-      query.locationValue = locationValue;
-    }
-
-    if (services) {
-        query.serviceValue = services;
-    }
-
+    // Date range filtering logic
     if (startDate && endDate) {
       query.NOT = {
         reservations: {
@@ -59,26 +41,20 @@ export default async function getListings(
             ]
           }
         }
-      }
+      };
     }
 
     const listings = await prisma.listing.findMany({
       where: query,
-      include: {
-        services: true, // Include services for each listing
-      },
-      orderBy: {
-        createdAt: 'desc'
-      }
+      include: { services: true },
+      orderBy: { createdAt: 'desc' }
     });
 
-    const safeListings = listings.map((listing) => ({
+    return listings.map(listing => ({
       ...listing,
       createdAt: listing.createdAt.toISOString(),
     }));
-
-    return safeListings;
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error in getListings:", error);
     throw new Error("Failed to fetch listings.");
   }

@@ -62,6 +62,7 @@ export default function Sidebar() {
         <TooltipProvider delayDuration={100}>
           <li className="flex items-center mb-5">
             <Tooltip >
+              
                 <TooltipTrigger>
             <Image src="/icons/shop.svg" alt="Shop" width={24} height={24} className=" text-[#7d8085] opacity-75 cursor-pointer" onClick={() => router.push('/market')}/>
                 </TooltipTrigger>
