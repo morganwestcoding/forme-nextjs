@@ -24,6 +24,7 @@ export default async function RootLayout({
 }) {
   const currentUser = await getCurrentUser();
   
+  
   return (
     <ClientProviders>
     <html lang="en">
@@ -34,7 +35,7 @@ export default async function RootLayout({
          <div className="flex h-screen "> {/* Full height container */}
               <Sidebar /> {/* Sidebar component, already styled with 'sticky top-0 w-48 h-screen' */}
               <div className="flex-1 ml-48"> {/* Container for header and the rest of the content */}
-                <Header currentUser={currentUser}/> {/* Header component */}
+                <Header currentUser={currentUser} /> {/* Header component */}
                 {/* Rest of the content */}
                 
                 {children}

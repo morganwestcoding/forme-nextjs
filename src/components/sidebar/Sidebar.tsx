@@ -35,7 +35,7 @@ export default function Sidebar() {
 
   return (
     
-    <div className="fixed top-0 flex h-screen z-46">
+    <div className="fixed top-0 flex h-screen z-50">
       <div className="flex flex-col items-center w-48 h-full  bg-[#ffffff] bg-opacity-80 shadow-md dark:shadow-lg dark:border dark:border-gray-600 p-10" >
         <Logo/>
         <div className="flex flex-col item-center pt-9 text-xs font-bold text-[#4d4d4d] opacity-75">
@@ -125,12 +125,12 @@ export default function Sidebar() {
       
        
         {/* Arrow button when expanded */}
-        <button onClick={toggleCollapse} className="fixed top-1/2 left-40 transform -translate-y-1/2 translate-x-4 rounded-full p-2 bg-white border shadow z-40">
+        <button onClick={toggleCollapse} className="fixed top-1/2 left-40 transform -translate-y-1/2 translate-x-4 rounded-full p-2 bg-white border shadow z-50">
           <span className="text-xl">{isCollapsed ? '<' : '>'}</span>
         </button>
         
          {/* Category Bar */}
-        <div className={`relative flex flex-col ${isCollapsed ? 'w-0' : 'w-48'} overflow-hidden transition-width duration-300 h-full rounded-r-4xl bg-[#0c0c0d] bg-opacity-90 z-48`}>
+        <div className={`relative flex flex-col ${isCollapsed ? 'w-0 z-40' : 'w-48 z-40'} overflow-hidden transition-width duration-300 h-full rounded-r-4xl bg-[#0c0c0d] bg-opacity-90`}>
         <Categories/>
       </div>
     </div>
