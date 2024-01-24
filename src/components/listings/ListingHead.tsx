@@ -3,7 +3,7 @@
 import Image from "next/image";
 
 import useStates from "@/app/hooks/useStates";
-import { SafeUser } from "@/app/types";
+import { SafeService, SafeUser } from "@/app/types";
 
 import Heading from "../Heading";
 import HeartButton from "../HeartButton";
@@ -14,6 +14,7 @@ interface ListingHeadProps {
   imageSrc: string;
   id: string;
   currentUser?: SafeUser | null
+  services?: SafeService[]; 
 }
 
 const ListingHead: React.FC<ListingHeadProps> = ({
@@ -21,7 +22,8 @@ const ListingHead: React.FC<ListingHeadProps> = ({
   locationValue,
   imageSrc,
   id,
-  currentUser
+  currentUser,
+  services 
 }) => {
   const { getByValue } = useStates();
 

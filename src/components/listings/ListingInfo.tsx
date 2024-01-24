@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { IconType } from "react-icons";
 
 import useStates from "@/app/hooks/useStates";
-import { SafeUser } from "@/app/types";
+import { SafeService, SafeUser } from "@/app/types";
 
 import Avatar from "../ui/avatar";
 import ListingCategory from "./ListingCategory";
@@ -21,6 +21,7 @@ interface ListingInfoProps {
     description: string;
   } | undefined
   locationValue: string;
+  services?: SafeService[]; 
 }
 
 const ListingInfo: React.FC<ListingInfoProps> = ({
@@ -28,6 +29,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
   description,
   category,
   locationValue,
+  services 
 }) => {
   const { getByValue } = useStates();
 
