@@ -1,7 +1,7 @@
 
 
 import Logo from "./Logo";
-import DarkModeToggle from "@/components/header/DarkModeToggle";
+import AddListing from "./AddListing";
 import UserButton from "../UserButton";
 
 
@@ -30,7 +30,7 @@ const Header: React.FC<HeaderProps> = ({
               <CreateChatButton />
               </>
              
-             <DarkModeToggle/>
+             <AddListing currentUser={currentUser}/>
              <UserButton currentUser={currentUser}/>
             
             

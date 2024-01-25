@@ -11,8 +11,8 @@ import useLoginModal from "@/app/hooks/useLoginModal";
 import { SafeListing, SafeReservation, SafeUser } from "@/app/types";
 import { categories } from "@/components/Categories";
 import ListingHead from "@/components/listings/ListingHead";
-/*import ListingReservation from "@/app/components/listings/ListingReservation";*/
 import ListingInfo from "@/components/listings/ListingInfo";
+import ListingReservation from "@/components/listings/ListingReservation";
 
 const initialDateRange = {
   startDate: new Date(),
@@ -36,6 +36,10 @@ const ListingClient: React.FC<ListingClientProps> = ({
   const loginModal = useLoginModal();
   const router = useRouter();
 
+  // New state for tracking selected services
+  const [selectedServices, setSelectedServices] = useState(new Set<string>());
+  const [totalPrice, setTotalPrice] = useState(0);
+
   const disabledDates = useMemo(() => {
     let dates: Date[] = [];
 
@@ -57,8 +61,28 @@ const ListingClient: React.FC<ListingClientProps> = ({
   }, [listing.category]);
 
   const [isLoading, setIsLoading] = useState(false);
-  /*const [totalPrice, setTotalPrice] = useState(listing.price);*/
   const [dateRange, setDateRange] = useState<Range>(initialDateRange);
+
+  // New toogle ServieSelection
+  const toggleServiceSelection = (serviceId: string) => {
+    setSelectedServices(prevSelected => {
+      const newSelected = new Set(prevSelected);
+      if (newSelected.has(serviceId)) {
+        newSelected.delete(serviceId);
+      } else {
+        newSelected.add(serviceId);
+      }
+      return newSelected;
+    });
+  };
+
+  useEffect(() => {
+    const newTotalPrice = listing.services
+      .filter(service => selectedServices.has(service.id))
+      .reduce((sum, service) => sum + service.price, 0);
+    setTotalPrice(newTotalPrice);
+  }, [selectedServices, listing.services]);
+
 
   const onCreateReservation = useCallback(() => {
       if (!currentUser) {
@@ -67,7 +91,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
       setIsLoading(true);
 
       axios.post('/api/reservations', {
-        /*totalPrice,*/
+        totalPrice,
         startDate: dateRange.startDate,
         endDate: dateRange.endDate,
         listingId: listing?.id
@@ -85,7 +109,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
       })
   },
   [
-    /*totalPrice,*/
+    totalPrice,
     dateRange, 
     listing?.id,
     router,
@@ -141,6 +165,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
               locationValue={listing.locationValue}
               services={listing.services} 
             />
+
             <div 
               className="
                 order-first 
@@ -149,15 +174,31 @@ const ListingClient: React.FC<ListingClientProps> = ({
                 md:col-span-3
               "
             >
-            {/*  <ListingReservation
-                price={listing.price}
+            {/* Checkbox for each service */}
+            {listing.services.map(service => (
+                <div key={service.id}>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={selectedServices.has(service.id)}
+                      onChange={() => toggleServiceSelection(service.id)}
+                    />
+                    {service.serviceName} - ${service.price}
+                  </label>
+                </div>
+              ))}
+              {/* Display the total price */}
+              <div>Total Price: ${totalPrice}</div>
+
+            <ListingReservation
+                price={totalPrice}
                 totalPrice={totalPrice}
                 onChangeDate={(value) => setDateRange(value)}
                 dateRange={dateRange}
                 onSubmit={onCreateReservation}
                 disabled={isLoading}
   disabledDates={disabledDates}
-                /> */}
+                />
               
             </div>
           </div>

@@ -9,7 +9,7 @@ import {
 import Avatar from "./ui/avatar";;
 import { signOut } from "next-auth/react";
 import { useCallback, useState } from "react";
-
+import { useRouter } from "next/navigation";
 import useRegisterModal from "@/app/hooks/useRegisterModal";
 import useLoginModal from "@/app/hooks/useLoginModal";
 import { SafeUser } from "@/app/types";
@@ -22,6 +22,7 @@ interface UserButtonProps {
 const UserButton: React.FC<UserButtonProps> = ({
   currentUser
 }) => {
+  const router = useRouter();
 
   const loginModal = useLoginModal();
   const registerModal = useRegisterModal();
@@ -42,7 +43,7 @@ const UserButton: React.FC<UserButtonProps> = ({
     
     return (  
       <div 
-      onClick={onRent}
+      
       className="inline-flex items-center border-[#ffffff] border justify-center whitespace-nowrap rounded-full text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 shadow-md bg-[#ffffff] bg-opacity-75 hover:bg-accent hover:text-accent-foreground">
         
     <DropdownMenu>   
@@ -56,9 +57,10 @@ const UserButton: React.FC<UserButtonProps> = ({
     <>
     
     <DropdownMenuItem>Profile</DropdownMenuItem>
+    <DropdownMenuItem>Manage Listings</DropdownMenuItem>
     <DropdownMenuItem
-    onClick={rentModal.onOpen}>Add Service</DropdownMenuItem>
-    <DropdownMenuItem>Manage Services</DropdownMenuItem>
+    onClick={() => router.push('/trips')}
+    >My Appointments</DropdownMenuItem>
     <DropdownMenuItem>Subscription</DropdownMenuItem>
     <DropdownMenuItem onClick={() => signOut()}>Sign Out</DropdownMenuItem>
     </>

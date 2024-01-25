@@ -6,9 +6,9 @@ import ModalButton from "../modals/ModalButton";
 import Calendar from "../inputs/Calender";
 
 interface ListingReservationProps {
-
+  price: number;
   dateRange: Range,
-
+  totalPrice: number;
   onChangeDate: (value: Range) => void;
   onSubmit: () => void;
   disabled?: boolean;
@@ -18,8 +18,9 @@ interface ListingReservationProps {
 const ListingReservation: React.FC<
   ListingReservationProps
 > = ({
+  price,
   dateRange,
- 
+  totalPrice,
   onChangeDate,
   onSubmit,
   disabled,
@@ -37,7 +38,9 @@ const ListingReservation: React.FC<
     >
       <div className="
       flex flex-row items-center gap-1 p-4">
- 
+        <div className="text-2xl font-semibold">
+          $ {price}
+        </div>
         <div className="font-light text-neutral-600">
           night
         </div>
@@ -51,7 +54,7 @@ const ListingReservation: React.FC<
       />
       <hr />
       <div className="p-4">
-        <ModalButton 
+        <ModalButton
           disabled={disabled} 
           label="Reserve" 
           onClick={onSubmit}
@@ -72,7 +75,9 @@ const ListingReservation: React.FC<
         <div>
           Total
         </div>
-      
+        <div>
+          $ {totalPrice}
+        </div>
       </div>
     </div>
    );

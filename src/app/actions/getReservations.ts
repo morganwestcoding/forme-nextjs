@@ -6,9 +6,7 @@ interface IParams {
   authorId?: string;
 }
 
-export default async function getReservations(
-  params: IParams
-) {
+export default async function getReservations(params: IParams) {
   try {
     const { listingId, userId, authorId } = params;
 
@@ -16,7 +14,7 @@ export default async function getReservations(
         
     if (listingId) {
       query.listingId = listingId;
-    };
+    }
 
     if (userId) {
       query.userId = userId;
@@ -29,15 +27,18 @@ export default async function getReservations(
     const reservations = await prisma.reservation.findMany({
       where: query,
       include: {
-        listing: true
+        listing: {
+          include: {
+            services: true, // Include services here
+          },
+        },
       },
       orderBy: {
-        createdAt: 'desc'
-      }
+        createdAt: 'desc',
+      },
     });
 
-    const safeReservations = reservations.map(
-      (reservation) => ({
+    const safeReservations = reservations.map(reservation => ({
       ...reservation,
       createdAt: reservation.createdAt.toISOString(),
       startDate: reservation.startDate.toISOString(),
@@ -45,6 +46,13 @@ export default async function getReservations(
       listing: {
         ...reservation.listing,
         createdAt: reservation.listing.createdAt.toISOString(),
+        services: reservation.listing.services.map(service => ({
+          id: service.id,
+          serviceName: service.serviceName,
+          price: service.price,
+          category: service.category,
+          // Include other fields as needed
+        })),
       },
     }));
 
@@ -53,3 +61,7 @@ export default async function getReservations(
     throw new Error(error);
   }
 }
+
+
+
+
