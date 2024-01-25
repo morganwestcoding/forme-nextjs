@@ -5,7 +5,7 @@ import ClientProviders from "@/components/ClientProviders";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import getReservations from "@/app/actions/getReservations";
 
-import TripsClient from "./ReservationsClient";
+import ReservationsClient from "./ReservationsClient";
 
 const ReservationsPage = async () => {
   const currentUser = await getCurrentUser();
@@ -36,7 +36,7 @@ const ReservationsPage = async () => {
 
   return (
     <ClientProviders>
-      <TripsClient
+      <ReservationsClient
         reservations={reservations}
         currentUser={currentUser}
       />

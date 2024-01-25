@@ -79,7 +79,7 @@ export default function Sidebar() {
             <li className="flex items-center mb-5">
              <Tooltip >
                 <TooltipTrigger>
-          <Image src="/icons/save-2.svg" alt="Home" width={24} height={24} className=" text-[#7d8085] opacity-75" />
+          <Image src="/icons/save-2.svg" alt="Home" width={24} height={24} className=" text-[#7d8085] opacity-75" onClick={() => router.push('/favorites')}/>
                 </TooltipTrigger>
                 <TooltipContent side="right" >
                   <p>Favorites</p>
@@ -106,7 +106,7 @@ export default function Sidebar() {
           <li className="flex items-center mb-5">
           <Tooltip >
                 <TooltipTrigger>
-          <Image src="/icons/calendar-2.svg" alt="Home" width={24} height={24} className=" text-[#7d8085] opacity-75" />
+          <Image src="/icons/calendar-2.svg" alt="Home" width={24} height={24} className=" text-[#7d8085] opacity-75" onClick={() => router.push('/reservations')}/>
                 </TooltipTrigger>
                 <TooltipContent side="right" >
                 <p>Bookings</p>
