@@ -57,7 +57,8 @@ const UserButton: React.FC<UserButtonProps> = ({
     <>
     
     <DropdownMenuItem>Profile</DropdownMenuItem>
-    <DropdownMenuItem>Manage Listings</DropdownMenuItem>
+    <DropdownMenuItem
+    onClick={() => router.push('/properties')}>Manage Listings</DropdownMenuItem>
     <DropdownMenuItem
     onClick={() => router.push('/trips')}
     >My Appointments</DropdownMenuItem>
