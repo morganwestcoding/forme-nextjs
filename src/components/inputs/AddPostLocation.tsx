@@ -21,11 +21,11 @@ const AddPostLocation: React.FC<AddPostLocationProps> = ({ currentUser, onLocati
     return (
         <>
             <button onClick={() => setShowInput(true)}>
-            <Image src="/icons/location-add.svg" alt="location" width={24} height={24} className='cursor-pointer drop-shadow'/>
+            <Image src="/icons/location-add.svg" alt="location" width={24} height={24} className='cursor-pointer drop-shadow-sm'/>
             </button>
 
             {showInput && (
-                <div className="absolute z-10 mt-28 bg-white bg-opacity-85 rounded-lg shadow-lg">
+                <div className="absolute -mt-2 left-full top-0 ml-2 bg-white bg-opacity-85 rounded-lg shadow-lg z-[1000]"> {/* Adjusted for right side */}
                     <div className="flex items-center p-2">
                     <input
                         type="text"

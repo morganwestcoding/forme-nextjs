@@ -24,10 +24,15 @@ const ContentInput: React.FC<ContentInputProps> = ({ currentUser, imageSrc, cont
             onChange={handleInputChange}
         />
         {imageSrc && (
-            <div style={{ paddingTop: '5px' }}>
-                <Image src={imageSrc} alt="Uploaded" style={{ width: '50px', height: '50px', borderRadius: '0.25rem' }} />
-            </div>
-        )}
+    <div style={{ paddingTop: '5px' }}>
+        <Image 
+            src={imageSrc} 
+            alt="Uploaded" 
+            width={50} 
+            height={50} 
+        />
+    </div>
+)}
         </>
     );
 };

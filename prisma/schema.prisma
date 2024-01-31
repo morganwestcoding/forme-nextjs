@@ -20,6 +20,8 @@ model User {
   accounts     Account[]
   listings     Listing[]
   reservations Reservation[]
+  posts          Post[]         // This line represents the relation to the Post model
+
 
 }
 
@@ -81,17 +83,21 @@ model Service {
 }
 
 model Post {
-  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
   content    String
   imageSrc   String?
   location   String?
   tag        String?
   photo      String?
   category   String
-  userId     String    @db.ObjectId
-  
-  createdAt  DateTime  @default(now())
+  userId     String   @db.ObjectId
+  createdAt  DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id])
+
+  // Include other fields and relations, but ensure 'userId' is not duplicated
 }
+
 
 model Category {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId

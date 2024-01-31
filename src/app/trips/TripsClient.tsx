@@ -42,9 +42,10 @@ const TripsClient: React.FC<TripsClientProps> = ({
   return (
     <>
       <Heading
-        title="Trips"
-        subtitle="Where you've been and where you're going"
+        title="Appointments"
+        subtitle="Upcoming appointments to go to!"
       />
+      <div className="pt-4 pl-16 mr-20 flex-1">
       <div 
         className="
           mt-10
@@ -71,6 +72,7 @@ const TripsClient: React.FC<TripsClientProps> = ({
             currentUser={currentUser}
           />
         ))}
+      </div>
       </div>
     </>
    );

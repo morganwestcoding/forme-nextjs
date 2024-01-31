@@ -121,7 +121,7 @@ const categoryColors = getColorByCategory(data.category);
       
       className="col-span-1 "
     >
-      <div className="bg-[#ffffff] bg-opacity-90 rounded-xl flex flex-col gap-2 w-52 shadow-md">
+      <div className="bg-[#ffffff] bg-opacity-80 rounded-xl flex flex-col gap-2 w-52 shadow-md">
         <div 
           className="
             w-full
@@ -157,7 +157,7 @@ const categoryColors = getColorByCategory(data.category);
             />
           </div>
         </div>
-        <div className={`inline-block ${categoryColors.borderColorClass} ${categoryColors.bgColorClass} bg-transparent border rounded-lg px-2 py-0.5 mx-auto my-1 ml-3 text-xs font-light shadow-sm`}>
+        <div className={`inline-block ${categoryColors.borderColorClass} ${categoryColors.bgColorClass} bg-white drop-shadow border rounded-lg px-2 py-0.5 mx-auto my-1 ml-3 text-xs font-light shadow-sm`}>
             <div className={categoryColors.textColorClass}>
         {data.category}
         

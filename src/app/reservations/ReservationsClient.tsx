@@ -45,6 +45,7 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
         title="Reservations"
         subtitle="Bookings on your properties"
       />
+      <div className="pt-4 pl-16 mr-20 flex-1">
       <div 
         className="
           mt-10
@@ -71,6 +72,7 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
             currentUser={currentUser}
           />
         ))}
+      </div>
       </div>
     </>
    );

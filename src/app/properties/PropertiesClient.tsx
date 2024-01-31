@@ -45,6 +45,7 @@ const PropertiesClient: React.FC<PropertiesClientProps> = ({
         title="Properties"
         subtitle="List of your properties"
       />
+      <div className="pt-4 pl-16 mr-20 flex-1">
       <div 
         className="
           mt-10
@@ -55,7 +56,7 @@ const PropertiesClient: React.FC<PropertiesClientProps> = ({
           lg:grid-cols-4
           xl:grid-cols-5
           2xl:grid-cols-6
-          gap-8
+          gap-6
         "
       >
         {listings.map((listing: any) => (
@@ -70,6 +71,7 @@ const PropertiesClient: React.FC<PropertiesClientProps> = ({
             currentUser={currentUser}
           />
         ))}
+      </div>
       </div>
     </>
    );

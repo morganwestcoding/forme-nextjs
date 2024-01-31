@@ -41,9 +41,7 @@ const ListingReservation: React.FC<
         <div className="text-2xl font-semibold">
           $ {price}
         </div>
-        <div className="font-light text-neutral-600">
-          night
-        </div>
+        
       </div>
       <hr />
       <Calendar
