@@ -69,9 +69,9 @@ const Share: React.FC<ShareProps> = ({ currentUser }) => {
   };
 
   return (
-    <div className='w-full h-auto rounded-lg shadow-md bg-[#ffffff] bg-opacity-70 p-6'>
+    <div className='w-full h-auto rounded-lg shadow bg-[#ffffff] bg-opacity-70 p-6'>
       <div className="flex items-center">
-      <Button variant="outline" size="icon" className='bg-white drop-shadow bg-opacity-100'>
+      <Button variant="outline" size="icon" className='bg-white drop-shadow-sm bg-opacity-100'>
         <Avatar src={currentUser?.image} />
       </Button>
         <ContentInput
@@ -82,7 +82,7 @@ const Share: React.FC<ShareProps> = ({ currentUser }) => {
         />
       </div>
       <div className="mt-4 flex items-center justify-between -mb-1">
-        <div className="flex items-center bg-white p-2 rounded-lg drop-shadow -mb-1">
+        <div className="flex items-center bg-white p-2 rounded-lg drop-shadow-sm -mb-1">
           <AddPostImage
             currentUser={currentUser} 
             onImageUpload={setImageSrc} 

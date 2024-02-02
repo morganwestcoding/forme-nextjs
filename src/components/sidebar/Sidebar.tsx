@@ -36,7 +36,7 @@ export default function Sidebar() {
   return (
     
     <div className="fixed top-0 flex h-screen z-50">
-      <div className="flex flex-col items-center w-48 h-full  bg-[#ffffff] bg-opacity-80 drop-shadow dark:shadow-lg dark:border dark:border-gray-600 p-10" >
+      <div className="flex flex-col items-center w-48 h-full rounded-r-md  bg-[#ffffff] bg-opacity-80 drop-shadow dark:shadow-lg dark:border dark:border-gray-600 p-10" >
         <Logo/>
         <div className="flex flex-col item-center pt-9 text-xs font-bold text-[#4d4d4d] opacity-75">
           MENU
@@ -125,8 +125,7 @@ export default function Sidebar() {
       
        
         {/* Arrow button when expanded */}
-        <button onClick={toggleCollapse} className="fixed top-1/2 left-40 transform -translate-y-1/2 translate-x-4 rounded-full p-2 bg-white border shadow z-50">
-          <span className="text-xl">{isCollapsed ? '<' : '>'}</span>
+        <button onClick={toggleCollapse} className="fixed top-1/2 left-40 transform -translate-y-1/2 translate-x-4 rounded-r-full h-32 ml-4 p-3 bg-white drop-shadow-sm z-50">
         </button>
         
          {/* Category Bar */}

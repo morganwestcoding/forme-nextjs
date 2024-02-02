@@ -20,7 +20,7 @@ const PostCategorySelect: React.FC<PostCategorySelectProps> = ({
 
   return (
     <div className="relative inline-block">
-      <Button className='rounded-xl bg-[#ffffff] drop-shadow p-5 py-2 -mb-2 text-black' onClick={() => setShowDropdown(!showDropdown)}>
+      <Button className='rounded-xl bg-[#ffffff] drop-shadow hover:bg-slate-100 p-5 py-2 -mb-2 text-black' onClick={() => setShowDropdown(!showDropdown)}>
         Submit
       </Button>
       {showDropdown && (
