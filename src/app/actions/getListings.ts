@@ -1,7 +1,7 @@
 import prisma from "@/app/libs/prismadb";
 import { SafeService, SafeListing } from "@/app/types";
 
-interface PrismaListing {
+interface Listing {
   id: string;
   title: string;
   description: string;
@@ -66,7 +66,7 @@ export default async function getListings(params: IListingsParams): Promise<Safe
     });
 
     // Transform listings to SafeListing[] including all necessary properties
-    const safeListings: SafeListing[] = listings.map((listing: PrismaListing): SafeListing => ({
+    const safeListings: SafeListing[] = listings.map((listing: Listing): SafeListing => ({
       id: listing.id,
       title: listing.title,
       description: listing.description,

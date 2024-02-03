@@ -1,4 +1,5 @@
-import { Listing, Reservation, User, Service, Post } from "@prisma/client";
+import type { Listing, Reservation, User, Post } from "@prisma/client";
+
 
 export type SafeService = {
   id: string;
