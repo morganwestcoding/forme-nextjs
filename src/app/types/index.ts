@@ -25,7 +25,7 @@ export type SafeReservation = Omit<
 
 export type SafeUser = Omit<
   User,
-  "createdAt" | "updatedAt" | "emailVerified"
+  'hashedPassword'|"createdAt" | "updatedAt" | "emailVerified"
 > & {
   createdAt: string;
   updatedAt: string;
@@ -37,9 +37,7 @@ export type SafePost = Omit<
   "createdAt" | "updatedAt" | "userId" | "categoryId"
 > & {
   createdAt: string;
-  updatedAt: string;
   userId: string; 
-  user?: SafeUser;// Assuming relation with User model
   category?: string; // Assuming the category is a string or adjust according to your model
   // Include any other relations or transformations here
 };

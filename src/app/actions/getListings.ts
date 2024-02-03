@@ -84,6 +84,8 @@ export default async function getListings(params: IListingsParams): Promise<Safe
       })),
     }));
 
+    
+
     return safeListings;
   } catch (error: any) {
     console.error("Error in getListings:", error.message);
