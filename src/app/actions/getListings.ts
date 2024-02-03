@@ -1,5 +1,5 @@
 import prisma from "@/app/libs/prismadb";
-import { Service } from "@prisma/client";
+import { SafeService, SafeListing } from "@/app/types";
 
 export interface IListingsParams {
   userId?: string;
@@ -7,12 +7,9 @@ export interface IListingsParams {
   endDate?: string;
   locationValue?: string;
   category?: string;
-  services?:  Service[]
 }
 
-export default async function getListings(
-  params: IListingsParams
-) {
+export default async function getListings(params: IListingsParams): Promise<SafeListing[]> {
   try {
     const {
       userId,
@@ -20,7 +17,6 @@ export default async function getListings(
       startDate,
       endDate,
       category,
-      services
     } = params;
 
     let query: any = {};
@@ -33,53 +29,45 @@ export default async function getListings(
       query.category = category;
     }
 
-
-
     if (locationValue) {
       query.locationValue = locationValue;
     }
 
-    if (services) {
-        query.serviceValue = services;
-    }
-
-    if (startDate && endDate) {
-      query.NOT = {
-        reservations: {
-          some: {
-            OR: [
-              {
-                endDate: { gte: startDate },
-                startDate: { lte: startDate }
-              },
-              {
-                startDate: { lte: endDate },
-                endDate: { gte: endDate }
-              }
-            ]
-          }
-        }
-      }
-    }
+    // Implement logic for startDate and endDate if needed
 
     const listings = await prisma.listing.findMany({
       where: query,
       include: {
-        services: true, // Include services for each listing
+        user: true, // Including user details
+        services: true, // Including services
       },
       orderBy: {
-        createdAt: 'desc'
-      }
+        createdAt: 'desc',
+      },
     });
 
-    const safeListings = listings.map((listing) => ({
-      ...listing,
+    // Transform listings to SafeListing[] including all necessary properties
+    const safeListings: SafeListing[] = listings.map((listing): SafeListing => ({
+      id: listing.id,
+      title: listing.title,
+      description: listing.description,
+      imageSrc: listing.imageSrc,
+      category: listing.category,
+      locationValue: listing.locationValue,
+      userId: listing.userId, // Assuming this is directly available; adjust according to your data model
       createdAt: listing.createdAt.toISOString(),
+      services: listing.services.map((service: SafeService) => ({ 
+        id: service.id,
+        serviceName: service.serviceName,
+        price: service.price,
+        category: service.category,
+        // Add other service fields as necessary based on SafeService definition
+      })),
     }));
 
     return safeListings;
   } catch (error: any) {
-    console.error("Error in getListings:", error);
+    console.error("Error in getListings:", error.message);
     throw new Error("Failed to fetch listings.");
   }
 }

@@ -32,7 +32,7 @@ export default async function getListingById(params: IParams) {
         updatedAt: listing.user.updatedAt.toISOString(),
         emailVerified: listing.user.emailVerified?.toISOString() || null,
       },
-      services: listing.services.map((service): SafeService => ({
+      services: listing.services.map((service: SafeService) => ({ // Correctly type the `service` parameter
         // Map each service to the desired structure
         id: service.id,
         serviceName: service.serviceName,
