@@ -1,6 +1,6 @@
 // src/app/actions/getPosts.ts
 import prisma from "@/app/libs/prismadb";
-import { Service } from "@prisma/client";
+
 
 interface QueryParams {
   userId?: string;
@@ -16,19 +16,17 @@ export interface IPostsParams {
   endDate?: string;
   locationValue?: string;
   category?: string;
-  services?: Service[];
+  
 }
 
 export default async function getPosts(params: IPostsParams) {
   try {
-    const { userId, locationValue, startDate, endDate, category, services } = params;
+    const { userId, locationValue, startDate, endDate, category} = params;
 
     let query: QueryParams = {};
     if (category) query.category = category;
     if (locationValue) query.locationValue = locationValue;
-    if (services && services.length > 0) {
-      query.services = { some: { id: { in: services.map(service => service.id) } } };
-    }
+  
     if (startDate && endDate) {
       query.createdAt = { gte: new Date(startDate), lte: new Date(endDate) };
     }
