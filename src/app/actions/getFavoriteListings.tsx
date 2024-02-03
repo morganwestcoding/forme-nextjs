@@ -1,6 +1,25 @@
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "./getCurrentUser";
-import { SafeListing } from "@/app/types";
+import { SafeListing, SafeService } from "@/app/types";
+
+interface RawListing {
+  id: string;
+  title: string;
+  description: string;
+  imageSrc: string;
+  createdAt: Date; // Assuming `createdAt` is a Date object in Prisma model
+  category: string;
+  locationValue: string;
+  userId: string; // Assuming there's a direct relation to a User model
+  services: Array<{
+    id: string;
+    serviceName: string;
+    price: number;
+    category: string;
+    // Include other fields from your Service model as necessary
+  }>;
+}
+
 
 export default async function getFavoriteListings(): Promise<SafeListing[]> {
   try {
@@ -13,32 +32,30 @@ export default async function getFavoriteListings(): Promise<SafeListing[]> {
     const favorites = await prisma.listing.findMany({
       where: {
         id: {
-          in: [...(currentUser.favoriteIds || [])]
-        }
+          in: currentUser.favoriteIds || [],
+        },
       },
       include: {
-        services: true, // Include services here
-      }
+        services: true, // Ensure services are included
+      },
     });
 
-    const safeFavorites: SafeListing[] = favorites.map(favorite => ({
+    // Transform the fetched favorites into SafeListing[]
+    const safeFavorites: SafeListing[] = favorites.map((favorite: RawListing) => ({
       ...favorite,
-      createdAt: favorite.createdAt.toISOString(), // Convert createdAt to string
-      services: favorite.services.map(service => ({
+      createdAt: favorite.createdAt.toISOString(), // Transform createdAt into a string
+      services: favorite.services.map((service): SafeService => ({
         id: service.id,
         serviceName: service.serviceName,
         price: service.price,
         category: service.category,
-        // Note: If there are additional fields in Service you need to transform or include, do so here
+        // Map other necessary fields for SafeService
       })),
     }));
 
     return safeFavorites;
-} catch (error: any) {
-    throw new Error(error);
+  } catch (error: any) {
+    console.error("Error fetching favorite listings:", error.message);
+    throw new Error("Failed to fetch favorite listings");
   }
 }
-
-
-
-
