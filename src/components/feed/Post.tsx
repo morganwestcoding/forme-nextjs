@@ -1,18 +1,19 @@
 'use client'
 import React from 'react';
 import Avatar from '../ui/avatar'; // Adjust the import based on your project structure
-import { SafeUser } from '@/app/types';
+import { SafeUser, SafeUserImage } from '@/app/types';
 import { Button } from '../ui/button';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
 interface PostData {
-  user: SafeUser; // Assuming SafeUser has a name or username field
-  createdAt: string; // Date string
+  
+  user: SafeUserImage; // Use SafeUserImage here
+  createdAt: string;
   content: string;
-  imageSrc: string | undefined;// Optional image source
-  category: string; // Category name
-  location?:string
+  imageSrc: string
+  category: string;
+  location?: string;
 }
 
 interface PostProps {

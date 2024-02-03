@@ -1,5 +1,22 @@
 import prisma from "@/app/libs/prismadb";
 
+interface PrismaReservation {
+  id: string;
+  createdAt: Date;
+  startDate: Date;
+  endDate: Date;
+  listing: {
+    id: string;
+    createdAt: Date;
+    services: Array<{
+      id: string;
+      serviceName: string;
+      price: number;
+      category: string;
+    }>;
+  };
+}
+
 interface IParams {
   listingId?: string;
   userId?: string;
@@ -38,7 +55,8 @@ export default async function getReservations(params: IParams) {
       },
     });
 
-    const safeReservations = reservations.map(reservation => ({
+    const safeReservations = reservations.map((reservation: PrismaReservation) => {
+      return {
       ...reservation,
       createdAt: reservation.createdAt.toISOString(),
       startDate: reservation.startDate.toISOString(),
@@ -54,7 +72,8 @@ export default async function getReservations(params: IParams) {
           // Include other fields as needed
         })),
       },
-    }));
+    };
+  });
 
     return safeReservations;
   } catch (error: any) {

@@ -14,6 +14,7 @@ interface PrismaPost {
   user?: {
     id: string;
     image?: string;
+    name: string;
     // Add other user fields you might need, focusing on safe items
   };
 }
@@ -56,7 +57,15 @@ export default async function getPosts(params: IPostsParams): Promise<SafePost[]
       userId: post.userId,
       createdAt: post.createdAt.toISOString(),
       // Assuming your SafePost type correctly handles the user structure
-      user: post.user ? { id: post.user.id, image: post.user.image } : undefined,
+      user: post.user ? {
+        id: post.user.id,
+        image: post.user.image || '/people/headshot-5.jpg', // Provide a default image if none exists
+        name: post.user.name
+      } : {
+        id: 'default-id',
+        image: '/people/headshot-5.jpg',
+        name: 'Anonymous'
+      }, 
     }));
 
     return safePosts;
