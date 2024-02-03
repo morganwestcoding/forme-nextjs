@@ -1,26 +1,29 @@
 import prisma from "@/app/libs/prismadb";
-import { SafePost, SafeUser } from "@/app/types";
+import { SafePost } from "@/app/types"; // Ensure this is updated according to your latest type definitions
 
-interface IPostsParams {
+interface PrismaPost {
+  id: string;
+  content: string;
+  imageSrc?: string | null;
+  location?: string | null;
+  tag?: string | null;
+  photo?: string | null;
+  category: string;
+  userId: string;
+  createdAt: Date;
+  user?: {
+    id: string;
+    image?: string;
+    // Add other user fields you might need, focusing on safe items
+  };
+}
+
+export interface IPostsParams {
   userId?: string;
   startDate?: string;
   endDate?: string;
   locationValue?: string;
   category?: string;
-}
-
-// Function to transform user data into SafeUser
-function transformUser(user: any): SafeUser {
-  return {
-    id: user.id,
-    createdAt: user.createdAt.toISOString(),
-    updatedAt: user.updatedAt.toISOString(),
-    emailVerified: user.emailVerified ? user.emailVerified.toISOString() : null,
-    name: user.name,
-    email: user.email,
-    image: user.image, // Ensure the image is included
-    favoriteIds: user.favoriteIds, // Include favoriteIds if necessary
-  };
 }
 
 export default async function getPosts(params: IPostsParams): Promise<SafePost[]> {
@@ -39,10 +42,10 @@ export default async function getPosts(params: IPostsParams): Promise<SafePost[]
       where: query,
       include: { user: true },
       orderBy: { createdAt: 'desc' },
-    });
+    }) as PrismaPost[]; // Cast the result to PrismaPost[] to help TypeScript understand the structure
 
-    // Transform each post to the SafePost structure
-    const safePosts: SafePost[] = posts.map(post => ({
+    // Now, TypeScript knows the structure of each post, thanks to PrismaPost type
+      const safePosts: SafePost[] = posts.map((post: PrismaPost): SafePost => ({
       id: post.id,
       content: post.content,
       imageSrc: post.imageSrc ?? null,
@@ -52,7 +55,8 @@ export default async function getPosts(params: IPostsParams): Promise<SafePost[]
       category: post.category,
       userId: post.userId,
       createdAt: post.createdAt.toISOString(),
-      user: post.user ? transformUser(post.user) : undefined, // Transform user data into SafeUser
+      // Assuming your SafePost type correctly handles the user structure
+      user: post.user ? { id: post.user.id, image: post.user.image } : undefined,
     }));
 
     return safePosts;
@@ -61,4 +65,3 @@ export default async function getPosts(params: IPostsParams): Promise<SafePost[]
     throw new Error("Failed to fetch posts.");
   }
 }
-

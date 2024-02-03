@@ -25,12 +25,17 @@ export type SafeReservation = Omit<
 
 export type SafeUser = Omit<
   User,
-  'hashedPassword'|"createdAt" | "updatedAt" | "emailVerified"
+  'favoriteIds'|'hashedPassword'|"createdAt" | "updatedAt" | "emailVerified"
 > & {
   createdAt: string;
   updatedAt: string;
   emailVerified: string | null;
 };
+
+export interface SafeUserImage {
+  id: string;
+  image?: string;
+}
 
 export type SafePost = Omit<
   Post,
@@ -38,6 +43,7 @@ export type SafePost = Omit<
 > & {
   createdAt: string;
   userId: string; 
-  category?: string; // Assuming the category is a string or adjust according to your model
+  category?: string;
+  user?: SafeUserImage; // Assuming the category is a string or adjust according to your model
   // Include any other relations or transformations here
 };
