@@ -17,9 +17,13 @@ export type SafeReservation = Omit<
   Reservation, 
   "createdAt" | "startDate" | "endDate" | "listing"
 > & {
+  id: string;
   createdAt: string;
   startDate: string;
   endDate: string;
+  userId: string;
+  totalPrice: number;
+  listingId: string;
   listing: SafeListing;
 };
 
@@ -30,6 +34,7 @@ export type SafeUser = Omit<
   createdAt: string;
   updatedAt: string;
   emailVerified: string | null;
+  favoriteIds?: string[]; 
 };
 
 export interface SafeUserImage {
@@ -48,3 +53,4 @@ export type SafePost = Omit<
   user: SafeUserImage; // Assuming the category is a string or adjust according to your model
   // Include any other relations or transformations here
 };
+

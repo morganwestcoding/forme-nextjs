@@ -1,20 +1,14 @@
 "use client"
 
-import { Home, Star, FileQuestion, Briefcase, Store, CalendarCheck } from "lucide-react";
-import { IoHomeOutline } from "react-icons/io5";
-import { IoStorefrontOutline } from "react-icons/io5";
-import { BsBookmarks } from "react-icons/bs";
-import { BsFillQuestionCircleFill } from "react-icons/bs";
-import { LiaSuitcaseSolid } from "react-icons/lia";
-import { HiOutlineCalendarDays } from "react-icons/hi2"
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import Link from "next/link";
+
 import CloseFriends from "./CloseFriends";
 import Logo from "../header/Logo";
 import Categories from "../Categories";

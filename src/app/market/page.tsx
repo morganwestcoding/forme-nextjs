@@ -17,6 +17,7 @@ interface MarketProps {
 const Market = async ({ searchParams }: MarketProps) => {
   const listings = await getListings(searchParams);
   const currentUser = await getCurrentUser();
+  const LoadingFallback = () => <div>Loading categories...</div>;
 
   if (listings.length === 0) {
     return (
@@ -27,6 +28,7 @@ const Market = async ({ searchParams }: MarketProps) => {
   }
 
   return (
+    
   <ClientProviders>
     <div className="pt-4 pl-16 mr-20 flex-1">
     <div 

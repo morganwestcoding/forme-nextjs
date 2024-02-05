@@ -19,6 +19,8 @@ interface PrismaPost {
   };
 }
 
+
+
 export interface IPostsParams {
   userId?: string;
   startDate?: string;
@@ -67,6 +69,8 @@ export default async function getPosts(params: IPostsParams): Promise<SafePost[]
         name: 'Anonymous'
       }, 
     }));
+
+    
 
     return safePosts;
   } catch (error) {

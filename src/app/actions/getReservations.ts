@@ -4,10 +4,19 @@ interface PrismaReservation {
   id: string;
   createdAt: Date;
   startDate: Date;
+  userId: string; // Add this line
+  totalPrice: number; // Add this line
   endDate: Date;
+  listingId: string;
   listing: {
     id: string;
     createdAt: Date;
+    category: string;
+    locationValue: string;
+    title: string, // Assuming these are available in your listing object
+    description: string,
+    imageSrc: string,
+    userId: string,
     services: Array<{
       id: string;
       serviceName: string;
@@ -55,31 +64,39 @@ export default async function getReservations(params: IParams) {
       },
     });
 
-    const safeReservations = reservations.map((reservation: PrismaReservation) => {
-      return {
-      ...reservation,
+    const safeReservations = reservations.map((reservation: PrismaReservation) => ({
+      id: reservation.id,
       createdAt: reservation.createdAt.toISOString(),
       startDate: reservation.startDate.toISOString(),
       endDate: reservation.endDate.toISOString(),
+      userId: reservation.userId, // Ensure this is passed along
+      totalPrice: reservation.totalPrice,
+      listingId: reservation.listingId, // Ensure this is passed along
       listing: {
-        ...reservation.listing,
+        id: reservation.listing.id,
         createdAt: reservation.listing.createdAt.toISOString(),
+        category: reservation.listing.category,
+        locationValue: reservation.listing.locationValue,
+        title: reservation.listing.title, // Assuming these are available in your listing object
+        description: reservation.listing.description,
+        imageSrc: reservation.listing.imageSrc,
+        userId: reservation.listing.userId,
         services: reservation.listing.services.map(service => ({
           id: service.id,
           serviceName: service.serviceName,
           price: service.price,
           category: service.category,
-          // Include other fields as needed
         })),
       },
-    };
-  });
+    }));
 
     return safeReservations;
   } catch (error: any) {
     throw new Error(error);
   }
 }
+
+
 
 
 
