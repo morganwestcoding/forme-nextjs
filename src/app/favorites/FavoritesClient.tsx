@@ -33,16 +33,13 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
           gap-8
         "
       >
-        
         {listings.map((listing: any) => (
-          
           <ListingCard
           categories={categories}
             currentUser={currentUser}
             key={listing.id}
             data={listing}
           />
-          
         ))}
       </div>
       </div>
