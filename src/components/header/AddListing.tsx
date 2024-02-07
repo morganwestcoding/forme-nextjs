@@ -31,7 +31,7 @@ const AddListing: React.FC<AddListingProps> = ({
   }, [rentModal]);
 
   return (
-    <Button className="bg-[#ffffff] text-[#FB6848] " onClick={onRent}  variant={'outline'} size="icon"><Image src="/icons/add.svg" width={22} height={22} alt="add service" className=" rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 text-[#FFFFFF]"/></Button>
+    <Button className="bg-[#ffffff] text-[#FB6848] " onClick={onRent}  variant={'outline'} size="icon"><Image src="/icons/add.svg" width={21} height={21} alt="add service" className=" rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 text-[#FFFFFF]"/></Button>
   )
 }
 

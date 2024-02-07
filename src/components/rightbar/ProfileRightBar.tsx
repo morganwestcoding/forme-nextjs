@@ -27,24 +27,48 @@ export default function ProfileRightbar() {
       <div className="flex flex-col justify-end bg-transparent  gap-6 pr-28 h-auto mt-8">
         <div className="w-full md:w-11/12 h-32 rounded-lg shadow-md bg-[#ffffff] bg-opacity-80 px-8 md:px-6 md:py-6 mx-4 md:mr-20 md:ml-12 relative">
           <div className="text-xl font-bold mb-2">User Information
-            <div className="text-sm font-normal">Subscribe to unlock new features and if eligible, receive a share of ad&apos;s revenue.</div>
-          </div>
-        </div>
-
-
-        <div className="w-full md:w-11/12 flex flex-col justify-start rounded-lg shadow-md bg-[#ffffff] bg-opacity-80 p-0 mx-0 overflow-hidden ml-12 pb-6">
-        <div className="px-6 py-6 text-xl font-bold">What&apos;s Happening</div>
-        {articles.map((article, index) => (
-          <div key={index} className="flex justify-between items-center hover:bg-[#ffffff] rounded w-full px-6 py-4">
-            <div>
-              <h3 className="text-base font-semibold">{article.title}</h3>
-              <p className="text-sm">{article.description}</p>
+            <div className="text-sm font-normal">
+              <ul>
+                <li>Location:</li>
+              </ul>
             </div>
-            <div className="w-20 h-20 bg-gray-300 rounded-md border-white border-2 drop-shadow flex-shrink-0" style={{ backgroundImage: `url(${article.imageSrc})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
           </div>
-        ))}
         </div>
+
+{/* New Section: 3x3 Grid of Placeholder Images */}
+<div className="w-full md:w-11/12 grid grid-cols-3 gap-0 mx-4 md:mr-20 md:ml-12 bg-transparent bg-opacity-80 rounded-lg shadow-md">
+  {Array.from({ length: 9 }).map((_, index) => {
+    // Determine the class for rounding specific corners based on the square's position
+    let cornerClass = "";
+    if (index === 0) cornerClass = "rounded-tl-lg"; // Top-left corner of the grid
+    if (index === 2) cornerClass = "rounded-tr-lg"; // Top-right corner of the grid
+    if (index === 6) cornerClass = "rounded-bl-lg"; // Bottom-left corner of the grid
+    if (index === 8) cornerClass = "rounded-br-lg"; // Bottom-right corner of the grid
+
+    const squareClasses = `w-full h-24 bg-white bg-opacity-80 ${cornerClass}`;
+    return (
+      <div key={index} className={squareClasses}>
+      
       </div>
+    );
+  })}
+</div>
+      
+{/* Storefront */}
+<div className="w-full md:w-11/12 flex flex-col justify-start rounded-lg shadow-md bg-[#ffffff] bg-opacity-80 p-0 mx-0 overflow-hidden ml-12 pb-6">
+  <div className="px-6 py-6 text-xl font-bold">Morgan's Storefronts</div>
+  <div className="grid grid-cols-4 gap-4 p-4">
+    {articles.slice(0, 16).map((article, index) => (
+      <div key={index} className="w-20 h-20 bg-gray-300 rounded-md border-white border-2 drop-shadow flex-shrink-0" style={{ backgroundImage: `url(${article.imageSrc})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+        {/* You can add overlays or text here if needed */}
+      </div>
+    ))}
+  </div>
+</div>
+         
+      </div>
+
+      
     );
   }
   

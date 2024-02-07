@@ -53,7 +53,7 @@ const Post: React.FC<PostProps> = ({ post, currentUser }) => {
           <Avatar src={post.user.image} />
         </Button>
         <div className="ml-2 flex flex-col">
-          <div className="ml-2 flex items-center">
+          <div className=" flex items-center">
             <div className="font-semibold pr-1 text-sm">{post.user.name}</div>
             <div className="text-sm text-gray-500">{formattedDate || 'Loading time...'}</div>
           </div>
