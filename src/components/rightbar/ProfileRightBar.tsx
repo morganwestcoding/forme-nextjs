@@ -25,11 +25,16 @@ const articles = [
 export default function ProfileRightbar() {
     return (
       <div className="flex flex-col justify-end bg-transparent  gap-6 pr-28 h-auto mt-8">
-        <div className="w-full md:w-11/12 h-32 rounded-lg shadow-md bg-[#ffffff] bg-opacity-80 px-8 md:px-6 md:py-6 mx-4 md:mr-20 md:ml-12 relative">
+         {/* Adjusted User Information Div to use Flex Grow to fill available space */}
+         <div className="flex flex-col justify-between w-full md:w-11/12 rounded-lg shadow-md bg-[#ffffff] bg-opacity-80 px-8 md:px-6 md:py-6 mx-4 md:mr-20 md:ml-12 relative min-h-[128px]">
           <div className="text-xl font-bold mb-2">User Information
-            <div className="text-sm font-normal">
+            <div className="text-sm font-normal flex-grow">
+              <p className="py-2">
+              Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries for previewing layouts and visual mockups.
+              </p>
               <ul>
-                <li>Location:</li>
+                <li className="pb-1"><b>Location:</b></li>
+                <li><b>Joined:</b></li>
               </ul>
             </div>
           </div>

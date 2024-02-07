@@ -5,7 +5,7 @@ import getPosts, { IPostsParams } from '../actions/getPost';
 import ProfileRightbar
  from '@/components/rightbar/ProfileRightBar';
  import { SafePost, SafeUserImage } from '@/app/types';
- 
+import { Button } from '@/components/ui/button';
 export default async function Page() {
   const currentUser = await getCurrentUser();
 
@@ -27,7 +27,7 @@ export default async function Page() {
         <div className="w-[0%]"></div>
 
                {/*Header Banner*/}
-        <div className="bg-white bg-opacity-70 text-white text-center h-56 py-8 w-[100%] rounded-lg flex justify-center items-center">
+        <div className="bg-red-400 text-white text-center h-56 py-8 w-[100%] rounded-lg flex justify-center items-center">
           {/* Rectangle inside the header */}
           <div className="w-5/12 h-40 bg-white bg-opacity-80 rounded-lg flex shadow-md">
             {/* Image Placeholder */}
@@ -36,9 +36,12 @@ export default async function Page() {
             </div>
 
             {/* Bio Section */}
-            <div className="w-1/2 h-full bg-white bg-opacity-90 rounded-r-lg flex flex-col justify-center items-center p-4">
+            <div className="w-1/2 h-fullrounded-r-lg flex flex-col justify-center items-center p-4">
               <span className="text-gray-800 text-lg font-semibold">Bio</span>
-              <p className="text-sm text-gray-600 mt-2">Short bio or description goes here, detailing the subject or purpose of the banner.</p>
+              <p className="text-sm text-gray-600 mt-2">Short bio or description goes here</p>
+              <Button className='rounded-xl w-36 bg-[#ffffff] drop-shadow hover:bg-slate-100 p-5 py-2 -mb-2 text-black'>
+        Submit
+      </Button>
             </div>
           </div>
         </div>
