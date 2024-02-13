@@ -178,7 +178,7 @@ const categoryColors = getColorByCategory(data.category);
           {/* Service Navigation */}
           {data.services && data.services.length > 0 && (
       <div className="flex justify-between text-xs capitalize items-center pb-3.5 pt-1 px-4 text-[#7d8085]">
-        <button onClick={handlePreviousService}><ChevronLeft size={26} strokeWidth={1.25}/></button>
+        <button onClick={handlePreviousService}><ChevronLeft size={26} strokeWidth={1.4}/></button>
         <div className="flex items-center text-[#7d8085] font-normal">
           
            <span className="ml"> {/* Margin left for spacing */}
@@ -186,7 +186,7 @@ const categoryColors = getColorByCategory(data.category);
         </span>
         </div>
         <button onClick={handleNextService}>
-            <ChevronRight size={26} strokeWidth={1.25}/></button>
+            <ChevronRight size={26} strokeWidth={1.4}/></button>
             
         
       </div>

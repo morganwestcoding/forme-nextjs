@@ -28,7 +28,7 @@ const PostCategorySelect: React.FC<PostCategorySelectProps> = ({
       {categories.map((category, index) => (
         <div 
           key={category.label} 
-          className={`flex items-center justify-center font-medium bg-opacity-95 w-20 hover:bg-gray-100 hover:text-black text-white cursor-pointer rounded-lg ${category.color} p-2`}
+          className={`flex items-center justify-center font-medium bg-opacity-95 w-20 hover:bg-gray-100 hover:text-black text-white border-0.5 border-white cursor-pointer rounded-lg ${category.color} p-2`}
           // This ensures each category is at least 150px wide
           onClick={() => handleCategorySelect(category.label)}
         >

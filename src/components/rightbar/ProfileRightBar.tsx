@@ -37,7 +37,7 @@ export default function ProfileRightbar() {
               <ul>
              {/* Adjusted list items to include flex layout for icon and text alignment */}
              <li className="flex items-center pb-1">
-                <Image src="/icons/location-tick.svg" alt='notification-bell' width={21} height={21}/>
+                <Image src="/icons/location-tick-outline.svg" alt='notification-bell' width={21} height={21}/>
                 <span className="ml-2">Your Location Here</span>
               </li>
               <li className="flex items-center">

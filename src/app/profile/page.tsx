@@ -43,7 +43,7 @@ export default async function Page() {
               {/* Overlay */}
   <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg"></div> {/* Adjust color and opacity as needed */}
           {/* Rectangle inside the header */}
-          <div className="w-2/5 h-40 bg-white bg-opacity-95 rounded-lg flex shadow-md z-50">
+          <div className="w-5/12 h-40 bg-white bg-opacity-95 rounded-lg flex shadow-md z-50">
   {/* User Profile Picture */}
   <div className="w-48 h-full flex justify-center items-center z-50 relative">
     <Image
@@ -57,23 +57,29 @@ export default async function Page() {
 
                         {/* Bio Section */}
             <div className="w-1/2 h-full rounded-r-lg flex flex-col justify-center items-center p-4 z-50">
-              <span className="text-gray-800 font-semibold justify-start">Bio</span>
+            <span className="text-gray-800 font-semibold ml-3 justify-start">{currentUser?.name || 'Username'}</span>
               {/* Friends and Followers Placeholder Container */}
-              <div className="mt-2 w-full flex justify-around items-center">
+              <div className="mt-2 w-full ml-5 flex justify-around items-center">
                 {/* Friends Placeholder */}
                 <div className="flex justify-center items-center">
-                  <span className="text-gray-700 text-sm"><b>121</b> Friends</span>
+                  <span className="text-gray-700 text-sm"><b>0</b> Following</span>
                 </div>
 
                 {/* Followers Placeholder */}
                 <div className="flex justify-center items-center">
-                  <span className="text-gray-700 text-sm"><b>125</b> Following</span>
+                  <span className="text-gray-700 text-sm"><b>0</b> Followers</span>
                 </div>
               </div>
 
-              <Button className='rounded-xl w-36 bg-[#ffffff] drop-shadow hover:bg-slate-100 p-5 py-2 mt-4 -mb-2 text-black'>
-        Add
-      </Button>
+             {/* Adjusted button order here for visual layout */}
+             <div className="flex mt-4 gap-0.25 -mb-2 ml-6">
+                <button className='rounded-l-md text-sm drop-shadow-sm bg-[#ffffff] w-28 p-2 text-black'>
+                  Follow
+                </button>
+                <button className='rounded-r-md bg-[#ffffff] drop-shadow-sm p-2 text-black'>
+                  <Image src="/icons/sms.svg" alt="Message" width={24} height={24} className='drop-shadow-sm' />
+                </button>
+              </div>
             </div>
           </div>
         </div>
