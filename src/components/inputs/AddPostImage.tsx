@@ -3,6 +3,7 @@ import { CldUploadWidget } from "next-cloudinary";
 import Image from "next/image";
 import { TbPhotoPlus } from 'react-icons/tb';
 import { SafeUser } from '@/app/types';
+import { IoImage } from "react-icons/io5";
 
 const uploadPreset = "cs0am6m7";
 
@@ -21,6 +22,7 @@ const AddPostImage: React.FC<AddPostImageProps> = ({ currentUser, onImageUpload 
     }, [onImageUpload]);
 
     return (
+        
         <CldUploadWidget 
             onUpload={handleUpload} 
             uploadPreset={uploadPreset}
@@ -29,8 +31,8 @@ const AddPostImage: React.FC<AddPostImageProps> = ({ currentUser, onImageUpload 
             }}
         >
             {({ open }) => (
-                <div onClick={() => open?.()}>
-                    <Image src="/icons/image.svg" alt="camera" width={26} height={26} className='mr-2 drop-shadow-sm'/>
+                <div className="relative inline-block" onClick={() => open?.()}>
+                    <Image src="/icons/image.svg" alt="camera" width={25} height={25} className='mr-2 drop-shadow-sm'/>
                     
                     {/*{imageSrc && (
                         <div className="absolute inset-0 w-full h-full">

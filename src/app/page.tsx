@@ -8,6 +8,7 @@ import Post from '@/components/feed/Post';
 import getPosts, { IPostsParams }  from './actions/getPost';
 import EmptyState from '@/components/EmptyState';
 import { SafePost, SafeUserImage } from '@/app/types';
+import {categories} from '@/components/Categories';
 
 export default async function Home() {
   const currentUser = await getCurrentUser();
@@ -29,7 +30,7 @@ export default async function Home() {
         <div className="flex-none w-[45%] ml-20 mt-8">
           <Share currentUser={currentUser} />
           {transformedPosts.map((post) => (
-            <Post key={post.id} post={post} currentUser={currentUser} />
+            <Post key={post.id} post={post} currentUser={currentUser} categories={categories} />
           ))}
         </div>
         <div className="flex-grow w-[45%] ml-4">

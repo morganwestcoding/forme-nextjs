@@ -28,7 +28,7 @@ export default function ProfileRightbar() {
     return (
       <div className="flex flex-col justify-end bg-transparent  gap-6 pr-28 h-auto mt-8">
          {/* Adjusted User Information Div to use Flex Grow to fill available space */}
-         <div className="flex flex-col justify-between w-full md:w-11/12 rounded-lg shadow-md bg-[#ffffff] bg-opacity-80 px-8 md:px-6 md:py-6 mx-4 md:mr-20 md:ml-12 relative min-h-[128px]">
+         <div className="flex flex-col justify-between w-full md:w-11/12 rounded-lg shadow-md bg-[#ffffff] bg-opacity-90 px-8 md:px-6 md:py-6 mx-4 md:mr-20 md:ml-12 relative min-h-[128px]">
           <div className="text-xl font-bold mb-2">About Me
             <div className="text-sm font-normal flex-grow">
               <p className="py-2">

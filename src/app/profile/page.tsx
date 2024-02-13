@@ -7,6 +7,10 @@ import ProfileRightbar
  from '@/components/rightbar/ProfileRightBar';
  import { SafePost, SafeUserImage } from '@/app/types';
 import { Button } from '@/components/ui/button';
+import { categories } from '@/components/Categories';
+import Avatar from '@/components/ui/avatar';
+
+
 export default async function Page() {
   const currentUser = await getCurrentUser();
 
@@ -39,11 +43,17 @@ export default async function Page() {
               {/* Overlay */}
   <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg"></div> {/* Adjust color and opacity as needed */}
           {/* Rectangle inside the header */}
-          <div className="w-5/12 h-40 bg-white bg-opacity-95 rounded-lg flex shadow-md z-50">
-            {/* Image Placeholder */}
-            <div className="w-1/2 h-full bg-gray-300 rounded-l-lg flex justify-center items-center z-50">
-              <span className="text-gray-700">Image Placeholder</span>
-            </div>
+          <div className="w-2/5 h-40 bg-white bg-opacity-95 rounded-lg flex shadow-md z-50">
+  {/* User Profile Picture */}
+  <div className="w-48 h-full flex justify-center items-center z-50 relative">
+    <Image
+      src={currentUser?.image || "/people/rooster.jpg"} // Use user's image or placeholder
+      alt="User Avatar"
+      layout="fill"
+      objectFit="cover"
+      className="rounded-l-lg"
+    />
+  </div>
 
                         {/* Bio Section */}
             <div className="w-1/2 h-full rounded-r-lg flex flex-col justify-center items-center p-4 z-50">
@@ -75,7 +85,7 @@ export default async function Page() {
       <div className="flex w-full">
         <div className="flex-none w-[45%] ml-20 mt-2">
         {transformedPosts.map((post) => (
-            <Post key={post.id} post={post} currentUser={currentUser} />
+            <Post key={post.id} post={post} currentUser={currentUser} categories={categories} />
           ))}
         </div>
         

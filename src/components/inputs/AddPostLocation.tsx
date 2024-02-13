@@ -19,20 +19,20 @@ const AddPostLocation: React.FC<AddPostLocationProps> = ({ currentUser, onLocati
     };
 
     return (
-        <>
+        <div className="relative inline-block">
             <button onClick={() => setShowInput(true)}>
-            <Image src="/icons/location-add.svg" alt="location" width={24} height={24} className='cursor-pointer drop-shadow-sm'/>
+            <Image src="/icons/location-tick.svg" alt="location" width={25} height={25} className='cursor-pointer drop-shadow -mb-1'/>
             </button>
 
             {showInput && (
-                <div className="absolute -mt-2 left-full top-0 ml-2 bg-white bg-opacity-85 rounded-lg shadow-lg z-[1000]"> {/* Adjusted for right side */}
+                <div className="absolute left-1/2 transform -translate-x-1/2 bg-white bg-opacity-90 rounded-lg shadow z-[100] w-60"> {/* Adjusted for direct below */}
                     <div className="flex items-center p-2">
                     <input
                         type="text"
                         value={location}
                         onChange={(e) => setLocation(e.target.value)}
-                        className="text-sm py-2 px-3 border rounded-lg flex-1"
-                        placeholder="Enter location"
+                        className="text-sm py-2 px-3 border w-32 rounded-lg flex-1"
+                        placeholder="location"
                     />
                     <MdCheckCircle
                         size={24}
@@ -42,7 +42,7 @@ const AddPostLocation: React.FC<AddPostLocationProps> = ({ currentUser, onLocati
                 </div>
             </div>
             )}
-        </>
+        </div>
     );
 };
 

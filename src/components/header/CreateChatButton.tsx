@@ -16,7 +16,7 @@ function CreateChatButton() {
 
     }
   return (
-    <Button className="bg-[#ffffff] text-[#FB6848] " onClick={createNewChat} variant={'outline'} size="icon"><Image src="/icons/notification.svg" alt='notification-bell' width={21} height={21} className=" rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 text-[#FFFFFF]"/></Button>
+    <Button className="bg-[#ffffff] text-[#FB6848] " onClick={createNewChat} variant={'outline'} size="icon"><Image src="/icons/notification.svg" alt='notification-bell' width={23} height={23} className="opacity-75 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 text-[#FFFFFF]"/></Button>
   )
 }
 

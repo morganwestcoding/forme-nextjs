@@ -19,13 +19,13 @@ const AddTagInput: React.FC<AddTagInputProps> = ({ currentUser, onTagSubmit }) =
     };
 
     return (
-        <>
+        <div className="relative inline-block ">
             <button onClick={() => setShowInput(true)} className="tag-icon-style">
-            <Image src="/icons/tag.svg" alt="tag" width={26} height={26} className='cursor-pointer drop-shadow-sm ml-2'/>
+            <Image src="/icons/tag.svg" alt="tag" width={27} height={27} className='cursor-pointer drop-shadow-sm ml-2 -mb-1'/>
             </button>
 
             {showInput && (
-                <div className="absolute -mt-2 left-full top-0 ml-2 bg-white bg-opacity-85 rounded-lg shadow-lg z-[1000]"> {/* Adjusted for right side */}
+                <div className="absolute left-1/2 transform -translate-x-1/2 bg-white bg-opacity-90 rounded-lg shadow-lg z-[100] w-60"> {/* Adjusted for direct below */}
                     <div className="flex items-center p-2">
                         <input
                             type="text"
@@ -42,7 +42,7 @@ const AddTagInput: React.FC<AddTagInputProps> = ({ currentUser, onTagSubmit }) =
                     </div>
                 </div>
             )}
-        </>
+        </div>
     );
 };
 
