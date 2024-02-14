@@ -50,7 +50,9 @@ export type SafePost = Omit<
   createdAt: string;
   userId: string; 
   category?: string;
-  user: SafeUserImage; // Assuming the category is a string or adjust according to your model
+  user: SafeUserImage;
+  imageSrc: string | null;
+   // Assuming the category is a string or adjust according to your model
   // Include any other relations or transformations here
 };
 

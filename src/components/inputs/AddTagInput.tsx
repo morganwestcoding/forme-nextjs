@@ -21,7 +21,7 @@ const AddTagInput: React.FC<AddTagInputProps> = ({ currentUser, onTagSubmit }) =
     return (
         <div className="relative inline-block ">
             <button onClick={() => setShowInput(true)} className="tag-icon-style">
-            <Image src="/icons/tag.svg" alt="tag" width={27} height={27} className='cursor-pointer drop-shadow-sm ml-2 -mb-1'/>
+            <Image src="/icons/tag.svg" alt="tag" width={27} height={27} className='cursor-pointer drop-shadow-sm ml-2 -mb-1.5'/>
             </button>
 
             {showInput && (

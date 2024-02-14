@@ -15,9 +15,9 @@ interface PostData {
   user: SafeUserImage; // Use SafeUserImage here
   createdAt: string;
   content: string;
-  imageSrc: string
+  imageSrc: string | null; 
   category: string;
-  location?: string;
+  location?: string | null;
 }
 
 interface PostProps {
@@ -119,7 +119,7 @@ const categoryColors = getColorByCategory(post.category);
         <Button variant="outline" size="icon" className='bg-white drop-shadow bg-opacity-100'>
           <Avatar src={post.user.image} />
         </Button>
-        <div className="ml-2 flex flex-col">
+        <div className="ml-3 flex flex-col">
           <div className="flex items-center">
             <div className="font-semibold pr-1 text-sm">{post.user.name}</div>
             <div className="text-sm text-gray-500">{formattedDate || 'Loading time...'}</div>
@@ -133,7 +133,7 @@ const categoryColors = getColorByCategory(post.category);
       <div className=" pl-1 mt-3">
         <p className='text-sm'>{post.content}</p>
         {post.imageSrc && (
-          <div className="mt-3 mb-4 rounded-md drop-shadow-sm " style={{ maxWidth: '100%', overflow: 'hidden', position: 'relative' }}>
+          <div className="mt-3 mb-4 rounded-md drop-shadow " style={{ maxWidth: '100%', overflow: 'hidden', position: 'relative' }}>
           <Image src={post.imageSrc} alt="Post Image" layout='responsive' objectFit="contain" width={500} height={300} />
         </div>
         )}

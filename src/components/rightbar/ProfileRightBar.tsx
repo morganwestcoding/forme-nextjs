@@ -73,7 +73,7 @@ export default function ProfileRightbar() {
   <div className="px-6 py-6 text-xl font-bold">Morgan's Storefronts</div>
   <div className="grid grid-cols-4 gap-4 p-4">
     {articles.slice(0, 16).map((article, index) => (
-      <div key={index} className="w-20 h-20 bg-gray-300 rounded-md border-white border-2 drop-shadow flex-shrink-0" style={{ backgroundImage: `url(${article.imageSrc})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+      <div key={index} className="w-20 h-20 bg-gray-300 rounded-md drop-shadow flex-shrink-0" style={{ backgroundImage: `url(${article.imageSrc})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
         {/* You can add overlays or text here if needed */}
       </div>
     ))}

@@ -21,7 +21,7 @@ const AddPostLocation: React.FC<AddPostLocationProps> = ({ currentUser, onLocati
     return (
         <div className="relative inline-block">
             <button onClick={() => setShowInput(true)}>
-            <Image src="/icons/location-tick.svg" alt="location" width={25} height={25} className='cursor-pointer drop-shadow -mb-1'/>
+            <Image src="/icons/location-tick.svg" alt="location" width={25} height={25} className='cursor-pointer drop-shadow -mb-1.5'/>
             </button>
 
             {showInput && (

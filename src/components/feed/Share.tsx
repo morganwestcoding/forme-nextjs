@@ -82,7 +82,7 @@ const Share: React.FC<ShareProps> = ({ currentUser }) => {
         />
       </div>
       <div className="mt-4 flex items-center justify-between -mb-1">
-        <div className="flex items-center p-2 bg-white rounded-lg -mb-1">
+        <div className="flex items-center p-2 bg-white rounded-lg">
           <AddPostImage
             currentUser={currentUser} 
             onImageUpload={setImageSrc} 

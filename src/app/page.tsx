@@ -15,21 +15,12 @@ export default async function Home() {
   const searchParams: IPostsParams = {};
   const posts = await getPosts(searchParams);
 
-  const transformedPosts = posts.map((post): any => {
-    return {
-      ...post,
-      imageSrc: post.imageSrc || undefined, // Convert null to undefined
-      // Assuming post.user is always present. If it's optional, handle accordingly
-      user: post.user as SafeUserImage,
-    };
-  });
-
   return (
     <ClientProviders>
       <div className="flex w-full">
         <div className="flex-none w-[45%] ml-20 mt-8">
           <Share currentUser={currentUser} />
-          {transformedPosts.map((post) => (
+          {posts.map((post) => (
             <Post key={post.id} post={post} currentUser={currentUser} categories={categories} />
           ))}
         </div>
