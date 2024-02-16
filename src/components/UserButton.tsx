@@ -12,15 +12,17 @@ import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import useRegisterModal from "@/app/hooks/useRegisterModal";
 import useLoginModal from "@/app/hooks/useLoginModal";
-import { SafeUser } from "@/app/types";
+import { SafePost, SafeUser } from "@/app/types";
 import useRentModal from "@/app/hooks/useRentModal";
 
 interface UserButtonProps {
-  currentUser?: SafeUser | null 
+currentUser?: SafeUser | null 
+data: SafePost;
 }
 
 const UserButton: React.FC<UserButtonProps> = ({
-  currentUser
+  currentUser,
+  data,
 }) => {
   const router = useRouter();
 
@@ -57,7 +59,7 @@ const UserButton: React.FC<UserButtonProps> = ({
     <>
     
     <DropdownMenuItem
-    onClick={() => router.push('/profile')}>Profile</DropdownMenuItem>
+    onClick={() => router.push(`/profile`)}>Profile</DropdownMenuItem>
     <DropdownMenuItem
     onClick={() => router.push('/properties')}>Manage Listings</DropdownMenuItem>
     <DropdownMenuItem

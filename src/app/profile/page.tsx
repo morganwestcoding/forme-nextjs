@@ -1,35 +1,39 @@
+// File: src/app/profile/page.tsx
 
-import getCurrentUser from "@/app/actions/getCurrentUser";
+import React from 'react';
+import { useRouter } from 'next/router';
+import ClientProviders from '@/components/ClientProviders';
+import EmptyState from '@/components/EmptyState';
+import ProfileClient from './ProfileClient';
+import getCurrentUser from '@/app/actions/getCurrentUser';
+import { getProfileId } from '../actions/getProfileId'; // Adjust the import path as necessary
+import getListings from '@/app/actions/getListings';
 
-import ClientProviders from "@/components/ClientProviders";
-import EmptyState from "@/components/EmptyState";
-import getPosts, { IPostsParams } from "../actions/getPost";
-import ProfileClient from "./ProfileClient";
-import Post from "@/components/feed/Post";
-import ProfileRightbar from "@/components/rightbar/ProfileRightBar";
-import { categories } from "@/components/Categories";
-
-
-interface IParams {
-  listingId?: string;
-}
-
-const ProfilePage = async ({ params }: { params: IParams }) => {
+const ProfilePage = async () => {
+  const router = useRouter();
+  const { userId } = router.query; // Adjust according to your routing and fetching logic
 
   const currentUser = await getCurrentUser();
-  const searchParams: IPostsParams = {};
-  const posts = await getPosts(searchParams);
+  const user = userId ? await getProfileId(userId as string) : null; // Use the new function if userId is present
+  const listings = userId ? await getListings({ userId: userId as string }) : []; // Adjust getListings call as necessary
+
+  if (!user) {
+    return (
+      <ClientProviders>
+        <EmptyState />
+      </ClientProviders>
+    );
+  }
 
   return (
     <ClientProviders>
-       <ProfileClient 
-       initialUser={currentUser}
-       posts={posts}
-       currentUser={currentUser}
-       categories={categories}
-     /> 
+      <ProfileClient
+        user={user}
+        listings={listings}
+        currentUser={currentUser}
+      />
     </ClientProviders>
   );
-}
- 
+};
+
 export default ProfilePage;

@@ -1,7 +1,7 @@
 import React from 'react';
 import Post from '@/components/feed/Post'; // Adjust the import path as necessary
-import getCurrentUser from '../actions/getCurrentUser';
-import getPosts, { IPostsParams } from '../actions/getPost';
+import getCurrentUser from './src/app/actions/getCurrentUser';
+import getPosts, { IPostsParams } from './src/app/actions/getPost';
 import Image from 'next/image';
 import ProfileRightbar
  from '@/components/rightbar/ProfileRightBar';
