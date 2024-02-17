@@ -1,7 +1,6 @@
 generator client {
   provider = "prisma-client-js"
-  output = "../node_modules/.prisma/client"
-  
+  output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -10,35 +9,32 @@ datasource db {
 }
 
 model User {
-  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  id             String        @id @default(auto()) @map("_id") @db.ObjectId
   name           String?
-  email          String?   @unique
+  email          String?       @unique
   emailVerified  DateTime?
   image          String?
   hashedPassword String?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  favoriteIds    String[]  @db.ObjectId
-  listings     Listing[]
-  reservations Reservation[]
-  posts          Post[]         // This line represents the relation to the Post model
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  favoriteIds    String[]      @db.ObjectId
+  listings       Listing[]
+  reservations   Reservation[]
+  posts          Post[] // This line represents the relation to the Post model
 }
 
-
 model Listing {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  id            String        @id @default(auto()) @map("_id") @db.ObjectId
   title         String
   description   String
   imageSrc      String
-  createdAt     DateTime @default(now())
+  createdAt     DateTime      @default(now())
   category      String
   locationValue String
-  userId        String   @db.ObjectId
-  services    Service[]
-  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  reservations Reservation[]
-  
-  
+  userId        String        @db.ObjectId
+  services      Service[]
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reservations  Reservation[]
 }
 
 model Reservation {
@@ -55,36 +51,32 @@ model Reservation {
 }
 
 model Service {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
   serviceName String
   price       Int
   category    String
-  listingId   String   @db.ObjectId
-  listing     Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  listingId   String  @db.ObjectId
+  listing     Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
 }
 
 model Post {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  content    String
-  imageSrc   String?
-  location   String?
-  tag        String?
-  photo      String?
-  category   String
-  userId     String   @db.ObjectId
-  createdAt  DateTime @default(now())
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  content   String
+  imageSrc  String?
+  location  String?
+  tag       String?
+  photo     String?
+  category  String
+  userId    String   @db.ObjectId
+  createdAt DateTime @default(now())
 
-  user       User     @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 
   // Include other fields and relations, but ensure 'userId' is not duplicated
 }
 
-
 model Category {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  name          String
-  description   String?
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String?
 }
-
-
-
