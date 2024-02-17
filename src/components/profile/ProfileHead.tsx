@@ -1,20 +1,18 @@
 // ProfileHead.tsx
-
+'use client';
 import React from 'react';
 import Image from 'next/image';
 import { CldUploadWidget } from 'next-cloudinary';// Ensure this path matches your project structure
 import { TbPhotoPlus } from 'react-icons/tb'; // Assuming you're using react-icons for icons
+import { ExtendedSafeUser } from '@/app/types';
 
 interface ProfileHeadProps {
-  user: {
-    name: string;
-    userImage: string; // Assuming this is the path or URL to the user's profile image
-    headerImage: string; // Assuming this is the path or URL to the header background image
-  };
+  user: ExtendedSafeUser;
   // Future props for follow functionality could be added here
 }
 
 const ProfileHead: React.FC<ProfileHeadProps> = ({ user }) => {
+
   const { name, userImage, headerImage } = user;
 
   // Placeholder function for handling upload success

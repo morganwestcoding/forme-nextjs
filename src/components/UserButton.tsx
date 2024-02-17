@@ -42,8 +42,10 @@ const UserButton: React.FC<UserButtonProps> = ({
 
     rentModal.onOpen();
   }, [currentUser, loginModal, rentModal]);
+  
     
     return (  
+      
       <div 
       
       className="inline-flex items-center border-[#ffffff] border justify-center whitespace-nowrap rounded-full drop-shadow-sm text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 shadow-md bg-[#ffffff] bg-opacity-75 hover:bg-accent hover:text-accent-foreground">
@@ -59,7 +61,7 @@ const UserButton: React.FC<UserButtonProps> = ({
     <>
     
     <DropdownMenuItem
-    onClick={() => router.push(`/profile`)}>Profile</DropdownMenuItem>
+    onClick={() => router.push(`/profile/${currentUser.id}`)}>Profile</DropdownMenuItem>
     <DropdownMenuItem
     onClick={() => router.push('/properties')}>Manage Listings</DropdownMenuItem>
     <DropdownMenuItem

@@ -56,3 +56,8 @@ export type SafePost = Omit<
   // Include any other relations or transformations here
 };
 
+export type ExtendedSafeUser = SafeUser & {
+  userImage: string;
+  headerImage: string;
+};
+

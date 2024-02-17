@@ -6,9 +6,8 @@ import { Button } from '../ui/button';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { categories } from "../Categories";
-import HeartButton from '../HeartButton';
 import { GoBookmark,GoBookmarkFill } from 'react-icons/go';
-import { CiBookmark } from "react-icons/ci";
+
 
 interface PostData {
   
