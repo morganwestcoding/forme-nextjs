@@ -2,35 +2,56 @@
 'use client';
 import React from 'react';
 import Image from 'next/image';
+import { useState } from 'react';
 import { CldUploadWidget } from 'next-cloudinary';// Ensure this path matches your project structure
 import { TbPhotoPlus } from 'react-icons/tb'; // Assuming you're using react-icons for icons
 import { ExtendedSafeUser } from '@/app/types';
+import axios from 'axios';
+import { useCallback } from 'react';
+
+
 
 interface ProfileHeadProps {
   user: ExtendedSafeUser;
-  // Future props for follow functionality could be added here
+  onUpdateUserImage: (newUserImage: string, newImageSrc: string) => void;// Prop to update user image in parent component
 }
 
-const ProfileHead: React.FC<ProfileHeadProps> = ({ user }) => {
 
-  const { name, userImage, headerImage } = user;
+const ProfileHead: React.FC<ProfileHeadProps> = ({ user, onUpdateUserImage }) => {
+  const { name, imageSrc, id, userImage } = user;
+  const [currentImageSrc, setCurrentImageSrc] = useState(imageSrc);
+  const [currentUserImage, setCurrentUserImage] = useState(userImage);
 
-  // Placeholder function for handling upload success
-  const handleUpload = (info: any) => {
-    console.log('Upload successful:', info);
-    // Logic to update user's profile or header image goes here
-  };
+  const handleUpload = useCallback(async (result: any) => {
+    if (result.info && result.info.secure_url) {
+      const imageUrl = result.info.secure_url;
+
+      try {
+        const response = await axios.post('/api/profile', {
+          userId: id,
+          userImage: imageUrl,
+          imageSrc: imageUrl, // Assuming the same image is used for both userImage and imageSrc
+        });
+        console.log("Profile updated successfully", response.data);
+        setCurrentUserImage(imageUrl);
+        setCurrentImageSrc(imageUrl);
+        onUpdateUserImage(imageUrl, imageUrl); // Pass both as potentially they could be handled differently
+      } catch (error) {
+        console.error('Error updating profile:', error);
+      }
+    }
+  }, [id, onUpdateUserImage]);
 
   return (
     <div className="flex justify-between w-full mt-8 px-20">
       <div className="w-[0%]"></div>
       <div className="relative text-white text-center h-56 py-8 w-full rounded-lg flex justify-center items-center">
-        <Image src={headerImage || "/assets/hero-background.jpeg"} layout="fill" objectFit="cover" className="rounded-lg" alt="Background" />
+        <Image src={currentImageSrc || "/assets/hero-background.jpeg"} layout="fill" objectFit="cover" className="rounded-lg" alt="Background" />
         <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg"></div>
         <div className="w-5/12 h-40 bg-white bg-opacity-95 rounded-lg flex shadow-md z-50">
           <div className="relative w-48 h-full flex justify-center items-center z-50">
             <Image
-              src={userImage}
+               src={currentUserImage || "/people/chicken-headshot.jpeg"} 
               alt="currentUser Avatar"
               layout="fill"
               objectFit="cover"

@@ -1,41 +1,40 @@
-
-
+import React from 'react';
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import getPost from "@/app/actions/getPost";
 import getListings from "@/app/actions/getListings";
 import ClientProviders from "@/components/ClientProviders";
 import EmptyState from "@/components/EmptyState";
 import ProfileClient from "./ProfileClient"; // Ensure this component is implemented
-
+import { ExtendedSafeUser, SafePost,SafeListing,SafeUser } from "@/app/types"; // Assuming this is correctly defined
 
 interface IParams {
-  userId?: string; // Add this line to include userId in your interface
+  userId?: string;
+
 }
 
 const ProfilePage = async ({ params }: { params: IParams }) => {
-  const currentUser = await getCurrentUser();
+  const currentUserData = await getCurrentUser();
 
-  if (!currentUser) {
-    return (
-      <ClientProviders>
-        <EmptyState />
-      </ClientProviders>
-    );
+  if (!currentUserData) {
+    return <ClientProviders><EmptyState /></ClientProviders>;
   }
-  
-  // Fetch posts and listings for the currentUser or another user based on params.userId
+
+  const currentUser: ExtendedSafeUser = {
+    ...currentUserData,
+    userImage: currentUserData.image || "/people/chicken-headshot.jpeg", // Assuming .image is the correct property from currentUserData
+    imageSrc: currentUserData.image || "/assets/hero-background.jpeg",
+  };
+
   const posts = await getPost({ userId: params.userId || currentUser.id });
-  const listing = await getListings({ userId: params.userId || currentUser.id });
-
-
+  const listings = await getListings({ userId: params.userId || currentUser.id });
 
   // Render ProfileClient with fetched data
   return (
     <ClientProviders>
       <ProfileClient
-        user={currentUser} 
-         posts={posts}
-         listings={listing}
+        user={currentUser}
+        posts={posts}
+        listings={listings}
         currentUser={currentUser}
       />
     </ClientProviders>

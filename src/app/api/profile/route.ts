@@ -4,18 +4,24 @@ import prisma from "@/app/libs/prismadb";
 
 export async function POST(request: Request) {
     const body = await request.json();
-    const { userId, headerImage } = body;
+    const { userId, userImage, imageSrc } = body;
 
-    if (!userId || !headerImage) {
-        return new Response("Missing userId or headerImage", { status: 400 });
+    if (!userId || (!userImage && !imageSrc)) {
+        return new Response("Missing userId , imageSrc or userImage", { status: 400 });
     }
 
     try {
-        // Ensure the `profile` model exists in your Prisma schema and you've run `prisma generate`.
+        
         const profile = await prisma.profile.upsert({
             where: { userId: userId },
-            update: { headerImage: headerImage },
-            create: { userId: userId, headerImage: headerImage },
+            update: { 
+                userImage: userImage,
+                imageSrc: imageSrc 
+            },
+            create: {
+                userId: userId,
+                userImage: userImage,
+                imageSrc: imageSrc },
         });
 
         // Use NextResponse for consistency with other route examples you've provided.
