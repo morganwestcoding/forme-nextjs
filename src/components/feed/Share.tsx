@@ -72,7 +72,7 @@ const Share: React.FC<ShareProps> = ({ currentUser }) => {
     <div className='w-full h-auto rounded-lg shadow bg-[#ffffff] bg-opacity-70 p-6'>
       <div className="flex items-center">
       <Button variant="outline" size="icon" className='bg-white drop-shadow-sm bg-opacity-100'>
-        <Avatar src={currentUser?.image} />
+      <Avatar src={currentUser?.image ?? undefined} />
       </Button>
         <ContentInput
           currentUser={currentUser}

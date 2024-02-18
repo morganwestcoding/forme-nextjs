@@ -1,6 +1,7 @@
 import React from 'react';
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import getPost from "@/app/actions/getPost";
+import getProfile from "@/app/actions/getProfile";
 import getListings from "@/app/actions/getListings";
 import ClientProviders from "@/components/ClientProviders";
 import EmptyState from "@/components/EmptyState";
@@ -9,7 +10,6 @@ import { ExtendedSafeUser, SafePost,SafeListing,SafeUser } from "@/app/types"; /
 
 interface IParams {
   userId?: string;
-
 }
 
 const ProfilePage = async ({ params }: { params: IParams }) => {
@@ -21,10 +21,11 @@ const ProfilePage = async ({ params }: { params: IParams }) => {
 
   const currentUser: ExtendedSafeUser = {
     ...currentUserData,
-    userImage: currentUserData.image || "/people/chicken-headshot.jpeg", // Assuming .image is the correct property from currentUserData
+    userImage: currentUserData.image || "/people/chicken-headshot.jpeg",
     imageSrc: currentUserData.image || "/assets/hero-background.jpeg",
+    profileId: currentUserData.profileId || 'default-profile-id', // Provide a default or fallback value
   };
-
+  
   const posts = await getPost({ userId: params.userId || currentUser.id });
   const listings = await getListings({ userId: params.userId || currentUser.id });
 

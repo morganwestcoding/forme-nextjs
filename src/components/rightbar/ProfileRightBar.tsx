@@ -70,7 +70,7 @@ export default function ProfileRightbar() {
       
 {/* Storefront */}
 <div className="w-full md:w-11/12 flex flex-col justify-start rounded-lg shadow-md bg-[#ffffff] bg-opacity-80 p-0 mx-0 overflow-hidden ml-12 pb-6">
-  <div className="px-6 py-6 text-xl font-bold">Morgan's Storefronts</div>
+  <div className="px-6 py-6 text-xl font-bold">Morgans Storefronts</div>
   <div className="grid grid-cols-4 gap-4 p-4">
     {articles.slice(0, 16).map((article, index) => (
       <div key={index} className="w-20 h-20 bg-gray-300 rounded-md drop-shadow flex-shrink-0" style={{ backgroundImage: `url(${article.imageSrc})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>

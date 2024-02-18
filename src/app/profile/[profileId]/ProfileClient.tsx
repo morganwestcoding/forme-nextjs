@@ -1,4 +1,3 @@
-// ProfileClient.tsx
 'use client';
 import React from 'react';
 import ClientProviders from '@/components/ClientProviders';
@@ -22,13 +21,18 @@ interface ProfileClientProps {
 const ProfileClient: React.FC<ProfileClientProps> = ({ user, posts, listings, currentUser }) => {
   const [updatedUser, setUpdatedUser] = useState<ExtendedSafeUser>(user);
 
-  const handleUserImageUpdate = (newImage: string) => {
-    setUpdatedUser((prevUser) => ({ ...prevUser, userImage: newImage }));
+    const handleUserImageUpdate = (newUserImage: string) => {
+    setUpdatedUser((prevUser) => ({ ...prevUser, userImage: newUserImage }));
+  };
+
+  // New function for updating imageSrc
+  const handleImageSrcUpdate = (newImageSrc: string) => {
+    setUpdatedUser((prevUser) => ({ ...prevUser, imageSrc: newImageSrc }));
   };
 
   return (
     <div>
-      <ProfileHead user={updatedUser} onUpdateUserImage={handleUserImageUpdate} />
+      <ProfileHead user={updatedUser} onUpdateUserImage={handleUserImageUpdate} onUpdateImageSrc={handleImageSrcUpdate} />
       <div className="flex w-full">
         <div className="flex-none w-[45%] ml-20 mt-2">
           {/* Posts Mapping */}

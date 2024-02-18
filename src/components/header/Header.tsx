@@ -3,7 +3,7 @@
 import Logo from "./Logo";
 import AddListing from "./AddListing";
 import UserButton from "../UserButton";
-
+import { SafePost } from "@/app/types";
 
 import CreateChatButton from "./CreateChatButton";
 
@@ -31,7 +31,8 @@ const Header: React.FC<HeaderProps> = ({
               </>
              
              <AddListing currentUser={currentUser}/>
-             <UserButton currentUser={currentUser}/>
+             <UserButton currentUser={currentUser}
+             data={{} as SafePost}  />
             
             
             </div>

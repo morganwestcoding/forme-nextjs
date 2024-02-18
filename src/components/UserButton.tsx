@@ -53,8 +53,8 @@ const UserButton: React.FC<UserButtonProps> = ({
     <DropdownMenu>   
   <DropdownMenuTrigger>
     
-    <Avatar src={currentUser?.image}
-     />
+  <Avatar src={currentUser?.image ?? undefined} />
+     
   </DropdownMenuTrigger>
   <DropdownMenuContent>
   {currentUser ? (

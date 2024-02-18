@@ -24,6 +24,11 @@ export async function POST(request: Request) {
                 imageSrc: imageSrc },
         });
 
+        await prisma.user.update({
+            where: { id: userId },
+            data: { profileId: profile.id },
+        });
+
         // Use NextResponse for consistency with other route examples you've provided.
         return new Response(JSON.stringify(profile), {
             status: 200,
