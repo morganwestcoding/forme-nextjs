@@ -1,42 +1,39 @@
 import React from 'react';
 import getCurrentUser from "@/app/actions/getCurrentUser";
-import getPost from "@/app/actions/getPost";
-import getProfile from "@/app/actions/getProfile";
-import getListings from "@/app/actions/getListings";
 import ClientProviders from "@/components/ClientProviders";
 import EmptyState from "@/components/EmptyState";
 import ProfileClient from "./ProfileClient"; // Ensure this component is implemented
-import { ExtendedSafeUser, SafePost,SafeListing,SafeUser } from "@/app/types"; // Assuming this is correctly defined
+import getProfileById from '@/app/actions/getProfileById';
+import getListings from '@/app/actions/getListings';
+import getPosts from '@/app/actions/getPost';
 
 interface IParams {
-  userId?: string;
+  profileId?: string;
+ 
 }
 
-const ProfilePage = async ({ params }: { params: IParams }) => {
-  const currentUserData = await getCurrentUser();
 
-  if (!currentUserData) {
-    return <ClientProviders><EmptyState /></ClientProviders>;
+
+const ProfilePage = async ({ params }: { params: IParams }) => {
+  
+  const profile = await getProfileById(params);
+  // Adjust params as needed for getPosts
+  const posts = await getPosts({ userId: profile?.userId });
+  if (!profile) {
+    return (
+      <ClientProviders>
+        <EmptyState />
+      </ClientProviders>
+    );
   }
 
-  const currentUser: ExtendedSafeUser = {
-    ...currentUserData,
-    userImage: currentUserData.image || "/people/chicken-headshot.jpeg",
-    imageSrc: currentUserData.image || "/assets/hero-background.jpeg",
-    profileId: currentUserData.profileId || 'default-profile-id', // Provide a default or fallback value
-  };
-  
-  const posts = await getPost({ userId: params.userId || currentUser.id });
-  const listings = await getListings({ userId: params.userId || currentUser.id });
-
-  // Render ProfileClient with fetched data
   return (
     <ClientProviders>
       <ProfileClient
-        user={currentUser}
+// currentUser now represents the profile being viewed
         posts={posts}
-        listings={listings}
-        currentUser={currentUser}
+    
+        user={profile} // Pass the currentUser as a prop if needed elsewhere
       />
     </ClientProviders>
   );

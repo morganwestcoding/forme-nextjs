@@ -14,6 +14,8 @@ import useRegisterModal from "@/app/hooks/useRegisterModal";
 import useLoginModal from "@/app/hooks/useLoginModal";
 import { SafePost, SafeUser } from "@/app/types";
 import useRentModal from "@/app/hooks/useRentModal";
+import useProfileModal from "@/app/hooks/useProfileModal";
+import ProfileModal from "./modals/ProfileModal";
 
 interface UserButtonProps {
 currentUser?: SafeUser | null 
@@ -29,6 +31,8 @@ const UserButton: React.FC<UserButtonProps> = ({
   const loginModal = useLoginModal();
   const registerModal = useRegisterModal();
   const rentModal = useRentModal();
+  const profileModal = useProfileModal();
+
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleOpen = useCallback(() => {
@@ -41,14 +45,12 @@ const UserButton: React.FC<UserButtonProps> = ({
     }
 
     rentModal.onOpen();
-  }, [currentUser, loginModal, rentModal]);
+  }, [currentUser, loginModal, rentModal, profileModal]);
   
     
     return (  
       
-      <div 
-      
-      className="inline-flex items-center border-[#ffffff] border justify-center whitespace-nowrap rounded-full drop-shadow-sm text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 shadow-md bg-[#ffffff] bg-opacity-75 hover:bg-accent hover:text-accent-foreground">
+      <div className="inline-flex items-center border-[#ffffff] border justify-center whitespace-nowrap rounded-full drop-shadow-sm text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 shadow-md bg-[#ffffff] bg-opacity-75 hover:bg-accent hover:text-accent-foreground">
         
     <DropdownMenu>   
   <DropdownMenuTrigger>
@@ -62,12 +64,13 @@ const UserButton: React.FC<UserButtonProps> = ({
     
     <DropdownMenuItem
     onClick={() => router.push(`/profile/${currentUser.id}`)}>Profile</DropdownMenuItem>
+    <DropdownMenuItem onClick={profileModal.onOpen}>Edit Profile</DropdownMenuItem>
     <DropdownMenuItem
     onClick={() => router.push('/properties')}>Manage Listings</DropdownMenuItem>
     <DropdownMenuItem
-    onClick={() => router.push('/trips')}
-    >My Appointments</DropdownMenuItem>
+    onClick={() => router.push('/trips')}>My Appointments</DropdownMenuItem>
     <DropdownMenuItem>Subscription</DropdownMenuItem>
+    <DropdownMenuItem onClick={() => signOut()}>Edit My Profile</DropdownMenuItem>
     <DropdownMenuItem onClick={() => signOut()}>Sign Out</DropdownMenuItem>
     </>
     ) : (

@@ -1,4 +1,4 @@
-import {Listing , User, Reservation, Post, Service} from '@prisma/client'
+import {Listing , User, Reservation, Post, Service, Profile} from '@prisma/client'
 
 export type SafeService = {
   id: string;
@@ -34,7 +34,8 @@ export type SafeUser = Omit<
   createdAt: string;
   updatedAt: string;
   emailVerified: string | null;
-  favoriteIds?: string[]; 
+  favoriteIds?: string[]; // Already exists in User model
+  imageSrc?: string | null;
 };
 
 export interface SafeUserImage {
@@ -56,9 +57,14 @@ export type SafePost = Omit<
   // Include any other relations or transformations here
 };
 
-export type ExtendedSafeUser = SafeUser & {
-  userImage?: string;
-  imageSrc?: string;
-  profileId?: string; 
-}
+export type SafeProfile = {
+  id: string; // Profile ID
+  bio?: string; // Optional biography text
+  userId: string; // User ID associated with this profile
+  image?: string; // URL/path to the user's profile image, aligning with the User model's field
+  name?: string; // User's name, marked as optional to match the User model
+  imageSrc?: string; // URL/path to the profile's background image
+};
+
+
 

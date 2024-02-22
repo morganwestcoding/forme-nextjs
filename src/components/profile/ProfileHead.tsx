@@ -2,71 +2,17 @@
 'use client';
 import React from 'react';
 import Image from 'next/image';
-import { useState } from 'react';
-import { CldUploadWidget } from 'next-cloudinary';// Ensure this path matches your project structure
-import { TbPhotoPlus } from 'react-icons/tb'; // Assuming you're using react-icons for icons
-import { ExtendedSafeUser } from '@/app/types';
-import axios from 'axios';
-import { useCallback } from 'react';
+import HeaderUpload from '../inputs/HeaderUpload';
+import { SafeProfile } from '@/app/types';
 
 interface ProfileHeadProps {
-  user: ExtendedSafeUser;
-  onUpdateUserImage: (newUserImage: string) => void;
-  onUpdateImageSrc: (newImageSrc: string) => void;// Prop to update user image in parent component
+  user: SafeProfile;
+
 }
 
-const ProfileHead: React.FC<ProfileHeadProps> = ({ user, onUpdateUserImage, onUpdateImageSrc }) => {
-  const { name, imageSrc, id, userImage } = user;
+const ProfileHead: React.FC<ProfileHeadProps> = ({ user }) => {
+  const { name, imageSrc, image } = user;
   
-  const handleImageSrcUpload = useCallback(async (imageUrl: string) => {
-    try {
-      const response = await axios.post('/api/profile', {
-        userId: id,
-        imageSrc: imageUrl,
-      });
-      console.log("Background image updated successfully", response.data);
-      onUpdateImageSrc(imageUrl); // Update parent component state
-    } catch (error) {
-      console.error('Error updating background image:', error);
-    }
-  }, [id, onUpdateImageSrc]);
-
-  const handleUserImageUpload = useCallback(async (imageUrl: string) => {
-    try {
-      const response = await axios.post('/api/profile', {
-        userId: id,
-        userImage: imageUrl,
-      });
-      console.log("User image updated successfully", response.data);
-      onUpdateUserImage(imageUrl); // Update parent component state
-    } catch (error) {
-      console.error('Error updating user image:', error);
-    }
-  }, [id, onUpdateUserImage]);
-
-  const uploadHandler = useCallback((uploadType: 'userImage' | 'imageSrc') => async (result: any) => {
-    if (result.info && result.info.secure_url) {
-      const imageUrl = result.info.secure_url;
-      
-      try {
-        await axios.post('/api/profile', {
-          userId: id,
-          [uploadType]: imageUrl,
-        });
-        
-        console.log(`${uploadType} updated successfully`);
-        
-        // Call the appropriate update function based on uploadType
-        if (uploadType === 'userImage') {
-          onUpdateUserImage(imageUrl);
-        } else if (uploadType === 'imageSrc') {
-          onUpdateImageSrc(imageUrl);
-        }
-      } catch (error) {
-        console.error(`Error updating ${uploadType}:`, error);
-      }
-    }
-  }, [id, onUpdateUserImage, onUpdateImageSrc]);
 
   return (
     <div className="flex justify-between w-full mt-8 px-20">
@@ -78,30 +24,16 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({ user, onUpdateUserImage, onUp
          className="rounded-lg" 
          alt="Background" />
         <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg"></div>
-        <CldUploadWidget uploadPreset="cs0am6m7" onUpload={uploadHandler('imageSrc')}>
-              {({ open }) => (
-                <div className="absolute bottom-0 right-0 p-2 cursor-pointer" onClick={() => open()}>
-                  <TbPhotoPlus size={24} className="text-white bg-gray-700 rounded-full" />
-                </div>
-              )}
-            </CldUploadWidget>
 
         <div className="w-5/12 h-40 bg-white bg-opacity-95 rounded-lg flex shadow-md z-50">
           <div className="relative w-48 h-full flex justify-center items-center z-50">
             <Image
-               src={userImage || "/people/chicken-headshot.jpeg"} 
+              src={image || "/people/chicken-headshot.jpeg"}
               alt="currentUser Avatar"
               layout="fill"
               objectFit="cover"
               className="rounded-l-lg"
             />
-            <CldUploadWidget uploadPreset="cs0am6m7" onUpload={uploadHandler('userImage')}>
-              {({ open }) => (
-                <div className="absolute bottom-0 right-0 p-2 cursor-pointer" onClick={() => open()}>
-                  <TbPhotoPlus size={24} className="text-white bg-gray-700 rounded-full" />
-                </div>
-              )}
-            </CldUploadWidget>
           </div>
 
           {/* Bio Section */}

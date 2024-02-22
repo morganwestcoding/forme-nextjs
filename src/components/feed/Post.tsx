@@ -1,12 +1,13 @@
 'use client'
 import React from 'react';
 import Avatar from '../ui/avatar'; // Adjust the import based on your project structure
-import { SafeUser, SafeUserImage } from '@/app/types';
+import { SafeUser, SafeUserImage, SafeProfile } from '@/app/types';
 import { Button } from '../ui/button';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { categories } from "../Categories";
 import { GoBookmark,GoBookmarkFill } from 'react-icons/go';
+
 
 
 interface PostData {
@@ -21,7 +22,7 @@ interface PostData {
 
 interface PostProps {
   post: PostData;
-  currentUser: SafeUser | null;
+  currentUser: SafeProfile | null; 
   categories: typeof categories;
 }
 

@@ -1,43 +1,67 @@
-// Import the Request type for proper typing of the request parameter.
-import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
+import getCurrentUser from "@/app/actions/getCurrentUser";
 
 export async function POST(request: Request) {
-    const body = await request.json();
-    const { userId, userImage, imageSrc } = body;
-
-    if (!userId || (!userImage && !imageSrc)) {
-        return new Response("Missing userId , imageSrc or userImage", { status: 400 });
+    // Get current user and validate
+    const currentUser = await getCurrentUser();
+    if (!currentUser) {
+        return new Response("Unauthorized", { status: 401 });
     }
 
+    const body = await request.json();
+    const { image, imageSrc } = body;
+
     try {
-        
-        const profile = await prisma.profile.upsert({
-            where: { userId: userId },
-            update: { 
-                userImage: userImage,
-                imageSrc: imageSrc 
-            },
+        // Update the user's profile image if provided
+        if (image) {
+            await prisma.user.update({
+                where: { id: currentUser.id },
+                data: { image: image },
+            });
+        }
+
+        // Update or create the profile with imageSrc if provided
+        let profileUpdateData = imageSrc ? { imageSrc: imageSrc } : {};
+
+        await prisma.profile.upsert({
+            where: { userId: currentUser.id },
+            update: profileUpdateData,
             create: {
-                userId: userId,
-                userImage: userImage,
-                imageSrc: imageSrc },
-        });
-
-        await prisma.user.update({
-            where: { id: userId },
-            data: { profileId: profile.id },
-        });
-
-        // Use NextResponse for consistency with other route examples you've provided.
-        return new Response(JSON.stringify(profile), {
-            status: 200,
-            headers: {
-                "Content-Type": "application/json",
+                userId: currentUser.id,
+                ...profileUpdateData,
             },
+        });
+
+        // Assuming you want to return the updated profile information
+        const updatedProfile = await prisma.profile.findUnique({
+            where: { userId: currentUser.id },
+            include: {
+                user: true, // Include user to fetch the possibly updated image
+            },
+        });
+
+        if (!updatedProfile) {
+            return new Response("Profile update failed", { status: 404 });
+        }
+
+        // Constructing a response object with the updated information
+        const responsePayload = {
+            profile: {
+                id: updatedProfile.id,
+                bio: updatedProfile.bio,
+                imageSrc: updatedProfile.imageSrc,
+                userId: updatedProfile.userId,
+                name: updatedProfile.user.name,
+                image: updatedProfile.user.image,
+            },
+        };
+
+        return new Response(JSON.stringify(responsePayload), {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
         });
     } catch (error) {
-        console.error("Error updating profile header image:", error);
+        console.error("Error updating profile:", error);
         return new Response("Internal Server Error", { status: 500 });
     }
 }

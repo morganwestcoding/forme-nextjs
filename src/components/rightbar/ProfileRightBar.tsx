@@ -32,7 +32,7 @@ export default function ProfileRightbar() {
           <div className="text-xl font-bold mb-2">About Me
             <div className="text-sm font-normal flex-grow">
               <p className="py-2">
-              Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries for previewing layouts and visual mockups.
+             {/*Bio PlaceHolder*/}
               </p>
               <ul>
              {/* Adjusted list items to include flex layout for icon and text alignment */}

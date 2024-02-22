@@ -21,6 +21,7 @@ const PropertiesPage = async () => {
 
   if (listings.length === 0) {
     return (
+      
       <ClientProviders>
         <EmptyState
           title="No properties found"
