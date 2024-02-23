@@ -23,13 +23,13 @@ const ProfileClient: React.FC<ProfileClientProps> = ({ user, posts, listings }) 
     <div>
        <ProfileHead user={user} />
       <div className="flex w-full">
-        <div className="flex-none w-[45%] ml-20 mt-2">
+        <div className="flex-none w-[45%] ml-28">
           {/* Posts Mapping */}
           {posts.map((post, index) => (
             <Post key={index} post={post} currentUser={user} categories={categories} />
           ))}
         </div>
-        <div className="flex-grow w-[45%] ml-4">
+        <div className="flex-grow w-[45%] ml-3">
         <ProfileRightbar user={user} listings={listings} />
           {/*<ProfileInfo user={user} />
           <ProfileImages user={user} />

@@ -18,13 +18,13 @@ export default async function Home() {
   return (
     <ClientProviders>
       <div className="flex w-full">
-        <div className="flex-none w-[45%] ml-20 mt-8">
+        <div className="flex-none w-[45%] ml-28 mt-8 mr-1">
           <Share currentUser={currentUser} />
           {posts.map((post) => (
             <Post key={post.id} post={post} currentUser={currentUser} categories={categories} />
           ))}
         </div>
-        <div className="flex-grow w-[45%] ml-4">
+        <div className="flex-grow w-[55%] ml-4">
           <Rightbar />
         </div>
       </div>

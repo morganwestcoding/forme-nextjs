@@ -121,7 +121,7 @@ const categoryColors = getColorByCategory(data.category);
       
       className="col-span-1 "
     >
-      <div className="bg-[#ffffff] rounded-2xl flex flex-col gap-2 w-52 shadow-sm">
+      <div className="bg-[#ffffff] rounded-2xl flex flex-col gap-2 w-48 shadow-sm">
         <div 
           className="
             w-full

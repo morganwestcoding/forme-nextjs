@@ -36,9 +36,9 @@ export default function Sidebar() {
   return (
     
     <div className="fixed top-0 flex h-screen z-50">
-      <div className="flex flex-col items-center w-52 h-full  dark:shadow-lg dark:border dark:border-gray-6.500 p-10" >
+      <div className="flex flex-col items-center w-56 h-full p-10 bg-[#ffffff] drop-shadow-sm" >
         <Logo/>
-        <div className="flex flex-col item-center pt-9 text-xs font-bold text-[#ffffff] opacity-75">
+        <div className="flex flex-col item-center pt-9 text-xs font-bold text-[#000000]">
           MENU
         </div>
         
@@ -48,9 +48,9 @@ export default function Sidebar() {
    
           <li className="flex items-center mb-5 pt-5">
 
-          <CottageRoundedIcon className="w-6.5 h-6.5 opacity-75 text-[#ffffff]  cursor-pointer" onClick={() => router.push('/')}/>
+          <CottageRoundedIcon className="w-6.5 h-6.5 text-[#000000]  cursor-pointer" onClick={() => router.push('/')}/>
 
-                  <span className="ml-2 text-white text-xs font-extralight uppercase">Home</span>
+                  <span className="ml-2 text-black text-xs font-bold uppercase">Home</span>
 
           </li>
 
@@ -59,9 +59,9 @@ export default function Sidebar() {
    
           <li className="flex items-center mb-5">
  
-            <StorefrontRoundedIcon className="w-6.5 h-6.5 opacity-75 text-[#ffffff] font-light cursor-pointer" onClick={() => router.push('/market')}/>
+            <StorefrontRoundedIcon className="w-6.5 h-6.5 text-[#000000] font-light cursor-pointer" onClick={() => router.push('/market')}/>
          
-            <span className="ml-2 text-white text-xs font-extralight uppercase">Market</span>
+            <span className="ml-2 text-black text-xs font-bold uppercase">Market</span>
         
             </li>
         
@@ -70,11 +70,11 @@ export default function Sidebar() {
        
             <li className="flex items-center mb-5">
  
-          <BookmarkRoundedIcon className="w-6.5 h-6.5 opacity-75 text-[#ffffff] " onClick={() => router.push('/favorites')}/>
+          <BookmarkRoundedIcon className="w-6.5 h-6.5 text-[#000000] " onClick={() => router.push('/favorites')}/>
                 
 
            
-          <span className="ml-2 text-white text-xs font-extralight uppercase">Favorites</span>
+          <span className="ml-2 text-black text-xs font-bold uppercase">Favorites</span>
      
             </li>
        
@@ -83,9 +83,9 @@ export default function Sidebar() {
   
           <li className="flex items-center mb-5">
      
-          <WorkRoundedIcon className="w-6.5 h-6.5 opacity-75 text-[#ffffff] " />
+          <WorkRoundedIcon className="w-6.5 h-6.5 text-[#000000] " />
              
-          <span className="ml-2 text-white text-xs font-extralight uppercase">Jobs</span>
+          <span className="ml-2 text-black text-xs font-bold uppercase">Jobs</span>
             
        
           </li>
@@ -93,9 +93,9 @@ export default function Sidebar() {
 
           <li className="flex items-center mb-5">
      
-          <EventNoteRoundedIcon className="w-6.5 h-6.5 opacity-75 text-[#ffffff] " onClick={() => router.push('/reservations')}/>
+          <EventNoteRoundedIcon className="w-6.5 h-6.5 text-[#000000] " onClick={() => router.push('/reservations')}/>
               
-          <span className="ml-2 text-white text-xs font-extralight uppercase">Bookings</span>
+          <span className="ml-2 text-black text-xs font-bold uppercase">Bookings</span>
             
           </li>
 

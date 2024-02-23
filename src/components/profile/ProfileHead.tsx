@@ -17,7 +17,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({ user }) => {
 
   return (
     <div className="flex justify-between w-full mt-8 px-20">
-      <div className="w-[0%]"></div>
+      <div className="w-[3.1%]"></div>
       <div className="relative text-white text-center h-56 py-8 w-full flex justify-center items-center">
         <Image src={imageSrc || "/assets/hero-background.jpeg"}
          layout="fill" 
@@ -63,7 +63,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({ user }) => {
         </div>
       </div>
 
-      <div className="w-[2%]"></div> {/* This empty div helps in aligning the header with the Rightbar component */}
+      <div className="w-[1.5%]"></div> {/* This empty div helps in aligning the header with the Rightbar component */}
     </div>
   );
 };

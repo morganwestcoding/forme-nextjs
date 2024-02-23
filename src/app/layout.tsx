@@ -37,10 +37,10 @@ export default async function RootLayout({
               <Sidebar /> {/* Sidebar component, already styled with 'sticky top-0 w-48 h-screen' */}
               <div className="flex-1 ml-52"> {/* Container for header and the rest of the content */}
                 <Header currentUser={currentUser} /> {/* Header component */}
-               <div className='w-full h-full bg-gradient-to-b from-[#f8f9fb] to-[#e9eff9] rounded-2xl mt-4 drop-shadow-sm'>
+             
                 
                 {children}
-                </div>
+                
               </div>
             </div>
             
