@@ -17,7 +17,7 @@ interface IParams {
 const ProfilePage = async ({ params }: { params: IParams }) => {
   
   const profile = await getProfileById(params);
-  // Adjust params as needed for getPosts
+  const listings = await getListings({ userId: profile?.userId });
   const posts = await getPosts({ userId: profile?.userId });
   if (!profile) {
     return (
@@ -32,7 +32,7 @@ const ProfilePage = async ({ params }: { params: IParams }) => {
       <ProfileClient
 // currentUser now represents the profile being viewed
         posts={posts}
-    
+        listings={listings}
         user={profile} // Pass the currentUser as a prop if needed elsewhere
       />
     </ClientProviders>

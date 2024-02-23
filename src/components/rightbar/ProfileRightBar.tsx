@@ -1,9 +1,11 @@
 import React from 'react';
-import { SafeProfile } from '@/app/types';
+import { SafeProfile, SafeListing } from '@/app/types';
 import Image from 'next/image';
+import format from 'date-fns/format'; 
 
 interface ProfileRightbarProps {
   user: SafeProfile;
+  listings: SafeListing[];
 }
 
 const articles = [
@@ -30,9 +32,10 @@ const articles = [
   // ... more articles
 ];
 
-const ProfileRightbar: React.FC<ProfileRightbarProps> = ({ user  }) => {
-const { bio } = user;
+const ProfileRightbar: React.FC<ProfileRightbarProps> = ({ user, listings  }) => {
+const { bio, createdAt } = user;
 
+const formattedDate = format(new Date(createdAt), 'PPP'); // Example format: Jan 1, 2020
     return (
       <div className="flex flex-col justify-end bg-transparent  gap-6 pr-28 h-auto mt-8">
          {/* Adjusted User Information Div to use Flex Grow to fill available space */}
@@ -50,7 +53,7 @@ const { bio } = user;
               </li>
               <li className="flex items-center">
                 <Image src="/icons/calendar-tick.svg" alt='notification-bell' width={21} height={21}/>
-                <span className="ml-2">Date Here</span>
+                <span className="ml-2">Joined {formattedDate}</span> {/* Display the formatted creation date here */}
               </li>
               </ul>
             </div>
@@ -80,11 +83,11 @@ const { bio } = user;
 <div className="w-full md:w-11/12 flex flex-col justify-start rounded-lg shadow-md bg-[#ffffff] bg-opacity-80 p-0 mx-0 overflow-hidden ml-12 pb-6">
   <div className="px-6 py-6 text-xl font-bold">Morgans Storefronts</div>
   <div className="grid grid-cols-4 gap-4 p-4">
-    {articles.slice(0, 16).map((article, index) => (
-      <div key={index} className="w-20 h-20 bg-gray-300 rounded-md drop-shadow flex-shrink-0" style={{ backgroundImage: `url(${article.imageSrc})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
-        {/* You can add overlays or text here if needed */}
-      </div>
-    ))}
+  {listings.map((listing, index) => (
+            <div key={index} className="w-20 h-20 bg-gray-300 rounded-md drop-shadow flex-shrink-0" style={{ backgroundImage: `url(${listing.imageSrc})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+              {/* You can add overlays or text here if needed */}
+            </div>
+          ))}
   </div>
 </div>
          

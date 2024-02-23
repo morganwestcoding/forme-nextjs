@@ -32,7 +32,8 @@ export default async function getProfile(): Promise<SafeProfile | null> {
       userId: profile.userId,
       image: profile.user.image || '/people/chicken-headshot.jpeg', // Provide a default profile image path if none exists
       name: profile.user.name || '', 
-      imageSrc: profile.imageSrc || '/assets/hero-background.jpeg', // Provide a default background image path if none exists
+      imageSrc: profile.imageSrc || '/assets/hero-background.jpeg', 
+      createdAt: profile.user.createdAt.toISOString(), // Provide a default background image path if none exists
     };
 
     return safeProfile;

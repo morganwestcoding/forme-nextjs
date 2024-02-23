@@ -64,6 +64,7 @@ export type SafeProfile = {
   image?: string; // URL/path to the user's profile image, aligning with the User model's field
   name?: string; // User's name, marked as optional to match the User model
   imageSrc?: string; // URL/path to the profile's background image
+  createdAt: string;
 };
 
 

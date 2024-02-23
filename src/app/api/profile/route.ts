@@ -9,7 +9,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { image, imageSrc } = body;
+    const { image, imageSrc, bio } = body;
 
     try {
         // Update the user's profile image if provided
@@ -21,7 +21,10 @@ export async function POST(request: Request) {
         }
 
         // Update or create the profile with imageSrc if provided
-        let profileUpdateData = imageSrc ? { imageSrc: imageSrc } : {};
+        let profileUpdateData = { 
+            ...imageSrc && { imageSrc: imageSrc }, // Conditionally add imageSrc if it's provided
+            ...bio && { bio: bio } // Conditionally add bio if it's provided
+        };
 
         await prisma.profile.upsert({
             where: { userId: currentUser.id },
@@ -53,6 +56,7 @@ export async function POST(request: Request) {
                 userId: updatedProfile.userId,
                 name: updatedProfile.user.name,
                 image: updatedProfile.user.image,
+                createdAt: updatedProfile.user.createdAt.toISOString(), 
             },
         };
 

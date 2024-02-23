@@ -12,11 +12,12 @@ import ProfileRightbar from '@/components/rightbar/ProfileRightBar';
 interface ProfileClientProps {
   posts: SafePost[];
   user: SafeProfile;
+  listings: SafeListing[];
 
 
 }
 
-const ProfileClient: React.FC<ProfileClientProps> = ({ user, posts }) => {
+const ProfileClient: React.FC<ProfileClientProps> = ({ user, posts, listings }) => {
 
   return (
     <div>
@@ -29,7 +30,7 @@ const ProfileClient: React.FC<ProfileClientProps> = ({ user, posts }) => {
           ))}
         </div>
         <div className="flex-grow w-[45%] ml-4">
-        <ProfileRightbar user={user}/>
+        <ProfileRightbar user={user} listings={listings} />
           {/*<ProfileInfo user={user} />
           <ProfileImages user={user} />
           <UserListings listings={listings} />*/}

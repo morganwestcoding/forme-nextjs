@@ -34,6 +34,7 @@ export default async function getProfileById(params: IParams) {
     image: user.image ?? undefined,
     bio: user.profile?.bio || '',
     imageSrc: user.profile?.imageSrc || '',
+    createdAt: user.createdAt.toISOString(), 
       
     };
 
