@@ -6,7 +6,7 @@ function CloseFriends() {
     <div className='pt-4'>
     <div className='pb-5 font-bold text-xs flex flex-col items-center justify-center text-[#4d4d4d] opacity-75'>
       FRIENDS</div>
-    <div className='w-20 rounded-xl flex-col items-center bg-white h-60 drop-shadow'>
+    <div className='w-20 rounded-2xl flex-col items-center  h-60 border'>
     <ul className='w-full h-full flex flex-col items-center justify-center'>
           {/* Circle 1 */}
           <li className='w-11 h-11 drop-shadow rounded-full my-1.5 border border-white flex justify-center items-center overflow-hidden'>

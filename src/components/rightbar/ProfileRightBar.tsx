@@ -1,4 +1,10 @@
-import Image from "next/image";
+import React from 'react';
+import { SafeProfile } from '@/app/types';
+import Image from 'next/image';
+
+interface ProfileRightbarProps {
+  user: SafeProfile;
+}
 
 const articles = [
   {
@@ -24,15 +30,17 @@ const articles = [
   // ... more articles
 ];
 
-export default function ProfileRightbar() {
+const ProfileRightbar: React.FC<ProfileRightbarProps> = ({ user  }) => {
+const { bio } = user;
+
     return (
       <div className="flex flex-col justify-end bg-transparent  gap-6 pr-28 h-auto mt-8">
          {/* Adjusted User Information Div to use Flex Grow to fill available space */}
-         <div className="flex flex-col justify-between w-full md:w-11/12 rounded-lg shadow-md bg-[#ffffff] bg-opacity-90 px-8 md:px-6 md:py-6 mx-4 md:mr-20 md:ml-12 relative min-h-[128px]">
+         <div className="flex flex-col justify-between w-full md:w-11/12 rounded-2xl shadow-md bg-[#ffffff] bg-opacity-90 px-8 md:px-6 md:py-6 mx-4 md:mr-20 md:ml-12 relative min-h-[128px]">
           <div className="text-xl font-bold mb-2">About Me
             <div className="text-sm font-normal flex-grow">
               <p className="py-2">
-             {/*Bio PlaceHolder*/}
+              {bio || "No bio available"} {/* Display bio here */}
               </p>
               <ul>
              {/* Adjusted list items to include flex layout for icon and text alignment */}
@@ -50,7 +58,7 @@ export default function ProfileRightbar() {
         </div>
 
 {/* New Section: 3x3 Grid of Placeholder Images */}
-<div className="w-full md:w-11/12 grid grid-cols-3 gap-0 mx-4 md:mr-20 md:ml-12 bg-transparent bg-opacity-80 rounded-lg shadow-md">
+<div className="w-full md:w-11/12 grid grid-cols-3 gap-0 mx-4 md:mr-20 md:ml-12 bg-transparent bg-opacity-80 rounded-2xl shadow-md">
   {Array.from({ length: 9 }).map((_, index) => {
     // Determine the class for rounding specific corners based on the square's position
     let cornerClass = "";
@@ -85,4 +93,5 @@ export default function ProfileRightbar() {
       
     );
   }
-  
+
+  export default ProfileRightbar;

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import Image from 'next/image';
+import { MapPin } from 'lucide-react';
 import { SafeUser } from '@/app/types';
 import { MdCheckCircle } from 'react-icons/md'; // This is for the check mark icon, ensure you have react-icons installed
+import AddLocationOutlinedIcon from '@mui/icons-material/AddLocationOutlined';
 
 interface AddPostLocationProps {
     currentUser: SafeUser | null;
@@ -21,7 +22,7 @@ const AddPostLocation: React.FC<AddPostLocationProps> = ({ currentUser, onLocati
     return (
         <div className="relative inline-block">
             <button onClick={() => setShowInput(true)}>
-            <Image src="/icons/location-tick.svg" alt="location" width={25} height={25} className='cursor-pointer drop-shadow -mb-1.5'/>
+            <AddLocationOutlinedIcon  width={23} height={23} className='cursor-pointer'/>
             </button>
 
             {showInput && (

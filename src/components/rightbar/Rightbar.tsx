@@ -30,23 +30,23 @@ export default function Rightbar() {
   const router = useRouter();
     return (
       <div className="flex flex-col justify-end bg-transparent  gap-6 pr-28 h-auto mt-8">
-        <div className="w-full md:w-11/12 h-32 rounded-lg shadow bg-[#ffffff] bg-opacity-90 px-8 md:px-6 md:py-6 mx-4 md:mr-20 md:ml-12 relative">
+        <div className="w-full md:w-11/12 h-32 rounded-2xl drop-shadow-sm bg-[#ffffff] px-8 md:px-6 md:py-6 mx-4 md:mr-20 relative">
           <div className="text-xl font-bold mb-2">Subscribe today
             <div className="text-sm font-normal">Subscribe to unlock new features and if eligible, receive a share of ad&apos;s revenue.</div>
           </div>
         </div>
 
 
-        <div className="w-full md:w-11/12 flex flex-col justify-start rounded-lg shadow bg-[#ffffff] bg-opacity-90 p-0 mx-0 overflow-hidden ml-12 pb-6">
+        <div className="w-full md:w-11/12 flex flex-col justify-start rounded-2xl shadow bg-[#ffffff]   p-0 mx-0 overflow-hidden ml-4 pb-6">
         <div className="px-6 py-6 text-xl font-bold">What&apos;s Happening</div>
         <hr className="border-1.5"/>
         {articles.map((article, index) => (
-          <div key={index} className="flex justify-between items-center hover:bg-[#ffffff] rounded w-full px-6 py-4" onClick={() => router.push('/articles')}>
+          <div key={index} className="flex justify-between items-center hover:bg-[#ffffff] rounded-2xl w-full px-6 py-4" onClick={() => router.push('/articles')}>
             <div>
               <h3 className="text-base font-semibold">{article.title}</h3>
               <p className="text-sm">{article.description}</p>
             </div>
-            <div className="w-20 h-20 bg-gray-300 rounded-md  drop-shadow flex-shrink-0" style={{ backgroundImage: `url(${article.imageSrc})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
+            <div className="w-20 h-20 bg-gray-300 rounded-2xl  drop-shadow flex-shrink-0" style={{ backgroundImage: `url(${article.imageSrc})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
           </div>
         ))}
         </div>

@@ -84,7 +84,7 @@ const categoryColors = getColorByCategory(post.category);
 
 
   return (
-    <div className='w-full h-auto rounded-lg drop-shadow bg-[#ffffff] bg-opacity-90 p-6 mr-8 my-6 '>
+    <div className='w-full h-auto rounded-2xl drop-shadow-sm bg-[#ffffff] p-6 mr-8 my-6 '>
       {/* Heart Button Placeholder at the top right corner */}
       <div className="absolute top-7 right-6">
         {/* Placeholder for the heart button, replace with actual HeartButton component or icon */}
@@ -116,7 +116,7 @@ const categoryColors = getColorByCategory(post.category);
       </div>
 
       <div className="flex items-center">
-        <Button variant="outline" size="icon" className='bg-white drop-shadow bg-opacity-100'>
+        <Button variant="outline" size="icon" className='bg-white drop-shadow-sm '>
           <Avatar src={post.user.image} />
         </Button>
         <div className="ml-3 flex flex-col">
@@ -133,7 +133,7 @@ const categoryColors = getColorByCategory(post.category);
       <div className=" pl-1 mt-3">
         <p className='text-sm'>{post.content}</p>
         {post.imageSrc && (
-          <div className="mt-3 mb-4 rounded-md drop-shadow " style={{ maxWidth: '100%', overflow: 'hidden', position: 'relative' }}>
+          <div className="mt-3 mb-4 rounded-2xl drop-shadow " style={{ maxWidth: '100%', overflow: 'hidden', position: 'relative' }}>
           <Image src={post.imageSrc} alt="Post Image" layout='responsive' objectFit="contain" width={500} height={300} />
         </div>
         )}

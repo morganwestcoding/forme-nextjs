@@ -18,7 +18,7 @@ const ContentInput: React.FC<ContentInputProps> = ({ currentUser, imageSrc, cont
     return (
         <>
         <textarea
-            className="ml-3 text-base py-2 px-3 border rounded-lg flex-1 min-h-[50px]"
+            className="ml-3 text-base py-2 px-3 border rounded-2xl flex-1 min-h-[50px]"
             placeholder={`${currentUser ? currentUser.name : 'User'}, what's on your mind?`}
             value={content}
             onChange={handleInputChange}

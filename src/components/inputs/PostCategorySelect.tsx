@@ -20,15 +20,15 @@ const PostCategorySelect: React.FC<PostCategorySelectProps> = ({
 
   return (
     <div className="relative inline-block">
-      <Button className='rounded-xl bg-[#ffffff] drop-shadow-sm hover:bg-slate-100 p-5 py-2 -mb-2 text-black' onClick={() => setShowDropdown(!showDropdown)}>
+      <Button className='drop-shadow-sm rounded-2xl bg-[#ffffff] hover:bg-slate-100 p-5 py-2 -mb-1 text-[#4d4d4d] ' onClick={() => setShowDropdown(!showDropdown)}>
         Submit
       </Button>
       {showDropdown && (
-    <div className="absolute left-1/2 transform -translate-x-1/2 w-48 text-xs bg-opacity-90 bg-black p-3 rounded-lg mt-3 z-[100] grid grid-cols-2 gap-x-2 gap-y-2" >
+    <div className="absolute left-1/2 transform -translate-x-1/2 w-48 text-xs bg-opacity-90 bg-black p-3 rounded-2xl mt-3 z-[100] grid grid-cols-2 gap-x-2 gap-y-2" >
       {categories.map((category, index) => (
         <div 
           key={category.label} 
-          className={`flex items-center justify-center font-medium bg-opacity-95 w-20 hover:bg-gray-100 hover:text-black text-white border-0.5 border-white cursor-pointer rounded-lg ${category.color} p-2`}
+          className={`flex items-center justify-center font-medium bg-opacity-95 w-20 hover:bg-gray-100 hover:text-black text-white border-0.5 border-white cursor-pointer rounded-2xl ${category.color} p-2`}
           // This ensures each category is at least 150px wide
           onClick={() => handleCategorySelect(category.label)}
         >

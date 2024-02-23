@@ -2,6 +2,12 @@
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import BusinessCenterRoundedIcon from '@mui/icons-material/BusinessCenterRounded';
+import CottageRoundedIcon from '@mui/icons-material/CottageRounded';
+import StorefrontOutlinedIcon from '@mui/icons-material/StorefrontOutlined';
+import BookmarksRoundedIcon from '@mui/icons-material/BookmarksRounded';
+import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';
+import WorkOutlineOutlinedIcon from '@mui/icons-material/WorkOutlineOutlined';
 import {
   Tooltip,
   TooltipContent,
@@ -30,7 +36,7 @@ export default function Sidebar() {
   return (
     
     <div className="fixed top-0 flex h-screen z-50">
-      <div className="flex flex-col items-center w-48 h-full rounded-r-md  bg-[#ffffff] bg-opacity-80 drop-shadow dark:shadow-lg dark:border dark:border-gray-600 p-10" >
+      <div className="flex flex-col items-center w-52 h-full backdrop-blur-sm  bg-[#ffffff97] bg-opacity-80 drop-shadow dark:shadow-lg dark:border dark:border-gray-6.500 p-10" >
         <Logo/>
         <div className="flex flex-col item-center pt-9 text-xs font-bold text-[#4d4d4d] opacity-75">
           MENU
@@ -43,7 +49,7 @@ export default function Sidebar() {
           <li className="flex items-center mb-5 pt-5">
             <Tooltip >
                 <TooltipTrigger>
-          <Image src="/icons/house.svg" alt="Home" width={24} height={24} className="opacity-75 text-[#7d8085]  cursor-pointer" onClick={() => router.push('/')}/>
+          <CottageRoundedIcon className="w-6.5 h-6.5 opacity-75 text-[#7d8085]  cursor-pointer" onClick={() => router.push('/')}/>
                 </TooltipTrigger>
                 
                 <TooltipContent side="right">
@@ -52,13 +58,14 @@ export default function Sidebar() {
             </Tooltip>
           </li>
         </TooltipProvider>
+
           {/* Market Icon with Tooltip */}
         <TooltipProvider delayDuration={100}>
           <li className="flex items-center mb-5">
             <Tooltip >
               
                 <TooltipTrigger>
-            <Image src="/icons/shop.svg" alt="Shop" width={24} height={24} className="opacity-75 text-[#7d8085]  cursor-pointer" onClick={() => router.push('/market')}/>
+            <StorefrontOutlinedIcon className="w-6.5 h-6.5 opacity-75 text-[#7d8085] font-light cursor-pointer" onClick={() => router.push('/market')}/>
                 </TooltipTrigger>
 
                 <TooltipContent side="right" >
@@ -73,8 +80,9 @@ export default function Sidebar() {
             <li className="flex items-center mb-5">
              <Tooltip >
                 <TooltipTrigger>
-          <Image src="/icons/archive-tick.svg" alt="Home" width={24} height={24} className="opacity-75 text-[#7d8085] " onClick={() => router.push('/favorites')}/>
+          <BookmarksRoundedIcon className="w-6.5 h-6.5 opacity-75 text-[#7d8085] " onClick={() => router.push('/favorites')}/>
                 </TooltipTrigger>
+
                 <TooltipContent side="right" >
                   <p>Favorites</p>
                 </TooltipContent>
@@ -87,7 +95,7 @@ export default function Sidebar() {
           <li className="flex items-center mb-5">
             <Tooltip >
                 <TooltipTrigger>
-          <Image src="/icons/briefcase.svg" alt="Home" width={24} height={24} className="h-6 w-6 opacity-75 text-[#7d8085] " />
+          <BusinessCenterRoundedIcon className="w-6.5 h-6.5 opacity-75 text-[#7d8085] " />
                 </TooltipTrigger>
                 <TooltipContent side="right" >
                 <p>Jobs</p>
@@ -100,7 +108,7 @@ export default function Sidebar() {
           <li className="flex items-center mb-5">
           <Tooltip >
                 <TooltipTrigger>
-          <Image src="/icons/calendar-2.svg" alt="Home" width={24} height={24} className="opacity-75 text-[#7d8085] " onClick={() => router.push('/reservations')}/>
+          <CalendarMonthOutlinedIcon className="w-6.5 h-6.5 opacity-75 text-[#7d8085] " onClick={() => router.push('/reservations')}/>
                 </TooltipTrigger>
                 <TooltipContent side="right" >
                 <p>Bookings</p>
@@ -110,22 +118,11 @@ export default function Sidebar() {
         </TooltipProvider>  
   
         </ul>
-        <div className="list-none p-0 m-0">
-        <CloseFriends/>
+        
       
         </div>
         
       </div>
-      
-       
-        {/* Arrow button when expanded */}
-        <button onClick={toggleCollapse} className="fixed top-1/2 left-40 transform -translate-y-1/2 translate-x-4 rounded-r-full h-32 ml-4 p-3 bg-white drop-shadow-sm z-50">
-        </button>
-        
-         {/* Category Bar */}
-        <div className={`relative flex flex-col ${isCollapsed ? 'w-0 z-40' : 'w-48 z-40'} overflow-hidden transition-width duration-300 h-full rounded-r-4xl bg-[#0c0c0d] bg-opacity-90`}>
-        <Categories/>
-      </div>
-    </div>
+
   )
 }

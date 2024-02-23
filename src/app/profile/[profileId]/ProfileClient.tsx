@@ -29,7 +29,7 @@ const ProfileClient: React.FC<ProfileClientProps> = ({ user, posts }) => {
           ))}
         </div>
         <div className="flex-grow w-[45%] ml-4">
-        <ProfileRightbar/>
+        <ProfileRightbar user={user}/>
           {/*<ProfileInfo user={user} />
           <ProfileImages user={user} />
           <UserListings listings={listings} />*/}

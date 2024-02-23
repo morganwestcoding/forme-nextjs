@@ -1,9 +1,10 @@
 import React, { useState, useCallback } from 'react';
 import { CldUploadWidget } from "next-cloudinary";
-import Image from "next/image";
+import { Image } from 'lucide-react';
 import { TbPhotoPlus } from 'react-icons/tb';
 import { SafeUser } from '@/app/types';
-import { IoImage } from "react-icons/io5";
+import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
+
 
 const uploadPreset = "cs0am6m7";
 
@@ -32,7 +33,7 @@ const AddPostImage: React.FC<AddPostImageProps> = ({ currentUser, onImageUpload 
         >
             {({ open }) => (
                 <div className="relative inline-block" onClick={() => open?.()}>
-                    <Image src="/icons/image.svg" alt="camera" width={25} height={25} className='mr-2 drop-shadow-sm'/>
+                    <ImageOutlinedIcon  width={24} height={24} className='mr-2'/>
                     
                     {/*{imageSrc && (
                         <div className="absolute inset-0 w-full h-full">

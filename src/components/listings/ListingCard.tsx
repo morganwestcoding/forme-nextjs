@@ -121,14 +121,14 @@ const categoryColors = getColorByCategory(data.category);
       
       className="col-span-1 "
     >
-      <div className="bg-[#ffffff] bg-opacity-80 rounded-xl flex flex-col gap-2 w-52 shadow-md">
+      <div className="bg-[#ffffff] rounded-2xl flex flex-col gap-2 w-52 shadow-md">
         <div 
           className="
             w-full
             h-36
             relative 
             overflow-hidden 
-            rounded-t-lg
+            rounded-t-2xl
             cursor-pointer group
           "
         >
