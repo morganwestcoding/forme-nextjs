@@ -8,7 +8,7 @@ import Avatar from '../ui/avatar';
 import { SafeUser } from '@/app/types';
 import axios from 'axios';
 import { Button } from '../ui/button';
-
+import AttachFileRoundedIcon from '@mui/icons-material/AttachFileRounded';
 import PostCategorySelect from '../inputs/PostCategorySelect';
 
 interface ShareProps {
@@ -71,9 +71,9 @@ const Share: React.FC<ShareProps> = ({ currentUser }) => {
   return (
     <div className='w-full h-auto rounded-2xl shadow-sm bg-[#ffffff] p-6'>
       <div className="flex items-center">
-      <Button variant="outline" size="icon" className='bg-white drop-shadow-sm bg-opacity-100'>
+      <div className='drop-shadow-sm'>
       <Avatar src={currentUser?.image ?? undefined} />
-      </Button>
+      </div>
         <ContentInput
           currentUser={currentUser}
           content={content}
@@ -81,9 +81,12 @@ const Share: React.FC<ShareProps> = ({ currentUser }) => {
           imageSrc={imageSrc}
         />
       </div>
-      <div className="mt-4 flex items-center justify-between -mb-1">
-        <div className="flex items-center p-2 px-3 drop-shadow-sm rounded-2xl bg-[#ffffff]">
-          <AddPostImage
+      <div className="mt-4 flex items-center justify-between -mb-1 ">
+        <div className="flex items-center p-1 pb-2 px-2 rounded-2xl shadow-sm bg-[#48DBFB] ">
+        <div className="flex items-center justify-center bg-[#ffffff] rounded-full p-1 cursor-pointer -mb-1 drop-shadow-sm mr-2">
+          <AttachFileRoundedIcon className="w-4 h-4 text-[#48DBFB]" />
+          </div>
+        {/*  <AddPostImage
             currentUser={currentUser} 
             onImageUpload={setImageSrc} 
           />
@@ -93,10 +96,13 @@ const Share: React.FC<ShareProps> = ({ currentUser }) => {
           <AddTagInput
             currentUser={currentUser}
             onTagSubmit={setTag}/>
-        </div>
+              */}
+
         <PostCategorySelect
           onCategorySelected={setCategory}
-        />
+  /> 
+        </div>
+      
       </div>
     </div>
   );

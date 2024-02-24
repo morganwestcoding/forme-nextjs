@@ -36,66 +36,66 @@ export default function Sidebar() {
   return (
     
     <div className="fixed top-0 flex h-screen z-50">
-      <div className="flex flex-col items-center w-56 h-full p-10 bg-[#ffffff] drop-shadow-sm" >
+      <div className="flex flex-col items-center w-56 h-full p-10 bg-[#ffffff] rounded-r-2xl drop-shadow-sm" >
         <Logo/>
-        <div className="flex flex-col item-center pt-9 text-xs font-bold text-[#000000]">
-          MENU
+        <div className="flex flex-col item-center pt-9 text-xs font-bold text-[#000000] mb-6">
+          Menu
         </div>
         
         <ul className="list-none m-0 p-0 ">
         
         {/* Home Icon with Tooltip */}
    
-          <li className="flex items-center mb-5 pt-5">
-
-          <CottageRoundedIcon className="w-6.5 h-6.5 text-[#000000]  cursor-pointer" onClick={() => router.push('/')}/>
-
-                  <span className="ml-2 text-black text-xs font-bold uppercase">Home</span>
+          <li className="flex items-center mb-5 p-2 px-4 rounded-2xl shadow-sm border-[#48DBFB] border ">
+          <div className="flex items-center justify-center bg-[#48DBFB] rounded-full p-1 cursor-pointer drop-shadow-sm" onClick={() => router.push('/')}>
+          <CottageRoundedIcon className="w-4 h-4 text-[#ffffff]"/>
+          </div>
+                  <span className="ml-2 text-black text-xs font-medium ">Home</span>
 
           </li>
 
 
           {/* Market Icon with Tooltip */}
    
-          <li className="flex items-center mb-5">
- 
-            <StorefrontRoundedIcon className="w-6.5 h-6.5 text-[#000000] font-light cursor-pointer" onClick={() => router.push('/market')}/>
-         
-            <span className="ml-2 text-black text-xs font-bold uppercase">Market</span>
+          <li className="flex items-center mb-5 p-2 px-4 rounded-2xl shadow-sm">
+          <div className="flex items-center justify-center bg-[#b7b7b7] rounded-full p-1 cursor-pointer drop-shadow-sm" onClick={() => router.push('/market')}>
+            <StorefrontRoundedIcon className="w-4 h-4 text-[#ffffff]" />
+            </div>
+            <span className="ml-2 text-black text-xs font-medium ">Market</span>
         
             </li>
         
 
            {/* Favorites Icon with Tooltip */}
        
-            <li className="flex items-center mb-5">
- 
-          <BookmarkRoundedIcon className="w-6.5 h-6.5 text-[#000000] " onClick={() => router.push('/favorites')}/>
-                
+            <li className="flex items-center mb-5 p-2 px-4 rounded-2xl shadow-sm">
+          <div className="flex items-center justify-center bg-[#b7b7b7] rounded-full p-1 cursor-pointer drop-shadow-sm" onClick={() => router.push('/favorites')}>
+          <BookmarkRoundedIcon className="w-4 h-4 text-[#ffffff]"/>
+          </div>     
 
            
-          <span className="ml-2 text-black text-xs font-bold uppercase">Favorites</span>
+          <span className="ml-2 text-black text-xs font-medium ">Favorites</span>
      
             </li>
        
 
          {/* Job Icon with Tooltip */}
   
-          <li className="flex items-center mb-5">
-     
-          <WorkRoundedIcon className="w-6.5 h-6.5 text-[#000000] " />
-             
-          <span className="ml-2 text-black text-xs font-bold uppercase">Jobs</span>
+          <li className="flex items-center mb-5 p-2 px-4 rounded-2xl shadow-sm">
+          <div className="flex items-center justify-center bg-[#b7b7b7] rounded-full p-1 cursor-pointer drop-shadow-sm">
+          <WorkRoundedIcon className="w-4 h-4 text-[#ffffff]" />
+          </div>
+          <span className="ml-2 text-black text-xs font-medium ">Jobs</span>
             
        
           </li>
         
 
-          <li className="flex items-center mb-5">
-     
-          <EventNoteRoundedIcon className="w-6.5 h-6.5 text-[#000000] " onClick={() => router.push('/reservations')}/>
-              
-          <span className="ml-2 text-black text-xs font-bold uppercase">Bookings</span>
+          <li className="flex items-center mb-5 p-2 px-4 rounded-2xl shadow-sm">
+          <div className="flex items-center justify-center bg-[#b7b7b7] rounded-full p-1 cursor-pointer drop-shadow-sm" onClick={() => router.push('/reservations')}>
+          <EventNoteRoundedIcon className="w-4 h-4 text-[#ffffff]" />
+          </div>
+          <span className="ml-2 text-black text-xs font-medium ">Bookings</span>
             
           </li>
 

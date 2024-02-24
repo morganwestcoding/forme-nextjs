@@ -24,9 +24,9 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({ user }) => {
          objectFit="cover" 
          className="rounded-2xl" 
          alt="Background" />
-        <div className="absolute inset-0 bg-black bg-opacity-50 rounded-2xl"></div>
+        <div className="absolute inset-0 bg-black bg-opacity-20 rounded-2xl"></div>
 
-        <div className="w-5/12 h-40 bg-white bg-opacity-95 rounded-2xl flex shadow-md z-50">
+        <div className="w-5/12 h-40 bg-white rounded-2xl flex shadow-md z-50">
           <div className="relative w-48 h-full flex justify-center items-center z-50">
             <Image
               src={image || "/people/chicken-headshot.jpeg"}
