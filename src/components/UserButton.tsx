@@ -15,6 +15,7 @@ import useLoginModal from "@/app/hooks/useLoginModal";
 import { SafePost, SafeUser } from "@/app/types";
 import useRentModal from "@/app/hooks/useRentModal";
 import useProfileModal from "@/app/hooks/useProfileModal";
+import useGalleryModal from "@/app/hooks/useGalleryModal";
 import ProfileModal from "./modals/ProfileModal";
 
 interface UserButtonProps {
@@ -32,6 +33,7 @@ const UserButton: React.FC<UserButtonProps> = ({
   const registerModal = useRegisterModal();
   const rentModal = useRentModal();
   const profileModal = useProfileModal();
+  const galleryModal = useGalleryModal();
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -65,12 +67,12 @@ const UserButton: React.FC<UserButtonProps> = ({
     <DropdownMenuItem
     onClick={() => router.push(`/profile/${currentUser.id}`)}>Profile</DropdownMenuItem>
     <DropdownMenuItem onClick={profileModal.onOpen}>Edit Profile</DropdownMenuItem>
+    <DropdownMenuItem onClick={galleryModal.onOpen}>Add Image</DropdownMenuItem>
     <DropdownMenuItem
     onClick={() => router.push('/properties')}>Manage Listings</DropdownMenuItem>
     <DropdownMenuItem
     onClick={() => router.push('/trips')}>My Appointments</DropdownMenuItem>
     <DropdownMenuItem>Subscription</DropdownMenuItem>
-    <DropdownMenuItem onClick={() => signOut()}>Edit My Profile</DropdownMenuItem>
     <DropdownMenuItem onClick={() => signOut()}>Sign Out</DropdownMenuItem>
     </>
     ) : (

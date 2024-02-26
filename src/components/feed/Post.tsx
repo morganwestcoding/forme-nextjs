@@ -7,8 +7,8 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { categories } from "../Categories";
 import { GoBookmark,GoBookmarkFill } from 'react-icons/go';
-
-
+import ArrowUpwardRoundedIcon from '@mui/icons-material/ArrowUpwardRounded';
+import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded';
 
 interface PostData {
   
@@ -97,28 +97,17 @@ const categoryColors = getColorByCategory(post.category);
         cursor-pointer
       "
     >
-      <GoBookmark
-        size={32}
-        className="
-        drop-shadow-sm
-          fill-white
-          absolute
-          -top-[2px]
-          -right-[2px]
-        "
-      />
-      <GoBookmarkFill
-        size={28}
-        className='fill-neutral-500/70'
-        
-      />
+
+      <div className={`text-sm drop-shadow-sm bg-white border ${categoryColors.borderColorClass} p-3 py-1 rounded-xl ${categoryColors.textColorClass}`}>
+                {post.category}
+            </div>
     </div>
       </div>
 
       <div className="flex items-center">
-        <Button variant="outline" size="icon" className='bg-white drop-shadow-sm '>
+        <div className='drop-shadow'>
           <Avatar src={post.user.image} />
-        </Button>
+          </div>
         <div className="ml-3 flex flex-col">
           <div className="flex items-center">
             <div className="font-semibold pr-1 text-sm">{post.user.name}</div>
@@ -140,14 +129,16 @@ const categoryColors = getColorByCategory(post.category);
 
         {/* Bottom */}
         <div className="flex justify-start items-center"> {/* Adjusted class here for left alignment */}
-          <div className="flex items-center bg-white p-2 rounded-lg drop-shadow-sm">
-            <Image src="/icons/arrow-up-3.svg" alt="camera" width={26} height={26} className='mr-2 drop-shadow-sm'/>
-            <Image src="/icons/arrow-down-1.svg" alt="camera" width={26} height={26} className=' drop-shadow-sm'/>
+          <div className="flex items-center bg-[#ffffff] p-2 rounded-2xl border border-[#48DBFB] drop-shadow-sm">
+          <div className="flex items-center justify-center bg-[#48DBFB] rounded-full p-1 cursor-pointer drop-shadow-sm">
+            <ArrowUpwardRoundedIcon className='w-4 h-4 text-white drop-shadow-sm'/>
+            </div>
+            <div className="flex items-center justify-center bg-[#b7b7b7] ml-1 rounded-full p-1 cursor-pointer drop-shadow-sm">
+            <ArrowDownwardRoundedIcon className='w-4 h-4 text-white drop-shadow-sm'/>
+            </div>
           </div>
           <div className="absolute bottom-7 right-6"> {/* Added margin left for spacing */}
-          <div className={`text-sm drop-shadow-sm bg-white border ${categoryColors.borderColorClass} p-3 py-1 rounded-xl ${categoryColors.textColorClass}`}>
-                {post.category}
-            </div>
+          
           </div>
         </div>
       </div>

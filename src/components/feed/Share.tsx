@@ -10,6 +10,8 @@ import axios from 'axios';
 import { Button } from '../ui/button';
 import AttachFileRoundedIcon from '@mui/icons-material/AttachFileRounded';
 import PostCategorySelect from '../inputs/PostCategorySelect';
+import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
+import { IoIosSettings } from "react-icons/io";
 
 interface ShareProps {
   currentUser: SafeUser | null;
@@ -71,7 +73,7 @@ const Share: React.FC<ShareProps> = ({ currentUser }) => {
   return (
     <div className='w-full h-auto rounded-2xl shadow-sm bg-[#ffffff] p-6'>
       <div className="flex items-center">
-      <div className='drop-shadow-sm'>
+      <div className='drop-shadow'>
       <Avatar src={currentUser?.image ?? undefined} />
       </div>
         <ContentInput
@@ -82,10 +84,12 @@ const Share: React.FC<ShareProps> = ({ currentUser }) => {
         />
       </div>
       <div className="mt-4 flex items-center justify-between -mb-1 ">
-        <div className="flex items-center p-1 pb-2 px-2 rounded-2xl shadow-sm bg-[#48DBFB] ">
-        <div className="flex items-center justify-center bg-[#ffffff] rounded-full p-1 cursor-pointer -mb-1 drop-shadow-sm mr-2">
-          <AttachFileRoundedIcon className="w-4 h-4 text-[#48DBFB]" />
+      <div className="flex items-center p-2 px-4 rounded-2xl shadow-sm">
+          <div className="flex items-center justify-center bg-[#b7b7b7] rounded-2xl p-1 cursor-pointer drop-shadow-sm">
+          <AttachFileRoundedIcon className="w-4 h-4 text-[#ffffff]" />
           </div>
+      </div>
+        {/*Submit Button*/}
         {/*  <AddPostImage
             currentUser={currentUser} 
             onImageUpload={setImageSrc} 
@@ -104,7 +108,7 @@ const Share: React.FC<ShareProps> = ({ currentUser }) => {
         </div>
       
       </div>
-    </div>
+   
   );
 };
 

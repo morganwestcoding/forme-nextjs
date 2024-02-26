@@ -11,6 +11,7 @@ import getCurrentUser from './actions/getCurrentUser';
 import Sidebar from '@/components/sidebar/Sidebar';
 import RentModal from '@/components/modals/RentModal';
 import ProfileModal from '@/components/modals/ProfileModal';
+import GalleryModal from '@/components/modals/GalleryModal';
 
 
 export const metadata: Metadata = {
@@ -49,6 +50,7 @@ export default async function RootLayout({
         <ProfileModal/>
         <LoginModal/>
         <RegisterModal/>
+        <GalleryModal/>
         
         
         

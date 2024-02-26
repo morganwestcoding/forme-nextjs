@@ -43,10 +43,10 @@ export default function Sidebar() {
         </div>
         
         <ul className="list-none m-0 p-0 ">
-        
+         
         {/* Home Icon with Tooltip */}
    
-          <li className="flex items-center mb-5 p-2 px-4 rounded-2xl shadow-sm border-[#48DBFB] border ">
+          <li className="flex items-center  mb-5 p-2 px-4 rounded-2xl shadow-sm border-[#48DBFB] border w-44">
           <div className="flex items-center justify-center bg-[#48DBFB] rounded-full p-1 cursor-pointer drop-shadow-sm" onClick={() => router.push('/')}>
           <CottageRoundedIcon className="w-4 h-4 text-[#ffffff]"/>
           </div>
