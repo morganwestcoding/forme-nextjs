@@ -84,11 +84,7 @@ const Share: React.FC<ShareProps> = ({ currentUser }) => {
         />
       </div>
       <div className="mt-4 flex items-center justify-between -mb-1 ">
-      <div className="flex items-center p-2 px-4 rounded-2xl shadow-sm">
-          <div className="flex items-center justify-center bg-[#b7b7b7] rounded-2xl p-1 cursor-pointer drop-shadow-sm">
-          <AttachFileRoundedIcon className="w-4 h-4 text-[#ffffff]" />
-          </div>
-      </div>
+      
         {/*Submit Button*/}
         {/*  <AddPostImage
             currentUser={currentUser} 
@@ -101,7 +97,11 @@ const Share: React.FC<ShareProps> = ({ currentUser }) => {
             currentUser={currentUser}
             onTagSubmit={setTag}/>
               */}
-
+        <div className="flex items-center p-2 px-4 rounded-2xl shadow-sm">
+          <div className="flex items-center justify-center bg-[#b7b7b7] rounded-2xl p-1 cursor-pointer drop-shadow-sm">
+          <AttachFileRoundedIcon className="w-4 h-4 text-[#ffffff]" />
+          </div>
+      </div>
         <PostCategorySelect
           onCategorySelected={setCategory}
   /> 

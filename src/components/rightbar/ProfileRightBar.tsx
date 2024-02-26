@@ -31,6 +31,18 @@ const articles = [
   },
   // ... more articles
 ];
+const placeholderImages = [
+  "/assets/business-2.jpg",
+  "/assets/business-1.jpg",
+  "/assets/business-4.jpg",
+  "/assets/business-3.jpg",
+  "/assets/skyline.jpg",
+  "/assets/scenic view.jpeg",
+  "/assets/water-sample.jpg",
+  "/assets/coral-sample.jpg",
+  "/assets/swimmer-sample.jpg",
+];
+
 
 const ProfileRightbar: React.FC<ProfileRightbarProps> = ({ user, listings  }) => {
 const { bio, createdAt } = user;
@@ -60,7 +72,8 @@ const formattedDate = format(new Date(createdAt), 'PPP'); // Example format: Jan
           </div>
         </div>
 
-{/* New Section: 3x3 Grid of Placeholder Images */}
+
+{/* Gallery Section: 3x3 Grid of Placeholder Images */}
 <div className="w-full md:w-11/12 grid grid-cols-3 gap-0 mx-4 md:mr-20 md:ml-2 bg-transparent bg-opacity-80 rounded-2xl shadow-sm">
   {Array.from({ length: 9 }).map((_, index) => {
     // Determine the class for rounding specific corners based on the square's position
@@ -72,7 +85,13 @@ const formattedDate = format(new Date(createdAt), 'PPP'); // Example format: Jan
 
     const squareClasses = `w-full h-24 bg-white bg-opacity-80 ${cornerClass}`;
     return (
-      <div key={index} className={squareClasses}>
+      <div key={index} className={squareClasses} style={{ position: 'relative' }}>
+      <Image
+      src={placeholderImages[index]}
+      className={squareClasses}
+      layout="fill"
+      objectFit="cover"
+      alt={`Placeholder ${index + 1}`}/>
       
       </div>
     );

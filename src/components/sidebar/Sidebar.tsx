@@ -98,10 +98,8 @@ export default function Sidebar() {
           <span className="ml-2 text-black text-xs font-medium ">Bookings</span>
             
           </li>
-
-  
         </ul>
-        
+        <CloseFriends/>
       
         </div>
         
