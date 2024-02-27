@@ -41,7 +41,7 @@ export default function Rightbar() {
         <div className="px-6 py-6 text-xl font-bold">What&apos;s Happening</div>
         <hr className="border-1.5"/>
         {articles.map((article, index) => (
-          <div key={index} className="flex justify-between items-center hover:bg-[#ffffff] rounded-2xl w-full px-6 py-4" onClick={() => router.push('/articles')}>
+          <div key={index} className="flex justify-between items-center hover:bg-[#e3e8ef]  w-full px-6 py-4" onClick={() => router.push('/articles')}>
             <div>
               <h3 className="text-base font-semibold">{article.title}</h3>
               <p className="text-sm pr-4">{article.description}</p>

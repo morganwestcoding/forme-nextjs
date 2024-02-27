@@ -26,7 +26,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({ user }) => {
          alt="Background" />
         <div className="absolute inset-0 bg-black bg-opacity-20 rounded-2xl"></div>
 
-        <div className="w-5/12 h-40 bg-white rounded-2xl flex shadow-md z-50">
+        <div className="w-5/12 h-40 bg-white  bg-opacity-85 backdrop-blur-sm rounded-2xl flex shadow-sm z-50">
           <div className="relative w-48 h-full flex justify-center items-center z-50">
             <Image
               src={image || "/people/chicken-headshot.jpeg"}
@@ -52,10 +52,10 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({ user }) => {
 
             {/* Follow and Message Buttons */}
             <div className="flex mt-4 gap-0.5 -mb-2 ml-6">
-              <button className='rounded-l-2xl text-sm drop-shadow-sm bg-[#ffffff] w-28 p-2 text-black'>
+              <button className='rounded-2xl text-sm drop-shadow-sm bg-[#ffffff] w-28 p-2 text-black mr-1'>
                 Follow
               </button>
-              <button className='rounded-r-2xl bg-[#ffffff] drop-shadow-sm p-2 text-black'>
+              <button className='rounded-2xl bg-[#ffffff] drop-shadow-sm p-2 px-4 text-black'>
                 <EmailRoundedIcon width={24} height={24} className='drop-shadow-sm' />
               </button>
             </div>

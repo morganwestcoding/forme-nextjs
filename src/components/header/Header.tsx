@@ -4,7 +4,7 @@ import Logo from "./Logo";
 import AddListing from "./AddListing";
 import UserButton from "../UserButton";
 import { SafePost } from "@/app/types";
-
+import Notification from "./Notification";
 import CreateChatButton from "./CreateChatButton";
 
 import { SafeUser } from "@/app/types";
@@ -27,10 +27,10 @@ const Header: React.FC<HeaderProps> = ({
               {/* LanguageSelect */}
 
               <>
-              <CreateChatButton />
+              <AddListing currentUser={currentUser}/>
               </>
-             
-             <AddListing currentUser={currentUser}/>
+            <CreateChatButton />
+             <Notification/>
              <UserButton currentUser={currentUser}
              data={{} as SafePost}  />
             

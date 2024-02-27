@@ -3,9 +3,9 @@ import Image from 'next/image'
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button"
 import { MessageSquarePlusIcon } from "lucide-react"
-import { IoIosMail } from "react-icons/io";
+import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded';
 
-function CreateChatButton() {
+function Notification() {
     const router = useRouter();
 
     const createNewChat = async() => {
@@ -18,9 +18,9 @@ function CreateChatButton() {
     }
   return (
     <Button className="bg-[#ffffff] bg-opacity-25 " onClick={createNewChat} variant={'outline'} size="icon">
-          <IoIosMail  className="w-6 h-6 text-[#ffffff]"/>
+          <NotificationsRoundedIcon  className="w-6 h-6 text-[#ffffff]"/>
       </Button>
   )
 }
 
-export default CreateChatButton
+export default Notification

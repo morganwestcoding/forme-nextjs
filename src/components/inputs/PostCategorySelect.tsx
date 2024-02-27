@@ -21,8 +21,8 @@ const PostCategorySelect: React.FC<PostCategorySelectProps> = ({
 
   return (
     <div className="relative inline-block">
-      <Button className='drop-shadow-sm rounded-2xl bg-[#ffffff] border-[#48DBFB] border  hover:bg-slate-100 p-5 py-2 -mb-1 text-[#4d4d4d] text-xs font-medium ' onClick={() => setShowDropdown(!showDropdown)}>
-      <div className="flex items-center justify-center bg-[#48DBFB] rounded-full p-1 cursor-pointer drop-shadow-sm -ml-2">
+      <Button className='drop-shadow-sm rounded-2xl bg-[#ffffff] hover:border-[#48DBFB] hover:border  hover:bg-slate-100 p-3 text-[#4d4d4d] text-xs font-medium ' onClick={() => setShowDropdown(!showDropdown)}>
+      <div className="flex items-center justify-center bg-[#b7b7b7] hover:bg-[#48DBFB] rounded-full p-1 cursor-pointer drop-shadow-sm ml-1">
           <SendRoundedIcon className="pl-0.5 w-4 h-4 text-[#ffffff]"/>   
           </div>
         <span className='ml-2'>Post</span>

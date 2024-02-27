@@ -6,7 +6,7 @@ import { MessageSquarePlusIcon } from "lucide-react"
 import { SafeUser } from "@/app/types";
 import useRentModal from "@/app/hooks/useRentModal";
 import { useCallback, useState } from "react";
-
+import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import useRegisterModal from "@/app/hooks/useRegisterModal";
 import useLoginModal from "@/app/hooks/useLoginModal";
 
@@ -31,7 +31,11 @@ const AddListing: React.FC<AddListingProps> = ({
   }, [rentModal]);
 
   return (
-    <Button className="bg-[#ffffff] text-[#FB6848] " onClick={onRent}  variant={'outline'} size="icon"><Image src="/icons/add.svg" width={24} height={24} alt="add service" className="opacity-75 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 text-[#FFFFFF]"/></Button>
+    <Button className="bg-[#ffffff] bg-opacity-25 " onClick={onRent} variant={'outline'} size="icon">
+    
+          <AddRoundedIcon className="w-6 h-6 text-[#ffffff]"/>
+
+      </Button>
   )
 }
 

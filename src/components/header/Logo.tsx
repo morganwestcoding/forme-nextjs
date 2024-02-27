@@ -6,7 +6,7 @@ import { AspectRatio } from '../ui/aspect-ratio';
 function Logo() {
   return (
     <Link href="/" prefetch={false} className='overflow-hidden'>
-      <div className='flex items-center w-14 h-14 p-2'>
+      <div className='flex items-center w-12 h-12 p-2'>
        
 
       <AspectRatio ratio={16 / 9}

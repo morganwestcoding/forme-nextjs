@@ -8,10 +8,11 @@ import Avatar from '../ui/avatar';
 import { SafeUser } from '@/app/types';
 import axios from 'axios';
 import { Button } from '../ui/button';
-import AttachFileRoundedIcon from '@mui/icons-material/AttachFileRounded';
+
 import PostCategorySelect from '../inputs/PostCategorySelect';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import { IoIosSettings } from "react-icons/io";
+import Attachment from '../inputs/Attachment';
 
 interface ShareProps {
   currentUser: SafeUser | null;
@@ -71,7 +72,7 @@ const Share: React.FC<ShareProps> = ({ currentUser }) => {
   };
 
   return (
-    <div className='w-full h-auto rounded-2xl shadow-sm bg-[#ffffff] p-6'>
+    <div className='w-full h-auto rounded-2xl shadow-sm bg-[#ffffff] bg-opacity-85 p-6'>
       <div className="flex items-center">
       <div className='drop-shadow'>
       <Avatar src={currentUser?.image ?? undefined} />
@@ -84,7 +85,7 @@ const Share: React.FC<ShareProps> = ({ currentUser }) => {
         />
       </div>
       <div className="mt-4 flex items-center justify-between -mb-1 ">
-      
+
         {/*Submit Button*/}
         {/*  <AddPostImage
             currentUser={currentUser} 
@@ -97,14 +98,15 @@ const Share: React.FC<ShareProps> = ({ currentUser }) => {
             currentUser={currentUser}
             onTagSubmit={setTag}/>
               */}
-        <div className="flex items-center p-2 px-4 rounded-2xl shadow-sm">
-          <div className="flex items-center justify-center bg-[#b7b7b7] rounded-2xl p-1 cursor-pointer drop-shadow-sm">
-          <AttachFileRoundedIcon className="w-4 h-4 text-[#ffffff]" />
-          </div>
-      </div>
+
+   {/* Wrap Attachment and PostCategorySelect in a new flex container */}
+   <div className="flex-grow">
+          {/* Placeholder for other components or spacing */}
+        </div>
+        <Attachment />
         <PostCategorySelect
           onCategorySelected={setCategory}
-  /> 
+        />
         </div>
       
       </div>
