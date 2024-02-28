@@ -12,36 +12,38 @@ interface PostCategorySelectProps {
 const PostCategorySelect: React.FC<PostCategorySelectProps> = ({
   onCategorySelected,
 }) => {
-  const [showDropdown, setShowDropdown] = useState(false);
+  const [showCategories, setShowCategories] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   const handleCategorySelect = (category: string) => {
     onCategorySelected(category);
-    setShowDropdown(false);
+    setShowCategories(false);
   };
 
   return (
-    <div className="relative inline-block">
-      <Button className='drop-shadow-sm rounded-2xl bg-[#ffffff] hover:border-[#48DBFB] hover:border  hover:bg-slate-100 p-3 text-[#4d4d4d] text-xs font-medium ' onClick={() => setShowDropdown(!showDropdown)}>
-      <div className="flex items-center justify-center bg-[#b7b7b7] hover:bg-[#48DBFB] rounded-full p-1 cursor-pointer drop-shadow-sm ml-1">
-          <SendRoundedIcon className="pl-0.5 w-4 h-4 text-[#ffffff]"/>   
-          </div>
-        <span className='ml-2'>Post</span>
-      </Button>
-      {showDropdown && (
-    <div className="absolute left-1/2 transform -translate-x-1/2 w-48 text-xs bg-opacity-90 bg-black p-3 rounded-2xl mt-3 z-[100] grid grid-cols-2 gap-x-2 gap-y-2" >
-      {categories.map((category, index) => (
+    <div className="relative inline-flex items-center">
+    {showCategories && (
+      categories.map((category, index) => (
         <div 
           key={category.label} 
-          className={`flex items-center justify-center font-medium bg-opacity-95 w-20 hover:bg-gray-100 hover:text-black text-white border-white cursor-pointer rounded-2xl ${category.color} py-3 `}
-          // This ensures each category is at least 150px wide
+          className={`mr-1 w-6 h-6 rounded-full cursor-pointer ${category.color}`}
           onClick={() => handleCategorySelect(category.label)}
-        >
-          {category.label}
-        </div>
-      ))}
-    </div>
-  )}
-    </div>
+          title={category.label} // Tooltip to show the label on hover
+        />
+      ))
+    )}
+    <Button 
+      className='drop-shadow-sm rounded-full bg-[#ffffff] hover:border-[#48DBFB] hover:bg-white border border-transparent px-2 p-2 pr-4 text-[#4d4d4d] text-xs font-medium'
+      onClick={() => setShowCategories(!showCategories)}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <div className={`flex items-center justify-center ${isHovered ? 'bg-[#48DBFB]' : 'bg-[#b7b7b7]'} rounded-full p-1 cursor-pointer drop-shadow-sm`}>
+        <SendRoundedIcon className={`pl-0.5 w-4 h-4 text-[#ffffff]`} />
+      </div>
+      <span className='ml-2'>Post</span>
+    </Button>
+  </div>
   );
 };
 

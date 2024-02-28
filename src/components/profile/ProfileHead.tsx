@@ -4,7 +4,7 @@ import React from 'react';
 import Image from 'next/image';
 import HeaderUpload from '../inputs/HeaderUpload';
 import { SafeProfile } from '@/app/types';
-import EmailRoundedIcon from '@mui/icons-material/EmailRounded';
+import { IoIosMail } from "react-icons/io";
 
 interface ProfileHeadProps {
   user: SafeProfile;
@@ -52,12 +52,14 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({ user }) => {
 
             {/* Follow and Message Buttons */}
             <div className="flex mt-4 gap-0.5 -mb-2 ml-6">
-              <button className='rounded-2xl text-sm drop-shadow-sm bg-[#ffffff] w-28 p-2 text-black mr-1'>
+              <button className='rounded-full text-xs drop-shadow-sm bg-[#ffffff] w-28 p-2 text-black mr-1'>
                 Follow
               </button>
-              <button className='rounded-2xl bg-[#ffffff] drop-shadow-sm p-2 px-4 text-black'>
-                <EmailRoundedIcon width={24} height={24} className='drop-shadow-sm' />
-              </button>
+              <div className="flex items-center p-2 rounded-full shadow-sm mr-2 bg-white bg-opacity-25 border border-white">
+
+    <IoIosMail className="w-6 h-6 text-[#ffffff]" />
+    
+</div>
             </div>
           </div>
         </div>
