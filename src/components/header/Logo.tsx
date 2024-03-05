@@ -1,27 +1,22 @@
-import LogoImage from '@logos/black.png';
+import LogoImage from '@logos/logo-white.png';
 import Link from "next/link";
 import Image from 'next/image';
 import { AspectRatio } from '../ui/aspect-ratio';
 
 function Logo() {
   return (
-    <Link href="/" prefetch={false} className='overflow-hidden'>
-      <div className='flex items-center w-12 h-12 p-2'>
-       
-
-      <AspectRatio ratio={16 / 9}
-      className='flex items-center justify-center'>
-          <Image
-            priority
-            src={LogoImage}
-            alt="ForMe Logo"
-            className='dark:filter dark:invert'
-            />
-        </AspectRatio>
-
-    
-      </div>  
-    </Link>
+    <Link href="/" prefetch={false}>
+    <div className='relative w-24 h-24 p-2 -mb-4 -mt-6 overflow-hidden'>
+      <Image
+        priority
+        src={LogoImage}
+        alt="ForMe Logo"
+        layout='fill'
+        objectFit='contain' // Adjust as needed
+        className='invert'
+      />
+    </div>
+  </Link>
   )
 }
 

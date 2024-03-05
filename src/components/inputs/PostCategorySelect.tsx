@@ -22,7 +22,14 @@ const PostCategorySelect: React.FC<PostCategorySelectProps> = ({
 
   return (
     <div className="relative inline-flex items-center">
-    {showCategories && (
+    
+    <Button 
+      className='drop-shadow-sm rounded-full bg-[#ffffff] hover:border-[#48DBFB] hover:bg-white border border-transparent px-2 p-2 pr-4 text-[#4d4d4d] text-xs font-medium'
+      onClick={() => setShowCategories(!showCategories)}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {showCategories && 
       categories.map((category, index) => (
         <div 
           key={category.label} 
@@ -31,13 +38,7 @@ const PostCategorySelect: React.FC<PostCategorySelectProps> = ({
           title={category.label} // Tooltip to show the label on hover
         />
       ))
-    )}
-    <Button 
-      className='drop-shadow-sm rounded-full bg-[#ffffff] hover:border-[#48DBFB] hover:bg-white border border-transparent px-2 p-2 pr-4 text-[#4d4d4d] text-xs font-medium'
-      onClick={() => setShowCategories(!showCategories)}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
+    }
       <div className={`flex items-center justify-center ${isHovered ? 'bg-[#48DBFB]' : 'bg-[#b7b7b7]'} rounded-full p-1 cursor-pointer drop-shadow-sm`}>
         <SendRoundedIcon className={`pl-0.5 w-4 h-4 text-[#ffffff]`} />
       </div>

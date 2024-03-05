@@ -2,6 +2,8 @@ import React from 'react';
 import { SafeProfile, SafeListing } from '@/app/types';
 import Image from 'next/image';
 import format from 'date-fns/format'; 
+import WhereToVoteRoundedIcon from '@mui/icons-material/WhereToVoteRounded';
+import EventAvailableRoundedIcon from '@mui/icons-material/EventAvailableRounded';
 
 interface ProfileRightbarProps {
   user: SafeProfile;
@@ -59,12 +61,16 @@ const formattedDate = format(new Date(createdAt), 'PPP'); // Example format: Jan
               </p>
               <ul>
              {/* Adjusted list items to include flex layout for icon and text alignment */}
-             <li className="flex items-center pb-1">
-                <Image src="/icons/location-tick-outline.svg" alt='notification-bell' width={21} height={21}/>
+             <li className="flex items-center pb-1"> 
+              <div className="flex items-center justify-center bg-[#48DBFB] rounded-2xl p-1  cursor-pointer drop-shadow-sm">
+              <WhereToVoteRoundedIcon className="w-4 h-4 text-[#ffffff]" />
+              </div>
                 <span className="ml-2">Your Location Here</span>
               </li>
               <li className="flex items-center">
-                <Image src="/icons/calendar-tick.svg" alt='notification-bell' width={21} height={21}/>
+              <div className="flex items-center justify-center bg-[#48DBFB] rounded-2xl p-1  cursor-pointer drop-shadow-sm">
+              <EventAvailableRoundedIcon className="w-4 h-4 text-[#ffffff]" />
+              </div>
                 <span className="ml-2">Joined {formattedDate}</span> {/* Display the formatted creation date here */}
               </li>
               </ul>

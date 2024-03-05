@@ -125,7 +125,7 @@ const categoryColors = getColorByCategory(data.category);
         <div 
           className="
             w-full
-            h-36
+            h-32
             relative 
             overflow-hidden 
             rounded-t-2xl
@@ -165,7 +165,7 @@ const categoryColors = getColorByCategory(data.category);
         </div>
         
         {/* Title */}
-        <div className="font-semibold text-sm capitalize px-4">
+        <div className="font-medium text-sm capitalize px-4">
           {data.title}
         </div>
 {/* Location */}
