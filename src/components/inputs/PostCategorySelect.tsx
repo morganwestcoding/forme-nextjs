@@ -39,10 +39,10 @@ const PostCategorySelect: React.FC<PostCategorySelectProps> = ({
         />
       ))
     }
-      <div className={`flex items-center justify-center ${isHovered ? 'bg-[#48DBFB]' : 'bg-[#b7b7b7]'} rounded-full p-1 cursor-pointer drop-shadow-sm`}>
-        <SendRoundedIcon className={`pl-0.5 w-4 h-4 text-[#ffffff]`} />
+      <div className='flex items-center justify-center  rounded-2xl p-1 cursor-pointer drop-shadow-sm'>
+        <SendRoundedIcon className='pl-0.5 w-5 h-5 text-[#8d8d8d]'/>
       </div>
-      <span className='ml-2'>Post</span>
+      <span className='font-light text-[#717171]'>Post</span>
     </Button>
   </div>
   );

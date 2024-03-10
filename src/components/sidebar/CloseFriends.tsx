@@ -1,35 +1,56 @@
-import React from 'react'
-import Image from 'next/image'
+import React from 'react';
+import Image from 'next/image';
 
 function CloseFriends() {
   return (
     <div className='pt-4'>
-      <div className='pb-5 font-medium text-xs flex flex-col items-center justify-center text-[#4d4d4d]'>Recents
-  
+      <div className='pb-3 font-medium text-xs flex flex-col items-center justify-center text-[#8d8d8d]'>
+        Recents
       </div>
       
-      <div className='w-full rounded-2xl flex items-center justify-center h-38 bg-white drop-shadow-sm'>
-        <ul className='w-full h-full grid grid-cols-2 gap-3 p-4 justify-items-center '>
-          {/* Circle 1 */}
-          <li className='w-11 h-11 drop-shadow rounded-full flex justify-center items-center overflow-hidden '>
-            <Image src="/people/headshot-1.png" width={45} height={45} alt="Friend 1" className='object-cover drop-shadow-md'/>
-          </li>
-          {/* Circle 2 */}
-          <li className='w-11 h-11 drop-shadow rounded-full flex justify-center items-center overflow-hidden'>
-            <Image src="/people/headshot-2.png" width={45} height={45} alt="Friend 2" className='object-cover drop-shadow-md'/>
-          </li>
-          {/* Circle 3 */}
-          <li className='w-11 h-11 drop-shadow rounded-full flex justify-center items-center overflow-hidden '>
-            <Image src="/people/headshot-3.png" width={45} height={45} alt="Friend 3" className='object-cover drop-shadow-md'/>
-          </li>
-          {/* Circle 4 */}
-          <li className='w-11 h-11 drop-shadow rounded-full flex justify-center items-center overflow-hidden'>
-            <Image src="/people/headshot-4.png" width={45} height={45} alt="Friend 4" className='object-cover drop-shadow-md'/>
-          </li>
-        </ul>
+      {/* Adjust the container to manage rows of circles */}
+      <div className='w-32 rounded-2xl bg-white drop-shadow-sm flex flex-wrap justify-around p-3'>
+        {/* Adjustments for rows of two */}
+        <div className='flex justify-between w-full mb-2'>
+          <div className='w-10 h-10 drop-shadow rounded-full overflow-hidden'>
+            <Image src="/people/headshot-1.png" layout="fill" objectFit="cover" alt="Friend 1"/>
+          </div>
+          <div className='w-10 h-10 drop-shadow rounded-full overflow-hidden'>
+            <Image src="/people/headshot-2.png" layout="fill" objectFit="cover" alt="Friend 2"/>
+          </div>
+        </div>
+
+        <div className='flex justify-between w-full mb-2'>
+          <div className='w-10 h-10 drop-shadow rounded-full overflow-hidden'>
+            <Image src="/people/headshot-3.png" layout="fill" objectFit="cover" alt="Friend 3"/>
+          </div>
+          <div className='w-10 h-10 drop-shadow rounded-full overflow-hidden'>
+            <Image src="/people/headshot-4.png" layout="fill" objectFit="cover" alt="Friend 4"/>
+          </div>
+        </div>
+
+        <div className='flex justify-between w-full mb-2'>
+          <div className='w-10 h-10 drop-shadow rounded-full overflow-hidden'>
+            <Image src="/people/headshot-1.png" layout="fill" objectFit="cover" alt="Friend 1"/>
+          </div>
+          <div className='w-10 h-10 drop-shadow rounded-full overflow-hidden'>
+            <Image src="/people/headshot-2.png" layout="fill" objectFit="cover" alt="Friend 2"/>
+          </div>
+        </div>
+
+        <div className='flex justify-between w-full mb-2'>
+          <div className='w-10 h-10 drop-shadow rounded-full overflow-hidden'>
+            <Image src="/people/headshot-1.png" layout="fill" objectFit="cover" alt="Friend 1"/>
+          </div>
+          <div className='w-10 h-10 drop-shadow rounded-full overflow-hidden'>
+            <Image src="/people/headshot-2.png" layout="fill" objectFit="cover" alt="Friend 2"/>
+          </div>
+        </div>
+
+        {/* Add additional rows as needed */}
       </div>
     </div>
-  )
+  );
 }
 
-export default CloseFriends
+export default CloseFriends;

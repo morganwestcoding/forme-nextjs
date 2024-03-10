@@ -138,9 +138,11 @@ const ListingClient: React.FC<ListingClientProps> = ({
         className="
           max-w-screen-lg 
           mx-auto
+        
+        
         "
       >
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6 -mr-2 ml-1">
           <ListingHead
             title={listing.title}
             imageSrc={listing.imageSrc}
@@ -159,6 +161,8 @@ const ListingClient: React.FC<ListingClientProps> = ({
             "
           >
             <ListingInfo
+              id={listing.id}
+              title={listing.title}
               user={listing.user}
               category={category}
               description={listing.description}

@@ -31,11 +31,8 @@ const ListingHead: React.FC<ListingHeadProps> = ({
 
   return ( 
     <>
-      <Heading
-        title={title}
-        subtitle={`${location?.label}`}
-      />
       <div className="
+          mt-9
           w-full
           h-56
           overflow-hidden 

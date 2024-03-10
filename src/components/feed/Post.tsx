@@ -7,8 +7,9 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { categories } from "../Categories";
 import { GoBookmark,GoBookmarkFill } from 'react-icons/go';
-import ArrowUpwardRoundedIcon from '@mui/icons-material/ArrowUpwardRounded';
-import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded';
+import ThumbUpAltRoundedIcon from '@mui/icons-material/ThumbUpAltRounded';
+import ThumbDownRoundedIcon from '@mui/icons-material/ThumbDownRounded';
+import MoreHorizRoundedIcon from '@mui/icons-material/MoreHorizRounded';
 
 interface PostData {
   
@@ -85,6 +86,8 @@ const categoryColors = getColorByCategory(post.category);
 
   return (
     <div className='w-full h-auto rounded-2xl drop-shadow-sm bg-[#ffffff] p-6 mr-8 my-6 '>
+      
+      
       {/* Heart Button Placeholder at the top right corner */}
       <div className="absolute top-7 right-6">
         {/* Placeholder for the heart button, replace with actual HeartButton component or icon */}
@@ -97,10 +100,9 @@ const categoryColors = getColorByCategory(post.category);
         cursor-pointer
       "
     >
-
-      <div className={`text-sm drop-shadow-sm bg-white border ${categoryColors.borderColorClass} p-3 py-1 rounded-xl ${categoryColors.textColorClass}`}>
-                {post.category}
-            </div>
+         <MoreHorizRoundedIcon className="w-8 h-8 hover:text-[#48DBFB] text-[#8d8d8d] mr-2"/>
+      {/*<div className={`text-xs drop-shadow-sm  border ${categoryColors.bgColorClass} ${categoryColors.borderColorClass} p-4 rounded-full text-white`}>      
+      </div>*/}
     </div>
       </div>
 
@@ -110,31 +112,31 @@ const categoryColors = getColorByCategory(post.category);
           </div>
         <div className="ml-3 flex flex-col">
           <div className="flex items-center">
-            <div className="font-semibold pr-1 text-sm">{post.user.name}</div>
-            <div className="text-sm text-gray-500">{formattedDate || 'Loading time...'}</div>
+            <div className="font-medium pr-1 text-sm text-[#484848]">{post.user.name}</div>
+            <div className="text-sm text-[#717171]">{formattedDate || 'Loading time...'}</div>
           </div>
-          <div className="text-sm text-gray-500">{post.location}</div>
+          <div className="text-sm text-[#717171]">{post.location}</div>
           
         </div>
       </div>
 
       {/*Image*/}
       <div className=" pl-1 mt-3">
-        <p className='text-sm'>{post.content}</p>
+        <p className='text-sm text-[#717171]'>{post.content}</p>
         {post.imageSrc && (
-          <div className="mt-3 mb-4 rounded-2xl drop-shadow " style={{ maxWidth: '100%', overflow: 'hidden', position: 'relative' }}>
+          <div className="mt-3 mb-3 rounded-2xl drop-shadow " style={{ maxWidth: '100%', overflow: 'hidden', position: 'relative' }}>
           <Image src={post.imageSrc} alt="Post Image" layout='responsive' objectFit="contain" width={500} height={300} />
         </div>
         )}
 
         {/* Bottom */}
-        <div className="flex justify-start items-center"> {/* Adjusted class here for left alignment */}
-          <div className="flex items-center bg-[#ffffff] p-2 rounded-2xl border border-[#48DBFB] drop-shadow-sm">
-          <div className="flex items-center justify-center bg-[#48DBFB] rounded-full p-1 cursor-pointer drop-shadow-sm">
-            <ArrowUpwardRoundedIcon className='w-4 h-4 text-white drop-shadow-sm'/>
+        <div className="flex justify-start items-center -mb-2"> {/* Adjusted class here for left alignment */}
+          <div className={`flex items-center p-2 rounded-2xl ${categoryColors.bgColorClass} drop-shadow-sm`}>
+          <div className="flex items-center justify-center bg-[#ffffff] rounded-full p-2 cursor-pointer drop-shadow-sm ">
+            <ThumbUpAltRoundedIcon className='w-3.5 h-3.5 text-[#8d8d8d] drop-shadow-sm'/>
             </div>
-            <div className="flex items-center justify-center bg-[#b7b7b7] ml-1 rounded-full p-1 cursor-pointer drop-shadow-sm">
-            <ArrowDownwardRoundedIcon className='w-4 h-4 text-white drop-shadow-sm'/>
+            <div className="flex items-center justify-center bg-[#ffffff] ml-1 rounded-full p-2 cursor-pointer drop-shadow-sm">
+            <ThumbDownRoundedIcon  className='w-3.5 h-3.5 text-[#8d8d8d] drop-shadow-sm'/>
             </div>
           </div>
           <div className="absolute bottom-7 right-6"> {/* Added margin left for spacing */}

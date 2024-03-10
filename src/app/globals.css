@@ -75,7 +75,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-gradient-to-b from-[#E1DADA] to-[#BDCAD9] text-foreground;
+    @apply bg-gradient-to-b from-[#D7E1EC] to-[#fcfcfc] text-foreground;
     min-height: 100vh; /* Ensure at least full viewport height */
     background-attachment: fixed;
   }
