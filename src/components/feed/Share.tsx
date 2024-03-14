@@ -74,7 +74,7 @@ const Share: React.FC<ShareProps> = ({ currentUser }) => {
   return (
     <div className='w-full h-auto rounded-2xl shadow bg-[#b1dafe] p-6'>
       <div className="flex items-center">
-      <div className='drop-shadow'>
+      <div className='drop-shadow mt-1 '>
       <Avatar src={currentUser?.image ?? undefined} />
       </div>
         <ContentInput

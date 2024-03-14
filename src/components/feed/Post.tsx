@@ -10,6 +10,8 @@ import { GoBookmark,GoBookmarkFill } from 'react-icons/go';
 import ThumbUpAltRoundedIcon from '@mui/icons-material/ThumbUpAltRounded';
 import ThumbDownRoundedIcon from '@mui/icons-material/ThumbDownRounded';
 import MoreHorizRoundedIcon from '@mui/icons-material/MoreHorizRounded';
+import ChatBubbleOutlinedIcon from '@mui/icons-material/ChatBubbleOutlined';
+import BookmarkOutlinedIcon from '@mui/icons-material/BookmarkOutlined';
 
 interface PostData {
   
@@ -122,7 +124,7 @@ const categoryColors = getColorByCategory(post.category);
 
       {/*Image*/}
       <div className=" pl-1 mt-3">
-        <p className='text-sm text-[#717171]'>{post.content}</p>
+        <p className='text-sm text-[#000000]'>{post.content}</p>
         {post.imageSrc && (
           <div className="mt-3 mb-3 rounded-2xl drop-shadow " style={{ maxWidth: '100%', overflow: 'hidden', position: 'relative' }}>
           <Image src={post.imageSrc} alt="Post Image" layout='responsive' objectFit="contain" width={500} height={300} />
@@ -135,10 +137,12 @@ const categoryColors = getColorByCategory(post.category);
           <div className="flex items-center justify-center bg-[#ffffff] rounded-full p-2 cursor-pointer drop-shadow-sm ">
             <ThumbUpAltRoundedIcon className='w-3.5 h-3.5 text-[#8d8d8d] drop-shadow-sm'/>
             </div>
-            <div className="flex items-center justify-center bg-[#ffffff] ml-1 rounded-full p-2 cursor-pointer drop-shadow-sm">
+            <div className="flex items-center justify-center bg-[#ffffff] ml-2 rounded-full p-2 cursor-pointer drop-shadow-sm">
             <ThumbDownRoundedIcon  className='w-3.5 h-3.5 text-[#8d8d8d] drop-shadow-sm'/>
             </div>
-          </div>
+            </div>
+  
+          
           <div className="absolute bottom-7 right-6"> {/* Added margin left for spacing */}
           
           </div>

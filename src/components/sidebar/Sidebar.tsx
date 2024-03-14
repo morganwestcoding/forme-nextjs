@@ -39,7 +39,6 @@ export default function Sidebar() {
       <div className="flex flex-col items-center w-52 h-full p-10 bg-white  backdrop-blur-lg bg drop-shadow-sm rounded-tr-2xl" >
         <Logo/>
 
-        
         <ul className="list-none m-0 p-0 flex flex-col items-center ">
    
           <li className="flex items-center justify-start mb-5 p-2  rounded-2xl shadow-sm  bg-[#b1dafe]  w-36" onClick={() => router.push('/')}>
