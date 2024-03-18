@@ -1,5 +1,6 @@
 "use client"
 
+import Carousel from "./Carousel";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import BusinessCenterRoundedIcon from '@mui/icons-material/BusinessCenterRounded';
@@ -15,7 +16,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 
-import CloseFriends from "./CloseFriends";
+import CloseFriends from "./Carousel";
 import Logo from "../header/Logo";
 import Categories from "../Categories";
 import { useState } from "react";
@@ -94,7 +95,7 @@ export default function Sidebar() {
           <span className="ml-6 text-[#8d8d8d] text-xs font-normal ">Bookings</span>
             
           </li>
-          <CloseFriends/>
+          <Carousel/>
        </ul>
           
         </div>
