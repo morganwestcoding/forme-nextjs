@@ -50,14 +50,6 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
       title={title}
       subtitle={`${location?.label}`}
     />
-
-    {/* "Hosted by" section - Ensure this is not within the same flex container as Heading */}
-    <div className="flex flex-col items-start gap-2">
-          <div className="flex items-start justify-start gap-2">
-      <Avatar src={user?.image ?? undefined} />
-      <span>Hosted by {user?.name}</span>
-    </div>
-    </div>
     
 
 
