@@ -16,7 +16,8 @@ import HeartButton from "../HeartButton";
 import ModalButton from "../modals/ModalButton";
 import { categories } from "../Categories";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-
+import NavigateBeforeRoundedIcon from '@mui/icons-material/NavigateBeforeRounded';
+import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
 
 interface ListingCardProps {
   data: SafeListing;
@@ -157,8 +158,8 @@ const categoryColors = getColorByCategory(data.category);
             />
           </div>
         </div>
-        <div className={`inline-block ${categoryColors.borderColorClass} ${categoryColors.bgColorClass} bg-white drop-shadow-sm border rounded-lg px-2 py-0.5 mx-auto my-1 ml-3 text-xs font-light shadow-sm`}>
-            <div className={categoryColors.textColorClass}>
+        <div className={`inline-block ${categoryColors.bgColorClass} drop-shadow-sm rounded-lg px-3 py-1 mx-auto my-1 ml-3 text-xs font-light`}>
+            <div className="text-white">
         {data.category}
         
         </div>
@@ -178,7 +179,7 @@ const categoryColors = getColorByCategory(data.category);
           {/* Service Navigation */}
           {data.services && data.services.length > 0 && (
       <div className="flex justify-between text-xs capitalize items-center pb-3.5 pt-1 px-4 text-[#7d8085]">
-        <button onClick={handlePreviousService}><ChevronLeft size={26} strokeWidth={1.4}/></button>
+        <button onClick={handlePreviousService}><NavigateBeforeRoundedIcon/></button>
         <div className="flex items-center text-[#7d8085] font-normal">
           
            <span className="ml"> {/* Margin left for spacing */}
@@ -186,7 +187,7 @@ const categoryColors = getColorByCategory(data.category);
         </span>
         </div>
         <button onClick={handleNextService}>
-            <ChevronRight size={26} strokeWidth={1.4}/></button>
+            <NavigateNextRoundedIcon /></button>
             
         
       </div>
