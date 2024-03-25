@@ -126,14 +126,14 @@ const categoryColors = getColorByCategory(post.category);
       <div className=" pl-1 mt-3">
         <p className='text-sm text-[#000000]'>{post.content}</p>
         {post.imageSrc && (
-          <div className="mt-3 mb-3 rounded-2xl drop-shadow " style={{ maxWidth: '100%', overflow: 'hidden', position: 'relative' }}>
+          <div className="mt-3 mb-3 rounded-xl drop-shadow " style={{ maxWidth: '100%', overflow: 'hidden', position: 'relative' }}>
           <Image src={post.imageSrc} alt="Post Image" layout='responsive' objectFit="contain" width={500} height={300} />
         </div>
         )}
 
         {/* Bottom */}
         <div className="flex justify-start items-center -mb-2"> {/* Adjusted class here for left alignment */}
-          <div className={`flex items-center p-2 rounded-2xl ${categoryColors.bgColorClass} drop-shadow-sm`}>
+          <div className={`flex items-center p-2 rounded-xl ${categoryColors.bgColorClass} drop-shadow-sm`}>
           <div className="flex items-center justify-center bg-[#ffffff] rounded-full p-2 cursor-pointer drop-shadow-sm ">
             <ThumbUpAltRoundedIcon className='w-3.5 h-3.5 text-[#8d8d8d] drop-shadow-sm'/>
             </div>

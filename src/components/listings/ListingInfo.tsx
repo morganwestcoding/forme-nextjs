@@ -43,24 +43,24 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
   /*const coordinates = getByValue(locationValue)?.latlng*/
 
   return ( 
-    <div className="col-span-4 flex flex-col gap-8 ">
+    <div className="w-full h-auto rounded-2xl drop-shadow-sm bg-[#ffffff] p-6 mr-8 my-6">
     {/* Render Heading */}
-    <div className="flex flex-col items-center gap-2 rounded-2xl bg-white drop-shadow p-4 text-center">
+
     <Heading
       title={title}
       subtitle={`${location?.label}`}
     />
 
     {/* "Hosted by" section - Ensure this is not within the same flex container as Heading */}
-    <div className="flex flex-col items-center gap-2">
-          <div className="flex items-center justify-center gap-2">
+    <div className="flex flex-col items-start gap-2">
+          <div className="flex items-start justify-start gap-2">
       <Avatar src={user?.image ?? undefined} />
       <span>Hosted by {user?.name}</span>
     </div>
     </div>
-    </div>
-
     
+
+
       <hr />
       {category && (
         <ListingCategory

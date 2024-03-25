@@ -95,7 +95,7 @@ export default function Sidebar() {
           <span className="ml-6 text-[#8d8d8d] text-xs font-normal ">Bookings</span>
             
           </li>
-          <Carousel/>
+          
        </ul>
           
         </div>

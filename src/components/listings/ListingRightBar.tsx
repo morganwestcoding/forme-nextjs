@@ -6,14 +6,13 @@ import { toast } from "react-hot-toast";
 import { Range } from "react-date-range";
 import { useRouter } from "next/navigation";
 import { differenceInDays, eachDayOfInterval } from 'date-fns';
-
+import Image from "next/image";
 import useLoginModal from "@/app/hooks/useLoginModal";
 import { SafeListing, SafeReservation, SafeUser } from "@/app/types";
 import { categories } from "@/components/Categories";
 import ListingHead from "@/components/listings/ListingHead";
 import ListingInfo from "@/components/listings/ListingInfo";
 import ListingReservation from "@/components/listings/ListingReservation";
-import ListingRightBar from "@/components/listings/ListingRightBar";
 
 const initialDateRange = {
   startDate: new Date(),
@@ -21,15 +20,20 @@ const initialDateRange = {
   key: 'selection'
 };
 
-interface ListingClientProps {
-  reservations?: SafeReservation[];
-  listing: SafeListing & {
-    user: SafeUser;
-  };
-  currentUser?: SafeUser | null;
-}
+interface ListingRightBarProps {
+    listing: SafeListing & { user: SafeUser };
+    reservations?: SafeReservation[];
+    currentUser?: SafeUser | null;
+    selectedServices: Set<string>;
+    toggleServiceSelection: (serviceId: string) => void;
+    totalPrice: number;
+    dateRange: Range;
+    onCreateReservation: () => void;
+    isLoading: boolean;
+    disabledDates: Date[];
+  }
 
-const ListingClient: React.FC<ListingClientProps> = ({
+const ListingRightBar: React.FC<ListingRightBarProps> = ({
   listing,
   reservations = [],
   currentUser
@@ -40,6 +44,17 @@ const ListingClient: React.FC<ListingClientProps> = ({
   // New state for tracking selected services
   const [selectedServices, setSelectedServices] = useState(new Set<string>());
   const [totalPrice, setTotalPrice] = useState(0);
+  const placeholderImages = [
+    "/assets/business-2.jpg",
+    "/assets/business-1.jpg",
+    "/assets/business-4.jpg",
+    "/assets/business-3.jpg",
+    "/assets/skyline.jpg",
+    "/assets/scenic view.jpeg",
+    "/assets/water-sample.jpg",
+    "/assets/coral-sample.jpg",
+    "/assets/swimmer-sample.jpg",
+  ];
 
   const disabledDates = useMemo(() => {
     let dates: Date[] = [];
@@ -134,62 +149,43 @@ const ListingClient: React.FC<ListingClientProps> = ({
   }, [dateRange, listing.price]);*/}
 
   return ( 
-    <div>
-      <div className="flex w-full" >
-        <div className="flex-none w-[45%] ml-28">
-        <ListingInfo
-              id={listing.id}
-              title={listing.title}
-              user={listing.user}
-              category={category}
-              description={listing.description}
-              locationValue={listing.locationValue}
-              services={listing.services} 
-            />
-            <div className="flex flex-col justify-between w-full md:w-11/12 rounded-2xl shadow-sm bg-[#ffffff] px-8 md:px-6 md:py-6 mx-3 md:mr-16 md:ml-2 relative min-h-[128px]" >
-               {listing.services.map(service => (
-                <div key={service.id}>
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={selectedServices.has(service.id)}
-                      onChange={() => toggleServiceSelection(service.id)}
-                    />
-                    {service.serviceName} - ${service.price}
-                  </label>
-                </div>
-              ))}
-              {/* Display the total price */}
-              <div>Total Price: ${totalPrice}</div>
-              </div>
+    <div className="flex flex-col justify-end bg-transparent  gap-6 pr-16 h-auto mt-6">
+      
+       
+      <div className="w-full md:w-11/12 grid grid-cols-3 gap-0 mx-4 md:mr-20 md:ml-2 bg-transparent bg-opacity-80 rounded-2xl shadow-sm">
+  {Array.from({ length: 9 }).map((_, index) => {
+    // Determine the class for rounding specific corners based on the square's position
+    let cornerClass = "";
+    if (index === 0) cornerClass = "rounded-tl-2xl"; // Top-left corner of the grid
+    if (index === 2) cornerClass = "rounded-tr-2xl"; // Top-right corner of the grid
+    if (index === 6) cornerClass = "rounded-bl-2xl"; // Bottom-left corner of the grid
+    if (index === 8) cornerClass = "rounded-br-2xl"; // Bottom-right corner of the grid
 
-            <ListingReservation
-                price={totalPrice}
-                totalPrice={totalPrice}
-                onChangeDate={(value) => setDateRange(value)}
-                dateRange={dateRange}
-                onSubmit={onCreateReservation}
-                disabled={isLoading}
-  disabledDates={disabledDates}
-                />
+    const squareClasses = `w-full h-24 bg-white bg-opacity-80 ${cornerClass}`;
+    return (
+      <div key={index} className={squareClasses} style={{ position: 'relative' }}>
+      <Image
+      src={placeholderImages[index]}
+      className={squareClasses}
+      layout="fill"
+      objectFit="cover"
+      alt={`Placeholder ${index + 1}`}/>
+      
+      </div>
+    );
+  })}
+</div>
+         
 
-          </div>
-          <div className="flex-grow w-[45%] ml-3">
-          <ListingRightBar
-            listing={listing}
-            selectedServices={selectedServices}
-            toggleServiceSelection={toggleServiceSelection}
-            totalPrice={totalPrice}
-            dateRange={dateRange}
-            onCreateReservation={onCreateReservation}
-            isLoading={isLoading}
-            disabledDates={disabledDates}
-          />
-            </div>
-          </div>
+            
+
+
+              
+            
+         
         </div>
 
    );
 }
  
-export default ListingClient;
+export default ListingRightBar;

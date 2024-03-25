@@ -46,7 +46,7 @@ export default function Rightbar() {
               <h3 className="text-base font-semibold">{article.title}</h3>
               <p className="text-sm pr-4">{article.description}</p>
             </div>
-            <div className="w-20 h-20 bg-gray-300 rounded-2xl  drop-shadow flex-shrink-0" style={{ backgroundImage: `url(${article.imageSrc})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
+            <div className="w-20 h-20 bg-gray-300 rounded-xl  drop-shadow flex-shrink-0" style={{ backgroundImage: `url(${article.imageSrc})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
           </div>
         ))}
         </div>

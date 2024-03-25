@@ -30,14 +30,8 @@ const ListingHead: React.FC<ListingHeadProps> = ({
   const location = getByValue(locationValue);
 
   return ( 
-    <>
-      <div className="
-          mt-9
-          w-full
-          h-56
-          overflow-hidden 
-          rounded-xl
-          relative
+
+      <div className="flex flex-col justify-between w-full md:w-11/12 rounded-2xl shadow-sm bg-[#ffffff] px-8 md:px-6 md:py-6 mx-3 md:mr-16 md:ml-2 relative min-h-[128px]
         "
       >
         <Image
@@ -59,7 +53,6 @@ const ListingHead: React.FC<ListingHeadProps> = ({
           />
         </div>
       </div>
-    </>
    );
 }
  
