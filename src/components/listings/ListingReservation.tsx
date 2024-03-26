@@ -31,15 +31,16 @@ const ListingReservation: React.FC<
   return ( 
     <div 
       className="
-        overflow-hidden
+        overflow-hidden mb-10
       "
     >
 
-      <hr />
-          <div className="p-4">
-        <div className="font-semibold text-lg mb-2">Date</div>
+      
+          <div>
+        <div className="font-bold">Date</div>
+        <hr/>
         <div
-          className="border border-gray-300 rounded-lg p-2 cursor-pointer"
+          className="py-2"
           onClick={() => setShowCalendar(!showCalendar)}
         >
           Select Dates
@@ -57,7 +58,7 @@ const ListingReservation: React.FC<
         )}
       </div>
       <hr />
-      <div className="p-4">
+      <div>
         <ModalButton
           disabled={disabled} 
           label="Reserve" 

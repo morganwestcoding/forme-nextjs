@@ -9,22 +9,22 @@ import Heading from "../Heading";
 import Avatar from "../ui/avatar";
 import ListingCategory from "./ListingCategory";
 
-/*const Map = dynamic(() => import('../Map'), { 
+/*const Map = dynamic(() => import('../Map'), {
   ssr: false 
 });*/
 
 interface ListingInfoProps {
   title: string;
   id: string;
-  currentUser?: SafeUser | null
-  user: SafeUser,
+  currentUser?: SafeUser | null;
+  user: SafeUser;
   description: string;
   category: {
     label: string;
     description: string;
-  } | undefined
+  } | undefined;
   locationValue: string;
-  services?: SafeService[]; 
+  services?: SafeService[];
 }
 
 const ListingInfo: React.FC<ListingInfoProps> = ({
@@ -40,29 +40,18 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
   const { getByValue } = useStates();
   const location = getByValue(locationValue);
 
-  /*const coordinates = getByValue(locationValue)?.latlng*/
-
   return ( 
     <div className="w-full h-auto p-6 mr-8 mt-8">
-    {/* Render Heading */}
-
-    <Heading
-      title={title}
-      subtitle={`${location?.label}`}
-    />
-    
-      {category && (
-        <ListingCategory
-         
-          label={category?.label}
-          description={category?.description} 
-        />
-      )}
+    {/* Title and Category Label Side by Side */}
+    <div className="flex items-center justify-between mb-4">
+      {/* Assuming Heading can only accept title and subtitle, we keep it for the title */}
+      <Heading title={title} subtitle={`${location?.label}`}
+        label={category?.label} />
+    </div>
       
-      
-      {/*<Map center={coordinates} />*/}
+      {/* Additional content */}
     </div>
    );
 }
- 
+
 export default ListingInfo;

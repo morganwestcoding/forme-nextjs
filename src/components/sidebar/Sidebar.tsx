@@ -37,12 +37,12 @@ export default function Sidebar() {
   return (
     
     <div className="fixed top-0 flex h-screen z-50">
-      <div className="flex flex-col items-center w-52 h-full p-10 bg-white  backdrop-blur-lg bg drop-shadow-sm rounded-tr-2xl" >
+      <div className="flex flex-col items-center w-52 h-full p-10 bg-white  backdrop-blur-full bg drop-shadow-sm rounded-tr-2xl" >
         <Logo/>
 
         <ul className="list-none m-0 p-0 flex flex-col items-center ">
    
-          <li className="flex items-center justify-start mb-5 p-2  rounded-2xl shadow-sm  bg-[#b1dafe]  w-36" onClick={() => router.push('/')}>
+          <li className="flex items-center justify-start mb-5 p-2  rounded-full shadow  bg-[#b1dafe]  w-36" onClick={() => router.push('/')}>
           <div className="flex flex-col  hover:bg-white rounded-full p-1 cursor-pointer" >
             
           <CottageRoundedIcon className="w-4 h-4 hover:text-[#48DBFB] text-[#ffffff]"/>
@@ -54,8 +54,8 @@ export default function Sidebar() {
 
           {/* Market Icon with Tooltip */}
    
-          <li className="flex items-center justify-start mb-5 p-2  rounded-2xl shadow-sm  w-36 bg-transparent">
-          <div className="flex flex-col  rounded-2xl p-1 cursor-pointer" onClick={() => router.push('/market')}>
+          <li className="flex items-center justify-start mb-5 p-2  rounded-full shadow  w-36 bg-transparent">
+          <div className="flex flex-col  rounded-full p-1 cursor-pointer" onClick={() => router.push('/market')}>
             <StorefrontRoundedIcon className="w-4 h-4 text-[#8d8d8d]" />
             </div>
             <span className="ml-6 text-[#8d8d8d] text-xs font-normal ">Market</span>
@@ -65,8 +65,8 @@ export default function Sidebar() {
 
            {/* Favorites Icon with Tooltip */}
        
-            <li className="flex items-center justify-start mb-5 p-2  rounded-2xl shadow-sm  w-36">
-          <div className="flex flex-col rounded-2xl p-1 cursor-pointer" onClick={() => router.push('/favorites')}>
+            <li className="flex items-center justify-start mb-5 p-2  rounded-full shadow  w-36">
+          <div className="flex flex-col rounded-full p-1 cursor-pointer" onClick={() => router.push('/favorites')}>
           <BookmarkRoundedIcon className="w-4 h-4 text-[#8d8d8d] "/>
           </div>     
 
@@ -78,8 +78,8 @@ export default function Sidebar() {
 
          {/* Job Icon with Tooltip */}
   
-          <li className="flex items-center justify-start mb-5 p-2  rounded-2xl shadow-sm  w-36">
-          <div className="flex flex-col rounded-2xl p-1 cursor-pointer">
+          <li className="flex items-center justify-start mb-5 p-2  rounded-full shadow  w-36">
+          <div className="flex flex-col rounded-lg p-1 cursor-pointer">
           <WorkRoundedIcon className="w-4 h-4 text-[#8d8d8d]" />
           </div>
           <span className="ml-6 text-[#8d8d8d] text-xs font-normal ">Jobs</span>
@@ -88,8 +88,8 @@ export default function Sidebar() {
           </li>
         
 
-          <li className="flex items-center justify-start mb-5 p-2  rounded-2xl shadow-sm  w-36">
-          <div className="flex flex-col  rounded-2xl p-1 cursor-pointer" onClick={() => router.push('/reservations')}>
+          <li className="flex items-center justify-start mb-5 p-2  rounded-full shadow  w-36">
+          <div className="flex flex-col  rounded-full p-1 cursor-pointer" onClick={() => router.push('/reservations')}>
           <EventNoteRoundedIcon className="w-4 h-4 text-[#8d8d8d]" />
           </div>
           <span className="ml-6 text-[#8d8d8d] text-xs font-normal ">Bookings</span>

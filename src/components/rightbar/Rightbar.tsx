@@ -39,7 +39,7 @@ export default function Rightbar() {
 
         <div className="w-full flex flex-col justify-start rounded-2xl shadow bg-[#ffffff]   p-0 mx-0 overflow-hidden  pb-6">
         <div className="px-6 py-6 text-lg font-bold">What&apos;s Happening</div>
-        <hr className="border-1.5"/>
+        <hr className=" mx-6"/>
         {articles.map((article, index) => (
           <div key={index} className="flex justify-between items-center hover:bg-[#b1dafe] hover:text-white  w-full px-6 py-4" onClick={() => router.push('/articles')}>
             <div>

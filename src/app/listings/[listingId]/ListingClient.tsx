@@ -152,23 +152,21 @@ const ListingClient: React.FC<ListingClientProps> = ({
               locationValue={listing.locationValue}
               services={listing.services} 
             />
-        <div className="service-section flex flex-col justify-between w-full  px-8 md:px-6  md:mr-16 relative">
-          <div className="services-title text-left font-bold">
-            Services
-          </div>
-          <select onChange={handleServiceSelectionChange} className="service-dropdown py-2 -mx-1">
-            <option value="">Select a Service</option>
+       <div className="rounded-2xl shadow-sm bg-[#ffffff] p-6">
+            <h3 className="font-bold mb-4">Services<hr/></h3>
+            
             {listing.services.map((service) => (
-              <option key={service.id} value={service.id}>
-                {service.serviceName} - ${service.price}
-              </option>
+              <div key={service.id} className="flex justify-between items-center mb-2 text-sm">
+                <span>{service.serviceName} - ${service.price}</span>
+                <button
+                  className="bg-white rounded-lg shadow text-[#8d8d8d] hover:bg-[#b1dafe] hover:text-white font-normal py-2 px-4"
+                  onClick={() => toggleServiceSelection(service.id)}
+                >
+                  {selectedServices.has(service.id) ? "Deselect" : "Select"}
+                </button>
+              </div>
             ))}
-          </select>
-          {/* Display the total price */}
-          <div className="total-price pt-4">
-            Total Price: ${totalPrice}
-          </div>
-        </div>
+        
 
             <ListingReservation
                 price={totalPrice}
@@ -180,6 +178,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
                 disabled={isLoading}
   disabledDates={disabledDates}
                 />
+                </div>
                 </div>
 
           </div>

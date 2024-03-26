@@ -26,7 +26,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({ user }) => {
          alt="Background" />
         <div className="absolute inset-0 bg-black bg-opacity-20 rounded-2xl"></div>
 
-        <div className="w-5/12 h-40 bg-white  bg-opacity-85 backdrop-blur-sm rounded-2xl flex shadow-sm z-50">
+        <div className="w-5/12 h-40 bg-white  backdrop-blur-sm rounded-2xl flex shadow-sm z-50">
           <div className="relative w-48 h-full flex justify-center items-center z-50">
             <Image
               src={image || "/people/chicken-headshot.jpeg"}
@@ -52,12 +52,12 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({ user }) => {
 
             {/* Follow and Message Buttons */}
             <div className="flex mt-4 gap-0.5 -mb-2 ml-6">
-              <button className='rounded-full text-xs drop-shadow-sm bg-[#ffffff] w-28 p-2 text-black mr-1'>
+              <button className='rounded-full text-xs drop-shadow bg-[#ffffff] w-28 p-2 text-black mr-1'>
                 Follow
               </button>
-              <div className="flex items-center p-2 rounded-full shadow-sm mr-2 bg-white bg-opacity-25 border border-white">
+              <div className="flex items-center p-2 rounded-full shadow mr-2 bg-white border border-white">
 
-    <IoIosMail className="w-6 h-6 text-[#ffffff]" />
+    <IoIosMail className="w-5 h-5 text-[#8d8d8d]" />
     
 </div>
             </div>
