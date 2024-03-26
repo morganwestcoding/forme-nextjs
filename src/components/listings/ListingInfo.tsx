@@ -43,7 +43,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
   /*const coordinates = getByValue(locationValue)?.latlng*/
 
   return ( 
-    <div className="w-full h-auto rounded-2xl drop-shadow-sm bg-[#ffffff] p-6 mr-8 my-6">
+    <div className="w-full h-auto p-6 mr-8 mt-8">
     {/* Render Heading */}
 
     <Heading
@@ -51,9 +51,6 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
       subtitle={`${location?.label}`}
     />
     
-
-
-      <hr />
       {category && (
         <ListingCategory
          
@@ -61,8 +58,8 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
           description={category?.description} 
         />
       )}
-      <hr />
-      <hr />
+      
+      
       {/*<Map center={coordinates} />*/}
     </div>
    );

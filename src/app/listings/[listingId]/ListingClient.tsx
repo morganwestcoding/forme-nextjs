@@ -64,6 +64,11 @@ const ListingClient: React.FC<ListingClientProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [dateRange, setDateRange] = useState<Range>(initialDateRange);
 
+  const handleServiceSelectionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const serviceId = event.target.value;
+    toggleServiceSelection(serviceId);
+  };
+
   // New toogle ServieSelection
   const toggleServiceSelection = (serviceId: string) => {
     setSelectedServices(prevSelected => {
@@ -137,6 +142,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
     <div>
       <div className="flex w-full" >
         <div className="flex-none w-[45%] ml-28">
+          <div className="rounded-2xl shadow-sm bg-[#ffffff]">
         <ListingInfo
               id={listing.id}
               title={listing.title}
@@ -146,25 +152,27 @@ const ListingClient: React.FC<ListingClientProps> = ({
               locationValue={listing.locationValue}
               services={listing.services} 
             />
-            <div className="flex flex-col justify-between w-full md:w-11/12 rounded-2xl shadow-sm bg-[#ffffff] px-8 md:px-6 md:py-6 mx-3 md:mr-16 md:ml-2 relative min-h-[128px]" >
-               {listing.services.map(service => (
-                <div key={service.id}>
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={selectedServices.has(service.id)}
-                      onChange={() => toggleServiceSelection(service.id)}
-                    />
-                    {service.serviceName} - ${service.price}
-                  </label>
-                </div>
-              ))}
-              {/* Display the total price */}
-              <div>Total Price: ${totalPrice}</div>
-              </div>
+        <div className="service-section flex flex-col justify-between w-full  px-8 md:px-6  md:mr-16 relative">
+          <div className="services-title text-left font-bold">
+            Services
+          </div>
+          <select onChange={handleServiceSelectionChange} className="service-dropdown py-2 -mx-1">
+            <option value="">Select a Service</option>
+            {listing.services.map((service) => (
+              <option key={service.id} value={service.id}>
+                {service.serviceName} - ${service.price}
+              </option>
+            ))}
+          </select>
+          {/* Display the total price */}
+          <div className="total-price pt-4">
+            Total Price: ${totalPrice}
+          </div>
+        </div>
 
             <ListingReservation
                 price={totalPrice}
+                
                 totalPrice={totalPrice}
                 onChangeDate={(value) => setDateRange(value)}
                 dateRange={dateRange}
@@ -172,10 +180,12 @@ const ListingClient: React.FC<ListingClientProps> = ({
                 disabled={isLoading}
   disabledDates={disabledDates}
                 />
+                </div>
 
           </div>
           <div className="flex-grow w-[45%] ml-3">
           <ListingRightBar
+          description={listing.description}
             listing={listing}
             selectedServices={selectedServices}
             toggleServiceSelection={toggleServiceSelection}

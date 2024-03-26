@@ -31,10 +31,12 @@ interface ListingRightBarProps {
     onCreateReservation: () => void;
     isLoading: boolean;
     disabledDates: Date[];
+    description: string
   }
 
 const ListingRightBar: React.FC<ListingRightBarProps> = ({
   listing,
+  description,
   reservations = [],
   currentUser
 }) => {
@@ -149,8 +151,16 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
   }, [dateRange, listing.price]);*/}
 
   return ( 
-    <div className="flex flex-col justify-end bg-transparent  gap-6 pr-16 h-auto mt-6">
-      
+    <div className="flex flex-col justify-end bg-transparent  gap-6 pr-16 h-auto mt-8">
+      <div className="flex flex-col justify-between w-full md:w-11/12 rounded-2xl shadow-sm bg-[#ffffff] px-8 md:px-6 md:py-6 mx-3 md:mr-16 md:ml-2 relative min-h-[128px]">
+      <div className="text-xl font-bold mb-2">About Us
+            <div className="text-sm font-normal flex-grow">
+              <p className="py-2">
+              {description}
+              </p>
+              </div>
+              </div>
+              </div>
        
       <div className="w-full md:w-11/12 grid grid-cols-3 gap-0 mx-4 md:mr-20 md:ml-2 bg-transparent bg-opacity-80 rounded-2xl shadow-sm">
   {Array.from({ length: 9 }).map((_, index) => {

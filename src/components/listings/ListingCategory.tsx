@@ -1,7 +1,5 @@
 'use client';
 
-
-
 interface CategoryViewProps {
   label: string,
   description: string
@@ -21,11 +19,7 @@ const CategoryView: React.FC<CategoryViewProps> = ({
             >
               {label}
             </div>
-            <div 
-              className="text-neutral-500 font-light"
-            >
-              {description}
-            </div>
+            
         </div>
       </div>
     </div>
