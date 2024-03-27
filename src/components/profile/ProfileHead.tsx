@@ -36,7 +36,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({ user }) => {
               className="rounded-l-xl"
             />
           </div>
-          <div className="w-60 h-40 bg-white rounded-r-xl flex shadow-sm z-50">
+          <div className="w-68 h-40 bg-white rounded-r-xl flex shadow-sm z-50">
 
           {/* Bio Section */}
           <div className=" h-full rounded-r-2xl flex flex-col justify-center items-center p-4 z-50">
@@ -52,15 +52,15 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({ user }) => {
             </div>
 
             {/* Follow and Message Buttons */}
-            <div className="flex mt-4 gap-0.5 -mb-2 ml-6 ">
-              <button className='font-light text-[#717171] rounded-l-xl text-xs bg-[#ffffff] border p-2 px-8 -mr-2'>
+            <div className="flex mt-4 gap-0.5 -mb-2 ">
+              <button className='font-light text-[#717171] rounded-xl text-xs bg-[#ffffff] border p-2 px-8 mr-1 shadow-sm'>
                 Follow
               </button>
-              <div className="flex items-center p-2 rounded-r-xl mr-2 border bg-[#dfdede]">
-              <div className="flex items-center justify-center  rounded-2xl p-1  cursor-pointer">
-    <IoIosMail className="w-5 h-5 text-[#ffffff] " />
-    </div>
-</div>
+            
+              <button className='font-light text-[#717171] rounded-xl text-xs bg-[#ffffff] border p-2 px-8 mr-1 shadow-sm'>
+                Message
+              </button>
+
             </div>
           </div>
         </div>
