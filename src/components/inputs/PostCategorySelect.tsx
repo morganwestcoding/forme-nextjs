@@ -24,7 +24,7 @@ const PostCategorySelect: React.FC<PostCategorySelectProps> = ({
     <div className="relative inline-flex items-center">
     
     <Button 
-      className='drop-shadow-sm rounded-full bg-[#ffffff] hover:border-[#48DBFB] hover:bg-white border border-transparent px-2 p-2 pr-4 text-[#4d4d4d] text-xs font-medium'
+      className='drop-shadow rounded-xl bg-[#ffffff] hover:bg-white p-2 text-[#4d4d4d] text-xs font-medium'
       onClick={() => setShowCategories(!showCategories)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -39,10 +39,8 @@ const PostCategorySelect: React.FC<PostCategorySelectProps> = ({
         />
       ))
     }
-      <div className='flex items-center justify-center  rounded-2xl p-1 cursor-pointer drop-shadow-sm'>
-        <SendRoundedIcon className='pl-0.5 w-5 h-5 text-[#8d8d8d]'/>
-      </div>
-      <span className='font-light text-[#717171]'>Post</span>
+     
+      <span className='font-light text-[#717171] px-4'>Submit</span>
     </Button>
   </div>
   );

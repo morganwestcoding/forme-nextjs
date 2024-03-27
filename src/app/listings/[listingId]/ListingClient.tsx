@@ -157,7 +157,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
             
             {listing.services.map((service) => (
               <div key={service.id} className="flex justify-between items-center mb-2 text-sm">
-                <span>{service.serviceName} - ${service.price}</span>
+                <span>{service.serviceName} ${service.price}</span>
                 <button
                   className="bg-white rounded-lg shadow text-[#8d8d8d] hover:bg-[#b1dafe] hover:text-white font-normal py-2 px-4"
                   onClick={() => toggleServiceSelection(service.id)}

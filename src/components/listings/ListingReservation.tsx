@@ -1,7 +1,7 @@
 'use client';
 
 import { Range } from "react-date-range";
-import { useState } from "react";
+
 import ModalButton from "../modals/ModalButton";
 import Calendar from "../inputs/Calender";
 
@@ -26,39 +26,27 @@ const ListingReservation: React.FC<
   disabled,
   disabledDates
 }) => {
-  const [showCalendar, setShowCalendar] = useState(false); 
-
+  
   return ( 
     <div 
       className="
-        overflow-hidden mb-10
+      bg-white 
+        rounded-xl 
+        border
+      border-neutral-200 
+        overflow-hidden
       "
     >
-
+ 
       
-          <div>
-        <div className="font-bold">Date</div>
-        <hr/>
-        <div
-          className="py-2"
-          onClick={() => setShowCalendar(!showCalendar)}
-        >
-          Select Dates
-        </div>
-        {showCalendar && (
-          <div className="relative">
-            <div className="absolute top-full z-10">
-              <Calendar
-                value={dateRange}
-                disabledDates={disabledDates}
-                onChange={(value) => onChangeDate(value.selection)}
-              />
-            </div>
-          </div>
-        )}
-      </div>
+      <Calendar
+        value={dateRange}
+        disabledDates={disabledDates}
+        onChange={(value) => 
+          onChangeDate(value.selection)}
+      />
       <hr />
-      <div>
+      <div className="p-4">
         <ModalButton
           disabled={disabled} 
           label="Reserve" 

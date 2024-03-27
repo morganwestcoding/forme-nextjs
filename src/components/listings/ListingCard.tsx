@@ -158,7 +158,7 @@ const categoryColors = getColorByCategory(data.category);
             />
           </div>
         </div>
-        <div className={`inline-block ${categoryColors.bgColorClass} drop-shadow-sm rounded-lg px-3 py-1 mx-auto my-1 ml-3 text-xs font-light`}>
+        <div className={`inline-block ${categoryColors.bgColorClass} drop-shadow-sm rounded-lg px-2 py-1 mx-auto my-1 ml-3 text-xs font-light`}>
             <div className="text-white">
         {data.category}
         

@@ -1,5 +1,6 @@
 'use client';
 import { categories } from "./Categories";
+import GradeRoundedIcon from '@mui/icons-material/GradeRounded';
 
 interface HeadingProps {
   title: string;
@@ -27,11 +28,17 @@ const Heading: React.FC<HeadingProps> = ({
           </div>
         )}
       </div>
+    
       {subtitle && (
-        <div className="font-light text-neutral-500 mt-2">
+        <div className="font-light text-neutral-500">
           {subtitle}
         </div>
       )}
+      {/* Star icon with rating next to the subtitle */}
+      <div className="flex items-center">
+          <GradeRoundedIcon className="w-5 h-5 text-[#b1dafe]" /> {/* Removed the negative margin */}
+          <span className="ml-1 text-[#b1dafe]">(5.0)</span>
+        </div>
     </div>
    );
 }

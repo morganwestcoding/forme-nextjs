@@ -26,19 +26,20 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({ user }) => {
          alt="Background" />
         <div className="absolute inset-0 bg-black bg-opacity-20 rounded-2xl"></div>
 
-        <div className="w-5/12 h-40 bg-white  backdrop-blur-sm rounded-2xl flex shadow-sm z-50">
+       
           <div className="relative w-48 h-full flex justify-center items-center z-50">
             <Image
               src={image || "/people/chicken-headshot.jpeg"}
               alt="currentUser Avatar"
               layout="fill"
               objectFit="cover"
-              className="rounded-l-2xl"
+              className="rounded-l-xl"
             />
           </div>
+          <div className="w-60 h-40 bg-white rounded-r-xl flex shadow-sm z-50">
 
           {/* Bio Section */}
-          <div className="w-1/2 h-full rounded-r-2xl flex flex-col justify-center items-center p-4 z-50">
+          <div className=" h-full rounded-r-2xl flex flex-col justify-center items-center p-4 z-50">
             <span className="text-gray-800 font-semibold ml-3 justify-start">{name}</span>
             {/* Friends and Followers Placeholder */}
             <div className="mt-2 w-full ml-5 flex justify-around items-center">
@@ -51,14 +52,14 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({ user }) => {
             </div>
 
             {/* Follow and Message Buttons */}
-            <div className="flex mt-4 gap-0.5 -mb-2 ml-6">
-              <button className='rounded-full text-xs drop-shadow bg-[#ffffff] w-28 p-2 text-black mr-1'>
+            <div className="flex mt-4 gap-0.5 -mb-2 ml-6 ">
+              <button className='font-light text-[#717171] rounded-l-xl text-xs bg-[#ffffff] border p-2 px-8 -mr-2'>
                 Follow
               </button>
-              <div className="flex items-center p-2 rounded-full shadow mr-2 bg-white border border-white">
-
-    <IoIosMail className="w-5 h-5 text-[#8d8d8d]" />
-    
+              <div className="flex items-center p-2 rounded-r-xl mr-2 border bg-[#dfdede]">
+              <div className="flex items-center justify-center  rounded-2xl p-1  cursor-pointer">
+    <IoIosMail className="w-5 h-5 text-[#ffffff] " />
+    </div>
 </div>
             </div>
           </div>

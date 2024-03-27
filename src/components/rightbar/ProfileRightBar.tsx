@@ -59,19 +59,19 @@ const formattedDate = format(new Date(createdAt), 'PPP'); // Example format: Jan
               <p className="py-2">
               {bio || "No bio available"} {/* Display bio here */}
               </p>
-              <ul>
+              <ul className='border rounded-lg p-2'>
              {/* Adjusted list items to include flex layout for icon and text alignment */}
-             <li className="flex items-center pb-1"> 
-              <div className="flex items-center justify-center bg-[#b1dafe] rounded-2xl p-1  cursor-pointer drop-shadow-sm">
-              <WhereToVoteRoundedIcon className="w-4 h-4 text-[#ffffff]" />
+             <li className="flex items-center pb-1 "> 
+              <div className="flex items-center justify-center p-1  cursor-pointer">
+              <WhereToVoteRoundedIcon className="w-5 h-5  text-[#b1dafe]" />
               </div>
-                <span className="ml-2">Your Location Here</span>
+                <span className="ml-1 text-sm text-[#b1dafe]">Your Location Here</span>
               </li>
               <li className="flex items-center">
-              <div className="flex items-center justify-center bg-[#b1dafe] rounded-2xl p-1  cursor-pointer drop-shadow-sm">
-              <EventAvailableRoundedIcon className="w-4 h-4 text-[#ffffff]" />
+              <div className="flex items-center justify-center  p-1  cursor-pointer">
+              <EventAvailableRoundedIcon className="w-5 h-5  text-[#b1dafe]" />
               </div>
-                <span className="ml-2">Joined {formattedDate}</span> {/* Display the formatted creation date here */}
+                <span className="ml-1 text-sm text-[#b1dafe]">Joined {formattedDate}</span> {/* Display the formatted creation date here */}
               </li>
               </ul>
             </div>

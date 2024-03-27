@@ -1,6 +1,6 @@
 "use client"
 
-import Carousel from "./Carousel";
+
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import BusinessCenterRoundedIcon from '@mui/icons-material/BusinessCenterRounded';
@@ -16,7 +16,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 
-import CloseFriends from "./Carousel";
+
 import Logo from "../header/Logo";
 import Categories from "../Categories";
 import { useState } from "react";
@@ -42,7 +42,7 @@ export default function Sidebar() {
 
         <ul className="list-none m-0 p-0 flex flex-col items-center ">
    
-          <li className="flex items-center justify-start mb-5 p-2  rounded-full shadow  bg-[#b1dafe]  w-36" onClick={() => router.push('/')}>
+          <li className="flex items-center justify-start mb-5 p-2  rounded-xl border shadow-inner bg-[#b1dafe] border-white w-36" onClick={() => router.push('/')}>
           <div className="flex flex-col  hover:bg-white rounded-full p-1 cursor-pointer" >
             
           <CottageRoundedIcon className="w-4 h-4 hover:text-[#48DBFB] text-[#ffffff]"/>
@@ -54,45 +54,45 @@ export default function Sidebar() {
 
           {/* Market Icon with Tooltip */}
    
-          <li className="flex items-center justify-start mb-5 p-2  rounded-full shadow  w-36 bg-transparent">
+          <li className="flex items-center justify-start mb-5 p-2  rounded-lg border shadow-sm  w-36 bg-white">
           <div className="flex flex-col  rounded-full p-1 cursor-pointer" onClick={() => router.push('/market')}>
-            <StorefrontRoundedIcon className="w-4 h-4 text-[#8d8d8d]" />
+            <StorefrontRoundedIcon className="w-4 h-4 text-[#d3d2d2]" />
             </div>
-            <span className="ml-6 text-[#8d8d8d] text-xs font-normal ">Market</span>
+            <span className="ml-6 text-[#d3d2d2] text-xs font-normal ">Market</span>
         
             </li>
         
 
            {/* Favorites Icon with Tooltip */}
        
-            <li className="flex items-center justify-start mb-5 p-2  rounded-full shadow  w-36">
+            <li className="flex items-center justify-start mb-5 p-2  rounded-lg  w-36 bg-white border shadow-sm">
           <div className="flex flex-col rounded-full p-1 cursor-pointer" onClick={() => router.push('/favorites')}>
-          <BookmarkRoundedIcon className="w-4 h-4 text-[#8d8d8d] "/>
+          <BookmarkRoundedIcon className="w-4 h-4 text-[#d3d2d2] "/>
           </div>     
 
            
-          <span className="ml-6 text-[#8d8d8d] text-xs font-normal ">Favorites </span>
+          <span className="ml-6 text-[#d3d2d2] text-xs font-normal ">Favorites </span>
      
             </li>
        
 
          {/* Job Icon with Tooltip */}
   
-          <li className="flex items-center justify-start mb-5 p-2  rounded-full shadow  w-36">
+          <li className="flex items-center justify-start mb-5 p-2  rounded-lg border shadow-sm  w-36">
           <div className="flex flex-col rounded-lg p-1 cursor-pointer">
-          <WorkRoundedIcon className="w-4 h-4 text-[#8d8d8d]" />
+          <WorkRoundedIcon className="w-4 h-4 text-[#d3d2d2]" />
           </div>
-          <span className="ml-6 text-[#8d8d8d] text-xs font-normal ">Jobs</span>
+          <span className="ml-6 text-[#d3d2d2] text-xs font-normal ">Jobs</span>
             
        
           </li>
         
 
-          <li className="flex items-center justify-start mb-5 p-2  rounded-full shadow  w-36">
+          <li className="flex items-center justify-start mb-5 p-2  rounded-lg border shadow-sm  w-36">
           <div className="flex flex-col  rounded-full p-1 cursor-pointer" onClick={() => router.push('/reservations')}>
-          <EventNoteRoundedIcon className="w-4 h-4 text-[#8d8d8d]" />
+          <EventNoteRoundedIcon className="w-4 h-4 text-[#d3d2d2]" />
           </div>
-          <span className="ml-6 text-[#8d8d8d] text-xs font-normal ">Bookings</span>
+          <span className="ml-6 text-[#d3d2d2] text-xs font-normal ">Bookings</span>
             
           </li>
           

@@ -7,8 +7,9 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { categories } from "../Categories";
 import { GoBookmark,GoBookmarkFill } from 'react-icons/go';
-import ThumbUpAltRoundedIcon from '@mui/icons-material/ThumbUpAltRounded';
-import ThumbDownRoundedIcon from '@mui/icons-material/ThumbDownRounded';
+import TextsmsOutlinedIcon from '@mui/icons-material/TextsmsOutlined';
+import BookmarkBorderRoundedIcon from '@mui/icons-material/BookmarkBorderRounded';
+import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded';
 import MoreHorizRoundedIcon from '@mui/icons-material/MoreHorizRounded';
 import ChatBubbleOutlinedIcon from '@mui/icons-material/ChatBubbleOutlined';
 import BookmarkOutlinedIcon from '@mui/icons-material/BookmarkOutlined';
@@ -114,31 +115,39 @@ const categoryColors = getColorByCategory(post.category);
           </div>
         <div className="ml-3 flex flex-col">
           <div className="flex items-center">
-            <div className="font-medium pr-1 text-sm text-[#484848]">{post.user.name}</div>
+            <div className="font-medium pr-1 text-sm text-[#484848]">{post.user.name} &middot;</div>
             <div className="text-sm text-[#717171]">{formattedDate || 'Loading time...'}</div>
           </div>
-          <div className="text-sm text-[#717171]">{post.location}</div>
-          
-        </div>
+          <div className="text-sm text-[#717171] flex items-center">
+        {post.location}
+        {/* Ensure category label is rendered inline with location */}
+        <span className={`ml-2 p-1 rounded-lg text-white drop-shadow-sm px-2 py-1 mx-auto my-1  text-xs ${categoryColors.bgColorClass}`}>
+          {post.category}
+        </span>
+      </div>
+      </div>
       </div>
 
       {/*Image*/}
-      <div className=" pl-1 mt-3">
+      <div className=" pl-1 mt-3 relative">
         <p className='text-sm text-[#000000]'>{post.content}</p>
         {post.imageSrc && (
-          <div className="mt-3 mb-3 rounded-xl drop-shadow " style={{ maxWidth: '100%', overflow: 'hidden', position: 'relative' }}>
+          <div className="mt-3 mb-3 rounded-2xl mr-0.5 " style={{ maxWidth: '100%', overflow: 'hidden', position: 'relative' }}>
           <Image src={post.imageSrc} alt="Post Image" layout='responsive' objectFit="contain" width={500} height={300} />
         </div>
         )}
 
         {/* Bottom */}
-        <div className="flex justify-start items-center -mb-2"> {/* Adjusted class here for left alignment */}
-          <div className={`flex items-center p-2 rounded-xl ${categoryColors.bgColorClass} drop-shadow-sm`}>
-          <div className="flex items-center justify-center bg-[#ffffff] rounded-full p-2 cursor-pointer drop-shadow-sm ">
-            <ThumbUpAltRoundedIcon className='w-3.5 h-3.5 text-[#8d8d8d] drop-shadow-sm'/>
+        <div className="absolute bottom-0 right-0 flex space-x-2"> {/* Adjusted class here for left alignment */}
+          <div className={`flex items-center p-2 rounded-xl bg-black bg-opacity-10 backdrop-blur-lg m-2`}>
+          <div className="flex items-center justify-center bg-[#ffffff] bg-opacity-30 rounded-full p-2 cursor-pointer drop-shadow-sm ">
+            <TextsmsOutlinedIcon className='w-4 h-4 text-[#ffffff] '/>
             </div>
-            <div className="flex items-center justify-center bg-[#ffffff] ml-2 rounded-full p-2 cursor-pointer drop-shadow-sm">
-            <ThumbDownRoundedIcon  className='w-3.5 h-3.5 text-[#8d8d8d] drop-shadow-sm'/>
+            <div className="flex items-center justify-center bg-[#ffffff] bg-opacity-30 ml-2 rounded-full p-2 cursor-pointer drop-shadow-sm">
+            <FavoriteBorderRoundedIcon  className='w-4 h-4 text-[#ffffff] '/>
+            </div>
+            <div className="flex items-center justify-center bg-[#ffffff] bg-opacity-30 ml-2 rounded-full p-2 cursor-pointer drop-shadow-sm">
+            <BookmarkBorderRoundedIcon  className='w-4 h-4 text-[#ffffff] '/>
             </div>
             </div>
   
