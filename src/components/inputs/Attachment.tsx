@@ -1,12 +1,12 @@
 import React from 'react'
-import AttachFileRoundedIcon from '@mui/icons-material/AttachFileRounded';
+import AttachFileOutlinedIcon from '@mui/icons-material/AttachFileOutlined';
 
 function Attachment() {
   return (
-    <div className="flex items-center p-2 px-2 rounded-full shadow mr-2 bg-[#dfdede] ">
-    <div className="flex items-center justify-center  rounded-2xl p-1  cursor-pointer drop-shadow-sm">
-    <AttachFileRoundedIcon className="w-4 h-4 text-[#ffffff]" />
-    </div>
+    <div className="flex items-center p-3 px-3 rounded-r-xl -ml-2  pl-4 shadow-sm bg-[#dfdede] backdrop-blur-full ">
+  
+    <AttachFileOutlinedIcon className="w-4 h-4 text-[#ffffff]" />
+  
 </div>
   )
 }

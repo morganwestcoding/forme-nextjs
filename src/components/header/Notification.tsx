@@ -3,7 +3,7 @@ import Image from 'next/image'
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button"
 import { MessageSquarePlusIcon } from "lucide-react"
-import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded';
+import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
 
 function Notification() {
     const router = useRouter();
@@ -17,9 +17,9 @@ function Notification() {
 
     }
   return (
-    <Button className="bg-[#ffffff] bg-opacity-25 " onClick={createNewChat} variant={'outline'} size="icon">
-          <NotificationsRoundedIcon  className="w-6 h-6 text-[#ffffff]"/>
-      </Button>
+    <div className="flex items-center justify-center bg-[#ffffff] bg-opacity-30 backdrop-blur-lg rounded-full p-3 cursor-pointer shadow-sm border border-white ">
+          <NotificationsOutlinedIcon  className="w-5 h-5 text-[#ffffff]"/>
+      </div>
   )
 }
 

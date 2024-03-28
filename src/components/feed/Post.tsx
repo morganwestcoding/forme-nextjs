@@ -103,7 +103,7 @@ const categoryColors = getColorByCategory(post.category);
         cursor-pointer
       "
     >
-         <MoreHorizRoundedIcon className="w-8 h-8 hover:text-[#48DBFB] text-[#8d8d8d] mr-2"/>
+         <MoreHorizRoundedIcon className="w-7 h-7 hover:text-[#48DBFB] text-[#8d8d8d] mr-2"/>
       {/*<div className={`text-xs drop-shadow-sm  border ${categoryColors.bgColorClass} ${categoryColors.borderColorClass} p-4 rounded-full text-white`}>      
       </div>*/}
     </div>
@@ -121,7 +121,7 @@ const categoryColors = getColorByCategory(post.category);
           <div className="text-sm text-[#717171] flex items-center">
         {post.location}
         {/* Ensure category label is rendered inline with location */}
-        <span className={`ml-2 p-1 rounded-lg text-white drop-shadow-sm px-2 py-1 mx-auto my-1  text-xs ${categoryColors.bgColorClass}`}>
+        <span className={`ml-2 p-1 rounded text-white drop-shadow-sm px-2 py-1 mx-auto my-1  text-xs ${categoryColors.bgColorClass}`}>
           {post.category}
         </span>
       </div>
@@ -129,35 +129,29 @@ const categoryColors = getColorByCategory(post.category);
       </div>
 
       {/*Image*/}
-      <div className=" pl-1 mt-3 relative">
-        <p className='text-sm text-[#000000]'>{post.content}</p>
-        {post.imageSrc && (
-          <div className="mt-3 mb-3 rounded-2xl mr-0.5 " style={{ maxWidth: '100%', overflow: 'hidden', position: 'relative' }}>
-          <Image src={post.imageSrc} alt="Post Image" layout='responsive' objectFit="contain" width={500} height={300} />
-        </div>
-        )}
+      <div className="mt-3 relative">
+                <p className='text-sm text-[#000000] mb-3'>{post.content}</p>
+                {post.imageSrc && (
+                    <div className="rounded-xl overflow-hidden relative">
+                        <Image src={post.imageSrc} alt="Post Image" layout='responsive' objectFit="cover" width={500} height={300} />
+                        {/* Centering interaction buttons */}
+                        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 flex space-x-4 mb-2">
+                            <div className="flex items-center justify-center bg-[#ffffff] bg-opacity-30 backdrop-blur-lg rounded-full p-3 cursor-pointer shadow-sm border border-white ">
+                                <TextsmsOutlinedIcon className='w-4 h-4 text-[#ffffff]'/>
+                            </div>
+                            <div className="flex items-center justify-center bg-[#ffffff] bg-opacity-30 backdrop-blur-lg rounded-full p-3 cursor-pointer shadow-sm border border-white ">
+                                <FavoriteBorderRoundedIcon className='w-4 h-4 text-[#ffffff]'/>
+                            </div>
+                            <div className="flex items-center justify-center bg-[#ffffff] bg-opacity-30 backdrop-blur-lg rounded-full p-3 cursor-pointer shadow-sm border border-white ">
+                                <BookmarkBorderRoundedIcon className='w-4 h-4 text-[#ffffff]'/>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
-        {/* Bottom */}
-        <div className="absolute bottom-0 right-0 flex space-x-2"> {/* Adjusted class here for left alignment */}
-          <div className={`flex items-center p-2 rounded-xl bg-black bg-opacity-10 backdrop-blur-lg m-2`}>
-          <div className="flex items-center justify-center bg-[#ffffff] bg-opacity-30 rounded-full p-2 cursor-pointer drop-shadow-sm ">
-            <TextsmsOutlinedIcon className='w-4 h-4 text-[#ffffff] '/>
-            </div>
-            <div className="flex items-center justify-center bg-[#ffffff] bg-opacity-30 ml-2 rounded-full p-2 cursor-pointer drop-shadow-sm">
-            <FavoriteBorderRoundedIcon  className='w-4 h-4 text-[#ffffff] '/>
-            </div>
-            <div className="flex items-center justify-center bg-[#ffffff] bg-opacity-30 ml-2 rounded-full p-2 cursor-pointer drop-shadow-sm">
-            <BookmarkBorderRoundedIcon  className='w-4 h-4 text-[#ffffff] '/>
-            </div>
-            </div>
-  
-          
-          <div className="absolute bottom-7 right-6"> {/* Added margin left for spacing */}
-          
-          </div>
         </div>
       </div>
-    </div>
+   
   );
 };
 

@@ -4,11 +4,12 @@
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import BusinessCenterRoundedIcon from '@mui/icons-material/BusinessCenterRounded';
-import CottageRoundedIcon from '@mui/icons-material/CottageRounded';
+import CottageOutlinedIcon from '@mui/icons-material/CottageOutlined';
 import StorefrontRoundedIcon from '@mui/icons-material/StorefrontRounded';
-import BookmarkRoundedIcon from '@mui/icons-material/BookmarkRounded';
-import EventNoteRoundedIcon from '@mui/icons-material/EventNoteRounded';
-import WorkRoundedIcon from '@mui/icons-material/WorkRounded';
+import BookmarkBorderOutlinedIcon from '@mui/icons-material/BookmarkBorderOutlined';
+import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';
+import WorkOutlineOutlinedIcon from '@mui/icons-material/WorkOutlineOutlined';
+import StorefrontOutlinedIcon from '@mui/icons-material/StorefrontOutlined';
 import {
   Tooltip,
   TooltipContent,
@@ -42,58 +43,61 @@ export default function Sidebar() {
 
         <ul className="list-none m-0 p-0 flex flex-col items-center ">
    
-          <li className="flex items-center justify-start mb-5 p-2  rounded-xl border shadow-inner bg-[#b1dafe] border-white w-36" onClick={() => router.push('/')}>
+          <li className="flex items-center justify-start mb-5 p-2  rounded-xl border shadow-inner bg-[#b1dafe] border-[#b1dafe] w-36" onClick={() => router.push('/')}>
           <div className="flex flex-col  hover:bg-white rounded-full p-1 cursor-pointer" >
             
-          <CottageRoundedIcon className="w-4 h-4 hover:text-[#48DBFB] text-[#ffffff]"/>
+          <CottageOutlinedIcon className="w-4 h-4  text-[#ffffff]"/>
           </div>
-                  <span className="ml-6 text-white text-xs font-normal hover:text-white">Home</span>
+                  <span className="ml-6 text-white text-xs font-light hover:text-white">Home</span>
 
           </li>
 
 
           {/* Market Icon with Tooltip */}
    
-          <li className="flex items-center justify-start mb-5 p-2  rounded-lg border shadow-sm  w-36 bg-white">
+          <li className="flex items-center justify-start mb-5 p-2  rounded-xl border shadow-sm  w-36 bg-white">
           <div className="flex flex-col  rounded-full p-1 cursor-pointer" onClick={() => router.push('/market')}>
-            <StorefrontRoundedIcon className="w-4 h-4 text-[#d3d2d2]" />
+            <StorefrontOutlinedIcon className="w-4 h-4 text-[#a2a2a2]" />
             </div>
-            <span className="ml-6 text-[#d3d2d2] text-xs font-normal ">Market</span>
+            <span className="ml-6 text-[#a2a2a2] text-xs font-light ">Market</span>
         
             </li>
         
 
            {/* Favorites Icon with Tooltip */}
        
-            <li className="flex items-center justify-start mb-5 p-2  rounded-lg  w-36 bg-white border shadow-sm">
+            <li className="flex items-center justify-start mb-5 p-2  rounded-xl  w-36 bg-white border shadow-sm">
           <div className="flex flex-col rounded-full p-1 cursor-pointer" onClick={() => router.push('/favorites')}>
-          <BookmarkRoundedIcon className="w-4 h-4 text-[#d3d2d2] "/>
+          <BookmarkBorderOutlinedIcon className="w-4 h-4 text-[#a2a2a2] "/>
           </div>     
 
            
-          <span className="ml-6 text-[#d3d2d2] text-xs font-normal ">Favorites </span>
+          <span className="ml-6 text-[#a2a2a2] text-xs font-light ">Favorites </span>
      
             </li>
        
 
          {/* Job Icon with Tooltip */}
   
-          <li className="flex items-center justify-start mb-5 p-2  rounded-lg border shadow-sm  w-36">
-          <div className="flex flex-col rounded-lg p-1 cursor-pointer">
-          <WorkRoundedIcon className="w-4 h-4 text-[#d3d2d2]" />
+          <li className="flex items-center justify-start mb-5 p-2  rounded-xl border shadow-sm  w-36">
+          <div className="flex flex-col rounded-xl p-1 cursor-pointer">
+          <WorkOutlineOutlinedIcon className="w-4 h-4 text-[#a2a2a2]" />
           </div>
-          <span className="ml-6 text-[#d3d2d2] text-xs font-normal ">Jobs</span>
+          <span className="ml-6 text-[#a2a2a2] text-xs font-light ">Jobs</span>
             
        
           </li>
         
 
-          <li className="flex items-center justify-start mb-5 p-2  rounded-lg border shadow-sm  w-36">
+          <li className="flex items-center justify-start mb-5 p-2  rounded-xl border shadow-sm  w-36">
           <div className="flex flex-col  rounded-full p-1 cursor-pointer" onClick={() => router.push('/reservations')}>
-          <EventNoteRoundedIcon className="w-4 h-4 text-[#d3d2d2]" />
+          <CalendarMonthOutlinedIcon className="w-4 h-4 text-[#a2a2a2]" />
           </div>
-          <span className="ml-6 text-[#d3d2d2] text-xs font-normal ">Bookings</span>
+          <span className="ml-6 text-[#a2a2a2] text-xs font-light ">Bookings</span>
             
+          </li>
+          <li className="flex items-center justify-start mb-5 p-2  rounded-xl border shadow-sm  w-36 h-36">
+
           </li>
           
        </ul>

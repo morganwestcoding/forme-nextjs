@@ -2,8 +2,8 @@ import React from 'react';
 import { SafeProfile, SafeListing } from '@/app/types';
 import Image from 'next/image';
 import format from 'date-fns/format'; 
-import WhereToVoteRoundedIcon from '@mui/icons-material/WhereToVoteRounded';
-import EventAvailableRoundedIcon from '@mui/icons-material/EventAvailableRounded';
+import PlaceOutlinedIcon from '@mui/icons-material/PlaceOutlined';
+import EventNoteOutlinedIcon from '@mui/icons-material/EventNoteOutlined';
 
 interface ProfileRightbarProps {
   user: SafeProfile;
@@ -53,28 +53,33 @@ const formattedDate = format(new Date(createdAt), 'PPP'); // Example format: Jan
     return (
       <div className="flex flex-col justify-end bg-transparent  gap-6 pr-16 h-auto mt-6">
          {/* Adjusted User Information Div to use Flex Grow to fill available space */}
-         <div className="flex flex-col justify-between w-full md:w-11/12 rounded-2xl shadow-sm bg-[#ffffff] px-8 md:px-6 md:py-6 mx-3 md:mr-16 md:ml-2 relative min-h-[128px]">
+         <div className="flex flex-col justify-between w-full md:w-11/12 rounded-2xl shadow-sm bg-[#ffffff] px-8 md:px-6 pt-6 pb-2 mx-3 md:mr-16 md:ml-2 relative min-h-[128px]">
           <div className="text-xl font-bold mb-2">About Me
             <div className="text-sm font-normal flex-grow">
-              <p className="py-2">
+              <p className="py-2 pb-2">
               {bio || "No bio available"} {/* Display bio here */}
               </p>
-              <ul className='border rounded-lg p-2'>
+              
+              </div>
+
+              <ul>
+                
              {/* Adjusted list items to include flex layout for icon and text alignment */}
-             <li className="flex items-center pb-1 "> 
+             <li className="flex items-center pb-2 pt-2 rounded-lg shadow-sm bg-white border px-2 w-full mb-2"> 
               <div className="flex items-center justify-center p-1  cursor-pointer">
-              <WhereToVoteRoundedIcon className="w-5 h-5  text-[#b1dafe]" />
+              <PlaceOutlinedIcon className="w-4 h-4  text-[#a2a2a2]" />
               </div>
-                <span className="ml-1 text-sm text-[#b1dafe]">Your Location Here</span>
+                <span className="ml-1 text-xs font-light text-[#717171]">Your Location Here</span>
               </li>
-              <li className="flex items-center">
+        
+              <li className="flex items-center pb-2 pt-2 w-full rounded-lg shadow-sm bg-white border px-2">
               <div className="flex items-center justify-center  p-1  cursor-pointer">
-              <EventAvailableRoundedIcon className="w-5 h-5  text-[#b1dafe]" />
+              <EventNoteOutlinedIcon className="w-4 h-4  text-[#a2a2a2]" />
               </div>
-                <span className="ml-1 text-sm text-[#b1dafe]">Joined {formattedDate}</span> {/* Display the formatted creation date here */}
+                <span className="ml-1 text-xs font-light text-[#717171]">Joined {formattedDate}</span> {/* Display the formatted creation date here */}
               </li>
               </ul>
-            </div>
+            
           </div>
         </div>
 

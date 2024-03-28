@@ -31,11 +31,11 @@ const AddListing: React.FC<AddListingProps> = ({
   }, [rentModal]);
 
   return (
-    <Button className="bg-[#ffffff] bg-opacity-25 " onClick={onRent} variant={'outline'} size="icon">
+    <div className="flex items-center justify-center bg-[#ffffff] bg-opacity-30 backdrop-blur-lg rounded-full p-3 cursor-pointer shadow-sm border border-white ">
     
           <AddRoundedIcon className="w-5 h-5 text-[#ffffff]"/>
 
-      </Button>
+      </div>
   )
 }
 

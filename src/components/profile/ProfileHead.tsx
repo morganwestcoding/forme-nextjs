@@ -40,24 +40,24 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({ user }) => {
 
           {/* Bio Section */}
           <div className=" h-full rounded-r-2xl flex flex-col justify-center items-center p-4 z-50">
-            <span className="text-gray-800 font-semibold ml-3 justify-start">{name}</span>
+            <span className="text-gray-800 font-semibold flex justify-center items-center">{name}</span>
             {/* Friends and Followers Placeholder */}
-            <div className="mt-2 w-full ml-5 flex justify-around items-center">
-              <div className="flex justify-center items-center">
-                <span className="text-gray-700 text-sm"><b>0</b> Following</span>
-              </div>
-              <div className="flex justify-center items-center">
-                <span className="text-gray-700 text-sm"><b>0</b> Followers</span>
-              </div>
-            </div>
+            <div className="mt-2 w-full flex justify-center items-center gap-2">
+    <div className="flex justify-center items-center">
+      <span className="text-gray-700 text-sm"><b>0</b> Following</span>
+    </div>
+    <div className="flex justify-center items-center">
+      <span className="text-gray-700 text-sm"><b>0</b> Followers</span>
+    </div>
+  </div>
 
             {/* Follow and Message Buttons */}
-            <div className="flex mt-4 gap-0.5 -mb-2 ">
-              <button className='font-light text-[#717171] rounded-xl text-xs bg-[#ffffff] border p-2 px-8 mr-1 shadow-sm'>
+            <div className="flex justify-center w-full mt-4 gap-1 ">
+              <button className='font-light text-[#717171] rounded-lg text-xs bg-[#ffffff] border p-2 px-8 mr-1 shadow-sm ml-1'>
                 Follow
               </button>
             
-              <button className='font-light text-[#717171] rounded-xl text-xs bg-[#ffffff] border p-2 px-8 mr-1 shadow-sm'>
+              <button className='font-light text-[#717171] rounded-lg text-xs bg-[#ffffff] border p-2 px-6 mr-1 shadow-sm'>
                 Message
               </button>
 

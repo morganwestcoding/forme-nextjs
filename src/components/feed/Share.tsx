@@ -103,10 +103,11 @@ const Share: React.FC<ShareProps> = ({ currentUser }) => {
    <div className="flex-grow">
           {/* Placeholder for other components or spacing */}
         </div>
-        <Attachment />
+       
         <PostCategorySelect
           onCategorySelected={setCategory}
         />
+         <Attachment />
         </div>
       
       </div>
