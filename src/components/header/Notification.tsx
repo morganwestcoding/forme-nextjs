@@ -17,7 +17,7 @@ function Notification() {
 
     }
   return (
-    <div className="flex items-center justify-center bg-[#ffffff] bg-opacity-30 backdrop-blur-lg rounded-full p-3 cursor-pointer shadow-sm border border-white ">
+    <div className="flex items-center justify-center bg-[#e2e8f0] backdrop-blur-lg rounded-full p-3 cursor-pointer shadow-sm border border-white ">
           <NotificationsOutlinedIcon  className="w-5 h-5 text-[#ffffff]"/>
       </div>
   )

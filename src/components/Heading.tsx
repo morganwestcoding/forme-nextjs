@@ -35,10 +35,6 @@ const Heading: React.FC<HeadingProps> = ({
         </div>
       )}
       {/* Star icon with rating next to the subtitle */}
-      <div className="flex items-center">
-          <GradeRoundedIcon className="w-5 h-5 text-[#b1dafe]" /> {/* Removed the negative margin */}
-          <span className="ml-1 text-[#b1dafe]">(5.0)</span>
-        </div>
     </div>
    );
 }

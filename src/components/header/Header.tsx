@@ -25,7 +25,7 @@ const Header: React.FC<HeaderProps> = ({
            
             <Search/>
             <Filter/>
-            <div className="flex-1 flex items-center justify-end space-x-2">
+            <div className="flex-1 flex items-center justify-end space-x-4">
               {/* LanguageSelect */}
 
               <>

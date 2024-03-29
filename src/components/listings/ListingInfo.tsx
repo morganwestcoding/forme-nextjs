@@ -2,6 +2,10 @@
 
 import dynamic from "next/dynamic";
 import { IconType } from "react-icons";
+import IosShareRoundedIcon from '@mui/icons-material/IosShareRounded';
+import BookmarkBorderRoundedIcon from '@mui/icons-material/BookmarkBorderRounded';
+
+import BookmarkBorderOutlinedIcon from '@mui/icons-material/BookmarkBorderOutlined';
 
 import useStates from "@/app/hooks/useStates";
 import { SafeService, SafeUser } from "@/app/types";
@@ -48,7 +52,28 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
       <Heading title={title} subtitle={`${location?.label}`}
         label={category?.label} />
     </div>
-      
+    
+    <div className="flex justify-start space-x-2"> {/* Adjusted for direct layout under Heading */}
+        <div
+          className="flex items-center shadow-sm justify-start p-2  rounded-xl border bg-white w-24"
+          onClick={() => console.log('Share div clicked')}
+        >
+          <div className="flex flex-col   rounded-full p-1 cursor-pointer" >
+          <IosShareRoundedIcon className="w-4 h-4 text-[#a2a2a2] " />
+          </div>
+          <span className="ml-2 text-[#a2a2a2] text-xs group-hover:text-white font-light ">Share</span>
+        </div>
+        <div
+          className="flex items-center shadow-sm justify-start p-2  rounded-xl border bg-white w-24"
+          onClick={() => console.log('Share div clicked')}
+        >
+          <div className="flex flex-col   rounded-full p-1  cursor-pointer" >
+          <BookmarkBorderOutlinedIcon className="w-4 h-4 text-[#a2a2a2] " />
+          </div>
+          <span className="ml-2 text-[#a2a2a2] text-xs group-hover:text-white font-light ">Save</span>
+        </div>
+      </div>
+     
       {/* Additional content */}
     </div>
    );

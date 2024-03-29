@@ -13,6 +13,9 @@ import { categories } from "@/components/Categories";
 import ListingHead from "@/components/listings/ListingHead";
 import ListingInfo from "@/components/listings/ListingInfo";
 import ListingReservation from "@/components/listings/ListingReservation";
+import LanguageOutlinedIcon from '@mui/icons-material/LanguageOutlined';
+import PlaceOutlinedIcon from '@mui/icons-material/PlaceOutlined';
+import LocalPhoneOutlinedIcon from '@mui/icons-material/LocalPhoneOutlined';
 
 const initialDateRange = {
   startDate: new Date(),
@@ -158,6 +161,29 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
               <p className="py-2">
               {description}
               </p>
+              <ul>
+                
+                {/* Adjusted list items to include flex layout for icon and text alignment */}
+                <li className="flex items-center pb-2 pt-2 rounded-lg shadow-sm bg-white border px-2 w-full mb-2"> 
+                 <div className="flex items-center justify-center p-1  cursor-pointer">
+                 <LocalPhoneOutlinedIcon className="w-4 h-4  text-[#a2a2a2]" />
+                 </div>
+                   <span className="ml-1 text-xs font-light text-[#717171]">(310) 372-1171</span>
+                 </li>
+           
+                 <li className="flex items-center pb-2 pt-2 w-full rounded-lg shadow-sm bg-white border px-2 mb-2">
+                 <div className="flex items-center justify-center  p-1  cursor-pointer">
+                 <LanguageOutlinedIcon className="w-4 h-4  text-[#a2a2a2]" />
+                 </div>
+                   <span className="ml-1 text-xs font-light text-[#717171]">https://www.redondo.org/</span> {/* Display the formatted creation date here */}
+                 </li>
+                 <li className="flex items-center pb-2 pt-2 w-full rounded-lg shadow-sm bg-white border px-2">
+                 <div className="flex items-center justify-center  p-1  cursor-pointer">
+                 <PlaceOutlinedIcon className="w-4 h-4  text-[#a2a2a2]" />
+                 </div>
+                   <span className="ml-1 text-xs font-light text-[#717171]">415 Diamond Street, Redondo Beach, CA 90277</span> {/* Display the formatted creation date here */}
+                 </li>
+                 </ul>
               </div>
               </div>
               </div>
