@@ -152,8 +152,8 @@ const ListingClient: React.FC<ListingClientProps> = ({
               locationValue={listing.locationValue}
               services={listing.services} 
             />
-       <div className="rounded-2xl shadow-sm bg-[#ffffff] p-6 -mt-4">
-            <h3 className="font-bold mb-4">Services<hr className="mt-2"/></h3>
+       <div className="rounded-2xl shadow-sm bg-[#ffffff] px-6 -mt-4">
+            <h3 className="font-bold mb-2 mt-2">Services</h3>
             
             {listing.services.map((service) => (
               <div key={service.id} className="flex justify-between items-center mb-2 text-sm">
@@ -166,8 +166,8 @@ const ListingClient: React.FC<ListingClientProps> = ({
                 </button>
               </div>
             ))}
-        
-
+        <hr className="-mx-6 mt-6 mb-5"/>
+        <h3 className="font-bold mb-4">Date</h3>
             <ListingReservation
                 price={totalPrice}
                 

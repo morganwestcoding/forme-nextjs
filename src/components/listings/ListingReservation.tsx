@@ -28,6 +28,7 @@ const ListingReservation: React.FC<
 }) => {
   
   return ( 
+    
     <div 
       className="
       bg-white 
@@ -37,7 +38,8 @@ const ListingReservation: React.FC<
         overflow-hidden
       "
     >
- 
+      
+    
       
       <Calendar
         value={dateRange}

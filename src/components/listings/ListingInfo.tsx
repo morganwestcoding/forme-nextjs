@@ -52,8 +52,8 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
       <Heading title={title} subtitle={`${location?.label}`}
         label={category?.label} />
     </div>
-    
-    <div className="flex justify-start space-x-2"> {/* Adjusted for direct layout under Heading */}
+   
+    <div className="flex justify-start space-x-2 mb-6"> {/* Adjusted for direct layout under Heading */}
         <div
           className="flex items-center shadow-sm justify-start p-2  rounded-xl border bg-white w-24"
           onClick={() => console.log('Share div clicked')}
@@ -73,6 +73,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
           <span className="ml-2 text-[#a2a2a2] text-xs group-hover:text-white font-light ">Save</span>
         </div>
       </div>
+      <hr className="mt-2 -mx-6"/>
      
       {/* Additional content */}
     </div>
