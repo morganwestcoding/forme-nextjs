@@ -162,12 +162,15 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
               {description}
               </p>
               <ul>
-              <li className="flex items-center pb-2 pt-2 rounded-lg shadow-sm bg-white border px-2 w-full h-28 mb-2"> 
-                 <div className="flex items-center justify-center p-1  cursor-pointer">
-
-                 </div>
-                   <span className="ml-1 text-xs font-light text-[#717171]">Placeholder Map</span>
-                 </li>
+              <li className="flex items-center justify-center mb-5 p-2 rounded-lg shadow-sm bg-white border px-2 w-full h-28 mb-2 relative">
+  <Image
+    src="/assets/8KmHl.png"
+    alt="Map Placeholder"
+    layout="fill" // This will cover the <li> element area
+    objectFit="cover" // Ensures the image covers the area nicely
+  />
+ 
+</li>
                 {/* Adjusted list items to include flex layout for icon and text alignment */}
                 <li className="flex items-center pb-2 pt-2 rounded-lg shadow-sm bg-white border px-2 w-full mb-2"> 
                  <div className="flex items-center justify-center p-1  cursor-pointer">

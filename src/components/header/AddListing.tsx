@@ -31,7 +31,7 @@ const AddListing: React.FC<AddListingProps> = ({
   }, [rentModal]);
 
   return (
-    <div className="flex items-center justify-center bg-[#e2e8f0]  rounded-full p-3 cursor-pointer shadow-sm border border-white ">
+    <div className="flex items-center justify-center bg-[#e2e8f0]  rounded-full p-3 cursor-pointer shadow-sm border border-white " onClick={onRent}>
     
           <AddRoundedIcon className="w-5 h-5 text-[#ffffff]"/>
 

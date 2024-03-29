@@ -72,7 +72,7 @@ export default function Sidebar() {
             
           <CottageOutlinedIcon className="w-4 h-4  text-[#ffffff]"/>
           </div>
-                  <span className="ml-6 text-white text-xs font-light hover:text-white">Home</span>
+                  <span className="ml-5 text-white text-xs font-light hover:text-white">Home</span>
 
           </li>
 
@@ -83,7 +83,7 @@ export default function Sidebar() {
           <div className="flex flex-col  rounded-full p-1 cursor-pointer" onClick={() => router.push('/market')}>
             <StorefrontOutlinedIcon className="w-4 h-4 group-hover:text-white text-[#a2a2a2]" />
             </div>
-            <span className="ml-6 text-[#a2a2a2] text-xs font-light group-hover:text-white ">Market</span>
+            <span className="ml-5 text-[#a2a2a2] text-xs font-light group-hover:text-white ">Market</span>
         
             </li>
         
@@ -96,7 +96,7 @@ export default function Sidebar() {
           </div>     
 
            
-          <span className="ml-6 text-[#a2a2a2] group-hover:text-white text-xs font-light ">Favorites </span>
+          <span className="ml-5 text-[#a2a2a2] group-hover:text-white text-xs font-light ">Favorites </span>
      
             </li>
        
@@ -107,7 +107,7 @@ export default function Sidebar() {
           <div className="flex flex-col rounded-xl p-1 cursor-pointer">
           <WorkOutlineOutlinedIcon className="group-hover:text-white w-4 h-4 text-[#a2a2a2]" />
           </div>
-          <span className="ml-6 group-hover:text-white text-[#a2a2a2] text-xs font-light ">Jobs</span>
+          <span className="ml-5 group-hover:text-white text-[#a2a2a2] text-xs font-light ">Jobs</span>
             
        
           </li>
@@ -117,15 +117,15 @@ export default function Sidebar() {
           <div className="flex flex-col  rounded-full p-1 cursor-pointer" onClick={() => router.push('/reservations')}>
           <CalendarMonthOutlinedIcon className="group-hover:text-white w-4 h-4 text-[#a2a2a2]" />
           </div>
-          <span className="ml-6 text-[#a2a2a2] text-xs group-hover:text-white font-light ">Bookings</span>
+          <span className="ml-5 text-[#a2a2a2] text-xs group-hover:text-white font-light ">Bookings</span>
             
           </li>
           {/* Categories */}
-          <li className="relative flex  items-center justify-center mb-5 p-2 rounded-xl shadow w-36 h-36">
+          <li className="relative flex  items-center justify-center mb-5 p-2 rounded-xl shadow w-36 h-32 bg-[#b1dafe]">
   <div className="absolute left-0 z-10 cursor-pointer" onClick={handlePrevClick}>
     <NavigateBeforeRoundedIcon className="w-6 h-6 text-white" />
   </div>
-  <Image src={images[currentImageIndex]} alt="categories" layout="fill" objectFit="cover" className="rounded-xl" />
+  <span className=" text-[#ffffff] text-xs group-hover:text-white font-light ">Default</span>
   <div className="absolute right-0 z-10 cursor-pointer" onClick={handleNextClick}>
     <NavigateNextRoundedIcon className="w-6 h-6 text-white"  />
   </div>

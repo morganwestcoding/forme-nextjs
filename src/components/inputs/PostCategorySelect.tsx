@@ -24,7 +24,7 @@ const PostCategorySelect: React.FC<PostCategorySelectProps> = ({
     <div className="relative inline-flex items-center">
     
     <Button 
-      className=' rounded-xl bg-[#ffffff] hover:bg-white px-2 py-4 text-[#4d4d4d] shadow-sm text-xs font-medium'
+      className=' rounded-xl bg-[#ffffff] border-white border hover:bg-white px-2 py-5 text-[#4d4d4d] shadow-sm text-xs font-medium'
       onClick={() => setShowCategories(!showCategories)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -33,7 +33,7 @@ const PostCategorySelect: React.FC<PostCategorySelectProps> = ({
       categories.map((category, index) => (
         <div 
           key={category.label} 
-          className={`mr-1 w-4 h-4 rounded-full cursor-pointer ${category.color}`}
+          className={`mr-1 w-5 h-5 rounded-full cursor-pointer ${category.color}`}
           onClick={() => handleCategorySelect(category.label)}
           title={category.label} // Tooltip to show the label on hover
         />
