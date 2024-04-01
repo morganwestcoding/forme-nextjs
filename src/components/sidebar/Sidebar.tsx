@@ -64,7 +64,7 @@ export default function Sidebar() {
     <div className="fixed top-0 flex h-screen z-50">
       <div className="flex flex-col items-center w-52 h-full p-10 bg-white  backdrop-blur-full bg drop-shadow-sm rounded-tr-2xl" >
         <Logo/>
-
+        <span className="ml-5 text-[#a2a2a2] text-xs font-light hover:text-white ">Menu</span>
         <ul className="list-none m-0 p-0 flex flex-col items-center ">
    
           <li className="flex items-center justify-start mb-5 p-2  rounded-xl border shadow-inner bg-[#b1dafe] border-[#b1dafe] w-36" onClick={() => router.push('/')}>
@@ -120,6 +120,8 @@ export default function Sidebar() {
           <span className="ml-5 text-[#a2a2a2] text-xs group-hover:text-white font-light ">Bookings</span>
             
           </li>
+
+          <span className="ml-5 text-[#a2a2a2] text-xs font-light hover:text-white ">Genre</span>
           {/* Categories */}
           <li className="relative flex  items-center justify-center mb-5 p-2 rounded-xl shadow w-36 h-32 bg-[#b1dafe]">
   <div className="absolute left-0 z-10 cursor-pointer" onClick={handlePrevClick}>
