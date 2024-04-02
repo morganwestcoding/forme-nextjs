@@ -35,25 +35,25 @@ const ServiceSelector = ({ onServicesChange, existingServices }: ServiceSelector
   return (
     <div className="max-w-2xl mx-auto">
       {services.map((service, index) => (
-        <div key={index} className="flex flex-row justify-between mb-4 gap-3">
+        <div key={index} className="flex flex-row justify-between mb-3 gap-3">
           <input
             type="text"
             placeholder="Service Name"
             value={service.serviceName}
             onChange={(e) => handleServiceChange(index, 'serviceName', e.target.value)}
-            className="rounded-md border p-2 flex-1"
+            className="rounded border-white bg-transparent text-white border p-2 flex-1"
           />
           <input
             type="number"
             placeholder="Price"
             value={service.price}
             onChange={(e) => handleServiceChange(index, 'price', parseFloat(e.target.value))}
-            className="rounded-md border p-2 w-1/4"
+            className="rounded border-white bg-transparent text-white border p-2 w-1/4"
           />
           <select
             value={service.category}
             onChange={(e) => handleServiceChange(index, 'category', e.target.value)}
-            className="rounded-md border p-2 w-1/4"
+            className="rounded border-white bg-transparent text-white border p-2 w-1/4"
           >
             <option value="">Category</option>
             {categories.map((category) => (

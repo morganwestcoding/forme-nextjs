@@ -118,7 +118,7 @@ const Modal: React.FC<ModalProps> = ({
               w-full 
             bg-black
             bg-opacity-55
-            backdrop-blur-xl
+            backdrop-blur-md
            
               
               outline-none 

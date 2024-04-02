@@ -24,7 +24,7 @@ const PostCategorySelect: React.FC<PostCategorySelectProps> = ({
     <div className="relative inline-flex items-center">
     
     <Button 
-      className=' rounded-xl bg-[#ffffff] border-white border hover:bg-white px-2 py-5 text-[#4d4d4d] shadow-sm text-xs font-medium'
+      className=' rounded-xl bg-[#ffffff]  hover:bg-white text-[#4d4d4d] shadow-sm text-xs font-medium'
       onClick={() => setShowCategories(!showCategories)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}

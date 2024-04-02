@@ -16,12 +16,13 @@ import useRentModal from '@/app/hooks/useRentModal';
 
 import Modal from "./Modal";
 import CategoryInput from '../inputs/CategoryInput';
-import StateSelect from "../inputs/StateSelect";
+import StateSelect from "../inputs/ListLocationSelect";
 import { categories } from '../Categories';
 import ImageUpload from '../inputs/ImageUpload';
 import Input from '../inputs/Input';
 import Heading from '../Heading';
 import ServiceSelector, { Service } from '../inputs/ServiceSelector';
+import ListLocationSelect from '../inputs/ListLocationSelect';
 
 enum STEPS {
   CATEGORY = 0,
@@ -173,15 +174,18 @@ const RentModal = () => {
           title="Where is your place located?"
           subtitle="Help guests find you!"
         />
-        <StateSelect 
-         id="state"
-         label="State"
-          value={location} 
-          onChange={(value) => setCustomValue('location', value)} 
-        />
+        <ListLocationSelect
+        onStateSelected={(selectedState) => {
+          // Handle state selection, e.g., update form value
+          setCustomValue('state', selectedState?.value);
+        }}
+        onCitySelected={(selectedCity) => {
+          // Handle city selection, e.g., update form value
+          setCustomValue('city', selectedCity?.value);
+        }}
+      />
     
-        {/*<Map
-            center={location?.latlng} />*/}
+    
             
       </div>
     );
