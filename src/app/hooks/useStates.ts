@@ -1,21 +1,43 @@
-import states from 'states-us';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 
-const formattedStates = states.map((state) => ({
-  value: state.abbreviation,  // Typically, state abbreviations are used as unique identifiers
-  label: state.name,          // The full name of the state
-}));
+interface GeoNameItem {
+  name: string;
+  geonameId: string;
+}
 
-const useStates = () => {
-  const getAll = () => formattedStates;
 
-  const getByValue = (value: string) => {
-    return formattedStates.find((item) => item.value === value);
-  }
+const useStates = (countryCode: string) => {
+  const [states, setStates] = useState<Array<{label: string, value: string}>>([]);
 
-  return {
-    getAll,
-    getByValue
-  }
+  useEffect(() => {
+    if (!countryCode) return;
+
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`http://api.geonames.org/childrenJSON`, {
+          params: {
+            geonameId: countryCode,
+            username: 'slaminmew',
+          },
+        });
+        if (response.data && response.data.geonames) {
+          const formattedStates = response.data.geonames.map((item: GeoNameItem) => ({
+            label: item.name,
+            value: item.geonameId,
+          }));
+          setStates(formattedStates);
+        }
+      } catch (error) {
+        console.error('Error fetching states from GeoNames:', error);
+      }
+    };
+
+    fetchData();
+  }, [countryCode]);
+
+  return states;
 };
+
 
 export default useStates;

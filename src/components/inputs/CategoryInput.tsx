@@ -20,23 +20,26 @@ const CategoryInput: React.FC<CategoryInputProps> = ({
       onClick={() => onClick(label)}
       className={`
         rounded-xl
-        border-2
+        shadow-sm
         p-4
         flex
-        bg-[#F9FCFF] 
-        bg-opacity-40 
-        shadow-md 
+        group
+        hover:bg-[#e2e8f0]
+        hover:border-[#e2e8f0]
+        bg-black
+        
+        bg-transparent
         flex-col
         gap-3
-        hover:border-white
+        
         transition
         cursor-pointer
-        ${selected ? 'border-white' : 'border-[#7d8085]'}
+        ${selected ? 'border-white' : 'border'}
       `}
     >
       
-      <div className="flex items-center gap-2 font-semibold text-xs uppercase text-[#7d8085]">
-      <span className={`h-6 w-6 rounded-full ${color} inline-block `}></span>
+      <div className="group group-hover:text-black flex items-center gap-5 font-light text-sm text-[white] ">
+      <span className={` h-6 w-6 rounded-full ${color} inline-block `}></span>
         {label}
       </div>
     </div>

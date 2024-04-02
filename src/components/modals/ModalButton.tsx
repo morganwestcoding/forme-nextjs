@@ -26,19 +26,20 @@ const ModalButton: React.FC<ModalButtonProps> = ({
       onClick={onClick}
       className={`
         relative
-        disabled:opacity-70
+        
         disabled:cursor-not-allowed
-        rounded-lg
+        rounded-xl
+        shadow-sm
         border-transparent
         hover:opacity-80
         transition
         w-full
-        ${outline ? 'bg-white' : 'bg-[#3d3f42]'}
-        ${outline ? 'border-white' : 'bg-[#3d3f42]'}
+        ${outline ? 'bg-white' : 'bg-[#b1dafe]'}
+        ${outline ? 'border-white' : 'bg-[#b1dafe]'}
         ${outline ? 'text-black' : 'text-white'}
         ${small ? 'text-sm' : 'text-md'}
         ${small ? 'py-1' : 'py-3'}
-        ${small ? 'font-light' : 'font-semibold'}
+        ${small ? 'font-light' : 'font-light'}
         ${small ? 'border-[1px]' : 'border-2'}
       `}>
         {Icon && (
@@ -48,6 +49,7 @@ const ModalButton: React.FC<ModalButtonProps> = ({
             absolute
             left-4
             top-3
+            
           "
         />
         )}

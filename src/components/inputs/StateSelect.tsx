@@ -1,69 +1,34 @@
-'use client';
+import React, { useState } from 'react';
+import Select from 'react-select';
+import useStates from '@/app/hooks/useStates'; 
+import useCities from '@/app/hooks/useCities';// Adjust the import path based on your project structure
 
-import Select from 'react-select'
+const ListLocationSelect = () => {
+  const [selectedCountry] = useState('3169070'); // Example: Country code for the United States
+  const [selectedState, setSelectedState] = useState(null);
+  
+  const states = useStates(selectedCountry);
+  const cities = useCities(selectedState ? selectedState.value : null);
 
-import useStates from '@/app/hooks/useStates';
+  const handleStateChange = (selectedOption) => {
+    setSelectedState(selectedOption);
+  };
 
-export type StateSelectValue = {
-  label: string;
-  id:string;
-  value: string
-}
-
-interface StateSelectProps {
-  label: string;
-  id:string;
-  value?: StateSelectValue;
-  onChange: (value: StateSelectValue) => void;
-}
-
-const StateSelect: React.FC<StateSelectProps> = ({
-  value,
-  onChange
-}) => {
-  const { getAll } = useStates();
-
-  return ( 
-    <div >
-      <Select 
-        
-        required
+  return (
+    <div>
+      <Select
+        options={states}
+        value={selectedState}
+        onChange={handleStateChange}
         placeholder="Select State"
-        isClearable
-        options={getAll()}
-        value={value}
-        onChange={(value) => onChange(value as StateSelectValue)}
-        formatOptionLabel={(option: any) => (
-          <div className="
-          flex flex-row items-center gap-3 ">
-           
-            <div >
-              {option.label}
-            
-            </div>
-          </div>
-        )}
-        classNames={{
-          control: () => ' border-2',
-          input: () => 'text-lg',
-          option: () => 'text-lg'
-        }}
-        theme={(theme) => ({
-          ...theme,
-          borderRadius: 6,
-          colors: {
-            ...theme.colors,
-            primary: '#7d8085',
-            primary25: '#c9c9c9',
-            neutral0: '#F9FCFF', // Background color for the input and dropdown
-            neutral20: '#7d8085', // Border color
-            neutral30: '#ffffff',
-            neutral80: '#7d8085'
-          }
-        })}
+      />
+      <Select
+        options={cities}
+        isDisabled={!selectedState}
+        placeholder="Select City"
       />
     </div>
-   );
-}
- 
-export default StateSelect;
+  );
+};
+
+export default ListLocationSelect;

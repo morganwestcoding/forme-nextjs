@@ -110,13 +110,16 @@ const Modal: React.FC<ModalProps> = ({
               lg:h-auto
               md:h-auto
               border-0 
-              rounded-lg 
-              shadow-lg 
+              rounded-2xl 
+               
               relative 
               flex 
               flex-col 
               w-full 
-              bg-gradient-to-b from-[#ffffff] to-[#BDCAD9]
+            bg-black
+            bg-opacity-55
+            backdrop-blur-xl
+           
               
               outline-none 
               focus:outline-none
@@ -145,14 +148,14 @@ const Modal: React.FC<ModalProps> = ({
                   "
                   onClick={handleClose}
                 >
-                  <X size={18} className=" text-black"/>
+                  <X size={18} className=" text-white"/>
                 </div>
-                <div className="text-lg font-semibold">
+                <div className="text-lg text-white font-medium">
                   {title}
                 </div>
               </div>
               {/*body*/}
-              <div className="relative p-6 flex-auto">
+              <div className="relative p-6 text-white flex-auto">
                 {body}
               </div>
               {/*footer*/}
