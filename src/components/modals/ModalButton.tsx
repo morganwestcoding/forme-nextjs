@@ -28,7 +28,7 @@ const ModalButton: React.FC<ModalButtonProps> = ({
         relative
         
         disabled:cursor-not-allowed
-        rounded-xl
+        rounded-md
         shadow-sm
         border-transparent
         hover:opacity-80

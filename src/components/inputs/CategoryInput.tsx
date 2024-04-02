@@ -26,15 +26,17 @@ const CategoryInput: React.FC<CategoryInputProps> = ({
         group
         hover:bg-[#e2e8f0]
         hover:border-[#e2e8f0]
-        bg-black
         
-        bg-transparent
+        
+      
         flex-col
         gap-3
         
         transition
         cursor-pointer
-        ${selected ? 'border-white' : 'border'}
+        ${selected ? 'border border-transparent' : 'border border-white'}
+        ${selected ? 'bg-[#b1dafe]' : 'bg-transparent'}
+       
       `}
     >
       
