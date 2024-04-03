@@ -34,7 +34,7 @@ const CategoryInput: React.FC<CategoryInputProps> = ({
         
         transition
         cursor-pointer
-        ${selected ? 'border border-transparent' : 'border border-white'}
+        ${selected ? '' : 'border border-white'}
         ${selected ? 'bg-[#b1dafe]' : 'bg-transparent'}
        
       `}
