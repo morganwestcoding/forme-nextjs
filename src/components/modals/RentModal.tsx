@@ -220,7 +220,7 @@ const RentModal = () => {
 
   if (step === STEPS.DESCRIPTION) {
     bodyContent = (
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-3">
         <Heading
           title="How would you describe your place?"
           subtitle="Short and sweet works best!"
@@ -233,7 +233,7 @@ const RentModal = () => {
           errors={errors}
           required
         />
-        <hr />
+        
         <Input
           id="description"
           label="Description"

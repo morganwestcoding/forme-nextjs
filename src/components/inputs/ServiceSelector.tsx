@@ -18,7 +18,7 @@ type ServiceSelectorProps = {
 const ServiceSelector: React.FC<ServiceSelectorProps> = ({ onServicesChange, existingServices }) => {
   const [services, setServices] = useState<Service[]>(existingServices);
   // State to keep track of the raw input values for prices
-  const [inputValues, setInputValues] = useState<string[]>(existingServices.map(service => service.price.toString()));
+  const [inputValues, setInputValues] = useState<string[]>(existingServices.map(service => service.price.toFixed(2)));
 
   useEffect(() => {
     onServicesChange(services.map((service, index) => ({
@@ -31,16 +31,27 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({ onServicesChange, exi
   const handleInputChange = (index: number, field: keyof Service, value: string) => {
     // Update the corresponding service detail based on the field
     const updatedServices = [...services];
+    const updatedInputValues = [...inputValues];
+
     if (field === 'price') {
       // Update the raw input value for price fields
-      const updatedInputValues = [...inputValues];
       updatedInputValues[index] = value; // Directly update with the raw input string
       setInputValues(updatedInputValues);
+      updatedServices[index] = {
+         ...updatedServices[index],
+      [field]: parseFloat(value) || 0,
+     };
     } else {
       updatedServices[index] = { ...updatedServices[index], [field]: value };
-      setServices(updatedServices);
     }
-  };
+      setServices(updatedServices);
+    };
+
+    const handleBlur = (index: number) => {
+      const updatedInputValues = [...inputValues];
+      updatedInputValues[index] = parseFloat(inputValues[index]).toFixed(2);
+      setInputValues(updatedInputValues);
+    };
   
 
 
@@ -56,14 +67,15 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({ onServicesChange, exi
             onChange={(e) => handleInputChange(index, 'serviceName', e.target.value)}
             className="rounded border-white text-white bg-transparent border p-4 flex-1"
           />
-          <div className="flex relative items-center border border-white bg-transparent rounded p-4">
+<div className="flex relative items-center border border-white bg-transparent rounded p-4">
             <span className="absolute left-3 text-white">$</span>
             <input
               type="text"
               placeholder="Price"
               value={inputValues[index]}
               onChange={(e) => handleInputChange(index, 'price', e.target.value)}
-              className="pl-8  bg-transparent text-white outline-none w-28"
+              onBlur={() => handleBlur(index)}
+              className="pl-8 bg-transparent text-white outline-none w-28"
             />
           </div>
           <select

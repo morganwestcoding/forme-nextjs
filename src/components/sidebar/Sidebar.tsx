@@ -68,7 +68,7 @@ export default function Sidebar() {
         <span className="mb-5 text-[#a2a2a2] text-xs font-light hover:text-white ">Menu</span>
         <ul className="list-none m-0 p-0 flex flex-col items-center ">
    
-          <li className="flex items-center justify-start mb-5 p-2  rounded-xl border shadow-inner bg-[#b1dafe] border-[#b1dafe] w-36" onClick={() => router.push('/')}>
+          <li className="flex items-center justify-start mb-5 p-2  rounded-lg border shadow-inner bg-[#b1dafe] border-[#b1dafe] w-36" onClick={() => router.push('/')}>
           <div className="flex flex-col   rounded-full p-1 cursor-pointer" >
             
           <CottageOutlinedIcon className="w-4 h-4  text-[#ffffff]"/>
@@ -80,7 +80,7 @@ export default function Sidebar() {
 
           {/* Market Icon with Tooltip */}
    
-          <li className="group hover:text-white flex items-center  justify-start mb-5 p-2 hover:bg-[#e2e8f0] rounded-xl border shadow-sm  w-36 bg-white">
+          <li className="group hover:text-white flex items-center  justify-start mb-5 p-2 hover:bg-[#e2e8f0] rounded-lg border shadow-sm  w-36 bg-white">
           <div className="flex flex-col  rounded-full p-1 cursor-pointer" onClick={() => router.push('/market')}>
             <StorefrontOutlinedIcon className="w-4 h-4 group-hover:text-white text-[#a2a2a2]" />
             </div>
@@ -91,7 +91,7 @@ export default function Sidebar() {
 
            {/* Favorites Icon with Tooltip */}
        
-            <li className="group flex items-center hover:text-white justify-start mb-5 p-2  rounded-xl hover:bg-[#e2e8f0]  w-36 bg-white border shadow-sm">
+            <li className="group flex items-center hover:text-white justify-start mb-5 p-2  rounded-lg hover:bg-[#e2e8f0]  w-36 bg-white border shadow-sm">
           <div className="flex  flex-col rounded-full p-1 cursor-pointer" onClick={() => router.push('/favorites')}>
           <BookmarkBorderOutlinedIcon className="group-hover:text-white w-4 h-4 text-[#a2a2a2] "/>
           </div>     
@@ -104,8 +104,8 @@ export default function Sidebar() {
 
          {/* Job Icon with Tooltip */}
   
-          <li className="group flex items-center hover:text-white justify-start mb-5 p-2  hover:bg-[#e2e8f0] rounded-xl border shadow-sm  w-36">
-          <div className="flex flex-col rounded-xl p-1 cursor-pointer">
+          <li className="group flex items-center hover:text-white justify-start mb-5 p-2  hover:bg-[#e2e8f0] rounded-lg border shadow-sm  w-36">
+          <div className="flex flex-col rounded-lg p-1 cursor-pointer">
           <WorkOutlineOutlinedIcon className="group-hover:text-white w-4 h-4 text-[#a2a2a2]" />
           </div>
           <span className="ml-5 group-hover:text-white text-[#a2a2a2] text-xs font-light ">Jobs</span>
@@ -114,7 +114,7 @@ export default function Sidebar() {
           </li>
         
 
-          <li className="group flex items-center hover:text-white justify-start mb-5 p-2 hover:bg-[#e2e8f0]  rounded-xl border shadow-sm  w-36 ">
+          <li className="group flex items-center hover:text-white justify-start mb-5 p-2 hover:bg-[#e2e8f0]  rounded-lg border shadow-sm  w-36 ">
           <div className="flex flex-col  rounded-full p-1 cursor-pointer" onClick={() => router.push('/reservations')}>
           <CalendarMonthOutlinedIcon className="group-hover:text-white w-4 h-4 text-[#a2a2a2]" />
           </div>
@@ -124,7 +124,7 @@ export default function Sidebar() {
 
           <span className="mb-5 text-[#a2a2a2] text-xs font-light hover:text-white ">Genre</span>
           {/* Categories */}
-          <li className="relative flex  items-center justify-center mb-5 p-2 rounded-xl shadow w-36 h-32 bg-[#b1dafe]">
+          <li className="relative flex  items-center justify-center mb-5 p-2 rounded-lg shadow w-36 h-32 bg-[#b1dafe]">
   <div className="absolute left-0 z-10 cursor-pointer" onClick={handlePrevClick}>
     <NavigateBeforeRoundedIcon className="w-6 h-6 text-white" />
   </div>

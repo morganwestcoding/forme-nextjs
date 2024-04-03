@@ -132,7 +132,7 @@ const categoryColors = getColorByCategory(post.category);
       <div className="mt-3 relative">
                 <p className='text-sm text-[#000000] mb-3'>{post.content}</p>
                 {post.imageSrc && (
-                    <div className="rounded-xl overflow-hidden relative">
+                    <div className="rounded-lg overflow-hidden relative">
                         <Image src={post.imageSrc} alt="Post Image" layout='responsive' objectFit="cover" width={500} height={300} />
                         {/* Centering interaction buttons */}
                         <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 flex space-x-4 mb-2">

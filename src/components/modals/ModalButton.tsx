@@ -31,7 +31,7 @@ const ModalButton: React.FC<ModalButtonProps> = ({
         rounded-md
         shadow-sm
         border-transparent
-        hover:opacity-80
+       
         transition
         w-full
         ${outline ? 'bg-white' : 'bg-[#b1dafe]'}

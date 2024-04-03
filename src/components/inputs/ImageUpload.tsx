@@ -3,7 +3,7 @@
 import { CldUploadWidget } from "next-cloudinary";
 import Image from "next/image";
 import { useCallback } from "react";
-import { TbPhotoPlus } from 'react-icons/tb'
+import PhotoCameraOutlinedIcon from '@mui/icons-material/PhotoCameraOutlined';
 
 declare global {
   var cloudinary: any
@@ -38,6 +38,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
             onClick={() => open?.()}
             className="
               relative
+              rounded-md
               cursor-pointer
               hover:opacity-71
               transition
@@ -50,13 +51,13 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
               justify-center
               items-center
               gap-4
-              text-neutral-600
+              text-white
             "
           >
-            <TbPhotoPlus
-              size={50}
+            <PhotoCameraOutlinedIcon
+             className="w-12 h-12 text-white"
             />
-            <div className="font-semibold text-lg">
+            <div className="font-medium text-lg">
               Click to upload
             </div>
             {value && (
