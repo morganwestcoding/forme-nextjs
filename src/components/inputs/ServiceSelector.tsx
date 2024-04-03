@@ -15,76 +15,61 @@ type ServiceSelectorProps = {
   existingServices: Service[];
 };
 
-const ServiceSelector = ({ onServicesChange, existingServices }: ServiceSelectorProps) => {
+const ServiceSelector: React.FC<ServiceSelectorProps> = ({ onServicesChange, existingServices }) => {
   const [services, setServices] = useState<Service[]>(existingServices);
+  // State to keep track of the raw input values for prices
   const [inputValues, setInputValues] = useState<string[]>(existingServices.map(service => service.price.toString()));
 
   useEffect(() => {
-    onServicesChange(services);
-  }, [services, onServicesChange]);
+    onServicesChange(services.map((service, index) => ({
+      ...service,
+      // Ensure price is a number when updating services, converting raw input string to a number
+      price: parseFloat(inputValues[index]) || 0
+    })));
+  }, [inputValues, onServicesChange]);
 
-  const handleServiceChange = (index: number, field: keyof Service, value: string | number) => {
-    const updatedServices = services.map((service, i) => {
-      if (i === index) {
-        return { ...service, [field]: typeof value === 'number' ? value : value.toString() };
-      }
-      return service;
-    });
-    setServices(updatedServices);
+  const handleInputChange = (index: number, field: keyof Service, value: string) => {
+    // Update the corresponding service detail based on the field
+    const updatedServices = [...services];
     if (field === 'price') {
-      // Also update the inputValues state for price inputs
+      // Update the raw input value for price fields
       const updatedInputValues = [...inputValues];
-      updatedInputValues[index] = value.toString();
+      updatedInputValues[index] = value; // Directly update with the raw input string
       setInputValues(updatedInputValues);
+    } else {
+      updatedServices[index] = { ...updatedServices[index], [field]: value };
+      setServices(updatedServices);
     }
+  };
   
-  };
 
-  const formatPriceForDisplay = (price: number) => {
-    return parseFloat(price.toString()).toFixed(2);
-  };
 
-  const handleBlur = (index: number) => {
-    // On blur, update the service price to be formatted and also reflect in the inputValues
-    const formattedPrice = formatPriceForDisplay(parseFloat(inputValues[index]));
-    const updatedInputValues = [...inputValues];
-    updatedInputValues[index] = formattedPrice;
-    setInputValues(updatedInputValues);
-    handleServiceChange(index, 'price', formattedPrice);
-  };
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-2xl ">
       {services.map((service, index) => (
         <div key={index} className="flex flex-row justify-between mb-3 gap-2">
           <input
             type="text"
             placeholder="Service Name"
             value={service.serviceName}
-            onChange={(e) => handleServiceChange(index, 'serviceName', e.target.value)}
-            className="rounded border-white text-white bg-transparent border p-3 flex-1"
+            onChange={(e) => handleInputChange(index, 'serviceName', e.target.value)}
+            className="rounded border-white text-white bg-transparent border p-4 flex-1"
           />
-           <input
-            type="text"
-            placeholder="Price"
-            value={inputValues[index]} // Use inputValues state for controlling input
-            onBlur={() => handleBlur(index)} // Format on blur
-            onChange={(e) => {
-              setInputValues(values => {
-                const updated = [...values];
-                updated[index] = e.target.value; // Directly use the input value
-                return updated;
-              });
-              if (!isNaN(parseFloat(e.target.value))) {
-                handleServiceChange(index, 'price', parseFloat(e.target.value));
-              }
-            }}
-            className="rounded border border-white text-white bg-transparent p-3 w-1/4"
-          />
+          <div className="flex relative items-center border border-white bg-transparent rounded p-4">
+            <span className="absolute left-3 text-white">$</span>
+            <input
+              type="text"
+              placeholder="Price"
+              value={inputValues[index]}
+              onChange={(e) => handleInputChange(index, 'price', e.target.value)}
+              className="pl-8  bg-transparent text-white outline-none w-28"
+            />
+          </div>
           <select
             value={service.category}
-            onChange={(e) => handleServiceChange(index, 'category', e.target.value)}
-            className="rounded border border-white text-white bg-transparent p-3 w-1/4"
+            onChange={(e) => handleInputChange(index, 'category', e.target.value)}
+            className="rounded border border-white text-white bg-transparent p-4 w-1/4"
           >
             <option value="">Category</option>
             {categories.map((category) => (
@@ -98,5 +83,6 @@ const ServiceSelector = ({ onServicesChange, existingServices }: ServiceSelector
     </div>
   );
 };
+
 
 export default ServiceSelector;
