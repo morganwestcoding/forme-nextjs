@@ -2,7 +2,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Select, { StylesConfig } from 'react-select';
 import { categories } from '../Categories';
 
 export type Service = {
@@ -11,18 +10,14 @@ export type Service = {
   category: string;
 };
 
-type CategoryOption = {
-  value: string;
-  label: string;
-};
-
 type ServiceSelectorProps = {
   onServicesChange: (services: Service[]) => void;
   existingServices: Service[];
 };
 
-const ServiceSelector: React.FC<ServiceSelectorProps> = ({ onServicesChange, existingServices }) => {
+const ServiceSelector = ({ onServicesChange, existingServices }: ServiceSelectorProps) => {
   const [services, setServices] = useState<Service[]>(existingServices);
+  const [inputValues, setInputValues] = useState<string[]>(existingServices.map(service => service.price.toString()));
 
   useEffect(() => {
     onServicesChange(services);
@@ -36,55 +31,30 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({ onServicesChange, exi
       return service;
     });
     setServices(updatedServices);
+    if (field === 'price') {
+      // Also update the inputValues state for price inputs
+      const updatedInputValues = [...inputValues];
+      updatedInputValues[index] = value.toString();
+      setInputValues(updatedInputValues);
+    }
+  
   };
 
-  const categoryOptions = categories.map(category => ({
-    value: category.label,
-    label: category.label,
-  }));
+  const formatPriceForDisplay = (price: number) => {
+    return parseFloat(price.toString()).toFixed(2);
+  };
 
-  const customSelectStyles: StylesConfig<Service, false> = {
-    control: (styles) => ({
-      ...styles,
-      background: 'transparent',
-      borderColor: 'white',
-      color: 'white',
-      boxShadow: 'none',
-      '&:hover': { borderColor: 'white' },
-      minHeight: 'auto',
-      padding: 6,
-      width: 'auto', // Adjust width here as needed
-    }),
-    singleValue: (styles) => ({
-      ...styles,
-      color: 'white',
-    }),
-    input: (styles) => ({
-      ...styles,
-      color: 'white',
-    }),
-    option: (styles, { isFocused, isSelected }) => ({
-      ...styles,
-      backgroundColor: isFocused ? '#666' : isSelected ? 'white' : 'black',
-      color: isSelected ? 'black' : 'white',
-      ':active': {
-        ...styles[':active'],
-        backgroundColor: !isSelected ? '#aaa' : 'white',
-      },
-    }),
-    menu: (styles) => ({
-      ...styles,
-      backgroundColor: 'black',
-      borderColor: 'white',
-    }),
-    menuList: (styles) => ({
-      ...styles,
-      padding: 2,
-    }),
+  const handleBlur = (index: number) => {
+    // On blur, update the service price to be formatted and also reflect in the inputValues
+    const formattedPrice = formatPriceForDisplay(parseFloat(inputValues[index]));
+    const updatedInputValues = [...inputValues];
+    updatedInputValues[index] = formattedPrice;
+    setInputValues(updatedInputValues);
+    handleServiceChange(index, 'price', formattedPrice);
   };
 
   return (
-    <div className="max-w-2xl">
+    <div className="max-w-2xl mx-auto">
       {services.map((service, index) => (
         <div key={index} className="flex flex-row justify-between mb-3 gap-2">
           <input
@@ -92,25 +62,37 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({ onServicesChange, exi
             placeholder="Service Name"
             value={service.serviceName}
             onChange={(e) => handleServiceChange(index, 'serviceName', e.target.value)}
-            className="rounded border-white bg-transparent text-white border p-3 flex-1"
+            className="rounded border-white text-white bg-transparent border p-3 flex-1"
           />
-          <input
-            type="number"
+           <input
+            type="text"
             placeholder="Price"
-            value={service.price}
-            onChange={(e) => handleServiceChange(index, 'price', parseFloat(e.target.value))}
-            className="rounded border-white bg-transparent text-white border p-3 w-32"
+            value={inputValues[index]} // Use inputValues state for controlling input
+            onBlur={() => handleBlur(index)} // Format on blur
+            onChange={(e) => {
+              setInputValues(values => {
+                const updated = [...values];
+                updated[index] = e.target.value; // Directly use the input value
+                return updated;
+              });
+              if (!isNaN(parseFloat(e.target.value))) {
+                handleServiceChange(index, 'price', parseFloat(e.target.value));
+              }
+            }}
+            className="rounded border border-white text-white bg-transparent p-3 w-1/4"
           />
-          <Select
-            isSearchable={false}
-            classNamePrefix="custom-select"
-            options={categoryOptions}
-            styles={customSelectStyles}
-            onChange={(selectedOption) => 
-              handleServiceChange(index, 'category', selectedOption ? selectedOption.value : '')
-            }
-            value={categoryOptions.find(option => option.value === service.category) || null}
-          />
+          <select
+            value={service.category}
+            onChange={(e) => handleServiceChange(index, 'category', e.target.value)}
+            className="rounded border border-white text-white bg-transparent p-3 w-1/4"
+          >
+            <option value="">Category</option>
+            {categories.map((category) => (
+              <option key={category.label} value={category.label}>
+                {category.label}
+              </option>
+            ))}
+          </select>
         </div>
       ))}
     </div>
