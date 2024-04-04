@@ -108,6 +108,11 @@ const Share: React.FC<ShareProps> = ({ currentUser }) => {
           onCategorySelected={setCategory}
         />
          <Attachment />
+  {/*currentUser={currentUser}
+  onImageUpload={setImageSrc}
+  onLocationSubmit={setLocation}
+            onTagSubmit={setTag}*/}
+
         </div>
       
       </div>

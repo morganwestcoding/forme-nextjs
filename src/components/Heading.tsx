@@ -2,6 +2,7 @@
 import { categories } from "./Categories";
 import GradeRoundedIcon from '@mui/icons-material/GradeRounded';
 
+// Updated interface without state and city
 interface HeadingProps {
   title: string;
   subtitle?: string;

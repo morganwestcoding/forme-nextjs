@@ -12,7 +12,8 @@ interface PrismaReservation {
     id: string;
     createdAt: Date;
     category: string;
-    locationValue: string;
+    state: string;
+    city: string;
     title: string, // Assuming these are available in your listing object
     description: string,
     imageSrc: string,
@@ -76,7 +77,8 @@ export default async function getReservations(params: IParams) {
         id: reservation.listing.id,
         createdAt: reservation.listing.createdAt.toISOString(),
         category: reservation.listing.category,
-        locationValue: reservation.listing.locationValue,
+        state: reservation.listing.state,
+        city: reservation.listing.city,
         title: reservation.listing.title, // Assuming these are available in your listing object
         description: reservation.listing.description,
         imageSrc: reservation.listing.imageSrc,

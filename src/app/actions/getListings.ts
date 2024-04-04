@@ -7,7 +7,8 @@ interface Listing {
   description: string;
   imageSrc: string;
   category: string;
-  locationValue: string;
+  state: string;
+  city: string;
   userId: string; // Assuming direct mapping, adjust according to your schema if needed
   createdAt: Date; // Prisma returns JavaScript Date objects for Date fields
   services: Array<{
@@ -24,7 +25,8 @@ export interface IListingsParams {
   userId?: string;
   startDate?: string;
   endDate?: string;
-  locationValue?: string;
+  state?: string;
+  city?: string;
   category?: string;
 }
 
@@ -32,7 +34,8 @@ export default async function getListings(params: IListingsParams): Promise<Safe
   try {
     const {
       userId,
-      locationValue,
+     state,
+     city,
       startDate,
       endDate,
       category,
@@ -48,8 +51,12 @@ export default async function getListings(params: IListingsParams): Promise<Safe
       query.category = category;
     }
 
-    if (locationValue) {
-      query.locationValue = locationValue;
+    if (state) {
+      query.state = state;
+    }
+
+    if (city) {
+      query.city = city;
     }
 
     // Implement logic for startDate and endDate if needed
@@ -72,7 +79,8 @@ export default async function getListings(params: IListingsParams): Promise<Safe
       description: listing.description,
       imageSrc: listing.imageSrc,
       category: listing.category,
-      locationValue: listing.locationValue,
+      state: listing.state,
+      city: listing.city,
       userId: listing.userId, // Assuming this is directly available; adjust according to your data model
       createdAt: listing.createdAt.toISOString(),
       services: listing.services.map((service: SafeService) => ({ 

@@ -33,7 +33,8 @@ model Listing {
   imageSrc      String
   createdAt     DateTime      @default(now())
   category      String
-  locationValue String
+  state         String        // New field for state
+  city          String        // New field for city
   userId        String        @db.ObjectId
   services      Service[]
   user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)

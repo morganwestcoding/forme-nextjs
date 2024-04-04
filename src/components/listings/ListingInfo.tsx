@@ -27,7 +27,8 @@ interface ListingInfoProps {
     label: string;
     description: string;
   } | undefined;
-  locationValue: string;
+  state: string;
+  city: string;
   services?: SafeService[];
 }
 
@@ -38,19 +39,19 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
   currentUser,
   description,
   category,
-  locationValue,
+  state,
+  city,
+
   services 
 }) => {
-  const { getByValue } = useStates();
-  const location = getByValue(locationValue);
+
 
   return ( 
     <div className="w-full h-auto p-6 mr-8 mt-8">
     {/* Title and Category Label Side by Side */}
     <div className="flex items-center justify-between mb-4">
       {/* Assuming Heading can only accept title and subtitle, we keep it for the title */}
-      <Heading title={title} subtitle={`${location?.label}`}
-        label={category?.label} />
+      <Heading title={title} subtitle={`${city}, ${state}`} label={category?.label} />
     </div>
    
     <div className="flex justify-start space-x-2 mb-6"> {/* Adjusted for direct layout under Heading */}

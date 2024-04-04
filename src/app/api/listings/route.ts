@@ -18,15 +18,21 @@ export async function POST(request: Request) {
     description,
     imageSrc,
     category,
-    location,
+    state, // Now using state
+    city, // and city fields
     services,
   
   } = body;
 
-  console.log("Received fields:", { title, description, imageSrc, category, location, services, });
+  const validatedState = typeof state === 'number' ? state.toString() : state;
+  const validatedCity = typeof city === 'number' ? city.toString() : city;
+
+  console.log("Received fields:", { title, description, imageSrc, category, state, city, services, });
+
+
 
   // Validate required fields
-  const requiredFields = [title, description, imageSrc, category, services];
+  const requiredFields = [title, description, imageSrc, category, state, city, services];
 const missingFields = requiredFields.filter((field) => !field);
 if (missingFields.length > 0) {
   console.log("Missing fields:", missingFields);
@@ -52,7 +58,8 @@ if (missingFields.length > 0) {
         description,
         imageSrc,
         category,
-        locationValue: location.value,
+        state: validatedState,
+        city: validatedCity,
         userId: currentUser.id,
         services: {
           create: parsedServices, // Nested write for services

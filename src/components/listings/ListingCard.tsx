@@ -43,10 +43,8 @@ const ListingCard: React.FC<ListingCardProps> = ({
 }) => {
     console.log(data.services);
   const router = useRouter();
-  const { getByValue } = useStates();
-
-  const location = getByValue(data.locationValue);
   const [currentServiceIndex, setCurrentServiceIndex] = useState(0);
+  
 
   const handleNextService = () => {
     setCurrentServiceIndex((prevIndex) => 
@@ -171,7 +169,7 @@ const categoryColors = getColorByCategory(data.category);
         </div>
 {/* Location */}
         <div className="font-light text-xs px-4 text-neutral-500 pb-2">
-          Los Angeles, {location?.label}
+        {data.state}, {data.city}
         </div>
          {/* Category */}
         
