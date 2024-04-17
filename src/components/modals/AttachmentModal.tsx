@@ -41,19 +41,22 @@ const AttachmentModal = () => {
     };
 
     const modalBody = (
-        <div className="flex flex-col gap-4">
+        <div className="flex justify-center items-center space-x-4">
+            <div className="flex flex-col items-center">
+             <div className="mb-2 text-center font-medium text-white">Add Image</div>
             <AddPostImage
                 currentUser={null} // Pass the correct user context or null
                 onImageUpload={(value) => setValue('image', value)}
             />
+            </div>
+            <div className="flex flex-col items-center">
+                <div className="mb-2 text-center font-medium text-white">Add Location</div>
             <AddPostLocation
                 currentUser={null} // Pass the correct user context or null
                 onLocationSubmit={(value) => setValue('location', value)}
             />
-            <AddTagInput
-                currentUser={null} // Pass the correct user context or null
-                onTagSubmit={(value) => setValue('tag', value)}
-            />
+            </div>
+          
         </div>
     );
 

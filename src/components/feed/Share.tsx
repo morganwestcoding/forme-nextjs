@@ -97,7 +97,7 @@ const Share: React.FC<ShareProps> = ({ currentUser }) => {
           {/* Placeholder for other components or spacing */}
         </div>
         <div className='group hover:bg-white hover:bg-opacity-55 rounded-full border bg-white bg-opacity-30 border-white p-2 px-3 mr-2'
-        onClick={attachmentModal.onOpen} >
+        onClick={attachmentModal.onOpen}>
         <AttachFileOutlinedIcon className='group-hover:text-white text-white w-4 h-4'/> 
        {/* <AddPostImage
             currentUser={currentUser} 

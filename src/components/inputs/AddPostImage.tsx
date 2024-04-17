@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { CldUploadWidget } from "next-cloudinary";
-import { Image } from 'lucide-react';
+import Image from 'next/image'; 
 import { TbPhotoPlus } from 'react-icons/tb';
 import { SafeUser } from '@/app/types';
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
@@ -30,18 +30,29 @@ const AddPostImage: React.FC<AddPostImageProps> = ({ currentUser, onImageUpload 
             onUpload={handleUpload} 
             uploadPreset={uploadPreset}
             options={{
-                maxFiles: 1
+                maxFiles: 1,
+                cropping: true, // Enable cropping
+                croppingAspectRatio: 1, // Square crop
+                croppingShowBackButton: true,
             }}
         >
             {({ open }) => (
-                <div className="relative inline-block" onClick={() => open?.()}>
-                    <InsertPhotoOutlinedIcon  className='w-5 h-5 mr-2 ml-2 text-white'/>
-                    
-                    {/*{imageSrc && (
-                        <div className="absolute inset-0 w-full h-full">
-                            <Image fill style={{ objectFit: 'cover' }} src={imageSrc} alt="Uploaded Image" />
+                 <div
+                 className="relative cursor-pointer hover:opacity-75 transition border-dashed border-2 p-4 w-40 h-40 border-neutral-300 flex flex-col justify-center items-center text-neutral-600 rounded-lg"
+                 onClick={() => open?.()}
+             >
+                   <TbPhotoPlus size={24} className="text-neutral-600" />
+                    {imageSrc && (
+                        <div className="absolute inset-0 w-full h-full rounded-lg overflow-hidden">
+                            <Image
+                                src={imageSrc}
+                                alt="Uploaded Image"
+                                layout="fill"
+                                objectFit="cover"
+                            />
                         </div>
-                    )}*/}
+                    )}
+                   
                 </div>
             )}
         </CldUploadWidget>
