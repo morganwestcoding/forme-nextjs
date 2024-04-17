@@ -118,8 +118,10 @@ const categoryColors = getColorByCategory(post.category);
             <div className="font-medium pr-1 text-sm text-[#484848]">{post.user.name} &middot;</div>
             <div className="text-sm text-[#717171]">{formattedDate || 'Loading time...'}</div>
           </div>
-          <div className="text-sm text-[#717171] flex items-center">
-        {post.location}
+          <div className={`flex items-center ${post.location ? 'text-gray-600' : '-ml-2'}`}>
+          {post.location && (
+              <span>{post.location}</span>
+            )}
         {/* Ensure category label is rendered inline with location */}
         <span className={`ml-2 p-1 rounded text-white drop-shadow-sm px-2 py-1 mx-auto my-1  text-xs ${categoryColors.bgColorClass}`}>
           {post.category}
