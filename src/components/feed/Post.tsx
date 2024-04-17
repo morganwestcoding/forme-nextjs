@@ -135,19 +135,21 @@ const categoryColors = getColorByCategory(post.category);
                     <div className="rounded-lg overflow-hidden relative">
                         <Image src={post.imageSrc} alt="Post Image" layout='responsive' objectFit="cover" width={500} height={300} />
                         {/* Centering interaction buttons */}
-                        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 flex space-x-4 mb-2">
-                            <div className="flex items-center justify-center bg-[#ffffff] bg-opacity-30 backdrop-blur-lg rounded-full p-3 cursor-pointer shadow-sm border border-white ">
-                                <TextsmsOutlinedIcon className='w-4 h-4 text-[#ffffff]'/>
-                            </div>
-                            <div className="flex items-center justify-center bg-[#ffffff] bg-opacity-30 backdrop-blur-lg rounded-full p-3 cursor-pointer shadow-sm border border-white ">
-                                <FavoriteBorderRoundedIcon className='w-4 h-4 text-[#ffffff]'/>
-                            </div>
-                            <div className="flex items-center justify-center bg-[#ffffff] bg-opacity-30 backdrop-blur-lg rounded-full p-3 cursor-pointer shadow-sm border border-white ">
-                                <BookmarkBorderRoundedIcon className='w-4 h-4 text-[#ffffff]'/>
-                            </div>
-                        </div>
+                        
                     </div>
                 )}
+
+                <div className="bottom-0 left-0 flex space-x-4 p-2 -ml-2 -mb-3 mt-1">
+                            <div className="flex items-center justify-center bg-[#ffffff]  rounded-full p-3 cursor-pointer shadow-sm border  ">
+                                <TextsmsOutlinedIcon className='w-4 h-4 text-[#a2a2a2]'/>
+                            </div>
+                            <div className="flex items-center justify-center bg-[#ffffff]  rounded-full p-3 cursor-pointer shadow-sm border  ">
+                                <FavoriteBorderRoundedIcon className='w-4 h-4 text-[#a2a2a2]'/>
+                            </div>
+                            <div className="flex items-center justify-center bg-[#ffffff]  rounded-full p-3 cursor-pointer shadow-sm border  ">
+                                <BookmarkBorderRoundedIcon className='w-4 h-4 text-[#a2a2a2]'/>
+                            </div>
+                        </div>
 
         </div>
       </div>
