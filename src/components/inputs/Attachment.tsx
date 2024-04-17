@@ -11,8 +11,8 @@ function Attachment() {
 
   return (
     <div 
-      className={`flex items-center p-3 px-3 rounded-r-lg shadow-sm bg-[#e2e8f0] backdrop-blur-full cursor-pointer ${
-        isExtended ? 'pl-[5rem]' : '-ml-3 pl-5'
+      className={`flex items-center p-3 px-3 rounded-full shadow-sm bg-[#e2e8f0] backdrop-blur-full cursor-pointer ${
+        isExtended ? 'pl-[5rem]' : 'ml-3'
       }`}
       onClick={handleExtensionToggle} // Add click handler
     >

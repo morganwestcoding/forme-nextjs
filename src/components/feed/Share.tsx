@@ -8,11 +8,13 @@ import Avatar from '../ui/avatar';
 import { SafeUser } from '@/app/types';
 import axios from 'axios';
 import { Button } from '../ui/button';
-
+import AttachFileOutlinedIcon from '@mui/icons-material/AttachFileOutlined';
 import PostCategorySelect from '../inputs/PostCategorySelect';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import { IoIosSettings } from "react-icons/io";
 import Attachment from '../inputs/Attachment';
+import AttachmentModal from '../modals/AttachmentModal';
+import useAttachmentModal from '@/app/hooks/useAttachmentModal';
 
 interface ShareProps {
   currentUser: SafeUser | null;
@@ -29,6 +31,7 @@ interface PostData {
 }
 
 const Share: React.FC<ShareProps> = ({ currentUser }) => {
+  const attachmentModal = useAttachmentModal(); 
   const [imageSrc, setImageSrc] = useState('');
   const [content, setContent] = useState('');
   const [location, setLocation] = useState('');
@@ -86,8 +89,17 @@ const Share: React.FC<ShareProps> = ({ currentUser }) => {
       </div>
       <div className="mt-4 flex items-center justify-between -mb-2 ">
 
-        {/*Submit Button*/}
-        {/*  <AddPostImage
+
+   
+
+   {/* Wrap Attachment and PostCategorySelect in a new flex container */}
+   <div className="flex-grow">
+          {/* Placeholder for other components or spacing */}
+        </div>
+        <div className='group hover:bg-white hover:bg-opacity-55 rounded-full border bg-white bg-opacity-30 border-white p-2 px-3 mr-2'
+        onClick={attachmentModal.onOpen} >
+        <AttachFileOutlinedIcon className='group-hover:text-white text-white w-4 h-4'/> 
+       {/* <AddPostImage
             currentUser={currentUser} 
             onImageUpload={setImageSrc} 
           />
@@ -96,26 +108,25 @@ const Share: React.FC<ShareProps> = ({ currentUser }) => {
             onLocationSubmit={setLocation}/>
           <AddTagInput
             currentUser={currentUser}
-            onTagSubmit={setTag}/>
-              */}
-
-   {/* Wrap Attachment and PostCategorySelect in a new flex container */}
-   <div className="flex-grow">
-          {/* Placeholder for other components or spacing */}
-        </div>
-       
-        <PostCategorySelect
+  onTagSubmit={setTag}/>*/}
+              
+            </div>
+            <PostCategorySelect
           onCategorySelected={setCategory}
         />
-         <Attachment />
+       
+      
+    
   {/*currentUser={currentUser}
   onImageUpload={setImageSrc}
   onLocationSubmit={setLocation}
             onTagSubmit={setTag}*/}
 
         </div>
+        
+    </div>
       
-      </div>
+     
    
   );
 };

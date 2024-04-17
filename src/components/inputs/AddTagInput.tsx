@@ -4,6 +4,7 @@ import { MdCheckCircle } from 'react-icons/md'; // Check mark icon
 import { Tag } from 'lucide-react';
 import LocalOfferOutlinedIcon from '@mui/icons-material/LocalOfferOutlined';
 
+
 interface AddTagInputProps {
     currentUser: SafeUser | null;
     onTagSubmit: (tag: string) => void;
@@ -22,7 +23,7 @@ const AddTagInput: React.FC<AddTagInputProps> = ({ currentUser, onTagSubmit }) =
     return (
         <div className="relative inline-block ">
             <button onClick={() => setShowInput(true)} className="tag-icon-style">
-            <LocalOfferOutlinedIcon width={23} height={23} className='cursor-pointer ml-2'/>
+            <LocalOfferOutlinedIcon className='h-5 w-5 cursor-pointer ml-2 text-white mr-2'/>
             </button>
 
             {showInput && (

@@ -3,6 +3,7 @@ import { MapPin } from 'lucide-react';
 import { SafeUser } from '@/app/types';
 import { MdCheckCircle } from 'react-icons/md'; // This is for the check mark icon, ensure you have react-icons installed
 import AddLocationOutlinedIcon from '@mui/icons-material/AddLocationOutlined';
+import FmdGoodOutlinedIcon from '@mui/icons-material/FmdGoodOutlined';
 
 interface AddPostLocationProps {
     currentUser: SafeUser | null;
@@ -22,7 +23,7 @@ const AddPostLocation: React.FC<AddPostLocationProps> = ({ currentUser, onLocati
     return (
         <div className="relative inline-block">
             <button onClick={() => setShowInput(true)}>
-            <AddLocationOutlinedIcon  width={23} height={23} className='cursor-pointer'/>
+            <FmdGoodOutlinedIcon className='h-5 w-5 text-white cursor-pointer'/>
             </button>
 
             {showInput && (

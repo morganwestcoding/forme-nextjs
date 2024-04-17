@@ -12,6 +12,7 @@ import Sidebar from '@/components/sidebar/Sidebar';
 import RentModal from '@/components/modals/RentModal';
 import ProfileModal from '@/components/modals/ProfileModal';
 import GalleryModal from '@/components/modals/GalleryModal';
+import AttachmentModal from '@/components/modals/AttachmentModal';
 
 
 export const metadata: Metadata = {
@@ -51,7 +52,7 @@ export default async function RootLayout({
         <LoginModal/>
         <RegisterModal/>
         <GalleryModal/>
-        
+        <AttachmentModal/>
         
         
 
