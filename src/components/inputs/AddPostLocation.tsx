@@ -11,11 +11,11 @@ interface LocationSelection {
 }
 
 interface AddPostLocationProps {
-  currentUser: SafeUser | null;
+  
   onLocationSubmit: (location: LocationSelection | null) => void;
 }
 
-const AddPostLocation: React.FC<AddPostLocationProps> = ({ currentUser, onLocationSubmit }) => {
+const AddPostLocation: React.FC<AddPostLocationProps> = ({  onLocationSubmit }) => {
   const [selectedCountry] = useState<string>('6252001'); // Assuming United States for simplicity
   const [selectedState, setSelectedState] = useState<LocationSelection | null>(null);
   const [selectedCity, setSelectedCity] = useState<LocationSelection | null>(null);

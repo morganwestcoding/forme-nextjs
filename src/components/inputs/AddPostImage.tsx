@@ -11,11 +11,11 @@ import InsertPhotoOutlinedIcon from '@mui/icons-material/InsertPhotoOutlined';
 const uploadPreset = "cs0am6m7";
 
 interface AddPostImageProps {
-    currentUser: SafeUser | null;
+    
     onImageUpload: (imageUrl: string) => void;
 }
 
-const AddPostImage: React.FC<AddPostImageProps> = ({ currentUser, onImageUpload }) => {
+const AddPostImage: React.FC<AddPostImageProps> = ({  onImageUpload }) => {
     const [imageSrc, setImageSrc] = useState('');
 
     const handleUpload = useCallback((result: any) => {
