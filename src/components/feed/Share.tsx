@@ -1,18 +1,11 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import AddPostImage from '../inputs/AddPostImage';
-import AddPostLocation from '../inputs/AddPostLocation';
-import AddTagInput from '../inputs/AddTagInput';
 import ContentInput from '../inputs/ContentInput';
 import Avatar from '../ui/avatar';
 import { SafeUser } from '@/app/types';
 import axios from 'axios';
-import { Button } from '../ui/button';
 import AttachFileOutlinedIcon from '@mui/icons-material/AttachFileOutlined';
 import PostCategorySelect from '../inputs/PostCategorySelect';
-import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
-import { IoIosSettings } from "react-icons/io";
-import Attachment from '../inputs/Attachment';
 import AttachmentModal from '../modals/AttachmentModal';
 import useAttachmentModal from '@/app/hooks/useAttachmentModal';
 
@@ -34,7 +27,7 @@ const Share: React.FC<ShareProps> = ({ currentUser }) => {
   const attachmentModal = useAttachmentModal(); 
   const [imageSrc, setImageSrc] = useState('');
   const [content, setContent] = useState('');
-  const [location, setLocation] = useState('');
+  const [location, setLocation] = useState<{ label: string; value: number } | null>(null); 
   const [tag, setTag] = useState('');
   const [category, setCategory] = useState('');
   const [categoryId, setCategoryId] = useState('');
@@ -52,7 +45,7 @@ const Share: React.FC<ShareProps> = ({ currentUser }) => {
       // Resetting form state
       setImageSrc('');
       setContent('');
-      setLocation('');
+      setLocation(null);
       setTag('');
       setCategory('');
       setCategoryId('');
@@ -65,7 +58,7 @@ const Share: React.FC<ShareProps> = ({ currentUser }) => {
     const postData = {
       imageSrc,
       content,
-      location,
+      location: location ? location.label : '',
       tag,
       category,
       categoryId,
@@ -85,6 +78,9 @@ const Share: React.FC<ShareProps> = ({ currentUser }) => {
           content={content}
           setContent={setContent}
           imageSrc={imageSrc}
+          setImageSrc={setImageSrc}
+          location={location} // Pass setImageSrc function
+          setLocation={setLocation} // Pass setLocation function
         />
       </div>
       <div className="mt-4 flex items-center justify-between -mb-2 ">
@@ -99,31 +95,21 @@ const Share: React.FC<ShareProps> = ({ currentUser }) => {
         <div className='group hover:bg-white hover:bg-opacity-55 rounded-full border bg-white bg-opacity-30 border-white p-2 px-3 mr-2'
         onClick={attachmentModal.onOpen}>
         <AttachFileOutlinedIcon className='group-hover:text-white text-white w-4 h-4'/> 
-       {/* <AddPostImage
-            currentUser={currentUser} 
-            onImageUpload={setImageSrc} 
-          />
-          <AddPostLocation
-            currentUser={currentUser}
-            onLocationSubmit={setLocation}/>
-          <AddTagInput
-            currentUser={currentUser}
-  onTagSubmit={setTag}/>*/}
-              
-            </div>
+
+    </div>
             <PostCategorySelect
           onCategorySelected={setCategory}
         />
        
       
-    
-  {/*currentUser={currentUser}
-  onImageUpload={setImageSrc}
-  onLocationSubmit={setLocation}
-            onTagSubmit={setTag}*/}
 
         </div>
-        
+        <AttachmentModal
+        isOpen={attachmentModal.isOpen} // Pass the modal state to determine visibility
+        onClose={attachmentModal.onClose} // Pass the close function to handle modal close
+        setImageSrc={setImageSrc}
+        setLocation={setLocation}
+      />
     </div>
       
      

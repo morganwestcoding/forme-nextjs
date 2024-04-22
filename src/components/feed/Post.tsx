@@ -2,23 +2,20 @@
 import React from 'react';
 import Avatar from '../ui/avatar'; // Adjust the import based on your project structure
 import { SafeUser, SafeUserImage, SafeProfile } from '@/app/types';
-import { Button } from '../ui/button';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { categories } from "../Categories";
-import { GoBookmark,GoBookmarkFill } from 'react-icons/go';
 import TextsmsOutlinedIcon from '@mui/icons-material/TextsmsOutlined';
 import BookmarkBorderRoundedIcon from '@mui/icons-material/BookmarkBorderRounded';
 import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded';
 import MoreHorizRoundedIcon from '@mui/icons-material/MoreHorizRounded';
-import ChatBubbleOutlinedIcon from '@mui/icons-material/ChatBubbleOutlined';
-import BookmarkOutlinedIcon from '@mui/icons-material/BookmarkOutlined';
 
 interface PostData {
   
   user: SafeUserImage; // Use SafeUserImage here
   createdAt: string;
   content: string;
+  
   imageSrc: string | null; 
   category: string;
   location?: string | null;

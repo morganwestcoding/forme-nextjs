@@ -5,11 +5,14 @@ import Image from 'next/image';
 interface ContentInputProps {
     currentUser: SafeUser | null;
     imageSrc?: string;
+    location?: { label: string; value: number } | null; 
     content: string;
     setContent: (content: string) => void;
+    setImageSrc: (imageSrc: string) => void; 
+    setLocation: (location: string | null) => void; 
 }
 
-const ContentInput: React.FC<ContentInputProps> = ({ currentUser, imageSrc, content, setContent }) => {
+const ContentInput: React.FC<ContentInputProps> = ({ currentUser, imageSrc, location, content, setContent, setLocation  }) => {
 
     const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setContent(event.target.value);
@@ -33,6 +36,11 @@ const ContentInput: React.FC<ContentInputProps> = ({ currentUser, imageSrc, cont
         />
     </div>
 )}
+{location && (
+                <div>
+                    Location: {location.label}
+                </div>
+            )}
         </>
     );
 };
