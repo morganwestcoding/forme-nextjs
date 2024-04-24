@@ -2,11 +2,6 @@ import React, { useState, useCallback } from 'react';
 import { CldUploadWidget } from "next-cloudinary";
 import Image from 'next/image'; 
 import { TbPhotoPlus } from 'react-icons/tb';
-import { SafeUser } from '@/app/types';
-import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
-import InsertPhotoOutlinedIcon from '@mui/icons-material/InsertPhotoOutlined';
-
-
 
 const uploadPreset = "cs0am6m7";
 

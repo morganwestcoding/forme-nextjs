@@ -15,7 +15,7 @@ import { SafeUser } from '@/app/types';
 
 interface AttachmentModalProps {
     setImageSrc: (imageSrc: string) => void;
-    setLocation: (location: string) => void;
+    setLocation: (location: { label: string; value: string } | null) => void; 
     isOpen: boolean; // Indicates whether the modal is open
     onClose: () => void; // Function to close the modal
 }

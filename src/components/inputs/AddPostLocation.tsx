@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Select, { StylesConfig } from 'react-select';
 import useStates from '@/app/hooks/useStates';
 import useCities from '@/app/hooks/useCities';
@@ -11,11 +11,10 @@ interface LocationSelection {
 }
 
 interface AddPostLocationProps {
-  
-  onLocationSubmit: (location: LocationSelection | null) => void;
+  onLocationSubmit: (location: string | null) => void; // Update the type
 }
 
-const AddPostLocation: React.FC<AddPostLocationProps> = ({  onLocationSubmit }) => {
+const AddPostLocation: React.FC<AddPostLocationProps> = ({ onLocationSubmit }) => {
   const [selectedCountry] = useState<string>('6252001'); // Assuming United States for simplicity
   const [selectedState, setSelectedState] = useState<LocationSelection | null>(null);
   const [selectedCity, setSelectedCity] = useState<LocationSelection | null>(null);
@@ -30,7 +29,9 @@ const AddPostLocation: React.FC<AddPostLocationProps> = ({  onLocationSubmit }) 
 
   const handleCityChange = (selectedOption: LocationSelection | null) => {
     setSelectedCity(selectedOption);
-    onLocationSubmit(selectedOption);
+    // Combine state and city into a single string for location
+    const location = selectedOption ? `${selectedOption.label}, ${selectedState?.label}` : null;
+    onLocationSubmit(location);
   };
 
   const customStyles: StylesConfig<LocationSelection, false> = {
@@ -91,3 +92,11 @@ const AddPostLocation: React.FC<AddPostLocationProps> = ({  onLocationSubmit }) 
 };
 
 export default AddPostLocation;
+
+
+
+
+
+
+
+

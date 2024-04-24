@@ -16,7 +16,7 @@ interface ShareProps {
 interface PostData {
   imageSrc: string;
   content: string;
-  location: string;
+  location: { label: string; value: string } | null; // Update the
   tag: string;
   category: string;
   categoryId: string;
@@ -27,7 +27,8 @@ const Share: React.FC<ShareProps> = ({ currentUser }) => {
   const attachmentModal = useAttachmentModal(); 
   const [imageSrc, setImageSrc] = useState('');
   const [content, setContent] = useState('');
-  const [location, setLocation] = useState<{ label: string; value: number } | null>(null); 
+  const [location, setLocation] = useState<{ label: string; value: string } | null>(null);
+
   const [tag, setTag] = useState('');
   const [category, setCategory] = useState('');
   const [categoryId, setCategoryId] = useState('');
@@ -58,7 +59,7 @@ const Share: React.FC<ShareProps> = ({ currentUser }) => {
     const postData = {
       imageSrc,
       content,
-      location: location ? location.label : '',
+      location: location ? location : null, 
       tag,
       category,
       categoryId,

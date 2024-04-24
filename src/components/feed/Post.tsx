@@ -115,7 +115,7 @@ const categoryColors = getColorByCategory(post.category);
             <div className="font-medium pr-1 text-sm text-[#484848]">{post.user.name} &middot;</div>
             <div className="text-sm text-[#717171]">{formattedDate || 'Loading time...'}</div>
           </div>
-          <div className={`flex items-center ${post.location ? 'text-gray-600' : '-ml-2'}`}>
+          <div className={`flex text-sm items-center ${post.location ? 'text-gray-600' : '-ml-2'}`}>
           {post.location && (
               <span>{post.location}</span>
             )}
