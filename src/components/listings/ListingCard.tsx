@@ -169,7 +169,7 @@ const categoryColors = getColorByCategory(data.category);
         </div>
 {/* Location */}
         <div className="font-light text-xs px-4 text-neutral-500 pb-2">
-        {data.state}, {data.city}
+        {data.location}
         </div>
          {/* Category */}
         
@@ -177,14 +177,15 @@ const categoryColors = getColorByCategory(data.category);
           {/* Service Navigation */}
           {data.services && data.services.length > 0 && (
       <div className="flex justify-between text-xs capitalize items-center pb-3.5 pt-1 px-4 text-[#7d8085]">
-        <button onClick={handlePreviousService}><NavigateBeforeRoundedIcon/></button>
-        <div className="flex items-center text-[#7d8085] font-normal">
+        <button className="rounded-full border mr-2" onClick={handlePreviousService}><NavigateBeforeRoundedIcon/></button>
+        <div className="text-center text-[#7d8085] font-normal">
           
-           <span className="ml"> {/* Margin left for spacing */}
-          {data.services[currentServiceIndex].serviceName} ${data.services[currentServiceIndex].price}
+           <span className="block mb-1"> {/* Margin left for spacing */}
+          {data.services[currentServiceIndex].serviceName}</span>
+          <span>${data.services[currentServiceIndex].price}
         </span>
         </div>
-        <button onClick={handleNextService}>
+        <button className="rounded-full border ml-2"onClick={handleNextService}>
             <NavigateNextRoundedIcon /></button>
             
         

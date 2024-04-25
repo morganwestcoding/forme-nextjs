@@ -10,24 +10,28 @@ interface LocationSelection {
 }
 
 interface ListLocationSelectProps {
-  onStateSelected: (selectedState: LocationSelection | null) => void;
-  onCitySelected: (selectedCity: LocationSelection | null) => void;
+  onLocationSubmit: (location: string | null) => void; // Update the type
 }
 
-const ListLocationSelect: React.FC<ListLocationSelectProps> = ({ onStateSelected, onCitySelected }) => {
+const ListLocationSelect: React.FC<ListLocationSelectProps> = ({ onLocationSubmit }) => {
   const [selectedCountry] = useState<string>('6252001'); // Correct country code for the United States
   const [selectedState, setSelectedState] = useState<LocationSelection | null>(null);
+  const [selectedCity, setSelectedCity] = useState<LocationSelection | null>(null);
 
   const states = useStates(selectedCountry);
   const cities = useCities(selectedState?.value ?? '');
 
   const handleStateChange = (selectedOption: LocationSelection | null) => {
     setSelectedState(selectedOption);
-    onStateSelected(selectedOption);
+    setSelectedCity(null); // Reset city when state changes
+    // Pass string value
   };
 
   const handleCityChange = (selectedOption: LocationSelection | null) => {
-    onCitySelected(selectedOption);
+
+    setSelectedCity(selectedOption);
+    const location = selectedOption ? `${selectedOption.label}, ${selectedState?.label}` : null;
+    onLocationSubmit(location);
   };
 
   const customStyles: StylesConfig<LocationSelection, false> = {
@@ -65,28 +69,28 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({ onStateSelected
   return (
     <div>
       <div className='mb-3'>
-      <Select<LocationSelection>
-        options={states}
-        value={selectedState}
-        onChange={handleStateChange}
-        placeholder="Select State"
-        styles={customStyles}
-        getOptionLabel={(option) => option.label}
-        getOptionValue={(option) => option.value}
-      />
-       </div>
-      <Select<LocationSelection>
+        <Select
+          options={states}
+          value={selectedState}
+          onChange={handleStateChange}
+          placeholder="Select State"
+          styles={customStyles}
+          getOptionLabel={(option) => option.label}
+          getOptionValue={(option) => option.value}
+        />
+      </div>
+      <Select
         options={cities}
-        isDisabled={!selectedState}
-        placeholder="Select City"
+        value={selectedCity} // Updated to find the corresponding city object
         onChange={handleCityChange}
+        placeholder="Select City"
         styles={customStyles}
         getOptionLabel={(option) => option.label}
         getOptionValue={(option) => option.value}
       />
-     
     </div>
   );
 };
 
 export default ListLocationSelect;
+

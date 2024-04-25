@@ -174,16 +174,9 @@ const RentModal = () => {
           title="Where is your place located?"
           subtitle="Help guests find you!"
         />
-        <ListLocationSelect
-        onStateSelected={(selectedState) => {
-          // Handle state selection, e.g., update form value
-          setCustomValue('state', selectedState?.value);
-        }}
-        onCitySelected={(selectedCity) => {
-          // Handle city selection, e.g., update form value
-          setCustomValue('city', selectedCity?.value);
-        }}
-      />
+        <ListLocationSelect // Use ListLocationSelect component
+          onLocationSubmit={(value) => setValue('location', value)}
+        />
     
     
             

@@ -18,31 +18,24 @@ export async function POST(request: Request) {
     description,
     imageSrc,
     category,
-    state, // Now using state
-    city, // and city fields
+    location,
     services,
   
   } = body;
 
-  const validatedState = typeof state === 'number' ? state.toString() : state;
-  const validatedCity = typeof city === 'number' ? city.toString() : city;
 
-  console.log("Received fields:", { title, description, imageSrc, category, state, city, services, });
+  console.log("Received fields:", { title, description, imageSrc, category, location, services, });
 
 
 
   // Validate required fields
-  const requiredFields = [title, description, imageSrc, category, state, city, services];
+  const requiredFields = [title, description, imageSrc, category, location, services];
 const missingFields = requiredFields.filter((field) => !field);
 if (missingFields.length > 0) {
   console.log("Missing fields:", missingFields);
   return new Response(`Missing required fields: ${missingFields.join(", ")}`, { status: 400 });
 }
 
-
-
-  // Convert services to the correct format if necessary
-  // Assuming services should be an array of objects
   let parsedServices;
   try {
     parsedServices = typeof services === 'string' ? JSON.parse(services) : services;
@@ -58,8 +51,7 @@ if (missingFields.length > 0) {
         description,
         imageSrc,
         category,
-        state: validatedState,
-        city: validatedCity,
+        location,
         userId: currentUser.id,
         services: {
           create: parsedServices, // Nested write for services

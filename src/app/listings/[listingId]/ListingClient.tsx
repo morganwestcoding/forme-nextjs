@@ -23,6 +23,7 @@ const initialDateRange = {
 
 interface ListingClientProps {
   reservations?: SafeReservation[];
+  location: string;
   listing: SafeListing & {
     user: SafeUser;
   };
@@ -31,6 +32,7 @@ interface ListingClientProps {
 
 const ListingClient: React.FC<ListingClientProps> = ({
   listing,
+  location,
   reservations = [],
   currentUser
 }) => {
@@ -118,6 +120,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
     totalPrice,
     dateRange, 
     listing?.id,
+    listing.location,
     router,
     currentUser,
     loginModal
@@ -149,7 +152,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
               user={listing.user}
               category={category}
               description={listing.description}
-              locationValue={listing.locationValue}
+              location={listing.location || "Default Location"}
               services={listing.services} 
             />
        <div className="rounded-2xl shadow-sm bg-[#ffffff] px-6 -mt-4">
