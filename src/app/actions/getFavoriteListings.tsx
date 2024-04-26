@@ -9,8 +9,7 @@ interface RawListing {
   imageSrc: string;
   createdAt: Date; // Assuming `createdAt` is a Date object in Prisma model
   category: string;
-  state: string;
-  city: string;
+  location: string | null;
   userId: string; // Assuming there's a direct relation to a User model
   services: Array<{
     id: string;

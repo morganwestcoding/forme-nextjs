@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import ContentInput from '../inputs/ContentInput';
 import Avatar from '../ui/avatar';
 import { SafeUser } from '@/app/types';
@@ -27,19 +27,14 @@ const Share: React.FC<ShareProps> = ({ currentUser }) => {
   const attachmentModal = useAttachmentModal(); 
   const [imageSrc, setImageSrc] = useState('');
   const [content, setContent] = useState('');
-  const [location, setLocation] = useState<{ label: string; value: string } | null>(null);
+ const [location, setLocation] = useState<{ label: string; value: string } | null>(null);
 
   const [tag, setTag] = useState('');
   const [category, setCategory] = useState('');
   const [categoryId, setCategoryId] = useState('');
 
-  useEffect(() => {
-    if (category) {
-      handleSubmit();
-    }
-  }, [category]);
 
-  const handlePostSubmit = async (postData: PostData) => {
+  const handlePostSubmit = useCallback(async (postData: PostData) => {
     try {
       const response = await axios.post('/api/post', postData);
       console.log("Post submitted successfully:", response.data);
@@ -53,20 +48,26 @@ const Share: React.FC<ShareProps> = ({ currentUser }) => {
     } catch (error) {
       console.error('Error submitting post:', error);
     }
-  };
+  }, []);
 
-  const handleSubmit = () => {
+  const handleSubmit = useCallback(() => {
     const postData = {
       imageSrc,
       content,
-      location: location ? location : null, 
+      location: location ? location : null,
       tag,
       category,
       categoryId,
       userId: currentUser?.id,
     };
     handlePostSubmit(postData);
-  };
+  }, [imageSrc, content, location, tag, category, categoryId, currentUser?.id, handlePostSubmit]);
+  
+  useEffect(() => {
+    if (category) {
+      handleSubmit();
+    }
+  }, [category, handleSubmit]);
 
   return (
     <div className='w-full h-auto rounded-2xl shadow bg-[#b1dafe] p-6'>
