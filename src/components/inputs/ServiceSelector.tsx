@@ -26,7 +26,7 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({ onServicesChange, exi
       // Ensure price is a number when updating services, converting raw input string to a number
       price: parseFloat(inputValues[index]) || 0
     })));
-  }, [inputValues, onServicesChange]);
+  }, [services, inputValues, onServicesChange]);
 
   const handleInputChange = (index: number, field: keyof Service, value: string) => {
     // Update the corresponding service detail based on the field

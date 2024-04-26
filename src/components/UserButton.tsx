@@ -47,7 +47,7 @@ const UserButton: React.FC<UserButtonProps> = ({
     }
 
     rentModal.onOpen();
-  }, [currentUser, loginModal, rentModal, profileModal]);
+  }, [currentUser, loginModal, rentModal]);
   
     
     return (  

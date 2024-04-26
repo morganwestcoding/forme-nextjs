@@ -37,33 +37,34 @@ const AddPostLocation: React.FC<AddPostLocationProps> = ({ onLocationSubmit }) =
   const customStyles: StylesConfig<LocationSelection, false> = {
     control: (styles) => ({
       ...styles,
-      backgroundColor: 'white',
-      borderColor: 'gray',
-      color: 'black',
+      backgroundColor: 'transparent',
+      borderColor: 'white',
+      color: 'white',
       boxShadow: 'none',
       padding: '8px',
       '&:hover': {
-        borderColor: 'gray',
+        borderColor: 'white',
       },
     }),
     option: (styles, { isFocused, isSelected }) => ({
       ...styles,
-      backgroundColor: isFocused ? 'lightgray' : 'white',
-      color: 'black',
+      backgroundColor: isFocused ? 'grey' : 'black',
+      color: 'white',
       cursor: 'pointer',
     }),
     singleValue: (styles) => ({
       ...styles,
-      color: 'black',
+      color: 'white',
     }),
     input: (styles) => ({
       ...styles,
-      color: 'black',
+      color: 'white',
     }),
     placeholder: (styles) => ({
       ...styles,
-      color: 'gray',
+      color: 'white',
     }),
+  
   };
 
   return (

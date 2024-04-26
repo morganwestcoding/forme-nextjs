@@ -31,17 +31,17 @@ const PersonTime: React.FC<PersonTimeProps> = ({ onTimeChange }) => {
     control: (styles) => ({
       ...styles,
       backgroundColor: 'transparent',
-    
+      borderColor: '#e3e8ef',
       color: 'white',
       boxShadow: 'none',
       padding: '10px',
       '&:hover': {
-        borderColor: 'white',
+        borderColor: '#e3e8ef',
       },
     }),
     option: (styles, { isFocused, isSelected }) => ({
       ...styles,
-      backgroundColor: isFocused ? 'grey' : 'black',
+      backgroundColor: isFocused ? 'grey' : 'white',
       color: 'white',
       cursor: 'pointer',
     }),
@@ -72,7 +72,7 @@ const PersonTime: React.FC<PersonTimeProps> = ({ onTimeChange }) => {
 
   return (
     <div className="flex justify-between">
-      <div className="w-1/2 pr-2 ml-4 mt-4">
+      <div className="w-1/2 pr-2 ml-4 mt-4 ">
         <Select
           options={employees}
           value={selectedEmployee}

@@ -118,7 +118,6 @@ const ListingClient: React.FC<ListingClientProps> = ({
     date,
     time,
     listing?.id,
-    listing.location,
     router,
     currentUser,
     loginModal
