@@ -32,6 +32,7 @@ const ListingPage = async ({ params }: { params: IParams }) => {
         listing={listing}
         reservations={reservations}
         currentUser={currentUser}
+        location={listing.location || "Default Location"} 
       />
     </ClientProviders>
   );

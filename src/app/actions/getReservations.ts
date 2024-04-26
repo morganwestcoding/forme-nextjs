@@ -68,7 +68,7 @@ export default async function getReservations(params: IParams) {
     const safeReservations = reservations.map((reservation: PrismaReservation) => ({
       id: reservation.id,
       createdAt: reservation.createdAt.toISOString(),
-      date: reservation.date.toISOString(),
+      date: reservation.date,
       time: reservation.time,
       userId: reservation.userId, // Ensure this is passed along
       totalPrice: reservation.totalPrice,
