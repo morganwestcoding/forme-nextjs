@@ -15,11 +15,6 @@ import ListingInfo from "@/components/listings/ListingInfo";
 import ListingReservation from "@/components/listings/ListingReservation";
 import ListingRightBar from "@/components/listings/ListingRightBar";
 
-const initialDateRange = {
-  startDate: new Date(),
-  endDate: new Date(),
-  key: 'selection'
-};
 
 interface ListingClientProps {
   reservations?: SafeReservation[];
@@ -42,10 +37,11 @@ const ListingClient: React.FC<ListingClientProps> = ({
   // New state for tracking selected services
   const [selectedServices, setSelectedServices] = useState(new Set<string>());
   const [totalPrice, setTotalPrice] = useState(0);
+  const [date, setDate] = useState(new Date());
+  const [time, setTime] = useState('8:00 AM');
 
   const disabledDates = useMemo(() => {
     let dates: Date[] = [];
-
     reservations.forEach((reservation: any) => {
       const range = eachDayOfInterval({
         start: new Date(reservation.startDate),
@@ -64,7 +60,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
   }, [listing.category]);
 
   const [isLoading, setIsLoading] = useState(false);
-  const [dateRange, setDateRange] = useState<Range>(initialDateRange);
+
 
   const handleServiceSelectionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const serviceId = event.target.value;
@@ -100,13 +96,14 @@ const ListingClient: React.FC<ListingClientProps> = ({
 
       axios.post('/api/reservations', {
         totalPrice,
-        startDate: dateRange.startDate,
-        endDate: dateRange.endDate,
+        date,
+        time,
         listingId: listing?.id
       })
       .then(() => {
         toast.success('Listing reserved!');
-        setDateRange(initialDateRange);
+        setDate(new Date()); // Reset date
+        setTime('8:00 AM'); // Reset time
         router.push('/trips');
       })
       .catch(() => {
@@ -118,7 +115,8 @@ const ListingClient: React.FC<ListingClientProps> = ({
   },
   [
     totalPrice,
-    dateRange, 
+    date,
+    time,
     listing?.id,
     listing.location,
     router,
@@ -126,20 +124,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
     loginModal
   ]);
 
-  {/*useEffect(() => {
-    if (dateRange.startDate && dateRange.endDate) {
-      const dayCount = differenceInDays(
-        dateRange.endDate, 
-        dateRange.startDate
-      );
-      
-      if (dayCount && listing.price) {
-        setTotalPrice(dayCount * listing.price);
-      } else {
-        setTotalPrice(listing.price);
-      }
-    }
-  }, [dateRange, listing.price]);*/}
+
 
   return ( 
     <div>
@@ -173,10 +158,11 @@ const ListingClient: React.FC<ListingClientProps> = ({
         <h3 className="font-bold mb-4">Date</h3>
             <ListingReservation
                 price={totalPrice}
-                
+                date={date}
+                time={time}
                 totalPrice={totalPrice}
-                onChangeDate={(value) => setDateRange(value)}
-                dateRange={dateRange}
+                onChangeDate={setDate}
+                onChangeTime={setTime}
                 onSubmit={onCreateReservation}
                 disabled={isLoading}
   disabledDates={disabledDates}
@@ -192,7 +178,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
             selectedServices={selectedServices}
             toggleServiceSelection={toggleServiceSelection}
             totalPrice={totalPrice}
-            dateRange={dateRange}
+           
             onCreateReservation={onCreateReservation}
             isLoading={isLoading}
             disabledDates={disabledDates}

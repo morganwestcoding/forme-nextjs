@@ -4,12 +4,15 @@ import { Range } from "react-date-range";
 
 import ModalButton from "../modals/ModalButton";
 import Calendar from "../inputs/Calender";
+import PersonTime from "./PersonTime";
 
 interface ListingReservationProps {
   price: number;
-  dateRange: Range,
+  date: Date,
+  time: string;
   totalPrice: number;
-  onChangeDate: (value: Range) => void;
+  onChangeDate: (date: Date) => void;
+  onChangeTime: (time: string) => void;
   onSubmit: () => void;
   disabled?: boolean;
   disabledDates: Date[];
@@ -19,9 +22,11 @@ const ListingReservation: React.FC<
   ListingReservationProps
 > = ({
   price,
-  dateRange,
+  date,
+  time,
   totalPrice,
   onChangeDate,
+  onChangeTime,
   onSubmit,
   disabled,
   disabledDates
@@ -42,12 +47,12 @@ const ListingReservation: React.FC<
     
       
       <Calendar
-        value={dateRange}
+        value={date}
         disabledDates={disabledDates}
-        onChange={(value) => 
-          onChangeDate(value.selection)}
+        onChange={onChangeDate}
       />
       <hr />
+      <PersonTime time={time} onTimeChange={onChangeTime} />
       <div className="p-4">
         <ModalButton
           disabled={disabled} 

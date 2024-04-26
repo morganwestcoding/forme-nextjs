@@ -30,7 +30,7 @@ interface ListingRightBarProps {
     selectedServices: Set<string>;
     toggleServiceSelection: (serviceId: string) => void;
     totalPrice: number;
-    dateRange: Range;
+ 
     onCreateReservation: () => void;
     isLoading: boolean;
     disabledDates: Date[];

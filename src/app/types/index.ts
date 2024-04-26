@@ -19,8 +19,8 @@ export type SafeReservation = Omit<
 > & {
   id: string;
   createdAt: string;
-  startDate: string;
-  endDate: string;
+  date: string;  // Convert Date to string for client-safe object
+  time: string; 
   userId: string;
   totalPrice: number;
   listingId: string;

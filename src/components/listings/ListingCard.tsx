@@ -78,10 +78,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
       return null;
     }
   
-    const start = new Date(reservation.startDate);
-    const end = new Date(reservation.endDate);
-
-    return `${format(start, 'PP')} - ${format(end, 'PP')}`;
   }, [reservation]);
 
   const getColorByCategory = (categoryName: string) => {

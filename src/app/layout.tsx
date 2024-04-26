@@ -52,7 +52,7 @@ export default async function RootLayout({
         <LoginModal/>
         <RegisterModal/>
         <GalleryModal/>
-        <AttachmentModal/>
+        
         
         
 
