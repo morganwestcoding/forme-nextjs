@@ -5,14 +5,15 @@ import Post from '@/components/feed/Post';
 //import ProfileImages from '@/components/profile/ProfileImages';
 //import UserListings from '@/components/profile/UserListings';
 import { useState, useEffect } from 'react';
-import { SafeProfile, SafePost, SafeListing} from "@/app/types";
+import { SafeProfile, SafePost, SafeListing, SafeUser} from "@/app/types";
 import { categories } from '@/components/Categories';
 import ProfileRightbar from '@/components/rightbar/ProfileRightBar';
 
 interface ProfileClientProps {
   posts: SafePost[];
-  user: SafeProfile;
+  user: SafeUser;
   listings: SafeListing[];
+  profile: SafeProfile;
 
 
 }

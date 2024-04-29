@@ -23,7 +23,7 @@ interface PostData {
 
 interface PostProps {
   post: PostData;
-  currentUser: SafeProfile | null; 
+  currentUser: SafeUser | null; 
   categories: typeof categories;
 }
 

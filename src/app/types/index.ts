@@ -59,7 +59,8 @@ export type SafePost = Omit<
 
 export type SafeProfile = {
   id: string; // Profile ID
-  bio?: string; // Optional biography text
+  bio?: string;
+  email?: string; // Optional biography text
   userId: string; // User ID associated with this profile
   image?: string; // URL/path to the user's profile image, aligning with the User model's field
   name?: string; // User's name, marked as optional to match the User model

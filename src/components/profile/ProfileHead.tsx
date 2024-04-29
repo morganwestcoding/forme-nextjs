@@ -1,20 +1,16 @@
-// ProfileHead.tsx
+
 'use client';
 import React from 'react';
 import Image from 'next/image';
-import HeaderUpload from '../inputs/HeaderUpload';
-import { SafeProfile } from '@/app/types';
-import { IoIosMail } from "react-icons/io";
+import { SafeUser } from '@/app/types';
 
 interface ProfileHeadProps {
-  user: SafeProfile;
-
+  user: SafeUser;
 }
 
 const ProfileHead: React.FC<ProfileHeadProps> = ({ user }) => {
   const { name, imageSrc, image } = user;
   
-
   return (
     <div className="flex justify-between w-full mt-8 px-20">
       <div className="w-[3.1%]"></div>
