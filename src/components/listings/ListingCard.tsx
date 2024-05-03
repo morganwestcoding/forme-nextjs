@@ -173,7 +173,10 @@ const categoryColors = getColorByCategory(data.category);
           {/* Service Navigation */}
           {data.services && data.services.length > 0 && (
       <div className="flex justify-between text-xs capitalize items-center pb-3.5 pt-1 px-4 text-[#7d8085]">
-        <button className="rounded-full border mr-2" onClick={handlePreviousService}><NavigateBeforeRoundedIcon/></button>
+        <button className="mr-2" onClick={handlePreviousService}><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={24} height={24} color={"#a2a2a2"} fill={"none"}>
+    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
+    <path d="M13.5 16C13.5 16 10.5 13.054 10.5 12C10.5 10.9459 13.5 8 13.5 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+</svg></button>
         <div className="text-center text-[#7d8085] font-normal">
           
            <span className="block mb-1"> {/* Margin left for spacing */}
@@ -181,8 +184,11 @@ const categoryColors = getColorByCategory(data.category);
           <span>${data.services[currentServiceIndex].price}
         </span>
         </div>
-        <button className="rounded-full border ml-2"onClick={handleNextService}>
-            <NavigateNextRoundedIcon /></button>
+        <button className="ml-2"onClick={handleNextService}>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={24} height={24} color={"#a2a2a2"} fill={"none"}>
+    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
+    <path d="M10.5 8C10.5 8 13.5 10.946 13.5 12C13.5 13.0541 10.5 16 10.5 16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+</svg></button>
             
         
       </div>

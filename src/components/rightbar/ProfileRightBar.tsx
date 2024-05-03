@@ -6,7 +6,7 @@ import PlaceOutlinedIcon from '@mui/icons-material/PlaceOutlined';
 import EventNoteOutlinedIcon from '@mui/icons-material/EventNoteOutlined';
 
 interface ProfileRightbarProps {
-  user: SafeProfile;
+  user: SafeUser;
   listings: SafeListing[];
 }
 

@@ -30,10 +30,9 @@ const ProfilePage = async ({ params }: { params: IParams }) => {
   return (
     <ClientProviders>
       <ProfileClient
-// currentUser now represents the profile being viewed
         posts={posts}
         listings={listings}
-        user={profile} // Pass the currentUser as a prop if needed elsewhere
+        user={profile} 
       />
     </ClientProviders>
   );
