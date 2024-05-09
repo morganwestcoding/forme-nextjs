@@ -1,7 +1,7 @@
 import prisma from "@/app/libs/prismadb";
 import { SafeService, SafeListing } from "@/app/types";
 
-interface Listing {
+{/*interface Listing {
   id: string;
   title: string;
   description: string;
@@ -18,21 +18,22 @@ interface Listing {
     // Add other fields from your Service model as needed
   }>;
   // Include the user if needed, with a structure similar to services
-}
+} */}
 
 export interface IListingsParams {
   userId?: string;
-
   locationValue?: string; 
   category?: string;
 }
 
-export default async function getListings(params: IListingsParams): Promise<SafeListing[]> {
+export default async function getListings(
+  params: IListingsParams
+) { 
   try {
     const {
-      userId,
-     locationValue,
-      category,
+    userId,
+    locationValue,
+    category,
     } = params;
 
     let query: any = {};
@@ -52,8 +53,7 @@ export default async function getListings(params: IListingsParams): Promise<Safe
 
     const listings = await prisma.listing.findMany({
       where: query,
-      include: {
-        user: true, // Including user details
+      include: {// Including user details
         services: true, // Including services
       },
       orderBy: {
@@ -62,25 +62,10 @@ export default async function getListings(params: IListingsParams): Promise<Safe
     });
 
     // Transform listings to SafeListing[] including all necessary properties
-    const safeListings: SafeListing[] = listings.map((listing: Listing): SafeListing => ({
-      id: listing.id,
-      title: listing.title,
-      description: listing.description,
-      imageSrc: listing.imageSrc,
-      category: listing.category,
-      location: listing.location ?? null,
-      userId: listing.userId, // Assuming this is directly available; adjust according to your data model
+    const safeListings  = listings.map((listing): SafeListing => ({
+      ...listing,
       createdAt: listing.createdAt.toISOString(),
-      services: listing.services.map((service: SafeService) => ({ 
-        id: service.id,
-        serviceName: service.serviceName,
-        price: service.price,
-        category: service.category,
-        // Add other service fields as necessary based on SafeService definition
-      })),
-    }));
-
-    
+      }));
 
     return safeListings;
   } catch (error: any) {

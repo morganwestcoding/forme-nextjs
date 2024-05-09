@@ -1,6 +1,6 @@
 import prisma from "@/app/libs/prismadb";
 
-interface PrismaReservation {
+{/*interface PrismaReservation {
   id: string;
   createdAt: Date;
   date: Date;
@@ -25,7 +25,7 @@ interface PrismaReservation {
       category: string;
     }>;
   };
-}
+} */}
 
 interface IParams {
   listingId?: string;
@@ -65,31 +65,18 @@ export default async function getReservations(params: IParams) {
       },
     });
 
-    const safeReservations = reservations.map((reservation: PrismaReservation) => ({
-      id: reservation.id,
+    const safeReservations = reservations.map(
+      (reservation) => ({
+      ...reservation,
       createdAt: reservation.createdAt.toISOString(),
       date: reservation.date,
       time: reservation.time,
-      userId: reservation.userId, // Ensure this is passed along
       totalPrice: reservation.totalPrice,
-      note: reservation.note ?? '', 
-      listingId: reservation.listingId, // Ensure this is passed along
+      note: reservation.note ?? '',  // Ensure this is passed along
       listing: {
-        id: reservation.listing.id,
+        ...reservation.listing,
         createdAt: reservation.listing.createdAt.toISOString(),
-        category: reservation.listing.category,
-        location: reservation.listing.location ?? 'Unknown', 
-        title: reservation.listing.title, // Assuming these are available in your listing object
-        description: reservation.listing.description,
-        imageSrc: reservation.listing.imageSrc,
-        userId: reservation.listing.userId,
-        services: reservation.listing.services.map(service => ({
-          id: service.id,
-          serviceName: service.serviceName,
-          price: service.price,
-          category: service.category,
-        })),
-      },
+        },
     }));
 
     return safeReservations;

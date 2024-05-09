@@ -48,7 +48,6 @@ export type SafePost = Omit<
   "createdAt" | "updatedAt" | "userId" | "categoryId"
 > & {
   createdAt: string;
-  userId: string; 
   category?: string;
   user: SafeUser;
   imageSrc: string | null;

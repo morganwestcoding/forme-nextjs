@@ -20,7 +20,7 @@ const Market = async ({ searchParams }: MarketProps) => {
   if (listings.length === 0) {
     return (
       <ClientProviders>
-        <EmptyState />
+        <EmptyState showReset />
       </ClientProviders>
     );
   }

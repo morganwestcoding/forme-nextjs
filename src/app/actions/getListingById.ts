@@ -5,7 +5,8 @@ interface IParams {
   listingId?: string;
 }
 
-export default async function getListingById(params: IParams) {
+export default async function getListingById(
+  params: IParams) {
   try {
     const { listingId } = params;
 
@@ -30,16 +31,9 @@ export default async function getListingById(params: IParams) {
         ...listing.user,
         createdAt: listing.user.createdAt.toISOString(),
         updatedAt: listing.user.updatedAt.toISOString(),
-        emailVerified: listing.user.emailVerified?.toISOString() || null,
+        emailVerified:
+         listing.user.emailVerified?.toISOString() || null,
       },
-      services: listing.services.map((service: SafeService) => ({ // Correctly type the `service` parameter
-        // Map each service to the desired structure
-        id: service.id,
-        serviceName: service.serviceName,
-        price: service.price,
-        category: service.category,
-        // Include other fields as needed
-      }))
     };
   } catch (error: any) {
     throw new Error(error);

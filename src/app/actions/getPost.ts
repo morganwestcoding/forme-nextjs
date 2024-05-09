@@ -1,7 +1,7 @@
 import prisma from "@/app/libs/prismadb";
 import { SafePost, SafeUser } from "@/app/types"; // Ensure this is updated according to your latest type definitions
 
-interface PrismaPost {
+{/*interface PrismaPost {
   id: string;
   content: string;
   imageSrc?: string | null;
@@ -23,7 +23,7 @@ interface PrismaPost {
     updatedAt: Date;
     emailVerified?: Date;
   };
-}
+} */}
 
 export interface IPostsParams {
   userId?: string;
@@ -49,17 +49,10 @@ export default async function getPosts(params: IPostsParams): Promise<SafePost[]
       where: query,
       include: { user: true },
       orderBy: { createdAt: 'desc' },
-    }) as PrismaPost[]; // Cast the result to PrismaPost[] to help TypeScript understand the structure
+    });
 
-    const safePosts: SafePost[] = posts.map((post: PrismaPost): SafePost => ({
-      id: post.id,
-      content: post.content,
-      imageSrc: post.imageSrc ?? null,
-      location: post.location ?? null,
-      tag: post.tag ?? null,
-      photo: post.photo ?? null,
-      category: post.category,
-      userId: post.userId,
+    const safePosts = posts.map((post) => ({
+      ...post,
       createdAt: post.createdAt.toISOString(),
       user: {
         id: post.user?.id || 'default-id',

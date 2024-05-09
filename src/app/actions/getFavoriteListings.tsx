@@ -2,7 +2,7 @@ import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "./getCurrentUser";
 import { SafeListing, SafeService } from "@/app/types";
 
-interface RawListing {
+{/*interface RawListing {
   id: string;
   title: string;
   description: string;
@@ -18,10 +18,10 @@ interface RawListing {
     category: string;
     // Include other fields from your Service model as necessary
   }>;
-}
+}*/}
 
 
-export default async function getFavoriteListings(): Promise<SafeListing[]> {
+export default async function getFavoriteListings() {
   try {
     const currentUser = await getCurrentUser();
 
@@ -32,7 +32,7 @@ export default async function getFavoriteListings(): Promise<SafeListing[]> {
     const favorites = await prisma.listing.findMany({
       where: {
         id: {
-          in: currentUser.favoriteIds || [],
+          in: [...(currentUser.favoriteIds || [])],
         },
       },
       include: {
@@ -41,17 +41,10 @@ export default async function getFavoriteListings(): Promise<SafeListing[]> {
     });
 
     // Transform the fetched favorites into SafeListing[]
-    const safeFavorites: SafeListing[] = favorites.map((favorite: RawListing) => ({
+    const safeFavorites = favorites.map((favorite) => ({
       ...favorite,
-      createdAt: favorite.createdAt.toISOString(), // Transform createdAt into a string
-      services: favorite.services.map((service): SafeService => ({
-        id: service.id,
-        serviceName: service.serviceName,
-        price: service.price,
-        category: service.category,
-        // Map other necessary fields for SafeService
-      })),
-    }));
+      createdAt: favorite.createdAt.toISOString(),
+      }));
 
     return safeFavorites;
   } catch (error: any) {
