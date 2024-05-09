@@ -22,8 +22,7 @@ interface Listing {
 
 export interface IListingsParams {
   userId?: string;
-  startDate?: string;
-  endDate?: string;
+
   locationValue?: string; 
   category?: string;
 }
@@ -33,8 +32,6 @@ export default async function getListings(params: IListingsParams): Promise<Safe
     const {
       userId,
      locationValue,
-      startDate,
-      endDate,
       category,
     } = params;
 
@@ -51,7 +48,7 @@ export default async function getListings(params: IListingsParams): Promise<Safe
     if (locationValue) {
       query.location = locationValue;
     }
-    // Implement logic for startDate and endDate if needed
+   
 
     const listings = await prisma.listing.findMany({
       where: query,

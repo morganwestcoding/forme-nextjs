@@ -40,7 +40,6 @@ export default async function RootLayout({
               <div className="flex-1 ml-52"> {/* Container for header and the rest of the content */}
                 <Header currentUser={currentUser} /> {/* Header component */}
              
-                
                 {children}
                 
               </div>

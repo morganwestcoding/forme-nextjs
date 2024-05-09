@@ -4,7 +4,6 @@ import getCurrentUser from '@/app/actions/getCurrentUser';
 import EmptyState from '@/components/EmptyState';
 import ListingCard from '@/components/listings/ListingCard'
 import { categories } from '@/components/Categories';
-import { Suspense } from 'react';
 
 import getListings, { 
   IListingsParams
@@ -17,12 +16,11 @@ interface MarketProps {
 const Market = async ({ searchParams }: MarketProps) => {
   const listings = await getListings(searchParams);
   const currentUser = await getCurrentUser();
-  const LoadingFallback = () => <div>Loading categories...</div>;
 
   if (listings.length === 0) {
     return (
       <ClientProviders>
-        <EmptyState showReset />
+        <EmptyState />
       </ClientProviders>
     );
   }

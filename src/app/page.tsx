@@ -6,8 +6,6 @@ import ClientProviders from '@/components/ClientProviders';
 import getCurrentUser from './actions/getCurrentUser';
 import Post from '@/components/feed/Post';
 import getPosts, { IPostsParams }  from './actions/getPost';
-import EmptyState from '@/components/EmptyState';
-import { SafePost, SafeProfile, SafeUserImage } from '@/app/types';
 import {categories} from '@/components/Categories';
 
 export default async function Home() {
