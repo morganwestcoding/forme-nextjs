@@ -1,5 +1,5 @@
 import React from 'react';
-import { SafeProfile, SafeListing, SafeUser } from '@/app/types';
+import {SafeListing, SafeUser} from '@/app/types';
 import Image from 'next/image';
 import format from 'date-fns/format'; 
 import PlaceOutlinedIcon from '@mui/icons-material/PlaceOutlined';
