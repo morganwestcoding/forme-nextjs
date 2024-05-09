@@ -47,7 +47,7 @@ const placeholderImages = [
 
 
 const ProfileRightbar: React.FC<ProfileRightbarProps> = ({ user, listings  }) => {
-const { bio, createdAt } = user;
+const { bio, createdAt, location } = user;
 
 const formattedDate = format(new Date(createdAt), 'PPP'); // Example format: Jan 1, 2020
     return (
@@ -67,16 +67,26 @@ const formattedDate = format(new Date(createdAt), 'PPP'); // Example format: Jan
              {/* Adjusted list items to include flex layout for icon and text alignment */}
              <li className="flex items-center pb-2 pt-2 rounded-lg shadow-sm bg-white border px-2 w-full mb-2"> 
               <div className="flex items-center justify-center p-1  cursor-pointer">
-              <PlaceOutlinedIcon className="w-4 h-4  text-[#a2a2a2]" />
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={19} height={19} color={"#a2a2a2"} fill={"none"}>
+    <path d="M14.5 9C14.5 10.3807 13.3807 11.5 12 11.5C10.6193 11.5 9.5 10.3807 9.5 9C9.5 7.61929 10.6193 6.5 12 6.5C13.3807 6.5 14.5 7.61929 14.5 9Z" stroke="currentColor" strokeWidth="1.5" />
+    <path d="M18.2222 17C19.6167 18.9885 20.2838 20.0475 19.8865 20.8999C19.8466 20.9854 19.7999 21.0679 19.7469 21.1467C19.1724 22 17.6875 22 14.7178 22H9.28223C6.31251 22 4.82765 22 4.25311 21.1467C4.20005 21.0679 4.15339 20.9854 4.11355 20.8999C3.71619 20.0475 4.38326 18.9885 5.77778 17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M13.2574 17.4936C12.9201 17.8184 12.4693 18 12.0002 18C11.531 18 11.0802 17.8184 10.7429 17.4936C7.6543 14.5008 3.51519 11.1575 5.53371 6.30373C6.6251 3.67932 9.24494 2 12.0002 2C14.7554 2 17.3752 3.67933 18.4666 6.30373C20.4826 11.1514 16.3536 14.5111 13.2574 17.4936Z" stroke="currentColor" strokeWidth="1.5" />
+</svg>
               </div>
-                <span className="ml-1 text-xs font-light text-[#717171]">Your Location Here</span>
+                <span className="ml-4 text-xs font-light text-[#a2a2a2]">{location}</span>
               </li>
         
               <li className="flex items-center pb-2 pt-2 w-full rounded-lg shadow-sm bg-white border px-2">
               <div className="flex items-center justify-center  p-1  cursor-pointer">
-              <EventNoteOutlinedIcon className="w-4 h-4  text-[#a2a2a2]" />
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={19} height={19} color={"#a2a2a2"} fill={"none"}>
+    <path d="M11 13H16M8 13H8.00898M13 17H8M16 17H15.991" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M18 2V4M6 2V4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M2.5 12.2432C2.5 7.88594 2.5 5.70728 3.75212 4.35364C5.00424 3 7.01949 3 11.05 3H12.95C16.9805 3 18.9958 3 20.2479 4.35364C21.5 5.70728 21.5 7.88594 21.5 12.2432V12.7568C21.5 17.1141 21.5 19.2927 20.2479 20.6464C18.9958 22 16.9805 22 12.95 22H11.05C7.01949 22 5.00424 22 3.75212 20.6464C2.5 19.2927 2.5 17.1141 2.5 12.7568V12.2432Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M3 8H21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+</svg>
               </div>
-                <span className="ml-1 text-xs font-light text-[#717171]">Joined {formattedDate}</span> {/* Display the formatted creation date here */}
+                <span className="ml-4 text-xs font-light text-[#a2a2a2]">Joined {formattedDate}</span> {/* Display the formatted creation date here */}
               </li>
               </ul>
             

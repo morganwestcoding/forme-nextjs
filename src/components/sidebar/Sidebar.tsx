@@ -145,12 +145,18 @@ export default function Sidebar() {
           <span className="mb-5 text-[#a2a2a2] text-xs font-light hover:text-white ">Genre</span>
           {/* Categories */}
           <li className="relative flex  items-center justify-center mb-5 p-2 rounded-lg shadow w-36 h-32 bg-[#b1dafe]">
-  <div className="absolute left-0 z-10 cursor-pointer" onClick={handlePrevClick}>
-    <NavigateBeforeRoundedIcon className="w-6 h-6 text-white" />
+  <div className="absolute left-0 z-10 ml-3 cursor-pointer" onClick={handlePrevClick}>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={24} height={24} color={"#ffffff"} fill={"none"}>
+    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
+    <path d="M13.5 16C13.5 16 10.5 13.054 10.5 12C10.5 10.9459 13.5 8 13.5 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+</svg>
   </div>
   <span className=" text-[#ffffff] text-xs group-hover:text-white font-light ">Default</span>
-  <div className="absolute right-0 z-10 cursor-pointer" onClick={handleNextClick}>
-    <NavigateNextRoundedIcon className="w-6 h-6 text-white"  />
+  <div className="absolute right-0 z-10 cursor-pointer mr-3" onClick={handleNextClick}>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={24} height={24} color={"#ffffff"} fill={"none"}>
+    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
+    <path d="M10.5 8C10.5 8 13.5 10.946 13.5 12C13.5 13.0541 10.5 16 10.5 16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+</svg>
   </div>
 </li>
 

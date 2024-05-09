@@ -1,46 +1,42 @@
-// getProfileById.ts
-
 import prisma from "@/app/libs/prismadb";
-import { SafeProfile } from "../types";
+import { SafeUser } from "@/app/types";
 
 interface IParams {
-  profileId?: string;
+  userId?: string;
 }
 
-export default async function getProfileById(params: IParams) {
-  try {
-    const { profileId } = params;
+export default async function getProfileById(params: IParams): Promise<SafeUser | null> {
+  const { userId } = params;
 
-    // Assuming profileId is the id of the User model
+  if (!userId) {
+    console.error("No user ID provided for getProfileById");
+    return null;
+  }
+
+  try {
     const user = await prisma.user.findUnique({
-      where: {
-        id: profileId,
-      },
-      include: {
-        profile: true, // Include the profile
-      }
+      where: { id: userId },
     });
 
     if (!user) {
+      console.error("User not found with ID:", userId);
       return null;
     }
 
-    // Constructing the response object
-    // Adjust the structure as per your front-end needs
-    const response: SafeProfile = {
-    id: user.id,
-    userId: user.id,
-    name: user.name ?? undefined,
-    image: user.image ?? undefined,
-    bio: user.profile?.bio || '',
-    imageSrc: user.profile?.imageSrc || '',
-    createdAt: user.createdAt.toISOString(), 
-      
+    return {
+      id: user.id,
+      name: user.name ?? null,
+      email: user.email ?? null,
+      image: user.image ?? null,
+      bio: user.bio || "No Bio Provided Yet..",
+      imageSrc: user.imageSrc || '/assets/hero-background.jpeg',
+      location: user.location ?? null,
+      createdAt: user.createdAt.toISOString(),
+      updatedAt: user.updatedAt.toISOString(),
+      emailVerified: user.emailVerified ? user.emailVerified.toISOString() : null,
     };
-
-    return response;
-  } catch (error: any) {
-    console.error("Error fetching profile:", error);
-    throw new Error(error);
+  } catch (error) {
+    console.error("Error fetching user profile by ID:", error);
+    return null;
   }
 }

@@ -30,14 +30,14 @@ export default function Rightbar() {
   const router = useRouter();
     return (
       <div className="flex flex-col justify-end bg-transparent  gap-6 pr-24 h-auto mt-8">
-        <div className="w-full h-32 rounded-2xl drop-shadow-sm bg-[#ffffff] px-2 md:px-6 pt-5 pb-2 relative">
-          <div className="text-lg font-bold mb-2">Subscribe today
+        <div className="w-full rounded-2xl drop-shadow-sm bg-[#ffffff] p-6 relative">
+          <div className="text-lg font-bold mb-3">Subscribe today
             <div className="text-sm font-normal">Subscribe to unlock new features and if eligible, receive a share of ad&apos;s revenue.</div>
           </div>
         </div>
 
 
-        <div className="w-full flex flex-col justify-start rounded-2xl shadow bg-[#ffffff]   p-0 mx-0 overflow-hidden  pb-6">
+        <div className="w-full flex flex-col justify-start rounded-2xl shadow bg-[#ffffff]   p-0 mx-0 overflow-hidden  pb-5">
         <div className="px-6 py-6 text-lg font-bold">What&apos;s Happening</div>
         <hr />
         {articles.map((article, index) => (

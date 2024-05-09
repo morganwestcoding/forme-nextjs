@@ -1,4 +1,4 @@
-import {Listing , User, Reservation, Post, Service, Profile} from '@prisma/client'
+import {Listing , User, Reservation, Post, Service} from '@prisma/client'
 
 export type SafeService = {
   id: string;
@@ -31,18 +31,18 @@ export type SafeUser = Omit<
   User,
   'favoriteIds'|'hashedPassword'|"createdAt" | "updatedAt" | "emailVerified"
 > & {
+  id: string; 
   createdAt: string;
   updatedAt: string;
+  image?: string | null; 
   emailVerified: string | null;
   favoriteIds?: string[]; // Already exists in User model
   imageSrc?: string | null;
+  bio: string;
+  location?: string | null;
+
 };
 
-export interface SafeUserImage {
-  id: string;
-  image: string;
-  name: string;
-}
 
 export type SafePost = Omit<
   Post,
@@ -51,10 +51,8 @@ export type SafePost = Omit<
   createdAt: string;
   userId: string; 
   category?: string;
-  user: SafeUserImage;
+  user: SafeUser;
   imageSrc: string | null;
-   // Assuming the category is a string or adjust according to your model
-  // Include any other relations or transformations here
 };
 
 export type SafeProfile = {

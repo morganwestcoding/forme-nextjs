@@ -6,20 +6,20 @@ import ProfileClient from "./ProfileClient"; // Ensure this component is impleme
 import getProfileById from '@/app/actions/getProfileById';
 import getListings from '@/app/actions/getListings';
 import getPosts from '@/app/actions/getPost';
-
-interface IParams {
-  profileId?: string;
+import { SafeUser } from '@/app/types';
  
+interface IParams {
+  userId?: string;
 }
-
-
-
-const ProfilePage = async ({ params }: { params: IParams }) => {
   
-  const profile = await getProfileById(params);
-  const listings = await getListings({ userId: profile?.userId });
-  const posts = await getPosts({ userId: profile?.userId });
-  if (!profile) {
+  const ProfilePage = async ({ params }: { params: IParams }) => {
+   
+    const user = await getProfileById(params);
+    const listings = await getListings(params); 
+    const posts = await getPosts(params);
+  
+
+  if (!user) {
     return (
       <ClientProviders>
         <EmptyState />
@@ -32,7 +32,7 @@ const ProfilePage = async ({ params }: { params: IParams }) => {
       <ProfileClient
         posts={posts}
         listings={listings}
-        user={profile} 
+        user={user} 
       />
     </ClientProviders>
   );

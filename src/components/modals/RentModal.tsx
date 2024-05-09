@@ -176,10 +176,7 @@ const RentModal = () => {
         />
         <ListLocationSelect // Use ListLocationSelect component
           onLocationSubmit={(value) => setValue('location', value)}
-        />
-    
-    
-            
+        />   
       </div>
     );
   }

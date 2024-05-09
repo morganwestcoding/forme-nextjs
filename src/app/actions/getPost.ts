@@ -1,5 +1,5 @@
 import prisma from "@/app/libs/prismadb";
-import { SafePost } from "@/app/types"; // Ensure this is updated according to your latest type definitions
+import { SafePost, SafeUser } from "@/app/types"; // Ensure this is updated according to your latest type definitions
 
 interface PrismaPost {
   id: string;
@@ -15,11 +15,15 @@ interface PrismaPost {
     id: string;
     image?: string;
     name: string;
-    // Add other user fields you might need, focusing on safe items
+    email?: string; // Add other necessary fields based on SafeUser
+    bio?: string;
+    location?: string;
+    imageSrc?: string;
+    createdAt: Date;
+    updatedAt: Date;
+    emailVerified?: Date;
   };
 }
-
-
 
 export interface IPostsParams {
   userId?: string;
@@ -47,8 +51,7 @@ export default async function getPosts(params: IPostsParams): Promise<SafePost[]
       orderBy: { createdAt: 'desc' },
     }) as PrismaPost[]; // Cast the result to PrismaPost[] to help TypeScript understand the structure
 
-    // Now, TypeScript knows the structure of each post, thanks to PrismaPost type
-      const safePosts: SafePost[] = posts.map((post: PrismaPost): SafePost => ({
+    const safePosts: SafePost[] = posts.map((post: PrismaPost): SafePost => ({
       id: post.id,
       content: post.content,
       imageSrc: post.imageSrc ?? null,
@@ -58,20 +61,19 @@ export default async function getPosts(params: IPostsParams): Promise<SafePost[]
       category: post.category,
       userId: post.userId,
       createdAt: post.createdAt.toISOString(),
-      // Assuming your SafePost type correctly handles the user structure
-      user: post.user ? {
-        id: post.user.id,
-        image: post.user.image || '/people/headshot-5.jpg', // Provide a default image if none exists
-        name: post.user.name
-      } : {
-        id: 'default-id',
-        image: '/people/headshot-5.jpg',
-        name: 'Anonymous'
-      }, 
+      user: {
+        id: post.user?.id || 'default-id',
+        image: post.user?.image || '/default-profile.jpg',
+        name: post.user?.name || 'Anonymous',
+        email: post.user?.email ?? null,
+        bio: post.user?.bio || "No Bio Provided Yet..",
+        location: post.user?.location ?? null,
+        imageSrc: post.user?.imageSrc || '/assets/hero-background.jpeg',
+        createdAt: post.user?.createdAt.toISOString() || new Date().toISOString(),
+        updatedAt: post.user?.updatedAt.toISOString() || new Date().toISOString(),
+        emailVerified: post.user?.emailVerified ? post.user.emailVerified.toISOString() : null,
+      },
     }));
-
-    
-
     return safePosts;
   } catch (error) {
     console.error("Error in getPosts:", error);

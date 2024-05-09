@@ -31,6 +31,7 @@ const Header: React.FC<HeaderProps> = ({
               <>
     
               </>
+              <AddListing/>
             <CreateChatButton />
              <Notification/>
              <UserButton currentUser={currentUser}
