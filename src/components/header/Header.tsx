@@ -1,12 +1,9 @@
-
-
-import Logo from "./Logo";
+import Container from "../Container";
 import AddListing from "./AddListing";
 import UserButton from "../UserButton";
 import { SafePost } from "@/app/types";
 import Notification from "./Notification";
 import CreateChatButton from "./CreateChatButton";
-
 import { SafeUser } from "@/app/types";
 import Search from "./Search";
 import Filter from "./Filter";
@@ -20,29 +17,22 @@ const Header: React.FC<HeaderProps> = ({
 }) => {
   console.log({ currentUser});
   return (
-        <header className="stickytop-0 dark:bg-gray-900 pr-24 pt-7 -mb-3">
-          <nav className="flex flex-col sm:flex-row items-centerjustify-between items-center dark:bg-gray-900 max-w-7xl mx-auto">
-           
-            <Search/>
-            <Filter/>
-            <div className="flex-1 flex items-center justify-end space-x-4">
-              {/* LanguageSelect */}
-
-              <>
-    
-              </>
-              <AddListing/>
-            <CreateChatButton />
-             <Notification/>
-             <UserButton currentUser={currentUser}
-             data={{} as SafePost}  />
-            
-            
-            </div>
-          </nav>
-
-         
-        </header>
+        <div className=" pr-4 pt-7 -mb-3">
+          <Container>
+              <div className="flex justify-between items-center">
+                  <div className="flex items-center space-x-2">
+                    <Search />
+                    <Filter />
+                  </div>
+                <div className="flex items-center space-x-4">
+                  <AddListing/>
+                  <CreateChatButton />
+                  <Notification/>
+                  <UserButton currentUser={currentUser} data={{} as SafePost}/>
+                </div>
+              </div>
+          </Container>
+        </div>
   );
 };
 
