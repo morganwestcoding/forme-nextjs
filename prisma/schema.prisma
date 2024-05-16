@@ -21,11 +21,29 @@ model User {
   listings       Listing[]
   reservations   Reservation[]
   posts          Post[]
+  accounts     Account[]
   bio            String
-  imageSrc       String?       // Background image for the user's profile
+  imageSrc       String?      
   location       String?  
-  
-  // This line represents the relation to the Post model
+}
+
+model Account {
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String  @db.ObjectId
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.String
+  access_token      String? @db.String
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.String
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
 }
 
 model Listing {
@@ -35,7 +53,7 @@ model Listing {
   imageSrc      String
   createdAt     DateTime      @default(now())
   category      String
-  location      String?        // New field for location
+  location      String?       
   userId        String        @db.ObjectId
   services      Service[]
   user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -78,7 +96,6 @@ model Post {
 
   user User @relation(fields: [userId], references: [id])
 
-  // Include other fields and relations, but ensure 'userId' is not duplicated
 }
 
 model Category {

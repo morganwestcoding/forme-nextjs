@@ -37,7 +37,7 @@ export default function Rightbar() {
         </div>
 
 
-        <div className="w-full flex flex-col justify-start rounded-2xl shadow bg-[#ffffff]   p-0 mx-0 overflow-hidden  pb-5">
+        <div className="w-full flex flex-col justify-start rounded-2xl shadow-sm bg-[#ffffff]   p-0 mx-0 overflow-hidden  pb-5">
         <div className="px-6 py-6 text-lg font-bold">What&apos;s Happening</div>
         <hr />
         {articles.map((article, index) => (

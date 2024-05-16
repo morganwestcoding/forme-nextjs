@@ -1,3 +1,4 @@
+
 import React from 'react'
 import ClientProviders from '@/components/ClientProviders'
 import getCurrentUser from '@/app/actions/getCurrentUser';
@@ -8,6 +9,7 @@ import { categories } from '@/components/Categories';
 import getListings, { 
   IListingsParams
 } from "@/app/actions/getListings";
+import ClientOnly from '@/components/ClientOnly';
 
 interface MarketProps {
   searchParams: IListingsParams
@@ -19,15 +21,15 @@ const Market = async ({ searchParams }: MarketProps) => {
 
   if (listings.length === 0) {
     return (
-      <ClientProviders>
+      <ClientOnly>
         <EmptyState showReset />
-      </ClientProviders>
+      </ClientOnly>
     );
   }
 
   return (
     
-  <ClientProviders>
+  <ClientOnly>
     <div className="pt-2 pl-4 mx-24 flex-1">
     <div 
     className="
@@ -52,7 +54,7 @@ const Market = async ({ searchParams }: MarketProps) => {
     ))}
   </div>
   </div>
-  </ClientProviders>
+  </ClientOnly>
   )
 }
 

@@ -34,7 +34,7 @@ export default async function RootLayout({
   <ClientProviders>
     <html lang="en">
       <body className={font.className}>
-          <div className="flex h-screen "> 
+          <div> 
               <Sidebar /> 
                 <div className="flex-1 ml-52"> 
                   <Header currentUser={currentUser} /> 

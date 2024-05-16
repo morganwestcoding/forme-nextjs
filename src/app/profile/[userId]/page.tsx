@@ -7,6 +7,7 @@ import getProfileById from '@/app/actions/getProfileById';
 import getListings from '@/app/actions/getListings';
 import getPosts from '@/app/actions/getPost';
 import { SafeUser } from '@/app/types';
+import ClientOnly from '@/components/ClientOnly';
  
 interface IParams {
   userId?: string;
@@ -21,20 +22,20 @@ interface IParams {
 
   if (!user) {
     return (
-      <ClientProviders>
+      <ClientOnly>
         <EmptyState />
-      </ClientProviders>
+      </ClientOnly>
     );
   }
 
   return (
-    <ClientProviders>
+    <ClientOnly>
       <ProfileClient
         posts={posts}
         listings={listings}
         user={user} 
       />
-    </ClientProviders>
+    </ClientOnly>
   );
 };
 

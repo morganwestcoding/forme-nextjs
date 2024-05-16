@@ -17,7 +17,7 @@ const Header: React.FC<HeaderProps> = ({
 }) => {
   console.log({ currentUser});
   return (
-        <div className=" pr-4 pt-7 -mb-3">
+        <div className=" pr-4 mt-5 -mb-3">
           <Container>
               <div className="flex justify-between items-center">
                   <div className="flex items-center space-x-2">

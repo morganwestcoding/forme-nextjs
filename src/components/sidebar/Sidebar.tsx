@@ -2,24 +2,6 @@
 
 
 import { useRouter } from "next/navigation";
-import NavigateBeforeRoundedIcon from '@mui/icons-material/NavigateBeforeRounded';
-import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
-
-import Link from "next/link";
-import BusinessCenterRoundedIcon from '@mui/icons-material/BusinessCenterRounded';
-import CottageOutlinedIcon from '@mui/icons-material/CottageOutlined';
-import StorefrontRoundedIcon from '@mui/icons-material/StorefrontRounded';
-import BookmarkBorderOutlinedIcon from '@mui/icons-material/BookmarkBorderOutlined';
-import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';
-import WorkOutlineOutlinedIcon from '@mui/icons-material/WorkOutlineOutlined';
-import StorefrontOutlinedIcon from '@mui/icons-material/StorefrontOutlined';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
-
 
 import Logo from "../header/Logo";
 import Categories from "../Categories";

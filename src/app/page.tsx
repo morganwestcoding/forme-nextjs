@@ -1,4 +1,4 @@
-// src/app/page.tsx
+
 import React from 'react';
 import Rightbar from '../components/rightbar/Rightbar';
 import Share from '@/components/feed/Share';
@@ -7,6 +7,7 @@ import getCurrentUser from './actions/getCurrentUser';
 import Post from '@/components/feed/Post';
 import getPosts, { IPostsParams }  from './actions/getPost';
 import {categories} from '@/components/Categories';
+import ClientOnly from '@/components/ClientOnly';
 
 export default async function Home() {
   const currentUser = await getCurrentUser();
@@ -14,7 +15,7 @@ export default async function Home() {
   const posts = await getPosts(searchParams);
 
   return (
-    <ClientProviders>
+    <ClientOnly>
       <div className="flex w-full">
         <div className="flex-none w-[45%] ml-28 mt-8 mr-1">
           <Share currentUser={currentUser} />
@@ -26,7 +27,7 @@ export default async function Home() {
           <Rightbar />
         </div>
       </div>
-    </ClientProviders>
+    </ClientOnly>
   );
 };
 

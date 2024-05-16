@@ -1,13 +1,14 @@
-/*@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");*/
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-html,
-body,
-:root {
-  height: 100%
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x:hidden /* Prevent horizontal scrolling */
 }
  
 @layer base {
@@ -50,7 +51,8 @@ body,
   }
   body {
     height: 100%;
-    background-attachment:fixed;
+    margin: 0;
+    background-attachment:scroll;
     background-image: linear-gradient(to bottom, #D7E1EC, #fcfcfc);
     background-size: cover;  
     background-attachment: fixed;

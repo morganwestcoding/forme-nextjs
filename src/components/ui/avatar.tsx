@@ -1,12 +1,11 @@
-// Avatar.tsx
+'use client'; 
 import React from 'react';
 import Image from 'next/image';
-import useUserStore from '../../app/hooks/userStore'; // Adjust the import path as necessary
+
 
 const Avatar: React.FC<{ src?: string }> = ({ src }) => {
   const defaultImage = "/people/rooster.jpg"; // Default image path
 
-  // Use the provided `src` or fall back to the default image
   const imageSrc = src || defaultImage;
 
 
