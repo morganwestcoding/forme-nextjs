@@ -1,18 +1,52 @@
-import React from 'react';
+'use client';
+import React, { useEffect, useState } from 'react';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import EmptyState from '@/components/EmptyState';
 import ListingCard from '@/components/listings/ListingCard';
 import { categories } from '@/components/Categories';
 import getListings, { IListingsParams } from '@/app/actions/getListings';
 import ClientOnly from '@/components/ClientOnly';
-
+import { SafeUser, SafeListing } from '../types';
 interface MarketProps {
   searchParams: IListingsParams;
 }
 
-const Market = async ({ searchParams }: MarketProps) => {
-  const listings = await getListings(searchParams);
-  const currentUser = await getCurrentUser();
+const Market = ({ searchParams }: MarketProps) => {
+  const [listings, setListings] = useState<SafeListing[]>([]);
+  const [currentUser, setCurrentUser] = useState<SafeUser | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchListings = async () => {
+      try {
+        const listings = await getListings(searchParams);
+        setListings(listings);
+      } catch (error) {
+        console.error("Failed to fetch listings:", error);
+      }
+      setLoading(false);
+    };
+
+    const fetchCurrentUser = async () => {
+      try {
+        const user = await getCurrentUser();
+        setCurrentUser(user);
+      } catch (error) {
+        console.error("Failed to fetch current user:", error);
+      }
+    };
+
+    fetchListings();
+    fetchCurrentUser();
+  }, [searchParams]);
+
+  if (loading) {
+    return (
+      <ClientOnly>
+        <div>Loading...</div>
+      </ClientOnly>
+    );
+  }
 
   if (listings.length === 0) {
     return (
@@ -21,6 +55,8 @@ const Market = async ({ searchParams }: MarketProps) => {
       </ClientOnly>
     );
   }
+
+
 
   return (
     <ClientOnly>

@@ -21,7 +21,7 @@ model User {
   listings       Listing[]
   reservations   Reservation[]
   posts          Post[]
-  accounts     Account[]
+  accounts       Account[]
   bio            String
   imageSrc       String?      
   location       String?  
