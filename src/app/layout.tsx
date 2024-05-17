@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import { Roboto } from 'next/font/google'
 import './globals.css'
 import Header from '../components/header/Header'
-import ClientProviders from '@/components/ClientProviders';
 import RegisterModal from '@/components/RegisterModal';
 import ToasterProvider from './providers/ToasterProvider';
 import LoginModal from '@/components/modals/LoginModal';
@@ -11,6 +10,7 @@ import Sidebar from '@/components/sidebar/Sidebar';
 import RentModal from '@/components/modals/RentModal';
 import ProfileModal from '@/components/modals/ProfileModal';
 import GalleryModal from '@/components/modals/GalleryModal';
+import ClientOnly from '@/components/ClientOnly';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -31,7 +31,7 @@ export default async function RootLayout({
   
   
   return (
-  <ClientProviders>
+  <ClientOnly>
     <html lang="en">
       <body className={font.className}>
           <div> 
@@ -53,6 +53,6 @@ export default async function RootLayout({
 
       </body>
     </html>
-  </ClientProviders>
+  </ClientOnly>
   )
 }

@@ -1,4 +1,4 @@
-'use client';
+
 import React from 'react';
 import ProfileHead from '@/components/profile/ProfileHead';
 import Post from '@/components/feed/Post';

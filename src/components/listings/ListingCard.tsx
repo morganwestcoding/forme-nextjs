@@ -3,9 +3,7 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
-import { format } from 'date-fns';
 
-import useStates from "@/app/hooks/useStates";
 import { 
   SafeListing, 
   SafeReservation, 
@@ -15,9 +13,7 @@ import {
 import HeartButton from "../HeartButton";
 import ModalButton from "../modals/ModalButton";
 import { categories } from "../Categories";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import NavigateBeforeRoundedIcon from '@mui/icons-material/NavigateBeforeRounded';
-import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
+
 
 interface ListingCardProps {
   data: SafeListing;

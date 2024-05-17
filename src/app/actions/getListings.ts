@@ -1,4 +1,5 @@
 import prisma from "@/app/libs/prismadb";
+import { SafeListing } from "@/app/types";
 
 export interface IListingsParams {
   userId?: string;

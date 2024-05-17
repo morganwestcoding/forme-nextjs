@@ -1,5 +1,4 @@
 import prisma from "@/app/libs/prismadb";
-import { SafeService, SafeUser } from "@/app/types";
 
 interface IParams {
   listingId?: string;
