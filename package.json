@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "prisma:generate": "prisma generate",
-    "deploy": "npm run build && npm run prisma:generate"
+    "deploy": "npm run build && npm run prisma:generate",
+    "postinstall": "rm -rf node_modules/sharp && npm install --no-save sharp"
+    
   },
   "dependencies": {
     "@date-io/date-fns": "^3.0.0",
@@ -76,6 +78,11 @@
     "tailwindcss": "^3.3.7",
     "typescript": "^5"
   },
+
+  "optionalDependencies": {
+    "sharp": "^0.33.4"
+  },
+  
   "engines": {
     "node": "18.x"
   }
