@@ -4,11 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && prisma generate",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
     "prisma:generate": "prisma generate",
-    "deploy": "npm run build && npm run prisma:generate",
+    "deploy": "npm run build",
     "postinstall": "rm -rf node_modules/sharp && npm install --no-save sharp"
     
   },
