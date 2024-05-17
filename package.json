@@ -80,10 +80,11 @@
   },
 
   "optionalDependencies": {
-    "sharp": "^0.33.4"
+    "sharp": "^0.33.4",
+    "@fortawesome/fontawesome-svg-core": "^6.5.1"
   },
-  
+
   "engines": {
-    "node": "18.x"
+    "node": "20.x"
   }
 }
