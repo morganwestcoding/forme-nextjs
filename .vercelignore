@@ -1,4 +1,6 @@
+node_modules/.cache
+**/node_modules/.prisma/client
 !.prisma
 !.prisma/client
-node_modules/.prisma
-node_modules/.prisma/client
+!node_modules/.prisma
+!node_modules/.prisma/client
