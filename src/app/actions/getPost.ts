@@ -1,29 +1,6 @@
 import prisma from "@/app/libs/prismadb";
 import { SafePost, SafeUser } from "@/app/types"; // Ensure this is updated according to your latest type definitions
 
-{/*interface PrismaPost {
-  id: string;
-  content: string;
-  imageSrc?: string | null;
-  location?: string | null;
-  tag?: string | null;
-  photo?: string | null;
-  category: string;
-  userId: string;
-  createdAt: Date;
-  user?: {
-    id: string;
-    image?: string;
-    name: string;
-    email?: string; // Add other necessary fields based on SafeUser
-    bio?: string;
-    location?: string;
-    imageSrc?: string;
-    createdAt: Date;
-    updatedAt: Date;
-    emailVerified?: Date;
-  };
-} */}
 
 export interface IPostsParams {
   userId?: string;
@@ -35,6 +12,7 @@ export interface IPostsParams {
 
 export default async function getPosts(params: IPostsParams): Promise<SafePost[]> {
   try {
+    console.log("Params:", params);
     const { userId, locationValue, startDate, endDate, category } = params;
 
     let query: any = {};
@@ -45,12 +23,14 @@ export default async function getPosts(params: IPostsParams): Promise<SafePost[]
       query.createdAt = { gte: new Date(startDate), lte: new Date(endDate) };
     }
 
+    console.log("Query:", query);
     const posts = await prisma.post.findMany({
       where: query,
       include: { user: true },
       orderBy: { createdAt: 'desc' },
     });
 
+    console.log("Posts:", posts);
     const safePosts = posts.map((post) => ({
       ...post,
       createdAt: post.createdAt.toISOString(),
@@ -67,6 +47,7 @@ export default async function getPosts(params: IPostsParams): Promise<SafePost[]
         emailVerified: post.user?.emailVerified ? post.user.emailVerified.toISOString() : null,
       },
     }));
+    console.log("Safe Posts:", safePosts);
     return safePosts;
   } catch (error) {
     console.error("Error in getPosts:", error);
