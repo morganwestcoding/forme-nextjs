@@ -20,21 +20,21 @@ const ListingPage = async ({ params }: { params: IParams }) => {
 
   if (!listing) {
     return (
-      <ClientOnly>
+      <ClientProviders>
         <EmptyState />
-      </ClientOnly>
+      </ClientProviders>
     );
   }
 
   return (
-    <ClientOnly>
+    <ClientProviders>
       <ListingClient
         listing={listing}
         reservations={reservations}
         currentUser={currentUser}
         location={listing.location || "Default Location"} 
       />
-    </ClientOnly>
+    </ClientProviders>
   );
 }
  
