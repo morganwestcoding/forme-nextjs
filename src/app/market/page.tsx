@@ -7,6 +7,7 @@ import { categories } from '@/components/Categories';
 import getListings, { IListingsParams } from '@/app/actions/getListings';
 import ClientOnly from '@/components/ClientOnly';
 import { SafeUser, SafeListing } from '../types';
+import ClientProviders from '@/components/ClientProviders';
 interface MarketProps {
   searchParams: IListingsParams;
 }
@@ -42,24 +43,24 @@ const Market = ({ searchParams }: MarketProps) => {
 
   if (loading) {
     return (
-      <ClientOnly>
+      <ClientProviders>
         <div>Loading...</div>
-      </ClientOnly>
+      </ClientProviders>
     );
   }
 
   if (listings.length === 0) {
     return (
-      <ClientOnly>
+      <ClientProviders>
         <EmptyState showReset />
-      </ClientOnly>
+      </ClientProviders>
     );
   }
 
 
 
   return (
-    <ClientOnly>
+    <ClientProviders>
       <div className="pt-2 pl-4 mx-24 flex-1">
         <div
           className="
@@ -84,7 +85,7 @@ const Market = ({ searchParams }: MarketProps) => {
           ))}
         </div>
       </div>
-    </ClientOnly>
+    </ClientProviders>
   );
 };
 
