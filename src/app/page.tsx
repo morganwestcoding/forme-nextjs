@@ -15,7 +15,7 @@ export default async function Home() {
   const posts = await getPosts(searchParams);
 
   return (
-    <ClientOnly>
+    <ClientProviders>
       <div className="flex w-full">
         <div className="flex-none w-[45%] ml-28 mt-8 mr-1">
           <Share currentUser={currentUser} />
@@ -27,7 +27,7 @@ export default async function Home() {
           <Rightbar />
         </div>
       </div>
-    </ClientOnly>
+    </ClientProviders>
   );
 };
 

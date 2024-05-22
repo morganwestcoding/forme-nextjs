@@ -11,6 +11,7 @@ import RentModal from '@/components/modals/RentModal';
 import ProfileModal from '@/components/modals/ProfileModal';
 import GalleryModal from '@/components/modals/GalleryModal';
 import ClientOnly from '@/components/ClientOnly';
+import ClientProviders from '@/components/ClientProviders';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -31,9 +32,9 @@ export default async function RootLayout({
   
   
   return (
-  <ClientOnly>
+  <ClientProviders>
     <html lang="en">
-      <body className={font.className}>
+      <body>
           <div> 
               <Sidebar /> 
                 <div className="flex-1 ml-52"> 
@@ -53,6 +54,6 @@ export default async function RootLayout({
 
       </body>
     </html>
-  </ClientOnly>
+  </ClientProviders>
   )
 }
