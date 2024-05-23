@@ -12,6 +12,7 @@ import ProfileModal from '@/components/modals/ProfileModal';
 import GalleryModal from '@/components/modals/GalleryModal';
 import ClientOnly from '@/components/ClientOnly';
 import ClientProviders from '@/components/ClientProviders';
+import MessageModal from '@/components/modals/MessageModal';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -51,7 +52,7 @@ export default async function RootLayout({
         <LoginModal/>
         <RegisterModal/>
         <GalleryModal/> 
-
+        <MessageModal/>
       </body>
     </html>
   </ClientProviders>

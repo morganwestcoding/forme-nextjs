@@ -45,6 +45,7 @@ const AddPostLocation: React.FC<AddPostLocationProps> = ({ onLocationSubmit }) =
       '&:hover': {
         borderColor: 'white',
       },
+      width: '100%', 
     }),
     option: (styles, { isFocused, isSelected }) => ({
       ...styles,
@@ -68,7 +69,7 @@ const AddPostLocation: React.FC<AddPostLocationProps> = ({ onLocationSubmit }) =
   };
 
   return (
-    <div className="relative">
+    <div>
       <Select
         options={states}
         value={selectedState}
@@ -77,6 +78,7 @@ const AddPostLocation: React.FC<AddPostLocationProps> = ({ onLocationSubmit }) =
         styles={customStyles}
         getOptionLabel={(option) => option.label}
         getOptionValue={(option) => option.value}
+        className='mb-3 w-full'
       />
       <Select
         options={cities}

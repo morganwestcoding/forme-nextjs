@@ -1,17 +1,12 @@
 'use client';
 
-// AttachmentModal.tsx
-
 import React, { useState } from 'react';
 import { useForm, SubmitHandler, FieldValues } from 'react-hook-form';
-import axios from 'axios';
-import { toast } from 'react-hot-toast';
 
 import Modal from './Modal';
 import AddPostImage from '../inputs/AddPostImage';
 import AddPostLocation from '../inputs/AddPostLocation';
-import AddTagInput from '../inputs/AddTagInput';
-import { SafeUser } from '@/app/types';
+
 
 interface AttachmentModalProps {
     setImageSrc: (imageSrc: string) => void;
@@ -41,14 +36,14 @@ const AttachmentModal: React.FC<AttachmentModalProps> = ({ setImageSrc, setLocat
     };
 
     const modalBody = (
-        <div className="flex justify-center items-center">
-            <div className="flex flex-col items-center">
+        <div className="flex">
+            <div className="flex flex-col w-1/2">
                 <div className="mb-2 text-center font-medium text-white">Add Image</div>
                 <AddPostImage
                     onImageUpload={(value) => setValue('imageSrc', value)}
                 />
             </div>
-            <div className="flex flex-col items-center ml-4">
+            <div className="flex flex-col w-1/2 ml-4">
                 <div className="mb-2 text-center font-medium text-white">Add Location</div>
                 <AddPostLocation
                     onLocationSubmit={(value) => setValue('location', value)}

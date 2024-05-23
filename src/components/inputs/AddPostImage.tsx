@@ -33,17 +33,18 @@ const AddPostImage: React.FC<AddPostImageProps> = ({  onImageUpload }) => {
         >
             {({ open }) => (
                  <div
-                 className="relative cursor-pointer hover:opacity-75 transition border-dashed border-2 p-4 w-40 h-40 border-neutral-300 flex flex-col justify-center items-center text-neutral-600 rounded-lg"
+                 className="relative cursor-pointer hover:opacity-75 transition border-dashed border-2 p-4 w-full h-full border-neutral-300 flex flex-col justify-center items-center text-neutral-600 rounded-lg"
                  onClick={() => open?.()}
              >
                    <TbPhotoPlus size={24} className="text-neutral-600" />
                     {imageSrc && (
-                        <div className="absolute inset-0 w-full h-full rounded-lg overflow-hidden">
+                        <div className="absolute w-full h-full rounded-lg overflow-hidden">
                             <Image
                                 src={imageSrc}
                                 alt="Uploaded Image"
                                 layout="fill"
                                 objectFit="cover"
+                                className='w-full'
                             />
                         </div>
                     )}

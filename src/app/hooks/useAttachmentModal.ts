@@ -9,7 +9,6 @@ interface AttachmentModalStore {
 const useAttachmentModal = create<AttachmentModalStore>((set) => ({
     isOpen: false,
     onOpen: () => {
-      console.log('Opening Attachment Modal');
       set({ isOpen: true });
     },
     onClose: () => {

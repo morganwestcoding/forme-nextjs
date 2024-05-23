@@ -16,7 +16,6 @@ import { SafePost, SafeUser } from "@/app/types";
 import useRentModal from "@/app/hooks/useRentModal";
 import useProfileModal from "@/app/hooks/useProfileModal";
 import useGalleryModal from "@/app/hooks/useGalleryModal";
-import ProfileModal from "./modals/ProfileModal";
 
 interface UserButtonProps {
 currentUser?: SafeUser | null 

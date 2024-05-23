@@ -44,7 +44,7 @@ export default function Sidebar() {
   return (
     
     <div className="fixed top-0 flex h-screen z-50">
-      <div className="flex flex-col items-center w-52 h-full p-10 bg-white  backdrop-blur-full bg drop-shadow-sm rounded-tr-2xl" >
+      <div className="flex flex-col items-center w-52 h-full px-10 pb-10 pt-8 bg-white  backdrop-blur-full bg drop-shadow-sm rounded-tr-2xl" >
         <Logo/>
         <div className="flex flex-col items-center w-full">
         <span className="mb-5 text-[#a2a2a2] text-xs font-light ">Menu</span>

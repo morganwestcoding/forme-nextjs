@@ -11,8 +11,8 @@ const Logo = () => {
           <Image
             alt="ForMe Logo"
             className='hidden md:block mb-8'
-            height="35"
-            width="35"
+            height="32"
+            width="32"
             src="/logos/black.png"
             />
     </Link>
