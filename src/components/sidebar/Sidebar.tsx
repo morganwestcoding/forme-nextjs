@@ -4,9 +4,8 @@
 import { useRouter } from "next/navigation";
 
 import Logo from "../header/Logo";
-import Categories from "../Categories";
+import { categories } from '../Categories';
 import { useState } from "react";
-import Image from "next/image";
 
 export default function Sidebar() {
   const router = useRouter();
@@ -131,7 +130,11 @@ export default function Sidebar() {
   <span className=" text-[#ffffff] text-xs group-hover:text-white font-light ">Default</span>
 
 </li>
-
+{/*<div className="grid grid-cols-4 gap-2">
+              {categories.map((item) => (
+                <div key={item.label} className={`w-5 h-5 rounded-full shadow-sm ${item.color}`} />
+              ))}
+            </div>*/}
            {/* Categories End */}
        </ul>
        </div>

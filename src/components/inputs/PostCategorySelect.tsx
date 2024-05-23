@@ -29,7 +29,7 @@ const PostCategorySelect: React.FC<PostCategorySelectProps> = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {showCategories && 
+     {showCategories && 
       categories.map((category, index) => (
         <div 
           key={category.label} 
