@@ -16,7 +16,8 @@ const MessageModal: React.FC = () => {
   const [messages, setMessages] = useState<string[]>([
     'Hi there!',
     'How are you?',
-    'Let\'s meet up tomorrow.'
+    'Let\'s meet up tomorrow.',
+    'Custom Message'
   ]); // Placeholder messages
 
   const { 
