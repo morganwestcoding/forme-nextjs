@@ -4,9 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "prisma:generate": "prisma generate",
+    "deploy": "npm run build",
+    "postinstall": "prisma generate && npm install --no-save sharp"
   },
   "dependencies": {
     "@date-io/date-fns": "^3.0.0",
