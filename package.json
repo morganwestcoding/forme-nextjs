@@ -9,8 +9,7 @@
     "lint": "next lint",
     "prisma:generate": "prisma generate",
     "deploy": "npm run build",
-    "postinstall": "prisma generate && npm install --no-save sharp",
-    "postbuild": "cp -r node_modules/.prisma node_modules/.prisma/client"
+    "postinstall": "prisma generate && npm install --no-save sharp"
   },
   "dependencies": {
     "@date-io/date-fns": "^3.0.0",
@@ -42,7 +41,6 @@
     "next-auth": "^4.24.5",
     "next-cloudinary": "^5.18.0",
     "next-themes": "^0.2.1",
-    "node": "^21.2.0",
     "query-string": "^8.1.0",
     "react": "^18.2.0",
     "react-date-range": "^2.0.0-alpha.4",
