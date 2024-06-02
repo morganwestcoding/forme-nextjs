@@ -1,0 +1,12 @@
+{
+  "build": {
+    "env": {
+      "PRISMA_QUERY_ENGINE_LIBRARY": "libquery_engine-rhel-openssl-3.0.x.so.node"
+    }
+  },
+  "functions": {
+    "api/*.js": {
+      "runtime": "vercel/nodejs20.x"
+    }
+  }
+}
