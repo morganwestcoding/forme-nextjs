@@ -9,7 +9,7 @@
     "lint": "next lint",
     "prisma:generate": "prisma generate",
     "deploy": "npm run build",
-    "postinstall": "prisma generate && npm install --no-save sharp && npx prisma download --binaryTargets native"
+    "postinstall": "prisma generate && npm install --no-save sharp"
   },
   "dependencies": {
     "@date-io/date-fns": "^3.0.0",
