@@ -47,8 +47,8 @@ export default async function getListings(
       ...listing,
       createdAt: listing.createdAt.toISOString(),
       }));
-
-    return safeListings;
+      console.log("Transformed Listings:", safeListings);
+    return safeListings; 
   } catch (error: any) {
     console.error("Error in getListings:", error.message);
     throw new Error("Failed to fetch listings.");

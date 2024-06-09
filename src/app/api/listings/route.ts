@@ -20,7 +20,6 @@ export async function POST(request: Request) {
     category,
     location,
     services,
-  
   } = body;
 
 
@@ -54,7 +53,7 @@ if (missingFields.length > 0) {
         location,
         userId: currentUser.id,
         services: {
-          create: parsedServices, // Nested write for services
+        create: parsedServices, // Nested write for services
         },
       },
     });
