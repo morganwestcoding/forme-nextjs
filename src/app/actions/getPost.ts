@@ -10,27 +10,30 @@ export interface IPostsParams {
   category?: string;
 }
 
-export default async function getPosts(params: IPostsParams): Promise<SafePost[]> {
-  try {
+export default async function getPosts(params: IPostsParams) {
 
     const { userId, locationValue, startDate, endDate, category } = params;
 
     let query: any = {};
+
     if (userId) query.userId = userId;
+
     if (category) query.category = category;
+
     if (locationValue) query.locationValue = locationValue;
+
     if (startDate && endDate) {
       query.createdAt = { gte: new Date(startDate), lte: new Date(endDate) };
     }
 
-
+    try {
     const posts = await prisma.post.findMany({
       where: query,
       include: { user: true },
       orderBy: { createdAt: 'desc' },
     });
 
-    const safePosts = posts.map((post) => ({
+    return posts.map(post => ({
       ...post,
       createdAt: post.createdAt.toISOString(),
       user: {
@@ -47,8 +50,6 @@ export default async function getPosts(params: IPostsParams): Promise<SafePost[]
       },
     }));
 
-
-    return safePosts;
   } catch (error) {
     console.error("Error in getPosts:", error);
     throw new Error("Failed to fetch posts.");
