@@ -1,25 +1,5 @@
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "./getCurrentUser";
-import { SafeListing, SafeService } from "@/app/types";
-
-{/*interface RawListing {
-  id: string;
-  title: string;
-  description: string;
-  imageSrc: string;
-  createdAt: Date; // Assuming `createdAt` is a Date object in Prisma model
-  category: string;
-  location: string | null;
-  userId: string; // Assuming there's a direct relation to a User model
-  services: Array<{
-    id: string;
-    serviceName: string;
-    price: number;
-    category: string;
-    // Include other fields from your Service model as necessary
-  }>;
-}*/}
-
 
 export default async function getFavoriteListings() {
   try {
