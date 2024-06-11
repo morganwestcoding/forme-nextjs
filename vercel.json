@@ -1,15 +1,14 @@
 {
-    "builds": [
-      {
-        "src": "package.json",
-        "use": "@vercel/node",
-        "config": {
-          "includeFiles": ["node_modules/.prisma/client/libquery_engine-rhel-openssl-3.0.x.so.node"]
-        }
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next",
+      "config": {
+        "includeFiles": ["node_modules/.prisma/client/libquery_engine-rhel-openssl-3.0.x.so.node"]
       }
-    ],
-    "env": {
-      "DATABASE_URL": "@database_url"
     }
+  ],
+  "env": {
+    "DATABASE_URL": "@database_url"
   }
-  
+}
