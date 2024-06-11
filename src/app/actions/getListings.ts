@@ -1,5 +1,4 @@
 import prisma from "@/app/libs/prismadb";
-import { SafeListing } from "@/app/types";
 
 export interface IListingsParams {
   userId?: string;
@@ -7,10 +6,7 @@ export interface IListingsParams {
   category?: string;
 }
 
-export default async function getListings(
-  params: IListingsParams
-) { 
-  try {
+export default async function getListings(params: IListingsParams) { 
     const {
     userId,
     locationValue,
@@ -31,7 +27,7 @@ export default async function getListings(
       query.location = locationValue;
     }
    
-
+    try {
     const listings = await prisma.listing.findMany({
       where: query,
       include: {// Including user details
@@ -43,12 +39,11 @@ export default async function getListings(
     });
 
     // Transform listings to SafeListing[] including all necessary properties
-    const safeListings  = listings.map((listing) => ({
+    return listings.map(listing => ({
       ...listing,
       createdAt: listing.createdAt.toISOString(),
       }));
-      console.log("Transformed Listings:", safeListings);
-    return safeListings; 
+ 
   } catch (error: any) {
     console.error("Error in getListings:", error.message);
     throw new Error("Failed to fetch listings.");

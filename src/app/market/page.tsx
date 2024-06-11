@@ -59,3 +59,4 @@ const Market = async ({ searchParams }: MarketProps) => {
 }
 
 export default Market;
+
