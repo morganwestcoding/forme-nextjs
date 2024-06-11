@@ -1,6 +1,4 @@
 import prisma from "@/app/libs/prismadb";
-import { SafePost } from "@/app/types"; // Ensure this is updated according to your latest type definitions
-
 
 export interface IPostsParams {
   userId?: string;

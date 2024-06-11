@@ -5,14 +5,17 @@ import Share from '@/components/feed/Share';
 import ClientProviders from '@/components/ClientProviders';
 import getCurrentUser from './actions/getCurrentUser';
 import Post from '@/components/feed/Post';
-import getPosts, { IPostsParams }  from './actions/getPost';
 import {categories} from '@/components/Categories';
-import ClientOnly from '@/components/ClientOnly';
+import getPosts, 
+{ IPostsParams }  from './actions/getPost';
 
-export default async function Home() {
+interface PostProps {
+  searchParams: IPostsParams
+}
+
+const Newsfeed = async ({ searchParams }: PostProps) => {
+  const posts = await getPosts(searchParams)
   const currentUser = await getCurrentUser();
-  const searchParams: IPostsParams = {};
-  const posts = await getPosts(searchParams);
 
   return (
     <ClientProviders>
@@ -31,3 +34,4 @@ export default async function Home() {
   );
 };
 
+export default Newsfeed;
