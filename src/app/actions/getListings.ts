@@ -6,7 +6,10 @@ export interface IListingsParams {
   category?: string;
 }
 
-export default async function getListings(params: IListingsParams) { 
+export default async function getListings(
+  params: IListingsParams
+) {
+  try {
     const {
     userId,
     locationValue,
@@ -27,23 +30,24 @@ export default async function getListings(params: IListingsParams) {
       query.location = locationValue;
     }
    
-    try {
+   
     const listings = await prisma.listing.findMany({
       where: query,
-      include: {// Including user details
-        services: true, // Including services
+      include: {
+        services: true, 
       },
       orderBy: {
         createdAt: 'desc',
       },
     });
 
-    // Transform listings to SafeListing[] including all necessary properties
-    return listings.map(listing => ({
+
+    const safeListings = listings.map((listing) => ({
       ...listing,
       createdAt: listing.createdAt.toISOString(),
       }));
  
+    return safeListings;
   } catch (error: any) {
     console.error("Error in getListings:", error.message);
     throw new Error("Failed to fetch listings.");
