@@ -16,11 +16,10 @@ export default async function getFavoriteListings() {
         },
       },
       include: {
-        services: true, // Ensure services are included
+        services: true, 
       },
     });
 
-    // Transform the fetched favorites into SafeListing[]
     const safeFavorites = favorites.map((favorite) => ({
       ...favorite,
       createdAt: favorite.createdAt.toISOString(),

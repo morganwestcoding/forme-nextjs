@@ -16,7 +16,6 @@ export async function POST(request: Request) {
 
     console.log("Received fields:", { content, imageSrc, location, tag, category});
 
-    // Validate required fields
     if (!content || !category) {
         return new Response(`Missing required fields: ${!content ? 'content' : ''} ${!category ? 'category' : ''}`, { status: 400 });
     }

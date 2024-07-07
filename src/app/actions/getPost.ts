@@ -8,8 +8,9 @@ export interface IPostsParams {
   category?: string;
 }
 
-export default async function getPosts(params: IPostsParams) {
-  
+export default async function getPosts(
+  params: IPostsParams
+) {
   try {
     const { userId, locationValue, startDate, endDate, category } = params;
 
@@ -48,6 +49,8 @@ export default async function getPosts(params: IPostsParams) {
         emailVerified: post.user?.emailVerified ? post.user.emailVerified.toISOString() : null,
       },
     }));
+
+    
     return safePosts;
   } catch (error) {
     console.error("Error in getPosts:", error);
