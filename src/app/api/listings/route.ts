@@ -4,7 +4,6 @@ import getCurrentUser from "@/app/actions/getCurrentUser";
 
 export async function POST(request: Request) {
   
-  // Get current user and validate
   const currentUser = await getCurrentUser();
   if (!currentUser) {
     return new Response("Unauthorized", { status: 401 });
@@ -12,7 +11,6 @@ export async function POST(request: Request) {
 
   const body = await request.json();
 
-  // Destructure and validate body content
   const {
     title,
     description,
@@ -26,8 +24,6 @@ export async function POST(request: Request) {
   console.log("Received fields:", { title, description, imageSrc, category, location, services, });
 
 
-
-  // Validate required fields
   const requiredFields = [title, description, imageSrc, category, location, services];
 const missingFields = requiredFields.filter((field) => !field);
 if (missingFields.length > 0) {
@@ -42,7 +38,6 @@ if (missingFields.length > 0) {
     return new Response("Invalid services format", { status: 400 });
   }
 
-  // Create the listing
   try {
     const listing = await prisma.listing.create({
       data: {
