@@ -4,14 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
+    "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "prisma:generate": "prisma generate",
-    "deploy": "npm run build",
-    "postinstall": "prisma generate && npm install --no-save sharp"
+    "lint": "next lint"
   },
   "dependencies": {
+    "@prisma/client": "^5.16.1",
     "@date-io/date-fns": "^3.0.0",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
@@ -57,7 +55,7 @@
     "zustand": "^4.4.7"
   },
   "devDependencies": {
-    "@prisma/client": "^5.16.1",
+    
     "@types/bcrypt": "^5.0.2",
     "@types/bcryptjs": "^2.4.6",
     "@types/leaflet": "^1.9.8",
