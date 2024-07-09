@@ -12,7 +12,7 @@ interface IParams {
   listingId?: string;
 }
 
-export const dynamic = 'force-dynamic'
+export const dynamic = 'force-dynamic';
 
 const ListingPage = async ({ params }: { params: IParams }) => {
 

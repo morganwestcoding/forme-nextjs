@@ -13,7 +13,7 @@ interface IParams {
   userId?: string;
 }
 
-export const dynamic = 'force-dynamic'
+export const dynamic = 'force-dynamic';
   
   const ProfilePage = async ({ params }: { params: IParams }) => {
    

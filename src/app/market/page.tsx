@@ -13,7 +13,7 @@ interface MarketProps {
   searchParams: IListingsParams
 };
 
-export const dynamic = 'force-dynamic'
+export const dynamic = 'force-dynamic';
 
 const Market = async ({ searchParams }: MarketProps) => {
   const listings = await getListings(searchParams);

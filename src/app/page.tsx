@@ -13,6 +13,8 @@ interface PostProps {
   searchParams: IPostsParams
 }
 
+export const dynamic = 'force-dynamic';
+
 const Newsfeed = async ({ searchParams }: PostProps) => {
   const posts = await getPosts(searchParams)
   const currentUser = await getCurrentUser();

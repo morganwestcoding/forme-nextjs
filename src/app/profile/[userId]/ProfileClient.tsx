@@ -12,7 +12,7 @@ interface ProfileClientProps {
   listings: SafeListing[];
 }
 
-export const dynamic = 'force-dynamic'
+export const dynamic = 'force-dynamic';
 
 const ProfileClient: React.FC<ProfileClientProps> = ({ user, posts, listings }) => {
   if (!user) {
