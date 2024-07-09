@@ -13,6 +13,8 @@ interface MarketProps {
   searchParams: IListingsParams
 };
 
+export const dynamic = 'force-dynamic'
+
 const Market = async ({ searchParams }: MarketProps) => {
   const listings = await getListings(searchParams);
   const currentUser = await getCurrentUser();
