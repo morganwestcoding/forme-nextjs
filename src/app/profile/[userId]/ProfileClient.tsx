@@ -12,6 +12,8 @@ interface ProfileClientProps {
   listings: SafeListing[];
 }
 
+export const dynamic = 'force-dynamic'
+
 const ProfileClient: React.FC<ProfileClientProps> = ({ user, posts, listings }) => {
   if (!user) {
     return <div>No user data available</div>; // Handling case when user data is not available
