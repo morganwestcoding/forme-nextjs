@@ -49,11 +49,11 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({ user }) => {
 
             {/* Follow and Message Buttons */}
             <div className="flex justify-center w-full mt-4 gap-1 ">
-              <button className='font-light text-[#717171] rounded-lg text-xs bg-[#ffffff] border p-2 px-8 mr-1 shadow-sm ml-1'>
+              <button className='font-light text-[#717171] rounded-lg text-xs bg-[#ffffff] border p-2.5 px-8 mr-1 shadow-sm ml-1'>
                 Follow
               </button>
             
-              <button className='font-light text-[#717171] rounded-lg text-xs bg-[#ffffff] border p-2 px-6 mr-1 shadow-sm'>
+              <button className='font-light text-[#717171] rounded-lg text-xs bg-[#ffffff] border p-2.5 px-6 mr-1 shadow-sm'>
                 Message
               </button>
 

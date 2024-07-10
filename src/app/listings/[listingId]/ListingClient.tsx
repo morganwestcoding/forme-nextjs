@@ -148,7 +148,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
               <div key={service.id} className="flex justify-between items-center mb-2 text-sm">
                 <span>{service.serviceName} ${service.price}</span>
                 <button
-                  className="bg-white rounded-lg text-sm shadow-sm border text-[#a2a2a2] hover:bg-[#b1dafe] hover:text-white font-light w-24 p-2.5"
+                  className="bg-white rounded-lg text-sm shadow-sm border text-[#a2a2a2] hover:bg-[#b1dafe] hover:text-white font-light w-24 p-1 py-2.5"
                   onClick={() => toggleServiceSelection(service.id)}
                 >
                   {selectedServices.has(service.id) ? "Deselect" : "Select"}

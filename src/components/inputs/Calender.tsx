@@ -1,12 +1,10 @@
 'use client';
 
-import { Calendar as SingleDateCalendar } from 'react-date-range';
-
-import 'react-date-range/dist/styles.css';
-import 'react-date-range/dist/theme/default.css';
+import React, { useState } from 'react';
+import { format, addDays, startOfWeek, isSameDay, isAfter, isBefore } from 'date-fns';
 
 interface CalendarProps {
-  value: Date,
+  value: Date;
   onChange: (date: Date) => void;
   disabledDates?: Date[];
 }
@@ -14,17 +12,60 @@ interface CalendarProps {
 const Calendar: React.FC<CalendarProps> = ({
   value,
   onChange,
-  disabledDates
+  disabledDates = []
 }) => {
-  return ( 
-    <SingleDateCalendar
-color="#262626" // color for the calendar
-date={value} // currently selected date
-onChange={(item) => onChange(item)} // update parent component upon date change
-minDate={new Date()} // minimum date that can be selected
-disabledDates={disabledDates} // dates that cannot be selected
-/>
-   );
-}
- 
+  const [currentDate, setCurrentDate] = useState(value);
+
+  const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const startDate = startOfWeek(currentDate);
+
+  const renderDays = () => {
+    return daysOfWeek.map((day, index) => {
+      const date = addDays(startDate, index);
+      const isSelected = isSameDay(date, value);
+      const isDisabled = disabledDates.some(disabledDate => isSameDay(disabledDate, date)) || isBefore(date, new Date());
+
+      return (
+        <div
+          key={day}
+          className={`flex flex-col items-center p-2 cursor-pointer ${
+            isSelected ? 'bg-black text-white' : ''
+          } ${isDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'}`}
+          onClick={() => !isDisabled && onChange(date)}
+        >
+          <div className="text-sm">{day}</div>
+          <div className="text-lg font-bold">{format(date, 'd')}</div>
+        </div>
+      );
+    });
+  };
+
+  const goToPreviousWeek = () => {
+    setCurrentDate(prevDate => addDays(prevDate, -7));
+  };
+
+  const goToNextWeek = () => {
+    setCurrentDate(prevDate => addDays(prevDate, 7));
+  };
+
+  return (
+    <div className="bg-white rounded-xl border border-neutral-200 overflow-hidden">
+      <div className="flex justify-between items-center p-4 bg-gray-50">
+        <button onClick={goToPreviousWeek} className="text-gray-600 hover:text-gray-800">
+          &lt; Prev
+        </button>
+        <div className="text-lg font-bold">
+          {format(currentDate, 'MMMM yyyy')}
+        </div>
+        <button onClick={goToNextWeek} className="text-gray-600 hover:text-gray-800">
+          Next &gt;
+        </button>
+      </div>
+      <div className="flex justify-between p-4">
+        {renderDays()}
+      </div>
+    </div>
+  );
+};
+
 export default Calendar;

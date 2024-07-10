@@ -37,9 +37,9 @@ const ListingReservation: React.FC<
     <div 
       className="
       bg-white 
-        rounded-xl 
-        border
-      border-neutral-200 
+      
+      
+      
         overflow-hidden
       "
     >
@@ -51,16 +51,18 @@ const ListingReservation: React.FC<
         disabledDates={disabledDates}
         onChange={onChangeDate}
       />
-      <hr />
+  <div className="my-4">
       <PersonTime time={time} onTimeChange={onChangeTime} />
-      <div className="p-4">
+    </div>
+   
+   <div className="mt-4">
         <ModalButton
           disabled={disabled} 
           label="Reserve" 
           onClick={onSubmit}
+          
         />
-      </div>
-      <hr />
+      
       <div 
         className="
           p-4 
@@ -74,6 +76,7 @@ const ListingReservation: React.FC<
       >
         <div>
           Total
+        </div>
         </div>
         <div>
           $ {totalPrice}

@@ -72,7 +72,7 @@ const PersonTime: React.FC<PersonTimeProps> = ({ onTimeChange }) => {
 
   return (
     <div className="flex justify-between">
-      <div className="w-1/2 pr-2 ml-4 mt-4 ">
+      
         <Select
           options={employees}
           value={selectedEmployee}
@@ -82,8 +82,8 @@ const PersonTime: React.FC<PersonTimeProps> = ({ onTimeChange }) => {
           getOptionLabel={(option) => option.label}
           getOptionValue={(option) => option.value}
         />
-      </div>
-      <div className="w-1/2 pl-2 mr-4 mt-4">
+      
+      
         <Select
           options={times}
           value={selectedTime}
@@ -93,7 +93,7 @@ const PersonTime: React.FC<PersonTimeProps> = ({ onTimeChange }) => {
           getOptionLabel={(option) => option.label}
           getOptionValue={(option) => option.value}
         />
-      </div>
+     
     </div>
   );
 };
