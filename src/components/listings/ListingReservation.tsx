@@ -37,15 +37,9 @@ const ListingReservation: React.FC<
     <div 
       className="
       bg-white 
-      
-      
-      
-        overflow-hidden
+      overflow-hidden
       "
     >
-      
-    
-      
       <Calendar
         value={date}
         disabledDates={disabledDates}

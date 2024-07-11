@@ -8,7 +8,7 @@ interface OptionType {
 }
 
 interface PersonTimeProps {
-time: string; // This represents the currently selected time
+  time: string;
   onTimeChange: (time: string) => void; 
 }
 
@@ -47,15 +47,12 @@ const PersonTime: React.FC<PersonTimeProps> = ({ onTimeChange }) => {
     }),
     singleValue: (styles) => ({
       ...styles,
-     
     }),
     input: (styles) => ({
       ...styles,
-     
     }),
     placeholder: (styles) => ({
       ...styles,
-     
     }),
   };
 
@@ -71,8 +68,8 @@ const PersonTime: React.FC<PersonTimeProps> = ({ onTimeChange }) => {
   };
 
   return (
-    <div className="flex justify-between">
-      
+    <div style={{ display: 'flex', gap: '1rem' }}>
+      <div style={{ flex: 1 }}>
         <Select
           options={employees}
           value={selectedEmployee}
@@ -82,8 +79,8 @@ const PersonTime: React.FC<PersonTimeProps> = ({ onTimeChange }) => {
           getOptionLabel={(option) => option.label}
           getOptionValue={(option) => option.value}
         />
-      
-      
+      </div>
+      <div style={{ flex: 1 }}>
         <Select
           options={times}
           value={selectedTime}
@@ -93,7 +90,7 @@ const PersonTime: React.FC<PersonTimeProps> = ({ onTimeChange }) => {
           getOptionLabel={(option) => option.label}
           getOptionValue={(option) => option.value}
         />
-     
+      </div>
     </div>
   );
 };

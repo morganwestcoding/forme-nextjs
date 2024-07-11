@@ -28,13 +28,13 @@ const Calendar: React.FC<CalendarProps> = ({
       return (
         <div
           key={day}
-          className={`flex flex-col items-center p-2 cursor-pointer ${
+          className={`flex flex-col items-center p-2 cursor-pointer rounded-lg ${
             isSelected ? 'bg-black text-white' : ''
           } ${isDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'}`}
           onClick={() => !isDisabled && onChange(date)}
         >
           <div className="text-sm">{day}</div>
-          <div className="text-lg font-bold">{format(date, 'd')}</div>
+          <div className="text-sm font-bold">{format(date, 'd')}</div>
         </div>
       );
     });
@@ -51,13 +51,13 @@ const Calendar: React.FC<CalendarProps> = ({
   return (
     <div className="bg-white rounded-xl border border-neutral-200 overflow-hidden">
       <div className="flex justify-between items-center p-4 bg-gray-50">
-        <button onClick={goToPreviousWeek} className="text-gray-600 hover:text-gray-800">
+        <button onClick={goToPreviousWeek} className="text-gray-600 text-sm hover:text-gray-800">
           &lt; Prev
         </button>
-        <div className="text-lg font-bold">
+        <div className=" font-bold">
           {format(currentDate, 'MMMM yyyy')}
         </div>
-        <button onClick={goToNextWeek} className="text-gray-600 hover:text-gray-800">
+        <button onClick={goToNextWeek} className=" text-sm text-gray-600 hover:text-gray-800">
           Next &gt;
         </button>
       </div>
