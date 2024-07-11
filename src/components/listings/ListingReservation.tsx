@@ -56,26 +56,13 @@ const ListingReservation: React.FC<
           onClick={onSubmit}
           
         />
+    </div>
       
-      <div 
-        className="
-          p-4 
-          flex 
-          flex-row 
-          items-center 
-          justify-between
-          font-semibold
-          text-lg
-        "
-      >
-        <div>
-          Total
-        </div>
-        </div>
-        <div>
-          $ {totalPrice}
-        </div>
+    <div className="p-4 flex flex-row items-center justify-between font-semibold text-lg">
+        <div>Total</div>
+        <div>$ {totalPrice}</div>
       </div>
+     
     </div>
    );
 }
