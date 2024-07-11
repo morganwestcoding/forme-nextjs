@@ -32,27 +32,34 @@ const PersonTime: React.FC<PersonTimeProps> = ({ onTimeChange }) => {
       ...styles,
       backgroundColor: 'transparent',
       borderColor: '#e3e8ef',
-      color: 'white',
       boxShadow: 'none',
       padding: '10px',
+      borderRadius: '0.5rem', // rounded-lg
       '&:hover': {
         borderColor: '#e3e8ef',
       },
     }),
     option: (styles, { isFocused, isSelected }) => ({
       ...styles,
-      backgroundColor: isFocused ? 'grey' : 'white',
-      color: 'white',
+      backgroundColor: isFocused ? '#e2e8f0' : 'white',
+      color: isFocused ? 'white' : '#a2a2a2',
       cursor: 'pointer',
+      '&:hover': {
+        backgroundColor: '#e2e8f0',
+        color: 'white',
+      },
     }),
     singleValue: (styles) => ({
       ...styles,
+      color: '#a2a2a2',
     }),
     input: (styles) => ({
       ...styles,
+      color: '#a2a2a2',
     }),
     placeholder: (styles) => ({
       ...styles,
+      color: '#a2a2a2',
     }),
   };
 
