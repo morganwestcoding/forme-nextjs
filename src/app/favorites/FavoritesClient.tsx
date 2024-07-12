@@ -15,22 +15,18 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
 }) => {
   return (
     <>
-      <Heading
-        title="Favorites"
-        subtitle="List of places you favorited!"
-      />
-      <div className="pt-4 pl-16 mr-20 flex-1">
+      <div className="pt-2 pl-4 mx-24 flex-1">
       <div 
         className="
-          mt-10
-          grid 
-          grid-cols-1 
-          sm:grid-cols-2 
-          md:grid-cols-3 
-          lg:grid-cols-4
-          xl:grid-cols-5
-          2xl:grid-cols-6
-          gap-8
+         pt-6
+      grid 
+      grid-cols-4 
+      sm:grid-cols-2 
+      md:grid-cols-3 
+      lg:grid-cols-4
+      xl:grid-cols-5
+      2xl:grid-cols-6
+      gap-6
         "
       >
         {listings.map((listing: any) => (
