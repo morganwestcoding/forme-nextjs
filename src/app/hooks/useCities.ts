@@ -24,7 +24,7 @@ const useCities = (stateGeonameId: string) => {
 
     const fetchData = async () => {
       try {
-        const response = await axios.get(`https://api.geonames.org/childrenJSON`, {
+        const response = await axios.get(`https://secure.geonames.org/childrenJSON`, {
           params: {
             geonameId: stateGeonameId,
             username: 'slaminmew',
