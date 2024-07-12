@@ -11,6 +11,8 @@ type CityItem = {
   value: string;
 };
 
+
+
 const useCities = (stateGeonameId: string) => {
   const [cities, setCities] = useState<CityItem[]>([]);
 
@@ -22,7 +24,7 @@ const useCities = (stateGeonameId: string) => {
 
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://api.geonames.org/childrenJSON`, {
+        const response = await axios.get(`https://api.geonames.org/childrenJSON`, {
           params: {
             geonameId: stateGeonameId,
             username: 'slaminmew',

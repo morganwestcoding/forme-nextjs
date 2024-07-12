@@ -15,7 +15,7 @@ const useStates = (countryCode: string) => {
 
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://api.geonames.org/childrenJSON`, {
+        const response = await axios.get(`https://api.geonames.org/childrenJSON`, {
           params: {
             geonameId: countryCode,
             username: 'slaminmew',
