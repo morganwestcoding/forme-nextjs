@@ -14,6 +14,8 @@ interface AddListingProps {
   currentUser?: SafeUser | null 
 }
 
+export const dynamic = 'force-dynamic';
+
 const AddListing: React.FC<AddListingProps> = ({
   
 }) => {

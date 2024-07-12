@@ -1,5 +1,6 @@
 'use client';
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import Select, { StylesConfig } from 'react-select';
 import useStates from '@/app/hooks/useStates';
 import useCities from '@/app/hooks/useCities';
@@ -10,28 +11,33 @@ interface LocationSelection {
 }
 
 interface ListLocationSelectProps {
-  onLocationSubmit: (location: string | null) => void; // Update the type
+  onLocationSubmit: (location: string | null) => void;
 }
 
 const ListLocationSelect: React.FC<ListLocationSelectProps> = ({ onLocationSubmit }) => {
-  const [selectedCountry] = useState<string>('6252001'); // Correct country code for the United States
+  const [selectedCountry] = useState<string>('6252001'); // USA
   const [selectedState, setSelectedState] = useState<LocationSelection | null>(null);
   const [selectedCity, setSelectedCity] = useState<LocationSelection | null>(null);
 
   const states = useStates(selectedCountry);
   const cities = useCities(selectedState?.value ?? '');
 
+  useEffect(() => {
+    if (selectedState && selectedCity) {
+      const location = `${selectedCity.label}, ${selectedState.label}`;
+      onLocationSubmit(location);
+    } else {
+      onLocationSubmit(null);
+    }
+  }, [selectedState, selectedCity, onLocationSubmit]);
+
   const handleStateChange = (selectedOption: LocationSelection | null) => {
     setSelectedState(selectedOption);
     setSelectedCity(null); // Reset city when state changes
-    // Pass string value
   };
 
   const handleCityChange = (selectedOption: LocationSelection | null) => {
-
     setSelectedCity(selectedOption);
-    const location = selectedOption ? `${selectedOption.label}, ${selectedState?.label}` : null;
-    onLocationSubmit(location);
   };
 
   const customStyles: StylesConfig<LocationSelection, false> = {
@@ -81,16 +87,16 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({ onLocationSubmi
       </div>
       <Select
         options={cities}
-        value={selectedCity} // Updated to find the corresponding city object
+        value={selectedCity}
         onChange={handleCityChange}
         placeholder="Select City"
         styles={customStyles}
         getOptionLabel={(option) => option.label}
         getOptionValue={(option) => option.value}
+        isDisabled={!selectedState}
       />
     </div>
   );
 };
 
 export default ListLocationSelect;
-
