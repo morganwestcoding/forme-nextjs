@@ -120,7 +120,7 @@ const formattedDate = format(new Date(createdAt), 'PPP'); // Example format: Jan
       
 {/* Storefront */}
 <div className="w-full md:w-11/12 flex flex-col justify-start rounded-2xl shadow-sm bg-[#ffffff] p-0 mx-0 overflow-hidden ml-2 pb-2">
-  <div className="px-6 pt-6 mb-2 text-xl font-bold"> {user.name ? user.name.split(' ')[0] : 'User'}'s Storefronts</div>
+  <div className="px-6 pt-6 mb-2 text-xl font-bold"> {user.name ? user.name.split(' ')[0] : 'User'}&apos;s Storefronts</div>
   <div className="grid grid-cols-4 gap-4 p-4 ml-2">
   {listings.map((listing, index) => (
      <Link key={index} href={`/listings/${listing.id}`} passHref>
