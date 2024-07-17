@@ -4,7 +4,7 @@ import ContentInput from '../inputs/ContentInput';
 import Avatar from '../ui/avatar';
 import { SafeUser } from '@/app/types';
 import axios from 'axios';
-import AttachFileOutlinedIcon from '@mui/icons-material/AttachFileOutlined';
+import Link from 'next/link';
 import PostCategorySelect from '../inputs/PostCategorySelect';
 import AttachmentModal from '../modals/AttachmentModal';
 import useAttachmentModal from '@/app/hooks/useAttachmentModal';
@@ -72,9 +72,11 @@ const Share: React.FC<ShareProps> = ({ currentUser }) => {
   return (
     <div className='w-full h-auto rounded-2xl shadow bg-[#b1dafe] p-6'>
       <div className="flex items-center">
+      <Link href={`/profile/${currentUser?.id}`} passHref>
       <div className='drop-shadow mt-1 '>
       <Avatar src={currentUser?.image ?? undefined} />
       </div>
+      </Link>
         <ContentInput
           currentUser={currentUser}
           content={content}
