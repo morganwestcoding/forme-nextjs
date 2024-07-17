@@ -5,10 +5,8 @@ import { SafeUser } from '@/app/types';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { categories } from "../Categories";
-import TextsmsOutlinedIcon from '@mui/icons-material/TextsmsOutlined';
-import BookmarkBorderRoundedIcon from '@mui/icons-material/BookmarkBorderRounded';
-import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded';
-import MoreHorizRoundedIcon from '@mui/icons-material/MoreHorizRounded';
+import Link from 'next/link'; 
+
 
 interface PostData {
   
@@ -112,9 +110,11 @@ const categoryColors = getColorByCategory(post.category);
       </div>
 
       <div className="flex items-center">
+      <Link href={`/profile/${post.user.id}`} passHref>
         <div className='drop-shadow'>
           <Avatar src={post.user.image ?? undefined} />
           </div>
+      </Link>
         <div className="ml-3 flex flex-col">
           <div className="flex items-center">
             <div className="font-medium pr-1 text-sm text-[#484848]">{post.user.name} &middot;</div>
