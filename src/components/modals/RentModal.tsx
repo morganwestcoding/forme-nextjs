@@ -63,6 +63,9 @@ const RentModal = () => {
       imageSrc: '',
       title: '',
       description: '',
+      phoneNumber: '',  // Add this line
+      website: '',      // Add this line
+      address: '',      // Add this line
     }
   });
 
@@ -232,6 +235,27 @@ const RentModal = () => {
           errors={errors}
           required
         />
+              <Input
+        id="phoneNumber"
+        label="Phone Number"
+        disabled={isLoading}
+        register={register}
+        errors={errors}
+      />
+      <Input
+        id="website"
+        label="Website"
+        disabled={isLoading}
+        register={register}
+        errors={errors}
+      />
+      <Input
+        id="address"
+        label="Address"
+        disabled={isLoading}
+        register={register}
+        errors={errors}
+      />
       </div>
     )
   }

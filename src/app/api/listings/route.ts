@@ -18,10 +18,13 @@ export async function POST(request: Request) {
     category,
     location,
     services,
+    phoneNumber,  
+    website,      
+    address,      
   } = body;
 
 
-  console.log("Received fields:", { title, description, imageSrc, category, location, services, });
+  console.log("Received fields:", { title, description, imageSrc, category, location, services, phoneNumber, website, address });
 
 
   const requiredFields = [title, description, imageSrc, category, location, services];
@@ -50,6 +53,9 @@ if (missingFields.length > 0) {
         services: {
         create: parsedServices, // Nested write for services
         },
+        phoneNumber,  
+        website,      
+        address,      
       },
     });
 

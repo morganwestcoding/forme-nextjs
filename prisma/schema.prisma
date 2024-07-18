@@ -58,6 +58,9 @@ model Listing {
   services      Service[]
   user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   reservations  Reservation[]
+  phoneNumber   String?       // Add this line
+  website       String?       // Add this line
+  address       String?       // Add this line
 }
 
 model Reservation {
