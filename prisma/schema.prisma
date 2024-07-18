@@ -94,6 +94,7 @@ model Post {
   userId    String   @db.ObjectId
   createdAt DateTime @default(now())
   likes     String[] @db.ObjectId // Add this line
+  bookmarks String[] @db.ObjectId  // Add this line
 
   user User @relation(fields: [userId], references: [id])
 

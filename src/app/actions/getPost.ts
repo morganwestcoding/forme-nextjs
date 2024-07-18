@@ -37,6 +37,7 @@ export default async function getPosts(
       ...post,
       createdAt: post.createdAt.toISOString(),
       likes: post.likes || [],
+      bookmarks: post.bookmarks || [],
       user: {
         id: post.user?.id || 'default-id',
         image: post.user?.image || '/default-profile.jpg',
