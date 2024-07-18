@@ -36,6 +36,7 @@ export default async function getPosts(
     const safePosts = posts.map((post) => ({
       ...post,
       createdAt: post.createdAt.toISOString(),
+      likes: post.likes || [],
       user: {
         id: post.user?.id || 'default-id',
         image: post.user?.image || '/default-profile.jpg',

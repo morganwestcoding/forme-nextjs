@@ -51,6 +51,7 @@ export type SafePost = Omit<
   category?: string;
   user: SafeUser;
   imageSrc: string | null;
+  likes: string[]; 
 };
 
 
