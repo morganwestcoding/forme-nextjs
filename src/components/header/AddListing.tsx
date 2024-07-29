@@ -6,9 +6,7 @@ import { MessageSquarePlusIcon } from "lucide-react"
 import { SafeUser } from "@/app/types";
 import useRentModal from "@/app/hooks/useRentModal";
 import { useCallback, useState } from "react";
-import AddRoundedIcon from '@mui/icons-material/AddRounded';
-import useRegisterModal from "@/app/hooks/useRegisterModal";
-import useLoginModal from "@/app/hooks/useLoginModal";
+
 
 interface AddListingProps {
   currentUser?: SafeUser | null 

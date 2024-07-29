@@ -108,9 +108,3 @@ model Category {
   name        String
   description String?
 }
-
-
-model GalleryImage {
-  id        String  @id @default(auto()) @map("_id") @db.ObjectId
-  url       String
-}

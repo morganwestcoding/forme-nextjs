@@ -4,8 +4,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
- 
 @layer base {
   :root {
     --background: 0 1% 66%;
@@ -74,14 +72,16 @@
   * {
     @apply border-border;
   }
-  body {
+  html, body {
     @apply bg-gradient-to-b from-[#D7E1EC] to-[#fcfcfc] text-foreground;
-    min-height: 100vh; /* Ensure at least full viewport height */
+    min-height: 100vh;
     background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
   }
 }
 
-*{
+* {
   margin: 0;
   font-family: 'Inter', sans-serif;
 }
@@ -100,4 +100,14 @@
 .rdrCalendarWrapper {
   font-size: 16px !important;
   width: 100% !important;
+}
+
+#__next {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
 }

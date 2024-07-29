@@ -15,7 +15,6 @@ import useLoginModal from "@/app/hooks/useLoginModal";
 import { SafePost, SafeUser } from "@/app/types";
 import useRentModal from "@/app/hooks/useRentModal";
 import useProfileModal from "@/app/hooks/useProfileModal";
-import useGalleryModal from "@/app/hooks/useGalleryModal";
 
 interface UserButtonProps {
 currentUser?: SafeUser | null 
@@ -30,7 +29,6 @@ const UserButton: React.FC<UserButtonProps> = ({
   const registerModal = useRegisterModal();
   const rentModal = useRentModal();
   const profileModal = useProfileModal();
-  const galleryModal = useGalleryModal();
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -62,7 +60,6 @@ const UserButton: React.FC<UserButtonProps> = ({
     <DropdownMenuItem
     onClick={() => router.push(`/profile/${currentUser.id}`)}>Profile</DropdownMenuItem>
     <DropdownMenuItem onClick={profileModal.onOpen}>Edit Profile</DropdownMenuItem>
-    <DropdownMenuItem onClick={galleryModal.onOpen}>Add Image</DropdownMenuItem>
     <DropdownMenuItem
     onClick={() => router.push('/properties')}>Manage Listings</DropdownMenuItem>
     <DropdownMenuItem

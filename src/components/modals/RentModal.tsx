@@ -48,7 +48,6 @@ const RentModal = () => {
   const { 
     register, 
     handleSubmit,
-    control,
     setValue,
     watch,
     formState: {
@@ -69,12 +68,8 @@ const RentModal = () => {
     }
   });
 
-  const location = watch('location');
   const category = watch('category');
   const imageSrc = watch('imageSrc');
-
-
-
 
   const setCustomValue = (id: string, value: any) => {
     setValue(id, value, {

@@ -8,6 +8,13 @@ import { categories } from "../Categories";
 import Link from 'next/link';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useRouter } from "next/navigation";
 
 
 interface PostData {
@@ -26,13 +33,15 @@ interface PostProps {
   post: PostData;
   currentUser: SafeUser | null; 
   categories: typeof categories;
+  onDelete: (postId: string) => void;
 }
 
 
-const Post: React.FC<PostProps> = ({ post, currentUser,  categories }) => {
+const Post: React.FC<PostProps> = ({ post, currentUser,  categories, onDelete }) => {
   const [formattedDate, setFormattedDate] = useState<string | null>(null);
   const [likes, setLikes] = useState(post.likes);
   const [bookmarks, setBookmarks] = useState(post.bookmarks);
+  const router = useRouter();
 
   useEffect(() => {
     const formatCreatedAt = (createdAt: string) => {
@@ -115,30 +124,37 @@ const handleBookmark = useCallback(async () => {
 
 const isBookmarked = currentUser ? bookmarks.includes(currentUser.id) : false;
 
+const handleDelete = useCallback(async () => {
+  try {
+    await axios.delete(`/api/posts/${post.id}`);
+    onDelete(post.id);
+    toast.success('Post deleted successfully');
+  } catch (error) {
+    toast.error('Failed to delete post');
+  }
+}, [post.id, onDelete]);
+
 
 
   return (
     <div className='w-full h-auto rounded-2xl drop-shadow-sm bg-[#ffffff] p-6 mr-8 my-6 '>
       
-      
-      {/* Heart Button Placeholder at the top right corner */}
       <div className="absolute top-7 right-6">
-        {/* Placeholder for the heart button, replace with actual HeartButton component or icon */}
-        <div 
-      className="
-        relative
-        hover:opacity-80
-        transition
-        cursor-pointer
-      "
-    >
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#a2a2a2">
-    <path d="M13.5 4.5C13.5 3.67157 12.8284 3 12 3C11.1716 3 10.5 3.67157 10.5 4.5C10.5 5.32843 11.1716 6 12 6C12.8284 6 13.5 5.32843 13.5 4.5Z" fill="currentColor" stroke="currentColor" stroke-width="1" />
-    <path d="M13 12C13.5 11.1716 12.8284 10.5 12 10.5C11.1716 10.5 10.5 11.1716 10.5 12C10.5 12.8284 11.1716 13.5 12 13.5C12.8284 13.5 13.5 12.8284 13.5 12Z" fill="currentColor" stroke="currentColor" stroke-width="1" />
-    <path d="M13.5 19.5C13.5 18.6716 12.8284 18 12 18C11.1716 18 10.5 18.6716 10.5 19.5C10.5 20.3284 11.1716 21 12 21C12.8284 21 13.5 20.3284 13.5 19.5Z" fill="currentColor" stroke="currentColor" stroke-width="1" />
-</svg>
-
-    </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#a2a2a2">
+              <path d="M13.5 4.5C13.5 3.67157 12.8284 3 12 3C11.1716 3 10.5 3.67157 10.5 4.5C10.5 5.32843 11.1716 6 12 6C12.8284 6 13.5 5.32843 13.5 4.5Z" fill="currentColor" stroke="currentColor" strokeWidth="1" />
+              <path d="M13 12C13.5 11.1716 12.8284 10.5 12 10.5C11.1716 10.5 10.5 11.1716 10.5 12C10.5 12.8284 11.1716 13.5 12 13.5C12.8284 13.5 13.5 12.8284 13.5 12Z" fill="currentColor" stroke="currentColor" strokeWidth="1" />
+              <path d="M13.5 19.5C13.5 18.6716 12.8284 18 12 18C11.1716 18 10.5 18.6716 10.5 19.5C10.5 20.3284 11.1716 21 12 21C12.8284 21 13.5 20.3284 13.5 19.5Z" fill="currentColor" stroke="currentColor" strokeWidth="1" />
+            </svg>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            {currentUser && currentUser.id === post.user.id && (
+              <DropdownMenuItem onClick={handleDelete}>Delete Post</DropdownMenuItem>
+            )}
+            {/* Add more options here if needed */}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       <div className="flex items-center">

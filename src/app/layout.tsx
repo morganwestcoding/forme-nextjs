@@ -9,7 +9,7 @@ import getCurrentUser from './actions/getCurrentUser';
 import Sidebar from '@/components/sidebar/Sidebar';
 import RentModal from '@/components/modals/RentModal';
 import ProfileModal from '@/components/modals/ProfileModal';
-import GalleryModal from '@/components/modals/GalleryModal';
+import ProfileGalleryModal from '@/components/modals/profileGalleryModal';
 import ClientOnly from '@/components/ClientOnly';
 import ClientProviders from '@/components/ClientProviders';
 import MessageModal from '@/components/modals/MessageModal';
@@ -35,8 +35,8 @@ export default async function RootLayout({
   return (
   <ClientProviders>
     <html lang="en">
-      <body>
-          <div> 
+      <body className={font.className}>
+          <div className='min-h-screen'> 
               <Sidebar /> 
                 <div className="flex-1 ml-52"> 
                   <Header currentUser={currentUser} /> 
@@ -51,7 +51,7 @@ export default async function RootLayout({
         <ProfileModal/>
         <LoginModal/>
         <RegisterModal/>
-        <GalleryModal/> 
+        <ProfileGalleryModal/> 
         <MessageModal/>
       </body>
     </html>
