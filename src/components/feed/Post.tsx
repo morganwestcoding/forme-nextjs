@@ -33,11 +33,10 @@ interface PostProps {
   post: PostData;
   currentUser: SafeUser | null; 
   categories: typeof categories;
-  onDelete: (postId: string) => void;
 }
 
 
-const Post: React.FC<PostProps> = ({ post, currentUser,  categories, onDelete }) => {
+const Post: React.FC<PostProps> = ({ post, currentUser,  categories}) => {
   const [formattedDate, setFormattedDate] = useState<string | null>(null);
   const [likes, setLikes] = useState(post.likes);
   const [bookmarks, setBookmarks] = useState(post.bookmarks);
@@ -124,15 +123,20 @@ const handleBookmark = useCallback(async () => {
 
 const isBookmarked = currentUser ? bookmarks.includes(currentUser.id) : false;
 
-const handleDelete = useCallback(async () => {
+const handleDelete = async () => {
+  if (!currentUser || currentUser.id !== post.user.id) {
+    toast.error('You are not authorized to delete this post');
+    return;
+  }
+
   try {
     await axios.delete(`/api/posts/${post.id}`);
-    onDelete(post.id);
     toast.success('Post deleted successfully');
+    router.refresh(); // This will trigger a refresh of the page data
   } catch (error) {
     toast.error('Failed to delete post');
   }
-}, [post.id, onDelete]);
+};
 
 
 
@@ -148,11 +152,10 @@ const handleDelete = useCallback(async () => {
               <path d="M13.5 19.5C13.5 18.6716 12.8284 18 12 18C11.1716 18 10.5 18.6716 10.5 19.5C10.5 20.3284 11.1716 21 12 21C12.8284 21 13.5 20.3284 13.5 19.5Z" fill="currentColor" stroke="currentColor" strokeWidth="1" />
             </svg>
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
+          <DropdownMenuContent >
             {currentUser && currentUser.id === post.user.id && (
-              <DropdownMenuItem onClick={handleDelete}>Delete Post</DropdownMenuItem>
+              <DropdownMenuItem className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">Delete Post</DropdownMenuItem>
             )}
-            {/* Add more options here if needed */}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

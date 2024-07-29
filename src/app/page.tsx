@@ -25,7 +25,10 @@ const Newsfeed = async ({ searchParams }: PostProps) => {
         <div className="flex-none w-[45%] ml-28 mt-8 mr-1">
           <Share currentUser={currentUser} />
           {posts.map((post) => (
-            <Post key={post.id} post={post} currentUser={currentUser} categories={categories} />
+            <Post key={post.id}
+            post={post}
+            currentUser={currentUser}
+            categories={categories}/>
           ))}
         </div>
         <div className="flex-grow w-[55%] ml-4">
