@@ -73,11 +73,8 @@
     @apply border-border;
   }
   html, body {
-    @apply bg-gradient-to-b from-[#D7E1EC] to-[#fcfcfc] text-foreground;
+    @apply text-foreground bg-[#D7E1EC] ;
     min-height: 100vh;
-    background-attachment: fixed;
-    background-repeat: no-repeat;
-    background-size: cover;
   }
 }
 

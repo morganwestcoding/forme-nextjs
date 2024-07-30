@@ -212,7 +212,7 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
           </div>
         )}
 
-        <div className="bottom-0 left-0 flex space-x-4 p-2 -ml-2 -mb-3 mt-1">
+        <div className="bottom-0 left-0 flex space-x-2 p-2 -ml-2 -mb-3 mt-1">
           <div className="flex items-center justify-center bg-[#ffffff] rounded-full p-3 cursor-pointer shadow-sm border">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={16} height={16} color={"#a2a2a2"} fill={"none"}>
               <path d="M8 13.5H16M8 8.5H12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />

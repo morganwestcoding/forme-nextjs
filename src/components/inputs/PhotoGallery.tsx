@@ -20,27 +20,9 @@ const PhotoGallery: React.FC<PhotoGalleryProps> = ({ images, onDeleteImage  }) =
   };
 
   return (
-    <div className="w-full md:w-11/12 bg-white rounded-2xl shadow-sm overflow-hidden mx-3 md:mr-16 md:ml-2 pb-6">
+    <div className="w-full md:w-11/12 bg-white rounded-2xl shadow-sm overflow-hidden mx-3 md:mr-16 md:ml-2 pb-16 relative">
       <div className="px-8 md:px-6 pt-6 flex justify-between items-center">
         <h2 className="text-xl font-bold">Gallery</h2>
-        <div className="flex items-center space-x-2">
-        <AddImageButton/>
-        <DropdownMenu>
-            <DropdownMenuTrigger>
-              <button className="p-2 rounded-full hover:bg-gray-100">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#a2a2a2">
-                  <path d="M13.5 4.5C13.5 3.67157 12.8284 3 12 3C11.1716 3 10.5 3.67157 10.5 4.5C10.5 5.32843 11.1716 6 12 6C12.8284 6 13.5 5.32843 13.5 4.5Z" fill="currentColor" stroke="currentColor" strokeWidth="1" />
-                  <path d="M13 12C13.5 11.1716 12.8284 10.5 12 10.5C11.1716 10.5 10.5 11.1716 10.5 12C10.5 12.8284 11.1716 13.5 12 13.5C12.8284 13.5 13.5 12.8284 13.5 12Z" fill="currentColor" stroke="currentColor" strokeWidth="1" />
-                  <path d="M13.5 19.5C13.5 18.6716 12.8284 18 12 18C11.1716 18 10.5 18.6716 10.5 19.5C10.5 20.3284 11.1716 21 12 21C12.8284 21 13.5 20.3284 13.5 19.5Z" fill="currentColor" stroke="currentColor" strokeWidth="1" />
-                </svg>
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem onClick={handleAddImage}>Add Image</DropdownMenuItem>
-              <DropdownMenuItem onClick={onDeleteImage}>Delete Image</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
       </div>
       <div className="px-8 md:px-6 pb-2">
       </div>
@@ -58,6 +40,16 @@ const PhotoGallery: React.FC<PhotoGalleryProps> = ({ images, onDeleteImage  }) =
             </div>
           </div>
         ))}
+      </div>
+      <div className="absolute bottom-1 left-6 flex space-x-2 mb-2">
+        <AddImageButton />
+        <div 
+          className="flex items-center justify-center bg-[#ffffff] rounded-full p-3 cursor-pointer shadow-sm border"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" color="#a2a2a2" fill="none">
+            <path d="M3 12C3 11.4188 3 11.1282 3.0575 10.8897C3.21354 10.2427 3.6684 9.73726 4.25074 9.56389C4.46534 9.5 4.72689 9.5 5.25 9.5H18.75C19.2731 9.5 19.5347 9.5 19.7493 9.56389C20.3316 9.73726 20.7865 10.2427 20.9425 10.8897C21 11.1282 21 11.4188 21 12C21 12.5812 21 12.8718 20.9425 13.1103C20.7865 13.7573 20.3316 14.2627 19.7493 14.4361C19.5347 14.5 19.2731 14.5 18.75 14.5H5.25C4.72689 14.5 4.46534 14.5 4.25074 14.4361C3.6684 14.2627 3.21354 13.7573 3.0575 13.1103C3 12.8718 3 12.5812 3 12Z" stroke="currentColor" strokeWidth="1.5" />
+          </svg>
+        </div>
       </div>
     </div>
   );
