@@ -20,7 +20,7 @@ const PhotoGallery: React.FC<PhotoGalleryProps> = ({ images, onDeleteImage  }) =
   };
 
   return (
-    <div className="w-full md:w-11/12 bg-white rounded-2xl shadow-sm overflow-hidden mx-3 md:mr-16 md:ml-2 pb-16 relative">
+    <div className="w-full md:w-11/12 bg-white rounded-2xl shadow-sm overflow-hidden mx-3 md:mr-16 md:ml-2 pb-[4.5rem] relative">
       <div className="px-8 md:px-6 pt-6 flex justify-between items-center">
         <h2 className="text-xl font-bold">Gallery</h2>
       </div>
@@ -41,7 +41,7 @@ const PhotoGallery: React.FC<PhotoGalleryProps> = ({ images, onDeleteImage  }) =
           </div>
         ))}
       </div>
-      <div className="absolute bottom-1 left-6 flex space-x-2 mb-2">
+      <div className="absolute bottom-1 left-6 flex space-x-2 mb-3">
         <AddImageButton />
         <div 
           className="flex items-center justify-center bg-[#ffffff] rounded-full p-3 cursor-pointer shadow-sm border"
