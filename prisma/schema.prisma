@@ -24,7 +24,8 @@ model User {
   accounts       Account[]
   bio            String
   imageSrc       String?      
-  location       String?  
+  location       String?
+  galleryImages  String[]
 }
 
 model Account {

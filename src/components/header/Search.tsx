@@ -13,7 +13,7 @@ function Search() {
             <path d="M16 9C16 5.13401 12.866 2 9 2C5.13401 2 2 5.13401 2 9C2 12.866 5.13401 16 9 16C12.866 16 16 12.866 16 9Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
           </svg>
         </span>
-        <input type="text" className="w-64 text-sm p-2.5 pl-10 pr-12 backdrop-blur-full bg-[#e2e8f0] shadow-sm border border-[#FFFFFF] rounded-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:outline-none focus:ring focus:ring-opacity-40 focus:ring-blue-300 placeholder-white" placeholder="Search" />
+        <input type="text" className="w-64 text-sm p-2.5 pl-10 pr-12 bg-transparent shadow-sm border border-[#FFFFFF] rounded-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:outline-none focus:ring focus:ring-opacity-40 focus:ring-blue-300 placeholder-white" placeholder="Search" />
       </div>
     </div>
   );

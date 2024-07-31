@@ -24,7 +24,7 @@ const Header: React.FC<HeaderProps> = ({
                     <Search />
                     <Filter />
                   </div>
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-3">
                   <AddListing/>
                   <CreateChatButton />
                   <Notification/>

@@ -69,8 +69,12 @@ const ProfileGalleryModal = () => {
     }
     
     setIsLoading(true);
-
-    axios.post('/api/gallery', data)
+    
+    axios.post('/api/profile', {
+      action: 'addGalleryImage',
+      galleryImage: data.imageSrc,
+      caption: data.caption
+    })
     .then(() => {
       toast.success('Image added successfully!');
       router.refresh();
@@ -84,6 +88,8 @@ const ProfileGalleryModal = () => {
     .finally(() => {
       setIsLoading(false);
     })
+
+   
   }
 
   const actionLabel = useMemo(() => {

@@ -29,7 +29,7 @@ const articles = [
 export default function Rightbar() {
   const router = useRouter();
     return (
-      <div className="flex flex-col justify-end bg-transparent  gap-6 pr-24 h-auto mt-8">
+      <div className="flex flex-col justify-end bg-transparent  gap-3 pr-24 h-auto mt-8">
         <div className="w-full rounded-2xl drop-shadow-sm bg-[#ffffff] p-6 relative">
           <div className="text-lg font-bold mb-3">Subscribe today
             <div className="text-sm font-normal">Subscribe to unlock new features and if eligible, receive a share of ad&apos;s revenue.</div>

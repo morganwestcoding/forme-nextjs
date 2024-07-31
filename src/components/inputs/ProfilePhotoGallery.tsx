@@ -1,22 +1,36 @@
 'use client';
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
-import { format } from 'date-fns';
 import useProfileGalleryModal from '@/app/hooks/useProfileGalleryModal';
-import { DropdownMenu, DropdownMenuTrigger,DropdownMenuContent, DropdownMenuItem } from '../ui/dropdown-menu';
 import AddImageButton from './AddGalleryImage';
-import getCurrentUser from '@/app/actions/getCurrentUser';
+import { SafeUser } from '@/app/types';
+import axios from 'axios';
 
-interface PhotoGalleryProps {
-  images: string[];
-  onDeleteImage?: () => void;
+interface ProfilePhotoGalleryProps {
+  currentUser: SafeUser | null;
 }
 
-const PhotoGallery: React.FC<PhotoGalleryProps> = ({ images, onDeleteImage  }) => {
+const ProfilePhotoGallery: React.FC<ProfilePhotoGalleryProps> = ({ currentUser }) => {
+  const [images, setImages] = useState<string[]>([]);
   const profileGalleryModal = useProfileGalleryModal();
 
-  const handleAddImage = () => {
-    profileGalleryModal.onOpen();
+  useEffect(() => {
+    if (currentUser && currentUser.galleryImages) {
+      setImages(currentUser.galleryImages);
+    }
+  }, [currentUser]);
+
+  const handleAddImage = useCallback((newImage: string) => {
+    setImages(prevImages => [newImage, ...prevImages]);
+  }, []);
+
+  const handleDeleteImage = async (index: number) => {
+    try {
+      await axios.delete(`/api/profile?imageIndex=${index}`);
+      setImages(prevImages => prevImages.filter((_, i) => i !== index));
+    } catch (error) {
+      console.error('Failed to delete image:', error);
+    }
   };
 
   return (
@@ -24,10 +38,8 @@ const PhotoGallery: React.FC<PhotoGalleryProps> = ({ images, onDeleteImage  }) =
       <div className="px-8 md:px-6 pt-6 flex justify-between items-center">
         <h2 className="text-xl font-bold">Gallery</h2>
       </div>
-      <div className="px-8 md:px-6 pb-2">
-      </div>
       <div className="grid grid-cols-4 gap-2 px-8 md:px-6 max-w-2xl mx-auto">
-        {images.slice(0, 9).map((image, index) => (
+        {images.map((image, index) => (
           <div key={index} className={`relative ${index === 0 ? 'col-span-2 row-span-2' : ''}`}>
             <div className="aspect-w-1 aspect-h-1 w-full">
               <Image
@@ -38,11 +50,17 @@ const PhotoGallery: React.FC<PhotoGalleryProps> = ({ images, onDeleteImage  }) =
                 className="rounded-lg"
               />
             </div>
+            <button 
+              onClick={() => handleDeleteImage(index)}
+              className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1"
+            >
+              X
+            </button>
           </div>
         ))}
       </div>
-      <div className="absolute bottom-1 left-6 flex space-x-2 mb-3">
-        <AddImageButton />
+      <div className="absolute bottom-1 left-6 flex space-x-3 mb-3">
+        <AddImageButton currentUser={currentUser} onImageAdded={handleAddImage} />
         <div 
           className="flex items-center justify-center bg-[#ffffff] rounded-full p-3 cursor-pointer shadow-sm border"
         >
@@ -55,4 +73,4 @@ const PhotoGallery: React.FC<PhotoGalleryProps> = ({ images, onDeleteImage  }) =
   );
 };
 
-export default PhotoGallery;
+export default ProfilePhotoGallery;

@@ -12,7 +12,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({ user }) => {
   const { name, imageSrc, image } = user;
   
   return (
-    <div className="flex justify-between w-full mt-8 px-20">
+    <div className="flex justify-between w-full mt-8 px-20 mb-2">
       <div className="w-[3.1%]"></div>
       <div className="relative text-white text-center h-56 py-8 w-full flex justify-center items-center">
         <Image src={imageSrc || "/assets/hero-background.jpeg"}

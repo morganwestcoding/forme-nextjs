@@ -3,7 +3,7 @@ import {SafeListing, SafeUser} from '@/app/types';
 import Link from 'next/link';
 import Image from 'next/image';
 import format from 'date-fns/format';
-import PhotoGallery from '../inputs/PhotoGallery'
+import ProfilePhotoGallery from '../inputs/ProfilePhotoGallery'
 
 
 
@@ -29,9 +29,9 @@ const { bio, createdAt, location } = user;
 
 const formattedDate = format(new Date(createdAt), 'PPP'); // Example format: Jan 1, 2020
     return (
-      <div className="flex flex-col justify-end bg-transparent  gap-6 pr-16 h-auto mt-6">
+      <div className="flex flex-col justify-end bg-transparent  gap-3 pr-16 h-auto mt-4">
          {/* Adjusted User Information Div to use Flex Grow to fill available space */}
-         <div className="flex flex-col justify-between w-full md:w-11/12 rounded-2xl shadow-sm bg-[#ffffff] px-8 md:px-6 pt-6 pb-6 mx-3 md:mr-16 md:ml-2 relative min-h-[128px]">
+         <div className="flex flex-col justify-between w-full md:w-11/12 rounded-2xl shadow-sm bg-[#ffffff] px-8 md:px-6 pt-6 pb-5 mx-3 md:mr-16 md:ml-2 relative min-h-[128px]">
           <div className="text-xl font-bold">About Me
             <div className="text-sm font-normal flex-grow">
               <p className="py-2 pb-2">
@@ -41,7 +41,7 @@ const formattedDate = format(new Date(createdAt), 'PPP'); // Example format: Jan
               <ul>
                 
              {/* Adjusted list items to include flex layout for icon and text alignment */}
-             <li className="flex items-center pb-2 pt-2 rounded-lg shadow-sm bg-white border px-2 w-full mb-2"> 
+             <li className="flex items-center pb-2 pt-2 rounded-lg shadow-sm bg-white border px-2 w-full mb-3"> 
               <div className="flex items-center justify-center p-1  cursor-pointer">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="19" height="19" color="#a2a2a2" fill="none">
@@ -67,7 +67,7 @@ const formattedDate = format(new Date(createdAt), 'PPP'); // Example format: Jan
           </div>
         </div>
 
-<PhotoGallery images={placeholderImages}/>
+<ProfilePhotoGallery currentUser={user}/>
       
 {/* Storefront */}
 <div className="w-full md:w-11/12 flex flex-col justify-start rounded-2xl shadow-sm bg-[#ffffff] p-0 mx-3 md:mr-16 md:ml-2 overflow-hidden pb-6">
