@@ -36,7 +36,7 @@ const ProfilePhotoGallery: React.FC<ProfilePhotoGalleryProps> = ({ currentUser }
   return (
     <div className="w-full md:w-11/12 bg-white rounded-2xl shadow-sm overflow-hidden mx-3 md:mr-16 md:ml-2 pb-[4.5rem] relative">
       <div className="px-8 md:px-6 pt-6 flex justify-between items-center">
-        <h2 className="text-xl font-bold">Gallery</h2>
+        <h2 className="text-xl font-bold mb-3">Gallery</h2>
       </div>
       <div className="grid grid-cols-4 gap-2 px-8 md:px-6 max-w-2xl mx-auto">
         {images.map((image, index) => (
@@ -50,12 +50,12 @@ const ProfilePhotoGallery: React.FC<ProfilePhotoGalleryProps> = ({ currentUser }
                 className="rounded-lg"
               />
             </div>
-            <button 
+            {/*<button 
               onClick={() => handleDeleteImage(index)}
               className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1"
             >
               X
-            </button>
+            </button>*/}
           </div>
         ))}
       </div>
