@@ -49,6 +49,7 @@ export default async function getPosts(
         createdAt: post.user?.createdAt.toISOString() || new Date().toISOString(),
         updatedAt: post.user?.updatedAt.toISOString() || new Date().toISOString(),
         emailVerified: post.user?.emailVerified ? post.user.emailVerified.toISOString() : null,
+        galleryImages: post.user?.galleryImages || [],
       },
     }));
 
