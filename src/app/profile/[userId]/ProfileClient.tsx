@@ -7,6 +7,7 @@ import { categories } from '@/components/Categories';
 import ProfileRightbar from '@/components/rightbar/ProfileRightBar';
 
 interface ProfileClientProps {
+  currentUser: SafeUser | null;
   posts: SafePost[];
   user: SafeUser;
   listings: SafeListing[];
@@ -14,13 +15,13 @@ interface ProfileClientProps {
 
 export const dynamic = 'force-dynamic';
 
-const ProfileClient: React.FC<ProfileClientProps> = ({ user, posts, listings }) => {
+const ProfileClient: React.FC<ProfileClientProps> = ({ user, posts, listings, currentUser }) => {
   if (!user) {
     return <div>No user data available</div>; // Handling case when user data is not available
   }
   return (
     <div>
-       <ProfileHead user={user} />
+       <ProfileHead user={user} currentUser={currentUser} />
       <div className="flex w-full">
         <div className="flex-none w-[45%] ml-28">
           {/* Posts Mapping */}

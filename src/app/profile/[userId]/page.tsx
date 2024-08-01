@@ -5,6 +5,7 @@ import getProfileById from '@/app/actions/getProfileById';
 import getListings from '@/app/actions/getListings';
 import getPosts from '@/app/actions/getPost';
 import ClientOnly from '@/components/ClientOnly';
+import getCurrentUser from '@/app/actions/getCurrentUser';
  
 interface IParams {
   userId?: string;
@@ -13,7 +14,7 @@ interface IParams {
 export const dynamic = 'force-dynamic';
   
   const ProfilePage = async ({ params }: { params: IParams }) => {
-   
+    const currentUser = await getCurrentUser();
     const user = await getProfileById(params);
     const listings = await getListings(params); 
     const posts = await getPosts(params);
@@ -32,6 +33,7 @@ export const dynamic = 'force-dynamic';
       <ProfileClient
         posts={posts}
         listings={listings}
+        currentUser={currentUser}
         user={user} 
       />
     </ClientOnly>

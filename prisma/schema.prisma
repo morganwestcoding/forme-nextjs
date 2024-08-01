@@ -26,6 +26,8 @@ model User {
   imageSrc       String?      
   location       String?
   galleryImages  String[]
+  following    String[]      @db.ObjectId
+  followers    String[]      @db.ObjectId
 }
 
 model Account {

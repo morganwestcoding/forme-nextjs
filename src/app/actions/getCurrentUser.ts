@@ -33,7 +33,9 @@ export default async function getCurrentUser() {
       location: currentUser.location,
       image: currentUser.image,
       imageSrc: currentUser.imageSrc,
-      galleryImages: currentUser.galleryImages || [], 
+      galleryImages: currentUser.galleryImages || [],
+      following: currentUser.following || [],  // Add this line
+      followers: currentUser.followers || [],  // Add this line
     };
   } catch (error: any) {
     return null;

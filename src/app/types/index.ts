@@ -40,7 +40,9 @@ export type SafeUser = Omit<
   imageSrc?: string | null;
   bio: string;
   location?: string | null;
-  galleryImages?: string[]; 
+  galleryImages?: string[];
+  following: string[];
+  followers: string[]; 
 };
 
 
