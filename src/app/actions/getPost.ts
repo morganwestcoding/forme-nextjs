@@ -50,6 +50,8 @@ export default async function getPosts(
         updatedAt: post.user?.updatedAt.toISOString() || new Date().toISOString(),
         emailVerified: post.user?.emailVerified ? post.user.emailVerified.toISOString() : null,
         galleryImages: post.user?.galleryImages || [],
+        following: post.user.following || [],
+        followers: post.user.followers || [],
       },
     }));
 

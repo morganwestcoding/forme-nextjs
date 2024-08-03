@@ -25,6 +25,7 @@ interface PostData {
   location?: string | null;
   likes: string[];
   bookmarks: string[];
+  
 }
 
 interface PostProps {
