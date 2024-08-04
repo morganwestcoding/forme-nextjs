@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { format, addDays, startOfWeek, isSameDay, isAfter, isBefore } from 'date-fns';
+import { format, addMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth } from 'date-fns';
 
 interface CalendarProps {
   value: Date;
@@ -14,59 +14,70 @@ const Calendar: React.FC<CalendarProps> = ({
   onChange,
   disabledDates = []
 }) => {
-  const [currentDate, setCurrentDate] = useState(value);
+  const [currentMonth, setCurrentMonth] = useState(startOfMonth(value));
 
-  const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  const startDate = startOfWeek(currentDate);
+  const daysOfWeek = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
 
   const renderDays = () => {
-    return daysOfWeek.map((day, index) => {
-      const date = addDays(startDate, index);
+    const monthStart = startOfMonth(currentMonth);
+    const monthEnd = endOfMonth(monthStart);
+    const dateRange = eachDayOfInterval({ start: monthStart, end: monthEnd });
+
+    return dateRange.map((date, index) => {
       const isSelected = isSameDay(date, value);
-      const isDisabled = disabledDates.some(disabledDate => isSameDay(disabledDate, date)) || isBefore(date, new Date());
+      const isDisabled = disabledDates.some(disabledDate => isSameDay(disabledDate, date));
+      const isCurrentMonth = isSameMonth(date, currentMonth);
 
       return (
         <div
-          key={day}
-          className={`flex flex-col items-center p-2 cursor-pointer rounded-lg ${
-            isSelected ? 'bg-[#b1dafe] text-white' : ''
-          } ${isDisabled ? ' cursor-not-allowed' : 'hover:bg-gray-100'}`}
+          key={index}
+          className={`flex justify-center items-center p-2 cursor-pointer rounded-lg ${
+            isSelected ? 'bg-black text-white' : ''
+          } ${!isCurrentMonth ? 'text-gray-300' : ''} ${isDisabled ? 'cursor-not-allowed' : 'hover:bg-gray-100'}`}
           onClick={() => !isDisabled && onChange(date)}
         >
-          <div className="text-sm">{day}</div>
-          <div className="text-sm font-bold">{format(date, 'd')}</div>
+          <div className="text-sm">{format(date, 'd')}</div>
         </div>
       );
     });
   };
 
-  const goToPreviousWeek = () => {
-    setCurrentDate(prevDate => addDays(prevDate, -7));
+  const goToPreviousMonth = () => {
+    setCurrentMonth(prevMonth => addMonths(prevMonth, -1));
   };
 
-  const goToNextWeek = () => {
-    setCurrentDate(prevDate => addDays(prevDate, 7));
+  const goToNextMonth = () => {
+    setCurrentMonth(prevMonth => addMonths(prevMonth, 1));
   };
 
   return (
-    <div className="bg-white rounded-xl border border-neutral-200 overflow-hidden">
-      <div className="flex justify-between items-center p-4 bg-gray-50">
-        <button onClick={goToPreviousWeek} className="text-gray-600 text-sm hover:text-gray-800">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#000000" fill="none">
-    <path d="M15 6C15 6 9.00001 10.4189 9 12C8.99999 13.5812 15 18 15 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-</svg> Prev
+    <div className="bg-white rounded-2xl shadow-sm overflow-hidden w-full max-w-4xl mx-auto border">
+      <div className="flex justify-between items-center p-4 pb-2 md:p-6 md:pb-3">
+        <button onClick={goToPreviousMonth} className="p-2 rounded-lg border bg-white">
+          {'<'}
         </button>
-        <div className=" font-bold">
-          {format(currentDate, 'MMMM yyyy')}
+        <div className="text-lg md:text-xl font-semibold">
+          {format(currentMonth, 'MMMM yyyy')}
         </div>
-        <button onClick={goToNextWeek} className=" text-sm text-gray-600 hover:text-gray-800">
-          Next <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#000000" fill="none">
-    <path d="M9.00005 6C9.00005 6 15 10.4189 15 12C15 13.5812 9 18 9 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-</svg>
+        <button onClick={goToNextMonth} className="p-2 rounded-lg border bg-white">
+          {'>'}
         </button>
       </div>
-      <div className="flex justify-between p-4">
+      <div className="grid grid-cols-7 gap-1 px-4 pt-2 pb-2 md:px-6 md:pt-3 md:pb-3">
+        {daysOfWeek.map(day => (
+          <div key={day} className="text-center text-gray-400 text-sm md:text-base mb-1">
+            {day}
+          </div>
+        ))}
         {renderDays()}
+      </div>
+      <div className="flex justify-between p-4 pt-2 md:p-6 md:pt-3">
+        <button className="px-4 py-2 rounded-lg border border-gray-300 text-gray-600">
+          Cancel
+        </button>
+        <button className="px-4 py-2 rounded-lg bg-black text-white">
+          Apply
+        </button>
       </div>
     </div>
   );

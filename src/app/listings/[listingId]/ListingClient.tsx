@@ -140,6 +140,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
               description={listing.description}
               location={listing.location || "Default Location"}
               services={listing.services} 
+              currentUser={currentUser} 
             />
        <div className="rounded-2xl shadow-sm bg-[#ffffff] px-6 -mt-4">
             <h3 className="font-bold mb-2 mt-2">Services</h3>
