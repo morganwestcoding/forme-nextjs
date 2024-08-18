@@ -2,17 +2,20 @@
 
 import React, { useState } from 'react';
 import { format, addMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth } from 'date-fns';
+import PersonTime from '../listings/PersonTime'; // Make sure to import the PersonTime component
 
 interface CalendarProps {
   value: Date;
   onChange: (date: Date) => void;
   disabledDates?: Date[];
+  onTimeChange: (time: string) => void; // Add this prop
 }
 
 const Calendar: React.FC<CalendarProps> = ({
   value,
   onChange,
-  disabledDates = []
+  disabledDates = [],
+  onTimeChange // Add this prop
 }) => {
   const [currentMonth, setCurrentMonth] = useState(startOfMonth(value));
 
@@ -56,7 +59,7 @@ const Calendar: React.FC<CalendarProps> = ({
         <button onClick={goToPreviousMonth} className="p-2 rounded-lg border bg-white">
           {'<'}
         </button>
-        <div className="text-lg md:text-xl font-semibold">
+        <div className="text-lg md:text-lg font-semibold">
           {format(currentMonth, 'MMMM yyyy')}
         </div>
         <button onClick={goToNextMonth} className="p-2 rounded-lg border bg-white">
@@ -70,14 +73,6 @@ const Calendar: React.FC<CalendarProps> = ({
           </div>
         ))}
         {renderDays()}
-      </div>
-      <div className="flex justify-between p-4 pt-2 md:p-6 md:pt-3">
-        <button className="px-4 py-2 rounded-lg border border-gray-300 text-gray-600">
-          Cancel
-        </button>
-        <button className="px-4 py-2 rounded-lg bg-black text-white">
-          Apply
-        </button>
       </div>
     </div>
   );

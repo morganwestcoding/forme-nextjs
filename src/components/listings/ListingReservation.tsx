@@ -44,10 +44,9 @@ const ListingReservation: React.FC<
         value={date}
         disabledDates={disabledDates}
         onChange={onChangeDate}
+        onTimeChange={onChangeTime}
+
       />
-  <div className="my-4">
-      <PersonTime time={time} onTimeChange={onChangeTime} />
-    </div>
    
    <div className="mt-4">
         <ModalButton

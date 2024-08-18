@@ -51,7 +51,7 @@ if (missingFields.length > 0) {
         location,
         userId: currentUser.id,
         services: {
-        create: parsedServices, // Nested write for services
+        create: parsedServices, 
         },
         phoneNumber,  
         website,      

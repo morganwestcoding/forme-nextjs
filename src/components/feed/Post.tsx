@@ -158,8 +158,9 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
   }
 
   return (
-    <div className='w-full h-auto rounded-2xl drop-shadow-sm bg-[#ffffff] p-6 mr-8 my-4 relative'>
-      
+    <div className='w-full h-auto rounded-2xl drop-shadow-sm bg-[#ffffff] p-6 mr-8 my-4 relative'
+    >
+     
       <div className="absolute top-7 right-6" >
         <DropdownMenu>
           <DropdownMenuTrigger>
