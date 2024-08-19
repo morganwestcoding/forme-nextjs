@@ -30,13 +30,13 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
                 </span>
               </div>
             </div>
-            <p className="text-sm text-gray-600 mb-4">{location}</p>
+            <p className="text-sm text-gray-600 mb-4"><i>{location}</i></p>
             <p className="text-sm text-gray-700 mb-6 line-clamp-3 overflow-hidden">
               {description}
             </p>
           </div>
           <div className="w-1/3 flex items-start justify-end">
-            <div className="w-36 h-36 relative">
+            <div className="w-32 h-32 relative shadow rounded-lg">
               <Image 
                 src={imageSrc || "/assets/default-listing.jpg"}
                 layout="fill" 

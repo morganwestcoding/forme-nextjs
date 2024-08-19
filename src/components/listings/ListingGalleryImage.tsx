@@ -57,21 +57,22 @@ const ListingGalleryImage: React.FC<ListingGalleryImageProps> = ({ listing, curr
 
   return (
     <div className="w-full pl-4 pr-[1.5%]">
-      <div className="bg-white rounded-2xl shadow-sm overflow-hidden relative">
+      <div className="bg-white rounded-2xl shadow-sm overflow-hidden relative pb-[4.5rem]">
         <div className="px-6 pt-6 flex justify-between items-center">
+          <h2 className="text-xl font-bold mb-3">Gallery</h2>
         </div>
-        <div className="grid grid-cols-4 gap-2 px-6 pb-6">
-          {images.map((image, index) => (
-            <div key={index} className={`relative ${index === 0 ? 'col-span-2 row-span-2' : ''}`}>
-              <div className="aspect-w-1 aspect-h-1 w-full">
-                <Image
-                  src={image}
-                  layout="fill"
-                  objectFit="cover"
-                  alt={`Gallery image ${index + 1}`}
-                  className="rounded-lg"
-                />
-              </div>
+        <div className="grid grid-cols-4 gap-2 px-6">
+  {images.map((image, index) => (
+    <div key={index} className="relative">
+      <div className="aspect-w-1 aspect-h-1 w-full">
+        <Image
+          src={image}
+          layout="fill"
+          objectFit="cover"
+          alt={`Gallery image ${index + 1}`}
+          className="rounded-lg"
+        />
+      </div>
               {isEditMode && (
                 <button 
                   onClick={() => handleDeleteImage(index)}
@@ -86,7 +87,7 @@ const ListingGalleryImage: React.FC<ListingGalleryImageProps> = ({ listing, curr
           ))}
         </div>
         {currentUser?.id === listing?.userId && (
-          <div className="absolute bottom-6 left-6 flex space-x-3">
+          <div className="absolute bottom-1 left-6 flex space-x-3 mb-3">
             <AddListingImageButton listing={listing} onImageAdded={handleAddImage} />
             <div 
               onClick={toggleEditMode}
