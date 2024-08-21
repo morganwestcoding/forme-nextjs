@@ -59,9 +59,9 @@ const ListingGalleryImage: React.FC<ListingGalleryImageProps> = ({ listing, curr
     <div className="w-full pl-4 pr-[1.5%]">
       <div className="bg-white rounded-2xl shadow-sm overflow-hidden relative pb-[4.5rem]">
         <div className="px-6 pt-6 flex justify-between items-center">
-          <h2 className="text-xl font-bold mb-3">Gallery</h2>
+          <h2 className="text-xl font-bold mb-4">Gallery</h2>
         </div>
-        <div className="grid grid-cols-4 gap-2 px-6">
+        <div className="grid grid-cols-4 gap-3 px-6">
   {images.map((image, index) => (
     <div key={index} className="relative">
       <div className="aspect-w-1 aspect-h-1 w-full">
