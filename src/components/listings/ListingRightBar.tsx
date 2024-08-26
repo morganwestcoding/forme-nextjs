@@ -203,8 +203,9 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
       <span className="text-sm">8:00 AM - 5:00 PM</span>
     </div>
   </div>
-  <div className="mt-3 text-sm text-gray-500 italic">
-    Open all week • Walk-ins welcome
+  <div className="mt-3 text-sm text-gray-500 italic flex items-center">
+    <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+    <span>Open all week • Walk-ins welcome</span>
   </div>
 </div>
     </div>
