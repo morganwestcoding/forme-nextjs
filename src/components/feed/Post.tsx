@@ -199,7 +199,7 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
             </div>
           </Link>
           <div className="ml-3 flex flex-col">
-            <div className="flex items-center">
+            <div className="flex items-center pb-1">
               <div className="font-medium pr-1 text-sm text-[#484848]">{post.user.name} &middot;</div>
               <div className="text-sm text-[#717171]">{formattedDate || 'Loading time...'}</div>
             </div>
@@ -207,8 +207,8 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
               {post.location && (
                 <span>{post.location}</span>
               )}
-              <span className={`ml-2 p-1 rounded text-white drop-shadow-sm px-2 py-1 mx-auto my-1  text-xs ${categoryColors.bgColorClass}`}>
-                {post.category}
+              <span className={`ml-2 w-8 h-5 rounded text-white drop-shadow-sm shadow-sm flex items-center justify-center text-xs ${categoryColors.bgColorClass}`}>
+                {post.category.charAt(0).toUpperCase()}
               </span>
             </div>
           </div>

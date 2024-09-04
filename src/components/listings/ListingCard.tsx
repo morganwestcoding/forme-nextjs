@@ -148,12 +148,22 @@ const categoryColors = getColorByCategory(data.category);
             />
           </div>
         </div>
-        <div className={`inline-block ${categoryColors.bgColorClass} drop-shadow-sm rounded px-2 py-1 mx-auto my-1 ml-3 text-xs font-light`}>
+        <div className="px-4 pt-1 pb-1">
+  <div 
+    className={`w-8 h-5 ${categoryColors.bgColorClass} shadow-sm rounded-md flex items-center justify-center`} 
+    title={data.category}
+  >
+    <span className="text-white text-xs font-extralight">
+      {data.category.charAt(0).toUpperCase()}
+    </span>
+  </div>
+</div>
+        {/*<div className={`inline-block ${categoryColors.bgColorClass} drop-shadow-sm rounded px-2 py-1 mx-auto my-1 ml-3 text-xs font-light`}>
             <div className="text-white">
         {data.category}
         
         </div>
-        </div>
+        </div>*/}
         
         {/* Title */}
         <div className="font-medium text-sm capitalize px-4">
