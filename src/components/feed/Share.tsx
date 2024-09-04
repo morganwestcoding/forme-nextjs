@@ -11,6 +11,7 @@ import useAttachmentModal from '@/app/hooks/useAttachmentModal';
 
 interface ShareProps {
   currentUser: SafeUser | null;
+  
 }
 
 interface PostData {

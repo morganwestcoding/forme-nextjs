@@ -175,7 +175,7 @@ export default function Sidebar() {
 
 {/* Categories */}
 <span className="mb-5 text-[#a2a2a2] text-xs font-light">Genre</span>
-    <li className={`relative flex items-center justify-center mb-4 p-2 rounded-lg shadow w-36 h-24 ${selectedCategory ? selectedCategory.color : 'bg-[#b1dafe]'}`}>
+    <li className={`relative flex items-center justify-center mb-4 p-2 rounded-lg shadow w-36 h-20 ${selectedCategory ? selectedCategory.color : 'bg-[#b1dafe]'}`}>
       <span className="text-[#ffffff] text-xs group-hover:text-white font-light">
         {selectedCategory ? selectedCategory.label : 'Default'}
       </span>
