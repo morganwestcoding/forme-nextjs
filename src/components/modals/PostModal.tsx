@@ -4,18 +4,12 @@ import { useState, useCallback, useEffect } from 'react';
 import Modal from './Modal';
 import Image from 'next/image';
 import Avatar from '../ui/avatar';
-import { SafeUser } from '@/app/types';
+import { SafeUser, SafeComment } from '@/app/types';
 import Link from 'next/link';
 import { categories } from "../Categories";
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-
-interface Comment {
-  id: string;
-  content: string;
-  createdAt: string;
-  user: SafeUser;
-}
+import getComments from '@/app/actions/getComments';
 
 interface PostModalProps {
   isOpen: boolean;
@@ -48,36 +42,52 @@ const PostModal: React.FC<PostModalProps> = ({
     new Date(post.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
   );
   const [comment, setComment] = useState('');
-  const [comments, setComments] = useState<Comment[]>([]);
+  const [comments, setComments] = useState<SafeComment[]>([]);
 
   const isLiked = currentUser ? post.likes.includes(currentUser.id) : false;
   const isBookmarked = currentUser ? post.bookmarks.includes(currentUser.id) : false;
 
   useEffect(() => {
     const fetchComments = async () => {
+      if (!isOpen) return;
+  
+      console.log(`Attempting to fetch comments for post ID: ${post.id}`);
       try {
-        const response = await axios.get(`/api/comments?postId=${post.id}`);
-        setComments(response.data);
+        const fetchedComments = await getComments(post.id);
+        console.log('Fetched comments:', fetchedComments);
+        setComments(fetchedComments);
       } catch (error) {
         console.error('Error fetching comments:', error);
         toast.error('Failed to load comments');
       }
     };
-    
-    if (isOpen) {
-      fetchComments();
-    }
+  
+    fetchComments();
   }, [isOpen, post.id]);
+  
+  console.log('Current comments state:', comments);
 
   const handleSubmitComment = useCallback(async () => {
     if (!comment.trim()) return;
-
+  
     try {
       const response = await axios.post('/api/comments', {
         content: comment,
         postId: post.id,
       });
-      setComments(prevComments => [...prevComments, response.data]);
+      const newComment: SafeComment = {
+        id: response.data.id,
+        content: response.data.content,
+        createdAt: response.data.createdAt,
+        userId: response.data.userId,
+        postId: response.data.postId,
+        user: {
+          id: response.data.user.id,
+          name: response.data.user.name,
+          image: response.data.user.image,
+        },
+      };
+      setComments(prevComments => [newComment, ...prevComments]);
       setComment('');
       toast.success('Comment added successfully');
     } catch (error) {
@@ -167,19 +177,19 @@ const PostModal: React.FC<PostModalProps> = ({
       <div className="pt-4">
         <h3 className="font-medium mb-2 text-white">Comments</h3>
         <div className="max-h-60 overflow-y-auto mb-4">
-          {comments.map((comment) => (
-            <div key={comment.id} className="flex items-start mb-4">
-              <Avatar src={comment.user.image ?? undefined} />
-              <div className="ml-3 flex flex-col">
-                <div className="font-medium text-sm text-white">{comment.user.name}</div>
-                <p className="text-sm text-gray-300">{comment.content}</p>
-                <div className="text-xs text-gray-400">
-                  {new Date(comment.createdAt).toLocaleDateString()}
-                </div>
-              </div>
-            </div>
-          ))}
+  {comments.map((comment) => (
+    <div key={comment.id} className="flex items-start mb-4">
+      <Avatar src={comment.user.image ?? undefined} />
+      <div className="ml-3 flex flex-col">
+        <div className="font-medium text-sm text-white">{comment.user.name}</div>
+        <p className="text-sm text-gray-300">{comment.content}</p>
+        <div className="text-xs text-gray-400">
+          {new Date(comment.createdAt).toLocaleDateString()}
         </div>
+      </div>
+    </div>
+  ))}
+</div>
         <input 
           type="text" 
           placeholder="Add a comment..." 

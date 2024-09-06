@@ -23,11 +23,30 @@ export async function POST(request: Request) {
                 postId,
             },
             include: {
-                user: true,
+                user: {
+                    select: {
+                        id: true,
+                        name: true,
+                        image: true,
+                    },
+                },
             },
         });
 
-        return NextResponse.json(comment);
+        const safeComment = {
+            id: comment.id,
+            content: comment.content,
+            createdAt: comment.createdAt.toISOString(),
+            userId: comment.userId,
+            postId: comment.postId,
+            user: {
+                id: comment.user.id,
+                name: comment.user.name || null,
+                image: comment.user.image || null,
+            },
+        };
+
+        return NextResponse.json(safeComment);
     } catch (error) {
         console.error("Error creating comment:", error);
         return new Response("Internal Server Error", { status: 500 });

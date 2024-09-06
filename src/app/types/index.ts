@@ -59,6 +59,20 @@ export type SafePost = Omit<
   bookmarks: string[]; 
 };
 
+export type SafeComment = {
+  id: string;
+  content: string;
+  createdAt: string;
+  userId: string;
+  postId: string;
+  user: {
+    id: string;
+    name: string | null;
+    image: string | null;
+    // Add other necessary user fields here
+  };
+};
+
 
 
 
