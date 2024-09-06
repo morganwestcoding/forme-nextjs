@@ -28,6 +28,7 @@ model User {
   galleryImages  String[]
   following    String[]      @db.ObjectId
   followers    String[]      @db.ObjectId
+  comments Comment[]
 }
 
 model Account {
@@ -102,6 +103,7 @@ model Post {
   createdAt DateTime @default(now())
   likes     String[] @db.ObjectId // Add this line
   bookmarks String[] @db.ObjectId  // Add this line
+  comments Comment[]
 
   user User @relation(fields: [userId], references: [id])
 
@@ -111,4 +113,15 @@ model Category {
   id          String  @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   description String?
+}
+
+model Comment {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  content   String
+  userId    String   @db.ObjectId
+  postId    String   @db.ObjectId
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
 }
