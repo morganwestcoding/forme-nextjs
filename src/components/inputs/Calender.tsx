@@ -8,14 +8,14 @@ interface CalendarProps {
   value: Date;
   onChange: (date: Date) => void;
   disabledDates?: Date[];
-  onTimeChange: (time: string) => void; // Add this prop
+  onTimeChange?: (time: string) => void; 
 }
 
 const Calendar: React.FC<CalendarProps> = ({
   value,
   onChange,
   disabledDates = [],
-  onTimeChange // Add this prop
+  onTimeChange 
 }) => {
   const [currentMonth, setCurrentMonth] = useState(startOfMonth(value));
 
@@ -54,21 +54,21 @@ const Calendar: React.FC<CalendarProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm overflow-hidden w-full max-w-4xl mx-auto border">
-      <div className="flex justify-between items-center p-4 pb-2 md:p-6 md:pb-3">
-        <button onClick={goToPreviousMonth} className="p-2 rounded-lg border bg-white">
+    <div className="bg-white rounded-2xl shadow-sm overflow-hidden w-full mx-auto border">
+      <div className="flex justify-between items-center p-4 pb-2">
+        <button onClick={goToPreviousMonth} className="p-2">
           {'<'}
         </button>
-        <div className="text-lg md:text-lg font-semibold">
+        <div className="text-lg font-semibold">
           {format(currentMonth, 'MMMM yyyy')}
         </div>
-        <button onClick={goToNextMonth} className="p-2 rounded-lg border bg-white">
+        <button onClick={goToNextMonth} className="p-2">
           {'>'}
         </button>
       </div>
-      <div className="grid grid-cols-7 gap-1 px-4 pt-2 pb-2 md:px-6 md:pt-3 md:pb-3">
+      <div className="grid grid-cols-7 gap-1 px-4 pt-2 pb-2">
         {daysOfWeek.map(day => (
-          <div key={day} className="text-center text-gray-400 text-sm md:text-base mb-1">
+          <div key={day} className="text-center text-gray-400 text-sm mb-1">
             {day}
           </div>
         ))}

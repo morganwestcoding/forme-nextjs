@@ -43,7 +43,8 @@ export type SafeUser = Omit<
   location?: string | null;
   galleryImages?: string[];
   following: string[];
-  followers: string[]; 
+  followers: string[];
+  
 };
 
 
