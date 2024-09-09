@@ -61,6 +61,7 @@ const ListingGalleryImage: React.FC<ListingGalleryImageProps> = ({ listing, curr
         <div className="px-6 pt-6 flex justify-between items-center">
           <h2 className="text-xl font-bold mb-4">Gallery</h2>
         </div>
+       
         <div className="grid grid-cols-4 gap-3 px-6">
   {images.map((image, index) => (
     <div key={index} className="relative">
