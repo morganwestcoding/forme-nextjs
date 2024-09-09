@@ -129,7 +129,7 @@
       }),
       valueContainer: (provided) => ({
         ...provided,
-        padding: '2px 8px',
+        padding: '11px 8px',
       }),
       placeholder: (provided) => ({
         ...provided,
@@ -178,31 +178,31 @@
             />
           </div>
           <div className="mb-3 relative">
-          <Select<OptionType>
-  styles={customStyles}
-  value={dateOption}
-  onChange={() => handleDateClick()}
-  options={[]}
-  placeholder="Pick a date"
-  isSearchable={false}
-/>
-            {showCalendar && (
-              <div 
-                ref={calendarRef} 
-                className="absolute z-50 mt-1 bg-white shadow-lg rounded-md"
-                style={{
-                  left: '0',
-                  width: '100%',
-                }}
-              >
-                <Calendar
-                  value={date || new Date()}
-                  onChange={handleDateChange}
-                  disabledDates={disabledDates}
-                />
-              </div>
-            )}
-          </div>
+  <input
+    type="text"
+    value={date ? format(date, 'PP') : ''}
+    onClick={handleDateClick}
+    readOnly
+    placeholder="Pick a date"
+    className="w-full h-14 bg-white border border-[#e2e8f0] text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
+  />
+  {showCalendar && (
+    <div 
+      ref={calendarRef} 
+      className="absolute z-50 mt-1 bg-white shadow-lg rounded-md"
+      style={{
+        left: '0',
+        width: '100%',
+      }}
+    >
+      <Calendar
+        value={date || new Date()}
+        onChange={handleDateChange}
+        disabledDates={disabledDates}
+      />
+    </div>
+  )}
+</div>
           <div className="mb-3">
             <Select<OptionType>
               options={timeOptions}
