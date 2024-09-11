@@ -125,7 +125,7 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
       <div className="w-full md:w-11/12 rounded-2xl shadow-sm bg-[#ffffff] px-8 md:px-6 pt-6 pb-6 mx-3 md:mr-16">
         <div className="mb-4">
           <h2 className="text-xl font-bold mb-1">Booking</h2>
-          <p className="text-sm text-gray-500">Reserve your spot before it's too late!</p>
+          <p className="text-sm text-gray-500">Reserve your spot before its too late!</p>
         </div>
         <div className="mb-3 relative">
           <input
