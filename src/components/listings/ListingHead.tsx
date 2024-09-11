@@ -36,10 +36,10 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
               <div className="flex items-center space-x-3">
                 <h1 className="text-2xl font-bold text-gray-800">{title}</h1>
                 <div 
-                  className={`w-10 h-7 ${categoryColor} shadow-sm rounded-md flex items-center justify-center`}
+                  className={`w-8 h-6 ${categoryColor} shadow-sm rounded-md flex items-center justify-center`}
                   title={firstLevelCategory}
                 >
-                  <span className="text-white text-sm font-medium">
+                  <span className="text-white text-sm font-extralight">
                     {firstLevelCategory.charAt(0).toUpperCase()}
                   </span>
                 </div>

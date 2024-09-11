@@ -1,102 +1,121 @@
-// MessageModal.tsx
 'use client';
-
-import { useRouter } from 'next/navigation';
-import React, { useState, useCallback } from 'react';
-import Modal from './Modal';
+import React, { useState, useEffect, useCallback } from 'react';
+import axios from 'axios';
+import { toast } from 'react-hot-toast';
 import useMessageModal from '@/app/hooks/useMessageModal';
-import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
-import Heading from '../Heading';
-import Input from '../inputs/Input';
+import Modal from './Modal';
+
+interface Message {
+  id: string;
+  content: string;
+  senderId: string;
+  createdAt: string;
+  sender: {
+    id: string;
+    name: string | null;
+    image: string | null;
+  };
+}
 
 const MessageModal: React.FC = () => {
-  const router = useRouter();
   const messageModal = useMessageModal();
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [newMessage, setNewMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [messages, setMessages] = useState<string[]>([
-    'Hi there!',
-    'How are you?',
-    'Let\'s meet up tomorrow.',
-    'Custom Message'
-  ]); // Placeholder messages
 
-  const { 
-    register, 
-    handleSubmit,
-    setValue,
-    watch,
-    formState: {
-      errors,
-    },
-    reset,
-  } = useForm<FieldValues>({
-    defaultValues: {
-      recipient: '',
+  useEffect(() => {
+    if (messageModal.isOpen && messageModal.conversationId) {
+      fetchMessages();
     }
-  });
+  }, [messageModal.isOpen, messageModal.conversationId]);
 
-  const recipient = watch('recipient');
-
-  const setCustomValue = (id: string, value: any) => {
-    setValue(id, value, {
-      shouldDirty: true,
-      shouldTouch: true,
-      shouldValidate: true
-    });
+  const fetchMessages = async () => {
+    if (!messageModal.conversationId) return;
+    setIsLoading(true);
+    try {
+      const response = await axios.get(`/api/messages/${messageModal.conversationId}`);
+      setMessages(response.data);
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+      toast.error('Failed to load messages');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const onSubmit: SubmitHandler<FieldValues> = (data) => {
-    setIsLoading(true);
+  const sendMessage = useCallback(async () => {
+    if (!newMessage.trim() || !messageModal.conversationId) return;
+    try {
+      const response = await axios.post(`/api/messages/${messageModal.conversationId}`, {
+        content: newMessage,
+      });
+      setMessages(prev => [...prev, response.data]);
+      setNewMessage('');
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error('Error sending message:', error.response?.data);
+        toast.error(error.response?.data?.error || 'Failed to send message');
+      } else {
+        console.error('Unexpected error:', error);
+        toast.error('An unexpected error occurred');
+      }
+    }
+  }, [newMessage, messageModal.conversationId]);
 
-    // Here you can handle form submission, e.g., sending messages
-    console.log('Submitting data:', data);
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      sendMessage();
+    }
+  };
 
-    // Mocking a successful submission
-    setTimeout(() => {
-      setIsLoading(false);
-      messageModal.onClose();
-      reset();
-    }, 2000);
-  }
-
-  const actionLabel = 'Send';
-
-  const modalBody = (
-    <div className="flex flex-col gap-4">
-      <Heading
-        title="Send a Message"
-        subtitle="Compose your message"
-      />
-      <Input
-        id="recipient"
-        label="Recipient"
-        disabled={isLoading}
-        register={register}
-        errors={errors}
-        required
-      />
-      <div className="flex flex-col flex-grow p-4 overflow-y-auto bg-gray-800">
-        <div className="mb-2 font-medium text-white">Current Messages:</div>
-        <div className="flex flex-col space-y-2">
-          {messages.map((message, index) => (
-            <div key={index} className="p-2 bg-gray-700 rounded-md text-white">
-              {message}
-            </div>
-          ))}
+  const bodyContent = (
+    <div className="flex flex-col h-full">
+      {isLoading ? (
+        <div className="flex-grow flex items-center justify-center">
+          <p>Loading messages...</p>
         </div>
-      </div>
+      ) : (
+        <>
+          <div className="flex-grow overflow-y-auto p-4 space-y-4">
+            {messages.map((message) => (
+              <div
+                key={message.id}
+                className={`max-w-[70%] p-3 rounded-lg ${
+                  message.senderId === messageModal.otherUserId
+                    ? 'bg-gray-200 self-start'
+                    : 'bg-blue-500 text-white self-end'
+                }`}
+              >
+                <p>{message.content}</p>
+                <p className="text-xs mt-1 opacity-70">
+                  {new Date(message.createdAt).toLocaleString()}
+                </p>
+              </div>
+            ))}
+          </div>
+          <div className="p-4 border-t">
+            <input
+              type="text"
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="Type a message..."
+              className="w-full p-2 border rounded-lg"
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 
   return (
     <Modal
-      disabled={isLoading}
       isOpen={messageModal.isOpen}
-      title="Messenger"
-      actionLabel={actionLabel}
-      onSubmit={handleSubmit(onSubmit)}
       onClose={messageModal.onClose}
-      body={modalBody}
+      onSubmit={sendMessage}
+      title="Chat"
+      body={bodyContent}
+      actionLabel="Send"
     />
   );
 };

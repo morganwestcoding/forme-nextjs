@@ -57,7 +57,7 @@ const ListingGalleryImage: React.FC<ListingGalleryImageProps> = ({ listing, curr
 
   return (
     <div className="w-full pl-4 pr-[1.5%]">
-      <div className="bg-white rounded-2xl shadow-sm overflow-hidden relative pb-[4.5rem]">
+      <div className="bg-white rounded-2xl shadow-sm overflow-hidden relative pb-[5.25rem]">
         <div className="px-6 pt-6 flex justify-between items-center">
           <h2 className="text-xl font-bold mb-4">Gallery</h2>
         </div>
@@ -88,15 +88,15 @@ const ListingGalleryImage: React.FC<ListingGalleryImageProps> = ({ listing, curr
           ))}
         </div>
         {currentUser?.id === listing?.userId && (
-          <div className="absolute bottom-1 left-6 flex space-x-3 mb-3">
+          <div className=" right-6 absolute justify-center flex space-x-2 border rounded-full p-2 shadow-sm mt-3">
             <AddListingImageButton listing={listing} onImageAdded={handleAddImage} />
             <div 
               onClick={toggleEditMode}
               className="flex items-center justify-center bg-[#ffffff] rounded-full p-3 cursor-pointer shadow-sm border"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" color="#a2a2a2" fill="none">
-                <path d="M3 12C3 11.4188 3 11.1282 3.0575 10.8897C3.21354 10.2427 3.6684 9.73726 4.25074 9.56389C4.46534 9.5 4.72689 9.5 5.25 9.5H18.75C19.2731 9.5 19.5347 9.5 19.7493 9.56389C20.3316 9.73726 20.7865 10.2427 20.9425 10.8897C21 11.1282 21 11.4188 21 12C21 12.5812 21 12.8718 20.9425 13.1103C20.7865 13.7573 20.3316 14.2627 19.7493 14.4361C19.5347 14.5 19.2731 14.5 18.75 14.5H5.25C4.72689 14.5 4.46534 14.5 4.25074 14.4361C3.6684 14.2627 3.21354 13.7573 3.0575 13.1103C3 12.8718 3 12.5812 3 12Z" stroke="currentColor" strokeWidth="1.5" />
-              </svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="13" height="13" color="#a2a2a2" fill="none">
+    <path d="M20 12L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+</svg>
             </div>
           </div>
         )}

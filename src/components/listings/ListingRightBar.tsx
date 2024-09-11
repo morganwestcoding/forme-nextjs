@@ -123,8 +123,9 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
   return (
     <div className="flex flex-col justify-end bg-transparent gap-4 pr-16 h-auto">
       <div className="w-full md:w-11/12 rounded-2xl shadow-sm bg-[#ffffff] px-8 md:px-6 pt-6 pb-6 mx-3 md:mr-16">
-        <div className="flex justify-center items-center mb-3">
-          <h2 className="text-xl font-bold">Booking</h2>
+        <div className="mb-4">
+          <h2 className="text-xl font-bold mb-1">Booking</h2>
+          <p className="text-sm text-gray-500">Reserve your spot before it's too late!</p>
         </div>
         <div className="mb-3 relative">
           <input
@@ -133,7 +134,7 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
             onClick={() => setShowServiceDropdown(!showServiceDropdown)}
             readOnly
             placeholder="Select a service"
-            className="w-full h-10 bg-white border border-[#e2e8f0] text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block py-6 px-3 placeholder-[#718096]"
+            className="w-full h-10 bg-white border border-[#e2e8f0] text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block py-6 text-center placeholder-[#718096]"
           />
           {showServiceDropdown && (
             <div className="absolute z-50 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg">
@@ -159,7 +160,7 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
             onClick={() => setShowEmployeeDropdown(!showEmployeeDropdown)}
             readOnly
             placeholder="Select employee"
-            className="w-full h-10 bg-white border border-[#e2e8f0] text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block py-6 px-3 placeholder-[#718096]"
+            className="w-full h-10 bg-white border border-[#e2e8f0] text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block py-6 text-center placeholder-[#718096]"
           />
           {showEmployeeDropdown && (
             <div className="absolute z-50 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg">
@@ -185,7 +186,7 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
             onClick={handleDateClick}
             readOnly
             placeholder="Pick a date"
-            className="w-full h-10 bg-white border border-[#e2e8f0] text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block py-6 px-3 placeholder-[#718096]"
+            className="w-full h-10 bg-white border border-[#e2e8f0] text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block py-6 text-center placeholder-[#718096]"
           />
           {showCalendar && (
             <div 
@@ -211,7 +212,7 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
             onClick={() => setShowTimeDropdown(!showTimeDropdown)}
             readOnly
             placeholder={date ? "Select time..." : "Pick a date first"}
-            className="w-full h-10 bg-white border border-[#e2e8f0] text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block py-6 px-3 placeholder-[#718096]"
+            className="w-full h-10 bg-white border border-[#e2e8f0] text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block py-6 text-center placeholder-[#718096]"
             disabled={!date}
           />
           {showTimeDropdown && date && (
@@ -241,8 +242,8 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
           onClick={onCreateReservation}
         />
       </div>
-      <div className="w-full md:w-11/12 rounded-2xl shadow-sm bg-[#ffffff] md:px-6 py-6 px-3 mx-3 md:mr-16 relative flex flex-col justify-end">
-      <div className="flex justify-center items-center mb-4">
+      <div className="w-full md:w-11/12 rounded-2xl shadow-sm bg-[#ffffff] md:px-6 py-6 text-center mx-3 md:mr-16 relative flex flex-col justify-end">
+      <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold">Hours</h2>
         </div>
         <div className="space-y-3">

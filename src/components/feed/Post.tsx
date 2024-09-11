@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useCallback, useEffect } from 'react';
 import Avatar from '../ui/avatar';
-import { SafeUser } from '@/app/types';
+import { SafeUser, SafeComment } from '@/app/types';
 import Image from 'next/image';
 import { categories } from "../Categories";
 import Link from 'next/link';
@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
 import PostModal from '../modals/PostModal';
+import getComments from '@/app/actions/getComments';
 
 interface PostData {
   id: string;
@@ -32,6 +33,7 @@ interface PostProps {
   post: PostData;
   currentUser: SafeUser | null; 
   categories: typeof categories;
+  
 }
 
 const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
@@ -40,6 +42,7 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
   const [bookmarks, setBookmarks] = useState(post.bookmarks);
   const [isHidden, setIsHidden] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [comments, setComments] = useState<SafeComment[]>([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -67,24 +70,24 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
     if (!category) return { bgColorClass: 'bg-gray-200', textColorClass: 'text-gray-200', borderColorClass: 'border-gray-200' };
 
     switch (category.color) {
-        case 'bg-yellow-200':
-            return { bgColorClass: 'bg-yellow-200', textColorClass: 'text-yellow-200', borderColorClass: 'border-yellow-200' };
-        case 'bg-rose-200':
-            return { bgColorClass: 'bg-rose-200', textColorClass: 'text-rose-200', borderColorClass: 'border-rose-200' };
-        case 'bg-orange-300':
-            return { bgColorClass: 'bg-orange-300', textColorClass: 'text-orange-300', borderColorClass: 'border-orange-300' };
-        case 'bg-teal-500':
-            return { bgColorClass: 'bg-teal-500', textColorClass: 'text-teal-500', borderColorClass: 'border-teal-500' };
-        case 'bg-emerald-600':
-            return { bgColorClass: 'bg-emerald-600', textColorClass: 'text-emerald-600', borderColorClass: 'border-emerald-600' };
-        case 'bg-cyan-600':
-            return { bgColorClass: 'bg-cyan-600', textColorClass: 'text-cyan-600', borderColorClass: 'border-cyan-600' };
-        case 'bg-blue-800':
-            return { bgColorClass: 'bg-blue-800', textColorClass: 'text-blue-800', borderColorClass: 'border-blue-800' };
-        case 'bg-indigo-800':
-            return { bgColorClass: 'bg-indigo-800', textColorClass: 'text-indigo-800', borderColorClass: 'border-indigo-800' };
-        default:
-            return { bgColorClass: 'bg-gray-200', textColorClass: 'text-gray-200', borderColorClass: 'border-gray-200' };
+      case 'bg-yellow-200':
+        return { bgColorClass: 'bg-yellow-200', textColorClass: 'text-yellow-200', borderColorClass: 'border-yellow-200' };
+      case 'bg-rose-200':
+        return { bgColorClass: 'bg-rose-200', textColorClass: 'text-rose-200', borderColorClass: 'border-rose-200' };
+      case 'bg-orange-300':
+        return { bgColorClass: 'bg-orange-300', textColorClass: 'text-orange-300', borderColorClass: 'border-orange-300' };
+      case 'bg-teal-500':
+        return { bgColorClass: 'bg-teal-500', textColorClass: 'text-teal-500', borderColorClass: 'border-teal-500' };
+      case 'bg-emerald-600':
+        return { bgColorClass: 'bg-emerald-600', textColorClass: 'text-emerald-600', borderColorClass: 'border-emerald-600' };
+      case 'bg-cyan-600':
+        return { bgColorClass: 'bg-cyan-600', textColorClass: 'text-cyan-600', borderColorClass: 'border-cyan-600' };
+      case 'bg-blue-800':
+        return { bgColorClass: 'bg-blue-800', textColorClass: 'text-blue-800', borderColorClass: 'border-blue-800' };
+      case 'bg-indigo-800':
+        return { bgColorClass: 'bg-indigo-800', textColorClass: 'text-indigo-800', borderColorClass: 'border-indigo-800' };
+      default:
+        return { bgColorClass: 'bg-gray-200', textColorClass: 'text-gray-200', borderColorClass: 'border-gray-200' };
     }
   };
 
@@ -151,17 +154,33 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
     }
   }, [currentUser]);
 
+  const fetchComments = useCallback(async () => {
+    try {
+      const fetchedComments = await getComments(post.id);
+      console.log('Fetched comments:', fetchedComments); // Debug log
+      setComments(fetchedComments);
+    } catch (error) {
+      console.error('Error fetching comments:', error);
+      toast.error('Failed to load comments');
+    }
+  }, [post.id]);
+
   const openModal = useCallback(() => {
     setIsModalOpen(true);
-  }, []);
+    fetchComments();
+  }, [fetchComments]);
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
   }, []);
 
-  if (isHidden) {
-    return null;
-  }
+  const handleCommentAdded = useCallback((newComment: SafeComment) => {
+    setComments(prevComments => {
+      const updatedComments = [newComment, ...prevComments];
+      console.log('Updated comments:', updatedComments); // Debug log
+      return updatedComments;
+    });
+  }, []);
 
   return (
     <>
@@ -281,6 +300,9 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
         currentUser={currentUser}
         onLike={handleLike}
         onBookmark={handleBookmark}
+        comments={comments}
+        onCommentAdded={handleCommentAdded}
+        refreshComments={fetchComments}
       />
     </>
   );

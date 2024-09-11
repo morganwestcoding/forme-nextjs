@@ -74,6 +74,19 @@ export type SafeComment = {
   };
 };
 
+export type SafeMessage = {
+  id: string;
+  content: string;
+  createdAt: string;
+  senderId: string;
+  conversationId: string;
+  sender: {
+    id: string;
+    name: string | null;
+    image: string | null;
+  };
+};
+
 
 
 

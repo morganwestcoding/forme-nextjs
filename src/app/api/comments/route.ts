@@ -3,15 +3,21 @@ import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 
 export async function POST(request: Request) {
+    console.log("Comment submission initiated");
+
     const currentUser = await getCurrentUser();
     if (!currentUser) {
+        console.log("Unauthorized: No current user");
         return new Response("Unauthorized", { status: 401 });
     }
 
     const body = await request.json();
     const { content, postId } = body;
 
+    console.log("Received comment data:", { content, postId, userId: currentUser.id });
+
     if (!content || !postId) {
+        console.log("Missing required fields");
         return new Response("Missing required fields", { status: 400 });
     }
 
@@ -33,6 +39,8 @@ export async function POST(request: Request) {
             },
         });
 
+        console.log("Created comment:", JSON.stringify(comment, null, 2));
+
         const safeComment = {
             id: comment.id,
             content: comment.content,
@@ -45,6 +53,8 @@ export async function POST(request: Request) {
                 image: comment.user.image || null,
             },
         };
+
+        console.log("Returning safe comment:", JSON.stringify(safeComment, null, 2));
 
         return NextResponse.json(safeComment);
     } catch (error) {
