@@ -14,7 +14,6 @@ import ClientOnly from '@/components/ClientOnly';
 import ClientProviders from '@/components/ClientProviders';
 import MessageModal from '@/components/modals/MessageModal';
 import ListingGalleryModal from '@/components/modals/listingGalleryModal';
-import CreateChatButton from '@/components/header/CreateChatButton';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
