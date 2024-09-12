@@ -3,7 +3,7 @@ import AddListing from "./AddListing";
 import UserButton from "../UserButton";
 import { SafePost } from "@/app/types";
 import Notification from "./Notification";
-import CreateChatButton from "./CreateChatButton";
+import Inbox from "./Inbox";
 import { SafeUser } from "@/app/types";
 import Search from "./Search";
 import Filter from "./Filter";
@@ -26,7 +26,7 @@ const Header: React.FC<HeaderProps> = ({
                   </div>
                 <div className="flex items-center space-x-3">
                   <AddListing/>
-                  <CreateChatButton />
+                  <Inbox currentUser={currentUser || null} />
                   <Notification/>
                   <UserButton currentUser={currentUser} data={{} as SafePost}/>
                 </div>

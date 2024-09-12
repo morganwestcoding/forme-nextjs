@@ -87,6 +87,18 @@ export type SafeMessage = {
   };
 };
 
+export type SafeConversation = {
+  id: string;
+  otherUser: {
+    id: string;
+    name: string | null;
+    image: string | null;
+  };
+  lastMessage?: {
+    content: string;
+    createdAt: string;
+  };
+};
 
 
 

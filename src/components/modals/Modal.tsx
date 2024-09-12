@@ -11,7 +11,7 @@ interface ModalProps {
   title?: string;
   body?: React.ReactElement;
   footer?: React.ReactElement;
-  actionLabel: string;
+  actionLabel?: string; // Made optional
   disabled?: boolean;
   secondaryAction?: () => void;
   secondaryActionLabel?: string;
@@ -23,7 +23,7 @@ const Modal: React.FC<ModalProps> = ({
   onSubmit, 
   title, 
   body, 
-  actionLabel, 
+  actionLabel,
   footer, 
   disabled,
   secondaryAction,
@@ -111,16 +111,13 @@ const Modal: React.FC<ModalProps> = ({
               md:h-auto
               border-0 
               rounded-2xl 
-               
               relative 
               flex 
               flex-col 
               w-full 
-            bg-black
-            bg-opacity-55
-            backdrop-blur-md
-           
-              
+              bg-black
+              bg-opacity-55
+              backdrop-blur-md
               outline-none 
               focus:outline-none
             "
@@ -144,7 +141,6 @@ const Modal: React.FC<ModalProps> = ({
                     transition
                     absolute
                     right-9
-                   
                   "
                   onClick={handleClose}
                 >
@@ -171,19 +167,19 @@ const Modal: React.FC<ModalProps> = ({
                 >
                   {secondaryAction && secondaryActionLabel && (
                     <ModalButton
-                    outline
-                    label={secondaryActionLabel} // the secondary action label
-                    disabled={disabled} 
-                    onClick={handleSecondaryAction}
-                    // adding the category prop
+                      outline
+                      label={secondaryActionLabel}
+                      disabled={disabled} 
+                      onClick={handleSecondaryAction}
                     />  
                   )}
-                  <ModalButton
-                    label={actionLabel} // Add the label prop here
-                    disabled={disabled} 
-                    onClick={handleSubmit}
-                    
-/>
+                  {actionLabel && ( // Conditional rendering of the action button
+                    <ModalButton
+                      label={actionLabel}
+                      disabled={disabled} 
+                      onClick={handleSubmit}
+                    />
+                  )}
                 </div>
                 {footer}
               </div>

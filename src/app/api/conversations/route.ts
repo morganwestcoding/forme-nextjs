@@ -2,53 +2,51 @@ import { NextResponse } from 'next/server';
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from '@/app/actions/getCurrentUser';
 
-export async function POST(request: Request) {
+
+export async function GET(request: Request) {
   try {
     const currentUser = await getCurrentUser();
     if (!currentUser?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json();
-    const { userId } = body;
-
-    if (!userId) {
-      return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
-    }
-
-    // Check if a conversation already exists
-    const existingConversation = await prisma.conversation.findFirst({
+    const conversations = await prisma.conversation.findMany({
       where: {
-        AND: [
-          { userIds: { has: currentUser.id } },
-          { userIds: { has: userId } }
-        ]
-      }
-    });
-
-    if (existingConversation) {
-      return NextResponse.json(existingConversation);
-    }
-
-    // Create a new conversation
-    const newConversation = await prisma.conversation.create({
-      data: {
-        userIds: [currentUser.id, userId],
-        users: {
-          connect: [
-            { id: currentUser.id },
-            { id: userId }
-          ]
+        userIds: {
+          has: currentUser.id
         }
       },
       include: {
-        users: true
+        users: true,
+        messages: {
+          orderBy: {
+            createdAt: 'desc'
+          },
+          take: 1
+        }
       }
     });
 
-    return NextResponse.json(newConversation);
+    // Format the conversations to match the SafeConversation type
+    const safeConversations = conversations.map(conversation => {
+      const otherUser = conversation.users.find(user => user.id !== currentUser.id);
+      return {
+        id: conversation.id,
+        otherUser: {
+          id: otherUser?.id || '',
+          name: otherUser?.name || null,
+          image: otherUser?.image || null,
+        },
+        lastMessage: conversation.messages[0] ? {
+          content: conversation.messages[0].content,
+          createdAt: conversation.messages[0].createdAt.toISOString(),
+        } : undefined,
+      };
+    });
+
+    return NextResponse.json(safeConversations);
   } catch (error) {
-    console.error('Error in conversation route:', error);
+    console.error('Error fetching conversations:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

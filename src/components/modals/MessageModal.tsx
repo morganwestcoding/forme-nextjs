@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import useMessageModal from '@/app/hooks/useMessageModal';
@@ -76,32 +77,72 @@ const MessageModal: React.FC = () => {
         </div>
       ) : (
         <>
-          <div className="flex-grow overflow-y-auto p-4 space-y-4">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`max-w-[70%] p-3 rounded-lg ${
-                  message.senderId === messageModal.otherUserId
-                    ? 'bg-gray-200 self-start'
-                    : 'bg-blue-500 text-white self-end'
-                }`}
-              >
-                <p>{message.content}</p>
-                <p className="text-xs mt-1 opacity-70">
-                  {new Date(message.createdAt).toLocaleString()}
-                </p>
-              </div>
-            ))}
+          <div className="flex-grow overflow-y-auto space-y-4 mb-14">
+  {messages.map((message) => (
+    <div
+      key={message.id}
+      className={`flex ${
+        message.senderId === messageModal.otherUserId
+          ? 'justify-end'
+          : 'justify-start'
+      }`}
+    >
+      <div className={`flex items-start ${
+        message.senderId === messageModal.otherUserId
+          ? 'flex-row-reverse'
+          : 'flex-row'
+      }`}>
+        <div className={`w-11 h-11 rounded-full overflow-hidden flex-shrink-0 ${
+          message.senderId === messageModal.otherUserId ? 'ml-2' : 'mr-2'
+        }`}>
+          <Image
+            src={message.sender.image || '/placeholder-avatar.png'}
+            alt={message.sender.name || 'User'}
+            width={46}
+            height={46}
+          />
+        </div>
+        <div className={`flex flex-col ${
+          message.senderId === messageModal.otherUserId ? 'items-end' : 'items-start'
+        }`}>
+          <div
+            className={`max-w-[100%] p-3 rounded-lg ${
+              message.senderId === messageModal.otherUserId
+                ? 'bg-gray-500 text-white text-sm'
+                : 'bg-blue-500 text-white text-sm'
+            }`}
+          >
+            <p>{message.content}</p>
           </div>
-          <div className="p-4 border-t">
+          <p className={`text-xs mt-1 text-gray-400 ${
+            message.senderId === messageModal.otherUserId ? '' : 'self-end'
+          }`}>
+            {new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          </p>
+        </div>
+      </div>
+    </div>
+  ))}
+</div>
+          <div className="fixed bottom-0 left-0 right-0 p-6 border-t flex items-center">
             <input
               type="text"
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Type a message..."
-              className="w-full p-2 border rounded-lg"
+              className="flex-grow p-3 border text-sm rounded-lg text-[#a2a2a2] mr-2"
             />
+            <button
+              onClick={sendMessage}
+              className="bg-transparent border border-white text-white rounded-full w-9 h-9 flex items-center justify-center"
+            >
+              <div className='-ml-0.5 '>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" color="#ffffff" fill="none">
+                  <path d="M11.922 4.79004C16.6963 3.16245 19.0834 2.34866 20.3674 3.63261C21.6513 4.91656 20.8375 7.30371 19.21 12.078L18.1016 15.3292C16.8517 18.9958 16.2267 20.8291 15.1964 20.9808C14.9195 21.0216 14.6328 20.9971 14.3587 20.9091C13.3395 20.5819 12.8007 18.6489 11.7231 14.783C11.4841 13.9255 11.3646 13.4967 11.0924 13.1692C11.0134 13.0748 10.9258 12.9866 10.8308 12.9076C10.5033 12.6354 10.0745 12.5159 9.21705 12.2769C5.35111 11.1993 3.41814 10.6605 3.0909 9.64127C3.00292 9.36724 2.97837 9.08053 3.01916 8.80355C3.17088 7.77332 5.00419 7.14834 8.6708 5.89838L11.922 4.79004Z" stroke="currentColor" stroke-width="1.5" />
+                </svg>
+              </div>
+            </button>
           </div>
         </>
       )}
@@ -113,9 +154,8 @@ const MessageModal: React.FC = () => {
       isOpen={messageModal.isOpen}
       onClose={messageModal.onClose}
       onSubmit={sendMessage}
-      title="Chat"
+      title="Message"
       body={bodyContent}
-      actionLabel="Send"
     />
   );
 };
