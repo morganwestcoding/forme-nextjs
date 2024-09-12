@@ -17,16 +17,12 @@ export default async function getPosts(
     let query: any = {};
 
     if (userId) query.userId = userId;
-
     if (category) query.category = category;
-
     if (locationValue) query.locationValue = locationValue;
-
     if (startDate && endDate) {
       query.createdAt = { gte: new Date(startDate), lte: new Date(endDate) };
     }
 
-   
     const posts = await prisma.post.findMany({
       where: query,
       include: { user: true },
@@ -52,10 +48,10 @@ export default async function getPosts(
         galleryImages: post.user?.galleryImages || [],
         following: post.user.following || [],
         followers: post.user.followers || [],
+        conversationIds: post.user.conversationIds || [], // Add this line
       },
     }));
 
-    
     return safePosts;
   } catch (error) {
     console.error("Error in getPosts:", error);
