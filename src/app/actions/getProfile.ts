@@ -22,8 +22,9 @@ export default async function getProfile(): Promise<SafeUser | null> {
       updatedAt: currentUser.updatedAt, // Assuming this is already a string
       emailVerified: currentUser.emailVerified, // Assuming this is already a string or null
       galleryImages: currentUser.galleryImages || [],
-      following: currentUser.following || [],  // Add this line
-      followers: currentUser.followers || [],  // Add this line // Add this line
+      following: currentUser.following || [],
+      followers: currentUser.followers || [],
+      conversationIds: currentUser.conversationIds || [], // Add this line
     };
   } catch (error) {
     console.error("Error in getProfile:", error);
