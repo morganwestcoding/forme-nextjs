@@ -2,13 +2,15 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useRouter } from 'next/navigation';
 import { SafeUser } from '@/app/types'; // Adjust the import path as needed
 
-function Search() {
+interface SearchProps {
+  onResultClick: (user: SafeUser) => void;
+}
+
+const Search: React.FC<SearchProps> = ({ onResultClick }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState<SafeUser[]>([]);
-  const router = useRouter();
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
@@ -36,13 +38,13 @@ function Search() {
   };
 
   const handleResultClick = (user: SafeUser) => {
-    router.push(`/profile/${user.id}`);
+    onResultClick(user);
     setSearchTerm('');
     setSearchResults([]);
   };
 
   return (
-    <div className="ml-8 relative">
+    <div className="relative">
       <div className="relative">
         <span className="absolute inset-y-0 left-0 flex items-center pl-3">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={18} height={18} color={"#ffffff"} fill={"none"}>
@@ -53,26 +55,26 @@ function Search() {
         </span>
         <input 
           type="text" 
-          className="w-64 text-sm p-2.5 pl-10 pr-12 bg-transparent shadow-sm border border-[#FFFFFF] rounded-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:outline-none focus:ring focus:ring-opacity-40 text-white focus:ring-blue-300 placeholder-white" 
+          className="w-full text-sm p-2.5 pl-10 pr-12 bg-transparent shadow-sm border border-[#FFFFFF] rounded-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:outline-none focus:ring focus:ring-opacity-40 text-white focus:ring-blue-300 placeholder-white" 
           placeholder="Search users" 
           value={searchTerm}
           onChange={handleInputChange}
         />
       </div>
       {searchResults.length > 0 && (
-        <div className="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg">
+        <div className="absolute z-10 w-full mt-1 bg-gray-800 rounded-md shadow-lg">
           {searchResults.map((user) => (
             <div 
               key={user.id} 
-              className="p-2 hover:bg-gray-100 cursor-pointer flex items-center"
+              className="p-2 hover:bg-gray-700 cursor-pointer flex items-center"
               onClick={() => handleResultClick(user)}
             >
               {user.image && (
                 <img src={user.image} alt={user.name || 'User'} className="w-8 h-8 rounded-full mr-2" />
               )}
               <div>
-                <div className="font-semibold">{user.name}</div>
-                <div className="text-sm text-gray-500">{user.email}</div>
+                <div className="font-semibold text-white">{user.name}</div>
+                <div className="text-sm text-gray-400">{user.email}</div>
               </div>
             </div>
           ))}
