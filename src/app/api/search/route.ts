@@ -33,46 +33,12 @@ export async function GET(request: Request) {
       },
     });
 
-    const listings = await prisma.listing.findMany({
-      where: {
-        OR: [
-          { title: { contains: term, mode: 'insensitive' } },
-          { description: { contains: term, mode: 'insensitive' } },
-        ],
-      },
-      include: {
-        services: true,
-        user: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-      },
-    });
-
-    const results = [
-      ...users.map(user => ({
-        ...user,
-        type: 'user' as const,
-        createdAt: user.createdAt.toISOString(),
-        updatedAt: user.updatedAt.toISOString(),
-        emailVerified: user.emailVerified?.toISOString() || null,
-      })),
-      ...listings.map(listing => ({
-        id: listing.id,
-        title: listing.title,
-        description: listing.description,
-        imageSrc: listing.imageSrc,
-        category: listing.category,
-        location: listing.location,
-        createdAt: listing.createdAt.toISOString(),
-        userId: listing.userId,
-        services: listing.services,
-        user: listing.user,
-        type: 'listing' as const,
-      })),
-    ];
+    const results = users.map(user => ({
+      ...user,
+      createdAt: user.createdAt.toISOString(),
+      updatedAt: user.updatedAt.toISOString(),
+      emailVerified: user.emailVerified?.toISOString() || null,
+    }));
 
     return NextResponse.json(results);
   } catch (error) {
