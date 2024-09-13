@@ -12,7 +12,7 @@ interface ListingHeadProps {
 }
 
 const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
-  const { title, location, description, category, id } = listing;
+  const { title, location, description, category, id, address } = listing;
   const { hasFavorited, toggleFavorite } = useFavorite({
     listingId: id,
     currentUser
@@ -45,7 +45,8 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
                 </div>
               </div>
             </div>
-            <p className="text-sm text-gray-600 mb-4"><i>{location}</i></p>
+            {address && <p className="text-sm text-gray-600 mb-1"><i>{address}</i></p>}
+            {location && <p className="text-sm text-gray-600 mb-4"><i>{location}</i></p>}
             <p className="text-xs text-gray-700 mb-6 line-clamp-4 overflow-hidden">
               {description}
             </p>

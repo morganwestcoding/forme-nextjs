@@ -188,14 +188,14 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
         className='w-full h-auto rounded-2xl drop-shadow-sm bg-[#ffffff] p-6 mr-8 my-4 relative cursor-pointer'
         onClick={openModal}
       >
-        <div className="absolute top-7 right-6" >
+        <div className="absolute top-4 right-6" >
           <DropdownMenu>
             <DropdownMenuTrigger>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#a2a2a2">
-                <path d="M13.5 4.5C13.5 3.67157 12.8284 3 12 3C11.1716 3 10.5 3.67157 10.5 4.5C10.5 5.32843 11.1716 6 12 6C12.8284 6 13.5 5.32843 13.5 4.5Z" fill="currentColor" stroke="currentColor" strokeWidth="1" />
-                <path d="M13 12C13.5 11.1716 12.8284 10.5 12 10.5C11.1716 10.5 10.5 11.1716 10.5 12C10.5 12.8284 11.1716 13.5 12 13.5C12.8284 13.5 13.5 12.8284 13.5 12Z" fill="currentColor" stroke="currentColor" strokeWidth="1" />
-                <path d="M13.5 19.5C13.5 18.6716 12.8284 18 12 18C11.1716 18 10.5 18.6716 10.5 19.5C10.5 20.3284 11.1716 21 12 21C12.8284 21 13.5 20.3284 13.5 19.5Z" fill="currentColor" stroke="currentColor" strokeWidth="1" />
-              </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="35" height="35" color="#a2a2a2" fill="none">
+    <path d="M11.9959 12H12.0049" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M17.9998 12H18.0088" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M5.99981 12H6.00879" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+</svg>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               {currentUser && currentUser.id === post.user.id ? (
