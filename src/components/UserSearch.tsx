@@ -1,19 +1,17 @@
-// components/Search.tsx
+// components/UserSearch.tsx
 'use client';
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { SafeUser, SafeListing } from '@/app/types';
+import { SafeUser } from '@/app/types';
 
-type SearchResult = SafeUser | SafeListing;
-
-interface SearchProps {
-  onResultClick: (result: SearchResult) => void;
+interface UserSearchProps {
+  onResultClick: (user: SafeUser) => void;
 }
 
-const Search: React.FC<SearchProps> = ({ onResultClick }) => {
+const UserSearch: React.FC<UserSearchProps> = ({ onResultClick }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [searchResults, setSearchResults] = useState<SafeUser[]>([]);
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
@@ -29,7 +27,7 @@ const Search: React.FC<SearchProps> = ({ onResultClick }) => {
 
   const fetchSearchResults = async () => {
     try {
-      const response = await axios.get<SearchResult[]>(`/api/search?term=${searchTerm}`);
+      const response = await axios.get<SafeUser[]>(`/api/search/users?term=${searchTerm}`);
       setSearchResults(response.data);
     } catch (error) {
       console.error('Error fetching search results:', error);
@@ -40,18 +38,14 @@ const Search: React.FC<SearchProps> = ({ onResultClick }) => {
     setSearchTerm(e.target.value);
   };
 
-  const handleResultClick = (result: SearchResult) => {
-    onResultClick(result);
+  const handleResultClick = (user: SafeUser) => {
+    onResultClick(user);
     setSearchTerm('');
     setSearchResults([]);
   };
 
-  const isUser = (result: SearchResult): result is SafeUser => {
-    return 'email' in result;
-  };
-
   return (
-    <div className="relative ml-8 w-64"> {/* Added w-64 to set a fixed width */}
+    <div className="relative">
       <div className="relative">
         <span className="absolute inset-y-0 left-0 flex items-center pl-3">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={18} height={18} color={"#ffffff"} fill={"none"}>
@@ -63,40 +57,26 @@ const Search: React.FC<SearchProps> = ({ onResultClick }) => {
         <input 
           type="text" 
           className="w-full text-sm p-2.5 pl-10 pr-12 bg-transparent shadow-sm border border-[#FFFFFF] rounded-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:outline-none focus:ring focus:ring-opacity-40 text-white focus:ring-blue-300 placeholder-white" 
-          placeholder="Search" 
+          placeholder="Search users" 
           value={searchTerm}
           onChange={handleInputChange}
         />
       </div>
       {searchResults.length > 0 && (
-        <div className="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg">
-          {searchResults.map((result) => (
+        <div className="absolute z-10 w-full mt-1 bg-gray-800 rounded-md shadow-lg">
+          {searchResults.map((user) => (
             <div 
-              key={result.id} 
-              className="p-2 hover:bg-gray-100 cursor-pointer flex items-center"
-              onClick={() => handleResultClick(result)}
+              key={user.id} 
+              className="p-2 hover:bg-gray-700 cursor-pointer flex items-center"
+              onClick={() => handleResultClick(user)}
             >
-              {isUser(result) ? (
-                <>
-                  {result.image && (
-                    <img src={result.image} alt={result.name || 'User'} className="w-8 h-8 rounded-full mr-2" />
-                  )}
-                  <div>
-                    <div className="font-semibold">{result.name}</div>
-                    <div className="text-sm text-gray-500">{result.email}</div>
-                  </div>
-                </>
-              ) : (
-                <>
-                  {result.imageSrc && (
-                    <img src={result.imageSrc} alt={result.title} className="w-8 h-8 object-cover mr-2" />
-                  )}
-                  <div>
-                    <div className="font-semibold">{result.title}</div>
-                    <div className="text-sm text-gray-500">{result.category}</div>
-                  </div>
-                </>
+              {user.image && (
+                <img src={user.image} alt={user.name || 'User'} className="w-8 h-8 rounded-full mr-2" />
               )}
+              <div>
+                <div className="font-semibold text-white">{user.name}</div>
+                <div className="text-sm text-gray-400">{user.email}</div>
+              </div>
             </div>
           ))}
         </div>
@@ -105,4 +85,4 @@ const Search: React.FC<SearchProps> = ({ onResultClick }) => {
   );
 }
 
-export default Search;
+export default UserSearch;

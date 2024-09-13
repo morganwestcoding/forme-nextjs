@@ -1,4 +1,4 @@
-// app/api/search/route.ts
+// app/api/search/users/route.ts
 import { NextResponse } from 'next/server';
 import prisma from '@/app/libs/prismadb';
 
@@ -26,26 +26,9 @@ export async function GET(request: Request) {
       },
     });
 
-    const listings = await prisma.listing.findMany({
-      where: {
-        OR: [
-          { title: { contains: term, mode: 'insensitive' } },
-          { description: { contains: term, mode: 'insensitive' } },
-        ],
-      },
-      select: {
-        id: true,
-        title: true,
-        imageSrc: true,
-        category: true,
-      },
-    });
-
-    const results = [...users, ...listings];
-
-    return NextResponse.json(results);
+    return NextResponse.json(users);
   } catch (error) {
-    console.error('Error searching:', error);
-    return NextResponse.json({ error: 'Failed to search' }, { status: 500 });
+    console.error('Error searching users:', error);
+    return NextResponse.json({ error: 'Failed to search users' }, { status: 500 });
   }
 }

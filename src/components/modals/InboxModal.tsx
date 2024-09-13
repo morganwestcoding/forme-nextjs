@@ -8,7 +8,7 @@ import { toast } from 'react-hot-toast';
 import { SafeUser, SafeConversation } from "@/app/types";
 import useMessageModal from "@/app/hooks/useMessageModal";
 import Modal from '../modals/Modal';
-import Search from '../header/Search';// Make sure to adjust the import path as needed
+import UserSearch from '../UserSearch';
 
 interface InboxModalProps {
   isOpen: boolean;
@@ -55,7 +55,7 @@ const InboxModal: React.FC<InboxModalProps> = ({ isOpen, onClose, currentUser })
   const bodyContent = (
     <div className="flex flex-col h-full">
       <div className="mb-4">
-        <Search onResultClick={startNewConversation} />
+      <UserSearch onResultClick={startNewConversation} />
       </div>
       <div className="flex-grow overflow-y-auto space-y-4 mb-4">
         {conversations.map((conversation) => (
