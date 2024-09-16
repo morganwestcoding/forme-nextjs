@@ -12,18 +12,6 @@ interface ProfileRightbarProps {
   listings: SafeListing[];
 }
 
-const placeholderImages = [
-  "/assets/beach-view.jpg",
-  "/assets/business-1.jpg",
-  "/assets/business-4.jpg",
-  "/assets/business-3.jpg",
-  "/assets/skyline.jpg",
-  "/assets/scenic view.jpeg",
-  "/assets/beach-tree.jpg",
-  "/assets/coral-sample.jpg",
-  "/assets/swimmer-sample.jpg",
-];
-
 const ProfileRightbar: React.FC<ProfileRightbarProps> = ({ user, listings  }) => {
 const { bio, createdAt, location } = user;
 

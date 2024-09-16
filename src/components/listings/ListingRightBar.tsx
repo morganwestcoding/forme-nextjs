@@ -141,7 +141,7 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
               {serviceOptions.map((option) => (
                 <div
                   key={option.value}
-                  className="p-2 hover:bg-gray-100 cursor-pointer"
+                  className="p-2 hover:bg-gray-100 cursor-pointer text-center"
                   onClick={() => {
                     handleServiceChange(option);
                     setShowServiceDropdown(false);
@@ -167,7 +167,7 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
               {employeeOptions.map((option) => (
                 <div
                   key={option.value}
-                  className="p-2 hover:bg-gray-100 cursor-pointer"
+                  className="p-2 hover:bg-gray-100 cursor-pointer text-center"
                   onClick={() => {
                     handleEmployeeChange(option);
                     setShowEmployeeDropdown(false);
@@ -220,7 +220,7 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
               {timeOptions.map((option) => (
                 <div
                   key={option.value}
-                  className="p-2 hover:bg-gray-100 cursor-pointer"
+                  className="p-2 hover:bg-gray-100 cursor-pointer text-center"
                   onClick={() => {
                     handleTimeChange(option);
                     setShowTimeDropdown(false);
