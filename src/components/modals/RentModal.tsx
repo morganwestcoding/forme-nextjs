@@ -7,16 +7,13 @@ import {
   SubmitHandler, 
   useForm
 } from 'react-hook-form';
-import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation';
 import { useMemo, useState, useCallback} from "react";
-
 
 import useRentModal from '@/app/hooks/useRentModal';
 
 import Modal from "./Modal";
 import CategoryInput from '../inputs/CategoryInput';
-import StateSelect from "../inputs/ListLocationSelect";
 import { categories } from '../Categories';
 import ImageUpload from '../inputs/ImageUpload';
 import Input from '../inputs/Input';
@@ -30,7 +27,6 @@ enum STEPS {
   INFO = 2,
   IMAGES = 3,
   DESCRIPTION = 4,
- 
 }
 
 const RentModal = () => {
@@ -56,15 +52,15 @@ const RentModal = () => {
     reset,
   } = useForm<FieldValues>({
     defaultValues: {
-    services: Array(3).fill({ serviceName: "", price: 0,category: "" }),
+      services: Array(3).fill({ serviceName: "", price: 0, category: "" }),
       category: '',
       location: null,
       imageSrc: '',
       title: '',
       description: '',
-      phoneNumber: '',  // Add this line
-      website: '',      // Add this line
-      address: '',      // Add this line
+      phoneNumber: '',
+      website: '',
+      // Address and zipCode are now handled in ListLocationSelect
     }
   });
 
@@ -90,6 +86,23 @@ const RentModal = () => {
   const handleServicesChange = useCallback((newServices: Service[]) => {
     setServices(newServices);
   }, []);
+
+  const handleLocationSubmit = (locationData: {
+    state: string;
+    city: string;
+    address: string;
+    zipCode: string;
+  } | null) => {
+    if (locationData) {
+      setValue('location', `${locationData.city}, ${locationData.state}`);
+      setValue('address', locationData.address);
+      setValue('zipCode', locationData.zipCode);
+    } else {
+      setValue('location', null);
+      setValue('address', '');
+      setValue('zipCode', '');
+    }
+  };
 
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
     if (step !== STEPS.DESCRIPTION) {
@@ -152,13 +165,13 @@ const RentModal = () => {
       >
         {categories.map((item) => (
           <div key={item.label} className="col-span-1">
-          <CategoryInput
+            <CategoryInput
               onClick={(category) => 
                 setCustomValue('category', category)}
               selected={category === item.label}
               label={item.label}
               color={item.color}
-              />
+            />
           </div>
         ))}
       </div>
@@ -172,8 +185,10 @@ const RentModal = () => {
           title="Where is your place located?"
           subtitle="Help guests find you!"
         />
-        <ListLocationSelect // Use ListLocationSelect component
-          onLocationSubmit={(value) => setValue('location', value)}
+        <ListLocationSelect
+          onLocationSubmit={handleLocationSubmit}
+          register={register}
+          errors={errors}
         />   
       </div>
     );
@@ -184,7 +199,7 @@ const RentModal = () => {
       <div className="flex flex-col gap-8">
         <Heading
           title="Share some basics about your place"
-          subtitle="What amenitis do you have?"
+          subtitle="What amenities do you have?"
         />
         <ServiceSelector onServicesChange={handleServicesChange} existingServices={services} />
       </div>
@@ -201,7 +216,7 @@ const RentModal = () => {
         <ImageUpload
           onChange={(value) => setCustomValue('imageSrc', value)}
           value={imageSrc}
-    />
+        />
       </div>
     )
   }
@@ -221,7 +236,6 @@ const RentModal = () => {
           errors={errors}
           required
         />
-        
         <Input
           id="description"
           label="Description"
@@ -230,31 +244,24 @@ const RentModal = () => {
           errors={errors}
           required
         />
-              <Input
-        id="phoneNumber"
-        label="Phone Number"
-        disabled={isLoading}
-        register={register}
-        errors={errors}
-      />
-      <Input
-        id="website"
-        label="Website"
-        disabled={isLoading}
-        register={register}
-        errors={errors}
-      />
-      <Input
-        id="address"
-        label="Address"
-        disabled={isLoading}
-        register={register}
-        errors={errors}
-      />
+        <Input
+          id="phoneNumber"
+          label="Phone Number"
+          disabled={isLoading}
+          register={register}
+          errors={errors}
+        />
+        <Input
+          id="website"
+          label="Website"
+          disabled={isLoading}
+          register={register}
+          errors={errors}
+        />
+        {/* Address input has been moved to ListLocationSelect */}
       </div>
     )
   }
-
 
   return (
     <Modal

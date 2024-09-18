@@ -11,12 +11,14 @@ interface InputProps {
   id: string;
   label: string;
   type?: string;
-  placeholder?:string;
+  placeholder?: string;
   disabled?: boolean;
   formatPrice?: boolean;
   required?: boolean;
   register: UseFormRegister<FieldValues>,
-  errors: FieldErrors
+  errors: FieldErrors,
+  className?: string;
+  height?: string;  // Add this line
 }
 
 const Input: React.FC<InputProps> = ({
@@ -29,9 +31,11 @@ const Input: React.FC<InputProps> = ({
   register,
   required,
   errors,
+  className = "",
+  height = "65px"  // Add this line with a default value
 }) => {
   return (
-    <div className="w-full relative">
+    <div className={`w-full relative ${className}`}>
       {formatPrice && (
         <BiDollar
           size={24}  
@@ -49,6 +53,7 @@ const Input: React.FC<InputProps> = ({
         {...register(id, { required })}
         placeholder={placeholder} 
         type={type}
+        style={{ height }}  // Add this line
         className={`
           peer
           w-full
@@ -76,7 +81,6 @@ const Input: React.FC<InputProps> = ({
           transform 
           -translate-y-3 
           top-5 
-          
           origin-[0] 
           ${formatPrice ? 'left-9' : 'left-4'}
           peer-placeholder-shown:scale-100 

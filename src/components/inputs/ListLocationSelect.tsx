@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Select, { StylesConfig } from 'react-select';
 import useStates from '@/app/hooks/useStates';
 import useCities from '@/app/hooks/useCities';
+import Input from '../inputs/Input';
 
 interface LocationSelection {
   label: string;
@@ -11,10 +12,17 @@ interface LocationSelection {
 }
 
 interface ListLocationSelectProps {
-  onLocationSubmit: (location: string | null) => void;
+  onLocationSubmit: (location: {
+    state: string;
+    city: string;
+    address: string;
+    zipCode: string;
+  } | null) => void;
+  register: any;
+  errors: any;
 }
 
-const ListLocationSelect: React.FC<ListLocationSelectProps> = ({ onLocationSubmit }) => {
+const ListLocationSelect: React.FC<ListLocationSelectProps> = ({ onLocationSubmit, register, errors }) => {
   const [selectedCountry] = useState<string>('6252001'); // USA
   const [selectedState, setSelectedState] = useState<LocationSelection | null>(null);
   const [selectedCity, setSelectedCity] = useState<LocationSelection | null>(null);
@@ -24,8 +32,12 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({ onLocationSubmi
 
   useEffect(() => {
     if (selectedState && selectedCity) {
-      const location = `${selectedCity.label}, ${selectedState.label}`;
-      onLocationSubmit(location);
+      onLocationSubmit({
+        state: selectedState.label,
+        city: selectedCity.label,
+        address: '', // This will be updated when the user types in the address
+        zipCode: '', // This will be updated when the user types in the ZIP code
+      });
     } else {
       onLocationSubmit(null);
     }
@@ -47,54 +59,82 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({ onLocationSubmi
       borderColor: 'white',
       color: 'white',
       boxShadow: 'none',
-      padding: '8px',
+      minHeight: '25px',
+      height: '60px',
       '&:hover': {
         borderColor: 'white',
       },
+   // Add this line
     }),
-    option: (styles, { isFocused, isSelected }) => ({
-      ...styles,
-      backgroundColor: isFocused ? 'grey' : 'black',
-      color: 'white',
-      cursor: 'pointer',
-    }),
+    // ... other styles ...
     singleValue: (styles) => ({
       ...styles,
       color: 'white',
+      width: '100%', // Add this line
+   // Add this line
     }),
     input: (styles) => ({
       ...styles,
       color: 'white',
+   // Add this line
     }),
     placeholder: (styles) => ({
       ...styles,
       color: 'white',
+      width: '100%', // Add this line
+   // Add this line
+    }),
+    valueContainer: (styles) => ({
+      ...styles,
+      height: '48px',
+      padding: '0 8px',
     }),
   };
 
   return (
-    <div>
-      <div className='mb-3'>
+    <div className="flex flex-col gap-4">
+      <Input
+        id="address"
+        label="Address"
+        register={register}
+        errors={errors}
+        required
+        height='60px'
+        className='text-center text-sm'
+      />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        
+        <Select
+          options={cities}
+          value={selectedCity}
+          onChange={handleCityChange}
+          placeholder="City"
+          styles={customStyles}
+          getOptionLabel={(option) => option.label}
+          getOptionValue={(option) => option.value}
+          isDisabled={!selectedState}
+          className='text-sm'
+        />
         <Select
           options={states}
           value={selectedState}
           onChange={handleStateChange}
-          placeholder="Select State"
+          placeholder="State"
           styles={customStyles}
           getOptionLabel={(option) => option.label}
           getOptionValue={(option) => option.value}
+          className='text-sm'
+        />
+        <Input
+          id="zipCode"
+          label="ZIP Code"
+          register={register}
+          errors={errors}
+          required
+          height='60px'
+          className='text-center text-sm'
         />
       </div>
-      <Select
-        options={cities}
-        value={selectedCity}
-        onChange={handleCityChange}
-        placeholder="Select City"
-        styles={customStyles}
-        getOptionLabel={(option) => option.label}
-        getOptionValue={(option) => option.value}
-        isDisabled={!selectedState}
-      />
     </div>
   );
 };
