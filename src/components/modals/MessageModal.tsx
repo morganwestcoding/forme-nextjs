@@ -61,6 +61,7 @@ const MessageModal: React.FC = () => {
       });
       setMessages(prev => [...prev, response.data]);
       setNewMessage('');
+      setTimeout(scrollToBottom, 0);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error('Error sending message:', error.response?.data);
@@ -78,6 +79,28 @@ const MessageModal: React.FC = () => {
     }
   };
 
+  const groupMessagesByDate = (messages: Message[]) => {
+    const groups: { [key: string]: Message[] } = {};
+    // Sort messages by createdAt in ascending order
+    messages.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+    messages.forEach(message => {
+      const date = new Date(message.createdAt).toLocaleDateString();
+      if (!groups[date]) {
+        groups[date] = [];
+      }
+      groups[date].push(message);
+    });
+    return groups;
+  };
+
+  const renderDateSeparator = (date: string) => (
+    <div className="flex justify-center my-4">
+      <span className="bg-gray-200 text-gray-600 text-xs px-2 py-1 rounded-lg">
+        {date}
+      </span>
+    </div>
+  );
+
   const bodyContent = (
     <div className="flex flex-col h-[475px]">
       {isLoading ? (
@@ -86,52 +109,60 @@ const MessageModal: React.FC = () => {
         </div>
       ) : (
         <>
-          <div className="flex-grow overflow-y-auto mb-4 p-4 flex flex-col-reverse">
-            <div className="space-y-4 flex flex-col-reverse">
-              {[...messages].reverse().map((message) => (
-                <div
-                  key={message.id}
-                  className={`flex ${
-                    message.senderId === messageModal.otherUserId
-                      ? 'justify-start'
-                      : 'justify-end'
-                  }`}
-                >
-                  <div className={`flex items-start ${
-                    message.senderId === messageModal.otherUserId
-                      ? 'flex-row'
-                      : 'flex-row-reverse'
-                  }`}>
-                    <div className={`w-11 h-11 rounded-full overflow-hidden flex-shrink-0 ${
-                      message.senderId === messageModal.otherUserId ? 'mr-2' : 'ml-2'
-                    }`}>
-                      <Image
-                        src={message.sender.image || '/placeholder-avatar.png'}
-                        alt={message.sender.name || 'User'}
-                        width={46}
-                        height={46}
-                      />
-                    </div>
-                    <div className={`flex flex-col ${
-                      message.senderId === messageModal.otherUserId ? 'items-start' : 'items-end'
-                    }`}>
-                      <div
-                        className={`max-w-[100%] p-3 rounded-lg ${
-                          message.senderId === messageModal.otherUserId
-                            ? 'bg-gray-500 text-white text-sm'
-                            : 'bg-blue-500 text-white text-sm'
-                        }`}
-                      >
-                        <p>{message.content}</p>
-                      </div>
-                      <p className={`text-xs mt-1 text-gray-400 ${
-                        message.senderId === messageModal.otherUserId ? 'self-start' : 'self-end'
+          <div className="flex-grow overflow-y-auto mb-4 p-4">
+            <div className="space-y-4 flex flex-col">
+              {Object.entries(groupMessagesByDate(messages)).map(([date, dateMessages]) => (
+                <React.Fragment key={date}>
+                  {renderDateSeparator(date)}
+                  {dateMessages.map((message) => (
+                    <div
+                      key={message.id}
+                      className={`flex ${
+                        message.senderId === messageModal.otherUserId
+                          ? 'justify-start'
+                          : 'justify-end'
+                      }`}
+                    >
+                      <div className={`flex items-start ${
+                        message.senderId === messageModal.otherUserId
+                          ? 'flex-row'
+                          : 'flex-row-reverse'
                       }`}>
-                        {new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </p>
+<div className={`w-11 h-11 rounded-full overflow-hidden flex-shrink-0 ${
+  message.senderId === messageModal.otherUserId ? 'mr-2' : 'ml-2'
+}`}>
+  <div className="w-full h-full relative">
+    <Image
+      src={message.sender.image || '/placeholder-avatar.png'}
+      alt={message.sender.name || 'User'}
+      layout="fill"
+      objectFit="cover"
+      className="rounded-full"
+    />
+  </div>
+</div>
+                        <div className={`flex flex-col ${
+                          message.senderId === messageModal.otherUserId ? 'items-start' : 'items-end'
+                        }`}>
+                          <div
+                            className={`max-w-[100%] p-3 rounded-lg ${
+                              message.senderId === messageModal.otherUserId
+                                ? 'bg-gray-500 text-white text-sm'
+                                : 'bg-blue-500 text-white text-sm'
+                            }`}
+                          >
+                            <p>{message.content}</p>
+                          </div>
+                          <p className={`text-xs mt-1 text-gray-400 ${
+                            message.senderId === messageModal.otherUserId ? 'self-start' : 'self-end'
+                          }`}>
+                            {new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </p>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
+                  ))}
+                </React.Fragment>
               ))}
             </div>
             <div ref={messagesEndRef} />

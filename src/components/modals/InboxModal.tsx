@@ -55,7 +55,7 @@ const InboxModal: React.FC<InboxModalProps> = ({ isOpen, onClose, currentUser })
   const bodyContent = (
     <div className="flex flex-col h-full">
       <div className="mb-4">
-      <UserSearch onResultClick={startNewConversation} />
+        <UserSearch onResultClick={startNewConversation} />
       </div>
       <div className="flex-grow overflow-y-auto space-y-4 mb-4">
         {conversations.map((conversation) => (
@@ -64,13 +64,17 @@ const InboxModal: React.FC<InboxModalProps> = ({ isOpen, onClose, currentUser })
             className="flex items-center space-x-3 cursor-pointer hover:bg-gray-700 p-2 rounded"
             onClick={() => openConversation(conversation.id, conversation.otherUser.id)}
           >
-            <Image
-              src={conversation.otherUser.image || '/placeholder-avatar.png'}
-              alt={conversation.otherUser.name || 'User'}
-              width={40}
-              height={40}
-              className="rounded-full"
-            />
+            <div className="w-11 h-11 rounded-full overflow-hidden flex-shrink-0">
+              <div className="w-full h-full relative">
+                <Image
+                  src={conversation.otherUser.image || '/placeholder-avatar.png'}
+                  alt={conversation.otherUser.name || 'User'}
+                  layout="fill"
+                  objectFit="cover"
+                  className="rounded-full"
+                />
+              </div>
+            </div>
             <div className="flex-1 min-w-0">
               <h3 className="font-semibold text-white truncate">{conversation.otherUser.name}</h3>
               <p className="text-sm text-gray-400 truncate max-w-[200px]">{conversation.lastMessage?.content}</p>
