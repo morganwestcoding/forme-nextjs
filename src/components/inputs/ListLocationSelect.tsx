@@ -64,30 +64,32 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({ onLocationSubmi
       '&:hover': {
         borderColor: 'white',
       },
-   // Add this line
     }),
-    // ... other styles ...
+    option: (styles, { isFocused, isSelected }) => ({
+      ...styles,
+      backgroundColor: isFocused ? 'grey' : 'black',
+      color: 'white',
+      cursor: 'pointer',
+    }),
     singleValue: (styles) => ({
       ...styles,
       color: 'white',
-      width: '100%', // Add this line
-   // Add this line
+      marginLeft: '0.5rem', // Add this line
     }),
     input: (styles) => ({
       ...styles,
       color: 'white',
-   // Add this line
+      marginLeft: '0.5rem', // Add this line
     }),
     placeholder: (styles) => ({
       ...styles,
       color: 'white',
-      width: '100%', // Add this line
-   // Add this line
+      marginLeft: '0.5rem', // Add this line
     }),
     valueContainer: (styles) => ({
       ...styles,
       height: '48px',
-      padding: '0 8px',
+      padding: '0 8px 0 0.5rem', // Modify this line
     }),
   };
 
@@ -95,7 +97,7 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({ onLocationSubmi
     <div className="flex flex-col gap-4">
       <Input
         id="address"
-        label="Address"
+        label="Street"
         register={register}
         errors={errors}
         required

@@ -11,7 +11,6 @@ import { SafeListing, SafeReservation, SafeUser } from "@/app/types";
 import { categories } from "@/components/Categories";
 import ListingHead from "@/components/listings/ListingHead";
 import ListingRightBar from "@/components/listings/ListingRightBar";
-import ListingGalleryImage from "@/components/listings/ListingGalleryImage";
 
 interface ListingClientProps {
   reservations?: SafeReservation[];
@@ -120,12 +119,6 @@ const ListingClient: React.FC<ListingClientProps> = ({
             listing={listing}
             currentUser={currentUser}
           />
-          <div className="mt-4">
-            <ListingGalleryImage 
-              listing={listing} 
-              currentUser={currentUser} 
-            />
-          </div>
         </div>
         <div className="w-[40%]">
           <ListingRightBar

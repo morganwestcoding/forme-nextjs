@@ -15,6 +15,7 @@ interface ModalProps {
   disabled?: boolean;
   secondaryAction?: () => void;
   secondaryActionLabel?: string;
+  children?: React.ReactNode; 
 }
 
 const Modal: React.FC<ModalProps> = ({ 
@@ -27,7 +28,8 @@ const Modal: React.FC<ModalProps> = ({
   footer, 
   disabled,
   secondaryAction,
-  secondaryActionLabel
+  secondaryActionLabel,
+  children
 }) => {
   const [showModal, setShowModal] = useState(isOpen);
 
@@ -153,6 +155,7 @@ const Modal: React.FC<ModalProps> = ({
               {/*body*/}
               <div className="relative p-6 text-white flex-auto">
                 {body}
+                {children}
               </div>
               {/*footer*/}
               <div className="flex flex-col gap-2 p-6">
