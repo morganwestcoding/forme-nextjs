@@ -91,7 +91,7 @@ const ListingGalleryImage: React.FC<ListingGalleryImageProps> = ({ listing, curr
                     layout="fill"
                     objectFit="cover"
                     alt={`Gallery image ${index + 1}`}
-                    className="rounded-lg"
+                    className="rounded-lg shadow-sm"
                   />
                 </div>
                 {isEditMode && (

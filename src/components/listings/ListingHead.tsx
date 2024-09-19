@@ -48,28 +48,28 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
   const stateAcronym = state ? stateToAcronym(state) : '';
 
   return (
-    <div className="w-full pl-4 pr-[1.5%]">
-      <div className="bg-white rounded-2xl shadow-sm overflow-hidden relative">
-        <div className="px-6 pt-6">
-          <div className="flex flex-col items-start">
-            <h1 className="text-2xl font-bold text-gray-800 mb-2">{title}</h1>
-            <div className="flex items-center space-x-2 mb-3">
-              <p className="text-sm text-gray-600">
-          {city}{stateAcronym && `, ${stateAcronym}`}
-              </p>
-            </div>
-          </div>
-        </div>
-        
-        <ListingGalleryImage listing={listing} currentUser={currentUser} />
-        
-        <div className="px-6">
-        <h1 className="text-2xl font-bold text-gray-800 mb-2">About Us</h1>
-          <p className="text-xs text-gray-700 mb-6 line-clamp-3 overflow-hidden">
-            {description}
+<div className="w-full pl-4 pr-[1.5%]">
+  <div className="bg-white rounded-2xl shadow-sm overflow-hidden relative">
+    <div className="px-6 pt-6">
+      <div className="flex flex-col items-start">
+        <h1 className="text-xl font-black text-gray-800">{title}</h1>
+        <div className="flex items-center mb-6 font-mono">
+          <p className="text-sm text-gray-600">
+            {city}{stateAcronym && `, ${stateAcronym}`}
           </p>
         </div>
-        
+      </div>
+    </div>
+    
+    <ListingGalleryImage listing={listing} currentUser={currentUser} />
+    
+    <div className="px-6">
+      <h2 className="text-xl font-bold text-gray-800 mb-2">About Us</h2>
+      <p className="text-xs text-gray-700 mb-6 line-clamp-3 overflow-hidden">
+        {description}
+      </p>
+    </div>
+
         {/*<div className="px-6 pb-6 flex justify-end">
           <div className="flex space-x-2">
             <button
@@ -103,8 +103,8 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
             </button>
           </div>
         </div>*/}
-      </div>
-    </div>
+          </div>
+          </div>
   );
 };
 

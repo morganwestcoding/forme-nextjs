@@ -39,7 +39,7 @@ const formattedDate = format(new Date(createdAt), 'PPP'); // Example format: Jan
                 <span className="ml-4 text-xs font-light text-[#a2a2a2]">{location}</span>
               </li>
         
-              <li className="flex items-center pb-2 pt-2 w-full rounded-lg shadow-sm bg-white border px-2">
+              <li className="flex items-center pb-2 pt-2 w-52 rounded-lg shadow-sm bg-white border px-2">
               <div className="flex items-center justify-center  p-1  cursor-pointer">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={19} height={19} color={"#a2a2a2"} fill={"none"}>
     <path d="M11 13H16M8 13H8.00898M13 17H8M16 17H15.991" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
