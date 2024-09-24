@@ -243,7 +243,11 @@ const RentModal = () => {
           register={register}
           errors={errors}
           required
+          maxLength={300}
         />
+              <div className="text-sm text-gray-500">
+        {watch('description')?.length || 0}/300 characters
+      </div>
         <Input
           id="phoneNumber"
           label="Phone Number"

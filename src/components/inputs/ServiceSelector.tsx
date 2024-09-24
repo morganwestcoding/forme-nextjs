@@ -3,6 +3,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { categories } from '../Categories';
+import Select, { StylesConfig, SingleValue } from 'react-select';
 
 export type Service = {
   serviceName: string;
@@ -15,86 +16,196 @@ type ServiceSelectorProps = {
   existingServices: Service[];
 };
 
+interface CategoryOption {
+  label: string;
+  value: string;
+}
+
 const ServiceSelector: React.FC<ServiceSelectorProps> = ({ onServicesChange, existingServices }) => {
   const [services, setServices] = useState<Service[]>(existingServices);
-  // State to keep track of the raw input values for prices
   const [inputValues, setInputValues] = useState<string[]>(existingServices.map(service => service.price.toFixed(2)));
+  const [focusedInputs, setFocusedInputs] = useState<boolean[]>(existingServices.map(() => false));
 
   useEffect(() => {
     onServicesChange(services.map((service, index) => ({
       ...service,
-      // Ensure price is a number when updating services, converting raw input string to a number
       price: parseFloat(inputValues[index]) || 0
     })));
   }, [services, inputValues, onServicesChange]);
 
   const handleInputChange = (index: number, field: keyof Service, value: string) => {
-    // Update the corresponding service detail based on the field
     const updatedServices = [...services];
     const updatedInputValues = [...inputValues];
 
     if (field === 'price') {
-      // Update the raw input value for price fields
-      updatedInputValues[index] = value; // Directly update with the raw input string
+      updatedInputValues[index] = value;
       setInputValues(updatedInputValues);
       updatedServices[index] = {
          ...updatedServices[index],
-      [field]: parseFloat(value) || 0,
-     };
+         [field]: parseFloat(value) || 0,
+      };
     } else {
       updatedServices[index] = { ...updatedServices[index], [field]: value };
     }
-      setServices(updatedServices);
-    };
+    setServices(updatedServices);
+  };
 
-    const handleBlur = (index: number) => {
-      const updatedInputValues = [...inputValues];
-      updatedInputValues[index] = parseFloat(inputValues[index]).toFixed(2);
-      setInputValues(updatedInputValues);
-    };
-  
+  const handleFocus = (index: number) => {
+    const newFocusedInputs = [...focusedInputs];
+    newFocusedInputs[index] = true;
+    setFocusedInputs(newFocusedInputs);
+  };
 
+  const handleBlur = (index: number) => {
+    const updatedInputValues = [...inputValues];
+    updatedInputValues[index] = parseFloat(inputValues[index]).toFixed(2);
+    setInputValues(updatedInputValues);
 
+    const newFocusedInputs = [...focusedInputs];
+    newFocusedInputs[index] = false;
+    setFocusedInputs(newFocusedInputs);
+  };
+
+  const handleCategoryChange = (index: number, selectedOption: SingleValue<CategoryOption>) => {
+    handleInputChange(index, 'category', selectedOption?.value || '');
+  };
+
+  const customStyles: StylesConfig<CategoryOption, false> = {
+    control: (styles) => ({
+      ...styles,
+      backgroundColor: 'transparent',
+      borderColor: 'white',
+      color: 'white',
+      boxShadow: 'none',
+      minHeight: '60px',
+      height: '60px',
+      '&:hover': {
+        borderColor: 'white',
+      },
+    }),
+    option: (styles, { isFocused, isSelected }) => ({
+      ...styles,
+      backgroundColor: isFocused ? 'grey' : 'black',
+      color: 'white',
+      cursor: 'pointer',
+    }),
+    singleValue: (styles) => ({
+      ...styles,
+      color: 'white',
+      marginLeft: '0.5rem',
+    }),
+    input: (styles) => ({
+      ...styles,
+      color: 'white',
+      marginLeft: '0.5rem',
+    }),
+    placeholder: (styles) => ({
+      ...styles,
+      color: 'white',
+      marginLeft: '0.5rem',
+    }),
+    valueContainer: (styles) => ({
+      ...styles,
+      height: '58px',
+      padding: '0 8px 0 0.5rem',
+    }),
+  };
 
   return (
-    <div className="max-w-2xl ">
+    <div className="max-w-2xl">
       {services.map((service, index) => (
-        <div key={index} className="flex flex-row justify-between mb-3 gap-2">
-          <input
-            type="text"
-            placeholder="Service Name"
-            value={service.serviceName}
-            onChange={(e) => handleInputChange(index, 'serviceName', e.target.value)}
-            className="rounded border-white text-white bg-transparent border p-4 flex-1"
-          />
-<div className="flex relative items-center border border-white bg-transparent rounded p-4">
-            <span className="absolute left-3 text-white">$</span>
+        <div key={index} className="flex flex-row justify-between mb-3 gap-3">
+          <div className="relative w-1/3">
             <input
               type="text"
-              placeholder="Price"
+              id={`serviceName-${index}`}
+              value={service.serviceName}
+              onChange={(e) => handleInputChange(index, 'serviceName', e.target.value)}
+              onFocus={() => handleFocus(index)}
+              onBlur={() => handleBlur(index)}
+              className="
+                peer
+                w-full
+                h-[60px]
+                px-4
+                pt-1
+                font-light 
+                bg-transparent
+                border-white 
+                border
+                rounded-md
+                outline-none
+                transition
+                disabled:opacity-70
+                disabled:cursor-not-allowed
+                text-white
+                text-sm
+              "
+              placeholder=""
+            />
+            <label 
+              htmlFor={`serviceName-${index}`}
+              className={`
+                absolute 
+                text-sm
+                duration-150 
+                transform 
+                -translate-y-3 
+                top-5 
+                z-10 
+                origin-[0] 
+                left-4
+                peer-placeholder-shown:scale-100 
+                peer-placeholder-shown:translate-y-0 
+                peer-focus:scale-75
+                peer-focus:-translate-y-4
+                text-zinc-400
+                ${service.serviceName || focusedInputs[index] ? 'scale-75 -translate-y-4' : ''}
+              `}
+            >
+              Service Name
+            </label>
+          </div>
+          <div className="relative w-1/3">
+            <input
+              type="text"
+              id={`price-${index}`}
               value={inputValues[index]}
               onChange={(e) => handleInputChange(index, 'price', e.target.value)}
               onBlur={() => handleBlur(index)}
-              className="pl-8 bg-transparent text-white outline-none w-28"
+              className="
+                text-sm
+                w-full
+                h-[60px]
+                px-4
+                pl-8
+                font-light
+                bg-transparent
+                border-white 
+                border
+                rounded-md
+                outline-none
+                transition
+                disabled:opacity-70
+                disabled:cursor-not-allowed
+                text-white
+              "
+              placeholder="Price"
             />
+            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white">$</span>
           </div>
-          <select
-            value={service.category}
-            onChange={(e) => handleInputChange(index, 'category', e.target.value)}
-            className="rounded border border-white text-white bg-transparent p-4 w-1/4"
-          >
-            <option value="">Category</option>
-            {categories.map((category) => (
-              <option key={category.label} value={category.label}>
-                {category.label}
-              </option>
-            ))}
-          </select>
+          <Select<CategoryOption>
+            value={service.category ? { label: service.category, value: service.category } : null}
+            onChange={(selectedOption) => handleCategoryChange(index, selectedOption)}
+            options={categories.map(category => ({ label: category.label, value: category.label }))}
+            styles={customStyles}
+            placeholder="Category"
+            className="w-1/3 text-sm"
+          />
         </div>
       ))}
     </div>
   );
 };
-
 
 export default ServiceSelector;

@@ -104,17 +104,21 @@ const ListingGalleryImage: React.FC<ListingGalleryImageProps> = ({ listing, curr
                     </svg>
                   </button>
                 )}
-                {index === images.length - 1 && <GridGalleryButton />}
+                {index === images.length - 1 && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <GridGalleryButton />
+                  </div>
+                )}
               </div>
             ))
           ) : (
             <div className="relative aspect-w-1 aspect-h-1 w-full border-2 border-dashed border-gray-300 rounded-lg">
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <p className="text-gray-400 mb-4">No images</p>
-              <GridGalleryButton />
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <p className="text-gray-400 mb-4">No images</p>
+                <GridGalleryButton />
+              </div>
             </div>
-          </div>
-        )}
+          )}
         </div>
       </div>
       <ListingGridModal listing={listing} currentUser={currentUser} />

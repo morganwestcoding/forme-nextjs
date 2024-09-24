@@ -3,7 +3,8 @@
 import { 
   FieldErrors, 
   FieldValues, 
-  UseFormRegister 
+  UseFormRegister,
+  UseFormWatch
 } from "react-hook-form";
 import { BiDollar } from "react-icons/bi";
 
@@ -18,7 +19,9 @@ interface InputProps {
   register: UseFormRegister<FieldValues>,
   errors: FieldErrors,
   className?: string;
-  height?: string;  // Add this line
+  height?: string;
+  maxLength?: number;
+  watch?: UseFormWatch<FieldValues>;
 }
 
 const Input: React.FC<InputProps> = ({
@@ -32,8 +35,13 @@ const Input: React.FC<InputProps> = ({
   required,
   errors,
   className = "",
-  height = "65px"  // Add this line with a default value
+  height = "65px",
+  maxLength,
+  watch
 }) => {
+  const value = watch ? watch(id) : '';
+  const charCount = value ? value.length : 0;
+
   return (
     <div className={`w-full relative ${className}`}>
       {formatPrice && (
@@ -50,10 +58,10 @@ const Input: React.FC<InputProps> = ({
       <input
         id={id}
         disabled={disabled}
-        {...register(id, { required })}
+        {...register(id, { required, maxLength })}
         placeholder={placeholder} 
         type={type}
-        style={{ height }}  // Add this line
+        style={{ height }}
         className={`
           peer
           w-full
@@ -92,6 +100,11 @@ const Input: React.FC<InputProps> = ({
       >
         {label}
       </label>
+      {maxLength && (
+        <div className="text-sm text-gray-500 absolute right-2 bottom-2">
+          {charCount}/{maxLength}
+        </div>
+      )}
     </div>
    );
 }

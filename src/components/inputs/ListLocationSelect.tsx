@@ -5,6 +5,7 @@ import Select, { StylesConfig } from 'react-select';
 import useStates from '@/app/hooks/useStates';
 import useCities from '@/app/hooks/useCities';
 import Input from '../inputs/Input';
+import { FieldValues, UseFormRegister, FieldErrors } from "react-hook-form";
 
 interface LocationSelection {
   label: string;
@@ -18,8 +19,8 @@ interface ListLocationSelectProps {
     address: string;
     zipCode: string;
   } | null) => void;
-  register: any;
-  errors: any;
+  register: UseFormRegister<FieldValues>;
+  errors: FieldErrors;
 }
 
 const ListLocationSelect: React.FC<ListLocationSelectProps> = ({ onLocationSubmit, register, errors }) => {
@@ -31,15 +32,16 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({ onLocationSubmi
   const cities = useCities(selectedState?.value ?? '');
 
   useEffect(() => {
-    if (selectedState && selectedCity) {
+    const address = (document.getElementById('address') as HTMLInputElement)?.value;
+    const zipCode = (document.getElementById('zipCode') as HTMLInputElement)?.value;
+
+    if (selectedState && selectedCity && address && zipCode) {
       onLocationSubmit({
         state: selectedState.label,
         city: selectedCity.label,
-        address: '', // This will be updated when the user types in the address
-        zipCode: '', // This will be updated when the user types in the ZIP code
+        address,
+        zipCode,
       });
-    } else {
-      onLocationSubmit(null);
     }
   }, [selectedState, selectedCity, onLocationSubmit]);
 
@@ -74,27 +76,28 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({ onLocationSubmi
     singleValue: (styles) => ({
       ...styles,
       color: 'white',
-      marginLeft: '0.5rem', // Add this line
+      marginLeft: '0.5rem',
     }),
     input: (styles) => ({
       ...styles,
       color: 'white',
-      marginLeft: '0.5rem', // Add this line
+      marginLeft: '0.5rem',
     }),
     placeholder: (styles) => ({
       ...styles,
       color: 'white',
-      marginLeft: '0.5rem', // Add this line
+      marginLeft: '0.5rem',
     }),
     valueContainer: (styles) => ({
       ...styles,
       height: '48px',
-      padding: '0 8px 0 0.5rem', // Modify this line
+      padding: '0 8px 0 0.5rem',
     }),
   };
 
+
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-3">
       <Input
         id="address"
         label="Street"
@@ -104,8 +107,7 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({ onLocationSubmi
         height='60px'
         className='text-center text-sm'
       />
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <Select
           options={cities}
           value={selectedCity}
