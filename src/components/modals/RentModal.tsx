@@ -236,6 +236,7 @@ const RentModal = () => {
           errors={errors}
           required
         />
+      <div className="relative">
         <Input
           id="description"
           label="Description"
@@ -245,8 +246,9 @@ const RentModal = () => {
           required
           maxLength={300}
         />
-              <div className="text-sm text-gray-500">
-        {watch('description')?.length || 0}/300 characters
+        <div className="absolute bottom-2 right-2 text-sm text-gray-500 bg-neutral-800 px-1 rounded">
+          {watch('description')?.length || 0}/300
+        </div>
       </div>
         <Input
           id="phoneNumber"
@@ -262,7 +264,7 @@ const RentModal = () => {
           register={register}
           errors={errors}
         />
-        {/* Address input has been moved to ListLocationSelect */}
+
       </div>
     )
   }

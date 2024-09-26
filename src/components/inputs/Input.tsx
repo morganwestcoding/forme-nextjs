@@ -1,5 +1,6 @@
 'use client';
 
+import React, { forwardRef } from 'react';
 import { 
   FieldErrors, 
   FieldValues, 
@@ -24,7 +25,7 @@ interface InputProps {
   watch?: UseFormWatch<FieldValues>;
 }
 
-const Input: React.FC<InputProps> = ({
+const Input = forwardRef<HTMLInputElement, InputProps>(({
   id,
   label,
   type = "text",
@@ -38,7 +39,7 @@ const Input: React.FC<InputProps> = ({
   height = "65px",
   maxLength,
   watch
-}) => {
+}, ref) => {
   const value = watch ? watch(id) : '';
   const charCount = value ? value.length : 0;
 
@@ -80,6 +81,7 @@ const Input: React.FC<InputProps> = ({
           ${errors[id] ? 'border-rose-500' : 'border-neutral-300'}
           ${errors[id] ? 'focus:border-rose-500' : 'focus:border-black'}
         `}
+        ref={ref}
       />
       <label 
         className={`
@@ -107,6 +109,8 @@ const Input: React.FC<InputProps> = ({
       )}
     </div>
    );
-}
- 
+});
+
+Input.displayName = 'Input';
+
 export default Input;

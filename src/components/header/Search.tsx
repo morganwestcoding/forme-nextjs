@@ -4,6 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { SafeUser, SafeListing } from '@/app/types';
+import Filter from './Filter';
 
 type SearchResult = SafeUser | SafeListing;
 
@@ -53,7 +54,7 @@ const Search: React.FC<SearchProps> = ({ onResultClick }) => {
   return (
     <div className="relative ml-8 w-64"> {/* Added w-64 to set a fixed width */}
       <div className="relative">
-        <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+        <span className="absolute inset-y-0 left-0 flex items-center pl-4">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={18} height={18} color={"#ffffff"} fill={"none"}>
             <path d="M14 14L16.5 16.5" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
             <path d="M16.4333 18.5252C15.8556 17.9475 15.8556 17.0109 16.4333 16.4333C17.0109 15.8556 17.9475 15.8556 18.5252 16.4333L21.5667 19.4748C22.1444 20.0525 22.1444 20.9891 21.5667 21.5667C20.9891 22.1444 20.0525 22.1444 19.4748 21.5667L16.4333 18.5252Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -62,11 +63,14 @@ const Search: React.FC<SearchProps> = ({ onResultClick }) => {
         </span>
         <input 
           type="text" 
-          className="w-full text-sm p-2.5 pl-10 pr-12 bg-black bg-opacity-5 shadow-sm border border-[#FFFFFF] rounded-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:outline-none focus:ring focus:ring-opacity-40 text-white focus:ring-blue-300 placeholder-white" 
+          className="w-full text-sm p-3 pl-11 font-light pr-12 bg-black bg-opacity-5 shadow-sm rounded-lg border border-white dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:outline-none focus:ring focus:ring-opacity-40 text-white focus:ring-blue-300 placeholder-white" 
           placeholder="Search" 
           value={searchTerm}
           onChange={handleInputChange}
         />
+   {/* <span className="absolute inset-y-0 right-0 flex items-center pr-4">
+          <Filter />
+        </span> */}
       </div>
       {searchResults.length > 0 && (
         <div className="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg">

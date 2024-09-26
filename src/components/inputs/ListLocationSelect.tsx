@@ -27,6 +27,8 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({ onLocationSubmi
   const [selectedCountry] = useState<string>('6252001'); // USA
   const [selectedState, setSelectedState] = useState<LocationSelection | null>(null);
   const [selectedCity, setSelectedCity] = useState<LocationSelection | null>(null);
+  const [stateError, setStateError] = useState<boolean>(false);
+  const [cityError, setCityError] = useState<boolean>(false);
 
   const states = useStates(selectedCountry);
   const cities = useCities(selectedState?.value ?? '');
@@ -42,29 +44,36 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({ onLocationSubmi
         address,
         zipCode,
       });
+    } else {
+      onLocationSubmit(null);
     }
+
+    setStateError(!selectedState);
+    setCityError(!selectedCity);
   }, [selectedState, selectedCity, onLocationSubmit]);
 
   const handleStateChange = (selectedOption: LocationSelection | null) => {
     setSelectedState(selectedOption);
-    setSelectedCity(null); // Reset city when state changes
+    setSelectedCity(null);
+    setStateError(!selectedOption);
   };
 
   const handleCityChange = (selectedOption: LocationSelection | null) => {
     setSelectedCity(selectedOption);
+    setCityError(!selectedOption);
   };
 
   const customStyles: StylesConfig<LocationSelection, false> = {
-    control: (styles) => ({
+    control: (styles, { isFocused }) => ({
       ...styles,
       backgroundColor: 'transparent',
-      borderColor: 'white',
+      borderColor: isFocused ? 'white' : (stateError || cityError ? '#ce3b55' : 'white'),
       color: 'white',
       boxShadow: 'none',
-      minHeight: '25px',
+      minHeight: '60px',
       height: '60px',
       '&:hover': {
-        borderColor: 'white',
+        borderColor: isFocused ? 'white' : (stateError || cityError ? '#E22F50' : 'white'),
       },
     }),
     option: (styles, { isFocused, isSelected }) => ({
@@ -85,16 +94,15 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({ onLocationSubmi
     }),
     placeholder: (styles) => ({
       ...styles,
-      color: 'white',
+      color: stateError || cityError ? '#ce3b55' : 'white',
       marginLeft: '0.5rem',
     }),
     valueContainer: (styles) => ({
       ...styles,
-      height: '48px',
+      height: '58px',
       padding: '0 8px 0 0.5rem',
     }),
   };
-
 
   return (
     <div className="flex flex-col gap-3">
@@ -109,6 +117,16 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({ onLocationSubmi
       />
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <Select
+          options={states}
+          value={selectedState}
+          onChange={handleStateChange}
+          placeholder="State"
+          styles={customStyles}
+          getOptionLabel={(option) => option.label}
+          getOptionValue={(option) => option.value}
+          className='text-sm'
+        />
+        <Select
           options={cities}
           value={selectedCity}
           onChange={handleCityChange}
@@ -117,16 +135,6 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({ onLocationSubmi
           getOptionLabel={(option) => option.label}
           getOptionValue={(option) => option.value}
           isDisabled={!selectedState}
-          className='text-sm'
-        />
-        <Select
-          options={states}
-          value={selectedState}
-          onChange={handleStateChange}
-          placeholder="State"
-          styles={customStyles}
-          getOptionLabel={(option) => option.label}
-          getOptionValue={(option) => option.value}
           className='text-sm'
         />
         <Input
@@ -139,6 +147,12 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({ onLocationSubmi
           className='text-center text-sm'
         />
       </div>
+      {(stateError || cityError) && (
+        <p className="text-red-500 text-sm mt-1">
+          {stateError && cityError ? 'State and City are required' : 
+           stateError ? 'State is required' : 'City is required'}
+        </p>
+      )}
     </div>
   );
 };
