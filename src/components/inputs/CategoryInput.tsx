@@ -1,7 +1,5 @@
 'use client';
 
-
-
 interface CategoryInputProps {
   color: string;
   label: string;
@@ -26,22 +24,16 @@ const CategoryInput: React.FC<CategoryInputProps> = ({
         group
         hover:bg-[#e2e8f0]
         hover:border-[#e2e8f0]
-        
-        
-      
         flex-col
         gap-3
-        
         transition
         cursor-pointer
         ${selected ? 'border border-white' : 'border border-white'}
         ${selected ? 'bg-[#b1dafe]' : 'bg-transparent'}
-       
       `}
     >
-      
       <div className="group group-hover:text-black flex items-center gap-5 font-light text-sm text-[white] ">
-      <span className={` h-6 w-6 rounded-full ${color} inline-block `}></span>
+        <span className={`h-6 w-6 rounded-full ${color} inline-block`}></span>
         {label}
       </div>
     </div>

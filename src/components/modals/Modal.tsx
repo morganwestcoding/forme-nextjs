@@ -11,7 +11,7 @@ interface ModalProps {
   title?: string;
   body?: React.ReactElement;
   footer?: React.ReactElement;
-  actionLabel?: string; // Made optional
+  actionLabel?: string;
   disabled?: boolean;
   secondaryAction?: () => void;
   secondaryActionLabel?: string;
@@ -98,7 +98,6 @@ const Modal: React.FC<ModalProps> = ({
           md:h-auto
           "
         >
-          {/*content*/}
           <div className={`
             translate
             duration-300
@@ -124,7 +123,6 @@ const Modal: React.FC<ModalProps> = ({
               focus:outline-none
             "
             >
-              {/*header*/}
               <div className="
                 flex 
                 items-center 
@@ -135,7 +133,7 @@ const Modal: React.FC<ModalProps> = ({
                 border-b-[1px]
                 "
               >
-                <div
+                <button
                   className="
                     p-1
                     border-0 
@@ -147,17 +145,15 @@ const Modal: React.FC<ModalProps> = ({
                   onClick={handleClose}
                 >
                   <X size={18} className=" text-white"/>
-                </div>
+                </button>
                 <div className="text-lg text-white font-medium">
                   {title}
                 </div>
               </div>
-              {/*body*/}
               <div className="relative p-6 text-white flex-auto">
                 {body}
                 {children}
               </div>
-              {/*footer*/}
               <div className="flex flex-col gap-2 p-6">
                 <div 
                   className="
@@ -176,7 +172,7 @@ const Modal: React.FC<ModalProps> = ({
                       onClick={handleSecondaryAction}
                     />  
                   )}
-                  {actionLabel && ( // Conditional rendering of the action button
+                  {actionLabel && (
                     <ModalButton
                       label={actionLabel}
                       disabled={disabled} 

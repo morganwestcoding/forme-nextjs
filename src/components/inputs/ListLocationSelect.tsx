@@ -85,7 +85,7 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({ onLocationSubmi
     }),
     placeholder: (styles) => ({
       ...styles,
-      color: 'white',
+      color: '#a2a2a2',
       marginLeft: '0.5rem',
     }),
     valueContainer: (styles) => ({
@@ -103,7 +103,6 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({ onLocationSubmi
         label="Street"
         register={register}
         errors={errors}
-        required
         height='60px'
         className='text-center text-sm'
       />
@@ -117,7 +116,7 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({ onLocationSubmi
           getOptionLabel={(option) => option.label}
           getOptionValue={(option) => option.value}
           isDisabled={!selectedState}
-          className='text-sm'
+          className='text-sm '
         />
         <Select
           options={states}
@@ -134,7 +133,6 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({ onLocationSubmi
           label="ZIP Code"
           register={register}
           errors={errors}
-          required
           height='60px'
           className='text-center text-sm'
         />

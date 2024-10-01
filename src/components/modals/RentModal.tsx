@@ -8,7 +8,7 @@ import {
   useForm
 } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
-import { useMemo, useState, useCallback} from "react";
+import { useMemo, useState, useCallback } from "react";
 
 import useRentModal from '@/app/hooks/useRentModal';
 
@@ -52,20 +52,27 @@ const RentModal = () => {
     reset,
   } = useForm<FieldValues>({
     defaultValues: {
-      services: Array(3).fill({ serviceName: "", price: 0, category: "" }),
       category: '',
       location: null,
+      address: '',
+      zipCode: '',
+      city: '',
+      state: '',
       imageSrc: '',
       title: '',
       description: '',
       phoneNumber: '',
       website: '',
-      // Address and zipCode are now handled in ListLocationSelect
     }
   });
 
   const category = watch('category');
   const imageSrc = watch('imageSrc');
+  const location = watch('location');
+  const address = watch('address');
+  const zipCode = watch('zipCode');
+  const city = watch('city');
+  const state = watch('state');
 
   const setCustomValue = (id: string, value: any) => {
     setValue(id, value, {
@@ -80,6 +87,16 @@ const RentModal = () => {
   }
 
   const onNext = () => {
+    if (step === STEPS.CATEGORY) {
+      if (!category) {
+        return toast.error('Please select a category.');
+      }
+    } else if (step === STEPS.LOCATION) {
+      if (!address || !zipCode || !city || !state) {
+        return toast.error('Please fill in all location fields.');
+      }
+    }
+    
     setStep((value) => value + 1);
   }
 
@@ -97,10 +114,14 @@ const RentModal = () => {
       setValue('location', `${locationData.city}, ${locationData.state}`);
       setValue('address', locationData.address);
       setValue('zipCode', locationData.zipCode);
+      setValue('city', locationData.city);
+      setValue('state', locationData.state);
     } else {
       setValue('location', null);
       setValue('address', '');
       setValue('zipCode', '');
+      setValue('city', '');
+      setValue('state', '');
     }
   };
 
@@ -110,20 +131,19 @@ const RentModal = () => {
     }
     
     setIsLoading(true);
-
+  
     const payload = { ...data, services };
-
-    console.log('Submitting data:', data, services);
+  
     axios.post('/api/listings', payload)
     .then(() => {
       toast.success('Listing created!');
       router.refresh();
       reset();
-      setStep(STEPS.CATEGORY)
+      setStep(STEPS.CATEGORY);
       rentModal.onClose();
     })
     .catch((error) => {
-      console.error('Error submitting listing:', error.response.data);
+      console.error('Error submitting listing:', error.response?.data);
       toast.error('Something went wrong.');
     })
     .finally(() => {
@@ -166,8 +186,7 @@ const RentModal = () => {
         {categories.map((item) => (
           <div key={item.label} className="col-span-1">
             <CategoryInput
-              onClick={(category) => 
-                setCustomValue('category', category)}
+              onClick={(category) => setCustomValue('category', category)}
               selected={category === item.label}
               label={item.label}
               color={item.color}
@@ -228,22 +247,28 @@ const RentModal = () => {
           title="How would you describe your place?"
           subtitle="Short and sweet works best!"
         />
-        <Input
-          id="title"
-          label="Title"
-          disabled={isLoading}
-          register={register}
-          errors={errors}
-          required
-        />
-        <Input
-          id="description"
-          label="Description"
-          disabled={isLoading}
-          register={register}
-          errors={errors}
-          required
-        />
+<Input
+  id="title"
+  label="Title"
+  disabled={isLoading}
+  register={register}
+  errors={errors}
+  required
+  maxLength={20}
+  watch={watch}
+  setValue={setValue}
+/>
+<Input
+  id="description"
+  label="Description"
+  disabled={isLoading}
+  register={register}
+  errors={errors}
+  required
+  maxLength={300}
+  watch={watch}
+  setValue={setValue}
+/>
         <Input
           id="phoneNumber"
           label="Phone Number"
@@ -258,7 +283,6 @@ const RentModal = () => {
           register={register}
           errors={errors}
         />
-        {/* Address input has been moved to ListLocationSelect */}
       </div>
     )
   }
