@@ -12,6 +12,9 @@ export type SafeListing = Omit<Listing, "createdAt"> & {
   createdAt: string;
   services: SafeService[];
   galleryImages: string[]; 
+  phoneNumber?: string | null;
+  website?: string | null;
+  address?: string | null; 
 };
 
 export type SafeReservation = Omit<

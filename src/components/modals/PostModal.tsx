@@ -124,21 +124,28 @@ const PostModal: React.FC<PostModalProps> = ({
             <div className="text-sm text-gray-400 mb-2">{formattedDate}</div>
           </div>
           <div className="flex items-center">
+
+            {post.location && (
+              <div className="text-sm text-gray-400 mr-2">{post.location}</div>
+            )}
             <span className={`w-8 h-5 rounded text-white drop-shadow-sm shadow-sm flex items-center justify-center text-xs ${categoryColors.bgColorClass}`}>
               {post.category.charAt(0).toUpperCase()}
             </span>
-            {post.location && (
-              <div className="text-sm text-gray-400 ml-2">{post.location}</div>
-            )}
           </div>
         </div>
       </div>
       <p className='text-sm mb-4 text-white'>{post.content}</p>
       {post.imageSrc && (
-        <div className="rounded-lg overflow-hidden relative mb-4">
-          <Image src={post.imageSrc} alt="Post Image" layout='responsive' objectFit="cover" width={500} height={300} />
-        </div>
-      )}
+  <div className="rounded-lg overflow-hidden relative w-full h-64 mb-3">
+    <Image 
+      src={post.imageSrc} 
+      alt="Post Image" 
+      layout='fill'
+      objectFit="cover"
+      className="transition-transform duration-300 ease-in-out hover:scale-105"
+    />
+  </div>
+)}
       <div className="flex space-x-4 mb-4">
         <button onClick={onLike} className={`flex items-center ${isLiked ? 'text-blue-500' : 'text-gray-400'}`}>
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">

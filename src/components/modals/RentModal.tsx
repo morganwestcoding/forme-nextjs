@@ -67,6 +67,8 @@ const RentModal = () => {
   });
 
   const category = watch('category');
+  const website = watch('website');
+  const phoneNumber = watch('phoneNumber');
   const imageSrc = watch('imageSrc');
   const location = watch('location');
   const address = watch('address');
@@ -132,7 +134,10 @@ const RentModal = () => {
     
     setIsLoading(true);
   
-    const payload = { ...data, services };
+    const payload = { ...data, services,
+      phoneNumber: data.phoneNumber,
+      website: data.website
+     };
   
     axios.post('/api/listings', payload)
     .then(() => {
@@ -275,6 +280,8 @@ const RentModal = () => {
           disabled={isLoading}
           register={register}
           errors={errors}
+          watch={watch}
+          setValue={setValue}
         />
         <Input
           id="website"
@@ -282,6 +289,8 @@ const RentModal = () => {
           disabled={isLoading}
           register={register}
           errors={errors}
+          watch={watch}
+          setValue={setValue}
         />
       </div>
     )
