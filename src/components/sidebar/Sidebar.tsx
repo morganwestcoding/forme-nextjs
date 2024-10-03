@@ -121,11 +121,7 @@ export default function Sidebar() {
   
          <li className={`group flex items-center justify-start mb-3 p-2 rounded-lg border ${
               selectedButton === 'jobs' ? 'bg-[#e2e8f0]' : 'bg-[#ffffff] hover:bg-[#e2e8f0]'
-            } w-36`} 
-            onClick={() => {
-              
-              setSelectedButton('jobs');
-            }}>
+            } w-36`} >
           <div className="group flex flex-col rounded-lg p-1 cursor-pointer">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={18} height={18} color={selectedButton === 'jobs' ? "#ffffff" : "#a2a2a2"}  fill={"none"} className=" group-hover:text-white">
     <path d="M10 12.3333C10 12.0233 10 11.8683 10.0341 11.7412C10.1265 11.3961 10.3961 11.1265 10.7412 11.0341C10.8683 11 11.0233 11 11.3333 11H12.6667C12.9767 11 13.1317 11 13.2588 11.0341C13.6039 11.1265 13.8735 11.3961 13.9659 11.7412C14 11.8683 14 12.0233 14 12.3333V13C14 14.1046 13.1046 15 12 15C10.8954 15 10 14.1046 10 13V12.3333Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
