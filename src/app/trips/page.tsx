@@ -8,6 +8,9 @@ import getReservations from "@/app/actions/getReservations";
 import TripsClient from "./TripsClient";
 import ClientOnly from "@/components/ClientOnly";
 
+
+export const dynamic = 'force-dynamic';
+
 const TripsPage = async () => {
   const currentUser = await getCurrentUser();
 

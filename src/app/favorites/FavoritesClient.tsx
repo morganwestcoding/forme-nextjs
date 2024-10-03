@@ -9,6 +9,8 @@ interface FavoritesClientProps {
   currentUser?: SafeUser | null,
 }
 
+export const dynamic = 'force-dynamic';
+
 const FavoritesClient: React.FC<FavoritesClientProps> = ({
   listings,
   currentUser

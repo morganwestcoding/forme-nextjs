@@ -8,6 +8,8 @@ import PropertiesClient from "./PropertiesClient";
 import ClientOnly from "@/components/ClientOnly";
 
 
+export const dynamic = 'force-dynamic';
+
 const PropertiesPage = async () => {
   const currentUser = await getCurrentUser();
 

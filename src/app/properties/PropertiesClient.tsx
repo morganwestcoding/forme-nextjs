@@ -15,6 +15,9 @@ interface PropertiesClientProps {
   currentUser?: SafeUser | null,
 }
 
+
+export const dynamic = 'force-dynamic';
+
 const PropertiesClient: React.FC<PropertiesClientProps> = ({
   listings,
   currentUser

@@ -10,10 +10,14 @@ import { SafeReservation, SafeUser } from "@/app/types";
 import Heading from "@/components/Heading";
 import ListingCard from "@/components/listings/ListingCard";
 
+
 interface TripsClientProps {
   reservations: SafeReservation[],
   currentUser?: SafeUser | null,
 }
+
+
+export const dynamic = 'force-dynamic';
 
 const TripsClient: React.FC<TripsClientProps> = ({
   reservations,

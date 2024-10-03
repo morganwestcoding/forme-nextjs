@@ -17,6 +17,9 @@ interface ReservationsClientProps {
   currentUser?: SafeUser | null,
 }
 
+
+export const dynamic = 'force-dynamic';
+
 const ReservationsClient: React.FC<ReservationsClientProps> = ({
   reservations,
   currentUser

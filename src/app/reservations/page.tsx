@@ -8,6 +8,10 @@ import ReservationsClient from "./ReservationsClient";
 
 import ClientOnly from "@/components/ClientOnly";
 import ClientProviders from "@/components/ClientProviders";
+
+
+export const dynamic = 'force-dynamic';
+
 const ReservationsPage = async () => {
   const currentUser = await getCurrentUser();
 

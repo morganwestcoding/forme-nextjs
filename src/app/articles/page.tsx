@@ -5,6 +5,8 @@ import getCurrentUser from "@/app/actions/getCurrentUser";
 import getListings from "@/app/actions/getListings";
 
 
+export const dynamic = 'force-dynamic';
+
 const ArticlesPage = async () => {
   const currentUser = await getCurrentUser();
 
