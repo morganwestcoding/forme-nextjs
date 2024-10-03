@@ -16,18 +16,14 @@ export const dynamic = 'force-dynamic';
 const Newsfeed = async ({ searchParams }: PostProps) => {
   const posts = await getPosts(searchParams);
   const currentUser = await getCurrentUser();
-  const category = searchParams.category;
-
-  const filteredPosts = category 
-    ? posts.filter(post => post.category === category)
-    : posts;
+  const categoryLabel = searchParams.category;
 
   return (
     <ClientProviders>
       <div className="flex w-full">
         <div className="flex-none w-[45%] ml-28 mt-8 mr-1">
-          <Share currentUser={currentUser} />
-          {filteredPosts.map((post) => (
+          <Share currentUser={currentUser} categoryLabel={categoryLabel} />
+          {posts.map((post) => (
             <Post 
               key={post.id}
               post={post}

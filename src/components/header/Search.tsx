@@ -68,9 +68,10 @@ const Search: React.FC<SearchProps> = ({ onResultClick }) => {
           value={searchTerm}
           onChange={handleInputChange}
         />
-   {/* <span className="absolute inset-y-0 right-0 flex items-center pr-4">
+   <span className="absolute inset-y-0 right-0 flex items-center pr-4">
+   <div className="w-px h-6 rounded-full bg-white mx-3"></div>
           <Filter />
-        </span> */}
+        </span> 
       </div>
       {searchResults.length > 0 && (
         <div className="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg">

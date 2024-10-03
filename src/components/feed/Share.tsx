@@ -1,4 +1,5 @@
 'use client';
+
 import React, { useState, useEffect, useCallback } from 'react';
 import ContentInput from '../inputs/ContentInput';
 import Avatar from '../ui/avatar';
@@ -9,9 +10,11 @@ import Image from 'next/image';
 import PostCategorySelect from '../inputs/PostCategorySelect';
 import AttachmentModal from '../modals/AttachmentModal';
 import useAttachmentModal from '@/app/hooks/useAttachmentModal';
+import { categories } from '@/components/Categories';
 
 interface ShareProps {
   currentUser: SafeUser | null;
+  categoryLabel: string | undefined;
 }
 
 interface PostData {
@@ -24,7 +27,7 @@ interface PostData {
   userId: string | undefined;
 }
 
-const Share: React.FC<ShareProps> = ({ currentUser }) => {
+const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
   const attachmentModal = useAttachmentModal();
   const [imageSrc, setImageSrc] = useState('');
   const [content, setContent] = useState('');
@@ -32,6 +35,9 @@ const Share: React.FC<ShareProps> = ({ currentUser }) => {
   const [tag, setTag] = useState('');
   const [category, setCategory] = useState('');
   const [categoryId, setCategoryId] = useState('');
+
+  // Find the selected category object client-side
+  const selectedCategory = categories.find(cat => cat.label === categoryLabel);
 
   const handlePostSubmit = useCallback(async (postData: PostData) => {
     try {
@@ -69,7 +75,7 @@ const Share: React.FC<ShareProps> = ({ currentUser }) => {
   }, [category, handleSubmit]);
 
   return (
-    <div className='w-full h-auto rounded-2xl shadow bg-[#b1dafe] p-6'>
+    <div className={`w-full h-auto rounded-2xl shadow ${selectedCategory ? selectedCategory.color : 'bg-[#b1dafe]'} p-6`}>
       <div className="flex items-start">
         <Link href={`/profile/${currentUser?.id}`} passHref>
           <div className='drop-shadow mt-1 mr-3'>
@@ -98,7 +104,6 @@ const Share: React.FC<ShareProps> = ({ currentUser }) => {
           )}
         </div>
         <div className="flex items-center">
-
           {imageSrc && (
             <div className="mx-2 w-10 h-10 overflow-hidden">
               <Image 
@@ -114,10 +119,10 @@ const Share: React.FC<ShareProps> = ({ currentUser }) => {
             className='group hover:bg-white hover:bg-opacity-55 rounded-full border bg-black bg-opacity-5 border-white p-3 px-3 mr-2'
             onClick={attachmentModal.onOpen}
           >
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" color="#ffffff" fill="none">
-    <path d="M9.5 14.5L14.5 9.49995" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-    <path d="M16.8463 14.6095L19.4558 12C21.5147 9.94108 21.5147 6.60298 19.4558 4.54411C17.397 2.48524 14.0589 2.48524 12 4.54411L9.39045 7.15366M14.6095 16.8463L12 19.4558C9.94113 21.5147 6.60303 21.5147 4.54416 19.4558C2.48528 17.3969 2.48528 14.0588 4.54416 12L7.1537 9.39041" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-</svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" color="#ffffff" fill="none">
+              <path d="M9.5 14.5L14.5 9.49995" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              <path d="M16.8463 14.6095L19.4558 12C21.5147 9.94108 21.5147 6.60298 19.4558 4.54411C17.397 2.48524 14.0589 2.48524 12 4.54411L9.39045 7.15366M14.6095 16.8463L12 19.4558C9.94113 21.5147 6.60303 21.5147 4.54416 19.4558C2.48528 17.3969 2.48528 14.0588 4.54416 12L7.1537 9.39041" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
           </div>
           <PostCategorySelect
             onCategorySelected={setCategory}
