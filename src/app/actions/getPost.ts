@@ -1,4 +1,5 @@
 import prisma from "@/app/libs/prismadb";
+import { SafePost, SafeUser } from '@/app/types';
 
 export interface IPostsParams {
   userId?: string;
@@ -8,11 +9,11 @@ export interface IPostsParams {
   category?: string;
 }
 
-export default async function getPosts(
-  params: IPostsParams
-) {
+export default async function getPosts(params: IPostsParams): Promise<SafePost[]> {
   try {
     const { userId, locationValue, startDate, endDate, category } = params;
+
+    console.log('Params received in getPosts:', params);
 
     let query: any = {};
 
@@ -23,13 +24,18 @@ export default async function getPosts(
       query.createdAt = { gte: new Date(startDate), lte: new Date(endDate) };
     }
 
+    console.log('Query for posts:', query);
+
     const posts = await prisma.post.findMany({
       where: query,
       include: { user: true },
       orderBy: { createdAt: 'desc' },
     });
 
-    const safePosts = posts.map((post) => ({
+    console.log('Posts found:', posts.length);
+    console.log('Sample post:', posts[0]);
+
+    const safePosts: SafePost[] = posts.map((post) => ({
       ...post,
       createdAt: post.createdAt.toISOString(),
       likes: post.likes || [],

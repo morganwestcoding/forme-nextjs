@@ -15,6 +15,7 @@ import ClientProviders from '@/components/ClientProviders';
 import MessageModal from '@/components/modals/MessageModal';
 import ListingGalleryModal from '@/components/modals/listingGalleryModal';
 import ListingGridModal from '@/components/modals/ListingGridModal';
+import { CategoryProvider } from '@/CategoryContext';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -39,6 +40,7 @@ export default async function RootLayout({
   return (
   <ClientProviders>
     <html lang="en">
+    <CategoryProvider>
       <body className={font.className}>
           <div className='min-h-screen'> 
               <Sidebar /> 
@@ -59,6 +61,7 @@ export default async function RootLayout({
         <ListingGalleryModal/>
         <MessageModal />
       </body>
+      </CategoryProvider>
     </html>
   </ClientProviders>
   )

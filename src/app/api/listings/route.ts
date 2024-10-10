@@ -3,7 +3,6 @@ import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 
 export async function POST(request: Request) {
-  
   const currentUser = await getCurrentUser();
   if (!currentUser) {
     return new Response("Unauthorized", { status: 401 });
@@ -23,16 +22,14 @@ export async function POST(request: Request) {
     address,      
   } = body;
 
-
   console.log("Received fields:", { title, description, imageSrc, category, location, services, phoneNumber, website, address });
 
-
   const requiredFields = [title, description, imageSrc, category, location, services];
-const missingFields = requiredFields.filter((field) => !field);
-if (missingFields.length > 0) {
-  console.log("Missing fields:", missingFields);
-  return new Response(`Missing required fields: ${missingFields.join(", ")}`, { status: 400 });
-}
+  const missingFields = requiredFields.filter((field) => !field);
+  if (missingFields.length > 0) {
+    console.log("Missing fields:", missingFields);
+    return new Response(`Missing required fields: ${missingFields.join(", ")}`, { status: 400 });
+  }
 
   let parsedServices;
   try {
@@ -51,7 +48,7 @@ if (missingFields.length > 0) {
         location,
         userId: currentUser.id,
         services: {
-        create: parsedServices, 
+          create: parsedServices, 
         },
         phoneNumber,  
         website,      

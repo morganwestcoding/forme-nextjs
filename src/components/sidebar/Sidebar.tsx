@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Logo from "../header/Logo";
 import { categories } from '../Categories';
 import { useState } from "react";
+import { useCategory } from "@/CategoryContext";
 
 interface Category {
   label: string;
@@ -13,40 +14,26 @@ interface Category {
 }
 export const dynamic = 'force-dynamic';
 
-interface MenuItem {
-  label: string;
-  icon: JSX.Element;
-  route: string;
-}
-
 export default function Sidebar() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [selectedButton, setSelectedButton] = useState('home');
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  const { selectedCategory, setSelectedCategory } = useCategory();
 
   const handleCategorySelect = (category: Category) => {
-    if (selectedCategory && selectedCategory.label === category.label) {
-      // If the clicked category is already selected, clear the selection
-      setSelectedCategory(null);
-      const currentParams = new URLSearchParams(searchParams?.toString() ?? '');
-      currentParams.delete('category');
-      router.push(`/?${currentParams.toString()}`);
+    if (selectedCategory === category.label) {
+      setSelectedCategory(undefined);
     } else {
-      // If a new category is selected, update as before
-      setSelectedCategory(category);
-      const currentParams = new URLSearchParams(searchParams?.toString() ?? '');
-      currentParams.set('category', category.label);
-      router.push(`/?${currentParams.toString()}`);
+      setSelectedCategory(category.label);
     }
   };
+
   return (
 
     <div className="fixed top-0 flex h-screen z-50">
-      <div className="flex flex-col items-center w-52 h-full px-10 pb-10 pt-8 bg-white  backdrop-blur-full bg drop-shadow-sm rounded-tr-2xl" >
+      <div className="flex flex-col items-center w-52 h-full px-10 pb-10 pt-8 bg-white backdrop-blur-full bg drop-shadow-sm rounded-tr-2xl" >
         <Logo/>
         <div className="flex flex-col items-center w-full">
-        <span className="mb-5 text-[#a2a2a2] text-xs font-light ">Menu</span>
+          <span className="mb-5 text-[#a2a2a2] text-xs font-light ">Menu</span>
         
         <ul className="list-none m-0 p-0 flex flex-col items-center hover:text-white ">
           <li className={`group flex items-center justify-start mb-3 p-2  rounded-lg border ${
@@ -158,29 +145,28 @@ export default function Sidebar() {
                 selectedButton === 'bookings' ? 'text-white' : 'text-[#a2a2a2] group-hover:text-white'
               }`}>Bookings</span>
           </li>
+          </ul>
 
 {/* Categories */}
 <span className="mb-5 text-[#a2a2a2] text-xs font-light">Genre</span>
-    <li className={`relative flex items-center justify-center mb-4 p-2 rounded-lg shadow w-36 h-20 ${selectedCategory ? selectedCategory.color : 'bg-[#b1dafe]'}`}>
-      <span className="text-[#ffffff] text-xs group-hover:text-white font-light w-20 text-center h-10 rounded-lg p-3 bg-white bg-opacity-15 backdrop-blur shadow-sm">
-        {selectedCategory ? selectedCategory.label : 'Default'}
-      </span>
-    </li>
-    <div className="w-36">
-      <div className="grid grid-cols-4 gap-1.5 rounded-xl grid-rows-2">
-        {categories.map((item: Category) => (
+          <li className={`relative flex items-center justify-center mb-4 p-2 rounded-lg shadow w-36 h-20 ${selectedCategory ? categories.find(c => c.label === selectedCategory)?.color : 'bg-[#b1dafe]'}`}>
+            <span className="text-[#ffffff] text-xs group-hover:text-white font-light w-20 text-center h-10 rounded-lg p-3 bg-white bg-opacity-15 backdrop-blur shadow-sm">
+              {selectedCategory || 'Default'}
+            </span>
+          </li>
+          <div className="w-36">
+            <div className="grid grid-cols-4 gap-1.5 rounded-xl grid-rows-2">
+            {categories.map((item: Category) => (
           <div 
             key={item.label} 
-            className={`h-6 rounded-md shadow ${item.color} cursor-pointer`}
+            className={`h-6 rounded-md shadow ${item.color} cursor-pointer ${selectedCategory === item.label ? 'ring-2 ring-offset-2 ring-blue-500' : ''}`}
             onClick={() => handleCategorySelect(item)}
           />
         ))}
+            </div>
+          </div>
+        </div>  
       </div>
     </div>
-       </ul>
-        </div>  
-          </div>
-            </div>
-
   )
 }

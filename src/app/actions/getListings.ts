@@ -11,10 +11,12 @@ export default async function getListings(
 ) {
   try {
     const {
-    userId,
-    locationValue,
-    category,
+      userId,
+      locationValue,
+      category,
     } = params;
+
+    console.log('Params received in getListings:', params);
 
     let query: any = {};
 
@@ -30,7 +32,8 @@ export default async function getListings(
       query.location = locationValue;
     }
    
-   
+    console.log('Query for listings:', query);
+
     const listings = await prisma.listing.findMany({
       where: query,
       include: {
@@ -41,11 +44,13 @@ export default async function getListings(
       },
     });
 
+    console.log('Listings found:', listings.length);
+    console.log('Sample listing:', listings[0]);
 
     const safeListings = listings.map((listing) => ({
       ...listing,
       createdAt: listing.createdAt.toISOString(),
-      }));
+    }));
  
     return safeListings;
   } catch (error: any) {

@@ -6,6 +6,8 @@ import getCurrentUser from './actions/getCurrentUser';
 import Post from '@/components/feed/Post';
 import { categories } from '@/components/Categories';
 import getPosts, { IPostsParams } from './actions/getPost';
+import { SafePost, SafeUser } from './types';
+import { useCategoryStore } from './hooks/useCategoryStore';
 
 interface PostProps {
   searchParams: IPostsParams
@@ -14,15 +16,21 @@ interface PostProps {
 export const dynamic = 'force-dynamic';
 
 const Newsfeed = async ({ searchParams }: PostProps) => {
-  const posts = await getPosts(searchParams);
-  const currentUser = await getCurrentUser();
-  const categoryLabel = searchParams.category;
+  const store = useCategoryStore.getState();
+  const categoryToUse = searchParams.category || store.selectedCategory;
+  
+  console.log('Category to use in Newsfeed:', categoryToUse);
+
+  const posts: SafePost[] = await getPosts({ ...searchParams, category: categoryToUse });
+  const currentUser: SafeUser | null = await getCurrentUser();
+
+  console.log('Posts fetched:', posts.length);
 
   return (
     <ClientProviders>
       <div className="flex w-full">
         <div className="flex-none w-[45%] ml-28 mt-8 mr-1">
-          <Share currentUser={currentUser} categoryLabel={categoryLabel} />
+          <Share currentUser={currentUser} categoryLabel={categoryToUse} />
           {posts.map((post) => (
             <Post 
               key={post.id}
