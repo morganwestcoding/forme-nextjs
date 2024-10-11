@@ -83,11 +83,7 @@ export type SafeMessage = {
   createdAt: string;
   senderId: string;
   conversationId: string;
-  sender: {
-    id: string;
-    name: string | null;
-    image: string | null;
-  };
+  isRead: boolean;  // Add this line
 };
 
 export type SafeConversation = {
@@ -100,8 +96,9 @@ export type SafeConversation = {
   lastMessage?: {
     content: string;
     createdAt: string;
+    isRead: boolean;
   };
+  lastMessageAt: string;  // Add this line
 };
-
 
 

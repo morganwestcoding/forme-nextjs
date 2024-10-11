@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from '@/app/actions/getCurrentUser';
 
-
 export async function GET(request: Request) {
   try {
     const currentUser = await getCurrentUser();
@@ -30,6 +29,7 @@ export async function GET(request: Request) {
     // Format the conversations to match the SafeConversation type
     const safeConversations = conversations.map(conversation => {
       const otherUser = conversation.users.find(user => user.id !== currentUser.id);
+      const lastMessage = conversation.messages[0];
       return {
         id: conversation.id,
         otherUser: {
@@ -37,10 +37,12 @@ export async function GET(request: Request) {
           name: otherUser?.name || null,
           image: otherUser?.image || null,
         },
-        lastMessage: conversation.messages[0] ? {
-          content: conversation.messages[0].content,
-          createdAt: conversation.messages[0].createdAt.toISOString(),
+        lastMessage: lastMessage ? {
+          content: lastMessage.content,
+          createdAt: lastMessage.createdAt.toISOString(),
+          isRead: lastMessage.isRead,  // This line should now work
         } : undefined,
+        lastMessageAt: conversation.lastMessageAt?.toISOString() || '',
       };
     });
 
@@ -102,4 +104,5 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Error in conversation route:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-  }}
+  }
+}

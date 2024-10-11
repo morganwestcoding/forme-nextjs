@@ -51,7 +51,9 @@ const UserButton: React.FC<UserButtonProps> = ({
         
     <DropdownMenu>   
       <DropdownMenuTrigger>
+      <div className="relative w-11 h-11 rounded-full overflow-hidden ">
         <Avatar src={currentUser?.image ?? undefined} />
+        </div>
       </DropdownMenuTrigger>
         <DropdownMenuContent>
           {currentUser ? (

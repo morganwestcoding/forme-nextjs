@@ -1,5 +1,3 @@
-// src/components/header/InboxModal.tsx
-
 'use client'
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
@@ -36,9 +34,15 @@ const InboxModal: React.FC<InboxModalProps> = ({ isOpen, onClose, currentUser })
     }
   };
 
-  const openConversation = (conversationId: string, otherUserId: string) => {
-    messageModal.onOpen(conversationId, otherUserId);
-    onClose();
+  const openConversation = async (conversationId: string, otherUserId: string) => {
+    try {
+      await axios.post('/api/messages/read', { conversationId });
+      messageModal.onOpen(conversationId, otherUserId);
+      onClose();
+    } catch (error) {
+      console.error('Error updating message read status:', error);
+      toast.error('Failed to update message status');
+    }
   };
 
   const startNewConversation = async (user: SafeUser) => {
@@ -79,9 +83,16 @@ const InboxModal: React.FC<InboxModalProps> = ({ isOpen, onClose, currentUser })
               <h3 className="font-semibold text-white truncate">{conversation.otherUser.name}</h3>
               <p className="text-sm text-gray-400 truncate max-w-[200px]">{conversation.lastMessage?.content}</p>
             </div>
-            <span className="text-xs text-gray-400 flex-shrink-0">
-              {conversation.lastMessage?.createdAt && new Date(conversation.lastMessage.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-            </span>
+            <div className="flex flex-col items-end">
+              <span className="text-xs text-gray-400 flex-shrink-0">
+                {conversation.lastMessage?.createdAt && new Date(conversation.lastMessage.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </span>
+              {conversation.lastMessage && (
+                <span className={`text-xs ${conversation.lastMessage.isRead ? 'text-green-500' : 'text-red-500'}`}>
+                  {conversation.lastMessage.isRead ? 'Read' : 'Unread'}
+                </span>
+              )}
+            </div>
           </div>
         ))}
       </div>
