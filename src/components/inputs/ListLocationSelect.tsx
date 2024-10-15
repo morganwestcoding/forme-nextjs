@@ -61,8 +61,8 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({ onLocationSubmi
       borderColor: 'white',
       color: 'white',
       boxShadow: 'none',
-      minHeight: '25px',
-      height: '60px',
+      minHeight: '58px',
+      height: '58px',
       '&:hover': {
         borderColor: 'white',
       },
@@ -85,29 +85,26 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({ onLocationSubmi
     }),
     placeholder: (styles) => ({
       ...styles,
-      color: '#a2a2a2',
+      color: 'white',
       marginLeft: '0.5rem',
     }),
     valueContainer: (styles) => ({
       ...styles,
-      height: '48px',
+      height: '58px',
       padding: '0 8px 0 0.5rem',
     }),
   };
 
-
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3 text-sm">
       <Input
         id="address"
         label="Street"
         register={register}
         errors={errors}
-        height='60px'
-        className='text-center text-sm'
       />
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <Select
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+        <Select
           options={states}
           value={selectedState}
           onChange={handleStateChange}
@@ -115,7 +112,7 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({ onLocationSubmi
           styles={customStyles}
           getOptionLabel={(option) => option.label}
           getOptionValue={(option) => option.value}
-          className='text-sm'
+          className='text-xs'
         />
         <Select
           options={cities}
@@ -126,15 +123,13 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({ onLocationSubmi
           getOptionLabel={(option) => option.label}
           getOptionValue={(option) => option.value}
           isDisabled={!selectedState}
-          className='text-sm '
+          className=''
         />
         <Input
           id="zipCode"
           label="ZIP Code"
           register={register}
           errors={errors}
-          height='60px'
-          className='text-center text-sm'
         />
       </div>
     </div>

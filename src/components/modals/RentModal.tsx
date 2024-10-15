@@ -259,9 +259,6 @@ const RentModal = () => {
   register={register}
   errors={errors}
   required
-  maxLength={20}
-  watch={watch}
-  setValue={setValue}
 />
 <Input
   id="description"
@@ -270,9 +267,6 @@ const RentModal = () => {
   register={register}
   errors={errors}
   required
-  maxLength={300}
-  watch={watch}
-  setValue={setValue}
 />
         <Input
           id="phoneNumber"
@@ -280,8 +274,6 @@ const RentModal = () => {
           disabled={isLoading}
           register={register}
           errors={errors}
-          watch={watch}
-          setValue={setValue}
         />
         <Input
           id="website"
@@ -289,8 +281,6 @@ const RentModal = () => {
           disabled={isLoading}
           register={register}
           errors={errors}
-          watch={watch}
-          setValue={setValue}
         />
       </div>
     )

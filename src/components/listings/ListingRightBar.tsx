@@ -134,7 +134,7 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
             onClick={() => setShowServiceDropdown(!showServiceDropdown)}
             readOnly
             placeholder="Select a service"
-            className="w-full h-10 bg-white border border-[#e2e8f0] text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block py-6 text-center placeholder-[#718096]"
+            className="w-full h-10 bg-white border border-[#e2e8f0] text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block py-6 pl-3 placeholder-[#718096]"
           />
           {showServiceDropdown && (
             <div className="absolute z-50 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg">
@@ -160,14 +160,14 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
             onClick={() => setShowEmployeeDropdown(!showEmployeeDropdown)}
             readOnly
             placeholder="Select employee"
-            className="w-full h-10 bg-white border border-[#e2e8f0] text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block py-6 text-center placeholder-[#718096]"
+            className="w-full h-10 bg-white border border-[#e2e8f0] text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block py-6 pl-3 placeholder-[#718096]"
           />
           {showEmployeeDropdown && (
             <div className="absolute z-50 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg">
               {employeeOptions.map((option) => (
                 <div
                   key={option.value}
-                  className="p-2 hover:bg-gray-100 cursor-pointer text-center"
+                  className="p-2 hover:bg-gray-100 cursor-pointer pl-3"
                   onClick={() => {
                     handleEmployeeChange(option);
                     setShowEmployeeDropdown(false);
@@ -186,7 +186,7 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
             onClick={handleDateClick}
             readOnly
             placeholder="Pick a date"
-            className="w-full h-10 bg-white border border-[#e2e8f0] text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block py-6 text-center placeholder-[#718096]"
+            className="w-full h-10 bg-white border border-[#e2e8f0] text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block py-6 pl-3 placeholder-[#718096]"
           />
           {showCalendar && (
             <div 
@@ -212,7 +212,7 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
             onClick={() => setShowTimeDropdown(!showTimeDropdown)}
             readOnly
             placeholder={date ? "Select time..." : "Pick a date first"}
-            className="w-full h-10 bg-white border border-[#e2e8f0] text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block py-6 text-center placeholder-[#718096]"
+            className="w-full h-10 bg-white border border-[#e2e8f0] text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block py-6 pl-3 placeholder-[#718096]"
             disabled={!date}
           />
           {showTimeDropdown && date && (
