@@ -47,7 +47,7 @@ const UserButton: React.FC<UserButtonProps> = ({
     
     return (  
       
-  <div className="inline-flex items-center justify-center whitespace-nowrap rounded-full drop-shadow-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:rounded-full focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground">
+  <div className="inline-flex items-center justify-center rounded-full drop-shadow-md text-sm font-medium ">
         
     <DropdownMenu>   
       <DropdownMenuTrigger>

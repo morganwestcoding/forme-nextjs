@@ -107,6 +107,16 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({ onLocationSubmi
         className='text-center text-sm'
       />
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <Select
+          options={states}
+          value={selectedState}
+          onChange={handleStateChange}
+          placeholder="State"
+          styles={customStyles}
+          getOptionLabel={(option) => option.label}
+          getOptionValue={(option) => option.value}
+          className='text-sm'
+        />
         <Select
           options={cities}
           value={selectedCity}
@@ -117,16 +127,6 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({ onLocationSubmi
           getOptionValue={(option) => option.value}
           isDisabled={!selectedState}
           className='text-sm '
-        />
-        <Select
-          options={states}
-          value={selectedState}
-          onChange={handleStateChange}
-          placeholder="State"
-          styles={customStyles}
-          getOptionLabel={(option) => option.label}
-          getOptionValue={(option) => option.value}
-          className='text-sm'
         />
         <Input
           id="zipCode"

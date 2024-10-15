@@ -11,11 +11,10 @@ interface ModalProps {
   title?: string;
   body?: React.ReactElement;
   footer?: React.ReactElement;
-  actionLabel?: string;
+  actionLabel?: string; // Made optional
   disabled?: boolean;
   secondaryAction?: () => void;
   secondaryActionLabel?: string;
-  children?: React.ReactNode; 
 }
 
 const Modal: React.FC<ModalProps> = ({ 
@@ -28,8 +27,7 @@ const Modal: React.FC<ModalProps> = ({
   footer, 
   disabled,
   secondaryAction,
-  secondaryActionLabel,
-  children
+  secondaryActionLabel
 }) => {
   const [showModal, setShowModal] = useState(isOpen);
 
@@ -98,6 +96,7 @@ const Modal: React.FC<ModalProps> = ({
           md:h-auto
           "
         >
+          {/*content*/}
           <div className={`
             translate
             duration-300
@@ -123,6 +122,7 @@ const Modal: React.FC<ModalProps> = ({
               focus:outline-none
             "
             >
+              {/*header*/}
               <div className="
                 flex 
                 items-center 
@@ -133,7 +133,7 @@ const Modal: React.FC<ModalProps> = ({
                 border-b-[1px]
                 "
               >
-                <button
+                <div
                   className="
                     p-1
                     border-0 
@@ -145,15 +145,16 @@ const Modal: React.FC<ModalProps> = ({
                   onClick={handleClose}
                 >
                   <X size={18} className=" text-white"/>
-                </button>
+                </div>
                 <div className="text-lg text-white font-medium">
                   {title}
                 </div>
               </div>
+              {/*body*/}
               <div className="relative p-6 text-white flex-auto">
                 {body}
-                {children}
               </div>
+              {/*footer*/}
               <div className="flex flex-col gap-2 p-6">
                 <div 
                   className="
@@ -172,7 +173,7 @@ const Modal: React.FC<ModalProps> = ({
                       onClick={handleSecondaryAction}
                     />  
                   )}
-                  {actionLabel && (
+                  {actionLabel && ( // Conditional rendering of the action button
                     <ModalButton
                       label={actionLabel}
                       disabled={disabled} 

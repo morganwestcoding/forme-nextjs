@@ -156,7 +156,7 @@ export default function Sidebar() {
           </li>
           <div className="w-36">
             <div className="grid grid-cols-4 gap-1.5 rounded-xl grid-rows-2">
-            {categories.map((item: Category) => (
+        {categories.map((item: Category) => (
           <div 
             key={item.label} 
             className={`h-6 rounded-md shadow ${item.color} cursor-pointer ${selectedCategory === item.label ? 'ring-2 ring-offset-2 ring-blue-500' : ''}`}

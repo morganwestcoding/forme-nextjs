@@ -38,9 +38,10 @@ export default async function RootLayout({
   
   
   return (
+    <CategoryProvider>
   <ClientProviders>
     <html lang="en">
-    <CategoryProvider>
+   
       <body className={font.className}>
           <div className='min-h-screen'> 
               <Sidebar /> 
@@ -61,8 +62,9 @@ export default async function RootLayout({
         <ListingGalleryModal/>
         <MessageModal />
       </body>
-      </CategoryProvider>
+    
     </html>
   </ClientProviders>
+    </CategoryProvider>
   )
 }

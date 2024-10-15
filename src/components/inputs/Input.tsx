@@ -1,12 +1,9 @@
 'use client';
 
-import React, { forwardRef, useEffect, useState } from 'react';
 import { 
   FieldErrors, 
   FieldValues, 
-  UseFormRegister,
-  UseFormWatch,
-  UseFormSetValue
+  UseFormRegister 
 } from "react-hook-form";
 import { BiDollar } from "react-icons/bi";
 
@@ -14,20 +11,15 @@ interface InputProps {
   id: string;
   label: string;
   type?: string;
-  placeholder?: string;
+  placeholder?:string;
   disabled?: boolean;
   formatPrice?: boolean;
   required?: boolean;
   register: UseFormRegister<FieldValues>,
-  errors: FieldErrors,
-  className?: string;
-  height?: string;
-  maxLength?: number;
-  watch?: UseFormWatch<FieldValues>;
-  setValue?: UseFormSetValue<FieldValues>;
+  errors: FieldErrors
 }
 
-const Input = forwardRef<HTMLInputElement, InputProps>(({
+const Input: React.FC<InputProps> = ({
   id,
   label,
   type = "text",
@@ -37,29 +29,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
   register,
   required,
   errors,
-  className = "",
-  height = "65px",
-  maxLength,
-  watch,
-  setValue
-}, ref) => {
-  const value = watch ? watch(id) : '';
-  const [charCount, setCharCount] = useState(value ? value.length : 0);
-
-  useEffect(() => {
-    setCharCount(value ? value.length : 0);
-  }, [value]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value.slice(0, maxLength);
-    e.target.value = newValue;  // Directly update the input value
-    if (setValue) {
-      setValue(id, newValue, { shouldValidate: true });
-    }
-  };
-
+}) => {
   return (
-    <div className={`w-full relative ${className}`}>
+    <div className="w-full relative">
       {formatPrice && (
         <BiDollar
           size={24}  
@@ -74,15 +46,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
       <input
         id={id}
         disabled={disabled}
-        {...register(id, { 
-          required, 
-          maxLength,
-          onChange: handleChange,
-          value: value ? value.slice(0, maxLength) : ''  // Ensure the initial value is also limited
-        })}
+        {...register(id, { required })}
         placeholder={placeholder} 
         type={type}
-        style={{ height }}
         className={`
           peer
           w-full
@@ -101,8 +67,6 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
           ${errors[id] ? 'border-rose-500' : 'border-neutral-300'}
           ${errors[id] ? 'focus:border-rose-500' : 'focus:border-black'}
         `}
-        maxLength={maxLength}  // Add HTML maxLength attribute
-        ref={ref}
       />
       <label 
         className={`
@@ -112,6 +76,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
           transform 
           -translate-y-3 
           top-5 
+          
           origin-[0] 
           ${formatPrice ? 'left-9' : 'left-4'}
           peer-placeholder-shown:scale-100 
@@ -123,15 +88,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
       >
         {label}
       </label>
-      {maxLength && (
-        <div className="text-sm text-gray-500 absolute right-2 bottom-2">
-          {Math.max(maxLength - charCount, 0)}
-        </div>
-      )}
     </div>
    );
-});
-
-Input.displayName = 'Input';
-
+}
+ 
 export default Input;

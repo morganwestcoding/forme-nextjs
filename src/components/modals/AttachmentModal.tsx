@@ -2,11 +2,9 @@
 
 import React, { useState } from 'react';
 import { useForm, SubmitHandler, FieldValues } from 'react-hook-form';
-
 import Modal from './Modal';
 import AddPostImage from '../inputs/AddPostImage';
 import AddPostLocation from '../inputs/AddPostLocation';
-
 
 interface AttachmentModalProps {
     setImageSrc: (imageSrc: string) => void;
