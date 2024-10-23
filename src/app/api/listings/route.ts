@@ -19,16 +19,25 @@ export async function POST(request: Request) {
     services,
     phoneNumber,  
     website,      
-    address,      
+    address,
+    zipCode,
+    employees,  // Add this line
   } = body;
 
-  console.log("Received fields:", { title, description, imageSrc, category, location, services, phoneNumber, website, address });
+  console.log("Received fields:", { title, description, imageSrc, category, location, 
+    services, phoneNumber, website, address, zipCode, employees });
 
-  const requiredFields = [title, description, imageSrc, category, location, services];
-  const missingFields = requiredFields.filter((field) => !field);
+  const requiredFields = [ title, description, imageSrc, category, 
+    location, services, address, zipCode ];
+  
+    const missingFields = requiredFields.filter((field) => !field);
   if (missingFields.length > 0) {
     console.log("Missing fields:", missingFields);
     return new Response(`Missing required fields: ${missingFields.join(", ")}`, { status: 400 });
+  }
+
+  if (!Array.isArray(employees) || employees.some(emp => typeof emp !== 'string' || !emp.trim())) {
+    return new Response("Invalid employees data", { status: 400 });
   }
 
   let parsedServices;
@@ -52,7 +61,15 @@ export async function POST(request: Request) {
         },
         phoneNumber,  
         website,      
-        address,      
+        address,
+        zipCode,
+        employees: {
+          create: employees
+            .filter((emp: string) => emp.trim()) // Filter out empty strings
+            .map((employee: string) => ({
+              fullName: employee.trim(),
+            })),
+        },
       },
     });
 

@@ -69,7 +69,9 @@ model Listing {
   phoneNumber   String?
   website       String?
   address       String?
+  zipCode       String?
   galleryImages  String[]
+  employees Employee[]
 }
 
 model Reservation {
@@ -159,4 +161,11 @@ model Message {
   conversation   Conversation @relation(fields: [conversationId], references: [id])
   conversationId String       @db.ObjectId
   isRead         Boolean      @default(false)  // Add this line
+}
+
+model Employee {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  fullName  String
+  listingId String   @db.ObjectId
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
 }

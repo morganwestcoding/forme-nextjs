@@ -38,6 +38,7 @@ export default async function getListings(
       where: query,
       include: {
         services: true, 
+        employees: true,
       },
       orderBy: {
         createdAt: 'desc',
@@ -47,9 +48,14 @@ export default async function getListings(
     console.log('Listings found:', listings.length);
     console.log('Sample listing:', listings[0]);
 
+
     const safeListings = listings.map((listing) => ({
       ...listing,
       createdAt: listing.createdAt.toISOString(),
+      employees: listing.employees.map(employee => ({
+        id: employee.id,
+        fullName: employee.fullName
+      }))
     }));
  
     return safeListings;

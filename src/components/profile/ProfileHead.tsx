@@ -35,7 +35,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({ user, currentUser }) => {
   return (
     <div className="flex justify-between w-full mt-8 px-20">
       <div className="w-[3.1%]"></div>
-      <div className="relative text-white text-center h-56 py-8 w-full flex justify-center items-center">
+      <div className="relative text-white text-center h-56 py-8 w-full flex justify-center items-center z-5">
         <Image src={imageSrc || "/assets/hero-background.jpeg"}
          layout="fill" 
          objectFit="cover" 
@@ -43,7 +43,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({ user, currentUser }) => {
          alt="Background" />
         <div className="absolute inset-0 bg-black bg-opacity-20 rounded-2xl"></div>
 
-        <div className="relative w-48 h-full flex justify-center items-center z-50">
+        <div className="relative w-48 h-full flex justify-center items-center">
           <Image
             src={image || "/people/chicken-headshot.jpeg"}
             alt="currentUser Avatar"
@@ -52,9 +52,9 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({ user, currentUser }) => {
             className="rounded-l-xl"
           />
         </div>
-        <div className="w-68 h-40 bg-white rounded-r-xl flex shadow-sm z-50">
+        <div className="w-68 h-40 bg-white rounded-r-xl flex shadow-sm z-10">
           {/* Bio Section */}
-          <div className=" h-full rounded-r-2xl flex flex-col justify-center items-center p-4 z-50">
+          <div className=" h-full rounded-r-2xl flex flex-col justify-center items-center p-4">
             <span className="text-gray-800 font-semibold flex justify-center items-center">{name}</span>
             {/* Friends and Followers */}
             <div className="mt-2 w-full flex justify-center items-center gap-2">

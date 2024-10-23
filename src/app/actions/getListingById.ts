@@ -15,7 +15,7 @@ export default async function getListingById(params: IParams) {
       include: {
         user: true,
         services: true,
-        
+        employees: true, // Add this line
       }
     });
 
@@ -32,6 +32,10 @@ export default async function getListingById(params: IParams) {
         updatedAt: listing.user.updatedAt.toISOString(),
         emailVerified: listing.user.emailVerified?.toISOString() || null,
       },
+      employees: listing.employees.map(employee => ({  // Add this mapping
+        id: employee.id,
+        fullName: employee.fullName
+      }))
     };
   } catch (error: any) {
     throw new Error(error);

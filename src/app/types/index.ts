@@ -15,6 +15,12 @@ export type SafeListing = Omit<Listing, "createdAt"> & {
   phoneNumber?: string | null;
   website?: string | null;
   address?: string | null; 
+  employees: {
+    id: string;
+    fullName: string;
+  }[];
+  zipCode?: string | null;
+  
 };
 
 export type SafeReservation = Omit<
@@ -29,6 +35,7 @@ export type SafeReservation = Omit<
   totalPrice: number;
   listingId: string;
   listing: SafeListing;
+  note: string | null;  
 };
 
 export type SafeUser = Omit<
@@ -99,6 +106,11 @@ export type SafeConversation = {
     isRead: boolean;
   };
   lastMessageAt: string;  // Add this line
+};
+
+export type SafeEmployee = {
+  id: string;
+  fullName: string;
 };
 
 

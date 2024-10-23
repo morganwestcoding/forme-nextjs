@@ -44,42 +44,32 @@ const ListingGridModal: React.FC<ListingGridModalProps> = ({ listing, currentUse
   };
 
   const bodyContent = useMemo(() => (
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-      {images.map((image, index) => (
-        <div key={index} className="relative">
-          <div className="aspect-w-1 aspect-h-1 w-full">
-            <Image
-              src={image}
-              layout="fill"
-              objectFit="cover"
-              alt={`Gallery image ${index + 1}`}
-              className="rounded-lg"
-            />
+    <div>
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        {images.map((image, index) => (
+          <div key={index} className="relative">
+            <div className="aspect-w-1 aspect-h-1 w-full">
+              <Image
+                src={image}
+                layout="fill"
+                objectFit="cover"
+                alt={`Gallery image ${index + 1}`}
+                className="rounded-lg"
+              />
+            </div>
+            {isDeleteMode && (
+              <button 
+                onClick={() => handleDeleteImage(index)}
+                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-red-500 rounded-full p-1"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="white">
+                  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/>
+                </svg>
+              </button>
+            )}
           </div>
-          {isDeleteMode && (
-            <button 
-              onClick={() => handleDeleteImage(index)}
-              className="absolute top-2 right-2 bg-red-500 rounded-full p-1"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="white">
-                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/>
-              </svg>
-            </button>
-          )}
-        </div>
-      ))}
-    </div>
-  ), [images, isDeleteMode]);
-
-  return (
-    <Modal
-      isOpen={listingGridModal.isOpen}
-      title="Gallery"
-      onClose={listingGridModal.onClose}
-      onSubmit={listingGridModal.onClose}
-      actionLabel="Close"
-      body={bodyContent}
-    >
+        ))}
+      </div>
       {currentUser?.id === listing?.userId && (
         <div className="flex justify-end mt-4 space-x-2">
           <button
@@ -96,7 +86,18 @@ const ListingGridModal: React.FC<ListingGridModalProps> = ({ listing, currentUse
           </button>
         </div>
       )}
-    </Modal>
+    </div>
+  ), [images, isDeleteMode, currentUser, listing]);
+
+  return (
+    <Modal
+      isOpen={listingGridModal.isOpen}
+      title="Gallery"
+      onClose={listingGridModal.onClose}
+      onSubmit={listingGridModal.onClose}
+      actionLabel="Close"
+      body={bodyContent}
+    />
   );
 }
 

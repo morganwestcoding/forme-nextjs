@@ -25,6 +25,38 @@ interface OptionType {
   price?: number;
 }
 
+interface InputFieldProps {
+  value: string | undefined;
+  onClick: () => void;
+  readOnly: boolean;
+  placeholder: string;
+  disabled?: boolean;
+  isSelected: boolean;
+}
+
+const InputField: React.FC<InputFieldProps> = ({ value, onClick, readOnly, placeholder, disabled = false, isSelected }) => (
+  <div className="mb-3 relative">
+    <div className="relative flex items-center">
+      <div className={`absolute left-4 w-6 h-6 border rounded-full flex items-center justify-center ${isSelected ? 'bg-green-500 border-green-500' : 'border-gray-300'}`}>
+        {isSelected && (
+          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+        )}
+      </div>
+      <input
+        type="text"
+        value={value || ''}
+        onClick={onClick}
+        readOnly={readOnly}
+        placeholder={placeholder}
+        disabled={disabled}
+        className="w-full h-10 bg-white border border-[#e2e8f0] text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block py-6 px-12 placeholder-[#718096] text-center"
+      />
+    </div>
+  </div>
+);
+
 const ListingRightBar: React.FC<ListingRightBarProps> = ({
   listing,
   reservations = [],
@@ -49,11 +81,11 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
 
   const calendarRef = useRef<HTMLDivElement>(null);
 
-  const employeeOptions: OptionType[] = [
-    { value: '1', label: 'Employee 1' },
-    { value: '2', label: 'Employee 2' },
-    { value: '3', label: 'Employee 3' },
-  ];
+
+  const employeeOptions: OptionType[] = listing?.employees?.map(employee => ({
+    value: employee.id,
+    label: employee.fullName
+  })) || [];
 
   const serviceOptions: OptionType[] = listing.services.map(service => ({
     value: service.id,
@@ -122,116 +154,103 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
 
   return (
     <div className="flex flex-col justify-end bg-transparent gap-4 pr-16 h-auto">
-      <div className="w-full md:w-11/12 rounded-2xl shadow-sm bg-[#ffffff] px-8 md:px-6 pt-6 pb-6 mx-3 md:mr-16">
+      <div className="w-full md:w-11/12 rounded-2xl shadow-sm bg-[#ffffff] px-8 md:px-6 pt-6 pb-6 mx-3 md:mr-16 relative">
         <div className="mb-4">
           <h2 className="text-xl font-bold mb-1">Booking</h2>
           <p className="text-sm text-gray-500">Reserve your spot before its too late!</p>
         </div>
-        <div className="mb-3 relative">
-          <input
-            type="text"
-            value={selectedService ? selectedService.label : ''}
-            onClick={() => setShowServiceDropdown(!showServiceDropdown)}
-            readOnly
-            placeholder="Select a service"
-            className="w-full h-10 bg-white border border-[#e2e8f0] text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block py-6 pl-3 placeholder-[#718096]"
-          />
-          {showServiceDropdown && (
-            <div className="absolute z-50 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg">
-              {serviceOptions.map((option) => (
-                <div
-                  key={option.value}
-                  className="p-2 hover:bg-gray-100 cursor-pointer text-center"
-                  onClick={() => {
-                    handleServiceChange(option);
-                    setShowServiceDropdown(false);
-                  }}
-                >
-                  {option.label}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-        <div className="mb-3 relative">
-          <input
-            type="text"
-            value={selectedEmployee ? selectedEmployee.label : ''}
-            onClick={() => setShowEmployeeDropdown(!showEmployeeDropdown)}
-            readOnly
-            placeholder="Select employee"
-            className="w-full h-10 bg-white border border-[#e2e8f0] text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block py-6 pl-3 placeholder-[#718096]"
-          />
-          {showEmployeeDropdown && (
-            <div className="absolute z-50 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg">
-              {employeeOptions.map((option) => (
-                <div
-                  key={option.value}
-                  className="p-2 hover:bg-gray-100 cursor-pointer pl-3"
-                  onClick={() => {
-                    handleEmployeeChange(option);
-                    setShowEmployeeDropdown(false);
-                  }}
-                >
-                  {option.label}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-        <div className="mb-3 relative">
-          <input
-            type="text"
-            value={date ? format(date, 'PP') : ''}
-            onClick={handleDateClick}
-            readOnly
-            placeholder="Pick a date"
-            className="w-full h-10 bg-white border border-[#e2e8f0] text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block py-6 pl-3 placeholder-[#718096]"
-          />
-          {showCalendar && (
-            <div 
-              ref={calendarRef} 
-              className="absolute z-50 mt-1 bg-white shadow-lg rounded-md"
-              style={{
-                left: '0',
-                width: '100%',
-              }}
-            >
-              <Calendar
-                value={date || new Date()}
-                onChange={handleDateChange}
-                disabledDates={disabledDates}
-              />
-            </div>
-          )}
-        </div>
-        <div className="mb-4 relative">
-          <input
-            type="text"
-            value={time ? timeOptions.find(option => option.value === time)?.label : ''}
-            onClick={() => setShowTimeDropdown(!showTimeDropdown)}
-            readOnly
-            placeholder={date ? "Select time..." : "Pick a date first"}
-            className="w-full h-10 bg-white border border-[#e2e8f0] text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block py-6 pl-3 placeholder-[#718096]"
-            disabled={!date}
-          />
-          {showTimeDropdown && date && (
-            <div className="absolute z-50 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg">
-              {timeOptions.map((option) => (
-                <div
-                  key={option.value}
-                  className="p-2 hover:bg-gray-100 cursor-pointer text-center"
-                  onClick={() => {
-                    handleTimeChange(option);
-                    setShowTimeDropdown(false);
-                  }}
-                >
-                  {option.label}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        <InputField
+          value={selectedService ? selectedService.label : undefined}
+          onClick={() => setShowServiceDropdown(!showServiceDropdown)}
+          readOnly={true}
+          placeholder="Select a service"
+          isSelected={!!selectedService}
+        />
+
+{showServiceDropdown && (
+  <div className="absolute z-50  bg-white border border-gray-300 rounded-md shadow-lg w-[calc(100%-3rem)]">
+    {serviceOptions.map((option) => (
+      <div
+        key={option.value}
+        className="p-2 hover:bg-gray-100 cursor-pointer text-center"
+        onClick={() => {
+          handleServiceChange(option);
+          setShowServiceDropdown(false);
+        }}
+      >
+        {option.label}
+      </div>
+    ))}
+  </div>
+)}
+        <InputField
+          value={selectedEmployee ? selectedEmployee.label : undefined}
+          onClick={() => setShowEmployeeDropdown(!showEmployeeDropdown)}
+          readOnly={true}
+          placeholder="Select employee"
+          isSelected={!!selectedEmployee}
+        />
+
+{showEmployeeDropdown && (
+  <div className="absolute z-50  bg-white border border-gray-300 rounded-md shadow-lg w-[calc(100%-3rem)]">
+    {employeeOptions.map((option) => (
+      <div
+        key={option.value}
+        className="p-2 hover:bg-gray-100 cursor-pointer text-center"
+        onClick={() => {
+          handleEmployeeChange(option);
+          setShowEmployeeDropdown(false);
+        }}
+      >
+        {option.label}
+      </div>
+    ))}
+  </div>
+)}
+        <InputField
+          value={date ? format(date, 'PP') : undefined}
+          onClick={handleDateClick}
+          readOnly={true}
+          placeholder="Pick a date"
+          isSelected={!!date}
+        />
+{showCalendar && (
+  <div 
+    ref={calendarRef} 
+    className="absolute z-50  w-[calc(100%-3rem)]"
+  >
+    <Calendar
+      value={date || new Date()}
+      onChange={handleDateChange}
+      disabledDates={disabledDates}
+    />
+  </div>
+)}
+        <InputField
+          value={time ? timeOptions.find(option => option.value === time)?.label : undefined}
+          onClick={() => setShowTimeDropdown(!showTimeDropdown)}
+          readOnly={true}
+          placeholder={date ? "Select time..." : "Pick a date first"}
+          disabled={!date}
+          isSelected={!!time}
+        />
+
+{showTimeDropdown && date && (
+  <div className="absolute z-50  bg-white border border-gray-300 rounded-md shadow-lg w-[calc(100%-3rem)]">
+    {timeOptions.map((option) => (
+      <div
+        key={option.value}
+        className="p-2 hover:bg-gray-100 cursor-pointer text-center "
+        onClick={() => {
+          handleTimeChange(option);
+          setShowTimeDropdown(false);
+        }}
+      >
+        {option.label}
+      </div>
+    ))}
+  </div>
+)}
         <div className="flex justify-between items-center mb-3">
           <span>Total Price:</span>
           <span>${calculatedTotalPrice}</span>
@@ -241,25 +260,6 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
           label="Reserve"
           onClick={onCreateReservation}
         />
-      </div>
-      <div className="w-full md:w-11/12 rounded-2xl shadow-sm bg-[#ffffff] md:px-6 py-6 text-center mx-3 md:mr-16 relative flex flex-col justify-end">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold">Hours</h2>
-        </div>
-        <div className="space-y-3">
-          <div className="flex justify-between items-center">
-            <span className="text-sm font-semibold">Mon - Fri</span>
-            <span className="text-sm">8:00 AM - 5:00 PM</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-sm font-semibold">Sat - Sun</span>
-            <span className="text-sm">8:00 AM - 5:00 PM</span>
-          </div>
-        </div>
-        <div className="mt-3 text-sm text-gray-500 italic flex items-center">
-          <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-          <span>Open all week • Walk-ins welcome</span>
-        </div>
       </div>
     </div>
   );

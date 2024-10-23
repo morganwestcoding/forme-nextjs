@@ -20,6 +20,7 @@ import Input from '../inputs/Input';
 import Heading from '../Heading';
 import ServiceSelector, { Service } from '../inputs/ServiceSelector';
 import ListLocationSelect from '../inputs/ListLocationSelect';
+import EmployeeSelector from '../inputs/EmployeeSelector';
 
 enum STEPS {
   CATEGORY = 0,
@@ -27,6 +28,7 @@ enum STEPS {
   INFO = 2,
   IMAGES = 3,
   DESCRIPTION = 4,
+  EMPLOYEE = 5,
 }
 
 const RentModal = () => {
@@ -40,6 +42,7 @@ const RentModal = () => {
     { serviceName: '', price: 0, category: '' },
     { serviceName: '', price: 0, category: '' },
   ]);
+  const [employees, setEmployees] = useState(['', '', '']);
 
   const { 
     register, 
@@ -106,6 +109,10 @@ const RentModal = () => {
     setServices(newServices);
   }, []);
 
+  const handleEmployeesChange = useCallback((newEmployees: string[]) => {
+    setEmployees(newEmployees);
+  }, []);
+
   const handleLocationSubmit = (locationData: {
     state: string;
     city: string;
@@ -128,16 +135,19 @@ const RentModal = () => {
   };
 
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
-    if (step !== STEPS.DESCRIPTION) {
+    if (step !== STEPS.EMPLOYEE) {
       return onNext();
     }
     
     setIsLoading(true);
   
-    const payload = { ...data, services,
+    const payload = { 
+      ...data, 
+      services,
+      employees,
       phoneNumber: data.phoneNumber,
       website: data.website
-     };
+    };
   
     axios.post('/api/listings', payload)
     .then(() => {
@@ -157,7 +167,7 @@ const RentModal = () => {
   }
 
   const actionLabel = useMemo(() => {
-    if (step === STEPS.DESCRIPTION) {
+    if (step === STEPS.EMPLOYEE) {
       return 'Create'
     }
 
@@ -252,28 +262,31 @@ const RentModal = () => {
           title="How would you describe your place?"
           subtitle="Short and sweet works best!"
         />
-<Input
-  id="title"
-  label="Title"
-  disabled={isLoading}
-  register={register}
-  errors={errors}
-  required
-/>
-<Input
-  id="description"
-  label="Description"
-  disabled={isLoading}
-  register={register}
-  errors={errors}
-  required
-/>
+        <Input
+          id="title"
+          label="Title"
+          disabled={isLoading}
+          register={register}
+          errors={errors}
+          required
+          maxLength={20}
+        />
+        <Input
+          id="description"
+          label="Description"
+          disabled={isLoading}
+          register={register}
+          errors={errors}
+          required
+          maxLength={450}
+        />
         <Input
           id="phoneNumber"
           label="Phone Number"
           disabled={isLoading}
           register={register}
           errors={errors}
+          maxLength={15}
         />
         <Input
           id="website"
@@ -281,7 +294,20 @@ const RentModal = () => {
           disabled={isLoading}
           register={register}
           errors={errors}
+          maxLength={20}
         />
+      </div>
+    )
+  }
+
+  if (step === STEPS.EMPLOYEE) {
+    bodyContent = (
+      <div className="flex flex-col gap-8">
+        <Heading
+          title="Add your employees"
+          subtitle="Let us know who is available for work!"
+        />
+        <EmployeeSelector onEmployeesChange={handleEmployeesChange} existingEmployees={employees} />
       </div>
     )
   }

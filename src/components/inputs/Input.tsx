@@ -6,6 +6,7 @@ import {
   UseFormRegister 
 } from "react-hook-form";
 import { BiDollar } from "react-icons/bi";
+import { useState, useEffect } from 'react';
 
 interface InputProps {
   id: string;
@@ -17,6 +18,7 @@ interface InputProps {
   required?: boolean;
   register: UseFormRegister<FieldValues>,
   errors: FieldErrors
+  maxLength?: number;
 }
 
 const Input: React.FC<InputProps> = ({
@@ -29,7 +31,16 @@ const Input: React.FC<InputProps> = ({
   register,
   required,
   errors,
+  maxLength
 }) => {
+  const [charCount, setCharCount] = useState(0);
+
+  useEffect(() => {
+    if (maxLength) {
+      setCharCount(0);
+    }
+  }, [maxLength]);
+
   return (
     <div className="w-full relative">
       {formatPrice && (
@@ -46,7 +57,13 @@ const Input: React.FC<InputProps> = ({
       <input
         id={id}
         disabled={disabled}
-        {...register(id, { required })}
+        {...register(id, { 
+          required,
+          maxLength: maxLength ? {
+            value: maxLength,
+            message: `Maximum ${maxLength} characters allowed`
+          } : undefined
+        })}
         placeholder={placeholder} 
         type={type}
         className={`
@@ -67,6 +84,15 @@ const Input: React.FC<InputProps> = ({
           ${errors[id] ? 'border-rose-500' : 'border-neutral-300'}
           ${errors[id] ? 'focus:border-rose-500' : 'focus:border-black'}
         `}
+        onChange={(e) => {
+          if (maxLength) {
+            setCharCount(e.target.value.length);
+            if (e.target.value.length > maxLength) {
+              e.target.value = e.target.value.slice(0, maxLength);
+              setCharCount(maxLength);
+            }
+          }
+        }}
       />
       <label 
         className={`
@@ -76,7 +102,6 @@ const Input: React.FC<InputProps> = ({
           transform 
           -translate-y-3 
           top-5 
-          
           origin-[0] 
           ${formatPrice ? 'left-9' : 'left-4'}
           peer-placeholder-shown:scale-100 
@@ -88,6 +113,11 @@ const Input: React.FC<InputProps> = ({
       >
         {label}
       </label>
+      {maxLength && (
+        <span className="absolute top-2 right-2 text-xs text-gray-500">
+          {charCount}/{maxLength}
+        </span>
+      )}
     </div>
    );
 }

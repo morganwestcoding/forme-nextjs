@@ -61,11 +61,12 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({ onLocationSubmi
       borderColor: 'white',
       color: 'white',
       boxShadow: 'none',
-      minHeight: '58px',
-      height: '58px',
+      minHeight: '62px',
+      height: '62px',
       '&:hover': {
         borderColor: 'white',
       },
+      borderRadius: '0.4rem', // Add this line to set the border radius
     }),
     option: (styles, { isFocused, isSelected }) => ({
       ...styles,
@@ -103,7 +104,7 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({ onLocationSubmi
         register={register}
         errors={errors}
       />
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm rounded-2xl">
         <Select
           options={states}
           value={selectedState}
@@ -112,7 +113,7 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({ onLocationSubmi
           styles={customStyles}
           getOptionLabel={(option) => option.label}
           getOptionValue={(option) => option.value}
-          className='text-xs'
+          className='text-sm rounded-2xl'
         />
         <Select
           options={cities}
@@ -123,7 +124,7 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({ onLocationSubmi
           getOptionLabel={(option) => option.label}
           getOptionValue={(option) => option.value}
           isDisabled={!selectedState}
-          className=''
+          className='text-sm rounded-2xl'
         />
         <Input
           id="zipCode"

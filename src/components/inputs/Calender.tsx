@@ -54,7 +54,7 @@ const Calendar: React.FC<CalendarProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm overflow-hidden w-full mx-auto border">
+    <div className="bg-white rounded-lg shadow-sm overflow-hidden w-full mx-auto border">
       <div className="flex justify-between items-center p-4 pb-2">
         <button onClick={goToPreviousMonth} className="p-2">
           {'<'}
