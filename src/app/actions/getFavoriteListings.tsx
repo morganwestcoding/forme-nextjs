@@ -16,14 +16,30 @@ export default async function getFavoriteListings() {
         },
       },
       include: {
-        services: true, 
+        services: true,
+        employees: true, // Add employees to include
       },
     });
 
     const safeFavorites = favorites.map((favorite) => ({
       ...favorite,
       createdAt: favorite.createdAt.toISOString(),
-      }));
+      services: favorite.services.map(service => ({
+        id: service.id,
+        serviceName: service.serviceName,
+        price: service.price,
+        category: service.category
+      })),
+      employees: favorite.employees.map(employee => ({
+        id: employee.id,
+        fullName: employee.fullName
+      })),
+      galleryImages: favorite.galleryImages || [],
+      phoneNumber: favorite.phoneNumber || null,
+      website: favorite.website || null,
+      address: favorite.address || null,
+      zipCode: favorite.zipCode || null
+    }));
 
     return safeFavorites;
   } catch (error: any) {
