@@ -121,9 +121,9 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
             {description}
           </p>
           
-          <div className="flex justify-between items-center mb-6">
+          <div className="flex justify-between items-center mb-6 mt-4">
   {address && (
-    <div className="flex items-center pb-2 pt-2 rounded-lg shadow-sm bg-white border flex-grow mr-2">
+    <div className="flex items-center pb-2 pt-2 rounded-lg shadow-sm bg-white border flex-grow mt-2.5">
 
       <span className="text-xs font-light text-[#a2a2a2] truncate flex-grow text-center p-2">{listing.address}</span>
     </div>

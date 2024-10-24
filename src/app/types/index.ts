@@ -20,6 +20,7 @@ export type SafeListing = Omit<Listing, "createdAt"> & {
     fullName: string;
   }[];
   zipCode?: string | null;
+  storeHours: SafeStoreHours[];
   
 };
 
@@ -113,4 +114,11 @@ export type SafeEmployee = {
   fullName: string;
 };
 
+
+export type SafeStoreHours = {
+  dayOfWeek: string;
+  openTime: string;
+  closeTime: string;
+  isClosed: boolean;
+};
 

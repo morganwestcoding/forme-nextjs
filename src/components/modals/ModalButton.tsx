@@ -28,8 +28,8 @@ const ModalButton: React.FC<ModalButtonProps> = ({
         relative
         
         disabled:cursor-not-allowed
-        rounded-md
-        shadow-sm
+        rounded-lg
+        shadow
         border-transparent
        
         transition
@@ -40,7 +40,7 @@ const ModalButton: React.FC<ModalButtonProps> = ({
         ${small ? 'text-sm' : 'text-md'}
         ${small ? 'py-1' : 'py-3'}
         ${small ? 'font-light' : 'font-light'}
-        ${small ? 'border-[1px]' : 'border-2'}
+        ${small ? 'border-[1px]' : 'border-[1px]'}
       `}>
         {Icon && (
         <Icon

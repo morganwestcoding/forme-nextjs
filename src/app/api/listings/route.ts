@@ -21,7 +21,8 @@ export async function POST(request: Request) {
     website,      
     address,
     zipCode,
-    employees,  // Add this line
+    employees,
+    storeHours,
   } = body;
 
   console.log("Received fields:", { title, description, imageSrc, category, location, 
@@ -69,6 +70,9 @@ export async function POST(request: Request) {
             .map((employee: string) => ({
               fullName: employee.trim(),
             })),
+        },
+        storeHours: {
+          create: storeHours
         },
       },
     });

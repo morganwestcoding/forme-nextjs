@@ -72,6 +72,7 @@ model Listing {
   zipCode       String?
   galleryImages  String[]
   employees Employee[]
+  storeHours     StoreHours[]  // Add this line
 }
 
 model Reservation {
@@ -167,5 +168,15 @@ model Employee {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   fullName  String
   listingId String   @db.ObjectId
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+}
+
+model StoreHours {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  listingId String   @db.ObjectId
+  dayOfWeek String
+  openTime  String
+  closeTime String
+  isClosed  Boolean  @default(false)
   listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
 }

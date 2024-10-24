@@ -21,6 +21,7 @@ import Heading from '../Heading';
 import ServiceSelector, { Service } from '../inputs/ServiceSelector';
 import ListLocationSelect from '../inputs/ListLocationSelect';
 import EmployeeSelector from '../inputs/EmployeeSelector';
+import StoreHours, { StoreHourType }  from '../inputs/StoreHours';
 
 enum STEPS {
   CATEGORY = 0,
@@ -28,7 +29,9 @@ enum STEPS {
   INFO = 2,
   IMAGES = 3,
   DESCRIPTION = 4,
-  EMPLOYEE = 5,
+  HOURS = 5,
+  EMPLOYEE = 6,
+ 
 }
 
 const RentModal = () => {
@@ -43,6 +46,16 @@ const RentModal = () => {
     { serviceName: '', price: 0, category: '' },
   ]);
   const [employees, setEmployees] = useState(['', '', '']);
+
+  const [storeHours, setStoreHours] = useState<StoreHourType[]>([
+    { dayOfWeek: 'Monday', openTime: '8:00 AM', closeTime: '8:00 PM', isClosed: false },
+    { dayOfWeek: 'Tuesday', openTime: '8:00 AM', closeTime: '8:00 PM', isClosed: false },
+    { dayOfWeek: 'Wednesday', openTime: '8:00 AM', closeTime: '8:00 PM', isClosed: false },
+    { dayOfWeek: 'Thursday', openTime: '8:00 AM', closeTime: '8:00 PM', isClosed: false },
+    { dayOfWeek: 'Friday', openTime: '8:00 AM', closeTime: '8:00 PM', isClosed: false },
+    { dayOfWeek: 'Saturday', openTime: '8:00 AM', closeTime: '8:00 PM', isClosed: false },
+    { dayOfWeek: 'Sunday', openTime: '8:00 AM', closeTime: '8:00 PM', isClosed: false },
+  ]);
 
   const { 
     register, 
@@ -145,6 +158,7 @@ const RentModal = () => {
       ...data, 
       services,
       employees,
+      storeHours,
       phoneNumber: data.phoneNumber,
       website: data.website
     };
@@ -295,6 +309,20 @@ const RentModal = () => {
           register={register}
           errors={errors}
           maxLength={20}
+        />
+      </div>
+    )
+  }
+
+  if (step === STEPS.HOURS) {
+    bodyContent = (
+      <div className="flex flex-col gap-8">
+        <Heading
+          title="Share your store hours"
+          subtitle="What hours each day is your store open?"
+        />
+        <StoreHours 
+          onChange={(hours) => setStoreHours(hours)}
         />
       </div>
     )
