@@ -15,7 +15,8 @@ export default async function getListingById(params: IParams) {
       include: {
         user: true,
         services: true,
-        employees: true, // Add this line
+        employees: true, 
+        storeHours: true
       }
     });
 
@@ -32,11 +33,18 @@ export default async function getListingById(params: IParams) {
         updatedAt: listing.user.updatedAt.toISOString(),
         emailVerified: listing.user.emailVerified?.toISOString() || null,
       },
-      employees: listing.employees.map(employee => ({  // Add this mapping
+      employees: listing.employees.map(employee => ({
         id: employee.id,
         fullName: employee.fullName
+      })),
+      storeHours: listing.storeHours.map(hour => ({  // Add this transform
+        dayOfWeek: hour.dayOfWeek,
+        openTime: hour.openTime,
+        closeTime: hour.closeTime,
+        isClosed: hour.isClosed
       }))
     };
+    
   } catch (error: any) {
     throw new Error(error);
   }

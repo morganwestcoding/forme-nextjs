@@ -11,6 +11,7 @@ import { SafeListing, SafeReservation, SafeUser } from "@/app/types";
 import { categories } from "@/components/Categories";
 import ListingHead from "@/components/listings/ListingHead";
 import ListingRightBar from "@/components/listings/ListingRightBar";
+import StoreHours from "@/components/listings/StoreHours";
 
 interface ListingClientProps {
   reservations?: SafeReservation[];

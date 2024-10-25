@@ -39,6 +39,7 @@ export default async function getListings(
       include: {
         services: true, 
         employees: true,
+        storeHours: true, // Add this line
       },
       orderBy: {
         createdAt: 'desc',
@@ -48,13 +49,18 @@ export default async function getListings(
     console.log('Listings found:', listings.length);
     console.log('Sample listing:', listings[0]);
 
-
     const safeListings = listings.map((listing) => ({
       ...listing,
       createdAt: listing.createdAt.toISOString(),
       employees: listing.employees.map(employee => ({
         id: employee.id,
         fullName: employee.fullName
+      })),
+      storeHours: listing.storeHours.map(hour => ({  // Add this block
+        dayOfWeek: hour.dayOfWeek,
+        openTime: hour.openTime,
+        closeTime: hour.closeTime,
+        isClosed: hour.isClosed
       }))
     }));
  

@@ -5,6 +5,7 @@ import { SafeListing, SafeUser } from '@/app/types';
 import useFavorite from "@/app/hooks/useFavorite";
 import { categories } from "../Categories";
 import ListingGalleryImage from "./ListingGalleryImage";
+import StoreHours from './StoreHours';
 
 interface ListingHeadProps {
   listing: SafeListing;
@@ -132,6 +133,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
 </div>
         </div>
       </div>
+      <StoreHours storeHours={listing.storeHours} />
     </div>
   );
 };
