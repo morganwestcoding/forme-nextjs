@@ -40,8 +40,8 @@ const HeartButton: React.FC<HeartButtonProps> = ({
           strokeWidth="1.5" 
           strokeLinecap="round" 
           strokeLinejoin="round"
-          fill={hasFavorited ? '#b1dafe' : 'none'}
-          className="bg-black bg-opacity-25"
+          fill={hasFavorited ? '#b1dafe' : 'rgba(0, 0, 0, 0.35)'}
+
         />
       </svg>
     </div>

@@ -20,7 +20,7 @@ export type SafeListing = Omit<Listing, "createdAt"> & {
     fullName: string;
   }[];
   zipCode?: string | null;
-  storeHours: SafeStoreHours[];
+  storeHours?: SafeStoreHours[];
   
 };
 
