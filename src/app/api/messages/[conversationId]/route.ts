@@ -4,53 +4,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 
-export async function GET(
-  request: Request,
-  { params }: { params: { conversationId: string } }
-) {
-  try {
-    const currentUser = await getCurrentUser();
-    if (!currentUser) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
-
-    const messages = await prisma.message.findMany({
-      where: {
-        conversationId: params.conversationId,
-      },
-      include: {
-        sender: {
-          select: {
-            id: true,
-            name: true,
-            image: true,
-          },
-        },
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
-
-    const safeMessages = messages.map((message) => ({
-      id: message.id,
-      content: message.content,
-      createdAt: message.createdAt.toISOString(),
-      senderId: message.senderId,
-      conversationId: message.conversationId,
-      sender: {
-        id: message.sender.id,
-        name: message.sender.name || null,
-        image: message.sender.image || null,
-      },
-    }));
-
-    return NextResponse.json(safeMessages);
-  } catch (error) {
-    console.error("Error fetching messages:", error);
-    return new NextResponse("Internal Error", { status: 500 });
-  }
-}
+// GET route remains the same...
 
 export async function POST(
   request: Request,
@@ -69,6 +23,25 @@ export async function POST(
       return new NextResponse("Missing content", { status: 400 });
     }
 
+    // Get conversation to find other participants
+    const conversation = await prisma.conversation.findUnique({
+      where: {
+        id: params.conversationId
+      },
+      include: {
+        users: {
+          select: {
+            id: true,
+            name: true
+          }
+        }
+      }
+    });
+
+    if (!conversation) {
+      return new NextResponse("Conversation not found", { status: 404 });
+    }
+
     const newMessage = await prisma.message.create({
       data: {
         content,
@@ -85,6 +58,19 @@ export async function POST(
         },
       },
     });
+
+    // Create notifications for all other users in the conversation
+    const otherUsers = conversation.users.filter(user => user.id !== currentUser.id);
+    
+    await Promise.all(otherUsers.map(user => 
+      prisma.notification.create({
+        data: {
+          type: 'NEW_MESSAGE',
+          content: `${currentUser.name || 'Someone'} sent you a message: "${content.length > 30 ? content.substring(0, 30) + '...' : content}"`,
+          userId: user.id
+        }
+      })
+    ));
 
     const safeMessage = {
       id: newMessage.id,

@@ -29,6 +29,7 @@ export async function POST(
   }
 
   let updatedLikes = [...(post.likes || [])];
+  const isLiking = !updatedLikes.includes(currentUser.id);
 
   if (updatedLikes.includes(currentUser.id)) {
     updatedLikes = updatedLikes.filter((id) => id !== currentUser.id);
@@ -44,6 +45,17 @@ export async function POST(
       likes: updatedLikes
     }
   });
+
+  // Only create notification if the user is liking (not unliking)
+  if (isLiking) {
+    await prisma.notification.create({
+      data: {
+        userId: post.userId,
+        type: 'NEW_LIKE',
+        content: `${currentUser.name} liked your post`
+      }
+    });
+  }
 
   return NextResponse.json(updatedPost);
 }

@@ -29,6 +29,7 @@ export async function POST(
   }
 
   let updatedBookmarks = [...(post.bookmarks || [])];
+  const isBookmarking = !updatedBookmarks.includes(currentUser.id);
 
   if (updatedBookmarks.includes(currentUser.id)) {
     updatedBookmarks = updatedBookmarks.filter((id) => id !== currentUser.id);
@@ -44,6 +45,17 @@ export async function POST(
       bookmarks: updatedBookmarks
     }
   });
+
+  // Only create notification when someone bookmarks (not when they remove bookmark)
+  if (isBookmarking) {
+    await prisma.notification.create({
+      data: {
+        userId: post.userId,
+        type: 'NEW_BOOKMARK',
+        content: `${currentUser.name} bookmarked your post`
+      }
+    });
+  }
 
   return NextResponse.json(updatedPost);
 }

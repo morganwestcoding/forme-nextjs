@@ -90,25 +90,32 @@ const StoreHours: React.FC<StoreHoursProps> = ({ onChange }) => {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center gap-2 p-3 border rounded-lg">
-        <label className="flex items-center gap-2 text-sm">
-          <span>Same every day</span>
-          <button
-            type="button"
-            onClick={toggleSameEveryDay}
+      <div className="flex items-center justify-between p-3 border rounded-lg">
+        <span className="text-sm font-medium">Same every day</span>
+        <div className="relative inline-block w-12 select-none">
+          <input
+            type="checkbox"
+            name="toggle"
+            id="toggle"
+            className="hidden"
+            checked={sameEveryDay}
+            onChange={toggleSameEveryDay}
+          />
+          <label
+            htmlFor="toggle"
             className={`
-              w-7 h-7 rounded-full relative transition-colors duration-200 ease-in-out
-              ${sameEveryDay ? 'bg-blue-500' : 'bg-gray-200'}
+              block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer
+              ${sameEveryDay ? 'bg-blue-500' : 'bg-gray-300'}
             `}
           >
             <span
               className={`
-                absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-transform duration-200 ease-in-out
-                ${sameEveryDay ? 'transform translate-x-7' : ''}
+                block w-4 h-4 rounded-full bg-white shadow transform transition-transform duration-200 ease-in-out
+                ${sameEveryDay ? 'translate-x-7' : 'translate-x-1'} mt-1
               `}
             />
-          </button>
-        </label>
+          </label>
+        </div>
       </div>
 
       <div className="space-y-4">
@@ -121,7 +128,7 @@ const StoreHours: React.FC<StoreHoursProps> = ({ onChange }) => {
             <select
               value={hour.openTime}
               onChange={(e) => handleTimeChange(index, 'openTime', e.target.value)}
-              className="p-2 border rounded"
+              className="p-2 border rounded text-black bg-white"
               disabled={hour.isClosed || (sameEveryDay && index !== 0)}
             >
               {HOURS.map((time) => (
@@ -136,7 +143,7 @@ const StoreHours: React.FC<StoreHoursProps> = ({ onChange }) => {
             <select
               value={hour.closeTime}
               onChange={(e) => handleTimeChange(index, 'closeTime', e.target.value)}
-              className="p-2 border rounded"
+              className="p-2 border rounded text-black bg-white"
               disabled={hour.isClosed || (sameEveryDay && index !== 0)}
             >
               {HOURS.map((time) => (
@@ -152,7 +159,9 @@ const StoreHours: React.FC<StoreHoursProps> = ({ onChange }) => {
               className={`
                 px-3 py-1 rounded text-sm
                 ${hour.isClosed ? 'bg-red-500 text-white' : 'bg-gray-200 text-gray-700'}
+                ${(sameEveryDay && index !== 0) ? 'opacity-50 cursor-not-allowed' : ''}
               `}
+              disabled={sameEveryDay && index !== 0}
             >
               {hour.isClosed ? 'Closed' : 'Open'}
             </button>

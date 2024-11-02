@@ -180,3 +180,4 @@ model StoreHours {
   isClosed  Boolean  @default(false)
   listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
 }
+
