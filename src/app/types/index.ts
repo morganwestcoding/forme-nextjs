@@ -91,7 +91,12 @@ export type SafeMessage = {
   createdAt: string;
   senderId: string;
   conversationId: string;
-  isRead: boolean;  // Add this line
+  isRead: boolean;
+  sender: {
+    id: string;
+    name: string | null;
+    image: string | null;
+  };
 };
 
 export type SafeConversation = {

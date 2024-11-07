@@ -38,7 +38,7 @@ export default async function RootLayout({
   
   
   return (
-    <CategoryProvider>
+<CategoryProvider>
   <ClientProviders>
     <html lang="en">
    
