@@ -6,6 +6,8 @@ import useFavorite from "@/app/hooks/useFavorite";
 import { categories } from "../Categories";
 import ListingGalleryImage from "./ListingGalleryImage";
 import StoreHours from './StoreHours';
+import HeartButton from '../HeartButton';
+
 
 interface ListingHeadProps {
   listing: SafeListing;
@@ -14,12 +16,6 @@ interface ListingHeadProps {
 
 const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
   const { title, location, description, category, id, address, website, phoneNumber } = listing;
-  const { hasFavorited, toggleFavorite } = useFavorite({
-    listingId: id,
-    currentUser
-  });
-
-
 
   const getColorByCategory = (categoryName: string) => {
     const firstLevelCategory = categoryName.split('/')[0].trim();
@@ -50,7 +46,6 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
 
   const categoryColors = getColorByCategory(category);
 
-
   // Split location into city and state
   const [city, state] = location?.split(',').map(s => s.trim()) || [];
   
@@ -80,9 +75,11 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
           <div className="flex flex-col items-start">
             <div className="flex items-center">
               <h1 className="text-xl font-black text-gray-800 mr-2">{title}</h1>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" color="#a2a2a2" fill="none" className='mr-2'>
-                <path d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              </svg>
+              <HeartButton 
+                listingId={id} 
+                currentUser={currentUser} 
+                variant="listingHead" 
+              />
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" color="#a2a2a2" fill="none">
                 <path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
@@ -98,7 +95,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
                 <span className={`${categoryColors.textColorClass} text-xs font-extralight`}>
                   {category.charAt(0).toUpperCase()}
                 </span>
-                </div>
+              </div>
             </div>
           </div>
           
@@ -123,14 +120,12 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
           </p>
           
           <div className="flex justify-between items-center mb-6 mt-4">
-  {address && (
-    <div className="flex items-center pb-2 pt-2 rounded-lg shadow-sm bg-white border flex-grow mt-2.5">
-
-      <span className="text-xs font-light text-[#a2a2a2] truncate flex-grow text-center p-2">{listing.address}</span>
-    </div>
-  )}
-
-</div>
+            {address && (
+              <div className="flex items-center pb-2 pt-2 rounded-lg shadow-sm bg-white border flex-grow mt-2.5">
+                <span className="text-xs font-light text-[#a2a2a2] truncate flex-grow text-center p-2">{listing.address}</span>
+              </div>
+            )}
+          </div>
         </div>
       </div>
       <StoreHours storeHours={listing.storeHours} />

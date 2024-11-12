@@ -4,49 +4,70 @@ import useFavorite from "@/app/hooks/useFavorite";
 import { SafeUser } from "@/app/types";
 
 interface HeartButtonProps {
-  listingId: string
-  currentUser?: SafeUser | null
+  listingId: string;
+  currentUser?: SafeUser | null;
+  variant?: 'default' | 'listingHead';
 }
 
-const HeartButton: React.FC<HeartButtonProps> = ({ 
+const HeartButton: React.FC<HeartButtonProps> = ({
   listingId,
-  currentUser
+  currentUser,
+  variant = 'default'
 }) => {
   const { hasFavorited, toggleFavorite } = useFavorite({
     listingId,
     currentUser
   });
-  
+
+  if (variant === 'listingHead') {
+    return (
+      <div
+        onClick={toggleFavorite}
+        className="relative hover:opacity-80 transition cursor-pointer"
+      >
+        <svg 
+          xmlns="http://www.w3.org/2000/svg" 
+          viewBox="0 0 24 24" 
+          width="20" 
+          height="20" 
+          color="#a2a2a2" 
+          fill={hasFavorited ? '#b1dafe' : 'none'} 
+          className='mr-2'
+        >
+          <path 
+            d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z" 
+            stroke="currentColor" 
+            strokeWidth="1.5" 
+            strokeLinecap="round" 
+          />
+        </svg>
+      </div>
+    );
+  }
+
   return (
     <div
       onClick={toggleFavorite}
-      className="
-        relative
-        hover:opacity-80
-        transition
-        cursor-pointer
-      "
+      className="relative hover:opacity-80 transition cursor-pointer"
     >
-      <svg 
-        xmlns="http://www.w3.org/2000/svg" 
-        viewBox="0 0 24 24" 
-        width="24" 
-        height="24" 
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        width="24"
+        height="24"
         className="absolute -top-[2px] -right-[2px]"
       >
-        <path 
-          d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z" 
+        <path
+          d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z"
           stroke="white"
-          strokeWidth="1.5" 
-          strokeLinecap="round" 
+          strokeWidth="1.5"
+          strokeLinecap="round"
           strokeLinejoin="round"
           fill={hasFavorited ? '#b1dafe' : 'rgba(0, 0, 0, 0.35)'}
-
         />
       </svg>
     </div>
-   );
+  );
 }
- 
-export default HeartButton;
 
+export default HeartButton;

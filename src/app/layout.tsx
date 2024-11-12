@@ -16,6 +16,9 @@ import MessageModal from '@/components/modals/MessageModal';
 import ListingGalleryModal from '@/components/modals/listingGalleryModal';
 import ListingGridModal from '@/components/modals/ListingGridModal';
 import { CategoryProvider } from '@/CategoryContext';
+import { FilterProvider } from '@/FilterContext';
+import FilterModal from '@/components/modals/FilterModal';
+
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -38,6 +41,7 @@ export default async function RootLayout({
   
   
   return (
+  <FilterProvider>
 <CategoryProvider>
   <ClientProviders>
     <html lang="en">
@@ -61,10 +65,12 @@ export default async function RootLayout({
         <ProfileGalleryModal/> 
         <ListingGalleryModal/>
         <MessageModal />
+        <FilterModal/>
       </body>
     
     </html>
   </ClientProviders>
     </CategoryProvider>
+    </FilterProvider>
   )
 }
