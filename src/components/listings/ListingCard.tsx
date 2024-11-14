@@ -125,7 +125,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
         <div 
           className="
             w-full
-            h-32
+            h-28
             relative 
             overflow-hidden 
             rounded-t-2xl
