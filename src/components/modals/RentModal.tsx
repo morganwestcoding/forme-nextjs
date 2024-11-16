@@ -133,17 +133,12 @@ const RentModal = () => {
     zipCode: string;
   } | null) => {
     if (locationData) {
-      setValue('location', `${locationData.city}, ${locationData.state}`);
-      setValue('address', locationData.address);
-      setValue('zipCode', locationData.zipCode);
-      setValue('city', locationData.city);
-      setValue('state', locationData.state);
-    } else {
-      setValue('location', null);
-      setValue('address', '');
-      setValue('zipCode', '');
-      setValue('city', '');
-      setValue('state', '');
+      // Set all values at once
+      setValue('location', `${locationData.city}, ${locationData.state}`, { shouldValidate: true });
+      setValue('address', locationData.address, { shouldValidate: true });
+      setValue('zipCode', locationData.zipCode, { shouldValidate: true });
+      setValue('city', locationData.city, { shouldValidate: true });
+      setValue('state', locationData.state, { shouldValidate: true });
     }
   };
 

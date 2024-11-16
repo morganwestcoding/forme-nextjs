@@ -71,6 +71,45 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({ onServicesChange, exi
   };
 
   const customStyles: StylesConfig<CategoryOption, false> = {
+    menu: (styles) => ({
+      ...styles,
+      backgroundColor: 'rgba(0, 0, 0, 0.75)',
+      backdropFilter: 'blur(8px)',
+      borderRadius: '0.5rem',
+      padding: '0.5rem',
+      maxHeight: '250px',
+    }),
+    menuList: (styles) => ({
+      ...styles,
+      backgroundColor: 'transparent',
+      padding: '0',
+      maxHeight: '220px',
+      overflowY: 'auto',
+      '&::-webkit-scrollbar': {
+        width: '6px',
+      },
+      '&::-webkit-scrollbar-track': {
+        background: 'transparent',
+      },
+      '&::-webkit-scrollbar-thumb': {
+        background: 'rgba(255, 255, 255, 0.3)',
+        borderRadius: '3px',
+      },
+      '&::-webkit-scrollbar-thumb:hover': {
+        background: 'rgba(255, 255, 255, 0.5)',
+      },
+    }),
+    option: (styles, { isFocused }) => ({
+      ...styles,
+      backgroundColor: isFocused ? 'rgba(128, 128, 128, 0.5)' : 'transparent',
+      color: 'white',
+      cursor: 'pointer',
+      padding: '0.75rem',
+      borderRadius: '0.375rem',
+      '&:hover': {
+        backgroundColor: 'rgba(128, 128, 128, 0.5)',
+      }
+    }),
     control: (styles) => ({
       ...styles,
       backgroundColor: 'transparent',
@@ -82,12 +121,7 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({ onServicesChange, exi
       '&:hover': {
         borderColor: 'white',
       },
-    }),
-    option: (styles, { isFocused, isSelected }) => ({
-      ...styles,
-      backgroundColor: isFocused ? 'grey' : 'black',
-      color: 'white',
-      cursor: 'pointer',
+      borderRadius: '0.4rem',
     }),
     singleValue: (styles) => ({
       ...styles,

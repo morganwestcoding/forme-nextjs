@@ -16,6 +16,12 @@ const Notifications: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isOpen, setIsOpen] = useState(false);
 
+  // Fetch notifications on component mount
+  useEffect(() => {
+    fetchNotifications();
+  }, []); // Empty dependency array means this runs once on mount
+
+  // Also fetch when dropdown opens
   useEffect(() => {
     if (isOpen) {
       fetchNotifications();
@@ -58,40 +64,76 @@ const Notifications: React.FC = () => {
             <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
           </svg>
           {notifications.some(n => !n.isRead) && (
-            <div className="absolute -top-1 -right-2 bg-white border rounded-full w-5 h-5 flex items-center justify-center text-xs text-[#a2a2a2] font-thin shadow-sm">
-              <div className="w-2.5 h-2.5 bg-red-500 rounded-full"></div>
+            <div className="absolute -top-0 -right-1 bg-red-500 border rounded-full w-4 h-4 flex items-center justify-center text-xs text-[#a2a2a2] font-thin shadow-sm">
             </div>
           )}
         </button>
       </div>
 
       {isOpen && (
-        <div className="absolute z-10 w-64 mt-1 bg-white rounded-md shadow-lg transform -translate-x-1/2 left-1/2">
-          <div className="p-4 border-b">
-            <h3 className="text-lg font-semibold">Notifications</h3>
-          </div>
+        <div className="
+          absolute 
+          z-10 
+          w-64 
+          mt-1 
+          rounded-lg
+          shadow-lg 
+          transform 
+          -translate-x-1/2 
+          left-1/2
+          bg-white
+          bg-opacity-75
+          backdrop-blur-md
+          border-none
+          overflow-hidden
+        ">
           <div className="max-h-96 overflow-y-auto">
             {notifications.length === 0 ? (
-              <div className="p-4 text-center text-gray-500">
+              <div className="p-4 text-center text-black rounded-lg">
                 No notifications
               </div>
             ) : (
-              notifications.map((notification) => (
+              notifications.map((notification, index) => (
                 <div
                   key={notification.id}
-                  className={`p-4 border-b hover:bg-gray-100 cursor-pointer ${
-                    !notification.isRead ? 'bg-blue-50' : ''
-                  }`}
+                  className={`
+                    p-4 
+                    hover:bg-gray-500 
+                    hover:bg-opacity-25 
+                    cursor-pointer 
+                    ${!notification.isRead ? 'bg-blue-500 bg-opacity-10' : ''}
+                    ${index !== notifications.length - 1 ? 'border-b border-gray-500 border-opacity-25' : ''}
+                    ${index === 0 ? 'rounded-t-lg' : ''}
+                    ${index === notifications.length - 1 ? 'rounded-b-lg' : ''}
+                    transition
+                    duration-200
+                  `}
                   onClick={() => markAsRead(notification.id)}
                 >
-                  <p className="text-sm text-gray-800">{notification.content}</p>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-sm text-black font-normal">{notification.content}</p>
+                  <p className="text-xs text-gray-600 mt-1">
                     {format(new Date(notification.createdAt), 'PPp')}
                   </p>
                 </div>
               ))
             )}
           </div>
+          
+          <style jsx global>{`
+            .max-h-96::-webkit-scrollbar {
+              width: 6px;
+            }
+            .max-h-96::-webkit-scrollbar-track {
+              background: transparent;
+            }
+            .max-h-96::-webkit-scrollbar-thumb {
+              background: rgba(0, 0, 0, 0.2);
+              border-radius: 3px;
+            }
+            .max-h-96::-webkit-scrollbar-thumb:hover {
+              background: rgba(0, 0, 0, 0.3);
+            }
+          `}</style>
         </div>
       )}
     </div>

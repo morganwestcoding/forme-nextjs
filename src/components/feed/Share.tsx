@@ -1,3 +1,4 @@
+// components/feed/Share.tsx
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -11,6 +12,7 @@ import PostCategorySelect from '../inputs/PostCategorySelect';
 import AttachmentModal from '../modals/AttachmentModal';
 import useAttachmentModal from '@/app/hooks/useAttachmentModal';
 import { categories } from '@/components/Categories';
+import { usePostStore } from '@/app/hooks/usePostStore';
 
 interface ShareProps {
   currentUser: SafeUser | null;
@@ -35,15 +37,20 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
   const [tag, setTag] = useState('');
   const [category, setCategory] = useState('');
   const [categoryId, setCategoryId] = useState('');
+  const addPost = usePostStore((state) => state.addPost);
 
-  // Find the selected category object client-side
   const selectedCategory = categories.find(cat => cat.label === categoryLabel);
 
   const handlePostSubmit = useCallback(async (postData: PostData) => {
     try {
       const response = await axios.post('/api/post', postData);
       console.log("Post submitted successfully:", response.data);
-      // Resetting form state
+      
+      addPost({
+        ...response.data,
+        user: currentUser,
+      });
+
       setImageSrc('');
       setContent('');
       setLocation(null);
@@ -53,7 +60,7 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
     } catch (error) {
       console.error('Error submitting post:', error);
     }
-  }, []);
+  }, [addPost, currentUser]);
 
   const handleSubmit = useCallback(() => {
     const postData = {

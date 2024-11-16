@@ -12,13 +12,14 @@ interface InputProps {
   id: string;
   label: string;
   type?: string;
-  placeholder?:string;
+  placeholder?: string;
   disabled?: boolean;
   formatPrice?: boolean;
   required?: boolean;
   register: UseFormRegister<FieldValues>,
   errors: FieldErrors
   maxLength?: number;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const Input: React.FC<InputProps> = ({
@@ -31,7 +32,8 @@ const Input: React.FC<InputProps> = ({
   register,
   required,
   errors,
-  maxLength
+  maxLength,
+  onChange
 }) => {
   const [charCount, setCharCount] = useState(0);
 
@@ -40,6 +42,22 @@ const Input: React.FC<InputProps> = ({
       setCharCount(0);
     }
   }, [maxLength]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Handle maxLength logic
+    if (maxLength) {
+      setCharCount(e.target.value.length);
+      if (e.target.value.length > maxLength) {
+        e.target.value = e.target.value.slice(0, maxLength);
+        setCharCount(maxLength);
+      }
+    }
+    
+    // Call the passed onChange handler if it exists
+    if (onChange) {
+      onChange(e);
+    }
+  };
 
   return (
     <div className="w-full relative">
@@ -84,15 +102,7 @@ const Input: React.FC<InputProps> = ({
           ${errors[id] ? 'border-rose-500' : 'border-neutral-300'}
           ${errors[id] ? 'focus:border-rose-500' : 'focus:border-black'}
         `}
-        onChange={(e) => {
-          if (maxLength) {
-            setCharCount(e.target.value.length);
-            if (e.target.value.length > maxLength) {
-              e.target.value = e.target.value.slice(0, maxLength);
-              setCharCount(maxLength);
-            }
-          }
-        }}
+        onChange={handleChange}
       />
       <label 
         className={`

@@ -16,7 +16,7 @@ interface MarketProps {
 
 export const dynamic = 'force-dynamic';
 
-const ITEMS_PER_PAGE = 8;
+const ITEMS_PER_PAGE = 10;
 
 const Market = async ({ searchParams }: MarketProps) => {
   const store = useCategoryStore.getState();
@@ -40,10 +40,9 @@ const Market = async ({ searchParams }: MarketProps) => {
     );
   }
 
-// Market.tsx
 return (
   <ClientProviders>
-    <div className="pt-2 pl-4 mx-24 h-[calc(100vh-80px)] flex flex-col"> {/* Changed min-h-screen to fixed height */}
+    <div className="pt-2 pl-4 mx-24 h-[calc(100vh-80px)] flex flex-col">
       <div className="
         pt-6
         flex-1
@@ -55,7 +54,7 @@ return (
         xl:grid-cols-5
         2xl:grid-cols-6
         gap-6
-        overflow-y-auto  {/* Added overflow scroll */}
+        overflow-y-auto
       ">
         {paginatedListings.map((listing: any) => (
           <ListingCard
@@ -66,12 +65,14 @@ return (
           />
         ))}
       </div>
-      <div className="mt-auto pt-4"> {/* Changed to mt-auto and removed border */}
-        <Pagination 
-          currentPage={currentPage}
-          totalPages={totalPages}
-          totalResults={listings.length}
-        />
+      <div className="flex  justify-center w-full pt-4  translate-x-10"> {/* Modified this line */}
+        <div className="w-[500px]"> {/* Added container with fixed width */}
+          <Pagination 
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalResults={listings.length}
+          />
+        </div>
       </div>
     </div>
   </ClientProviders>

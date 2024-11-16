@@ -54,11 +54,11 @@ const Pagination = ({ currentPage, totalPages, totalResults }: PaginationProps) 
   };
 
   return (
-    <div className="flex items-center justify-between w-full max-w-2xl mx-auto">
+    <div className="flex items-center justify-between w-full">
       <button
         onClick={() => handlePageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className="px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="px-4 py-2 text-white disabled:opacity-50 disabled:cursor-not-allowed"
       >
         Previous
       </button>
@@ -68,12 +68,12 @@ const Pagination = ({ currentPage, totalPages, totalResults }: PaginationProps) 
       <button
         onClick={() => handlePageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="px-4 py-2 text-white disabled:opacity-50 disabled:cursor-not-allowed"
       >
         Next
       </button>
-      <div className="ml-4 text-sm text-gray-500">
-        Showing {totalResults} of {totalResults} results
+      <div className="ml-4 text-sm text-white">
+        Showing {totalResults} of {totalResults}
       </div>
     </div>
   );

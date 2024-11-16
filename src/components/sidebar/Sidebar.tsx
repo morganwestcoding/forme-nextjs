@@ -37,7 +37,7 @@ export default function Sidebar() {
         
         <ul className="list-none m-0 p-0 flex flex-col items-center hover:text-white ">
           <li className={`group flex items-center justify-start mb-3 p-2  rounded-lg border ${
-          selectedButton === 'home' ? 'bg-[#e2e8f0]' : 'bg-[#ffffff] hover:bg-[#e2e8f0]'
+          selectedButton === 'home' ? 'bg-[#000000] border-black' : 'bg-[#ffffff] hover:bg-[#e2e8f0]'
           } w-36`}
           onClick={() => {
             router.push('/');
@@ -62,7 +62,7 @@ export default function Sidebar() {
           {/* Market Icon */}
    
           <li className={`group flex items-center justify-start mb-3 p-2 rounded-lg border ${
-              selectedButton === 'market' ? 'bg-[#e2e8f0]' : 'bg-[#ffffff] hover:bg-[#e2e8f0]'
+              selectedButton === 'market' ? 'bg-[#000000] border-black' : 'bg-[#ffffff] hover:bg-[#e2e8f0]'
             } w-36`} 
             onClick={() => {
               router.push('/market');
@@ -84,7 +84,7 @@ export default function Sidebar() {
            {/* Favorites Icon */}
        
            <li className={`group flex items-center justify-start mb-3 p-2 rounded-lg border ${
-              selectedButton === 'favorites' ? 'bg-[#e2e8f0]' : 'bg-[#ffffff] hover:bg-[#e2e8f0]'
+              selectedButton === 'favorites' ? 'bg-[#000000] border-black': 'bg-[#ffffff] hover:bg-[#e2e8f0]'
             } w-36`} 
             onClick={() => {
               router.push('/favorites');
@@ -107,7 +107,7 @@ export default function Sidebar() {
          {/* Job Icon with Tooltip */}
   
          <li className={`group flex items-center justify-start mb-3 p-2 rounded-lg border ${
-              selectedButton === 'jobs' ? 'bg-[#e2e8f0]' : 'bg-[#ffffff] hover:bg-[#e2e8f0]'
+              selectedButton === 'jobs' ? 'bg-[#000000] border-black' : 'bg-[#ffffff] hover:bg-[#e2e8f0]'
             } w-36`} >
           <div className="group flex flex-col rounded-lg p-1 cursor-pointer">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={18} height={18} color={selectedButton === 'jobs' ? "#ffffff" : "#a2a2a2"}  fill={"none"} className=" group-hover:text-white">
@@ -126,7 +126,7 @@ export default function Sidebar() {
         
 
           <li className={`group flex items-center justify-start mb-5 p-2 rounded-lg border ${
-              selectedButton === 'bookings' ? 'bg-[#e2e8f0]' : 'bg-[#ffffff] hover:bg-[#e2e8f0]'
+              selectedButton === 'bookings' ? 'bg-[#000000] border-black' : 'bg-[#ffffff] hover:bg-[#e2e8f0]'
             } w-36`} 
             onClick={() => {
               router.push('/reservations');
