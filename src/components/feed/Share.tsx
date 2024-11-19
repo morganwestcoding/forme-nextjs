@@ -82,10 +82,10 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
   }, [category, handleSubmit]);
 
   return (
-    <div className={`w-full h-auto rounded-2xl shadow ${selectedCategory ? selectedCategory.color : 'bg-[#b1dafe]'} p-6`}>
+    <div className={`w-full h-auto rounded-2xl shadow ${selectedCategory ? selectedCategory.color : 'bg-[#8cadc9]'} p-6`}>
       <div className="flex items-start">
         <Link href={`/profile/${currentUser?.id}`} passHref>
-          <div className='drop-shadow mt-1 mr-3'>
+          <div className='drop-shadow-md mt-1 mr-3'>
             <Avatar src={currentUser?.image ?? undefined} />
           </div>
         </Link>

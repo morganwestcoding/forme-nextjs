@@ -7,19 +7,19 @@ import CategoryChoice from './CategoryChoice';
 export const categories = [
   {
     label: 'Nails',
-    color: 'bg-yellow-200',
+    color: 'bg-[#5D4E6D]',
     description: 'This property is close to the beach!',
     gradient: 'bg-gradient-to-b from-[#dac6be] to-[#6d635f]'
   },
   {
     label: 'Barber',
-    color: 'bg-rose-200',
+    color: 'bg-[#65524D]',
     description: 'This property is has windmills!',
     gradient: 'bg-gradient-to-b from-[#cdb3a8] to-[#907d76]'
   },
   {
     label: 'Salon',
-    color: 'bg-orange-300',
+    color: 'bg-[#DD9296]',
     description: 'This property is modern!',
     gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
   },

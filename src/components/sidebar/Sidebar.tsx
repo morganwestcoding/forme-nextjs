@@ -36,7 +36,7 @@ export default function Sidebar() {
           <span className="mb-5 text-[#a2a2a2] text-xs font-light ">Menu</span>
         
         <ul className="list-none m-0 p-0 flex flex-col items-center hover:text-white ">
-          <li className={`group flex items-center justify-start mb-3 p-2  rounded-lg border transition-colors duration-300 ${
+          <li className={`group flex items-center justify-start mb-3 p-2  rounded-lg border transition-colors duration-250 ${
           selectedButton === 'home' ? 'bg-[#8c929a] border-[#8c929a]' : 'bg-[#ffffff] hover:bg-[#e2e8f0]'
           } w-36`}
           onClick={() => {
@@ -48,7 +48,7 @@ export default function Sidebar() {
             
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={20} height={20} color={selectedButton === 'home' ? "#ffffff" : "#a2a2a2"} fill={selectedButton === 'home' ? "#ffffff" : "none"} className="group-hover:text-white">
                 <path d="M9.06165 4.82633L3.23911 9.92134C2.7398 10.3583 3.07458 11.1343 3.76238 11.1343C4.18259 11.1343 4.52324 11.4489 4.52324 11.8371V15.0806C4.52324 17.871 4.52324 19.2662 5.46176 20.1331C6.40029 21 7.91082 21 10.9319 21H13.0681C16.0892 21 17.5997 21 18.5382 20.1331C19.4768 19.2662 19.4768 17.871 19.4768 15.0806V11.8371C19.4768 11.4489 19.8174 11.1343 20.2376 11.1343C20.9254 11.1343 21.2602 10.3583 20.7609 9.92134L14.9383 4.82633C13.5469 3.60878 12.8512 3 12 3C11.1488 3 10.4531 3.60878 9.06165 4.82633Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                <path className={`${selectedButton !== 'home' ? 'group-hover:stroke-white' : ''}`} d="M12 16H12.009" stroke={selectedButton === 'home' ? "#8c929a" : "#a2a2a2"} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path className={`${selectedButton !== 'home' ? 'group-hover:stroke-white' : ''}`} d="M12 16H12.009" stroke={selectedButton === 'home' ? "#8c929a" : "#a2a2a2"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           
           </div>
@@ -61,17 +61,17 @@ export default function Sidebar() {
 
           {/* Market Icon */}
    
-          <li className={`group flex items-center justify-start mb-3 p-2 rounded-lg border ${
-              selectedButton === 'market' ? 'bg-[#000000] border-black' : 'bg-[#ffffff] hover:bg-[#e2e8f0]'
+          <li className={`group flex items-center justify-start mb-3 p-2 rounded-lg border transition-colors duration-250 ${
+              selectedButton === 'market' ? 'bg-[#8c929a] border-[#8c929a]' : 'bg-[#ffffff] hover:bg-[#e2e8f0]'
             } w-36`} 
             onClick={() => {
               router.push('/market');
               setSelectedButton('market');
             }}>
           <div className="group flex flex-col  rounded-full p-1 cursor-pointer" >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={18} height={18} color={selectedButton === 'market' ? "#ffffff" : "#a2a2a2"}  fill={"none"} className=" group-hover:text-white">
-            <path d="M3 10.9871V15.4925C3 18.3243 3 19.7403 3.87868 20.62C4.75736 21.4998 6.17157 21.4998 9 21.4998H15C17.8284 21.4998 19.2426 21.4998 20.1213 20.62C21 19.7403 21 18.3243 21 15.4925V10.9871" stroke="currentColor" strokeWidth="1.5" />
-            <path d="M15 16.9768C14.3159 17.584 13.2268 17.9768 12 17.9768C10.7732 17.9768 9.68409 17.584 9 16.9768" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={18} height={18} color={selectedButton === 'market' ? "#ffffff" : "#a2a2a2"}  fill={selectedButton === 'market' ? "#8c929a" : "none"}  className=" group-hover:text-white">
+            <path d="M3 10.9871V15.4925C3 18.3243 3 19.7403 3.87868 20.62C4.75736 21.4998 6.17157 21.4998 9 21.4998H15C17.8284 21.4998 19.2426 21.4998 20.1213 20.62C21 19.7403 21 18.3243 21 15.4925V10.9871" stroke="currentColor" strokeWidth="1.5" fill={selectedButton === 'market' ? "#ffffff" : "#none"}  />
+            <path className={`${selectedButton !== 'market' ? 'group-hover:stroke-white' : ''}`} d="M15 16.9768C14.3159 17.584 13.2268 17.9768 12 17.9768C10.7732 17.9768 9.68409 17.584 9 16.9768" stroke={selectedButton === 'market' ? "#8c929a" : "#a2a2a2"} strokeWidth="1.5" strokeLinecap="round" />
             <path d="M17.7957 2.50294L6.14983 2.53202C4.41166 2.44248 3.966 3.78259 3.966 4.43768C3.966 5.02359 3.89055 5.87774 2.82524 7.4831C1.75993 9.08846 1.83998 9.56536 2.44071 10.6767C2.93928 11.5991 4.20741 11.9594 4.86862 12.02C6.96883 12.0678 7.99065 10.2517 7.99065 8.97523C9.03251 12.1825 11.9955 12.1825 13.3158 11.8157C14.6385 11.4483 15.7717 10.1331 16.0391 8.97523C16.195 10.4142 16.6682 11.2538 18.0663 11.8308C19.5145 12.4284 20.7599 11.515 21.3848 10.9294C22.0096 10.3439 22.4107 9.04401 21.2967 7.6153C20.5285 6.63001 20.2084 5.7018 20.1032 4.73977C20.0423 4.18234 19.9888 3.58336 19.5971 3.20219C19.0247 2.64515 18.2035 2.47613 17.7957 2.50294Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
             </div>
@@ -83,15 +83,15 @@ export default function Sidebar() {
 
            {/* Favorites Icon */}
        
-           <li className={`group flex items-center justify-start mb-3 p-2 rounded-lg border ${
-              selectedButton === 'favorites' ? 'bg-[#000000] border-black': 'bg-[#ffffff] hover:bg-[#e2e8f0]'
+           <li className={`group flex items-center justify-start mb-3 p-2 rounded-lg border transition-colors duration-250 ${
+              selectedButton === 'favorites' ? 'bg-[#8c929a] border-[#8c929a]': 'bg-[#ffffff] hover:bg-[#e2e8f0]'
             } w-36`} 
             onClick={() => {
               router.push('/favorites');
               setSelectedButton('favorites');
             }}>
           <div className="group flex  flex-col rounded-full p-1 cursor-pointer" onClick={() => router.push('/favorites')}>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={17} height={17} color={selectedButton === 'favorites' ? "#ffffff" : "#a2a2a2"} fill={"none"} className=" group-hover:text-white">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={17} height={17} color={selectedButton === 'favorites' ? "#ffffff" : "#a2a2a2"} fill={selectedButton === 'favorites' ? "#ffffff" : "none"} className=" group-hover:text-white">
               <path d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>     
@@ -106,7 +106,7 @@ export default function Sidebar() {
 
          {/* Job Icon with Tooltip */}
   
-         <li className={`group flex items-center justify-start mb-3 p-2 rounded-lg border ${
+         <li className={`group flex items-center justify-start mb-3 p-2 rounded-lg border transition-colors duration-250 ${
               selectedButton === 'jobs' ? 'bg-[#000000] border-black' : 'bg-[#ffffff] hover:bg-[#e2e8f0]'
             } w-36`} >
           <div className="group flex flex-col rounded-lg p-1 cursor-pointer">
@@ -125,31 +125,52 @@ export default function Sidebar() {
           </li>
         
 
-          <li className={`group flex items-center justify-start mb-5 p-2 rounded-lg border ${
-              selectedButton === 'bookings' ? 'bg-[#000000] border-black' : 'bg-[#ffffff] hover:bg-[#e2e8f0]'
-            } w-36`} 
-            onClick={() => {
-              router.push('/reservations');
-              setSelectedButton('bookings');
-            }}>
-          <div className="group flex flex-col  rounded-full p-1 cursor-pointer" onClick={() => router.push('/reservations')}>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={18} height={18} color={selectedButton === 'bookings' ? "#ffffff" : "#a2a2a2"}  fill={"none"} className=" group-hover:text-white">
-    <path d="M18 2V4M6 2V4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M11.9955 13H12.0045M11.9955 17H12.0045M15.991 13H16M8 13H8.00897M8 17H8.00897" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M3.5 8H20.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M2.5 12.2432C2.5 7.88594 2.5 5.70728 3.75212 4.35364C5.00424 3 7.01949 3 11.05 3H12.95C16.9805 3 18.9958 3 20.2479 4.35364C21.5 5.70728 21.5 7.88594 21.5 12.2432V12.7568C21.5 17.1141 21.5 19.2927 20.2479 20.6464C18.9958 22 16.9805 22 12.95 22H11.05C7.01949 22 5.00424 22 3.75212 20.6464C2.5 19.2927 2.5 17.1141 2.5 12.7568V12.2432Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M3 8H21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          <li className={`group flex items-center justify-start mb-5 p-2 rounded-lg border transition-colors duration-250 ${
+    selectedButton === 'bookings' ? 'bg-[#8c929a] border-[#8c929a]' : 'bg-[#ffffff] hover:bg-[#e2e8f0]'
+  } w-36`} 
+  onClick={() => {
+    router.push('/reservations');
+    setSelectedButton('bookings');
+  }}>
+  <div className="group flex flex-col rounded-full p-1 cursor-pointer">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={18} height={18} className="group-hover:text-white">
+  {/* Base calendar shape */}
+  <path 
+    d="M2.5 12.2432C2.5 7.88594 2.5 5.70728 3.75212 4.35364C5.00424 3 7.01949 3 11.05 3H12.95C16.9805 3 18.9958 3 20.2479 4.35364C21.5 5.70728 21.5 7.88594 21.5 12.2432V12.7568C21.5 17.1141 21.5 19.2927 20.2479 20.6464C18.9958 22 16.9805 22 12.95 22H11.05C7.01949 22 5.00424 22 3.75212 20.6464C2.5 19.2927 2.5 17.1141 2.5 12.7568V12.2432Z" 
+    stroke={selectedButton === 'bookings' ? "#ffffff" : "#a2a2a2"} 
+    fill={selectedButton === 'bookings' ? "#ffffff" : "none"}
+    strokeWidth="1.5" 
+    className={`${selectedButton !== 'bookings' ? 'group-hover:stroke-white' : ''}`}
+  />
+  
+  {/* Top bar lines */}
+  <path 
+    d="M18 2V4M6 2V4M3 8H21" 
+    stroke={selectedButton === 'bookings' ? "#8c929a" : "#a2a2a2"} 
+    strokeWidth="1.5" 
+    strokeLinecap="round" 
+    className={`${selectedButton !== 'bookings' ? 'group-hover:stroke-white' : ''}`}
+  />
+  
+  {/* Calendar dots */}
+  <path 
+    d="M11.9955 13H12.0045M11.9955 17H12.0045M15.991 13H16M8 13H8.00897M8 17H8.00897" 
+    stroke={selectedButton === 'bookings' ? "#8c929a" : "#a2a2a2"} 
+    strokeWidth="2" 
+    strokeLinecap="round" 
+    className={`${selectedButton !== 'bookings' ? 'group-hover:stroke-white' : ''}`}
+  />
 </svg>
-          </div>
-          <span className={`ml-5 text-xs font-light ${
-                selectedButton === 'bookings' ? 'text-white' : 'text-[#a2a2a2] group-hover:text-white'
-              }`}>Bookings</span>
-          </li>
+  </div>
+  <span className={`ml-5 text-xs font-light ${
+    selectedButton === 'bookings' ? 'text-white' : 'text-[#a2a2a2] group-hover:text-white'
+  }`}>Bookings</span>
+</li>
           </ul>
 
 {/* Categories */}
 <span className="mb-5 text-[#a2a2a2] text-xs font-light">Genre</span>
-          <li className={`relative flex items-center justify-center mb-4 p-2 rounded-lg shadow w-36 h-20 ${selectedCategory ? categories.find(c => c.label === selectedCategory)?.color : 'bg-[#b1dafe]'}`}>
+          <li className={`relative flex items-center justify-center mb-4 p-2 rounded-lg shadow w-36 h-20 ${selectedCategory ? categories.find(c => c.label === selectedCategory)?.color : 'bg-[#8cadc9]'}`}>
             <span className="text-[#ffffff] text-xs group-hover:text-white font-light w-20 text-center h-10 rounded-lg p-3 bg-white bg-opacity-15 backdrop-blur shadow-sm">
               {selectedCategory || 'Default'}
             </span>
