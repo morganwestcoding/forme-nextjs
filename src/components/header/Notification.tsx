@@ -57,14 +57,14 @@ const Notifications: React.FC = () => {
       <div className="relative">
         <button 
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center justify-center bg-black bg-opacity-5 border border-white rounded-full p-3 cursor-pointer shadow-sm relative"
+          className="flex items-center justify-center bg-black bg-opacity-35 border border-white rounded-full p-3 cursor-pointer shadow-sm relative"
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={19} height={19} fill="none" color="#ffffff">
             <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
             <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
           </svg>
           {notifications.some(n => !n.isRead) && (
-            <div className="absolute -top-0 -right-0 bg-red-500 border border-red-500 rounded-full w-3 h-3 flex items-center shadow-sm justify-center text-xs text-[#a2a2a2] font-thin shadow-sm">
+            <div className="absolute -top-0 -right-0 bg-red-500 border border-red-500 rounded-full w-3 h-3 flex items-center justify-center text-xs text-[#a2a2a2] font-thin shadow">
             </div>
           )}
         </button>

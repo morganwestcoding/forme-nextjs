@@ -1,5 +1,6 @@
 import prisma from "@/app/libs/prismadb";
 import { SafePost, SafeUser } from '@/app/types';
+import getCurrentUser from "./getCurrentUser";
 
 export interface IPostsParams {
   userId?: string;
@@ -12,8 +13,9 @@ export interface IPostsParams {
 export default async function getPosts(params: IPostsParams): Promise<SafePost[]> {
   try {
     const { userId, locationValue, startDate, endDate, category } = params;
+    const currentUser = await getCurrentUser();
 
-    console.log('Params received in getPosts:', params);
+    console.log('Starting getPosts with currentUser:', currentUser?.id);
 
     let query: any = {};
 
@@ -24,22 +26,27 @@ export default async function getPosts(params: IPostsParams): Promise<SafePost[]
       query.createdAt = { gte: new Date(startDate), lte: new Date(endDate) };
     }
 
-    console.log('Query for posts:', query);
-
-    const posts = await prisma.post.findMany({
-      where: query,
+    // First, let's try getting all posts without the hiddenBy filter
+    const allPosts = await prisma.post.findMany({
       include: { user: true },
       orderBy: { createdAt: 'desc' },
     });
 
-    console.log('Posts found:', posts.length);
-    console.log('Sample post:', posts[0]);
+    console.log('Total posts without filter:', allPosts.length);
 
-    const safePosts: SafePost[] = posts.map((post) => ({
+    // Now filter out hidden posts in JavaScript
+    const filteredPosts = currentUser 
+      ? allPosts.filter(post => !post.hiddenBy?.includes(currentUser.id))
+      : allPosts;
+
+    console.log('Posts after filtering:', filteredPosts.length);
+
+    const safePosts: SafePost[] = filteredPosts.map((post) => ({
       ...post,
       createdAt: post.createdAt.toISOString(),
       likes: post.likes || [],
       bookmarks: post.bookmarks || [],
+      hiddenBy: post.hiddenBy || [], 
       user: {
         id: post.user?.id || 'default-id',
         image: post.user?.image || '/default-profile.jpg',
@@ -58,7 +65,9 @@ export default async function getPosts(params: IPostsParams): Promise<SafePost[]
       },
     }));
 
+    console.log('Final safe posts:', safePosts.length);
     return safePosts;
+
   } catch (error) {
     console.error("Error in getPosts:", error);
     throw new Error("Failed to fetch posts.");

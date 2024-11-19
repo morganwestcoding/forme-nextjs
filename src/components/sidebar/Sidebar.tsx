@@ -36,8 +36,8 @@ export default function Sidebar() {
           <span className="mb-5 text-[#a2a2a2] text-xs font-light ">Menu</span>
         
         <ul className="list-none m-0 p-0 flex flex-col items-center hover:text-white ">
-          <li className={`group flex items-center justify-start mb-3 p-2  rounded-lg border ${
-          selectedButton === 'home' ? 'bg-[#000000] border-black' : 'bg-[#ffffff] hover:bg-[#e2e8f0]'
+          <li className={`group flex items-center justify-start mb-3 p-2  rounded-lg border transition-colors duration-300 ${
+          selectedButton === 'home' ? 'bg-[#8c929a] border-[#8c929a]' : 'bg-[#ffffff] hover:bg-[#e2e8f0]'
           } w-36`}
           onClick={() => {
             router.push('/');
@@ -46,9 +46,9 @@ export default function Sidebar() {
           >
             <div className="group flex flex-col   rounded-full p-1 cursor-pointer" >
             
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={20} height={20} color={selectedButton === 'home' ? "#ffffff" : "#a2a2a2"} fill={"none"} className="group-hover:text-white">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={20} height={20} color={selectedButton === 'home' ? "#ffffff" : "#a2a2a2"} fill={selectedButton === 'home' ? "#ffffff" : "none"} className="group-hover:text-white">
                 <path d="M9.06165 4.82633L3.23911 9.92134C2.7398 10.3583 3.07458 11.1343 3.76238 11.1343C4.18259 11.1343 4.52324 11.4489 4.52324 11.8371V15.0806C4.52324 17.871 4.52324 19.2662 5.46176 20.1331C6.40029 21 7.91082 21 10.9319 21H13.0681C16.0892 21 17.5997 21 18.5382 20.1331C19.4768 19.2662 19.4768 17.871 19.4768 15.0806V11.8371C19.4768 11.4489 19.8174 11.1343 20.2376 11.1343C20.9254 11.1343 21.2602 10.3583 20.7609 9.92134L14.9383 4.82633C13.5469 3.60878 12.8512 3 12 3C11.1488 3 10.4531 3.60878 9.06165 4.82633Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M12 16H12.009" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path className={`${selectedButton !== 'home' ? 'group-hover:stroke-white' : ''}`} d="M12 16H12.009" stroke={selectedButton === 'home' ? "#8c929a" : "#a2a2a2"} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           
           </div>

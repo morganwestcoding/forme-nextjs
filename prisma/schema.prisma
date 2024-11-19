@@ -110,6 +110,7 @@ model Post {
   createdAt DateTime @default(now())
   likes     String[] @db.ObjectId // Add this line
   bookmarks String[] @db.ObjectId  // Add this line
+  hiddenBy  String[] @db.ObjectId  // Add this line
   comments Comment[]
 
   user User @relation(fields: [userId], references: [id])

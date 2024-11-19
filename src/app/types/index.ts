@@ -69,6 +69,7 @@ export type SafePost = Omit<
   imageSrc: string | null;
   likes: string[]; 
   bookmarks: string[]; 
+  hiddenBy: string[]; // Add this line
 };
 
 export type SafeComment = {
