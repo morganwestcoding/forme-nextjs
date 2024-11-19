@@ -65,33 +65,8 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
     setFormattedDate(formatCreatedAt(post.createdAt));
   }, [post.createdAt]);
 
-  const getColorByCategory = (categoryName: string) => {
-    const category = categories.find(cat => cat.label === categoryName);
-    if (!category) return { bgColorClass: 'bg-gray-200', textColorClass: 'text-gray-200', borderColorClass: 'border-gray-200' };
-
-    switch (category.color) {
-      case 'bg-yellow-200':
-        return { bgColorClass: 'bg-yellow-200', textColorClass: 'text-yellow-200', borderColorClass: 'border-yellow-200' };
-      case 'bg-rose-200':
-        return { bgColorClass: 'bg-rose-200', textColorClass: 'text-rose-200', borderColorClass: 'border-rose-200' };
-      case 'bg-orange-300':
-        return { bgColorClass: 'bg-orange-300', textColorClass: 'text-orange-300', borderColorClass: 'border-orange-300' };
-      case 'bg-teal-500':
-        return { bgColorClass: 'bg-teal-500', textColorClass: 'text-teal-500', borderColorClass: 'border-teal-500' };
-      case 'bg-emerald-600':
-        return { bgColorClass: 'bg-emerald-600', textColorClass: 'text-emerald-600', borderColorClass: 'border-emerald-600' };
-      case 'bg-cyan-600':
-        return { bgColorClass: 'bg-cyan-600', textColorClass: 'text-cyan-600', borderColorClass: 'border-cyan-600' };
-      case 'bg-blue-800':
-        return { bgColorClass: 'bg-blue-800', textColorClass: 'text-blue-800', borderColorClass: 'border-blue-800' };
-      case 'bg-indigo-800':
-        return { bgColorClass: 'bg-indigo-800', textColorClass: 'text-indigo-800', borderColorClass: 'border-indigo-800' };
-      default:
-        return { bgColorClass: 'bg-gray-200', textColorClass: 'text-gray-200', borderColorClass: 'border-gray-200' };
-    }
-  };
-
-  const categoryColors = getColorByCategory(post.category);
+  
+  const categoryColor = categories.find(cat => cat.label === post.category)?.color || 'bg-gray-200';
 
   const handleLike = useCallback(async () => {
     if (!currentUser) {
@@ -257,9 +232,9 @@ return (
                 {post.location && (
                   <span>{city}, {stateAcronym}</span>
                 )}
-                <span className={`ml-2 w-8 h-5 rounded text-white drop-shadow-sm shadow-sm flex items-center justify-center text-xs ${categoryColors.bgColorClass}`}>
-                  {post.category.charAt(0).toUpperCase()}
-                </span>
+<span className={`ml-2 w-8 h-5 rounded text-white drop-shadow-sm shadow-sm flex items-center justify-center text-xs ${categoryColor}`}>
+  {post.category.charAt(0).toUpperCase()}
+</span>
               </div>
             </div>
           </div>
@@ -279,7 +254,7 @@ return (
             )}
 
             <div className="bottom-0 left-0 flex space-x-3 p-2 -ml-2 -mb-4 mt-1.5">
-              <div className="flex items-center justify-center bg-white bg-opacity-15 rounded-full p-3 cursor-pointer shadow-sm border">
+              <div className="flex items-center justify-center bg-white bg-opacity-15 rounded-full p-3 cursor-pointer shadow-sm border border-dashed">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={17} height={17} color={"#a2a2a2"} fill={"none"}>
                   <path d="M8 13.5H16M8 8.5H12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   <path d="M6.09881 19C4.7987 18.8721 3.82475 18.4816 3.17157 17.8284C2 16.6569 2 14.7712 2 11V10.5C2 6.72876 2 4.84315 3.17157 3.67157C4.34315 2.5 6.22876 2.5 10 2.5H14C17.7712 2.5 19.6569 2.5 20.8284 3.67157C22 4.84315 22 6.72876 22 10.5V11C22 14.7712 22 16.6569 20.8284 17.8284C19.6569 19 17.7712 19 14 19C13.4395 19.0125 12.9931 19.0551 12.5546 19.155C11.3562 19.4309 10.2465 20.0441 9.14987 20.5789C7.58729 21.3408 6.806 21.7218 6.31569 21.3651C5.37769 20.6665 6.29454 18.5019 6.5 17.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -287,7 +262,7 @@ return (
               </div>
               <div 
                 onClick={(e) => { e.stopPropagation(); handleLike(); }}
-                className="flex items-center justify-center bg-[#ffffff] rounded-full p-3 cursor-pointer shadow-sm border relative">
+                className="flex items-center justify-center bg-[#ffffff] rounded-full p-3 cursor-pointer shadow-sm border relative border-dashed">
                 <svg 
                   xmlns="http://www.w3.org/2000/svg" 
                   viewBox="0 0 24 24" 
@@ -307,7 +282,7 @@ return (
               </div>
               <div
                 onClick={(e) => { e.stopPropagation(); handleBookmark(); }}
-                className="flex items-center justify-center bg-[#ffffff] rounded-full p-3 cursor-pointer shadow-sm border relative">
+                className="flex items-center justify-center bg-[#ffffff] rounded-full p-3 cursor-pointer shadow-sm border border-dashed relative">
                 <svg 
                   xmlns="http://www.w3.org/2000/svg" 
                   viewBox="0 0 24 24" 

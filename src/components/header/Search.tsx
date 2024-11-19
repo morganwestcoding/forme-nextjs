@@ -63,13 +63,14 @@ const Search: React.FC<SearchProps> = ({ onResultClick }) => {
        </span>
        <input 
          type="text" 
-         className="w-full text-sm p-3 pl-11 font-light pr-12 bg-[#898F91] shadow-sm rounded-lg border border-white dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:outline-none focus:ring focus:ring-opacity-40 text-white focus:ring-blue-300 placeholder-white" 
-         placeholder="Search" 
+         className="w-full text-sm p-3 pl-11 pr-12 bg-[#394041] shadow rounded-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:outline-none focus:ring focus:ring-opacity-40 text-white focus:ring-blue-300 placeholder:text-white placeholder:font-light" 
+         placeholder="Search"  
          value={searchTerm}
          onChange={handleInputChange}
+         
        />
        <span className="absolute inset-y-0 right-0 flex items-center pr-4">
-         <div className="w-px h-6 rounded-full bg-white mx-3"></div>
+         <div className="w-px h-4 rounded-full bg-white mx-3"></div>
          <Filter />
        </span> 
      </div>

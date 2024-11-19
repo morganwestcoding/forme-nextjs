@@ -6,53 +6,72 @@ import CategoryChoice from './CategoryChoice';
 
 export const categories = [
   {
-    label: 'Nails',
-    color: 'bg-[#5D4E6D]',
-    description: 'This property is close to the beach!',
-    gradient: 'bg-gradient-to-b from-[#dac6be] to-[#6d635f]'
-  },
-  {
-    label: 'Barber',
-    color: 'bg-[#65524D]',
-    description: 'This property is has windmills!',
-    gradient: 'bg-gradient-to-b from-[#cdb3a8] to-[#907d76]'
-  },
-  {
     label: 'Salon',
-    color: 'bg-[#DD9296]',
+    color: 'bg-[#78C3FB]',
     description: 'This property is modern!',
     gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
   },
-  {
-    label: 'Massage',
-    color: 'bg-teal-500',
-    description: 'This property is in the countryside!',
-    gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
-  },
-  {
-    label: 'Eyebrows',
-    color: 'bg-emerald-600',
-    description: 'This is property has a beautiful pool!',
-    gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
-  },
-  {
-    label: 'Facial',
-    color: 'bg-cyan-600',
-    description: 'This property is on an island!',
-    gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
-  },
+
   {
     label: 'Trainor',
-    color: 'bg-blue-800',
+    color: 'bg-[#0673C6]',
     description: 'This property is near a lake!',
     gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
   },
   {
-    label: 'Flex',
-    color: 'bg-indigo-800',
+    label: 'Barber',
+    color: 'bg-[#D6C3B6]',
+    description: 'This property is has windmills!',
+    gradient: 'bg-gradient-to-b from-[#cdb3a8] to-[#907d76]'
+  },
+  {
+    label: 'Eyebrows',
+    color: 'bg-[#A08C81]',
+    description: 'This is property has a beautiful pool!',
+    gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
+  },
+
+
+
+  {
+    label: 'Yoga',
+    color: 'bg-[#77C6AE]',
     description: 'This property has skiing activies!',
     gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
-  }
+  },
+
+
+
+  {
+    label: 'Massage',
+    color: 'bg-[#559074]',
+    description: 'This property is in the countryside!',
+    gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
+  },
+  {
+    label: 'Facial',
+    color: 'bg-[#D79898]',
+    description: 'This property is on an island!',
+    gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
+  },
+
+
+
+  {
+    label: 'Nails',
+    color: 'bg-[#C46666]',
+    description: 'This property is close to the beach!',
+    gradient: 'bg-gradient-to-b from-[#dac6be] to-[#6d635f]'
+  },
+ 
+
+
+  
+
+
+
+
+
 ]
 
 

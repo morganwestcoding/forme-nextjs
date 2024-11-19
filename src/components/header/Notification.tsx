@@ -57,12 +57,14 @@ const Notifications: React.FC = () => {
       <div className="relative">
         <button 
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center justify-center bg-[#898F91] border border-white rounded-full p-3 cursor-pointer shadow-sm relative"
+          className="flex items-center justify-center bg-[#394041] rounded-full p-3 cursor-pointer shadow relative"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={19} height={19} fill="none" color="#ffffff">
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-            <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          </svg>
+
+
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="19" height="19" color="#ffffff" fill="none">
+    <path d="M2.52992 14.7696C2.31727 16.1636 3.268 17.1312 4.43205 17.6134C8.89481 19.4622 15.1052 19.4622 19.5679 17.6134C20.732 17.1312 21.6827 16.1636 21.4701 14.7696C21.3394 13.9129 20.6932 13.1995 20.2144 12.5029C19.5873 11.5793 19.525 10.5718 19.5249 9.5C19.5249 5.35786 16.1559 2 12 2C7.84413 2 4.47513 5.35786 4.47513 9.5C4.47503 10.5718 4.41272 11.5793 3.78561 12.5029C3.30684 13.1995 2.66061 13.9129 2.52992 14.7696Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M8 19C8.45849 20.7252 10.0755 22 12 22C13.9245 22 15.5415 20.7252 16 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+</svg>
           {notifications.some(n => !n.isRead) && (
             <div className="absolute -top-0 -right-0 bg-red-500 border border-red-500 rounded-full w-3 h-3 flex items-center justify-center text-xs text-[#a2a2a2] font-thin shadow">
             </div>
