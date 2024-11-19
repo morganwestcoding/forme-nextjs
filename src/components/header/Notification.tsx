@@ -57,7 +57,7 @@ const Notifications: React.FC = () => {
       <div className="relative">
         <button 
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center justify-center bg-black bg-opacity-35 border border-white rounded-full p-3 cursor-pointer shadow-sm relative"
+          className="flex items-center justify-center bg-[#898F91] border border-white rounded-full p-3 cursor-pointer shadow-sm relative"
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={19} height={19} fill="none" color="#ffffff">
             <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
