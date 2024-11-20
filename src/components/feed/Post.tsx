@@ -197,7 +197,7 @@ return (
           <div className="absolute top-4 right-6" >
             <DropdownMenu>
               <DropdownMenuTrigger>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" color="#a2a2a2" fill="none">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" color="#394041" fill="none">
                   <path d="M11.9959 12H12.0049" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
                   <path d="M17.9998 12H18.0088" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
                   <path d="M5.99981 12H6.00879" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
@@ -254,7 +254,7 @@ return (
             )}
 
             <div className="bottom-0 left-0 flex space-x-3 p-2 -ml-2 -mb-4 mt-1.5">
-              <div className="flex items-center justify-center bg-white bg-opacity-15 rounded-full p-3 cursor-pointer shadow-sm border border-dashed">
+              <div className="flex items-center justify-center bg-white bg-opacity-15 rounded-full p-3 cursor-pointer shadow-sm border ">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={17} height={17} color={"#a2a2a2"} fill={"none"}>
                   <path d="M8 13.5H16M8 8.5H12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   <path d="M6.09881 19C4.7987 18.8721 3.82475 18.4816 3.17157 17.8284C2 16.6569 2 14.7712 2 11V10.5C2 6.72876 2 4.84315 3.17157 3.67157C4.34315 2.5 6.22876 2.5 10 2.5H14C17.7712 2.5 19.6569 2.5 20.8284 3.67157C22 4.84315 22 6.72876 22 10.5V11C22 14.7712 22 16.6569 20.8284 17.8284C19.6569 19 17.7712 19 14 19C13.4395 19.0125 12.9931 19.0551 12.5546 19.155C11.3562 19.4309 10.2465 20.0441 9.14987 20.5789C7.58729 21.3408 6.806 21.7218 6.31569 21.3651C5.37769 20.6665 6.29454 18.5019 6.5 17.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -262,7 +262,7 @@ return (
               </div>
               <div 
                 onClick={(e) => { e.stopPropagation(); handleLike(); }}
-                className="flex items-center justify-center bg-[#ffffff] rounded-full p-3 cursor-pointer shadow-sm border relative border-dashed">
+                className="flex items-center justify-center bg-[#ffffff] rounded-full p-3 cursor-pointer shadow-sm border relative ">
                 <svg 
                   xmlns="http://www.w3.org/2000/svg" 
                   viewBox="0 0 24 24" 
@@ -282,7 +282,7 @@ return (
               </div>
               <div
                 onClick={(e) => { e.stopPropagation(); handleBookmark(); }}
-                className="flex items-center justify-center bg-[#ffffff] rounded-full p-3 cursor-pointer shadow-sm border border-dashed relative">
+                className="flex items-center justify-center bg-[#ffffff] rounded-full p-3 cursor-pointer shadow-sm border  relative">
                 <svg 
                   xmlns="http://www.w3.org/2000/svg" 
                   viewBox="0 0 24 24" 

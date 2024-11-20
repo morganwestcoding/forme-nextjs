@@ -39,11 +39,11 @@ const Pagination = ({ currentPage, totalPages, totalResults }: PaginationProps) 
         <button
           key={i}
           onClick={() => handlePageChange(i)}
-          className={`px-4 py-2 mx-1 rounded-full ${
+          className={`flex items-center justify-center w-10 h-10 mx-1 rounded-full text-[#a2a2a2] bg-white border border-[#e2e8f0] ${
             currentPage === i
-              ? 'border border-white bg-black bg-opacity-10 text-white'
-              : 'border border-white text-white bg-black bg-opacity-5 hover:bg-gray-100'
-          }`}
+              ? 'bg-[#e2e8f0]'
+              : 'hover:bg-[#e2e8f0]'
+          } shadow ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:rounded-full focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-25`}
         >
           {i}
         </button>
@@ -58,21 +58,21 @@ const Pagination = ({ currentPage, totalPages, totalResults }: PaginationProps) 
       <button
         onClick={() => handlePageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className="px-4 py-2 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+        className="flex items-center justify-center w-10 h-10 rounded-full bg-white text-[#a2a2a2] border border-[#e2e8f0] disabled:opacity-25 disabled:cursor-not-allowed hover:bg-[#e2e8f0] shadow ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:rounded-full focus-visible:ring-ring focus-visible:ring-offset-2"
       >
-        Previous
+        ←
       </button>
-      <div className="flex items-center">
+      <div className="flex items-center font-extralight">
         {renderPageNumbers()}
       </div>
       <button
         onClick={() => handlePageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="px-4 py-2 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+        className="flex items-center justify-center w-10 h-10 rounded-full bg-white text-[#a2a2a2] border border-[#e2e8f0] disabled:opacity-25 disabled:cursor-not-allowed hover:bg-[#e2e8f0] shadow ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:rounded-full focus-visible:ring-ring focus-visible:ring-offset-2"
       >
-        Next
+        →
       </button>
-      <div className="ml-4 text-sm text-white">
+      <div className="ml-4 text-sm text-[#a2a2a2]">
         Showing {totalResults} of {totalResults}
       </div>
     </div>

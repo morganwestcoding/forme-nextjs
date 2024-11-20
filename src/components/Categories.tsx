@@ -50,7 +50,7 @@ export const categories = [
   },
   {
     label: 'Facial',
-    color: 'bg-[#D79898]',
+    color: 'bg-[#F2BABA]',
     description: 'This property is on an island!',
     gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
   },
@@ -59,7 +59,7 @@ export const categories = [
 
   {
     label: 'Nails',
-    color: 'bg-[#C46666]',
+    color: 'bg-[#E26060]',
     description: 'This property is close to the beach!',
     gradient: 'bg-gradient-to-b from-[#dac6be] to-[#6d635f]'
   },

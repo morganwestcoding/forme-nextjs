@@ -31,7 +31,7 @@ const AddListing: React.FC<AddListingProps> = ({
   }, [rentModal]);
 
   return (
-    <div className="flex items-center justify-center bg-[#394041] backdrop-blur-lg rounded-full p-3 cursor-pointer shadow  ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:rounded-full focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-25 hover:bg-white hover:bg-opacity-10 hover:text-accent-foreground" onClick={onRent}>
+    <div className="flex items-center justify-center bg-[#3E4142] backdrop-blur-lg rounded-full p-3 cursor-pointer shadow  ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:rounded-full focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-25 hover:bg-white hover:bg-opacity-10 hover:text-accent-foreground" onClick={onRent}>
 
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="19" height="19" color="#ffffff" fill="none">
     <path d="M12 4V20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
