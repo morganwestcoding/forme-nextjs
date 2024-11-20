@@ -33,9 +33,9 @@ export default function Rightbar() {
     <div className="flex flex-col justify-end bg-transparent gap-3 pr-24 h-auto mt-8">
       <div className="w-full rounded-2xl drop-shadow-sm bg-[#ffffff] p-6 relative">
         <div className="flex flex-col">
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-2">
             <div className="text-lg font-bold">Subscribe today</div>
-            <label className="relative inline-flex items-center cursor-pointer">
+         {/*<label className="relative inline-flex items-center cursor-pointer">
               <input 
                 type="checkbox" 
                 className="sr-only peer" 
@@ -43,7 +43,7 @@ export default function Rightbar() {
                 onChange={() => setIsToggled(!isToggled)}
               />
               <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#b1dafe]"></div>
-            </label>
+            </label>*/}
           </div>
           <div className="text-sm font-normal text-gray-600"> Experience priority features, enhanced analytics, 
           and be at the forefront of innovation with exclusive early access to new features.

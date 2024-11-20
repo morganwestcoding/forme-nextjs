@@ -33,7 +33,7 @@ export default function Sidebar() {
       <div className="flex flex-col items-center w-52 h-full px-10 pb-10 pt-8 bg-white backdrop-blur-full bg drop-shadow-sm rounded-tr-2xl" >
         <Logo/>
         <div className="flex flex-col items-center w-full">
-          <span className="mb-5 text-[#a2a2a2] text-xs font-light ">Menu</span>
+          <span className="mb-5 text-[#a2a2a2] text-[0.8125rem] font-light ">Menu</span>
         
         <ul className="list-none m-0 p-0 flex flex-col items-center hover:text-white ">
           <li className={`group flex items-center justify-start mb-3 p-2  rounded-lg border transition-colors duration-250 ${
@@ -52,7 +52,7 @@ export default function Sidebar() {
             </svg>
           
           </div>
-          <span className={`ml-5 text-xs font-light ${
+          <span className={`ml-4 text-[0.8125rem] font-light ${
     selectedButton === 'home' ? 'text-white' : 'text-[#a2a2a2] group-hover:text-white'
   }`}>Home</span>
 
@@ -75,7 +75,7 @@ export default function Sidebar() {
             <path d="M17.7957 2.50294L6.14983 2.53202C4.41166 2.44248 3.966 3.78259 3.966 4.43768C3.966 5.02359 3.89055 5.87774 2.82524 7.4831C1.75993 9.08846 1.83998 9.56536 2.44071 10.6767C2.93928 11.5991 4.20741 11.9594 4.86862 12.02C6.96883 12.0678 7.99065 10.2517 7.99065 8.97523C9.03251 12.1825 11.9955 12.1825 13.3158 11.8157C14.6385 11.4483 15.7717 10.1331 16.0391 8.97523C16.195 10.4142 16.6682 11.2538 18.0663 11.8308C19.5145 12.4284 20.7599 11.515 21.3848 10.9294C22.0096 10.3439 22.4107 9.04401 21.2967 7.6153C20.5285 6.63001 20.2084 5.7018 20.1032 4.73977C20.0423 4.18234 19.9888 3.58336 19.5971 3.20219C19.0247 2.64515 18.2035 2.47613 17.7957 2.50294Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
             </div>
-            <span className={`ml-5 text-xs font-light ${
+            <span className={`ml-4 text-[0.8125rem] font-light ${
                 selectedButton === 'market' ? 'text-white' : 'text-[#a2a2a2] group-hover:text-white'
               }`}>Market</span>
             </li>
@@ -97,7 +97,7 @@ export default function Sidebar() {
           </div>     
 
            
-          <span className={`ml-5 text-xs font-light ${
+          <span className={`ml-4 text-[0.8125rem] font-light ${
                 selectedButton === 'favorites' ? 'text-white' : 'text-[#a2a2a2] group-hover:text-white'
               }`}>Favorites</span>
      
@@ -107,22 +107,24 @@ export default function Sidebar() {
          {/* Job Icon with Tooltip */}
   
          <li className={`group flex items-center justify-start mb-3 p-2 rounded-lg border transition-colors duration-250 ${
-              selectedButton === 'jobs' ? 'bg-[#000000] border-black' : 'bg-[#ffffff] hover:bg-[#e2e8f0]'
-            } w-36`} >
-          <div className="group flex flex-col rounded-lg p-1 cursor-pointer">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={18} height={18} color={selectedButton === 'jobs' ? "#ffffff" : "#a2a2a2"}  fill={"none"} className=" group-hover:text-white">
-    <path d="M10 12.3333C10 12.0233 10 11.8683 10.0341 11.7412C10.1265 11.3961 10.3961 11.1265 10.7412 11.0341C10.8683 11 11.0233 11 11.3333 11H12.6667C12.9767 11 13.1317 11 13.2588 11.0341C13.6039 11.1265 13.8735 11.3961 13.9659 11.7412C14 11.8683 14 12.0233 14 12.3333V13C14 14.1046 13.1046 15 12 15C10.8954 15 10 14.1046 10 13V12.3333Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M13.8016 13C14.1132 12.9095 14.4666 12.8005 14.88 12.673L19.0512 11.3866C20.5358 10.9288 21.2624 10.131 21.4204 8.74977C21.4911 8.13198 21.5265 7.82308 21.4768 7.57022C21.3349 6.84864 20.7289 6.26354 19.9213 6.06839C19.6383 6 19.283 6 18.5724 6H5.42757C4.717 6 4.36172 6 4.07871 6.06839C3.27111 6.26354 2.6651 6.84864 2.52323 7.57022C2.47351 7.82308 2.50886 8.13198 2.57956 8.74977C2.73764 10.131 3.46424 10.9288 4.94882 11.3866L9.11996 12.673C9.53336 12.8005 9.88684 12.9095 10.1984 13" stroke="currentColor" strokeWidth="1.5" />
-    <path d="M3.46283 11L3.26658 13.1723C2.91481 17.0662 2.73892 19.0131 3.86734 20.2566C4.99576 21.5 6.93851 21.5 10.824 21.5H13.176C17.0615 21.5 19.0042 21.5 20.1327 20.2566C21.2611 19.0131 21.0852 17.0662 20.7334 13.1723L20.5372 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M15.5 5.5L15.4227 5.23509C15.0377 3.91505 14.8452 3.25503 14.3869 2.87752C13.9286 2.5 13.3199 2.5 12.1023 2.5H11.8977C10.6801 2.5 10.0714 2.5 9.61309 2.87752C9.15478 3.25503 8.96228 3.91505 8.57727 5.23509L8.5 5.5" stroke="currentColor" strokeWidth="1.5" />
-</svg>
-          </div>
-          <span className={`ml-5 text-xs font-light ${
-                selectedButton === 'jobs' ? 'text-white' : 'text-[#a2a2a2] group-hover:text-white'
-              }`}>Jobs</span>
-            
-       
-          </li>
+    selectedButton === 'jobs' ? 'bg-[#3E4142] border-[#3E4142]' : 'bg-[#ffffff] hover:bg-[#e2e8f0]'
+  } w-36`} 
+  onClick={() => {
+    router.push('/jobs');
+    setSelectedButton('jobs');
+  }}>
+  <div className="group flex flex-col rounded-lg p-1 cursor-pointer">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={18} height={18} color={selectedButton === 'jobs' ? "#ffffff" : "#a2a2a2"}  fill={"none"} className="group-hover:text-white">
+      <path d="M10 12.3333C10 12.0233 10 11.8683 10.0341 11.7412C10.1265 11.3961 10.3961 11.1265 10.7412 11.0341C10.8683 11 11.0233 11 11.3333 11H12.6667C12.9767 11 13.1317 11 13.2588 11.0341C13.6039 11.1265 13.8735 11.3961 13.9659 11.7412C14 11.8683 14 12.0233 14 12.3333V13C14 14.1046 13.1046 15 12 15C10.8954 15 10 14.1046 10 13V12.3333Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M13.8016 13C14.1132 12.9095 14.4666 12.8005 14.88 12.673L19.0512 11.3866C20.5358 10.9288 21.2624 10.131 21.4204 8.74977C21.4911 8.13198 21.5265 7.82308 21.4768 7.57022C21.3349 6.84864 20.7289 6.26354 19.9213 6.06839C19.6383 6 19.283 6 18.5724 6H5.42757C4.717 6 4.36172 6 4.07871 6.06839C3.27111 6.26354 2.6651 6.84864 2.52323 7.57022C2.47351 7.82308 2.50886 8.13198 2.57956 8.74977C2.73764 10.131 3.46424 10.9288 4.94882 11.3866L9.11996 12.673C9.53336 12.8005 9.88684 12.9095 10.1984 13" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M3.46283 11L3.26658 13.1723C2.91481 17.0662 2.73892 19.0131 3.86734 20.2566C4.99576 21.5 6.93851 21.5 10.824 21.5H13.176C17.0615 21.5 19.0042 21.5 20.1327 20.2566C21.2611 19.0131 21.0852 17.0662 20.7334 13.1723L20.5372 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M15.5 5.5L15.4227 5.23509C15.0377 3.91505 14.8452 3.25503 14.3869 2.87752C13.9286 2.5 13.3199 2.5 12.1023 2.5H11.8977C10.6801 2.5 10.0714 2.5 9.61309 2.87752C9.15478 3.25503 8.96228 3.91505 8.57727 5.23509L8.5 5.5" stroke="currentColor" strokeWidth="1.5" />
+    </svg>
+  </div>
+  <span className={`ml-4 text-[0.8125rem] font-light ${
+    selectedButton === 'jobs' ? 'text-white' : 'text-[#a2a2a2] group-hover:text-white'
+  }`}>Jobs</span>
+</li>
         
 
           <li className={`group flex items-center justify-start mb-5 p-2 rounded-lg border transition-colors duration-250 ${
@@ -162,16 +164,16 @@ export default function Sidebar() {
   />
 </svg>
   </div>
-  <span className={`ml-5 text-xs font-light ${
+  <span className={`ml-4 text-[0.8125rem] font-light ${
     selectedButton === 'bookings' ? 'text-white' : 'text-[#a2a2a2] group-hover:text-white'
   }`}>Bookings</span>
 </li>
           </ul>
 
 {/* Categories */}
-<span className="mb-5 text-[#a2a2a2] text-xs font-light">Genre</span>
-          <li className={`relative flex items-center justify-center mb-4 p-2 rounded-lg shadow w-36 h-20 ${selectedCategory ? categories.find(c => c.label === selectedCategory)?.color : 'bg-[#82ADBD]'}`}>
-            <span className="text-[#ffffff] text-xs group-hover:text-white font-light w-20 text-center h-10 rounded-lg p-3 bg-black bg-opacity-10 backdrop-blur shadow">
+<span className="mb-5 text-[#a2a2a2] text-[0.8125rem] font-light">Genre</span>
+          <li className={`relative flex items-center justify-center mb-4 p-2 rounded-lg shadow w-36 h-20 ${selectedCategory ? categories.find(c => c.label === selectedCategory)?.color : 'bg-[#78C3FB]'}`}>
+            <span className="text-[#ffffff] text-[0.8125rem] group-hover:text-white font-light text-center h-10 rounded-lg p-3 bg-black bg-opacity-10 backdrop-blur shadow">
               {selectedCategory || 'Default'}
             </span>
           </li>

@@ -6,16 +6,33 @@ import CategoryChoice from './CategoryChoice';
 
 export const categories = [
   {
-    label: 'Salon',
-    color: 'bg-[#78C3FB]',
-    description: 'This property is modern!',
+    label: 'Massage',
+    color: 'bg-[#D4B185]',
+    description: 'This property is in the countryside!',
     gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
   },
-
   {
-    label: 'Trainor',
-    color: 'bg-[#0673C6]',
+    label: 'Wellness',
+    color: 'bg-[#C4D4A9]',
+    description: 'This property has skiing activies!',
+    gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
+  },
+  {
+    label: 'Fitness',
+    color: 'bg-[#86A4BB]',
     description: 'This property is near a lake!',
+    gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
+  },
+  {
+    label: 'Nails',
+    color: 'bg-[#E5B9AD]',
+    description: 'This property is close to the beach!',
+    gradient: 'bg-gradient-to-b from-[#dac6be] to-[#6d635f]'
+  },
+  {
+    label: 'Spa',
+    color: 'bg-[#D8C3CE]',
+    description: 'This property is on an island!',
     gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
   },
   {
@@ -24,66 +41,27 @@ export const categories = [
     description: 'This property is has windmills!',
     gradient: 'bg-gradient-to-b from-[#cdb3a8] to-[#907d76]'
   },
+
   {
-    label: 'Eyebrows',
-    color: 'bg-[#A08C81]',
+    label: 'Beauty',
+    color: 'bg-[#E6C9B3]',
     description: 'This is property has a beautiful pool!',
     gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
   },
-
-
-
   {
-    label: 'Yoga',
-    color: 'bg-[#77C6AE]',
-    description: 'This property has skiing activies!',
+    label: 'Salon',
+    color: 'bg-[#B3C5D1]',
+    description: 'This property is modern!',
     gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
   },
-
-
-
-  {
-    label: 'Massage',
-    color: 'bg-[#559074]',
-    description: 'This property is in the countryside!',
-    gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
-  },
-  {
-    label: 'Facial',
-    color: 'bg-[#F2BABA]',
-    description: 'This property is on an island!',
-    gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
-  },
-
-
-
-  {
-    label: 'Nails',
-    color: 'bg-[#E26060]',
-    description: 'This property is close to the beach!',
-    gradient: 'bg-gradient-to-b from-[#dac6be] to-[#6d635f]'
-  },
- 
-
-
-  
-
-
-
 
 
 ]
-
-
-
-
 const Categories = () => {
   const params = useSearchParams();
   const category = params?.get('category');
   const pathname = usePathname();
   const isMainPage = pathname === '/';
-
-
 
   if (!isMainPage) {
     return null;
