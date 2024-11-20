@@ -39,10 +39,10 @@ const Pagination = ({ currentPage, totalPages, totalResults }: PaginationProps) 
         <button
           key={i}
           onClick={() => handlePageChange(i)}
-          className={`flex items-center justify-center w-10 h-10 mx-1 rounded-full text-[#a2a2a2] bg-white border border-[#e2e8f0] ${
+          className={`flex items-center justify-center w-10 h-10 mx-1 rounded-full text-[#a2a2a2] bg-white border border-dashed transition-colors duration-250 ${
             currentPage === i
-              ? 'bg-[#e2e8f0]'
-              : 'hover:bg-[#e2e8f0]'
+              ? 'bg-[#78C3FB] border text-white'
+              : 'hover:bg-[#e2e8f0] hover:border hover:border-dashed hover:border-white'
           } shadow ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:rounded-full focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-25`}
         >
           {i}
@@ -54,11 +54,11 @@ const Pagination = ({ currentPage, totalPages, totalResults }: PaginationProps) 
   };
 
   return (
-    <div className="flex items-center justify-between w-full">
+    <div className="flex items-center justify-between w-full -ml-9">
       <button
         onClick={() => handlePageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className="flex items-center justify-center w-10 h-10 rounded-full bg-white text-[#a2a2a2] border border-[#e2e8f0] disabled:opacity-25 disabled:cursor-not-allowed hover:bg-[#e2e8f0] shadow ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:rounded-full focus-visible:ring-ring focus-visible:ring-offset-2"
+        className="flex items-center justify-center w-10 h-10 rounded-full bg-white text-[#a2a2a2] border border-dashed disabled:opacity-25 disabled:cursor-not-allowed hover:bg-[#e2e8f0] shadow ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:rounded-full focus-visible:ring-ring focus-visible:ring-offset-2"
       >
         ←
       </button>
@@ -68,13 +68,11 @@ const Pagination = ({ currentPage, totalPages, totalResults }: PaginationProps) 
       <button
         onClick={() => handlePageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="flex items-center justify-center w-10 h-10 rounded-full bg-white text-[#a2a2a2] border border-[#e2e8f0] disabled:opacity-25 disabled:cursor-not-allowed hover:bg-[#e2e8f0] shadow ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:rounded-full focus-visible:ring-ring focus-visible:ring-offset-2"
+        className="flex items-center justify-center w-10 h-10 rounded-full bg-white text-[#a2a2a2] border border-dashed disabled:opacity-25 disabled:cursor-not-allowed hover:bg-[#e2e8f0] shadow ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:rounded-full focus-visible:ring-ring focus-visible:ring-offset-2"
       >
         →
       </button>
-      <div className="ml-4 text-sm text-[#a2a2a2]">
-        Showing {totalResults} of {totalResults}
-      </div>
+
     </div>
   );
 };

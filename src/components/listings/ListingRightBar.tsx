@@ -37,13 +37,6 @@ interface InputFieldProps {
 const InputField: React.FC<InputFieldProps> = ({ value, onClick, readOnly, placeholder, disabled = false, isSelected }) => (
   <div className="mb-3 relative">
     <div className="relative flex items-center">
-      <div className={`absolute left-4 w-6 h-6 border rounded-full flex items-center justify-center ${isSelected ? 'bg-green-500 border-green-500' : 'border-gray-300'}`}>
-        {isSelected && (
-          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-          </svg>
-        )}
-      </div>
       <input
         type="text"
         value={value || ''}

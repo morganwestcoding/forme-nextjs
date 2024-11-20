@@ -70,33 +70,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
     }
   }, [reservation]);
 
-  const getColorByCategory = (categoryName: string) => {
-    const category = categories.find(cat => cat.label === categoryName);
-    if (!category) return { bgColorClass: 'bg-gray-200', textColorClass: 'text-gray-200', borderColorClass: 'border-gray-200' };
-
-    switch (category.color) {
-        case 'bg-yellow-200':
-            return { bgColorClass: 'bg-yellow-200', textColorClass: 'text-yellow-200', borderColorClass: 'border-yellow-200' };
-        case 'bg-rose-200':
-            return { bgColorClass: 'bg-rose-200', textColorClass: 'text-rose-200', borderColorClass: 'border-rose-200' };
-        case 'bg-orange-300':
-            return { bgColorClass: 'bg-orange-300', textColorClass: 'text-orange-300', borderColorClass: 'border-orange-300' };
-        case 'bg-teal-500':
-            return { bgColorClass: 'bg-teal-500', textColorClass: 'text-teal-500', borderColorClass: 'border-teal-500' };
-        case 'bg-emerald-600':
-            return { bgColorClass: 'bg-emerald-600', textColorClass: 'text-emerald-600', borderColorClass: 'border-emerald-600' };
-        case 'bg-cyan-600':
-            return { bgColorClass: 'bg-cyan-600', textColorClass: 'text-cyan-600', borderColorClass: 'border-cyan-600' };
-        case 'bg-blue-800':
-            return { bgColorClass: 'bg-blue-800', textColorClass: 'text-blue-800', borderColorClass: 'border-blue-800' };
-        case 'bg-indigo-800':
-            return { bgColorClass: 'bg-indigo-800', textColorClass: 'text-indigo-800', borderColorClass: 'border-indigo-800' };
-        default:
-            return { bgColorClass: 'bg-gray-200', textColorClass: 'text-gray-200', borderColorClass: 'border-gray-200' };
-    }
-  };
-
-  const categoryColors = getColorByCategory(data.category);
+  const categoryColor = categories.find(cat => cat.label === data.category)?.color || 'bg-gray-200';
 
   // Function to get state acronym
   const getStateAcronym = (state: string) => {
@@ -157,14 +131,14 @@ const ListingCard: React.FC<ListingCardProps> = ({
           </div>
         </div>
         <div className="px-4 pt-1 pb-1">
-          <div 
-            className={`w-8 h-5 ${categoryColors.bgColorClass} shadow-sm rounded-md flex items-center justify-center`} 
-            title={data.category}
-          >
-            <span className="text-white text-xs font-extralight">
-              {data.category.charAt(0).toUpperCase()}
-            </span>
-          </div>
+        <div 
+  className={`w-8 h-5 ${categoryColor} shadow-sm rounded-md flex items-center justify-center`} 
+  title={data.category}
+>
+  <span className="text-white text-xs font-extralight">
+    {data.category.charAt(0).toUpperCase()}
+  </span>
+</div>
         </div>
         
         {/* Title */}

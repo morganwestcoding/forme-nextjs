@@ -172,7 +172,7 @@ export default function Sidebar() {
 
 {/* Categories */}
 <span className="mb-5 text-[#a2a2a2] text-[0.8125rem] font-light">Genre</span>
-          <li className={`relative flex items-center justify-center mb-4 p-2 rounded-lg shadow w-36 h-20 ${selectedCategory ? categories.find(c => c.label === selectedCategory)?.color : 'bg-[#78C3FB]'}`}>
+          <li className={`relative flex items-center justify-center mb-4 p-2 rounded-lg shadow w-36 h-20 transition-colors duration-250 ${selectedCategory ? categories.find(c => c.label === selectedCategory)?.color : 'bg-[#78C3FB]'}`}>
             <span className="text-[#ffffff] text-[0.8125rem] group-hover:text-white font-light text-center h-10 rounded-lg p-3 bg-black bg-opacity-10 backdrop-blur shadow">
               {selectedCategory || 'Default'}
             </span>

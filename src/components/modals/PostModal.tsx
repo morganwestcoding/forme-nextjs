@@ -99,7 +99,7 @@ const PostModal: React.FC<PostModalProps> = ({
   const categoryColor = categories.find(cat => cat.label === post.category)?.color || 'bg-gray-200';
 
   const bodyContent = (
-    <div className="flex flex-col max-h-[80vh] relative">
+    <div className="flex flex-col max-h-[70vh] relative">
       {/* Header - User info */}
       <div className="flex items-center mb-4">
         <Link href={`/profile/${post.user.id}`} passHref>
@@ -116,7 +116,7 @@ const PostModal: React.FC<PostModalProps> = ({
             {post.location && (
               <div className="text-sm text-gray-400 mr-2">{post.location}</div>
             )}
-            <span className={`ml-2 w-8 h-5 rounded text-white drop-shadow-sm shadow-sm flex items-center justify-center text-xs ${categoryColor}`}>
+            <span className={`w-8 h-5 rounded text-white drop-shadow-sm shadow-sm flex items-center justify-center text-xs ${categoryColor}`}>
               {post.category.charAt(0).toUpperCase()}
             </span>
           </div>
@@ -182,26 +182,26 @@ const PostModal: React.FC<PostModalProps> = ({
       </div>
   
       {/* Comment input - Fixed at bottom */}
-      <div className="sticky bottom-0 bg-[#1e1e1e] pt-2">
-        <div className="flex gap-2">
-          <input 
-            type="text" 
-            placeholder="Add a comment..." 
-            className="w-full bg-gray-700 text-white rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            onKeyPress={handleKeyPress}
-            disabled={isSubmitting}
-          />
-          <button
-            onClick={handleSubmitComment}
-            disabled={!comment.trim() || isSubmitting}
-            className="px-4 py-2 bg-blue-500 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-600 transition"
-          >
-            {isSubmitting ? 'Posting...' : 'Post'}
-          </button>
-        </div>
-      </div>
+      <div className="sticky bottom-0 ">  {/* Removed pt-2 */}
+  <div className="flex gap-2 mb-0"> {/* Added mb-0 to ensure no bottom margin */}
+    <input 
+      type="text" 
+      placeholder="Add a comment..." 
+      className="w-full bg-gray-700 text-white rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+      value={comment}
+      onChange={(e) => setComment(e.target.value)}
+      onKeyPress={handleKeyPress}
+      disabled={isSubmitting}
+    />
+    <button
+      onClick={handleSubmitComment}
+      disabled={!comment.trim() || isSubmitting}
+      className="px-4 py-2 bg-blue-500 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-600 transition"
+    >
+      {isSubmitting ? 'Posting...' : 'Post'}
+    </button>
+  </div>
+</div>
     </div>
   );
 
