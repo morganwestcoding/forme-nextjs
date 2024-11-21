@@ -56,7 +56,6 @@ export default async function RootLayout({
                 
                 </div>
           </div>
-            
         <ToasterProvider/>
         <RentModal/>
         <ProfileModal/>

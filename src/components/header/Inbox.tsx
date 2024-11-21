@@ -15,7 +15,7 @@ const Inbox: React.FC<InboxProps> = ({ currentUser }) => {
   return (
     <>
       <div 
-        className="flex items-center justify-center bg-[#3E4142] backdrop-blur-lg border border-[#3E4142] rounded-full p-3 cursor-pointer shadow ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:rounded-full focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-25 hover:bg-white hover:bg-opacity-10 hover:text-accent-foreground" 
+        className="flex items-center justify-center bg-[#5E6365] backdrop-blur-lg border border-[#5E6365] rounded-full p-3 cursor-pointer shadow ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:rounded-full focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-25 hover:bg-white hover:bg-opacity-10 hover:text-accent-foreground" 
         onClick={() => setIsOpen(true)}
       >
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={19} height={19} color={"#ffffff"} fill={"none"}>

@@ -1,7 +1,7 @@
-// components/inputs/StoreHours.tsx
 'use client';
 
 import { useState } from 'react';
+import Select, { StylesConfig } from 'react-select';
 
 interface StoreHoursProps {
   onChange: (hours: StoreHourType[]) => void;
@@ -14,6 +14,11 @@ export type StoreHourType = {
   isClosed: boolean;
 };
 
+interface TimeOption {
+  label: string;
+  value: string;
+}
+
 const DAYS_OF_WEEK = [
   { short: 'MN', full: 'Monday' },
   { short: 'TU', full: 'Tuesday' },
@@ -24,15 +29,91 @@ const DAYS_OF_WEEK = [
   { short: 'SU', full: 'Sunday' },
 ];
 
-const HOURS = Array.from({ length: 12 }, (_, i) => {
+const HOURS: TimeOption[] = Array.from({ length: 12 }, (_, i) => {
   const hour = (i + 1).toString();
   return [
-    `${hour}:00 AM`,
-    `${hour}:30 AM`,
-    `${hour}:00 PM`,
-    `${hour}:30 PM`,
+    { label: `${hour}:00 AM`, value: `${hour}:00 AM` },
+    { label: `${hour}:30 AM`, value: `${hour}:30 AM` },
+    { label: `${hour}:00 PM`, value: `${hour}:00 PM` },
+    { label: `${hour}:30 PM`, value: `${hour}:30 PM` },
   ];
 }).flat();
+
+const customStyles: StylesConfig<TimeOption, false> = {
+  menu: (styles) => ({
+    ...styles,
+    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    backdropFilter: 'blur(8px)',
+    borderRadius: '0.5rem',
+    padding: '0.5rem',
+    maxHeight: '250px',
+  }),
+  menuList: (styles) => ({
+    ...styles,
+    backgroundColor: 'transparent',
+    padding: '0',
+    maxHeight: '220px',
+    overflowY: 'auto',
+    '&::-webkit-scrollbar': {
+      width: '6px',
+    },
+    '&::-webkit-scrollbar-track': {
+      background: 'transparent',
+    },
+    '&::-webkit-scrollbar-thumb': {
+      background: 'rgba(255, 255, 255, 0.3)',
+      borderRadius: '3px',
+    },
+    '&::-webkit-scrollbar-thumb:hover': {
+      background: 'rgba(255, 255, 255, 0.5)',
+    },
+  }),
+  option: (styles, { isFocused }) => ({
+    ...styles,
+    backgroundColor: isFocused ? 'rgba(128, 128, 128, 0.5)' : 'transparent',
+    color: 'white',
+    cursor: 'pointer',
+    padding: '0.75rem',
+    borderRadius: '0.375rem',
+    '&:hover': {
+      backgroundColor: 'rgba(128, 128, 128, 0.5)',
+    }
+  }),
+  control: (styles, { isDisabled }) => ({
+    ...styles,
+    backgroundColor: 'transparent',
+    borderColor: 'white',
+    color: 'white',
+    boxShadow: 'none',
+    minHeight: '60px',
+    height: '60px',
+    opacity: isDisabled ? 0.5 : 1,
+    '&:hover': {
+      borderColor: 'white',
+    },
+    borderRadius: '0.4rem',
+  }),
+  singleValue: (styles) => ({
+    ...styles,
+    color: 'white',
+    marginLeft: '0.5rem',
+  }),
+  input: (styles) => ({
+    ...styles,
+    color: 'white',
+    marginLeft: '0.5rem',
+  }),
+  placeholder: (styles) => ({
+    ...styles,
+    color: 'white',
+    marginLeft: '0.5rem',
+  }),
+  valueContainer: (styles) => ({
+    ...styles,
+    height: '58px',
+    padding: '0 8px 0 0.5rem',
+  }),
+};
 
 const StoreHours: React.FC<StoreHoursProps> = ({ onChange }) => {
   const [sameEveryDay, setSameEveryDay] = useState(false);
@@ -45,13 +126,15 @@ const StoreHours: React.FC<StoreHoursProps> = ({ onChange }) => {
     }))
   );
 
-  const handleTimeChange = (index: number, type: 'openTime' | 'closeTime', value: string) => {
+  const handleTimeChange = (index: number, type: 'openTime' | 'closeTime', selectedOption: TimeOption | null) => {
+    if (!selectedOption) return;
+    
     const newHours = [...hours];
-    newHours[index][type] = value;
+    newHours[index][type] = selectedOption.value;
     
     if (sameEveryDay) {
       newHours.forEach(hour => {
-        hour[type] = value;
+        hour[type] = selectedOption.value;
       });
     }
     
@@ -88,10 +171,89 @@ const StoreHours: React.FC<StoreHoursProps> = ({ onChange }) => {
     }
   };
 
+  const renderHourRow = (hour: StoreHourType, index: number) => (
+    <div key={DAYS_OF_WEEK[index].full} className="flex items-center gap-4">
+      <div 
+        className="
+          min-w-[60px]
+          h-[60px]
+          rounded-full
+          border
+          border-white
+          bg-transparent
+          flex
+          items-center
+          justify-center
+          text-white
+          font-light
+          text-sm
+        "
+      >
+        {DAYS_OF_WEEK[index].short}
+      </div>
+      
+      <Select<TimeOption>
+        value={{ label: hour.openTime, value: hour.openTime }}
+        onChange={(option) => handleTimeChange(index, 'openTime', option)}
+        options={HOURS}
+        isDisabled={hour.isClosed || (sameEveryDay && index !== 0)}
+        styles={customStyles}
+        className="w-1/3 text-sm"
+      />
+      
+      <span className="text-white text-sm">—</span>
+      
+      <Select<TimeOption>
+        value={{ label: hour.closeTime, value: hour.closeTime }}
+        onChange={(option) => handleTimeChange(index, 'closeTime', option)}
+        options={HOURS}
+        isDisabled={hour.isClosed || (sameEveryDay && index !== 0)}
+        styles={customStyles}
+        className="w-1/3 text-sm"
+      />
+
+      <button
+        type="button"
+        onClick={() => handleClosedToggle(index)}
+        disabled={sameEveryDay && index !== 0}
+        className={`
+          h-[60px]
+          px-4
+          rounded-md
+          border
+          text-sm
+          font-light
+          transition-colors
+          duration-200
+          disabled:opacity-50
+          disabled:cursor-not-allowed
+          ${hour.isClosed 
+            ? 'border-red-500 text-red-500 hover:bg-red-500 hover:bg-opacity-10' 
+            : 'border-white text-white hover:bg-white hover:bg-opacity-10'
+          }
+        `}
+      >
+        {hour.isClosed ? 'Closed' : 'Open'}
+      </button>
+    </div>
+  );
+
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between p-3 border rounded-lg">
-        <span className="text-sm font-medium">Same every day</span>
+    <div className="flex flex-col gap-4 w-[900px]">
+      <div 
+        className="
+          flex 
+          items-center 
+          justify-between 
+          p-4 
+          border 
+          border-white 
+          rounded-md 
+          bg-transparent
+          h-[60px]
+        "
+      >
+        <span className="text-sm font-light text-white">Same hours every day</span>
         <div className="relative inline-block w-12 select-none">
           <input
             type="checkbox"
@@ -104,69 +266,46 @@ const StoreHours: React.FC<StoreHoursProps> = ({ onChange }) => {
           <label
             htmlFor="toggle"
             className={`
-              block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer
-              ${sameEveryDay ? 'bg-blue-500' : 'bg-gray-300'}
+              block 
+              overflow-hidden 
+              h-6 
+              rounded-full 
+              cursor-pointer
+              transition-colors
+              duration-200
+              ${sameEveryDay ? 'bg-[#b1dafe]' : 'bg-gray-600'}
             `}
           >
             <span
               className={`
-                block w-4 h-4 rounded-full bg-white shadow transform transition-transform duration-200 ease-in-out
-                ${sameEveryDay ? 'translate-x-7' : 'translate-x-1'} mt-1
+                block 
+                w-4 
+                h-4 
+                rounded-full 
+                bg-white 
+                shadow 
+                transform 
+                transition-transform 
+                duration-200 
+                ease-in-out
+                mt-1
+                ${sameEveryDay ? 'translate-x-7' : 'translate-x-1'}
               `}
             />
           </label>
         </div>
       </div>
 
-      <div className="space-y-4">
-        {hours.map((hour, index) => (
-          <div key={DAYS_OF_WEEK[index].full} className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white">
-              {DAYS_OF_WEEK[index].short}
-            </div>
-            
-            <select
-              value={hour.openTime}
-              onChange={(e) => handleTimeChange(index, 'openTime', e.target.value)}
-              className="p-2 border rounded text-black bg-white"
-              disabled={hour.isClosed || (sameEveryDay && index !== 0)}
-            >
-              {HOURS.map((time) => (
-                <option key={time} value={time}>
-                  {time}
-                </option>
-              ))}
-            </select>
-            
-            <span>—</span>
-            
-            <select
-              value={hour.closeTime}
-              onChange={(e) => handleTimeChange(index, 'closeTime', e.target.value)}
-              className="p-2 border rounded text-black bg-white"
-              disabled={hour.isClosed || (sameEveryDay && index !== 0)}
-            >
-              {HOURS.map((time) => (
-                <option key={time} value={time}>
-                  {time}
-                </option>
-              ))}
-            </select>
+      <div className="flex gap-8">
+        {/* Weekdays (Mon-Thu) */}
+        <div className="flex-1 space-y-4">
+          {hours.slice(0, 4).map((hour, index) => renderHourRow(hour, index))}
+        </div>
 
-            <button
-              type="button"
-              onClick={() => handleClosedToggle(index)}
-              className={`
-                px-3 py-1 rounded text-sm
-                ${hour.isClosed ? 'bg-red-500 text-white' : 'bg-gray-200 text-gray-700'}
-                ${(sameEveryDay && index !== 0) ? 'opacity-50 cursor-not-allowed' : ''}
-              `}
-              disabled={sameEveryDay && index !== 0}
-            >
-              {hour.isClosed ? 'Closed' : 'Open'}
-            </button>
-          </div>
-        ))}
+        {/* Weekend (Fri-Sun) */}
+        <div className="flex-1 space-y-4">
+          {hours.slice(4).map((hour, index) => renderHourRow(hour, index + 4))}
+        </div>
       </div>
     </div>
   );

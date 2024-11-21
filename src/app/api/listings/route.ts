@@ -20,7 +20,8 @@ export async function POST(request: Request) {
     category,
     location,
     services,
-    phoneNumber,  
+    phoneNumber, 
+    galleryImages, 
     website,      
     address,
     zipCode,
@@ -30,11 +31,11 @@ export async function POST(request: Request) {
 
   console.log("Received fields:", { 
     title, description, imageSrc, category, location, 
-    services, phoneNumber, website, address, zipCode, employees, storeHours 
+    services, phoneNumber, website, address, zipCode, employees, storeHours,  galleryImages 
   });
 
   const requiredFields = [ title, description, imageSrc, category, 
-    location, services, address, zipCode, storeHours ];
+    location, services, address, zipCode, storeHours,  galleryImages ];
   
   const missingFields = requiredFields.filter((field) => !field);
   if (missingFields.length > 0) {
@@ -67,13 +68,15 @@ export async function POST(request: Request) {
         description,
         imageSrc,
         category,
+        galleryImages: galleryImages || [],
         location,
         userId: currentUser.id,
         services: {
           create: parsedServices, 
         },
         phoneNumber,  
-        website,      
+        website,    
+        
         address,
         zipCode,
         employees: {

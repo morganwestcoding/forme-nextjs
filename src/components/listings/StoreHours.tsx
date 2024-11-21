@@ -2,15 +2,19 @@
 'use client';
 
 import { SafeStoreHours } from "@/app/types";
+import { categories } from "../Categories"; 
 
 interface StoreHoursProps {
   storeHours?: SafeStoreHours[];
+  category?: string;
 }
 
-const StoreHours: React.FC<StoreHoursProps> = ({ storeHours = [] }) => {
+const StoreHours: React.FC<StoreHoursProps> = ({ storeHours = [],   category  }) => {
   if (!storeHours || storeHours.length === 0) {
     return null;
   }
+
+  const categoryColor = categories.find(cat => cat.label === category)?.color || 'bg-gray-200';
 
   const formatTime = (time: string) => {
     return time.replace(':00', '');
@@ -72,7 +76,7 @@ const StoreHours: React.FC<StoreHoursProps> = ({ storeHours = [] }) => {
                   {group.days.map((day) => (
                     <div 
                       key={day.dayOfWeek}
-                      className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-medium"
+                      className={`w-12 h-12 rounded-full ${categoryColor} flex items-center justify-center text-white text-xs font-medium shadow-sm`}
                     >
                       {day.dayOfWeek.slice(0, 2).toUpperCase()}
                     </div>

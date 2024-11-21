@@ -71,18 +71,22 @@ const ListingGridModal: React.FC<ListingGridModalProps> = ({ listing, currentUse
         ))}
       </div>
       {currentUser?.id === listing?.userId && (
-        <div className="flex justify-end mt-4 space-x-2">
+        <div className="flex justify-center mt-4 space-x-2 -mb-4">
           <button
             onClick={handleAddImage}
-            className="bg-white text-black px-4 py-2 rounded-full"
+            className="bg-transparent text-white border border-white border-dashed p-3 rounded-full"
           >
-            +
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="17" height="17" color="#ffffff" fill="none">
+    <path d="M12 4V20M20 12H4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+</svg>
           </button>
           <button
             onClick={toggleDeleteMode}
-            className="bg-white text-black px-4 py-2 rounded-full"
+            className="bg-transparent text-white border border-white border-dashed p-3 rounded-full"
           >
-            {isDeleteMode ? 'Done' : '-'}
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="17" height="17" color="#ffffff" fill="none">
+    <path d="M20 12L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+</svg>
           </button>
         </div>
       )}

@@ -62,7 +62,7 @@ const ListingGalleryImage: React.FC<ListingGalleryImageProps> = ({ listing, curr
   const GridGalleryButton = () => (
     <button 
       className={`
-        absolute bottom-4 bg-black bg-opacity-25 rounded-full p-2.5 shadow-md border border-gray-200
+        absolute bottom-4 bg-black bg-opacity-25 rounded-full p-2.5 shadow-md border border-gray-200 border-dashed
         transition-opacity duration-300 ease-in-out
       `}
       onClick={(e) => {

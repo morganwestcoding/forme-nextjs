@@ -17,34 +17,8 @@ interface ListingHeadProps {
 const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
   const { title, location, description, category, id, address, website, phoneNumber } = listing;
 
-  const getColorByCategory = (categoryName: string) => {
-    const firstLevelCategory = categoryName.split('/')[0].trim();
-    const categoryItem = categories.find(cat => cat.label === firstLevelCategory);
-    if (!categoryItem) return { bgColorClass: 'bg-gray-200', textColorClass: 'text-gray-200' };
+  const categoryColor = categories.find(cat => cat.label === category)?.color || 'bg-gray-200';
 
-    switch (categoryItem.color) {
-      case 'bg-yellow-200':
-        return { bgColorClass: 'bg-yellow-200', textColorClass: 'text-white' };
-      case 'bg-rose-200':
-        return { bgColorClass: 'bg-rose-200', textColorClass: 'text-white' };
-      case 'bg-orange-300':
-        return { bgColorClass: 'bg-orange-300', textColorClass: 'text-white' };
-      case 'bg-teal-500':
-        return { bgColorClass: 'bg-teal-500', textColorClass: 'text-white' };
-      case 'bg-emerald-600':
-        return { bgColorClass: 'bg-emerald-600', textColorClass: 'text-white' };
-      case 'bg-cyan-600':
-        return { bgColorClass: 'bg-cyan-600', textColorClass: 'text-white' };
-      case 'bg-blue-800':
-        return { bgColorClass: 'bg-blue-800', textColorClass: 'text-white' };
-      case 'bg-indigo-800':
-        return { bgColorClass: 'bg-indigo-800', textColorClass: 'text-white' };
-      default:
-        return { bgColorClass: 'bg-gray-200', textColorClass: 'text-white' };
-    }
-  };
-
-  const categoryColors = getColorByCategory(category);
 
   // Split location into city and state
   const [city, state] = location?.split(',').map(s => s.trim()) || [];
@@ -89,10 +63,10 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
                 {city}, {stateAcronym}
               </p>
               <div 
-                className={`w-8 h-5 ${categoryColors.bgColorClass} shadow-sm rounded-md flex items-center justify-center ml-2`} 
+                className={`w-8 h-5 ${categoryColor} shadow-sm rounded-md flex items-center justify-center ml-2`} 
                 title={category}
               >
-                <span className={`${categoryColors.textColorClass} text-xs font-extralight`}>
+                <span className={`${categoryColor} text-xs text-[#ffffff] font-extralight`}>
                   {category.charAt(0).toUpperCase()}
                 </span>
               </div>
@@ -115,20 +89,23 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
         
         <div className="px-6">
           <h2 className="text-xl font-bold text-gray-800 mb-2">About Us</h2>
-          <p className="text-xs text-gray-700 mb-6 line-clamp-3 overflow-hidden">
+          <p className="text-xs text-gray-700 mb-6 line-clamp-4 overflow-hidden">
             {description}
           </p>
           
           <div className="flex justify-between items-center mb-6 mt-4">
             {address && (
               <div className="flex items-center pb-2 pt-2 rounded-lg shadow-sm bg-white border flex-grow mt-2.5">
-                <span className="text-xs font-light text-[#a2a2a2] truncate flex-grow text-center p-2">{listing.address}</span>
+                <span className="text-xs font-light text-[#a2a2a2] truncate flex-grow text-center p-2">{listing.address} {city}, {stateAcronym} {listing.zipCode}</span>
               </div>
             )}
           </div>
         </div>
       </div>
-      <StoreHours storeHours={listing.storeHours} />
+      <StoreHours 
+      storeHours={listing.storeHours}
+      category={listing.category}
+       />
     </div>
   );
 };

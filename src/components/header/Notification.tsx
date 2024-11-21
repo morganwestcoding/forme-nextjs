@@ -57,7 +57,7 @@ const Notifications: React.FC = () => {
       <div className="relative">
         <button 
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center justify-center bg-[#3E4142] border border-[#3E4142] rounded-full p-3 cursor-pointer shadow relative"
+          className="flex items-center justify-center bg-[#5E6365] border border-[#5E6365] rounded-full p-3 cursor-pointer shadow relative"
         >
 
 

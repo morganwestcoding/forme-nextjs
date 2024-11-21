@@ -22,6 +22,7 @@ import ServiceSelector, { Service } from '../inputs/ServiceSelector';
 import ListLocationSelect from '../inputs/ListLocationSelect';
 import EmployeeSelector from '../inputs/EmployeeSelector';
 import StoreHours, { StoreHourType }  from '../inputs/StoreHours';
+import ImageUploadGrid from '../inputs/ImageUploadGrid';
 
 enum STEPS {
   CATEGORY = 0,
@@ -79,6 +80,7 @@ const RentModal = () => {
       description: '',
       phoneNumber: '',
       website: '',
+      galleryImages: [],
     }
   });
 
@@ -175,6 +177,13 @@ const RentModal = () => {
     })
   }
 
+  const modalWidthClasses = useMemo(() => {
+    if (step === STEPS.HOURS) {
+      return 'w-full md:w-[950px]'
+    }
+    return 'w-full md:w-4/6 lg:w-3/6 xl:w-2/5'
+  }, [step]);
+
   const actionLabel = useMemo(() => {
     if (step === STEPS.EMPLOYEE) {
       return 'Create'
@@ -256,10 +265,12 @@ const RentModal = () => {
           title="Add a photo of your place"
           subtitle="Show guests what your place looks like!"
         />
-        <ImageUpload
-          onChange={(value) => setCustomValue('imageSrc', value)}
-          value={imageSrc}
-        />
+      <ImageUploadGrid
+        onChange={(value) => setCustomValue('imageSrc', value)}
+        onGalleryChange={(values) => setCustomValue('galleryImages', values)}
+        value={imageSrc}
+        galleryImages={watch('galleryImages') || []}
+      />
       </div>
     )
   }
@@ -346,6 +357,7 @@ const RentModal = () => {
       secondaryAction={step === STEPS.CATEGORY ? undefined : onBack}
       onClose={rentModal.onClose}
       body={bodyContent}
+      className={modalWidthClasses} 
     />
   );
 }

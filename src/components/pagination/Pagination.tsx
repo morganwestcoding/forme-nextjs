@@ -36,17 +36,35 @@ const Pagination = ({ currentPage, totalPages, totalResults }: PaginationProps) 
 
     for (let i = startPage; i <= endPage; i++) {
       pages.push(
-        <button
-          key={i}
-          onClick={() => handlePageChange(i)}
-          className={`flex items-center justify-center w-10 h-10 mx-1 rounded-full text-[#a2a2a2] bg-white border border-dashed transition-colors duration-250 ${
-            currentPage === i
-              ? 'bg-[#78C3FB] border text-white'
-              : 'hover:bg-[#e2e8f0] hover:border hover:border-dashed hover:border-white'
-          } shadow ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:rounded-full focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-25`}
-        >
-          {i}
-        </button>
+<button
+  key={i}
+  onClick={() => handlePageChange(i)}
+  className={`
+    flex items-center justify-center 
+    w-10 h-10 mx-1 
+    rounded-full 
+    text-[#a2a2a2] 
+    border border-dashed 
+    transition-colors 
+    duration-250
+    ${currentPage === i 
+      ? 'bg-[#78C3FB] !text-white' 
+      : 'bg-white hover:bg-[#e2e8f0] hover:border hover:border-dashed hover:border-white'
+    }
+    shadow 
+    ring-offset-background 
+    transition-colors 
+    focus-visible:outline-none 
+    focus-visible:ring-2 
+    focus-visible:rounded-full 
+    focus-visible:ring-ring 
+    focus-visible:ring-offset-2 
+    disabled:pointer-events-none 
+    disabled:opacity-25
+  `}
+>
+  {i}
+</button>
       );
     }
 
