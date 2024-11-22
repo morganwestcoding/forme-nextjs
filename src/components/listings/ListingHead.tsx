@@ -112,11 +112,16 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
     
     {showDropdown && (
       <div 
-        className="absolute transform -translate-x-1/2 left-1/2 mt-2 w-48 rounded-lg shadow-lg bg-white border border-[#e2e8f0] overflow-hidden z-50"
+        className="absolute right-0 mt-1 w-32 bg-white rounded-md shadow-sm z-50"
+        style={{ 
+          transform: 'translateX(50%)', 
+          right: '50%',
+          marginTop: '0.5rem'
+        }}
       >
         <button
           onClick={handleEditClick}
-          className="w-full px-4 py-3 text-sm text-[#5E6365] hover:bg-[#e2e8f0] text-left transition-colors duration-200 font-light"
+          className="w-full py-2 text-sm text-[#5E6365] hover:bg-[#e2e8f0] text-center transition-colors duration-200 font-light"
         >
           Edit Listing
         </button>

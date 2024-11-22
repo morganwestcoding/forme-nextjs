@@ -45,14 +45,10 @@ const TripsClient: React.FC<TripsClientProps> = ({
 
   return (
     <>
-      <Heading
-        title="Appointments"
-        subtitle="Upcoming appointments to go to!"
-      />
-      <div className="pt-4 pl-16 mr-20 flex-1">
+      <div className="pt-2 pl-4 mx-24 flex-1">
       <div 
         className="
-          mt-10
+          mt-6
           grid 
           grid-cols-1 
           sm:grid-cols-2 
@@ -60,7 +56,7 @@ const TripsClient: React.FC<TripsClientProps> = ({
           lg:grid-cols-4
           xl:grid-cols-5
           2xl:grid-cols-6
-          gap-8
+          gap-6
         "
       >
         {reservations.map((reservation: any) => (
