@@ -29,7 +29,7 @@ const CategoryInput: React.FC<CategoryInputProps> = ({
         transition
         cursor-pointer
         ${selected ? 'border border-white' : 'border border-white'}
-        ${selected ? 'bg-[#b1dafe]' : 'bg-transparent'}
+        ${selected ? 'bg-[#7b7b7b]' : 'bg-transparent'}
       `}
     >
       <div className="group group-hover:text-black flex items-center gap-5 font-light text-sm text-[white] ">

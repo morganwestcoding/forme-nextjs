@@ -128,7 +128,7 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({
   }),
   placeholder: (styles) => ({
     ...styles,
-    color: 'white',
+    color: '#a2a2a2',
     marginLeft: '0.5rem',
   }),
   valueContainer: (styles) => ({
