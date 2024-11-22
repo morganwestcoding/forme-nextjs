@@ -32,73 +32,110 @@ export async function DELETE(
   return NextResponse.json(listing);
 }
 
-export async function PATCH(
+export async function PUT(
   request: Request,
   { params }: { params: IParams }
 ) {
   const currentUser = await getCurrentUser();
   if (!currentUser) {
-    return new NextResponse("Unauthorized", { status: 401 });
+    return NextResponse.error();
   }
 
   const { listingId } = params;
   if (!listingId || typeof listingId !== 'string') {
-    return new NextResponse("Invalid listing ID", { status: 400 });
+    throw new Error('Invalid ID');
   }
 
-  const body = await request.json();
-  const { action, image, imageIndex } = body;
-
   try {
-    const listing = await prisma.listing.findUnique({
-      where: { id: listingId },
+    const body = await request.json();
+
+    // Verify listing exists and belongs to user
+    const existingListing = await prisma.listing.findUnique({
+      where: {
+        id: listingId,
+        userId: currentUser.id
+      }
     });
 
-    if (!listing) {
-      return new NextResponse("Listing not found", { status: 404 });
+    if (!existingListing) {
+      return new NextResponse("Unauthorized or listing not found", { status: 403 });
     }
 
-    if (listing.userId !== currentUser.id) {
-      return new NextResponse("Unauthorized", { status: 403 });
-    }
+    // Update main listing
+    const updatedListing = await prisma.listing.update({
+      where: {
+        id: listingId
+      },
+      data: {
+        title: body.title,
+        description: body.description,
+        imageSrc: body.imageSrc,
+        category: body.category,
+        location: body.location,
+        address: body.address,
+        zipCode: body.zipCode,
+        phoneNumber: body.phoneNumber,
+        website: body.website,
+        galleryImages: body.galleryImages,
+      }
+    });
 
-    let updatedListing;
-
-    switch (action) {
-      case "addImage":
-        if (!image) {
-          return new NextResponse("Image URL is required", { status: 400 });
-        }
-        updatedListing = await prisma.listing.update({
-          where: { id: listingId },
+    // Update services
+    await prisma.service.deleteMany({
+      where: { listingId }
+    });
+    
+    await prisma.$transaction(
+      body.services.map((service: any) => 
+        prisma.service.create({
           data: {
-            galleryImages: {
-              push: image,
-            },
-          },
-        });
-        break;
+            serviceName: service.serviceName,
+            price: service.price,
+            category: service.category,
+            listingId
+          }
+        })
+      )
+    );
 
-      case "removeImage":
-        if (imageIndex === undefined) {
-          return new NextResponse("Image index is required", { status: 400 });
-        }
-        const updatedImages = listing.galleryImages.filter((_, index) => index !== imageIndex);
-        updatedListing = await prisma.listing.update({
-          where: { id: listingId },
+    // Update employees
+    await prisma.employee.deleteMany({
+      where: { listingId }
+    });
+
+    await prisma.$transaction(
+      body.employees.map((employee: string) => 
+        prisma.employee.create({
           data: {
-            galleryImages: updatedImages,
-          },
-        });
-        break;
+            fullName: employee,
+            listingId
+          }
+        })
+      )
+    );
 
-      default:
-        return new NextResponse("Invalid action", { status: 400 });
-    }
+    // Update store hours
+    await prisma.storeHours.deleteMany({
+      where: { listingId }
+    });
+
+    await prisma.$transaction(
+      body.storeHours.map((hours: any) => 
+        prisma.storeHours.create({
+          data: {
+            dayOfWeek: hours.dayOfWeek,
+            openTime: hours.openTime,
+            closeTime: hours.closeTime,
+            isClosed: hours.isClosed,
+            listingId
+          }
+        })
+      )
+    );
 
     return NextResponse.json(updatedListing);
   } catch (error) {
-    console.error("Error updating listing:", error);
-    return new NextResponse("Internal Server Error", { status: 500 });
+    console.error('[LISTING_UPDATE]', error);
+    return new NextResponse("Internal Error", { status: 500 });
   }
 }

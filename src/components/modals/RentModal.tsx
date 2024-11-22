@@ -8,14 +8,12 @@ import {
   useForm
 } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
 
 import useRentModal from '@/app/hooks/useRentModal';
-
 import Modal from "./Modal";
 import CategoryInput from '../inputs/CategoryInput';
 import { categories } from '../Categories';
-import ImageUpload from '../inputs/ImageUpload';
 import Input from '../inputs/Input';
 import Heading from '../Heading';
 import ServiceSelector, { Service } from '../inputs/ServiceSelector';
@@ -32,31 +30,40 @@ enum STEPS {
   DESCRIPTION = 4,
   HOURS = 5,
   EMPLOYEE = 6,
- 
 }
 
 const RentModal = () => {
   const router = useRouter();
   const rentModal = useRentModal();
+  const listing = rentModal.listing;
+  const isEditMode = !!listing;
 
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState(STEPS.CATEGORY);
-  const [services, setServices] = useState([
-    { serviceName: '', price: 0, category: '' },
-    { serviceName: '', price: 0, category: '' },
-    { serviceName: '', price: 0, category: '' },
-  ]);
-  const [employees, setEmployees] = useState(['', '', '']);
 
-  const [storeHours, setStoreHours] = useState<StoreHourType[]>([
-    { dayOfWeek: 'Monday', openTime: '8:00 AM', closeTime: '8:00 PM', isClosed: false },
-    { dayOfWeek: 'Tuesday', openTime: '8:00 AM', closeTime: '8:00 PM', isClosed: false },
-    { dayOfWeek: 'Wednesday', openTime: '8:00 AM', closeTime: '8:00 PM', isClosed: false },
-    { dayOfWeek: 'Thursday', openTime: '8:00 AM', closeTime: '8:00 PM', isClosed: false },
-    { dayOfWeek: 'Friday', openTime: '8:00 AM', closeTime: '8:00 PM', isClosed: false },
-    { dayOfWeek: 'Saturday', openTime: '8:00 AM', closeTime: '8:00 PM', isClosed: false },
-    { dayOfWeek: 'Sunday', openTime: '8:00 AM', closeTime: '8:00 PM', isClosed: false },
-  ]);
+  const [services, setServices] = useState<Service[]>(
+    listing?.services || [
+      { serviceName: '', price: 0, category: '' },
+      { serviceName: '', price: 0, category: '' },
+      { serviceName: '', price: 0, category: '' },
+    ]
+  );
+
+  const [employees, setEmployees] = useState<string[]>(
+    listing?.employees.map(emp => emp.fullName) || ['', '', '']
+  );
+
+  const [storeHours, setStoreHours] = useState<StoreHourType[]>(
+    listing?.storeHours || [
+      { dayOfWeek: 'Monday', openTime: '8:00 AM', closeTime: '8:00 PM', isClosed: false },
+      { dayOfWeek: 'Tuesday', openTime: '8:00 AM', closeTime: '8:00 PM', isClosed: false },
+      { dayOfWeek: 'Wednesday', openTime: '8:00 AM', closeTime: '8:00 PM', isClosed: false },
+      { dayOfWeek: 'Thursday', openTime: '8:00 AM', closeTime: '8:00 PM', isClosed: false },
+      { dayOfWeek: 'Friday', openTime: '8:00 AM', closeTime: '8:00 PM', isClosed: false },
+      { dayOfWeek: 'Saturday', openTime: '8:00 AM', closeTime: '8:00 PM', isClosed: false },
+      { dayOfWeek: 'Sunday', openTime: '8:00 AM', closeTime: '8:00 PM', isClosed: false },
+    ]
+  );
 
   const { 
     register, 
@@ -69,30 +76,36 @@ const RentModal = () => {
     reset,
   } = useForm<FieldValues>({
     defaultValues: {
-      category: '',
-      location: null,
-      address: '',
-      zipCode: '',
-      city: '',
-      state: '',
-      imageSrc: '',
-      title: '',
-      description: '',
-      phoneNumber: '',
-      website: '',
-      galleryImages: [],
+      category: listing?.category || '',
+      location: listing?.location || null,
+      address: listing?.address || '',
+      zipCode: listing?.zipCode || '',
+      imageSrc: listing?.imageSrc || '',
+      title: listing?.title || '',
+      description: listing?.description || '',
+      phoneNumber: listing?.phoneNumber || '',
+      website: listing?.website || '',
+      galleryImages: listing?.galleryImages || [],
     }
   });
 
+  // Pre-fill form when listing changes
+  useEffect(() => {
+    if (listing) {
+      Object.entries(listing).forEach(([key, value]) => {
+        setValue(key, value);
+      });
+      setServices(listing.services);
+      setEmployees(listing.employees.map(emp => emp.fullName));
+      setStoreHours(listing.storeHours || []);
+    }
+  }, [listing, setValue]);
+
   const category = watch('category');
-  const website = watch('website');
-  const phoneNumber = watch('phoneNumber');
   const imageSrc = watch('imageSrc');
   const location = watch('location');
   const address = watch('address');
   const zipCode = watch('zipCode');
-  const city = watch('city');
-  const state = watch('state');
 
   const setCustomValue = (id: string, value: any) => {
     setValue(id, value, {
@@ -112,7 +125,7 @@ const RentModal = () => {
         return toast.error('Please select a category.');
       }
     } else if (step === STEPS.LOCATION) {
-      if (!address || !zipCode || !city || !state) {
+      if (!address || !zipCode) {
         return toast.error('Please fill in all location fields.');
       }
     }
@@ -135,16 +148,13 @@ const RentModal = () => {
     zipCode: string;
   } | null) => {
     if (locationData) {
-      // Set all values at once
       setValue('location', `${locationData.city}, ${locationData.state}`, { shouldValidate: true });
       setValue('address', locationData.address, { shouldValidate: true });
       setValue('zipCode', locationData.zipCode, { shouldValidate: true });
-      setValue('city', locationData.city, { shouldValidate: true });
-      setValue('state', locationData.state, { shouldValidate: true });
     }
   };
 
-  const onSubmit: SubmitHandler<FieldValues> = (data) => {
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     if (step !== STEPS.EMPLOYEE) {
       return onNext();
     }
@@ -156,26 +166,27 @@ const RentModal = () => {
       services,
       employees,
       storeHours,
-      phoneNumber: data.phoneNumber,
-      website: data.website
     };
-  
-    axios.post('/api/listings', payload)
-    .then(() => {
-      toast.success('Listing created!');
+
+    try {
+      if (isEditMode && listing) {
+        await axios.put(`/api/listings/${listing.id}`, payload);
+        toast.success('Listing updated successfully!');
+      } else {
+        await axios.post('/api/listings', payload);
+        toast.success('Listing created successfully!');
+      }
+      
       router.refresh();
       reset();
       setStep(STEPS.CATEGORY);
       rentModal.onClose();
-    })
-    .catch((error) => {
-      console.error('Error submitting listing:', error.response?.data);
+    } catch (error) {
       toast.error('Something went wrong.');
-    })
-    .finally(() => {
+    } finally {
       setIsLoading(false);
-    })
-  }
+    }
+  };
 
   const modalWidthClasses = useMemo(() => {
     if (step === STEPS.HOURS) {
@@ -186,36 +197,25 @@ const RentModal = () => {
 
   const actionLabel = useMemo(() => {
     if (step === STEPS.EMPLOYEE) {
-      return 'Create'
+      return isEditMode ? 'Update' : 'Create'
     }
-
     return 'Next'
-  }, [step]);
+  }, [step, isEditMode]);
 
   const secondaryActionLabel = useMemo(() => {
     if (step === STEPS.CATEGORY) {
       return undefined
     }
-
     return 'Back'
   }, [step]);
 
   let bodyContent = (
     <div className="flex flex-col gap-8">
       <Heading
-        title="Define your establishment"
+        title={isEditMode ? "Edit your establishment" : "Define your establishment"}
         subtitle="Pick a category"
       />
-      <div 
-        className="
-          grid 
-          grid-cols-1 
-          md:grid-cols-2 
-          gap-3
-          max-h-[50vh]
-          overflow-y-auto
-        "
-      >
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[50vh] overflow-y-auto">
         {categories.map((item) => (
           <div key={item.label} className="col-span-1">
             <CategoryInput
@@ -228,7 +228,7 @@ const RentModal = () => {
         ))}
       </div>
     </div>
-  )
+  );
 
   if (step === STEPS.LOCATION) {
     bodyContent = (
@@ -253,26 +253,29 @@ const RentModal = () => {
           title="Share some basics about your place"
           subtitle="What amenities do you have?"
         />
-        <ServiceSelector onServicesChange={handleServicesChange} existingServices={services} />
+        <ServiceSelector 
+          onServicesChange={handleServicesChange} 
+          existingServices={services}
+        />
       </div>
-    )
+    );
   }
 
   if (step === STEPS.IMAGES) {
     bodyContent = (
       <div className="flex flex-col gap-8">
         <Heading
-          title="Add a photo of your place"
+          title={isEditMode ? "Update your photos" : "Add photos of your place"}
           subtitle="Show guests what your place looks like!"
         />
-      <ImageUploadGrid
-        onChange={(value) => setCustomValue('imageSrc', value)}
-        onGalleryChange={(values) => setCustomValue('galleryImages', values)}
-        value={imageSrc}
-        galleryImages={watch('galleryImages') || []}
-      />
+        <ImageUploadGrid
+          onChange={(value) => setCustomValue('imageSrc', value)}
+          onGalleryChange={(values) => setCustomValue('galleryImages', values)}
+          value={imageSrc}
+          galleryImages={watch('galleryImages') || []}
+        />
       </div>
-    )
+    );
   }
 
   if (step === STEPS.DESCRIPTION) {
@@ -289,7 +292,6 @@ const RentModal = () => {
           register={register}
           errors={errors}
           required
-          maxLength={20}
         />
         <Input
           id="description"
@@ -298,7 +300,6 @@ const RentModal = () => {
           register={register}
           errors={errors}
           required
-          maxLength={450}
         />
         <Input
           id="phoneNumber"
@@ -306,7 +307,6 @@ const RentModal = () => {
           disabled={isLoading}
           register={register}
           errors={errors}
-          maxLength={15}
         />
         <Input
           id="website"
@@ -314,10 +314,9 @@ const RentModal = () => {
           disabled={isLoading}
           register={register}
           errors={errors}
-          maxLength={20}
         />
       </div>
-    )
+    );
   }
 
   if (step === STEPS.HOURS) {
@@ -331,33 +330,36 @@ const RentModal = () => {
           onChange={(hours) => setStoreHours(hours)}
         />
       </div>
-    )
+    );
   }
 
   if (step === STEPS.EMPLOYEE) {
     bodyContent = (
       <div className="flex flex-col gap-8">
         <Heading
-          title="Add your employees"
+          title={isEditMode ? "Update your employees" : "Add your employees"}
           subtitle="Let us know who is available for work!"
         />
-        <EmployeeSelector onEmployeesChange={handleEmployeesChange} existingEmployees={employees} />
+        <EmployeeSelector 
+          onEmployeesChange={handleEmployeesChange} 
+          existingEmployees={employees}
+        />
       </div>
-    )
+    );
   }
 
   return (
     <Modal
       disabled={isLoading}
       isOpen={rentModal.isOpen}
-      title="Join the fun!"
+      title={isEditMode ? "Edit your listing" : "Join the fun!"}
       actionLabel={actionLabel}
       onSubmit={handleSubmit(onSubmit)}
       secondaryActionLabel={secondaryActionLabel}
       secondaryAction={step === STEPS.CATEGORY ? undefined : onBack}
       onClose={rentModal.onClose}
       body={bodyContent}
-      className={modalWidthClasses} 
+      className={modalWidthClasses}
     />
   );
 }

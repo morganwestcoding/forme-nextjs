@@ -1,13 +1,13 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { SafeListing, SafeUser } from '@/app/types';
 import useFavorite from "@/app/hooks/useFavorite";
 import { categories } from "../Categories";
 import ListingGalleryImage from "./ListingGalleryImage";
 import StoreHours from './StoreHours';
 import HeartButton from '../HeartButton';
-
+import useRentModal from "@/app/hooks/useRentModal";
 
 interface ListingHeadProps {
   listing: SafeListing;
@@ -15,10 +15,18 @@ interface ListingHeadProps {
 }
 
 const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
-  const { title, location, description, category, id, address, website, phoneNumber } = listing;
+  const [showDropdown, setShowDropdown] = useState(false);
+  const rentModal = useRentModal();
+  const { title, location, description, category, id, address, website, phoneNumber, userId } = listing;
 
   const categoryColor = categories.find(cat => cat.label === category)?.color || 'bg-gray-200';
+  const isOwner = currentUser?.id === userId;
 
+  const handleEditClick = useCallback(() => {
+    console.log('Editing listing:', listing);  // Debug log
+    rentModal.onOpen(listing);
+    setShowDropdown(false);
+  }, [rentModal, listing]);
 
   // Split location into city and state
   const [city, state] = location?.split(',').map(s => s.trim()) || [];
@@ -41,6 +49,18 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
   };
 
   const stateAcronym = state ? getStateAcronym(state) : '';
+
+  // Click outside handler
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showDropdown && !(event.target as HTMLElement).closest('.dropdown-container')) {
+        setShowDropdown(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [showDropdown]);
 
   return (
     <div className="w-full pl-4 pr-[1.5%]">
@@ -73,16 +93,37 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
             </div>
           </div>
           
-          <button
-            className="flex bg-[#ffffff] cursor-pointer"
-            onClick={() => console.log('Options clicked')}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" color="#a2a2a2" fill="none">
-              <path d="M11.9959 12H12.0049" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M17.9998 12H18.0088" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M5.99981 12H6.00879" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
+          {isOwner && (
+  <div className="dropdown-container relative">
+    <button
+      className="flex cursor-pointer p-2 transition-colors duration-200 hover:text-gray-300"
+      onClick={(e) => {
+        e.stopPropagation();
+        setShowDropdown(!showDropdown);
+      }}
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" color="#a2a2a2" fill="none" 
+        className="hover:text-gray-300 transition-colors duration-200">
+        <path d="M11.9959 12H12.0049" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M17.9998 12H18.0088" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M5.99981 12H6.00879" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </button>
+    
+    {showDropdown && (
+      <div 
+        className="absolute transform -translate-x-1/2 left-1/2 mt-2 w-48 rounded-lg shadow-lg bg-white border border-[#e2e8f0] overflow-hidden z-50"
+      >
+        <button
+          onClick={handleEditClick}
+          className="w-full px-4 py-3 text-sm text-[#5E6365] hover:bg-[#e2e8f0] text-left transition-colors duration-200 font-light"
+        >
+          Edit Listing
+        </button>
+      </div>
+    )}
+  </div>
+)}
         </div>
         
         <ListingGalleryImage listing={listing} currentUser={currentUser} />
@@ -96,16 +137,18 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
           <div className="flex justify-between items-center mb-6 mt-4">
             {address && (
               <div className="flex items-center pb-2 pt-2 rounded-lg shadow-sm bg-white border flex-grow mt-2.5">
-                <span className="text-xs font-light text-[#a2a2a2] truncate flex-grow text-center p-2">{listing.address} {city}, {stateAcronym} {listing.zipCode}</span>
+                <span className="text-xs font-light text-[#a2a2a2] truncate flex-grow text-center p-2">
+                  {listing.address} {city}, {stateAcronym} {listing.zipCode}
+                </span>
               </div>
             )}
           </div>
         </div>
       </div>
       <StoreHours 
-      storeHours={listing.storeHours}
-      category={listing.category}
-       />
+        storeHours={listing.storeHours}
+        category={listing.category}
+      />
     </div>
   );
 };

@@ -86,7 +86,7 @@ const StoreHours: React.FC<StoreHoursProps> = ({ storeHours = [],   category  })
                   {group.days[0].isClosed ? (
                     <span className="text-black">Closed</span>
                   ) : (
-                    `${formatTime(group.openTime)} - ${formatTime(group.closeTime)}`
+                    `${formatTime(group.openTime)} — ${formatTime(group.closeTime)}`
                   )}
                 </div>
               </div>

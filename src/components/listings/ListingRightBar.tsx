@@ -34,7 +34,14 @@ interface InputFieldProps {
   isSelected: boolean;
 }
 
-const InputField: React.FC<InputFieldProps> = ({ value, onClick, readOnly, placeholder, disabled = false, isSelected }) => (
+const InputField: React.FC<InputFieldProps> = ({ 
+  value, 
+  onClick, 
+  readOnly, 
+  placeholder, 
+  disabled = false, 
+  isSelected 
+}) => (
   <div className="mb-3 relative">
     <div className="relative flex items-center">
       <input
@@ -44,7 +51,25 @@ const InputField: React.FC<InputFieldProps> = ({ value, onClick, readOnly, place
         readOnly={readOnly}
         placeholder={placeholder}
         disabled={disabled}
-        className="w-full h-10 bg-white border border-[#e2e8f0] text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block py-6 px-12 placeholder-[#718096] text-center"
+        className={`
+          w-full 
+          h-10 
+          border 
+          text-sm 
+          rounded-lg 
+          block 
+          py-6 
+          px-12 
+          placeholder-[#a2a2a2]
+          text-center
+          transition-colors
+          duration-250
+          ${isSelected 
+            ? 'bg-[#5E6365] text-white border-[#5E6365]' 
+            : 'bg-white border-[#e2e8f0] hover:bg-[#e2e8f0]'
+          }
+          ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+        `}
       />
     </div>
   </div>
@@ -161,11 +186,11 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
         />
 
 {showServiceDropdown && (
-  <div className="absolute z-50  bg-white border border-gray-300 rounded-md shadow-lg w-[calc(100%-3rem)]">
+  <div className="absolute z-50 bg-white border border-gray-300 rounded-md shadow-lg w-[calc(100%-3rem)]">
     {serviceOptions.map((option) => (
       <div
         key={option.value}
-        className="p-2 hover:bg-gray-100 cursor-pointer text-center"
+        className="p-2 hover:bg-[#e2e8f0] cursor-pointer text-center transition-colors duration-250"
         onClick={() => {
           handleServiceChange(option);
           setShowServiceDropdown(false);

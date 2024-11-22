@@ -19,8 +19,10 @@ export type SafeListing = Omit<Listing, "createdAt"> & {
     id: string;
     fullName: string;
   }[];
-  zipCode?: string | null;
-  storeHours?: SafeStoreHours[];
+  zipCode: string | null;
+  storeHours: SafeStoreHours[];
+  city?: string | null;  // Add this
+  state?: string | null; // Add this
   
 };
 
