@@ -207,11 +207,12 @@ const PostModal: React.FC<PostModalProps> = ({
 
   return (
     <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      onSubmit={handleSubmitComment}
-      title="Post"
-      body={bodyContent}
+    isOpen={isOpen}
+    onClose={onClose}
+    onSubmit={() => {}} // Empty function since we don't use it
+    title="Post"
+    body={bodyContent}
+    actionLabel="" 
     />
   );
 };

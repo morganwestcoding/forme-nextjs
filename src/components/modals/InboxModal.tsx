@@ -56,16 +56,40 @@ const InboxModal: React.FC<InboxModalProps> = ({ isOpen, onClose, currentUser })
     }
   };
 
+  const styles = `
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 3px;
+    }
+    
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.5);
+    }
+
+    .custom-scrollbar {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+    }
+  `;
+
   const bodyContent = (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-[450px]">
       <div className="mb-4">
         <UserSearch onResultClick={startNewConversation} />
       </div>
-      <div className="flex-grow overflow-y-auto space-y-4 mb-4">
+      <div className="h-full overflow-y-auto space-y-4 custom-scrollbar pr-2"> {/* Added pr-2 for scrollbar spacing */}
         {conversations.map((conversation) => (
           <div 
             key={conversation.id}
-            className="flex items-center space-x-3 cursor-pointer hover:bg-gray-700 p-2 rounded"
+            className="flex items-center space-x-3 cursor-pointer hover:bg-gray-700 p-2 rounded transition duration-200"
             onClick={() => openConversation(conversation.id, conversation.otherUser.id)}
           >
             <div className="w-11 h-11 rounded-full overflow-hidden flex-shrink-0">
@@ -80,33 +104,59 @@ const InboxModal: React.FC<InboxModalProps> = ({ isOpen, onClose, currentUser })
               </div>
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-white truncate">{conversation.otherUser.name}</h3>
-              <p className="text-sm text-gray-400 truncate max-w-[200px]">{conversation.lastMessage?.content}</p>
+              <h3 className="font-semibold text-white truncate">
+                {conversation.otherUser.name}
+              </h3>
+              <p className="text-sm text-gray-400 truncate max-w-[200px]">
+                {conversation.lastMessage?.content}
+              </p>
             </div>
-            <div className="flex flex-col items-end">
+            <div className="flex flex-col items-end space-y-1">
               <span className="text-xs text-gray-400 flex-shrink-0">
-                {conversation.lastMessage?.createdAt && new Date(conversation.lastMessage.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                {conversation.lastMessage?.createdAt && 
+                  new Date(conversation.lastMessage.createdAt).toLocaleTimeString([], { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                  })
+                }
               </span>
               {conversation.lastMessage && (
-                <span className={`text-xs ${conversation.lastMessage.isRead ? 'text-green-500' : 'text-red-500'}`}>
-                  {conversation.lastMessage.isRead ? 'Read' : 'Unread'}
+                <span 
+                  className={`
+                    text-xs px-3 py-1 rounded-lg
+                    ${conversation.lastMessage.isRead 
+                      ? 'bg-gray-700 text-gray-300' 
+                      : 'bg-blue-500 text-white'
+                    }
+                  `}
+                >
+                  {conversation.lastMessage.isRead ? 'Read' : 'New'}
                 </span>
               )}
             </div>
           </div>
         ))}
+        {conversations.length === 0 && (
+          <div className="text-center text-gray-400 mt-4">
+            No conversations yet. Start a new one by searching for users above.
+          </div>
+        )}
       </div>
     </div>
   );
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      onSubmit={() => {}}
-      title="Inbox"
-      body={bodyContent}
-    />
+    <>
+      <style>{styles}</style>
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        onSubmit={() => {}}
+        title="Inbox"
+        body={bodyContent}
+        className="md:w-[500px]"
+      />
+    </>
   );
 };
 
