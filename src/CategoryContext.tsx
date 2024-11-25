@@ -1,84 +1,44 @@
+// CategoryContext.tsx
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { createContext, useContext, useState, useEffect } from 'react';
+import { usePathname, useSearchParams } from 'next/navigation';
 
 interface CategoryContextType {
-  selectedCategory: string | undefined;
-  setSelectedCategory: (category: string | undefined) => void;
+  selectedCategory: string | null;
+  setSelectedCategory: (category: string | null) => void;
 }
 
 const CategoryContext = createContext<CategoryContextType | undefined>(undefined);
 
-export const CategoryProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
-  const router = useRouter();
+export function CategoryProvider({ children }: { children: React.ReactNode }) {
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // Load category from localStorage on initial mount
-  useEffect(() => {
-    const savedCategory = localStorage.getItem('selectedCategory');
-    if (savedCategory) {
-      setSelectedCategory(savedCategory);
-      // Update URL with saved category
-      const currentParams = new URLSearchParams(window.location.search);
-      currentParams.set('category', savedCategory);
-      const newUrl = `${pathname}?${currentParams.toString()}`;
-      router.push(newUrl);
-    }
-  }, []); // Empty dependency array for initial load only
-
-  // Update URL and localStorage when category changes
-  const handleSetCategory = (category: string | undefined) => {
-    setSelectedCategory(category);
-    
-    // Save to localStorage
-    if (category) {
-      localStorage.setItem('selectedCategory', category);
-    } else {
-      localStorage.removeItem('selectedCategory');
-    }
-
-    // Update URL
-    const currentParams = new URLSearchParams(window.location.search);
-    if (category) {
-      currentParams.set('category', category);
-    } else {
-      currentParams.delete('category');
-    }
-    const newUrl = `${pathname}?${currentParams.toString()}`;
-    router.push(newUrl);
-  };
-
-  // Listen for URL changes and update category if needed
   useEffect(() => {
     const categoryFromUrl = searchParams?.get('category');
-    const savedCategory = localStorage.getItem('selectedCategory');
-
-    if (categoryFromUrl && categoryFromUrl !== selectedCategory) {
+    if (categoryFromUrl) {
       setSelectedCategory(categoryFromUrl);
-      localStorage.setItem('selectedCategory', categoryFromUrl);
-    } else if (!categoryFromUrl && savedCategory) {
-      // If there's no category in URL but there is one saved, update URL
-      const currentParams = new URLSearchParams(window.location.search);
-      currentParams.set('category', savedCategory);
-      const newUrl = `${pathname}?${currentParams.toString()}`;
-      router.push(newUrl);
     }
-  }, [pathname, searchParams]); // Listen for route changes
+  }, [searchParams]);
+
+  const value = {
+    selectedCategory,
+    setSelectedCategory,
+  };
 
   return (
-    <CategoryContext.Provider value={{ selectedCategory, setSelectedCategory: handleSetCategory }}>
+    <CategoryContext.Provider value={value}>
       {children}
     </CategoryContext.Provider>
   );
-};
+}
 
-export const useCategory = () => {
+export function useCategory() {
   const context = useContext(CategoryContext);
   if (context === undefined) {
     throw new Error('useCategory must be used within a CategoryProvider');
   }
   return context;
-};
+}
