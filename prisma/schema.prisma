@@ -83,6 +83,7 @@ model Reservation {
   time       String
   note       String?
   totalPrice Int
+   status     String   @default("pending") // Add this line - can be "pending", "accepted", "declined"
   createdAt  DateTime @default(now())
 
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)

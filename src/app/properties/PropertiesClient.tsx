@@ -6,6 +6,8 @@ import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { categories } from '@/components/Categories';
 import { SafeListing, SafeUser } from "@/app/types";
+import ClientProviders from "@/components/ClientProviders";
+import useRentModal from "@/app/hooks/useRentModal"; // Add this
 
 import Heading from "@/components/Heading";
 import ListingCard from "@/components/listings/ListingCard";
@@ -24,6 +26,14 @@ const PropertiesClient: React.FC<PropertiesClientProps> = ({
 }) => {
   const router = useRouter();
   const [deletingId, setDeletingId] = useState('');
+  const [editingId, setEditingId] = useState('');
+  const rentModal = useRentModal();
+
+  const onEdit = useCallback((listing: SafeListing) => {
+    setEditingId(listing.id);
+    rentModal.onOpen(listing);
+    setEditingId('');
+  }, [rentModal]);
 
   const onDelete = useCallback((id: string) => {
     setDeletingId(id);
@@ -43,11 +53,7 @@ const PropertiesClient: React.FC<PropertiesClientProps> = ({
 
 
   return ( 
-    <>
-      <Heading
-        title="Properties"
-        subtitle="List of your properties"
-      />
+    <ClientProviders>
       <div className="pt-2 pl-4 mx-24 flex-1">
       <div 
         className="
@@ -63,20 +69,20 @@ const PropertiesClient: React.FC<PropertiesClientProps> = ({
         "
       >
         {listings.map((listing: any) => (
-          <ListingCard
-          categories={categories}
+            <ListingCard
+            categories={categories}
             key={listing.id}
             data={listing}
             actionId={listing.id}
-            onAction={onDelete}
-            disabled={deletingId === listing.id}
-            actionLabel="Delete property"
+            onAction={() => onEdit(listing)}
+            disabled={editingId === listing.id}
+            actionLabel="Edit listing"
             currentUser={currentUser}
           />
         ))}
       </div>
       </div>
-    </>
+    </ClientProviders>
    );
 }
  

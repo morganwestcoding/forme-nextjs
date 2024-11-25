@@ -11,7 +11,7 @@ export default async function getReservations(params: IParams) {
   try {
     const { listingId, userId, authorId } = params;
 
-    console.log('Fetching reservations with params:', params); // Debug log
+    console.log('Fetching reservations with params:', params);
 
     const query: any = {};
         
@@ -27,7 +27,7 @@ export default async function getReservations(params: IParams) {
       query.listing = { userId: authorId };
     }
 
-    console.log('Query constructed:', query); // Debug log
+    console.log('Query constructed:', query);
 
     const reservations = await prisma.reservation.findMany({
       where: query,
@@ -36,7 +36,8 @@ export default async function getReservations(params: IParams) {
           include: {
             services: true,
             employees: true,
-            user: true
+            user: true,
+            storeHours: true,
           },
         },
       },
@@ -45,7 +46,7 @@ export default async function getReservations(params: IParams) {
       },
     });
 
-    console.log('Raw reservations found:', reservations.length); // Debug log
+    console.log('Raw reservations found:', reservations.length);
 
     if (!reservations) {
       console.log('No reservations found');
@@ -54,7 +55,6 @@ export default async function getReservations(params: IParams) {
 
     const safeReservations: SafeReservation[] = reservations.map(
       (reservation) => {
-        // Add null checks
         if (!reservation) {
           console.log('Found null reservation');
           return null;
@@ -69,6 +69,7 @@ export default async function getReservations(params: IParams) {
             time: reservation.time,
             note: reservation.note ?? '',
             totalPrice: reservation.totalPrice,
+            status: reservation.status || 'pending',  // Add this line
             createdAt: reservation.createdAt.toISOString(),
             listing: reservation.listing ? {
               ...reservation.listing,
@@ -82,6 +83,12 @@ export default async function getReservations(params: IParams) {
               employees: reservation.listing.employees?.map(employee => ({
                 id: employee.id,
                 fullName: employee.fullName
+              })) || [],
+              storeHours: reservation.listing.storeHours?.map(hours => ({
+                dayOfWeek: hours.dayOfWeek,
+                openTime: hours.openTime,
+                closeTime: hours.closeTime,
+                isClosed: hours.isClosed
               })) || [],
               user: reservation.listing.user ? {
                 ...reservation.listing.user,
@@ -97,9 +104,13 @@ export default async function getReservations(params: IParams) {
           return null;
         }
       }
-    ).filter(Boolean) as SafeReservation[]; // Filter out any null values
+    ).filter(Boolean) as SafeReservation[];
 
-    console.log('Processed safe reservations:', safeReservations.length); // Debug log
+    console.log('Processed safe reservations:', safeReservations.map(r => ({
+      id: r.id,
+      status: r.status
+    })));
+    
     return safeReservations;
 
   } catch (error: any) {

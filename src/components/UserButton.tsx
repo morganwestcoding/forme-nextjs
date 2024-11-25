@@ -67,21 +67,7 @@ const UserButton: React.FC<UserButtonProps> = ({
               >
                 Profile
               </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={profileModal.onOpen}
-                className="
-                  p-3 
-                  text-black 
-                  hover:bg-gray-500 
-                  hover:bg-opacity-25 
-                  rounded-md 
-                  cursor-pointer 
-                  transition 
-                  duration-200
-                "
-              >
-                Edit Profile
-              </DropdownMenuItem>
+
               <DropdownMenuItem
                 onClick={() => router.push('/properties')}
                 className="

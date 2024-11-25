@@ -54,7 +54,7 @@ return (
         xl:grid-cols-5
         2xl:grid-cols-6
         gap-6
-        overflow-y-auto
+     
       ">
         {paginatedListings.map((listing: any) => (
           <ListingCard

@@ -1,8 +1,12 @@
 'use client';
 
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
+import useRentModal from "@/app/hooks/useRentModal";
+import axios from "axios";
+import { toast } from "react-hot-toast";
+import { format } from 'date-fns';
 
 import { 
   SafeListing, 
@@ -19,11 +23,14 @@ interface ListingCardProps {
   reservation?: SafeReservation;
   onAction?: (id: string) => void;
   disabled?: boolean;
-  actionLabel?: string;
   actionId?: string;
-  currentUser?: SafeUser | null
+  actionLabel?: string;
+  onAccept?: () => void;
+  onDecline?: () => void;
+  showAcceptDecline?: boolean;
+  currentUser?: SafeUser | null;
   categories: typeof categories;
-};
+}
 
 const ListingCard: React.FC<ListingCardProps> = ({
   data,
@@ -31,45 +38,51 @@ const ListingCard: React.FC<ListingCardProps> = ({
   reservation,
   onAction,
   disabled,
-  actionLabel,
   actionId = '',
+  actionLabel,
+  onAccept,
+  onDecline,
+  showAcceptDecline,
   currentUser,
 }) => {
-  console.log(data.services);
   const router = useRouter();
+  const pathname = usePathname();
+  const rentModal = useRentModal();
   const [currentServiceIndex, setCurrentServiceIndex] = useState(0);
 
-  const handleNextService = () => {
+  const handleNextService = (e: React.MouseEvent) => {
+    e.stopPropagation();
     setCurrentServiceIndex((prevIndex) => 
       (prevIndex + 1) % data.services.length
     );
   };
 
-  const handlePreviousService = () => {
+  const handlePreviousService = (e: React.MouseEvent) => {
+    e.stopPropagation();
     setCurrentServiceIndex((prevIndex) => 
       prevIndex === 0 ? data.services.length - 1 : prevIndex - 1
     );
   };
 
-  const currentService = data.services[currentServiceIndex];
-
-  const handleCancel = useCallback(
-    (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
+    rentModal.onOpen(data);
+  };
 
-    if (disabled) {
-      return;
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (disabled || !actionId) return;
+
+    try {
+      await axios.delete(`/api/listings/${actionId}`);
+      toast.success('Listing deleted');
+      router.refresh();
+    } catch (error) {
+      toast.error('Something went wrong');
     }
+  };
 
-    onAction?.(actionId)
-  }, [disabled, onAction, actionId]);
-
-  const reservationDate = useMemo(() => {
-    if (!reservation) {
-      return null;
-    }
-  }, [reservation]);
-
+  const currentService = data.services[currentServiceIndex];
   const categoryColor = categories.find(cat => cat.label === data.category)?.color || 'bg-gray-200';
 
   // Function to get state acronym
@@ -94,7 +107,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
   const stateAcronym = state ? getStateAcronym(state) : '';
 
   return (
-    <div className="col-span-1 ">
+    <div className="col-span-1">
       <div className="bg-[#ffffff] rounded-2xl flex flex-col gap-2 w-48 shadow-sm">
         <div 
           className="
@@ -103,7 +116,8 @@ const ListingCard: React.FC<ListingCardProps> = ({
             relative 
             overflow-hidden 
             rounded-t-2xl
-            cursor-pointer group
+            cursor-pointer 
+            group
           "
         >
           <Image
@@ -119,44 +133,96 @@ const ListingCard: React.FC<ListingCardProps> = ({
             src={data.imageSrc}
             alt="Listing"
           />
-          <div className="
-            absolute
-            top-3
-            right-3
-          ">
-            <HeartButton 
-              listingId={data.id} 
-              currentUser={currentUser}
-            />
+          {currentUser?.id === data.userId && pathname === '/properties' ? (
+            <div className="absolute top-3 right-3 flex gap-2">
+              <button 
+                onClick={handleDelete}
+                disabled={disabled}
+                className="
+                  bg-red-500 
+                  p-2 
+                  rounded-full 
+                  hover:bg-red-600 
+                  transition
+                  disabled:opacity-50
+                  disabled:cursor-not-allowed
+                "
+              >
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  width="16" 
+                  height="16" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="white" 
+                  strokeWidth="2"
+                >
+                  <path d="M18 6L6 18M6 6l12 12" />
+                </svg>
+              </button>
+              <div>
+                <HeartButton 
+                  listingId={data.id} 
+                  currentUser={currentUser}
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="absolute top-3 right-3">
+              <HeartButton 
+                listingId={data.id} 
+                currentUser={currentUser}
+              />
+            </div>
+          )}
+        </div>
+
+        <div className="px-4 pt-1 pb-1">
+          <div 
+            className={`w-8 h-5 ${categoryColor} shadow-sm rounded-md flex items-center justify-center`} 
+            title={data.category}
+          >
+            <span className="text-white text-xs font-extralight">
+              {data.category.charAt(0).toUpperCase()}
+            </span>
           </div>
         </div>
-        <div className="px-4 pt-1 pb-1">
-        <div 
-  className={`w-8 h-5 ${categoryColor} shadow-sm rounded-md flex items-center justify-center`} 
-  title={data.category}
->
-  <span className="text-white text-xs font-extralight">
-    {data.category.charAt(0).toUpperCase()}
-  </span>
-</div>
-        </div>
         
-        {/* Title */}
         <div className="font-medium text-sm capitalize px-4">
           {data.title}
         </div>
 
-        {/* Location with state acronym */}
         <div className="font-light text-xs px-4 text-neutral-500 pb-2">
           {city}, {stateAcronym}
         </div>
+
+        {reservation && (
+          <div className="px-4 pb-2">
+            <div className="font-light text-xs text-neutral-500">
+              Reservation date: {format(new Date(reservation.date), 'PP')}
+            </div>
+            <div className="font-light text-xs text-neutral-500">
+              Time: {reservation.time}
+            </div>
+            {reservation.note && (
+              <div className="font-light text-xs text-neutral-500 mt-1">
+                Note: {reservation.note}
+              </div>
+            )}
+            <div className="font-semibold text-sm mt-1">
+              Total: ${reservation.totalPrice}
+            </div>
+          </div>
+        )}
         
         <hr/>
         
-        {/* Service Navigation */}
-        {data.services && data.services.length > 0 && (
+        {data.services && data.services.length > 0 && !reservation && (
           <div className="flex justify-between text-xs capitalize items-center pb-3.5 pt-1 px-4">
-            <button className="mr-2" onClick={handlePreviousService}>
+            <button 
+              className="mr-2" 
+              onClick={handlePreviousService}
+            >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#a2a2a2" fill="none">
                 <path d="M15 6C15 6 9.00001 10.4189 9 12C8.99999 13.5812 15 18 15 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
@@ -167,22 +233,87 @@ const ListingCard: React.FC<ListingCardProps> = ({
               </span>
               <span>${data.services[currentServiceIndex].price}</span>
             </div>
-            <button className="ml-2" onClick={handleNextService}>
+            <button 
+              className="ml-2" 
+              onClick={handleNextService}
+            >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#a2a2a2" fill="none">
                 <path d="M9.00005 6C9.00005 6 15 10.4189 15 12C15 13.5812 9 18 9 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </button>
           </div>
         )}
-        
-        {onAction && actionLabel && (
-          <ModalButton
-            disabled={disabled}
-            small
-            label={actionLabel} 
-            onClick={handleCancel}
-          />
-        )}
+
+{reservation && showAcceptDecline && (
+  <div className="p-4">
+    {reservation.status === 'accepted' ? (
+      // Single "Accepted" button when status is accepted
+      <button
+        className="
+          w-full 
+          text-center 
+          py-2 
+          rounded-lg 
+          bg-green-500
+          text-white 
+          text-sm 
+          font-light
+          cursor-default
+        "
+      >
+        Accepted
+      </button>
+    ) : (
+      // Show Accept/Decline buttons when not accepted
+      <div className="flex gap-2">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onAccept?.();
+          }}
+          disabled={disabled}
+          className="
+            flex-1
+            bg-green-500
+            text-white
+            text-sm
+            font-light
+            py-2
+            rounded-lg
+            transition
+            hover:bg-green-600
+            disabled:opacity-50
+            disabled:cursor-not-allowed
+          "
+        >
+          Accept
+        </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onDecline?.();
+          }}
+          disabled={disabled}
+          className="
+            flex-1
+            bg-red-500
+            text-white
+            text-sm
+            font-light
+            py-2
+            rounded-lg
+            transition
+            hover:bg-red-600
+            disabled:opacity-50
+            disabled:cursor-not-allowed
+          "
+        >
+          Decline
+        </button>
+      </div>
+    )}
+  </div>
+)}
       </div>
     </div>
   );

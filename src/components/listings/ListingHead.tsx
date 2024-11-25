@@ -8,6 +8,12 @@ import ListingGalleryImage from "./ListingGalleryImage";
 import StoreHours from './StoreHours';
 import HeartButton from '../HeartButton';
 import useRentModal from "@/app/hooks/useRentModal";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface ListingHeadProps {
   listing: SafeListing;
@@ -94,39 +100,24 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
           </div>
           
           {isOwner && (
-  <div className="dropdown-container relative">
-    <button
-      className="flex cursor-pointer p-2 transition-colors duration-200 hover:text-gray-300"
-      onClick={(e) => {
-        e.stopPropagation();
-        setShowDropdown(!showDropdown);
-      }}
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" color="#a2a2a2" fill="none" 
-        className="hover:text-gray-300 transition-colors duration-200">
-        <path d="M11.9959 12H12.0049" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M17.9998 12H18.0088" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M5.99981 12H6.00879" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    </button>
-    
-    {showDropdown && (
-      <div 
-        className="absolute right-0 mt-1 w-32 bg-white rounded-md shadow-sm z-50"
-        style={{ 
-          transform: 'translateX(50%)', 
-          right: '50%',
-          marginTop: '0.5rem'
-        }}
-      >
-        <button
-          onClick={handleEditClick}
-          className="w-full py-2 text-sm text-[#5E6365] hover:bg-[#e2e8f0] text-center transition-colors duration-200 font-light"
+  <div className="absolute top-4 right-6">
+    <DropdownMenu>
+      <DropdownMenuTrigger>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" color="#5E6365" fill="none">
+          <path d="M11.9959 12H12.0049" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M17.9998 12H18.0088" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M5.99981 12H6.00879" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuItem 
+          onClick={handleEditClick} 
+          className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
         >
           Edit Listing
-        </button>
-      </div>
-    )}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   </div>
 )}
         </div>

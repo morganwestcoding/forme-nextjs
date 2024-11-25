@@ -38,7 +38,8 @@ export type SafeReservation = Omit<
   totalPrice: number;
   listingId: string;
   listing: SafeListing;
-  note: string | null;  
+  note: string | null;
+  status: string;  // Add this 
 };
 
 export type SafeUser = Omit<

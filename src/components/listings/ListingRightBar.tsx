@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import Calendar from '../inputs/Calender';
 import ModalButton from "../modals/ModalButton";
 import { SafeListing, SafeReservation, SafeUser } from "@/app/types";
-import { format } from 'date-fns';
+import { format, isSameDay } from 'date-fns';
 
 interface ListingRightBarProps {
   listing: SafeListing & { user: SafeUser };
@@ -99,6 +99,21 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
 
   const calendarRef = useRef<HTMLDivElement>(null);
 
+  // Get accepted reservations
+  const acceptedReservations = useMemo(() => {
+    return reservations.filter(reservation => 
+      reservation.status === 'accepted' || !reservation.status
+    );
+  }, [reservations]);
+
+  // Get disabled times for selected date
+  const getDisabledTimes = (selectedDate: Date) => {
+    return acceptedReservations
+      .filter(reservation => 
+        isSameDay(new Date(reservation.date), selectedDate)
+      )
+      .map(reservation => reservation.time);
+  };
 
   const employeeOptions: OptionType[] = listing?.employees?.map(employee => ({
     value: employee.id,
@@ -140,6 +155,7 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
 
   const handleDateChange = (newDate: Date) => {
     setDate(newDate);
+    setTime(''); // Reset time when date changes
     setShowCalendar(false);
   };
 
@@ -170,6 +186,9 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
     };
   }, []);
 
+  // Get disabled times for current date
+  const disabledTimes = date ? getDisabledTimes(date) : [];
+
   return (
     <div className="flex flex-col justify-end bg-transparent gap-4 pr-16 h-auto">
       <div className="w-full md:w-11/12 rounded-2xl shadow-sm bg-[#ffffff] px-8 md:px-6 pt-6 pb-6 mx-3 md:mr-16 relative">
@@ -185,22 +204,22 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
           isSelected={!!selectedService}
         />
 
-{showServiceDropdown && (
-  <div className="absolute z-50 bg-white border border-gray-300 rounded-md shadow-lg w-[calc(100%-3rem)]">
-    {serviceOptions.map((option) => (
-      <div
-        key={option.value}
-        className="p-2 hover:bg-[#e2e8f0] cursor-pointer text-center transition-colors duration-250"
-        onClick={() => {
-          handleServiceChange(option);
-          setShowServiceDropdown(false);
-        }}
-      >
-        {option.label}
-      </div>
-    ))}
-  </div>
-)}
+        {showServiceDropdown && (
+          <div className="absolute z-50 bg-white border border-gray-300 rounded-md shadow-lg w-[calc(100%-3rem)]">
+            {serviceOptions.map((option) => (
+              <div
+                key={option.value}
+                className="p-2 hover:bg-[#e2e8f0] cursor-pointer text-center transition-colors duration-250"
+                onClick={() => {
+                  handleServiceChange(option);
+                  setShowServiceDropdown(false);
+                }}
+              >
+                {option.label}
+              </div>
+            ))}
+          </div>
+        )}
         <InputField
           value={selectedEmployee ? selectedEmployee.label : undefined}
           onClick={() => setShowEmployeeDropdown(!showEmployeeDropdown)}
@@ -209,22 +228,22 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
           isSelected={!!selectedEmployee}
         />
 
-{showEmployeeDropdown && (
-  <div className="absolute z-50  bg-white border border-gray-300 rounded-md shadow-lg w-[calc(100%-3rem)]">
-    {employeeOptions.map((option) => (
-      <div
-        key={option.value}
-        className="p-2 hover:bg-gray-100 cursor-pointer text-center"
-        onClick={() => {
-          handleEmployeeChange(option);
-          setShowEmployeeDropdown(false);
-        }}
-      >
-        {option.label}
-      </div>
-    ))}
-  </div>
-)}
+        {showEmployeeDropdown && (
+          <div className="absolute z-50 bg-white border border-gray-300 rounded-md shadow-lg w-[calc(100%-3rem)]">
+            {employeeOptions.map((option) => (
+              <div
+                key={option.value}
+                className="p-2 hover:bg-[#e2e8f0] cursor-pointer text-center transition-colors duration-250"
+                onClick={() => {
+                  handleEmployeeChange(option);
+                  setShowEmployeeDropdown(false);
+                }}
+              >
+                {option.label}
+              </div>
+            ))}
+          </div>
+        )}
         <InputField
           value={date ? format(date, 'PP') : undefined}
           onClick={handleDateClick}
@@ -232,18 +251,18 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
           placeholder="Pick a date"
           isSelected={!!date}
         />
-{showCalendar && (
-  <div 
-    ref={calendarRef} 
-    className="absolute z-50  w-[calc(100%-3rem)]"
-  >
-    <Calendar
-      value={date || new Date()}
-      onChange={handleDateChange}
-      disabledDates={disabledDates}
-    />
-  </div>
-)}
+        {showCalendar && (
+          <div 
+            ref={calendarRef} 
+            className="absolute z-50 w-[calc(100%-3rem)]"
+          >
+            <Calendar
+              value={date || new Date()}
+              onChange={handleDateChange}
+              disabledDates={[...disabledDates, ...acceptedReservations.map(r => new Date(r.date))]}
+            />
+          </div>
+        )}
         <InputField
           value={time ? timeOptions.find(option => option.value === time)?.label : undefined}
           onClick={() => setShowTimeDropdown(!showTimeDropdown)}
@@ -253,22 +272,36 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
           isSelected={!!time}
         />
 
-{showTimeDropdown && date && (
-  <div className="absolute z-50  bg-white border border-gray-300 rounded-md shadow-lg w-[calc(100%-3rem)]">
-    {timeOptions.map((option) => (
-      <div
-        key={option.value}
-        className="p-2 hover:bg-gray-100 cursor-pointer text-center "
-        onClick={() => {
-          handleTimeChange(option);
-          setShowTimeDropdown(false);
-        }}
-      >
-        {option.label}
-      </div>
-    ))}
-  </div>
-)}
+        {showTimeDropdown && date && (
+          <div className="absolute z-50 bg-white border border-gray-300 rounded-md shadow-lg w-[calc(100%-3rem)]">
+            {timeOptions.map((option) => {
+              const isDisabled = disabledTimes.includes(option.value);
+              return (
+                <div
+                  key={option.value}
+                  className={`
+                    p-2 
+                    text-center
+                    transition-colors 
+                    duration-250
+                    ${isDisabled 
+                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                      : 'hover:bg-[#e2e8f0] cursor-pointer'
+                    }
+                  `}
+                  onClick={() => {
+                    if (!isDisabled) {
+                      handleTimeChange(option);
+                      setShowTimeDropdown(false);
+                    }
+                  }}
+                >
+                  {option.label}
+                </div>
+              );
+            })}
+          </div>
+        )}
         <div className="flex justify-between items-center mb-3">
           <span>Total Price:</span>
           <span>${calculatedTotalPrice}</span>
