@@ -6,7 +6,9 @@ import Modal from "./Modal";
 import useFilterModal from '@/app/hooks/useFilterModal';
 import { useFilter } from '@/FilterContext';
 import Input from '../inputs/Input';
+import FilterInput from '../inputs/FilterInput';
 import { FieldValues, useForm } from 'react-hook-form';
+import FilterLocationSelect from '../inputs/FilterLocationSelect';
 
 const FilterModal = () => {
   const filterModal = useFilterModal();
@@ -29,35 +31,35 @@ const FilterModal = () => {
     reset,
   } = useForm<FieldValues>({
     defaultValues: {
-      state: filters.location.state,
-      city: filters.location.city,
-      minPrice: filters.price.min,
-      maxPrice: filters.price.max,
+      minPrice: filters.price?.min,
+      maxPrice: filters.price?.max,
     }
   });
 
-  const onSubmit = useCallback((data: FieldValues) => {
-    // Update location filters
-    setLocationFilter(
-      data.state || undefined,
-      data.city || undefined
-    );
+  const handleLocationSelect = useCallback((location: {
+    state: string;
+    city: string;
+  } | null) => {
+    if (location) {
+      setLocationFilter(location.state, location.city);
+    } else {
+      setLocationFilter(undefined, undefined);
+    }
+  }, [setLocationFilter]);
 
-    // Update price filters
+  const onSubmit = useCallback((data: FieldValues) => {
     setPriceFilter(
       data.minPrice ? parseInt(data.minPrice) : undefined,
       data.maxPrice ? parseInt(data.maxPrice) : undefined
     );
-
     filterModal.onClose();
-  }, [setLocationFilter, setPriceFilter]);
+  }, [setPriceFilter, filterModal]);
 
   const toggleSortOrder = useCallback(() => {
     const currentOrder = filters.sort.order;
-    const currentSortBy = filters.sort.by || 'date';
     setSortFilter(
       currentOrder === 'asc' ? 'desc' : 'asc',
-      currentSortBy
+      'date'
     );
   }, [filters.sort, setSortFilter]);
 
@@ -69,47 +71,36 @@ const FilterModal = () => {
   const bodyContent = (
     <div className="flex flex-col gap-4">
       <div className="space-y-4">
-        <h3 className="text-sm font-medium text-gray-700">Location</h3>
-        <Input
-          id="state"
-          label="State"
-          disabled={isLoading}
-          register={register}
-          errors={errors}
-        />
-        <Input
-          id="city"
-          label="City"
-          disabled={isLoading}
-          register={register}
-          errors={errors}
+        <h3 className="text-sm font-medium text-white">Location</h3>
+        <FilterLocationSelect
+          onLocationSubmit={handleLocationSelect}
         />
       </div>
 
       <div className="space-y-4">
-        <h3 className="text-sm font-medium text-gray-700">Price Range</h3>
+        <h3 className="text-sm font-medium text-white">Price Range</h3>
         <div className="grid grid-cols-2 gap-4">
-          <Input
-            id="minPrice"
-            label="Min Price"
-            type="number"
-            disabled={isLoading}
-            register={register}
-            errors={errors}
-          />
-          <Input
-            id="maxPrice"
-            label="Max Price"
-            type="number"
-            disabled={isLoading}
-            register={register}
-            errors={errors}
-          />
+        <FilterInput
+      id="minPrice"
+      label="Min Price"
+      type="number"
+      disabled={isLoading}
+      register={register}
+      errors={errors}
+    />
+    <FilterInput
+      id="maxPrice"
+      label="Max Price"
+      type="number"
+      disabled={isLoading}
+      register={register}
+      errors={errors}
+    />
         </div>
       </div>
 
       <div className="space-y-4">
-        <h3 className="text-sm font-medium text-gray-700">Sort</h3>
+        <h3 className="text-sm font-medium text-white">Sort</h3>
         <div 
           onClick={toggleSortOrder}
           className="flex items-center gap-2 cursor-pointer p-2 hover:bg-gray-100 rounded"
