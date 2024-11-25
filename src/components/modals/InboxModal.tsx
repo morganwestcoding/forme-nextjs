@@ -81,7 +81,7 @@ const InboxModal: React.FC<InboxModalProps> = ({ isOpen, onClose, currentUser })
   `;
 
   const bodyContent = (
-    <div className="flex flex-col h-[450px]">
+    <div className="flex flex-col h-[450px] pb-2">
       <div className="mb-4">
         <UserSearch onResultClick={startNewConversation} />
       </div>

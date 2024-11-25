@@ -102,7 +102,7 @@ const MessageModal: React.FC = () => {
   );
 
   const bodyContent = (
-    <div className="flex flex-col h-[475px]">
+    <div className="flex flex-col h-[450px]">
       {isLoading ? (
         <div className="flex-grow flex items-center justify-center">
           <p>Loading messages...</p>
@@ -168,7 +168,7 @@ const MessageModal: React.FC = () => {
             <div ref={messagesEndRef} />
           </div>
       
-          <div className="flex items-center p-4 -mb-8">
+          <div className="flex items-center p-4 mb-1">
             <input
               type="text"
               value={newMessage}
