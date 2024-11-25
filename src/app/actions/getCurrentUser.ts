@@ -34,8 +34,8 @@ export default async function getCurrentUser() {
       image: currentUser.image,
       imageSrc: currentUser.imageSrc,
       galleryImages: currentUser.galleryImages || [],
-      following: currentUser.following || [],  // Add this line
-      followers: currentUser.followers || [],  // Add this line
+      following: currentUser.following || [],
+      followers: currentUser.followers || [],
     };
   } catch (error: any) {
     return null;

@@ -1,4 +1,3 @@
-// app/actions/getComments.ts
 import axios from 'axios';
 import { SafeComment } from "@/app/types";
 

@@ -1,5 +1,3 @@
-// app/actions/getMessages.ts
-
 import axios from 'axios';
 import { SafeMessage } from "@/app/types";
 

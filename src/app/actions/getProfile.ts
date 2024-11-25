@@ -18,13 +18,13 @@ export default async function getProfile(): Promise<SafeUser | null> {
       bio: currentUser.bio || "No Bio Provided Yet..",
       imageSrc: currentUser.imageSrc || '/assets/hero-background.jpeg',
       location: currentUser.location ?? null,
-      createdAt: currentUser.createdAt, // Assuming this is already a string
-      updatedAt: currentUser.updatedAt, // Assuming this is already a string
-      emailVerified: currentUser.emailVerified, // Assuming this is already a string or null
+      createdAt: currentUser.createdAt,
+      updatedAt: currentUser.updatedAt,
+      emailVerified: currentUser.emailVerified,
       galleryImages: currentUser.galleryImages || [],
       following: currentUser.following || [],
       followers: currentUser.followers || [],
-      conversationIds: currentUser.conversationIds || [], // Add this line
+      conversationIds: currentUser.conversationIds || [],
     };
   } catch (error) {
     console.error("Error in getProfile:", error);

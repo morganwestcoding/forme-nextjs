@@ -17,7 +17,7 @@ export default async function getFavoriteListings() {
       },
       include: {
         services: true,
-        employees: true, // Add employees to include
+        employees: true,
       },
     });
 

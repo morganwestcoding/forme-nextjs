@@ -40,19 +40,16 @@ export async function POST(
     updatedFollowers.push(currentUser.id);
   }
 
-  // Update current user's following
   await prisma.user.update({
     where: { id: currentUser.id },
     data: { following: updatedFollowing }
   });
 
-  // Update target user's followers and create notification if it's a new follow
   const updatedUser = await prisma.user.update({
     where: { id: userId },
     data: { followers: updatedFollowers }
   });
 
-  // Create notification if user is following (not unfollowing)
   if (isFollowing) {
     await prisma.notification.create({
       data: {
@@ -62,7 +59,6 @@ export async function POST(
       }
     });
 
-    // Check if this creates a mutual follow (both users follow each other)
     if (updatedFollowers.includes(currentUser.id) && updatedUser.following.includes(currentUser.id)) {
       await prisma.notification.create({
         data: {

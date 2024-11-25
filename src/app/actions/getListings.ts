@@ -39,7 +39,7 @@ export default async function getListings(
       include: {
         services: true, 
         employees: true,
-        storeHours: true, // Add this line
+        storeHours: true,
       },
       orderBy: {
         createdAt: 'desc',
@@ -56,7 +56,7 @@ export default async function getListings(
         id: employee.id,
         fullName: employee.fullName
       })),
-      storeHours: listing.storeHours.map(hour => ({  // Add this block
+      storeHours: listing.storeHours.map(hour => ({
         dayOfWeek: hour.dayOfWeek,
         openTime: hour.openTime,
         closeTime: hour.closeTime,

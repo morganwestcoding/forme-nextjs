@@ -37,7 +37,7 @@ export default async function getListingById(params: IParams) {
         id: employee.id,
         fullName: employee.fullName
       })),
-      storeHours: listing.storeHours.map(hour => ({  // Add this transform
+      storeHours: listing.storeHours.map(hour => ({
         dayOfWeek: hour.dayOfWeek,
         openTime: hour.openTime,
         closeTime: hour.closeTime,

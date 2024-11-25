@@ -37,7 +37,7 @@ export default async function getProfileById(params: IParams): Promise<SafeUser 
       galleryImages: user.galleryImages || [],
       following: user.following || [],
       followers: user.followers || [],
-      conversationIds: user.conversationIds || [], // Add this line
+      conversationIds: user.conversationIds || [],
     };
   } catch (error) {
     console.error("Error fetching user profile by ID:", error);

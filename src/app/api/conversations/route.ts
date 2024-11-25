@@ -26,7 +26,6 @@ export async function GET(request: Request) {
       }
     });
 
-    // Format the conversations to match the SafeConversation type
     const safeConversations = conversations.map(conversation => {
       const otherUser = conversation.users.find(user => user.id !== currentUser.id);
       const lastMessage = conversation.messages[0];
@@ -40,7 +39,7 @@ export async function GET(request: Request) {
         lastMessage: lastMessage ? {
           content: lastMessage.content,
           createdAt: lastMessage.createdAt.toISOString(),
-          isRead: lastMessage.isRead,  // This line should now work
+          isRead: lastMessage.isRead,
         } : undefined,
         lastMessageAt: conversation.lastMessageAt?.toISOString() || '',
       };

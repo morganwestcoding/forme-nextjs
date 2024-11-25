@@ -15,8 +15,6 @@ export async function POST(request: Request) {
     if (!conversationId) {
       return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
     }
-
-    // Update all unread messages in the conversation to read
     await prisma.message.updateMany({
       where: {
         conversationId: conversationId,
@@ -30,7 +28,6 @@ export async function POST(request: Request) {
       }
     });
 
-    // Optionally, you can fetch the updated conversation to return it
     const updatedConversation = await prisma.conversation.findUnique({
       where: {
         id: conversationId

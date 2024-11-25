@@ -1,8 +1,6 @@
-// app/api/comments/[postId]/route.ts
 import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
 
-// app/api/comments/[postId]/route.ts
 export async function GET(
   request: Request,
   { params }: { params: { postId: string } }

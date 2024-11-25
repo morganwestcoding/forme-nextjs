@@ -26,7 +26,6 @@ export default async function getPosts(params: IPostsParams): Promise<SafePost[]
       query.createdAt = { gte: new Date(startDate), lte: new Date(endDate) };
     }
 
-    // First, let's try getting all posts without the hiddenBy filter
     const allPosts = await prisma.post.findMany({
       include: { user: true },
       orderBy: { createdAt: 'desc' },
@@ -34,7 +33,6 @@ export default async function getPosts(params: IPostsParams): Promise<SafePost[]
 
     console.log('Total posts without filter:', allPosts.length);
 
-    // Now filter out hidden posts in JavaScript
     const filteredPosts = currentUser 
       ? allPosts.filter(post => !post.hiddenBy?.includes(currentUser.id))
       : allPosts;

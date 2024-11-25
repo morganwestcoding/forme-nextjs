@@ -131,7 +131,6 @@ export async function POST(
       },
     });
 
-    // Create notifications for all other users in the conversation
     const otherUsers = conversation.users.filter(user => user.id !== currentUser.id);
     
     await Promise.all(otherUsers.map(user => 

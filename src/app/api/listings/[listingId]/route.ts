@@ -49,7 +49,7 @@ export async function PUT(
   try {
     const body = await request.json();
 
-    // Verify listing exists and belongs to user
+
     const existingListing = await prisma.listing.findUnique({
       where: {
         id: listingId,
@@ -61,7 +61,7 @@ export async function PUT(
       return new NextResponse("Unauthorized or listing not found", { status: 403 });
     }
 
-    // Update main listing
+
     const updatedListing = await prisma.listing.update({
       where: {
         id: listingId
@@ -80,7 +80,7 @@ export async function PUT(
       }
     });
 
-    // Update services
+
     await prisma.service.deleteMany({
       where: { listingId }
     });
@@ -98,7 +98,7 @@ export async function PUT(
       )
     );
 
-    // Update employees
+
     await prisma.employee.deleteMany({
       where: { listingId }
     });
@@ -114,7 +114,7 @@ export async function PUT(
       )
     );
 
-    // Update store hours
+
     await prisma.storeHours.deleteMany({
       where: { listingId }
     });
