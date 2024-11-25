@@ -18,6 +18,7 @@ export default async function getFavoriteListings() {
       include: {
         services: true,
         employees: true,
+        storeHours: true,
       },
     });
 
@@ -34,6 +35,12 @@ export default async function getFavoriteListings() {
         id: employee.id,
         fullName: employee.fullName
       })),
+      storeHours: favorite.storeHours.map(hours => ({
+        dayOfWeek: hours.dayOfWeek,
+        openTime: hours.openTime,
+        closeTime: hours.closeTime,
+        isClosed: hours.isClosed
+      })),
       galleryImages: favorite.galleryImages || [],
       phoneNumber: favorite.phoneNumber || null,
       website: favorite.website || null,
@@ -41,6 +48,7 @@ export default async function getFavoriteListings() {
       zipCode: favorite.zipCode || null
     }));
 
+    console.log('Safe favorites:', safeFavorites);
     return safeFavorites;
   } catch (error: any) {
     console.error("Error fetching favorite listings:", error.message);

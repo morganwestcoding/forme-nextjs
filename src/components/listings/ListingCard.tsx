@@ -82,6 +82,13 @@ const ListingCard: React.FC<ListingCardProps> = ({
     }
   };
 
+  const handleAction = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (disabled || !actionId || !onAction) return;
+    
+    onAction(actionId);
+  };
+
   const currentService = data.services[currentServiceIndex];
   const categoryColor = categories.find(cat => cat.label === data.category)?.color || 'bg-gray-200';
 
@@ -238,79 +245,90 @@ const ListingCard: React.FC<ListingCardProps> = ({
           </div>
         )}
 
-{reservation && showAcceptDecline && (
-  <div className="p-4">
-    {reservation.status === 'accepted' ? (
-      // Single "Accepted" button when status is accepted
-      <button
-        className="
-          w-full 
-          text-center 
-          py-2 
-          rounded-lg 
-          bg-green-500
-          text-white 
-          text-sm 
-          font-light
-          cursor-default
-        "
-      >
-        Accepted
-      </button>
-    ) : (
-      // Show Accept/Decline buttons when not accepted
-      <div className="flex gap-2">
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onAccept?.();
-          }}
-          disabled={disabled}
-          className="
-            flex-1
-            bg-green-500
-            text-white
-            text-sm
-            font-light
-            py-2
-            rounded-lg
-            transition
-            hover:bg-green-600
-            disabled:opacity-50
-            disabled:cursor-not-allowed
-          "
-        >
-          Accept
-        </button>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onDecline?.();
-          }}
-          disabled={disabled}
-          className="
-            flex-1
-            bg-red-500
-            text-white
-            text-sm
-            font-light
-            py-2
-            rounded-lg
-            transition
-            hover:bg-red-600
-            disabled:opacity-50
-            disabled:cursor-not-allowed
-          "
-        >
-          Decline
-        </button>
-      </div>
-    )}
-  </div>
-)}
+        {/* Regular action button (edit/cancel) */}
+        {onAction && actionLabel && !showAcceptDecline && (
+          <div className="p-4 -mt-3">
+            <ModalButton
+              disabled={disabled}
+              small
+              label={actionLabel}
+              onClick={handleAction}
+            />
+          </div>
+        )}
+
+        {/* Accept/Decline buttons */}
+        {reservation && showAcceptDecline && (
+          <div className="p-4">
+            {reservation.status === 'accepted' ? (
+              <button
+                className="
+                  w-full 
+                  text-center 
+                  py-2 
+                  rounded-lg 
+                  bg-green-500
+                  text-white 
+                  text-sm 
+                  font-light
+                  cursor-default
+                "
+              >
+                Accepted
+              </button>
+            ) : (
+              <div className="flex gap-2">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onAccept?.();
+                  }}
+                  disabled={disabled}
+                  className="
+                    flex-1
+                    bg-green-500
+                    text-white
+                    text-sm
+                    font-light
+                    py-2
+                    rounded-lg
+                    transition
+                    hover:bg-green-600
+                    disabled:opacity-50
+                    disabled:cursor-not-allowed
+                  "
+                >
+                  Accept
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDecline?.();
+                  }}
+                  disabled={disabled}
+                  className="
+                    flex-1
+                    bg-red-500
+                    text-white
+                    text-sm
+                    font-light
+                    py-2
+                    rounded-lg
+                    transition
+                    hover:bg-red-600
+                    disabled:opacity-50
+                    disabled:cursor-not-allowed
+                  "
+                >
+                  Decline
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
 }
- 
+
 export default ListingCard;
