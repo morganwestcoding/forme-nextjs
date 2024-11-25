@@ -4,85 +4,204 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
-interface FilterContextType {
-  state: string | undefined;
-  city: string | undefined;
-  priceRange: number | undefined;
-  sortOrder: 'asc' | 'desc' | undefined;
-  setState: (state: string | undefined) => void;
-  setCity: (city: string | undefined) => void;
-  setPriceRange: (price: number | undefined) => void;
-  setSortOrder: (order: 'asc' | 'desc' | undefined) => void;
+interface FilterState {
+  location: {
+    state?: string;
+    city?: string;
+  };
+  price: {
+    min?: number;
+    max?: number;
+  };
+  sort: {
+    order?: 'asc' | 'desc';
+    by?: 'date' | 'price';
+  };
 }
+
+interface FilterContextType {
+  filters: FilterState;
+  setLocationFilter: (state?: string, city?: string) => void;
+  setPriceFilter: (min?: number, max?: number) => void;
+  setSortFilter: (order?: 'asc' | 'desc', by?: 'date' | 'price') => void;
+  clearLocationFilter: () => void;
+  clearPriceFilter: () => void;
+  clearSortFilter: () => void;
+  clearAllFilters: () => void;
+}
+
+const initialFilters: FilterState = {
+  location: {
+    state: undefined,
+    city: undefined
+  },
+  price: {
+    min: undefined,
+    max: undefined
+  },
+  sort: {
+    order: undefined,
+    by: undefined
+  }
+};
 
 const FilterContext = createContext<FilterContextType | undefined>(undefined);
 
 export const FilterProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [state, setState] = useState<string | undefined>(undefined);
-  const [city, setCity] = useState<string | undefined>(undefined);
-  const [priceRange, setPriceRange] = useState<number | undefined>(undefined);
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | undefined>(undefined);
-  
+  const [filters, setFilters] = useState<FilterState>(initialFilters);
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // Load filters from localStorage on initial mount
+  // Load filters from localStorage on mount
   useEffect(() => {
-    const savedFilters = localStorage.getItem('filters');
-    if (savedFilters) {
-      const filters = JSON.parse(savedFilters);
-      setState(filters.state);
-      setCity(filters.city);
-      setPriceRange(filters.priceRange);
-      setSortOrder(filters.sortOrder);
-
-      // Update URL with saved filters
-      const currentParams = new URLSearchParams(window.location.search);
-      if (filters.state) currentParams.set('state', filters.state);
-      if (filters.city) currentParams.set('city', filters.city);
-      if (filters.priceRange) currentParams.set('price', filters.priceRange.toString());
-      if (filters.sortOrder) currentParams.set('sort', filters.sortOrder);
-      
-      const newUrl = `${pathname}?${currentParams.toString()}`;
-      router.push(newUrl);
+    try {
+      const savedFilters = localStorage.getItem('filters');
+      if (savedFilters) {
+        const parsedFilters = JSON.parse(savedFilters);
+        setFilters({
+          location: parsedFilters.location || initialFilters.location,
+          price: parsedFilters.price || initialFilters.price,
+          sort: parsedFilters.sort || initialFilters.sort
+        });
+        updateURL({
+          location: parsedFilters.location || initialFilters.location,
+          price: parsedFilters.price || initialFilters.price,
+          sort: parsedFilters.sort || initialFilters.sort
+        });
+      }
+    } catch (error) {
+      console.error('Error loading filters:', error);
+      setFilters(initialFilters);
     }
   }, []);
 
-  // Update localStorage and URL when filters change
-  useEffect(() => {
-    const filters = { state, city, priceRange, sortOrder };
-    localStorage.setItem('filters', JSON.stringify(filters));
+  // Update URL based on filters
+  const updateURL = (currentFilters: FilterState) => {
+    const params = new URLSearchParams(searchParams?.toString() || '');
 
-    const currentParams = new URLSearchParams(window.location.search);
+    // Location params
+    const locationState = currentFilters.location?.state;
+    const locationCity = currentFilters.location?.city;
     
-    if (state) currentParams.set('state', state);
-    else currentParams.delete('state');
+    if (locationState) {
+      params.set('state', locationState);
+    } else {
+      params.delete('state');
+    }
     
-    if (city) currentParams.set('city', city);
-    else currentParams.delete('city');
-    
-    if (priceRange) currentParams.set('price', priceRange.toString());
-    else currentParams.delete('price');
-    
-    if (sortOrder) currentParams.set('sort', sortOrder);
-    else currentParams.delete('sort');
+    if (locationCity) {
+      params.set('city', locationCity);
+    } else {
+      params.delete('city');
+    }
 
-    const newUrl = `${pathname}?${currentParams.toString()}`;
-    router.push(newUrl);
-  }, [state, city, priceRange, sortOrder, pathname]);
+    // Price params
+    const priceMin = currentFilters.price?.min;
+    const priceMax = currentFilters.price?.max;
+    
+    if (priceMin !== undefined) {
+      params.set('minPrice', priceMin.toString());
+    } else {
+      params.delete('minPrice');
+    }
+    
+    if (priceMax !== undefined) {
+      params.set('maxPrice', priceMax.toString());
+    } else {
+      params.delete('maxPrice');
+    }
+
+    // Sort params
+    const sortOrder = currentFilters.sort?.order;
+    const sortBy = currentFilters.sort?.by;
+    
+    if (sortOrder) {
+      params.set('order', sortOrder);
+    } else {
+      params.delete('order');
+    }
+    
+    if (sortBy) {
+      params.set('sortBy', sortBy);
+    } else {
+      params.delete('sortBy');
+    }
+
+    router.push(`${pathname}?${params.toString()}`);
+    localStorage.setItem('filters', JSON.stringify(currentFilters));
+  };
+
+  const setLocationFilter = (state?: string, city?: string) => {
+    const newFilters = {
+      ...filters,
+      location: { ...filters.location, state, city }
+    };
+    setFilters(newFilters);
+    updateURL(newFilters);
+  };
+
+  const setPriceFilter = (min?: number, max?: number) => {
+    const newFilters = {
+      ...filters,
+      price: { ...filters.price, min, max }
+    };
+    setFilters(newFilters);
+    updateURL(newFilters);
+  };
+
+  const setSortFilter = (order?: 'asc' | 'desc', by?: 'date' | 'price') => {
+    const newFilters = {
+      ...filters,
+      sort: { ...filters.sort, order, by }
+    };
+    setFilters(newFilters);
+    updateURL(newFilters);
+  };
+
+  const clearLocationFilter = () => {
+    const newFilters = {
+      ...filters,
+      location: initialFilters.location
+    };
+    setFilters(newFilters);
+    updateURL(newFilters);
+  };
+
+  const clearPriceFilter = () => {
+    const newFilters = {
+      ...filters,
+      price: initialFilters.price
+    };
+    setFilters(newFilters);
+    updateURL(newFilters);
+  };
+
+  const clearSortFilter = () => {
+    const newFilters = {
+      ...filters,
+      sort: initialFilters.sort
+    };
+    setFilters(newFilters);
+    updateURL(newFilters);
+  };
+
+  const clearAllFilters = () => {
+    setFilters(initialFilters);
+    updateURL(initialFilters);
+  };
 
   return (
     <FilterContext.Provider 
       value={{ 
-        state, 
-        city, 
-        priceRange, 
-        sortOrder,
-        setState,
-        setCity,
-        setPriceRange,
-        setSortOrder
+        filters,
+        setLocationFilter,
+        setPriceFilter,
+        setSortFilter,
+        clearLocationFilter,
+        clearPriceFilter,
+        clearSortFilter,
+        clearAllFilters
       }}
     >
       {children}

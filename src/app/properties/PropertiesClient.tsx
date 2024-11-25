@@ -81,6 +81,7 @@ const PropertiesClient: React.FC<PropertiesClientProps> = ({
           />
         ))}
       </div>
+      
       </div>
     </ClientProviders>
    );

@@ -1,8 +1,7 @@
 // CategoryContext.tsx
 'use client';
 
-import { createContext, useContext, useState, useEffect } from 'react';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { createContext, useContext, useState } from 'react';
 
 interface CategoryContextType {
   selectedCategory: string | null;
@@ -13,23 +12,9 @@ const CategoryContext = createContext<CategoryContextType | undefined>(undefined
 
 export function CategoryProvider({ children }: { children: React.ReactNode }) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-
-  useEffect(() => {
-    const categoryFromUrl = searchParams?.get('category');
-    if (categoryFromUrl) {
-      setSelectedCategory(categoryFromUrl);
-    }
-  }, [searchParams]);
-
-  const value = {
-    selectedCategory,
-    setSelectedCategory,
-  };
 
   return (
-    <CategoryContext.Provider value={value}>
+    <CategoryContext.Provider value={{ selectedCategory, setSelectedCategory }}>
       {children}
     </CategoryContext.Provider>
   );

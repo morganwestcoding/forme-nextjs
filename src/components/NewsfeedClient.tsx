@@ -9,6 +9,7 @@ import { categories } from '@/components/Categories';
 import { SafePost, SafeUser } from '@/app/types';
 import { usePostStore } from '@/app/hooks/usePostStore';
 import { useCategory } from '@/CategoryContext';
+import { useFilter } from '@/FilterContext';
 
 interface NewsfeedClientProps {
   initialPosts: SafePost[];
@@ -24,15 +25,43 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
   const setPosts = usePostStore((state) => state.setPosts);
   const storePosts = usePostStore((state) => state.posts);
   const { selectedCategory } = useCategory();
+  const { filters } = useFilter();
 
   useEffect(() => {
-    // Filter posts based on selected category
-    const filteredPosts = selectedCategory
-      ? initialPosts.filter(post => post.category === selectedCategory)
-      : initialPosts;
-    setPosts(filteredPosts);
-  }, [initialPosts, setPosts, selectedCategory]);
+    let filteredPosts = [...initialPosts];
 
+    // Apply category filter
+    if (selectedCategory) {
+      filteredPosts = filteredPosts.filter(post => post.category === selectedCategory);
+    }
+
+    // Apply location filters
+    if (filters.location.state || filters.location.city) {
+      filteredPosts = filteredPosts.filter(post => {
+        if (!post.location) return false;
+        
+        const postLocation = post.location.toLowerCase();
+        const stateMatches = !filters.location.state || 
+          postLocation.includes(filters.location.state.toLowerCase());
+        const cityMatches = !filters.location.city || 
+          postLocation.includes(filters.location.city.toLowerCase());
+        
+        return stateMatches && cityMatches;
+      });
+    }
+
+    // Apply sort filter
+    if (filters.sort.order) {
+      filteredPosts.sort((a, b) => {
+        const dateA = new Date(a.createdAt).getTime();
+        const dateB = new Date(b.createdAt).getTime();
+        return filters.sort.order === 'asc' ? dateA - dateB : dateB - dateA;
+      });
+    }
+
+    setPosts(filteredPosts);
+  }, [initialPosts, setPosts, selectedCategory, filters]);
+  
   return (
     <ClientProviders>
       <div className="flex w-full">

@@ -1,3 +1,4 @@
+// getPosts.ts
 import prisma from "@/app/libs/prismadb";
 import { SafePost, SafeUser } from '@/app/types';
 import getCurrentUser from "./getCurrentUser";
@@ -8,11 +9,24 @@ export interface IPostsParams {
   endDate?: string;
   locationValue?: string;
   category?: string;
+  state?: string;
+  city?: string;
+  order?: 'asc' | 'desc';
 }
 
 export default async function getPosts(params: IPostsParams): Promise<SafePost[]> {
   try {
-    const { userId, locationValue, startDate, endDate, category } = params;
+    const { 
+      userId, 
+      locationValue, 
+      startDate, 
+      endDate, 
+      category,
+      state,
+      city,
+      order 
+    } = params;
+    
     const currentUser = await getCurrentUser();
 
     console.log('Starting getPosts with currentUser:', currentUser?.id);
@@ -26,9 +40,20 @@ export default async function getPosts(params: IPostsParams): Promise<SafePost[]
       query.createdAt = { gte: new Date(startDate), lte: new Date(endDate) };
     }
 
+    // Location filtering
+    if (state || city) {
+      query.location = {
+        contains: state || city,
+        mode: 'insensitive'
+      };
+    }
+
     const allPosts = await prisma.post.findMany({
+      where: query,
       include: { user: true },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { 
+        createdAt: order === 'asc' ? 'asc' : 'desc' 
+      },
     });
 
     console.log('Total posts without filter:', allPosts.length);
@@ -44,7 +69,7 @@ export default async function getPosts(params: IPostsParams): Promise<SafePost[]
       createdAt: post.createdAt.toISOString(),
       likes: post.likes || [],
       bookmarks: post.bookmarks || [],
-      hiddenBy: post.hiddenBy || [], 
+      hiddenBy: post.hiddenBy || [],
       user: {
         id: post.user?.id || 'default-id',
         image: post.user?.image || '/default-profile.jpg',

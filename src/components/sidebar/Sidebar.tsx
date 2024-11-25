@@ -21,7 +21,7 @@ export default function Sidebar() {
 
   const handleCategorySelect = (category: Category) => {
     if (selectedCategory === category.label) {
-      setSelectedCategory(undefined);
+      setSelectedCategory(null);
     } else {
       setSelectedCategory(category.label);
     }
