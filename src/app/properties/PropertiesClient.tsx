@@ -11,6 +11,7 @@ import useRentModal from "@/app/hooks/useRentModal"; // Add this
 
 import Heading from "@/components/Heading";
 import ListingCard from "@/components/listings/ListingCard";
+import Container from "@/components/Container";
 
 interface PropertiesClientProps {
   listings: SafeListing[],
@@ -53,8 +54,9 @@ const PropertiesClient: React.FC<PropertiesClientProps> = ({
 
 
   return ( 
+    <Container>
     <ClientProviders>
-      <div className="pt-2 pl-4 mx-24 flex-1">
+      <div className="pt-2 flex-1">
       <div 
         className="
           pt-6
@@ -84,6 +86,7 @@ const PropertiesClient: React.FC<PropertiesClientProps> = ({
       
       </div>
     </ClientProviders>
+    </Container>
    );
 }
  

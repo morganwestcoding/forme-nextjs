@@ -6,6 +6,7 @@ import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { categories } from '@/components/Categories';
 import { SafeReservation, SafeUser } from "@/app/types";
+import Container from "@/components/Container";
 
 import Heading from "@/components/Heading";
 import ListingCard from "@/components/listings/ListingCard";
@@ -44,8 +45,8 @@ const TripsClient: React.FC<TripsClientProps> = ({
   }, [router]);
 
   return (
-    <>
-      <div className="pt-2 pl-4 mx-24 flex-1">
+    <Container>
+      <div className="pt-2 flex-1">
       <div 
         className="
           mt-6
@@ -74,7 +75,7 @@ const TripsClient: React.FC<TripsClientProps> = ({
         ))}
       </div>
       </div>
-    </>
+    </Container>
    );
 }
  

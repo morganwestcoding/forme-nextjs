@@ -37,8 +37,8 @@ const ProfileRightbar: React.FC<ProfileRightbarProps> = ({ user, listings  }) =>
   const stateAcronym = state ? getStateAcronym(state) : '';
 
   return (
-    <div className="flex flex-col justify-end bg-transparent  gap-3 pr-16 h-auto mt-4">
-      <div className="flex flex-col justify-between w-full md:w-11/12 rounded-2xl shadow-sm bg-[#ffffff] px-8 md:px-6 pt-6 pb-5 mx-3 md:mr-16 md:ml-2 relative min-h-[128px]">
+    <div className="flex flex-col justify-end bg-transparent gap-3 h-auto mt-4">
+      <div className="flex flex-col justify-between w-full rounded-2xl shadow-sm bg-[#ffffff] px-8 md:px-6 pt-6 pb-5 relative min-h-[128px]">
         <div className="text-xl font-bold">About Me
           <div className="text-sm font-normal flex-grow">
             <p className="py-2 pb-2">
@@ -73,7 +73,7 @@ const ProfileRightbar: React.FC<ProfileRightbarProps> = ({ user, listings  }) =>
       <ProfilePhotoGallery currentUser={user}/>
       
       {/* Storefront */}
-      <div className="w-full md:w-11/12 flex flex-col justify-start rounded-2xl shadow-sm bg-[#ffffff] p-0 mx-3 md:mr-16 md:ml-2 overflow-hidden pb-6">
+      <div className="w-full flex flex-col justify-start rounded-2xl shadow-sm bg-[#ffffff] p-0 overflow-hidden pb-6">
         <div className="px-8 md:px-6 pt-6 mb-2 text-xl font-bold">{user.name ? user.name.split(' ')[0] : 'User'}&apos;s Storefronts</div>
         <div className="px-8 md:px-6 pb-2">
           {/* This empty div matches the layout in the gallery component */}

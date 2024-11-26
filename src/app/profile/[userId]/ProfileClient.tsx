@@ -5,6 +5,7 @@ import Post from '@/components/feed/Post';
 import { SafePost, SafeListing, SafeUser} from "@/app/types";
 import { categories } from '@/components/Categories';
 import ProfileRightbar from '@/components/rightbar/ProfileRightBar';
+import Container from '@/components/Container';
 
 interface ProfileClientProps {
   currentUser: SafeUser | null;
@@ -20,20 +21,22 @@ const ProfileClient: React.FC<ProfileClientProps> = ({ user, posts, listings, cu
     return <div>No user data available</div>; // Handling case when user data is not available
   }
   return (
+    <Container>
     <div>
        <ProfileHead user={user} currentUser={currentUser} />
       <div className="flex w-full">
-        <div className="flex-none w-[45%] ml-28">
+        <div className="flex-none w-[50%]">
           {/* Posts Mapping */}
           {posts.map((post, index) => (
             <Post key={index} post={post} currentUser={user} categories={categories} />
           ))}
         </div>
-        <div className="flex-grow w-[45%] ml-3">
+        <div className="flex-grow w-[50%] ml-3">
         <ProfileRightbar user={user} listings={listings} />
         </div>
       </div>
     </div>
+    </Container>
   );
 };
 

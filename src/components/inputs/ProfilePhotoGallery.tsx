@@ -52,7 +52,7 @@ const ProfilePhotoGallery: React.FC<ProfilePhotoGalleryProps> = ({ currentUser }
   };
 
   return (
-    <div className="w-full md:w-11/12 bg-white rounded-2xl shadow-sm overflow-hidden mx-3 md:mr-16 md:ml-2 pb-[2rem] relative">
+    <div className="w-full bg-white rounded-2xl shadow-sm overflow-hidden pb-[2rem] relative">
       <div className="px-8 md:px-6 pt-6 flex justify-between items-center">
         <h2 className="text-xl font-bold mb-3">Gallery</h2>
         <div className="relative">

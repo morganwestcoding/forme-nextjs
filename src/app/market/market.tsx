@@ -7,6 +7,7 @@ import { categories } from '@/components/Categories';
 import getListings, { IListingsParams } from "@/app/actions/getListings";
 import Pagination from '@/components/pagination/Pagination';
 import { useFilter } from '@/FilterContext';
+import Container from '@/components/Container';
 
 interface MarketProps {
   searchParams: IListingsParams & {
@@ -79,38 +80,40 @@ const Market = async ({ searchParams }: MarketProps) => {
   }
 
   return (
-    <div className="pt-2 pl-4 mx-24 h-[calc(100vh-80px)] flex flex-col">
-      <div className="
-        pt-6
-        flex-1
-        grid 
-        grid-cols-4 
-        sm:grid-cols-2 
-        md:grid-cols-3 
-        lg:grid-cols-4
-        xl:grid-cols-5
-        2xl:grid-cols-6
-        gap-6
-      ">
-        {paginatedListings.map((listing: any) => (
-          <ListingCard
-            currentUser={currentUser}
-            key={listing.id}
-            data={listing}
-            categories={categories}
-          />
-        ))}
-      </div>
-      <div className="flex justify-center w-full pt-4 translate-x-10">
-        <div className="w-[500px]">
-          <Pagination 
-            currentPage={currentPage}
-            totalPages={totalPages}
-            totalResults={filteredListings.length}
-          />
+    <Container>
+      <div className="pt-2 h-[calc(100vh-80px)] flex flex-col">
+        <div className="
+          pt-6
+          flex-1
+          grid 
+          grid-cols-1 
+          sm:grid-cols-2 
+          md:grid-cols-3 
+          lg:grid-cols-4
+          xl:grid-cols-5
+          2xl:grid-cols-6
+          gap-6
+        ">
+          {paginatedListings.map((listing: any) => (
+            <ListingCard
+              currentUser={currentUser}
+              key={listing.id}
+              data={listing}
+              categories={categories}
+            />
+          ))}
+        </div>
+        <div className="flex justify-center w-full pt-4">
+          <div className="w-[500px]">
+            <Pagination 
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalResults={filteredListings.length}
+            />
+          </div>
         </div>
       </div>
-    </div>
+    </Container>
   );
 };
 

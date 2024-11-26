@@ -3,6 +3,7 @@ import { SafeListing, SafeUser } from "@/app/types";
 import Heading from "@/components/Heading";
 import { categories } from '@/components/Categories';
 import ListingCard from "@/components/listings/ListingCard";
+import Container from "@/components/Container";
 
 interface FavoritesClientProps {
   listings: SafeListing[],
@@ -16,8 +17,8 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
   currentUser
 }) => {
   return (
-    <>
-      <div className="pt-2 pl-4 mx-24 flex-1">
+    <Container>
+      <div className="pt-2 flex-1">
       <div 
         className="
          pt-6
@@ -41,7 +42,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
         ))}
       </div>
       </div>
-    </>
+      </Container>
    );
 }
  

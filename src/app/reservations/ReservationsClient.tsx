@@ -8,6 +8,7 @@ import { categories } from '@/components/Categories';
 import { SafeReservation, SafeUser } from "@/app/types";
 import ListingCard from "@/components/listings/ListingCard";
 import ClientProviders from "@/components/ClientProviders";
+import Container from "@/components/Container";
 
 interface ReservationsClientProps {
   reservations: SafeReservation[],
@@ -53,8 +54,9 @@ const onDecline = useCallback(async (id: string) => {
 }, [router]);
 
   return (
+    <Container>
     <ClientProviders>
-      <div className="pt-2 pl-4 mx-24 flex-1">
+      <div className="pt-2 flex-1">
         <div className="pt-6 grid grid-cols-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6">
           {reservations.map((reservation: any) => (
             <ListingCard
@@ -73,6 +75,7 @@ const onDecline = useCallback(async (id: string) => {
         </div>
       </div>
     </ClientProviders>
+    </Container>
   );
 }
 
