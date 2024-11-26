@@ -1,12 +1,8 @@
+// AddListing.tsx
 'use client'
-import Image from 'next/image'
-import { useRouter } from "next/navigation";
-import { Button } from "../ui/button"
-import { MessageSquarePlusIcon } from "lucide-react"
+import { useCallback, useState } from "react";
 import { SafeUser } from "@/app/types";
 import useRentModal from "@/app/hooks/useRentModal";
-import { useCallback, useState } from "react";
-
 
 interface AddListingProps {
   currentUser?: SafeUser | null 
@@ -14,32 +10,86 @@ interface AddListingProps {
 
 export const dynamic = 'force-dynamic';
 
-const AddListing: React.FC<AddListingProps> = ({
-  
-}) => {
-
+const AddListing: React.FC<AddListingProps> = ({}) => {
   const rentModal = useRentModal();
   const [isOpen, setIsOpen] = useState(false);
 
-  const toggleOpen = useCallback(() => {
-    setIsOpen((value) => !value);
-  }, []);
-
   const onRent = useCallback(() => {
-
     rentModal.onOpen();
   }, [rentModal]);
 
   return (
-    <div className="flex items-center justify-center bg-[#5E6365] border border-[#5E6365] backdrop-blur-lg rounded-full p-3 cursor-pointer shadow  ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:rounded-full focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-25 hover:bg-white hover:bg-opacity-10 hover:text-accent-foreground" onClick={onRent}>
-
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="19" height="19" color="#ffffff" fill="none">
-    <path d="M12 4V20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-    <path d="M4 12H20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-</svg>
-
-      </div>
+    <div 
+      className="
+        relative
+        flex 
+        items-center 
+        justify-center 
+        bg-[#5E6365]
+        rounded-full 
+        p-3 
+        cursor-pointer 
+        shadow
+        transform
+        transition-all
+        duration-500
+        ease-out
+        hover:shadow-[#5E6365]/50
+        hover:shadow-md
+        overflow-hidden
+        group
+        before:content-['']
+        before:absolute
+        before:w-12
+        before:h-12
+        before:bg-white/10
+        before:top-1/2
+        before:left-1/2
+        before:-translate-x-1/2
+        before:-translate-y-1/2
+        before:rounded-full
+        before:scale-0
+        before:opacity-0
+        hover:before:scale-150
+        hover:before:opacity-100
+        before:transition-all
+        before:duration-500
+        before:ease-out
+      " 
+      onClick={onRent}
+    >
+      <svg 
+        xmlns="http://www.w3.org/2000/svg" 
+        viewBox="0 0 24 24" 
+        width="19" 
+        height="19" 
+        className="
+          relative
+          z-10
+          text-white 
+          transition-transform 
+          duration-500 
+          group-hover:scale-110
+        "
+        fill="none"
+      >
+        <path 
+          d="M12 4V20" 
+          stroke="currentColor" 
+          strokeWidth="1.5" 
+          strokeLinecap="round" 
+          strokeLinejoin="round" 
+        />
+        <path 
+          d="M4 12H20" 
+          stroke="currentColor" 
+          strokeWidth="1.5" 
+          strokeLinecap="round" 
+          strokeLinejoin="round" 
+        />
+      </svg>
+    </div>
   )
 }
 
-export default AddListing
+export default AddListing;

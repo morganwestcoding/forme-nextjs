@@ -10,6 +10,7 @@ import { SafePost, SafeUser } from '@/app/types';
 import { usePostStore } from '@/app/hooks/usePostStore';
 import { useCategory } from '@/CategoryContext';
 import { useFilter } from '@/FilterContext';
+import Container from './Container';
 
 interface NewsfeedClientProps {
   initialPosts: SafePost[];
@@ -61,27 +62,30 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
 
     setPosts(filteredPosts);
   }, [initialPosts, setPosts, selectedCategory, filters]);
-  
+
   return (
     <ClientProviders>
-      <div className="flex w-full">
-        <div className="flex-none w-[45%] ml-28 mt-8 mr-1">
-          <Share currentUser={currentUser} categoryLabel={selectedCategory || undefined} />
-          {storePosts.map((post) => (
-            <Post 
-              key={post.id}
-              post={post}
-              currentUser={currentUser}
-              categories={categories}
-            />
-          ))}
+      <Container>
+        <div className="flex w-full">
+          <div className="flex-none w-[55%] mt-8 mr-1">
+            <Share currentUser={currentUser} categoryLabel={selectedCategory || undefined} />
+            {storePosts.map((post) => (
+              <Post 
+                key={post.id}
+                post={post}
+                currentUser={currentUser}
+                categories={categories}
+              />
+            ))}
+          </div>
+          <div className="flex-grow w-[45%] ml-4">
+            <Rightbar />
+          </div>
         </div>
-        <div className="flex-grow w-[55%] ml-4">
-          <Rightbar />
-        </div>
-      </div>
+      </Container>
     </ClientProviders>
   );
 };
+
 
 export default NewsfeedClient;

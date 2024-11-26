@@ -52,7 +52,7 @@ const Search: React.FC<SearchProps> = ({ onResultClick }) => {
  };
 
  return (
-   <div className="relative ml-8 w-64">
+   <div className="relative w-64">
      <div className="relative">
        <span className="absolute inset-y-0 left-0 flex items-center pl-4 ">
          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={18} height={18} color={"#ffffff"} fill={"none"}>

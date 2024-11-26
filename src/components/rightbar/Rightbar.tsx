@@ -30,7 +30,7 @@ export default function Rightbar() {
   const [isToggled, setIsToggled] = useState(false);
 
   return (
-    <div className="flex flex-col justify-end bg-transparent gap-3 pr-24 h-auto mt-8">
+    <div className="flex flex-col justify-end bg-transparent gap-3 h-auto mt-8">
       <div className="w-full rounded-2xl drop-shadow-sm bg-[#ffffff] p-6 relative">
         <div className="flex flex-col">
           <div className="flex items-center justify-between mb-2">

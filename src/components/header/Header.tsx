@@ -29,13 +29,13 @@ const Header: React.FC<HeaderProps> = ({ currentUser }) => {
   };
 
   return (
-    <div className="pr-4 mt-5 -mb-3">
+    <div className="mt-5 -mb-3">
       <Container>
         <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center">
             <Search onResultClick={handleSearchResult} />
           </div>
-          <div className="flex items-center space-x-2 ">
+          <div className="flex items-center space-x-2">
             <AddListing />
             <Inbox currentUser={currentUser || null} />
             <Notification />
