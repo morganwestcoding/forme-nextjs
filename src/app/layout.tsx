@@ -56,7 +56,15 @@ export default async function RootLayout({
                   
                 </div>
               </div>
-              {/* Modals remain unchanged */}
+              <ToasterProvider/>
+              <RentModal/>
+              <ProfileModal/>
+              <LoginModal/>
+              <RegisterModal/>
+              <ProfileGalleryModal/> 
+              <ListingGalleryModal/>
+              <MessageModal />
+              <FilterModal/>
             </body>
           </html>
         </ClientProviders>

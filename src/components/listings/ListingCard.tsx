@@ -198,23 +198,31 @@ const ListingCard: React.FC<ListingCardProps> = ({
         </div>
 
         {reservation && (
-          <div className="px-4 pb-2">
-            <div className="font-light text-xs text-neutral-500">
-              Reservation date: {format(new Date(reservation.date), 'PP')}
-            </div>
-            <div className="font-light text-xs text-neutral-500">
-              Time: {reservation.time}
-            </div>
-            {reservation.note && (
-              <div className="font-light text-xs text-neutral-500 mt-1">
-                Note: {reservation.note}
-              </div>
-            )}
-            <div className="font-semibold text-sm mt-1">
-              Total: ${reservation.totalPrice}
-            </div>
-          </div>
-        )}
+  <div className="px-4 pb-2">
+    {/* User Name */}
+    <div className="font-semibold text-sm text-neutral-700 mb-1">
+      {reservation.user?.name || 'Guest'}
+    </div>
+    {/* Service Selected */}
+    <div className="font-light text-xs text-neutral-500">
+      Service: {reservation.serviceName || 'Not specified'}
+    </div>
+    <div className="font-light text-xs text-neutral-500">
+      Date: {format(new Date(reservation.date), 'PP')}
+    </div>
+    <div className="font-light text-xs text-neutral-500">
+      Time: {reservation.time}
+    </div>
+    {reservation.note && (
+      <div className="font-light text-xs text-neutral-500 mt-1">
+        Note: {reservation.note}
+      </div>
+    )}
+    <div className="font-semibold text-sm mt-1">
+      Total: ${reservation.totalPrice}
+    </div>
+  </div>
+)}
         
         <hr/>
         

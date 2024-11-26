@@ -190,8 +190,8 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
   const disabledTimes = date ? getDisabledTimes(date) : [];
 
   return (
-    <div className="flex flex-col justify-end bg-transparent gap-4 pr-16 h-auto">
-      <div className="w-full md:w-11/12 rounded-2xl shadow-sm bg-[#ffffff] px-8 md:px-6 pt-6 pb-6 mx-3 md:mr-16 relative">
+    <div className="flex flex-col justify-end bg-transparent gap-4 h-auto">
+      <div className="w-full rounded-2xl shadow-sm bg-[#ffffff] px-8 md:px-6 pt-6 pb-6 relative">
         <div className="mb-4">
           <h2 className="text-xl font-bold mb-1">Booking</h2>
           <p className="text-sm text-gray-500">Reserve your spot before its too late!</p>

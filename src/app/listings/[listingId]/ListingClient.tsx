@@ -12,6 +12,7 @@ import { categories } from "@/components/Categories";
 import ListingHead from "@/components/listings/ListingHead";
 import ListingRightBar from "@/components/listings/ListingRightBar";
 import StoreHours from "@/components/listings/StoreHours";
+import Container from "@/components/Container";
 
 interface ListingClientProps {
   reservations?: SafeReservation[];
@@ -113,15 +114,16 @@ const ListingClient: React.FC<ListingClientProps> = ({
   ]);
 
   return ( 
-    <div className="max-w-[1280px] mx-auto px-4">
-      <div className="flex justify-between items-start mt-8">
-        <div className="w-[65%] pl-20">
+    <Container>
+    <div className="max-w-full">
+      <div className="flex gap-6 items-start mt-8"> {/* Added gap-8 here */}
+        <div className="w-[60%]">
           <ListingHead 
             listing={listing}
             currentUser={currentUser}
           />
         </div>
-        <div className="w-[40%]">
+        <div className="w-[40%]"> {/* Adjusted width to account for gap */}
           <ListingRightBar
             description={listing.description}
             listing={listing}
@@ -137,7 +139,8 @@ const ListingClient: React.FC<ListingClientProps> = ({
         </div>
       </div>
     </div>
-  );
+  </Container>
+);
 }
  
 export default ListingClient;

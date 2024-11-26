@@ -141,7 +141,7 @@ const Notifications: React.FC = () => {
       justify-center 
       text-xs 
       shadow-md
-      z-50
+      z-10
     "/>
   )}
 </div>

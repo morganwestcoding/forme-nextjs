@@ -69,7 +69,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
   }, [showDropdown]);
 
   return (
-    <div className="w-full pl-4 pr-[1.5%]">
+    <div className="w-full">
       <div className="bg-white rounded-2xl shadow-sm overflow-hidden relative">
         <div className="px-6 pt-6 flex justify-between items-start">
           <div className="flex flex-col items-start">

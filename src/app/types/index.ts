@@ -40,6 +40,8 @@ export type SafeReservation = Omit<
   listing: SafeListing;
   note: string | null;
   status: string;  // Add this 
+  user?: SafeUser;  // Add this if not already present
+  serviceName?: string; 
 };
 
 export type SafeUser = Omit<
