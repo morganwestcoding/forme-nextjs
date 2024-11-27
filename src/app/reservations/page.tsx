@@ -1,51 +1,60 @@
-
+// app/reservations/page.tsx
+import ClientOnly from "@/components/ClientOnly";
 import EmptyState from "@/components/EmptyState";
+import ReservationsClient from "./ReservationsClient";
 
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import getReservations from "@/app/actions/getReservations";
 
-import ReservationsClient from "./ReservationsClient";
+interface ReservationsPageProps {
+  searchParams: { page?: string }
+}
 
-import ClientOnly from "@/components/ClientOnly";
-import ClientProviders from "@/components/ClientProviders";
-
-
-export const dynamic = 'force-dynamic';
-
-const ReservationsPage = async () => {
+const ReservationsPage = async ({ searchParams }: ReservationsPageProps) => {
   const currentUser = await getCurrentUser();
 
   if (!currentUser) {
     return (
-      <ClientProviders> 
+      <ClientOnly>
         <EmptyState
           title="Unauthorized"
           subtitle="Please login"
         />
-      </ClientProviders>
-    )
+      </ClientOnly>
+    );
   }
 
+  const currentPage = Number(searchParams?.page) || 1;
+  const ITEMS_PER_PAGE = 3;
+
   const reservations = await getReservations({ authorId: currentUser.id });
+  
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const paginatedReservations = reservations.slice(startIndex, endIndex);
+  const totalPages = Math.ceil(reservations.length / ITEMS_PER_PAGE);
 
   if (reservations.length === 0) {
     return (
-      <ClientProviders>
+      <ClientOnly>
         <EmptyState
           title="No reservations found"
           subtitle="Looks like you have no reservations on your properties."
         />
-      </ClientProviders>
+      </ClientOnly>
     );
   }
 
   return (
-    <ClientProviders>
+    <ClientOnly>
       <ReservationsClient
-        reservations={reservations}
+        reservations={paginatedReservations}
         currentUser={currentUser}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        totalResults={reservations.length}
       />
-    </ClientProviders>
+    </ClientOnly>
   );
 }
  

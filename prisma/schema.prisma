@@ -79,15 +79,22 @@ model Reservation {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
   userId     String   @db.ObjectId
   listingId  String   @db.ObjectId
+  employeeId   String  @db.ObjectId  // Add this field
   date       DateTime
   time       String
   note       String?
   totalPrice Int
-   status     String   @default("pending") // Add this line - can be "pending", "accepted", "declined"
+  status     String   @default("pending") // Add this line - can be "pending", "accepted", "declined"
   createdAt  DateTime @default(now())
+  serviceId   String   @db.ObjectId 
+  serviceName String             
+  
 
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  service     Service @relation(fields: [serviceId], references: [id])  // Add this
+  employee  Employee  @relation(fields: [employeeId], references: [id])  // Add this relation
+
 }
 
 model Service {
@@ -97,6 +104,7 @@ model Service {
   category    String
   listingId   String  @db.ObjectId
   listing     Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  reservations Reservation[] // Add this line for the opposite relation
 }
 
 model Post {
@@ -166,13 +174,6 @@ model Message {
   isRead         Boolean      @default(false)  // Add this line
 }
 
-model Employee {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  fullName  String
-  listingId String   @db.ObjectId
-  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
-}
-
 model StoreHours {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   listingId String   @db.ObjectId
@@ -183,3 +184,10 @@ model StoreHours {
   listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
 }
 
+model Employee {
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  fullName     String
+  listingId    String        @db.ObjectId
+  listing      Listing       @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  reservations Reservation[] // Add this line
+}

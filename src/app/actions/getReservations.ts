@@ -10,24 +10,17 @@ interface IParams {
 export default async function getReservations(params: IParams) {
   try {
     const { listingId, userId, authorId } = params;
-
-    console.log('Fetching reservations with params:', params);
-
     const query: any = {};
         
     if (listingId) {
       query.listingId = listingId;
     }
-
     if (userId) {
       query.userId = userId;
     }
-
     if (authorId) {
       query.listing = { userId: authorId };
     }
-
-    console.log('Query constructed:', query);
 
     const reservations = await prisma.reservation.findMany({
       where: query,
@@ -36,100 +29,65 @@ export default async function getReservations(params: IParams) {
           include: {
             services: true,
             employees: true,
-            user: true,
-            storeHours: true,
+            storeHours: true
           },
         },
+        user: true
       },
       orderBy: {
         createdAt: 'desc',
       },
     });
 
-    console.log('Raw reservations found:', reservations.length);
-
-    if (!reservations) {
-      console.log('No reservations found');
-      return [];
-    }
-
-    const safeReservations: SafeReservation[] = reservations.map(
-      (reservation) => {
-        if (!reservation) {
-          console.log('Found null reservation');
-          return null;
-        }
-
-        try {
-          return {
-            id: reservation.id,
-            userId: reservation.userId,
-            listingId: reservation.listingId,
-            date: reservation.date,
-            time: reservation.time,
-            note: reservation.note ?? '',
-            totalPrice: reservation.totalPrice,
-            status: reservation.status || 'pending',  // Add this line
-            createdAt: reservation.createdAt.toISOString(),
-            listing: reservation.listing ? {
-              ...reservation.listing,
-              createdAt: reservation.listing.createdAt.toISOString(),
-              services: reservation.listing.services?.map(service => ({
-                id: service.id,
-                serviceName: service.serviceName,
-                price: service.price,
-                category: service.category
-              })) || [],
-              employees: reservation.listing.employees?.map(employee => ({
-                id: employee.id,
-                fullName: employee.fullName
-              })) || [],
-              storeHours: reservation.listing.storeHours?.map(hours => ({
-                dayOfWeek: hours.dayOfWeek,
-                openTime: hours.openTime,
-                closeTime: hours.closeTime,
-                isClosed: hours.isClosed
-              })) || [],
-              user: reservation.listing.user ? {
-                ...reservation.listing.user,
-                createdAt: reservation.listing.user.createdAt.toISOString(),
-                updatedAt: reservation.listing.user.updatedAt.toISOString(),
-                emailVerified: 
-                  reservation.listing.user.emailVerified?.toISOString() || null,
-              } : null
-            } : null,
-          };
-        } catch (error) {
-          console.error('Error processing reservation:', reservation.id, error);
-          return null;
-        }
+    const safeReservations = reservations.map((reservation): SafeReservation => ({
+      id: reservation.id,
+      userId: reservation.userId,
+      listingId: reservation.listingId,
+      employeeId: reservation.employeeId, // Add this line
+      serviceId: reservation.serviceId,
+      serviceName: reservation.serviceName,
+      date: reservation.date,
+      time: reservation.time,
+      note: reservation.note,
+      totalPrice: reservation.totalPrice,
+      status: reservation.status,
+      createdAt: reservation.createdAt.toISOString(),
+      listing: {
+        id: reservation.listing.id,
+        title: reservation.listing.title,
+        description: reservation.listing.description,
+        imageSrc: reservation.listing.imageSrc,
+        category: reservation.listing.category,
+        location: reservation.listing.location,
+        userId: reservation.listing.userId,
+        createdAt: reservation.listing.createdAt.toISOString(),
+        services: reservation.listing.services.map(service => ({
+          id: service.id,
+          serviceName: service.serviceName,
+          price: service.price,
+          category: service.category
+        })),
+        phoneNumber: reservation.listing.phoneNumber,
+        website: reservation.listing.website,
+        address: reservation.listing.address,
+        zipCode: reservation.listing.zipCode,
+        galleryImages: reservation.listing.galleryImages,
+        employees: reservation.listing.employees.map(employee => ({
+          id: employee.id,
+          fullName: employee.fullName
+        })),
+        storeHours: reservation.listing.storeHours
+      },
+      user: {
+        ...reservation.user,
+        createdAt: reservation.user.createdAt.toISOString(),
+        updatedAt: reservation.user.updatedAt.toISOString(),
+        emailVerified: reservation.user.emailVerified?.toISOString() || null,
       }
-    ).filter(Boolean) as SafeReservation[];
+    }));
 
-    console.log('Processed safe reservations:', safeReservations.map(r => ({
-      id: r.id,
-      status: r.status
-    })));
-    
     return safeReservations;
-
   } catch (error: any) {
-    console.error('getReservations error details:', {
-      name: error.name,
-      message: error.message,
-      code: error.code,
-      stack: error.stack
-    });
-
-    if (error.code === 'P2003') {
-      throw new Error('Related listing or user not found');
-    }
-    if (error.code === 'P2025') {
-      throw new Error('Record not found');
-    }
-    if (error instanceof Error) {
-      throw error;
-    }
     throw new Error(`Failed to fetch reservations: ${error.message}`);
   }
 }

@@ -7,6 +7,7 @@ import useRentModal from "@/app/hooks/useRentModal";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { format } from 'date-fns';
+import Avatar from "../ui/avatar";
 
 import { 
   SafeListing, 
@@ -92,7 +93,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
   const currentService = data.services[currentServiceIndex];
   const categoryColor = categories.find(cat => cat.label === data.category)?.color || 'bg-gray-200';
 
-  // Function to get state acronym
   const getStateAcronym = (state: string) => {
     const stateMap: {[key: string]: string} = {
       'Alabama': 'AL', 'Alaska': 'AK', 'Arizona': 'AZ', 'Arkansas': 'AR', 'California': 'CA',
@@ -109,122 +109,162 @@ const ListingCard: React.FC<ListingCardProps> = ({
     return stateMap[state] || state;
   };
 
-  // Split location into city and state, and convert state to acronym
   const [city, state] = data.location?.split(',').map(s => s.trim()) || [];
   const stateAcronym = state ? getStateAcronym(state) : '';
 
   return (
     <div className="col-span-1">
-      <div className="bg-[#ffffff] rounded-2xl flex flex-col gap-2 w-48 shadow-sm">
-        <div 
-          className="
-            w-full
-            h-28
-            relative 
-            overflow-hidden 
-            rounded-t-2xl
-            cursor-pointer 
-            group
-          "
-        >
-          <Image
-            onClick={() => router.push(`/listings/${data.id}`)} 
-            fill
-            className="
-              object-cover 
+      <div className={`
+        bg-[#ffffff] 
+        rounded-2xl 
+        flex 
+        flex-col 
+        gap-2 
+        shadow-sm
+        ${reservation ? 'w-80' : 'w-48'}
+        transition-all 
+        duration-300
+      `}>
+        {!reservation && (
+          <>
+            <div className="
+              relative 
+              overflow-hidden 
+              rounded-t-2xl
+              cursor-pointer 
+              group
+              h-28
               w-full
-              h-full
-              group-hover:scale-110 
-              transition
-            "
-            src={data.imageSrc}
-            alt="Listing"
-          />
-          {currentUser?.id === data.userId && pathname === '/properties' ? (
-            <div className="absolute top-3 right-3 flex gap-2">
-              <button 
-                onClick={handleDelete}
-                disabled={disabled}
+            ">
+              <Image
+                onClick={() => router.push(`/listings/${data.id}`)} 
+                fill
                 className="
-                  bg-red-500 
-                  p-2 
-                  rounded-full 
-                  hover:bg-red-600 
+                  object-cover 
+                  w-full
+                  h-full
+                  group-hover:scale-110 
                   transition
-                  disabled:opacity-50
-                  disabled:cursor-not-allowed
                 "
-              >
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  width="16" 
-                  height="16" 
-                  viewBox="0 0 24 24" 
-                  fill="none" 
-                  stroke="white" 
-                  strokeWidth="2"
-                >
-                  <path d="M18 6L6 18M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-          ) : (
-            <div className="absolute top-3 right-3">
-              <HeartButton 
-                listingId={data.id} 
-                currentUser={currentUser}
+                src={data.imageSrc}
+                alt="Listing"
               />
+              <div className="absolute top-3 right-3">
+                <HeartButton 
+                  listingId={data.id} 
+                  currentUser={currentUser}
+                />
+              </div>
             </div>
-          )}
-        </div>
 
-        <div className="px-4 pt-1 pb-1">
-          <div 
-            className={`w-8 h-5 ${categoryColor} shadow-sm rounded-md flex items-center justify-center`} 
-            title={data.category}
-          >
-            <span className="text-white text-xs font-extralight">
-              {data.category.charAt(0).toUpperCase()}
-            </span>
-          </div>
-        </div>
-        
-        <div className="font-medium text-sm capitalize px-4">
-          {data.title}
-        </div>
+            <div className="px-4 pt-1 pb-1">
+              <div 
+                className={`w-8 h-5 ${categoryColor} shadow-sm rounded-md flex items-center justify-center`} 
+                title={data.category}
+              >
+                <span className="text-white text-xs font-extralight">
+                  {data.category.charAt(0).toUpperCase()}
+                </span>
+              </div>
+            </div>
+          </>
+        )}
 
-        <div className="font-light text-xs px-4 text-neutral-500 pb-2">
-          {city}, {stateAcronym}
-        </div>
+        {!reservation && (
+          <>
+            <div className="font-medium text-sm capitalize px-4">
+              {data.title}
+            </div>
+            <div className="font-light text-xs px-4 text-neutral-500 pb-2">
+              {city}, {stateAcronym}
+            </div>
+          </>
+        )}
 
         {reservation && (
-  <div className="px-4 pb-2">
-    {/* User Name */}
-    <div className="font-semibold text-sm text-neutral-700 mb-1">
-      {reservation.user?.name || 'Guest'}
-    </div>
-    {/* Service Selected */}
-    <div className="font-light text-xs text-neutral-500">
-      Service: {reservation.serviceName || 'Not specified'}
-    </div>
-    <div className="font-light text-xs text-neutral-500">
-      Date: {format(new Date(reservation.date), 'PP')}
-    </div>
-    <div className="font-light text-xs text-neutral-500">
-      Time: {reservation.time}
-    </div>
-    {reservation.note && (
-      <div className="font-light text-xs text-neutral-500 mt-1">
-        Note: {reservation.note}
-      </div>
-    )}
-    <div className="font-semibold text-sm mt-1">
-      Total: ${reservation.totalPrice}
-    </div>
-  </div>
-)}
-        
-        <hr/>
+          <>
+            <div className="font-medium capitalize px-4 text-base pt-4">
+              {data.title}
+            </div>
+
+            <div className="flex items-center gap-2 px-4 pb-4">
+              <span className="font-light text-xs text-neutral-500">
+                {city}, {stateAcronym}
+              </span>
+              <div 
+                className={`w-8 h-5 ${categoryColor} shadow-sm rounded-md flex items-center justify-center`} 
+                title={data.category}
+              >
+                <span className="text-white text-xs font-extralight">
+                  {data.category.charAt(0).toUpperCase()}
+                </span>
+              </div>
+            </div>
+
+            <div className="px-4 pb-4">
+              <div className="space-y-3">
+                {/* Reservation Header */}
+                <div className="flex items-center gap-3 border-t border-neutral-100 pb-3 pt-3 -mx-4 px-6">
+                  <Avatar src={reservation.user.image || undefined} />
+                  <div className="flex-1">
+                    <div className="text-sm font-medium">
+                      {reservation.user.name}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Reservation Details */}
+                <div className="space-y-3">
+                  {/* Service & Employee */}
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div className="bg-neutral-50 p-3 rounded-lg">
+                      <div className="text-neutral-500 mb-1">Service</div>
+                      <div className="font-medium truncate">{reservation.serviceName}</div>
+                    </div>
+                    <div className="bg-neutral-50 p-3 rounded-lg">
+                      <div className="text-neutral-500 mb-1">Employee</div>
+                      <div className="font-medium truncate">
+                        {data.employees.find((emp: { id: string; fullName: string }) => 
+                          emp.id === reservation.employeeId
+                        )?.fullName}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Date & Time */}
+                  <div className="grid grid-cols-2 gap-3 text-sm border-b border-neutral-100 -mx-4 px-4 pb-3">
+                    <div className="bg-neutral-50 p-3 rounded-lg">
+                      <div className="text-neutral-500 mb-1">Date</div>
+                      <div className="font-medium">
+                        {format(new Date(reservation.date), 'PP')}
+                      </div>
+                    </div>
+                    <div className="bg-neutral-50 p-3 rounded-lg">
+                      <div className="text-neutral-500 mb-1">Time</div>
+                      <div className="font-medium">{reservation.time}</div>
+                    </div>
+                  </div>
+
+                  {/* Note if exists */}
+                  {reservation.note && (
+                    <div className="bg-neutral-50 p-3 rounded-lg text-sm">
+                      <div className="text-neutral-500 mb-1">Note</div>
+                      <div className="font-medium">{reservation.note}</div>
+                    </div>
+                  )}
+
+                  {/* Total Price */}
+                  <div className="flex justify-between items-center pt-2">
+                    <span className="text-sm text-neutral-500">Total</span>
+                    <span className="text-base font-semibold">
+                      ${reservation.totalPrice}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
         
         {data.services && data.services.length > 0 && !reservation && (
           <div className="flex justify-between text-xs capitalize items-center pb-3.5 pt-1 px-4">
@@ -253,9 +293,8 @@ const ListingCard: React.FC<ListingCardProps> = ({
           </div>
         )}
 
-        {/* Regular action button (edit/cancel) */}
         {onAction && actionLabel && !showAcceptDecline && (
-          <div className="p-4 -mt-3">
+          <div className="p-4">
             <ModalButton
               disabled={disabled}
               small

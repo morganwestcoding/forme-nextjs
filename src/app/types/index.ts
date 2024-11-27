@@ -30,18 +30,27 @@ export type SafeReservation = Omit<
   Reservation, 
   "createdAt" | "startDate" | "endDate" | "listing"
 > & {
-  id: string;
   createdAt: string;
-  date: Date;  // Convert Date to string for client-safe object
-  time: string; 
-  userId: string;
-  totalPrice: number;
-  listingId: string;
-  listing: SafeListing;
-  note: string | null;
-  status: string;  // Add this 
-  user?: SafeUser;  // Add this if not already present
-  serviceName?: string; 
+  date: Date;
+  listing: {
+    id: string;
+    title: string;
+    description: string;
+    imageSrc: string;
+    category: string;
+    location: string | null;
+    userId: string;
+    createdAt: string;
+    services: SafeService[];
+    phoneNumber: string | null;
+    website: string | null;
+    address: string | null;
+    zipCode: string | null;
+    galleryImages: string[];
+    employees: SafeEmployee[];
+    storeHours: SafeStoreHours[];
+  };
+  user: SafeUser;
 };
 
 export type SafeUser = Omit<

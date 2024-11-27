@@ -11,8 +11,18 @@ import { SafeListing, SafeReservation, SafeUser } from "@/app/types";
 import { categories } from "@/components/Categories";
 import ListingHead from "@/components/listings/ListingHead";
 import ListingRightBar from "@/components/listings/ListingRightBar";
-import StoreHours from "@/components/listings/StoreHours";
 import Container from "@/components/Container";
+
+export interface SelectedEmployee {
+  value: string;
+  label: string;
+}
+
+export interface SelectedService {
+  value: string;
+  label: string;
+  price?: number;
+}
 
 interface ListingClientProps {
   reservations?: SafeReservation[];
@@ -35,9 +45,11 @@ const ListingClient: React.FC<ListingClientProps> = ({
   const router = useRouter();
 
   const [selectedServices, setSelectedServices] = useState(new Set<string>());
+  const [selectedEmployee, setSelectedEmployee] = useState<SelectedEmployee | null>(null);
+  const [selectedService, setSelectedService] = useState<SelectedService | null>(null);
   const [totalPrice, setTotalPrice] = useState(0);
-  const [date, setDate] = useState(new Date());
-  const [time, setTime] = useState('8:00 AM');
+  const [date, setDate] = useState<Date | null>(null);
+  const [time, setTime] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
 
   const disabledDates = useMemo(() => {
@@ -47,10 +59,8 @@ const ListingClient: React.FC<ListingClientProps> = ({
         start: new Date(reservation.startDate),
         end: new Date(reservation.endDate)
       });
-
       dates = [...dates, ...range];
     });
-
     return dates;
   }, [reservations]);
 
@@ -59,17 +69,18 @@ const ListingClient: React.FC<ListingClientProps> = ({
      items.label === listing.category);
   }, [listing.category]);
 
-  const toggleServiceSelection = (serviceId: string) => {
+  const toggleServiceSelection = useCallback((serviceId: string) => {
     setSelectedServices(prevSelected => {
       const newSelected = new Set(prevSelected);
       if (newSelected.has(serviceId)) {
         newSelected.delete(serviceId);
       } else {
+        newSelected.clear(); // Clear any existing selection
         newSelected.add(serviceId);
       }
       return newSelected;
     });
-  };
+  }, []);
 
   useEffect(() => {
     const newTotalPrice = listing.services
@@ -82,65 +93,108 @@ const ListingClient: React.FC<ListingClientProps> = ({
     if (!currentUser) {
       return loginModal.onOpen();
     }
+
+    if (!date || !time || !selectedService || !selectedEmployee) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
     setIsLoading(true);
 
     axios.post('/api/reservations', {
       totalPrice,
       date,
       time,
-      listingId: listing?.id
+      listingId: listing?.id,
+      serviceId: selectedService.value,
+      serviceName: listing.services.find(service => 
+        service.id === selectedService.value
+      )?.serviceName,
+      employeeId: selectedEmployee.value,
+      note: ''
     })
     .then(() => {
-      toast.success('Listing reserved!');
-      setDate(new Date());
-      setTime('8:00 AM');
+      toast.success('Reservation created successfully!');
+      setDate(null);
+      setTime('');
+      setSelectedService(null);
+      setSelectedEmployee(null);
+      setSelectedServices(new Set());
       router.push('/trips');
     })
-    .catch(() => {
-      toast.error('Something went wrong.');
+    .catch((error) => {
+      toast.error(error.response?.data || 'Something went wrong creating your reservation.');
     })
     .finally(() => {
       setIsLoading(false);
-    })
-  },
-  [
+    });
+  }, [
     totalPrice,
     date,
     time,
     listing?.id,
+    selectedService,
+    selectedEmployee,
+    listing.services,
     router,
     currentUser,
     loginModal
   ]);
 
+  const handleServiceChange = useCallback((service: SelectedService) => {
+    setSelectedService(service);
+    setSelectedServices(new Set([service.value]));
+  }, []);
+
+  const handleEmployeeChange = useCallback((employee: SelectedEmployee) => {
+    setSelectedEmployee(employee);
+  }, []);
+
+  const handleDateChange = useCallback((newDate: Date) => {
+    setDate(newDate);
+    setTime('');
+  }, []);
+
+  const handleTimeChange = useCallback((newTime: string) => {
+    setTime(newTime);
+  }, []);
+
   return ( 
     <Container>
-    <div className="max-w-full">
-      <div className="flex gap-6 items-start mt-8"> {/* Added gap-8 here */}
-        <div className="w-[60%]">
-          <ListingHead 
-            listing={listing}
-            currentUser={currentUser}
-          />
-        </div>
-        <div className="w-[40%]"> {/* Adjusted width to account for gap */}
-          <ListingRightBar
-            description={listing.description}
-            listing={listing}
-            selectedServices={selectedServices}
-            toggleServiceSelection={toggleServiceSelection}
-            totalPrice={totalPrice}
-            onCreateReservation={onCreateReservation}
-            isLoading={isLoading}
-            disabledDates={disabledDates}
-            currentUser={currentUser}
-            reservations={reservations}
-          />
+      <div className="max-w-full">
+        <div className="flex gap-6 items-start mt-8">
+          <div className="w-[60%]">
+            <ListingHead 
+              listing={listing}
+              currentUser={currentUser}
+            />
+          </div>
+          <div className="w-[40%]">
+            <ListingRightBar
+              description={listing.description}
+              listing={listing}
+              selectedServices={selectedServices}
+              toggleServiceSelection={toggleServiceSelection}
+              totalPrice={totalPrice}
+              onCreateReservation={onCreateReservation}
+              isLoading={isLoading}
+              disabledDates={disabledDates}
+              currentUser={currentUser}
+              reservations={reservations}
+              selectedService={selectedService}
+              selectedEmployee={selectedEmployee}
+              date={date}
+              time={time}
+              onServiceChange={handleServiceChange}
+              onEmployeeChange={handleEmployeeChange}
+              onDateChange={handleDateChange}
+              onTimeChange={handleTimeChange}
+            />
+          </div>
         </div>
       </div>
-    </div>
-  </Container>
-);
+    </Container>
+  );
 }
  
 export default ListingClient;

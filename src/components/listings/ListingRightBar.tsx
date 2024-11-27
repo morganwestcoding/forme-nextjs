@@ -5,6 +5,7 @@ import Calendar from '../inputs/Calender';
 import ModalButton from "../modals/ModalButton";
 import { SafeListing, SafeReservation, SafeUser } from "@/app/types";
 import { format, isSameDay } from 'date-fns';
+import { SelectedEmployee, SelectedService } from "@/app/listings/[listingId]/ListingClient";
 
 interface ListingRightBarProps {
   listing: SafeListing & { user: SafeUser };
@@ -17,12 +18,14 @@ interface ListingRightBarProps {
   selectedServices: Set<string>;
   toggleServiceSelection: (serviceId: string) => void;
   totalPrice: number;
-}
-
-interface OptionType {
-  value: string;
-  label: string;
-  price?: number;
+  selectedService: SelectedService | null;
+  selectedEmployee: SelectedEmployee | null;
+  date: Date | null;
+  time: string;
+  onServiceChange: (service: SelectedService) => void;
+  onEmployeeChange: (employee: SelectedEmployee) => void;
+  onDateChange: (date: Date) => void;
+  onTimeChange: (time: string) => void;
 }
 
 interface InputFieldProps {
@@ -85,13 +88,16 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
   description,
   selectedServices,
   toggleServiceSelection,
-  totalPrice: propTotalPrice
+  totalPrice,
+  selectedService,
+  selectedEmployee,
+  date,
+  time,
+  onServiceChange,
+  onEmployeeChange,
+  onDateChange,
+  onTimeChange
 }) => {
-  const [selectedEmployee, setSelectedEmployee] = useState<OptionType | null>(null);
-  const [selectedService, setSelectedService] = useState<OptionType | null>(null);
-  const [date, setDate] = useState<Date | null>(null);
-  const [time, setTime] = useState<string>('');
-  const [calculatedTotalPrice, setCalculatedTotalPrice] = useState(propTotalPrice);
   const [showCalendar, setShowCalendar] = useState(false);
   const [showServiceDropdown, setShowServiceDropdown] = useState(false);
   const [showEmployeeDropdown, setShowEmployeeDropdown] = useState(false);
@@ -99,14 +105,12 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
 
   const calendarRef = useRef<HTMLDivElement>(null);
 
-  // Get accepted reservations
   const acceptedReservations = useMemo(() => {
     return reservations.filter(reservation => 
       reservation.status === 'accepted' || !reservation.status
     );
   }, [reservations]);
 
-  // Get disabled times for selected date
   const getDisabledTimes = (selectedDate: Date) => {
     return acceptedReservations
       .filter(reservation => 
@@ -115,18 +119,18 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
       .map(reservation => reservation.time);
   };
 
-  const employeeOptions: OptionType[] = listing?.employees?.map(employee => ({
+  const employeeOptions: SelectedEmployee[] = listing?.employees?.map(employee => ({
     value: employee.id,
     label: employee.fullName
   })) || [];
 
-  const serviceOptions: OptionType[] = listing.services.map(service => ({
+  const serviceOptions: SelectedService[] = listing.services.map(service => ({
     value: service.id,
     label: `${service.serviceName} - $${service.price}`,
     price: service.price
   }));
 
-  const timeOptions: OptionType[] = [
+  const timeOptions: SelectedService[] = [
     { value: '09:00', label: '09:00 AM' },
     { value: '10:00', label: '10:00 AM' },
     { value: '11:00', label: '11:00 AM' },
@@ -137,38 +141,6 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
     { value: '16:00', label: '04:00 PM' },
     { value: '17:00', label: '05:00 PM' },
   ];
-
-  const handleServiceChange = (selectedOption: OptionType) => {
-    setSelectedService(selectedOption);
-    if (selectedOption && selectedOption.price) {
-      toggleServiceSelection(selectedOption.value);
-    }
-  };
-
-  const handleEmployeeChange = (selectedOption: OptionType) => {
-    setSelectedEmployee(selectedOption);
-  };
-
-  const handleDateClick = () => {
-    setShowCalendar(!showCalendar);
-  };
-
-  const handleDateChange = (newDate: Date) => {
-    setDate(newDate);
-    setTime(''); // Reset time when date changes
-    setShowCalendar(false);
-  };
-
-  const handleTimeChange = (selectedOption: OptionType) => {
-    setTime(selectedOption.value);
-  };
-
-  useEffect(() => {
-    const newTotalPrice = listing.services
-      .filter(service => selectedServices.has(service.id))
-      .reduce((sum, service) => sum + service.price, 0);
-    setCalculatedTotalPrice(newTotalPrice);
-  }, [selectedServices, listing.services]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -186,7 +158,6 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
     };
   }, []);
 
-  // Get disabled times for current date
   const disabledTimes = date ? getDisabledTimes(date) : [];
 
   return (
@@ -211,7 +182,7 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
                 key={option.value}
                 className="p-2 hover:bg-[#e2e8f0] cursor-pointer text-center transition-colors duration-250"
                 onClick={() => {
-                  handleServiceChange(option);
+                  onServiceChange(option);
                   setShowServiceDropdown(false);
                 }}
               >
@@ -235,7 +206,7 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
                 key={option.value}
                 className="p-2 hover:bg-[#e2e8f0] cursor-pointer text-center transition-colors duration-250"
                 onClick={() => {
-                  handleEmployeeChange(option);
+                  onEmployeeChange(option);
                   setShowEmployeeDropdown(false);
                 }}
               >
@@ -246,7 +217,7 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
         )}
         <InputField
           value={date ? format(date, 'PP') : undefined}
-          onClick={handleDateClick}
+          onClick={() => setShowCalendar(!showCalendar)}
           readOnly={true}
           placeholder="Pick a date"
           isSelected={!!date}
@@ -258,7 +229,10 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
           >
             <Calendar
               value={date || new Date()}
-              onChange={handleDateChange}
+              onChange={(newDate) => {
+                onDateChange(newDate);
+                setShowCalendar(false);
+              }}
               disabledDates={[...disabledDates, ...acceptedReservations.map(r => new Date(r.date))]}
             />
           </div>
@@ -291,7 +265,7 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
                   `}
                   onClick={() => {
                     if (!isDisabled) {
-                      handleTimeChange(option);
+                      onTimeChange(option.value);
                       setShowTimeDropdown(false);
                     }
                   }}
@@ -304,7 +278,7 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
         )}
         <div className="flex justify-between items-center mb-3">
           <span>Total Price:</span>
-          <span>${calculatedTotalPrice}</span>
+          <span>${totalPrice}</span>
         </div>
         <ModalButton
           disabled={isLoading || !date || !time || !selectedService || !selectedEmployee}
