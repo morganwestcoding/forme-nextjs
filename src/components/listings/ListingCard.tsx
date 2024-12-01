@@ -267,7 +267,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
         )}
         
         {data.services && data.services.length > 0 && !reservation && (
-          <div className="flex justify-between text-xs capitalize items-center pb-3.5 pt-1 px-4">
+          <div className="border-t flex justify-between text-xs capitalize items-center pb-3.5 pt-4 px-4">
             <button 
               className="mr-2" 
               onClick={handlePreviousService}
