@@ -294,7 +294,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
         )}
 
         {onAction && actionLabel && !showAcceptDecline && (
-          <div className="p-4">
+          <div className="p-4 -mt-4">
             <ModalButton
               disabled={disabled}
               small
@@ -306,7 +306,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
 
         {/* Accept/Decline buttons */}
         {reservation && showAcceptDecline && (
-          <div className="p-4">
+          <div className="p-4 -mt-5">
             {reservation.status === 'accepted' ? (
               <button
                 className="

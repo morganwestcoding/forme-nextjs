@@ -35,6 +35,7 @@ interface InputFieldProps {
   placeholder: string;
   disabled?: boolean;
   isSelected: boolean;
+  showHoverEffect?: boolean;
 }
 
 const InputField: React.FC<InputFieldProps> = ({ 
@@ -43,7 +44,8 @@ const InputField: React.FC<InputFieldProps> = ({
   readOnly, 
   placeholder, 
   disabled = false, 
-  isSelected 
+  isSelected,
+  showHoverEffect = false
 }) => (
   <div className="mb-3 relative">
     <div className="relative flex items-center">
@@ -72,6 +74,7 @@ const InputField: React.FC<InputFieldProps> = ({
             : 'bg-white border-[#e2e8f0] hover:bg-[#e2e8f0]'
           }
           ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+          ${showHoverEffect ? 'hover:placeholder-white' : ''}
         `}
       />
     </div>
@@ -105,18 +108,39 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
 
   const calendarRef = useRef<HTMLDivElement>(null);
 
-  const acceptedReservations = useMemo(() => {
+  const activeReservations = useMemo(() => {
     return reservations.filter(reservation => 
-      reservation.status === 'accepted' || !reservation.status
+      reservation.status !== 'declined'
     );
   }, [reservations]);
 
-  const getDisabledTimes = (selectedDate: Date) => {
-    return acceptedReservations
+  const getAvailableTimes = (selectedDate: Date, employeeId?: string) => {
+    if (!employeeId) return [];
+
+    const bookedTimes = activeReservations
       .filter(reservation => 
-        isSameDay(new Date(reservation.date), selectedDate)
+        isSameDay(new Date(reservation.date), selectedDate) && 
+        reservation.employeeId === employeeId
       )
       .map(reservation => reservation.time);
+
+    return bookedTimes;
+  };
+
+  const isDateFullyBooked = (date: Date, employeeId: string) => {
+    const bookingsForDate = activeReservations.filter(r => 
+      isSameDay(new Date(r.date), date) && 
+      r.employeeId === employeeId
+    );
+
+    const timeOptions = [
+      '09:00', '10:00', '11:00', '12:00', '13:00',
+      '14:00', '15:00', '16:00', '17:00'
+    ];
+
+    return timeOptions.every(time => 
+      bookingsForDate.some(booking => booking.time === time)
+    );
   };
 
   const employeeOptions: SelectedEmployee[] = listing?.employees?.map(employee => ({
@@ -158,7 +182,9 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
     };
   }, []);
 
-  const disabledTimes = date ? getDisabledTimes(date) : [];
+  const bookedTimes = date && selectedEmployee 
+    ? getAvailableTimes(date, selectedEmployee.value) 
+    : [];
 
   return (
     <div className="flex flex-col justify-end bg-transparent gap-4 h-auto">
@@ -173,6 +199,7 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
           readOnly={true}
           placeholder="Select a service"
           isSelected={!!selectedService}
+          showHoverEffect={true}
         />
 
         {showServiceDropdown && (
@@ -197,6 +224,7 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
           readOnly={true}
           placeholder="Select employee"
           isSelected={!!selectedEmployee}
+          showHoverEffect={true}
         />
 
         {showEmployeeDropdown && (
@@ -221,6 +249,7 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
           readOnly={true}
           placeholder="Pick a date"
           isSelected={!!date}
+          showHoverEffect={true}
         />
         {showCalendar && (
           <div 
@@ -233,7 +262,9 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
                 onDateChange(newDate);
                 setShowCalendar(false);
               }}
-              disabledDates={[...disabledDates, ...acceptedReservations.map(r => new Date(r.date))]}
+              disabledDates={selectedEmployee ? disabledDates.filter(date => 
+                isDateFullyBooked(date, selectedEmployee.value)
+              ) : []}
             />
           </div>
         )}
@@ -249,7 +280,8 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
         {showTimeDropdown && date && (
           <div className="absolute z-50 bg-white border border-gray-300 rounded-md shadow-lg w-[calc(100%-3rem)]">
             {timeOptions.map((option) => {
-              const isDisabled = disabledTimes.includes(option.value);
+              const isBooked = bookedTimes.includes(option.value);
+
               return (
                 <div
                   key={option.value}
@@ -258,13 +290,13 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
                     text-center
                     transition-colors 
                     duration-250
-                    ${isDisabled 
-                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                    ${isBooked 
+                      ? 'line-through decoration-1 text-gray-400' 
                       : 'hover:bg-[#e2e8f0] cursor-pointer'
                     }
                   `}
                   onClick={() => {
-                    if (!isDisabled) {
+                    if (!isBooked) {
                       onTimeChange(option.value);
                       setShowTimeDropdown(false);
                     }

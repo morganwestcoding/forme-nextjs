@@ -33,7 +33,7 @@ export default function Sidebar() {
       <div className="flex flex-col items-center w-52 h-full px-10 pb-10 pt-8 bg-white backdrop-blur-full bg drop-shadow-sm rounded-tr-2xl" >
         <Logo/>
         <div className="flex flex-col items-center w-full">
-          <span className="mb-5 text-[#a2a2a2] text-[0.8125rem] font-light ">Menu</span>
+          <span className="mb-5 text-[#a2a2a2] text-[0.8rem] font-light ">Menu</span>
         
         <ul className="list-none m-0 p-0 flex flex-col items-center hover:text-white ">
           <li className={`group flex items-center justify-start mb-3 p-2  rounded-lg border transition-colors duration-250 ${
@@ -52,7 +52,7 @@ export default function Sidebar() {
             </svg>
           
           </div>
-          <span className={`ml-4 text-[0.8125rem] font-light ${
+          <span className={`ml-4 text-[0.8rem] font-light ${
     selectedButton === 'home' ? 'text-white' : 'text-[#a2a2a2] group-hover:text-white'
   }`}>Home</span>
 
@@ -75,7 +75,7 @@ export default function Sidebar() {
             <path d="M17.7957 2.50294L6.14983 2.53202C4.41166 2.44248 3.966 3.78259 3.966 4.43768C3.966 5.02359 3.89055 5.87774 2.82524 7.4831C1.75993 9.08846 1.83998 9.56536 2.44071 10.6767C2.93928 11.5991 4.20741 11.9594 4.86862 12.02C6.96883 12.0678 7.99065 10.2517 7.99065 8.97523C9.03251 12.1825 11.9955 12.1825 13.3158 11.8157C14.6385 11.4483 15.7717 10.1331 16.0391 8.97523C16.195 10.4142 16.6682 11.2538 18.0663 11.8308C19.5145 12.4284 20.7599 11.515 21.3848 10.9294C22.0096 10.3439 22.4107 9.04401 21.2967 7.6153C20.5285 6.63001 20.2084 5.7018 20.1032 4.73977C20.0423 4.18234 19.9888 3.58336 19.5971 3.20219C19.0247 2.64515 18.2035 2.47613 17.7957 2.50294Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
             </div>
-            <span className={`ml-4 text-[0.8125rem] font-light ${
+            <span className={`ml-4 text-[0.8rem] font-light ${
                 selectedButton === 'market' ? 'text-white' : 'text-[#a2a2a2] group-hover:text-white'
               }`}>Market</span>
             </li>
@@ -97,7 +97,7 @@ export default function Sidebar() {
           </div>     
 
            
-          <span className={`ml-4 text-[0.8125rem] font-light ${
+          <span className={`ml-4 text-[0.8rem] font-light ${
                 selectedButton === 'favorites' ? 'text-white' : 'text-[#a2a2a2] group-hover:text-white'
               }`}>Favorites</span>
      
@@ -121,7 +121,7 @@ export default function Sidebar() {
       <path d="M15.5 5.5L15.4227 5.23509C15.0377 3.91505 14.8452 3.25503 14.3869 2.87752C13.9286 2.5 13.3199 2.5 12.1023 2.5H11.8977C10.6801 2.5 10.0714 2.5 9.61309 2.87752C9.15478 3.25503 8.96228 3.91505 8.57727 5.23509L8.5 5.5" stroke="currentColor" strokeWidth="1.5" />
     </svg>
   </div>
-  <span className={`ml-4 text-[0.8125rem] font-light ${
+  <span className={`ml-4 text-[0.8rem] font-light ${
     selectedButton === 'jobs' ? 'text-white' : 'text-[#a2a2a2] group-hover:text-white'
   }`}>Jobs</span>
 </li>
@@ -164,16 +164,16 @@ export default function Sidebar() {
   />
 </svg>
   </div>
-  <span className={`ml-4 text-[0.8125rem] font-light ${
+  <span className={`ml-4 text-[0.8rem] font-light ${
     selectedButton === 'bookings' ? 'text-white' : 'text-[#a2a2a2] group-hover:text-white'
   }`}>Bookings</span>
 </li>
           </ul>
 
 {/* Categories */}
-<span className="mb-5 text-[#a2a2a2] text-[0.8125rem] font-light">Genre</span>
+<span className="mb-5 text-[#a2a2a2] text-[0.8rem] font-light">Genre</span>
           <li className={`relative flex items-center justify-center mb-4 p-2 rounded-lg shadow w-36 h-20 transition-colors duration-250 ${selectedCategory ? categories.find(c => c.label === selectedCategory)?.color : 'bg-[#78C3FB]'}`}>
-            <span className="text-[#ffffff] text-[0.8125rem] group-hover:text-white font-light text-center h-10 rounded-lg p-3 bg-black bg-opacity-10 backdrop-blur shadow">
+            <span className="text-[#ffffff] text-[0.8rem] group-hover:text-white font-light text-center h-10 rounded-lg p-3 bg-black bg-opacity-10 backdrop-blur shadow">
               {selectedCategory || 'Default'}
             </span>
           </li>
