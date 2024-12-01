@@ -1,38 +1,52 @@
-
+// app/favorites/page.tsx
+import React from 'react';
+import ClientOnly from "@/components/ClientOnly";
 import EmptyState from "@/components/EmptyState";
-import ClientProviders from "@/components/ClientProviders";
-
-import getCurrentUser from "@/app/actions/getCurrentUser";
 import getFavoriteListings from "@/app/actions/getFavoriteListings";
-
+import getCurrentUser from "@/app/actions/getCurrentUser";
 import FavoritesClient from "./FavoritesClient";
 
+interface FavoritesPageProps {
+  searchParams: {
+    page?: string;
+  };
+}
 
-export const dynamic = 'force-dynamic';
+const ITEMS_PER_PAGE = 10;
 
-const ListingPage = async () => {
+const FavoritesPage = async ({ searchParams }: FavoritesPageProps) => {
+  const currentPage = Number(searchParams?.page) || 1;
   const listings = await getFavoriteListings();
   const currentUser = await getCurrentUser();
 
   if (listings.length === 0) {
     return (
-      <ClientProviders>
+      <ClientOnly>
         <EmptyState
           title="No favorites found"
           subtitle="Looks like you have no favorite listings."
         />
-      </ClientProviders>
+      </ClientOnly>
     );
   }
 
+  const totalPages = Math.ceil(listings.length / ITEMS_PER_PAGE);
+  const paginatedListings = listings.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
   return (
-    <ClientProviders>
-      <FavoritesClient
-        listings={listings}
+    <ClientOnly>
+      <FavoritesClient 
+        listings={paginatedListings}
         currentUser={currentUser}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        totalResults={listings.length}
       />
-    </ClientProviders>
+    </ClientOnly>
   );
 }
- 
-export default ListingPage;
+
+export default FavoritesPage;

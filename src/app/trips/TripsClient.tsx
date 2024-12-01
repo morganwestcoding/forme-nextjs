@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { categories } from '@/components/Categories';
 import { SafeReservation, SafeUser } from "@/app/types";
 import Container from "@/components/Container";
+import Pagination from "@/components/pagination/Pagination";
 
 import Heading from "@/components/Heading";
 import ListingCard from "@/components/listings/ListingCard";
@@ -15,14 +16,21 @@ import ListingCard from "@/components/listings/ListingCard";
 interface TripsClientProps {
   reservations: SafeReservation[],
   currentUser?: SafeUser | null,
+  currentPage: number;
+  totalPages: number;
+  totalResults: number;
 }
 
+const ITEMS_PER_PAGE = 3; 
 
 export const dynamic = 'force-dynamic';
 
 const TripsClient: React.FC<TripsClientProps> = ({
   reservations,
   currentUser,
+  currentPage,
+  totalPages,
+  totalResults
   
 }) => {
   const router = useRouter();
@@ -49,15 +57,14 @@ const TripsClient: React.FC<TripsClientProps> = ({
       <div className="pt-2 flex-1">
       <div 
         className="
-          mt-6
-          grid 
-          grid-cols-1 
-          sm:grid-cols-2 
-          md:grid-cols-3 
-          lg:grid-cols-4
-          xl:grid-cols-5
-          2xl:grid-cols-6
-          gap-6
+              pt-6 
+              grid 
+              grid-cols-1 
+              sm:grid-cols-2 
+              md:grid-cols-3
+              lg:grid-cols-3
+              gap-9
+              mb-28
         "
       >
         {reservations.map((reservation: any) => (
@@ -74,6 +81,15 @@ const TripsClient: React.FC<TripsClientProps> = ({
           />
         ))}
       </div>
+      <div className="flex justify-center w-full pt-6">
+          <div className="w-[500px]">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalResults={totalResults}
+            />
+          </div>
+        </div>
       </div>
     </Container>
    );

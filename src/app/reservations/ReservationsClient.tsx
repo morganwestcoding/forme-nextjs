@@ -19,7 +19,7 @@ interface ReservationsClientProps {
   totalResults: number;
 }
 
-const ITEMS_PER_PAGE = 8; // Show 8 items (2 rows of 4)
+const ITEMS_PER_PAGE = 3; 
 
 const ReservationsClient: React.FC<ReservationsClientProps> = ({
   reservations,
@@ -70,6 +70,7 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
               md:grid-cols-3
               lg:grid-cols-3
               gap-9
+              mb-28
             "
           >
             {reservations.map((reservation: any) => (
@@ -87,7 +88,8 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
               />
             ))}
           </div>
-          <div className="mt-10 flex justify-center pb-10">
+          <div className="flex justify-center w-full pt-5">
+          <div className="w-[500px]">
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
@@ -95,6 +97,7 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
             />
           </div>
         </div>
+      </div>
       </ClientProviders>
     </Container>
   );
