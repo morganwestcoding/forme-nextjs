@@ -64,7 +64,7 @@ const TripsClient: React.FC<TripsClientProps> = ({
               md:grid-cols-3
               lg:grid-cols-3
               gap-9
-              mb-28
+              mb-32
         "
       >
         {reservations.map((reservation: any) => (
@@ -81,7 +81,7 @@ const TripsClient: React.FC<TripsClientProps> = ({
           />
         ))}
       </div>
-      <div className="flex justify-center w-full pt-6">
+      <div className="flex justify-center w-full pt-7">
           <div className="w-[500px]">
             <Pagination
               currentPage={currentPage}

@@ -42,7 +42,6 @@ const UserButton: React.FC<UserButtonProps> = ({
           className="
             w-58
             bg-white 
-            bg-opacity-35 
             backdrop-blur-md 
             rounded-lg 
             p-2 

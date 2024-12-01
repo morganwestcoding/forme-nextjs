@@ -4,24 +4,24 @@ import { useState } from "react";
 
 const articles = [
   {
-    title: "Startup Challenges",
-    description: "Key strategies to tackle startup obstacles.",
-    imageSrc: "/assets/business-3.jpg",
+    title: "Power Play",
+    description: "Key strategies to scultping your core.",
+    imageSrc: "/assets/wellness.jpg",
   },
   {
     title: "Digital Age Marketing",
     description: "Exploring innovative digital marketing methods.",
-    imageSrc: "/assets/business-4.jpg",
+    imageSrc: "/assets/fit.jpg",
   },
   {
     title: "Sustainable Business",
     description: "Adopting sustainability for business success.",
-    imageSrc:"/assets/business-1.jpg",
+    imageSrc:"/assets/barber.jpg",
   },
   {
     title: "Social Entrepreneurship",
     description: "Entrepreneurs blending profit with social impact.",
-    imageSrc: "/assets/business-2.jpg",
+    imageSrc: "/assets/spa.jpg",
   },
 ];
 
@@ -47,7 +47,7 @@ export default function Rightbar() {
         <div className="px-6 py-6 text-lg font-bold">What&apos;s Happening</div>
         <hr />
         {articles.map((article, index) => (
-          <div key={index} className="flex justify-between items-center hover:bg-[#b1dafe] hover:text-white w-full px-6 py-4" onClick={() => router.push('/articles')}>
+          <div key={index} className="flex justify-between items-center hover:bg-[#717272] hover:text-white w-full px-6 py-4" onClick={() => router.push('/articles')}>
             <div>
               <h3 className="text-base font-semibold">{article.title}</h3>
               <p className="text-sm pr-4">{article.description}</p>
