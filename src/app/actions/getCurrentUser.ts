@@ -30,6 +30,7 @@ export default async function getCurrentUser() {
       updatedAt: currentUser.updatedAt.toISOString(),
       emailVerified: currentUser.emailVerified?.toISOString() || null,
       bio: currentUser.bio || "No Bio Provided Yet.." ,
+      isSubscribed: currentUser.isSubscribed, 
       location: currentUser.location,
       image: currentUser.image,
       imageSrc: currentUser.imageSrc,

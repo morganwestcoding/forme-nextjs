@@ -60,7 +60,6 @@ export type SafeUser = Omit<
   id: string; 
   createdAt: string;
   updatedAt: string;
-  image?: string | null; 
   emailVerified: string | null;
   favoriteIds?: string[]; 
   imageSrc?: string | null;
@@ -70,6 +69,12 @@ export type SafeUser = Omit<
   following: string[];
   followers: string[];
   conversationIds?: string[]; 
+  isSubscribed: boolean;
+  resetToken?: string | null;
+  resetTokenExpiry: Date | null;
+  subscriptionStartDate: Date | null;
+  subscriptionEndDate: Date | null;
+  
 };
 
 

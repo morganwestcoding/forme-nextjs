@@ -1,4 +1,3 @@
-// components/feed/Share.tsx
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -13,6 +12,7 @@ import AttachmentModal from '../modals/AttachmentModal';
 import useAttachmentModal from '@/app/hooks/useAttachmentModal';
 import { categories } from '@/components/Categories';
 import { usePostStore } from '@/app/hooks/usePostStore';
+import { toast } from 'react-hot-toast';
 
 interface ShareProps {
   currentUser: SafeUser | null;
@@ -37,32 +37,52 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
   const [tag, setTag] = useState('');
   const [category, setCategory] = useState('');
   const [categoryId, setCategoryId] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const addPost = usePostStore((state) => state.addPost);
 
   const selectedCategory = categories.find(cat => cat.label === categoryLabel);
 
   const handlePostSubmit = useCallback(async (postData: PostData) => {
+    if (!postData.content.trim()) {
+      toast.error('Please write something');
+      return;
+    }
+
+    if (!postData.category) {
+      toast.error('Please select a category');
+      return;
+    }
+
     try {
+      setIsSubmitting(true);
       const response = await axios.post('/api/post', postData);
-      console.log("Post submitted successfully:", response.data);
       
+      // Add the new post to the store
       addPost({
         ...response.data,
         user: currentUser,
       });
 
+      // Reset form
       setImageSrc('');
       setContent('');
       setLocation(null);
       setTag('');
       setCategory('');
       setCategoryId('');
+      
+      toast.success('Post created successfully!');
     } catch (error) {
       console.error('Error submitting post:', error);
+      toast.error('Something went wrong while creating your post');
+    } finally {
+      setIsSubmitting(false);
     }
   }, [addPost, currentUser]);
 
   const handleSubmit = useCallback(() => {
+    if (isSubmitting) return;
+
     const postData = {
       imageSrc,
       content,
@@ -73,13 +93,17 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
       userId: currentUser?.id,
     };
     handlePostSubmit(postData);
-  }, [imageSrc, content, location, tag, category, categoryId, currentUser?.id, handlePostSubmit]);
+  }, [imageSrc, content, location, tag, category, categoryId, currentUser?.id, handlePostSubmit, isSubmitting]);
   
   useEffect(() => {
-    if (category) {
+    if (category && content.trim()) {
       handleSubmit();
     }
-  }, [category, handleSubmit]);
+  }, [category, content, handleSubmit]);
+
+  if (!currentUser) {
+    return null;
+  }
 
   return (
     <div className={`w-full h-auto rounded-2xl shadow transition-colors duration-250 ${selectedCategory ? selectedCategory.color : 'bg-[#78C3FB]'} p-6`}>
@@ -123,7 +147,7 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
             </div>
           )}
           <div 
-            className='group hover:bg-white hover:bg-opacity-55 rounded-full border bg-black bg-opacity-5 border-white p-3 px-3 mr-2'
+            className='group hover:bg-white hover:bg-opacity-55 rounded-full border bg-black bg-opacity-5 border-white p-3 px-3 mr-2 cursor-pointer'
             onClick={attachmentModal.onOpen}
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" color="#ffffff" fill="none">
@@ -133,6 +157,7 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
           </div>
           <PostCategorySelect
             onCategorySelected={setCategory}
+            disabled={isSubmitting}
           />
         </div>
       </div>

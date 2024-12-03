@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "react-hot-toast";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import Modal from "./Modal";
 import Heading from "../Heading";
 import Input from "../inputs/Input";
@@ -15,7 +16,22 @@ const SubscribeModal = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState('credit');
 
-  const onSubmit = async () => {
+  const { 
+    register, 
+    handleSubmit,
+    formState: {
+      errors,
+    },
+  } = useForm<FieldValues>({
+    defaultValues: {
+      accountName: '',
+      cardNumber: '',
+      expiry: '',
+      cvc: '',
+    }
+  });
+
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     try {
       setIsLoading(true);
       // Add payment processing logic here
@@ -42,8 +58,9 @@ const SubscribeModal = () => {
           <Input
             id="accountName"
             disabled={isLoading}
+            register={register}
+            errors={errors}
             required
-            errors={{}}
             label="Account Name"
           />
         </div>
@@ -122,23 +139,26 @@ const SubscribeModal = () => {
               id="cardNumber"
               label="Card Number"
               disabled={isLoading}
+              register={register}
+              errors={errors}
               required
-              errors={{}}
             />
             <div className="grid grid-cols-2 gap-4">
               <Input
                 id="expiry"
                 label="Expiry Date"
                 disabled={isLoading}
+                register={register}
+                errors={errors}
                 required
-                errors={{}}
               />
               <Input
                 id="cvc"
                 label="CVC"
                 disabled={isLoading}
+                register={register}
+                errors={errors}
                 required
-                errors={{}}
               />
             </div>
           </div>
@@ -163,7 +183,7 @@ const SubscribeModal = () => {
       title="Subscribe"
       actionLabel="Subscribe"
       onClose={subscribeModal.onClose}
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit(onSubmit)}
       body={bodyContent}
       footer={footerContent}
     />

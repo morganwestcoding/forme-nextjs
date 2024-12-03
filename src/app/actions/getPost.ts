@@ -64,29 +64,37 @@ export default async function getPosts(params: IPostsParams): Promise<SafePost[]
 
     console.log('Posts after filtering:', filteredPosts.length);
 
-    const safePosts: SafePost[] = filteredPosts.map((post) => ({
-      ...post,
-      createdAt: post.createdAt.toISOString(),
-      likes: post.likes || [],
-      bookmarks: post.bookmarks || [],
-      hiddenBy: post.hiddenBy || [],
-      user: {
-        id: post.user?.id || 'default-id',
-        image: post.user?.image || '/default-profile.jpg',
-        name: post.user?.name || 'Anonymous',
-        email: post.user?.email ?? null,
-        bio: post.user?.bio || "No Bio Provided Yet..",
-        location: post.user?.location ?? null,
-        imageSrc: post.user?.imageSrc || '/assets/hero-background.jpeg',
-        createdAt: post.user?.createdAt.toISOString() || new Date().toISOString(),
-        updatedAt: post.user?.updatedAt.toISOString() || new Date().toISOString(),
-        emailVerified: post.user?.emailVerified ? post.user.emailVerified.toISOString() : null,
-        galleryImages: post.user?.galleryImages || [],
-        following: post.user?.following || [],
-        followers: post.user?.followers || [],
-        conversationIds: post.user?.conversationIds || [],
-      },
-    }));
+    const safePosts = filteredPosts.map((post) => {
+      const user = post.user;
+      return {
+        id: post.id,
+        content: post.content,
+        imageSrc: post.imageSrc,
+        location: post.location,
+        tag: post.tag,
+        photo: post.photo,
+        category: post.category,
+        createdAt: post.createdAt.toISOString(),
+        likes: post.likes || [],
+        bookmarks: post.bookmarks || [],
+        hiddenBy: post.hiddenBy || [],
+        user: {
+          ...user,
+          createdAt: user.createdAt.toISOString(),
+          updatedAt: user.updatedAt.toISOString(),
+          emailVerified: user.emailVerified?.toISOString() || null,
+          resetTokenExpiry: user.resetTokenExpiry,
+          subscriptionStartDate: user.subscriptionStartDate,
+          subscriptionEndDate: user.subscriptionEndDate,
+          bio: user.bio || "No Bio Provided Yet..",
+          galleryImages: user.galleryImages || [],
+          following: user.following || [],
+          followers: user.followers || [],
+          conversationIds: user.conversationIds || [],
+          isSubscribed: user.isSubscribed || false
+        }
+      };
+    });
 
     console.log('Final safe posts:', safePosts.length);
     return safePosts;
