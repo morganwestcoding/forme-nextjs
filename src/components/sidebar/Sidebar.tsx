@@ -37,7 +37,7 @@ export default function Sidebar() {
         
         <ul className="list-none m-0 p-0 flex flex-col items-center hover:text-white ">
           <li className={`group flex items-center justify-start mb-3 p-2  rounded-lg border transition-colors duration-250 ${
-          selectedButton === 'home' ? 'bg-[#5E6365] border-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#DDDDDD]'
+          selectedButton === 'home' ? 'bg-[#5E6365] border-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#D5D7D8]'
           } w-36`}
           onClick={() => {
             router.push('/');
@@ -62,7 +62,7 @@ export default function Sidebar() {
           {/* Market Icon */}
    
           <li className={`group flex items-center justify-start mb-3 p-2 rounded-lg border transition-colors duration-250 ${
-              selectedButton === 'market' ? 'bg-[#5E6365] border-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#DDDDDD]'
+              selectedButton === 'market' ? 'bg-[#5E6365] border-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#D5D7D8] hover:border-[#D5D7D8]'
             } w-36`} 
             onClick={() => {
               router.push('/market');
@@ -76,7 +76,7 @@ export default function Sidebar() {
           </svg>
             </div>
             <span className={`ml-4 text-[0.8rem] font-light ${
-                selectedButton === 'market' ? 'text-white' : 'text-[#a2a2a2] group-hover:text-white'
+                selectedButton === 'market' ? 'text-white' : 'text-[#a2a2a2] group-hover:text-white hover:border-[#D5D7D8]'
               }`}>Market</span>
             </li>
         
@@ -84,7 +84,7 @@ export default function Sidebar() {
            {/* Favorites Icon */}
        
            <li className={`group flex items-center justify-start mb-3 p-2 rounded-lg border transition-colors duration-250 ${
-              selectedButton === 'favorites' ? 'bg-[#5E6365] border-[#5E6365]': 'bg-[#ffffff] hover:bg-[#DDDDDD]'
+              selectedButton === 'favorites' ? 'bg-[#5E6365] border-[#5E6365]': 'bg-[#ffffff] hover:bg-[#D5D7D8] hover:border-[#D5D7D8]'
             } w-36`} 
             onClick={() => {
               router.push('/favorites');
@@ -107,7 +107,7 @@ export default function Sidebar() {
          {/* Job Icon with Tooltip */}
   
          <li className={`group flex items-center justify-start mb-3 p-2 rounded-lg border transition-colors duration-250 ${
-    selectedButton === 'jobs' ? 'bg-[#5E6365] border-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#DDDDDD]'
+    selectedButton === 'jobs' ? 'bg-[#5E6365] border-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#D5D7D8] hover:border-[#D5D7D8]'
   } w-36`} 
   onClick={() => {
     router.push('/jobs');
@@ -128,7 +128,7 @@ export default function Sidebar() {
         
 
           <li className={`group flex items-center justify-start mb-5 p-2 rounded-lg border transition-colors duration-250 ${
-    selectedButton === 'bookings' ? 'bg-[#5E6365] border-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#DDDDDD]'
+    selectedButton === 'bookings' ? 'bg-[#5E6365] border-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#D5D7D8] hover:border-[#D5D7D8]'
   } w-36`} 
   onClick={() => {
     router.push('/reservations');
