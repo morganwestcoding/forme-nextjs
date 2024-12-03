@@ -37,7 +37,7 @@ export default function Sidebar() {
         
         <ul className="list-none m-0 p-0 flex flex-col items-center hover:text-white ">
           <li className={`group flex items-center justify-start mb-3 p-2  rounded-lg border transition-colors duration-250 ${
-          selectedButton === 'home' ? 'bg-[#5E6365] border-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#e2e8f0]'
+          selectedButton === 'home' ? 'bg-[#5E6365] border-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#DDDDDD]'
           } w-36`}
           onClick={() => {
             router.push('/');
@@ -62,7 +62,7 @@ export default function Sidebar() {
           {/* Market Icon */}
    
           <li className={`group flex items-center justify-start mb-3 p-2 rounded-lg border transition-colors duration-250 ${
-              selectedButton === 'market' ? 'bg-[#5E6365] border-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#e2e8f0]'
+              selectedButton === 'market' ? 'bg-[#5E6365] border-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#DDDDDD]'
             } w-36`} 
             onClick={() => {
               router.push('/market');
@@ -84,7 +84,7 @@ export default function Sidebar() {
            {/* Favorites Icon */}
        
            <li className={`group flex items-center justify-start mb-3 p-2 rounded-lg border transition-colors duration-250 ${
-              selectedButton === 'favorites' ? 'bg-[#5E6365] border-[#5E6365]': 'bg-[#ffffff] hover:bg-[#e2e8f0]'
+              selectedButton === 'favorites' ? 'bg-[#5E6365] border-[#5E6365]': 'bg-[#ffffff] hover:bg-[#DDDDDD]'
             } w-36`} 
             onClick={() => {
               router.push('/favorites');
@@ -107,7 +107,7 @@ export default function Sidebar() {
          {/* Job Icon with Tooltip */}
   
          <li className={`group flex items-center justify-start mb-3 p-2 rounded-lg border transition-colors duration-250 ${
-    selectedButton === 'jobs' ? 'bg-[#5E6365] border-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#e2e8f0]'
+    selectedButton === 'jobs' ? 'bg-[#5E6365] border-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#DDDDDD]'
   } w-36`} 
   onClick={() => {
     router.push('/jobs');
@@ -128,7 +128,7 @@ export default function Sidebar() {
         
 
           <li className={`group flex items-center justify-start mb-5 p-2 rounded-lg border transition-colors duration-250 ${
-    selectedButton === 'bookings' ? 'bg-[#5E6365] border-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#e2e8f0]'
+    selectedButton === 'bookings' ? 'bg-[#5E6365] border-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#DDDDDD]'
   } w-36`} 
   onClick={() => {
     router.push('/reservations');

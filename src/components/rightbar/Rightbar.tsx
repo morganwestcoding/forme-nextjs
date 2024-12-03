@@ -4,23 +4,23 @@ import { useState } from "react";
 
 const articles = [
   {
-    title: "Power Play",
-    description: "Key strategies to scultping your core.",
+    title: "Crush The Curve",
+    description: "Crush the Curve revolutionizes fitness with results-driven, cutting-edge workouts.",
     imageSrc: "/assets/wellness.jpg",
   },
   {
-    title: "Digital Age Marketing",
-    description: "Exploring innovative digital marketing methods.",
+    title: "Iron And Age",
+    description: "Iron and Edge delivers bold workouts and fitness tips for modern men.",
     imageSrc: "/assets/fit.jpg",
   },
   {
-    title: "Sustainable Business",
-    description: "Adopting sustainability for business success.",
+    title: "Lather, Razor, Repeat, Refine",
+    description: "Explore the latest trends, techniques, and tips for mastering the art of barbering.",
     imageSrc:"/assets/barber.jpg",
   },
   {
-    title: "Social Entrepreneurship",
-    description: "Entrepreneurs blending profit with social impact.",
+    title: "Pure Tranquil Escape",
+    description: "Indulge in luxurious treatments designed to rejuvenate your body and calm your mind.",
     imageSrc: "/assets/spa.jpg",
   },
 ];
@@ -47,7 +47,7 @@ export default function Rightbar() {
         <div className="px-6 py-6 text-lg font-bold">What&apos;s Happening</div>
         <hr />
         {articles.map((article, index) => (
-          <div key={index} className="flex justify-between items-center hover:bg-[#717272] hover:text-white w-full px-6 py-4" onClick={() => router.push('/articles')}>
+          <div key={index} className="flex justify-between items-center hover:bg-[#e2e8f0] hover:text-white w-full px-6 py-4" onClick={() => router.push('/articles')}>
             <div>
               <h3 className="text-base font-semibold">{article.title}</h3>
               <p className="text-sm pr-4">{article.description}</p>
