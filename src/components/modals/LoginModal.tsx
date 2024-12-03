@@ -14,11 +14,13 @@ import useLoginModal from "@/app/hooks/useLoginModal";
 import Modal from "./Modal";
 import Input from "../inputs/Input";
 import Heading from "../Heading";
+import useForgotPasswordModal from "@/app/hooks/useForgotPassword";
 
 const LoginModal = () => {
   const router = useRouter();
   const loginModal = useLoginModal();
   const registerModal = useRegisterModal();
+  const forgotPasswordModal = useForgotPasswordModal();
   const [isLoading, setIsLoading] = useState(false);
 
   const { 
@@ -59,7 +61,12 @@ const LoginModal = () => {
   const onToggle = useCallback(() => {
     loginModal.onClose();
     registerModal.onOpen();
-  }, [loginModal, registerModal])
+  }, [loginModal, registerModal]);
+
+  const onForgotPassword = useCallback(() => {
+    loginModal.onClose();
+    forgotPasswordModal.onOpen();
+  }, [loginModal, forgotPasswordModal]);
 
   const bodyContent = (
     <div className="flex flex-col gap-4">
@@ -84,19 +91,47 @@ const LoginModal = () => {
         errors={errors}
         required
       />
+      <div 
+        className="
+          text-center
+          text-sm
+          text-neutral-500
+          cursor-pointer
+          hover:underline
+        "
+        onClick={onForgotPassword}
+      >
+        Forgot password?
+      </div>
     </div>
   )
 
   const footerContent = (
     <div className="flex flex-col gap-4 mt-3">
       <hr />
-      <div className="text-neutral-500 text-center mt-4 font-light">
-        <p>First time using ForMe?
-          <span 
-            onClick={onToggle} 
-            className="text-neutral-800 cursor-pointer hover:underline"
-          > Create an account</span>
-        </p>
+      <div 
+        className="
+          flex 
+          flex-row 
+          justify-center 
+          gap-2
+          text-neutral-500
+          text-center 
+          mt-4 
+          font-light
+        "
+      >
+        <div>First time using ForMe?</div>
+        <div 
+          onClick={onToggle} 
+          className="
+            text-neutral-800 
+            cursor-pointer 
+            hover:underline
+          "
+        >
+          Create an account
+        </div>
       </div>
     </div>
   )
@@ -106,7 +141,7 @@ const LoginModal = () => {
       disabled={isLoading}
       isOpen={loginModal.isOpen}
       title="Login"
-      actionLabel="Login"
+      actionLabel="Continue"
       onClose={loginModal.onClose}
       onSubmit={handleSubmit(onSubmit)}
       body={bodyContent}

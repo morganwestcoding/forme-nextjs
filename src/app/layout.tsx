@@ -18,6 +18,7 @@ import ListingGridModal from '@/components/modals/ListingGridModal';
 import { CategoryProvider } from '@/CategoryContext';
 import { FilterProvider } from '@/FilterContext';
 import FilterModal from '@/components/modals/FilterModal';
+import ForgotPasswordModal from '@/components/modals/ForgotPasswordModal';
 
 
 export const metadata: Metadata = {
@@ -63,6 +64,7 @@ export default async function RootLayout({
               <RegisterModal/>
               <ProfileGalleryModal/> 
               <ListingGalleryModal/>
+              <ForgotPasswordModal/> 
               <MessageModal />
               <FilterModal/>
             </body>
