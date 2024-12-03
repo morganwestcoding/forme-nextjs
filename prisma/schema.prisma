@@ -28,6 +28,9 @@ model User {
   imageSrc       String?      
   location       String?
   galleryImages  String[]
+  isSubscribed    Boolean @default(false)
+  subscriptionStartDate DateTime?
+  subscriptionEndDate DateTime?
   following    String[]      @db.ObjectId
   followers    String[]      @db.ObjectId
   comments Comment[]

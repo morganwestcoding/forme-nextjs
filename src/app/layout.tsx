@@ -20,6 +20,7 @@ import { FilterProvider } from '@/FilterContext';
 import FilterModal from '@/components/modals/FilterModal';
 import ForgotPasswordModal from '@/components/modals/ForgotPasswordModal';
 import ResetPasswordModal from '@/components/modals/ResetPasswordModal';
+import SubscribeModal from '@/components/modals/SubscribeModal';
 
 
 export const metadata: Metadata = {
@@ -68,6 +69,7 @@ export default async function RootLayout({
               <ForgotPasswordModal/> 
               <ResetPasswordModal/>
               <MessageModal />
+              <SubscribeModal/>
               <FilterModal/>
             </body>
           </html>
