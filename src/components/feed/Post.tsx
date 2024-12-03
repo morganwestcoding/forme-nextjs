@@ -67,6 +67,7 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
 
   
   const categoryColor = categories.find(cat => cat.label === post.category)?.color || 'bg-[#78C3FB]';
+  const badgeColor = categoryColor.replace('bg-[', '').replace(']', '') || '#78C3FB';
 
   const handleLike = useCallback(async () => {
     if (!currentUser) {
@@ -234,7 +235,7 @@ return (
         width="18" 
         height="18" 
         className="inline-block ml-1 relative "
-        style={{ color: '#78C3FB' }}
+        style={{ color: badgeColor }}
         fill="none"
       >
         <path 
