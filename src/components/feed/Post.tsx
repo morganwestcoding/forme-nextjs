@@ -269,16 +269,16 @@ return (
           <div className="mt-3 relative">
             <p className='text-sm text-[#000000] mb-3'>{post.content}</p>
             {post.imageSrc && (
-              <div className="rounded-lg overflow-hidden relative w-full h-64 mb-3">
-                <Image 
-                  src={post.imageSrc} 
-                  alt="Post Image" 
-                  layout='fill'
-                  objectFit="cover"
-                  className="transition-transform duration-300 ease-in-out hover:scale-105"
-                />
-              </div>
-            )}
+  <div className="rounded-lg overflow-hidden relative aspect-square w-full mb-3">
+    <Image 
+      src={post.imageSrc} 
+      alt="Post Image" 
+      width={250}
+      height={250}
+      className="w-full h-full object-cover transition-transform duration-300 ease-in-out hover:scale-105"
+    />
+  </div>
+)}
 
             <div className="bottom-0 left-0 flex space-x-3 p-2 -ml-2 -mb-4 mt-1.5">
               <div className="flex items-center justify-center bg-white bg-opacity-15 rounded-full p-3 cursor-pointer shadow-sm border border-dashed ">

@@ -135,17 +135,17 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
           )}
         </div>
         <div className="flex items-center">
-          {imageSrc && (
-            <div className="mx-2 w-10 h-10 overflow-hidden">
-              <Image 
-                src={imageSrc} 
-                alt="Uploaded" 
-                width={40} 
-                height={40} 
-                className="w-full h-full object-cover rounded-md"
-              />
-            </div>
-          )}
+        {imageSrc && (
+  <div className="mx-2 w-10 h-10 overflow-hidden">
+    <Image 
+      src={imageSrc} 
+      alt="Uploaded" 
+      width={40}
+      height={40}
+      className="w-full h-full object-cover rounded-md"
+    />
+  </div>
+)}
           <div 
             className='group hover:bg-white hover:bg-opacity-55 rounded-full border bg-black bg-opacity-5 border-white p-3 px-3 mr-2 cursor-pointer'
             onClick={attachmentModal.onOpen}

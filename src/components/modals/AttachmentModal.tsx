@@ -34,14 +34,16 @@ const AttachmentModal: React.FC<AttachmentModalProps> = ({ setImageSrc, setLocat
     };
 
     const modalBody = (
-        <div className="flex">
+        <div className="flex gap-4">
             <div className="flex flex-col w-1/2">
                 <div className="mb-2 text-center font-medium text-white">Add Image</div>
-                <AddPostImage
-                    onImageUpload={(value) => setValue('imageSrc', value)}
-                />
+                <div className="w-full" style={{ maxWidth: '300px', margin: '0 auto' }}>
+                    <AddPostImage
+                        onImageUpload={(value) => setValue('imageSrc', value)}
+                    />
+                </div>
             </div>
-            <div className="flex flex-col w-1/2 ml-4">
+            <div className="flex flex-col w-1/2">
                 <div className="mb-2 text-center font-medium text-white">Add Location</div>
                 <AddPostLocation
                     onLocationSubmit={(value) => setValue('location', value)}

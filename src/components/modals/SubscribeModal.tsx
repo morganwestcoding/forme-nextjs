@@ -134,7 +134,7 @@ const SubscribeModal = () => {
         </div>
 
         {selectedPayment === 'credit' && (
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 -mb-4">
             <Input
               id="cardNumber"
               label="Card Number"
