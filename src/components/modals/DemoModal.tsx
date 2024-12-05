@@ -21,14 +21,13 @@ const DemoModal = () => {
       showProgress: true,
       animate: true,
       overlayColor: 'rgba(0, 0, 0, 0.75)',
-      allowClose: false,
       stagePadding: 10,
-      popoverClass: 'backdrop-blur-md bg-black text-white border border-white',
+      popoverClass: 'backdrop-blur-md bg-black bg-opacity-75 text-white border border-white',
       onDeselected: (element, step) => {
         if (element?.id === 'add-listing-button') {
           rentModal.onOpen();
           setTimeout(() => {
-            const modalContent = document.querySelector('#rent-modal');
+            const modalContent = document.querySelector('#modal-content-with-actions');
             if (modalContent) {
               driverObj.moveNext();
             }
@@ -46,58 +45,58 @@ const DemoModal = () => {
           }
         },
         {
-          element: '#rent-modal',
+          element: '#modal-content-with-actions',
           popover: {
             title: 'Choose Category',
-            description: 'Select the category that best fits your business type',
+            description: 'Select a category that best describes your business, then click Next to continue.',
             side: "left"
           }
         },
         {
-          element: '#rent-modal',
+          element: '#modal-content-with-actions',
           popover: {
             title: 'Location',
-            description: 'Enter your business location details to help customers find you',
+            description: 'Enter your business location details, then click Next.',
             side: "left"
           }
         },
         {
-          element: '#rent-modal',
+          element: '#modal-content-with-actions',
           popover: {
             title: 'Services',
-            description: 'Add all the services you offer along with their prices',
+            description: 'Add all the services you offer along with their prices, then click Next.',
             side: "left"
           }
         },
         {
-          element: '#rent-modal',
+          element: '#modal-content-with-actions',
           popover: {
             title: 'Images',
-            description: 'Upload your storefront photo and gallery images',
+            description: 'Upload your storefront photo and gallery images, then click Next.',
             side: "left"
           }
         },
         {
-          element: '#rent-modal',
+          element: '#modal-content-with-actions',
           popover: {
             title: 'Business Details',
-            description: 'Add your business name, description and contact information',
+            description: 'Add your business name, description and contact information, then click Next.',
             side: "left"
           }
         },
         {
-          element: '#rent-modal',
+          element: '#modal-content-with-actions',
           popover: {
             title: 'Business Hours',
-            description: 'Set your operating hours for each day of the week',
+            description: 'Set your operating hours for each day of the week, then click Next.',
             side: "left"
           }
         },
         {
-          element: '#rent-modal',
+          element: '#modal-content-with-actions',
           popover: {
             title: 'Employees',
-            description: 'Add your team members who will be providing services',
+            description: 'Add your team members who will be providing services, then click Create to finish.',
             side: "left"
           }
         }

@@ -350,7 +350,8 @@ const RentModal = () => {
 
   return (
     <Modal
-       id="rent-modal"
+    id="rent-modal"
+    modalContentId="modal-content-with-actions"
       disabled={isLoading}
       isOpen={rentModal.isOpen}
       title={isEditMode ? "Edit your listing" : "Join the fun!"}
