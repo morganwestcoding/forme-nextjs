@@ -25,6 +25,11 @@ export default async function getProfile(): Promise<SafeUser | null> {
       following: currentUser.following || [],
       followers: currentUser.followers || [],
       conversationIds: currentUser.conversationIds || [],
+      resetToken: currentUser.resetToken ?? null,
+      resetTokenExpiry: currentUser.resetTokenExpiry ?? null,
+      isSubscribed: currentUser.isSubscribed ?? false,
+      subscriptionStartDate: currentUser.subscriptionStartDate ?? null,
+      subscriptionEndDate: currentUser.subscriptionEndDate ?? null,
     };
   } catch (error) {
     console.error("Error in getProfile:", error);

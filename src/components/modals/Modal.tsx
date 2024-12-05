@@ -5,6 +5,7 @@ import { X } from "lucide-react";
 import ModalButton from "./ModalButton";
 
 interface ModalProps {
+  id?: string;  
   isOpen?: boolean;
   onClose: () => void;
   onSubmit: () => void;
