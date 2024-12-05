@@ -16,6 +16,7 @@ interface ModalProps {
   secondaryAction?: () => void;
   secondaryActionLabel?: string;
   className?: string;  
+  actionId?: string;
 }
 
 const Modal: React.FC<ModalProps> = ({ 
@@ -30,6 +31,7 @@ const Modal: React.FC<ModalProps> = ({
   secondaryAction,
   secondaryActionLabel,
   className, 
+  actionId,
 }) => {
   const [showModal, setShowModal] = useState(isOpen);
 
@@ -77,7 +79,11 @@ const Modal: React.FC<ModalProps> = ({
             <div className="translate h-full lg:h-auto md:h-auto border-0 rounded-2xl relative flex flex-col w-full bg-black bg-opacity-55 backdrop-blur-md outline-none focus:outline-none">
               {/*header*/}
               <div className="flex items-center p-6 rounded-t justify-center relative border-b-[1px]">
-                <div className="p-1 border-0 hover:opacity-70 transition absolute right-9" onClick={handleClose}>
+                <div 
+                  id="modal-close"
+                  className="p-1 border-0 hover:opacity-70 transition absolute right-9" 
+                  onClick={handleClose}
+                >
                   <X size={18} className="text-white"/>
                 </div>
                 <div className="text-lg text-white font-medium">
@@ -85,7 +91,7 @@ const Modal: React.FC<ModalProps> = ({
                 </div>
               </div>
               {/*body*/}
-              <div className="relative p-6 text-white flex-auto">
+              <div id="modal-body" className="relative p-6 text-white flex-auto">
                 {body}
               </div>
               {/*footer - only show if there are actions*/}
@@ -94,6 +100,7 @@ const Modal: React.FC<ModalProps> = ({
                   <div className="flex flex-row items-center gap-4 w-full">
                     {secondaryAction && secondaryActionLabel && (
                       <ModalButton
+                        id="secondary-action-button"
                         outline
                         label={secondaryActionLabel}
                         disabled={disabled} 
@@ -102,6 +109,7 @@ const Modal: React.FC<ModalProps> = ({
                     )}
                     {actionLabel && (
                       <ModalButton
+                        id={actionId || "primary-action-button"}
                         label={actionLabel}
                         disabled={disabled} 
                         onClick={handleSubmit}

@@ -14,6 +14,7 @@ export type Service = {
 type ServiceSelectorProps = {
   onServicesChange: (services: Service[]) => void;
   existingServices: Service[];
+  id?: string;
 };
 
 interface CategoryOption {
@@ -21,7 +22,11 @@ interface CategoryOption {
   value: string;
 }
 
-const ServiceSelector: React.FC<ServiceSelectorProps> = ({ onServicesChange, existingServices }) => {
+const ServiceSelector: React.FC<ServiceSelectorProps> = ({ 
+  onServicesChange, 
+  existingServices,
+  id 
+}) => {
   const [services, setServices] = useState<Service[]>(existingServices);
   const [inputValues, setInputValues] = useState<string[]>(existingServices.map(service => service.price.toFixed(2)));
   const [focusedInputs, setFocusedInputs] = useState<boolean[]>(existingServices.map(() => false));
@@ -146,9 +151,13 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({ onServicesChange, exi
   };
 
   return (
-    <div className="max-w-2xl">
+    <div id={id} className="max-w-2xl">
       {services.map((service, index) => (
-        <div key={index} className="flex flex-row justify-between mb-3 gap-3">
+        <div 
+          key={index} 
+          id={`service-row-${index}`}
+          className="flex flex-row justify-between mb-3 gap-3"
+        >
           <div className="relative w-1/3">
             <input
               type="text"
@@ -203,7 +212,7 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({ onServicesChange, exi
           <div className="relative w-1/3">
             <input
               type="text"
-              id={`price-${index}`}
+              id={`service-price-${index}`}
               value={inputValues[index]}
               onChange={(e) => handleInputChange(index, 'price', e.target.value)}
               onBlur={() => handleBlur(index)}
@@ -229,6 +238,7 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({ onServicesChange, exi
             <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white">$</span>
           </div>
           <Select<CategoryOption>
+            id={`service-category-${index}`}
             value={service.category ? { label: service.category, value: service.category } : null}
             onChange={(selectedOption) => handleCategoryChange(index, selectedOption)}
             options={categories.map(category => ({ label: category.label, value: category.label }))}

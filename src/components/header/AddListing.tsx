@@ -20,6 +20,7 @@ const AddListing: React.FC<AddListingProps> = ({}) => {
 
   return (
     <div 
+    id="add-listing-button" 
       className="
         relative
         flex 
@@ -38,6 +39,7 @@ const AddListing: React.FC<AddListingProps> = ({}) => {
         hover:shadow-md
         overflow-hidden
         group
+        z-[9999]
         before:content-['']
         before:absolute
         before:w-12

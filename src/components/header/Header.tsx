@@ -35,7 +35,7 @@ const Header: React.FC<HeaderProps> = ({ currentUser }) => {
           <div className="flex items-center">
             <Search onResultClick={handleSearchResult} />
           </div>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2.5">
             <AddListing />
             <Inbox currentUser={currentUser || null} />
             <Notification />

@@ -89,7 +89,6 @@ const RentModal = () => {
     }
   });
 
-  // Pre-fill form when listing changes
   useEffect(() => {
     if (listing) {
       Object.entries(listing).forEach(([key, value]) => {
@@ -120,16 +119,12 @@ const RentModal = () => {
   }
 
   const onNext = () => {
-    if (step === STEPS.CATEGORY) {
-      if (!category) {
-        return toast.error('Please select a category.');
-      }
-    } else if (step === STEPS.LOCATION) {
-      if (!address || !zipCode) {
-        return toast.error('Please fill in all location fields.');
-      }
+    if (step === STEPS.CATEGORY && !category) {
+      return toast.error('Please select a category.');
     }
-    
+    if (step === STEPS.LOCATION && (!address || !zipCode)) {
+      return toast.error('Please fill in all location fields.');
+    }
     setStep((value) => value + 1);
   }
 
@@ -160,7 +155,6 @@ const RentModal = () => {
     }
     
     setIsLoading(true);
-  
     const payload = { 
       ...data, 
       services,
@@ -210,12 +204,12 @@ const RentModal = () => {
   }, [step]);
 
   let bodyContent = (
-    <div className="flex flex-col gap-8">
+    <div id="category-section" className="flex flex-col gap-8">
       <Heading
         title={isEditMode ? "Edit your establishment" : "Define your establishment"}
         subtitle="Pick a category"
       />
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[50vh] overflow-y-auto">
+      <div id="category-grid" className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[50vh] overflow-y-auto">
         {categories.map((item) => (
           <div key={item.label} className="col-span-1">
             <CategoryInput
@@ -232,12 +226,13 @@ const RentModal = () => {
 
   if (step === STEPS.LOCATION) {
     bodyContent = (
-      <div className="flex flex-col gap-8">
+      <div id="location-section" className="flex flex-col gap-8">
         <Heading
           title="Where is your place located?"
           subtitle="Help guests find you!"
         />
         <ListLocationSelect
+          id="location"
           onLocationSubmit={handleLocationSubmit}
           register={register}
           errors={errors}
@@ -248,27 +243,30 @@ const RentModal = () => {
 
   if (step === STEPS.INFO) {
     bodyContent = (
-      <div className="flex flex-col gap-8">
+      <div id="services-section" className="flex flex-col gap-8">
         <Heading
           title="Share some basics about your place"
           subtitle="What amenities do you have?"
         />
         <ServiceSelector 
+          id="service-selector"
           onServicesChange={handleServicesChange} 
           existingServices={services}
         />
+        <div id="add-service-button"></div>
       </div>
     );
   }
 
   if (step === STEPS.IMAGES) {
     bodyContent = (
-      <div className="flex flex-col gap-8">
+      <div id="images-section" className="flex flex-col gap-8">
         <Heading
           title={isEditMode ? "Update your photos" : "Add photos of your place"}
           subtitle="Show guests what your place looks like!"
         />
         <ImageUploadGrid
+          id="image-upload"
           onChange={(value) => setCustomValue('imageSrc', value)}
           onGalleryChange={(values) => setCustomValue('galleryImages', values)}
           value={imageSrc}
@@ -280,7 +278,7 @@ const RentModal = () => {
 
   if (step === STEPS.DESCRIPTION) {
     bodyContent = (
-      <div className="flex flex-col gap-3">
+      <div id="description-section" className="flex flex-col gap-3">
         <Heading
           title="How would you describe your place?"
           subtitle="Short and sweet works best!"
@@ -302,7 +300,7 @@ const RentModal = () => {
           required
         />
         <Input
-          id="phoneNumber"
+          id="phone"
           label="Phone Number"
           disabled={isLoading}
           register={register}
@@ -321,12 +319,13 @@ const RentModal = () => {
 
   if (step === STEPS.HOURS) {
     bodyContent = (
-      <div className="flex flex-col gap-8">
+      <div id="hours-section" className="flex flex-col gap-8">
         <Heading
           title="Share your store hours"
           subtitle="What hours each day is your store open?"
         />
         <StoreHours 
+          id="store-hours"
           onChange={(hours) => setStoreHours(hours)}
         />
       </div>
@@ -335,12 +334,13 @@ const RentModal = () => {
 
   if (step === STEPS.EMPLOYEE) {
     bodyContent = (
-      <div className="flex flex-col gap-8">
+      <div id="employees-section" className="flex flex-col gap-8">
         <Heading
           title={isEditMode ? "Update your employees" : "Add your employees"}
           subtitle="Let us know who is available for work!"
         />
         <EmployeeSelector 
+          id="employee-selector"
           onEmployeesChange={handleEmployeesChange} 
           existingEmployees={employees}
         />
@@ -354,6 +354,7 @@ const RentModal = () => {
       isOpen={rentModal.isOpen}
       title={isEditMode ? "Edit your listing" : "Join the fun!"}
       actionLabel={actionLabel}
+      actionId="submit-button"
       onSubmit={handleSubmit(onSubmit)}
       secondaryActionLabel={secondaryActionLabel}
       secondaryAction={step === STEPS.CATEGORY ? undefined : onBack}

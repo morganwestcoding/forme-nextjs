@@ -9,6 +9,7 @@ interface ModalButtonProps {
   outline?: boolean;
   small?: boolean;
   icon?: IconType;
+  id?: string;
 }
 
 const ModalButton: React.FC<ModalButtonProps> = ({ 
@@ -18,11 +19,13 @@ const ModalButton: React.FC<ModalButtonProps> = ({
   outline,
   small,
   icon: Icon,
+  id
 }) => {
   const isEditButton = label.toLowerCase().includes('edit');
   
   return ( 
     <button
+      id={id}
       disabled={disabled}
       onClick={onClick}
       className={`
@@ -39,14 +42,15 @@ const ModalButton: React.FC<ModalButtonProps> = ({
         ${small ? 'py-1' : 'py-3'}
         ${small ? 'font-light' : 'font-light'}
         ${small ? 'border-[1px]' : 'border-[1px]'}
-      `}>
-        {Icon && (
-          <Icon
-            size={24}
-            className="absolute left-4 top-3"
-          />
-        )}
-        {label}
+      `}
+    >
+      {Icon && (
+        <Icon
+          size={24}
+          className="absolute left-4 top-3"
+        />
+      )}
+      {label}
     </button>
    );
 }

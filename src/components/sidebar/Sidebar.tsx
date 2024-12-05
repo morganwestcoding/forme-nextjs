@@ -5,6 +5,7 @@ import Logo from "../header/Logo";
 import { categories } from '../Categories';
 import { useState } from "react";
 import { useCategory } from "@/CategoryContext";
+import useDemoModal from "@/app/hooks/useDemoModal";
 
 interface Category {
   label: string;
@@ -16,6 +17,7 @@ export const dynamic = 'force-dynamic';
 
 export default function Sidebar() {
   const router = useRouter();
+  const demoModal = useDemoModal();
   const [selectedButton, setSelectedButton] = useState('home');
   const { selectedCategory, setSelectedCategory } = useCategory();
 
@@ -26,6 +28,13 @@ export default function Sidebar() {
       setSelectedCategory(category.label);
     }
   };
+
+  const [isDemoHidden, setIsDemoHidden] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('hideDemoButton') === 'true';
+    }
+    return false;
+  });
 
   return (
 
@@ -188,8 +197,56 @@ export default function Sidebar() {
         ))}
             </div>
           </div>
+          {!isDemoHidden && (
+    <li className={`group flex items-center justify-start mt-4 p-2 rounded-lg border transition-colors duration-250 ${
+      selectedButton === 'demo' ? 'bg-[#5E6365] border-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#DFE2E2] hover:border-[#DFE2E2]'
+    } w-36`} 
+    onClick={() => {
+      setSelectedButton('demo');
+      demoModal.onOpen();
+    }}>
+      <div className="group flex flex-col rounded-lg p-1 cursor-pointer">
+        <svg 
+          xmlns="http://www.w3.org/2000/svg" 
+          viewBox="0 0 24 24" 
+          width={18} 
+          height={18} 
+          color={selectedButton === 'demo' ? "#ffffff" : "#a2a2a2"}  
+          fill="none" 
+          className="group-hover:text-white"
+        >
+          <circle 
+            cx="12" 
+            cy="12" 
+            r="10" 
+            stroke="currentColor" 
+            strokeWidth="1.5" 
+            className={`${selectedButton !== 'demo' ? 'group-hover:stroke-white' : ''}`}
+          />
+          <path 
+            d="M10 9C10 7.89543 10.8954 7 12 7C13.1046 7 14 7.89543 14 9C14 9.39815 13.8837 9.76913 13.6831 10.0808C13.0854 11.0097 12 11.8954 12 13V13.5" 
+            stroke="currentColor" 
+            strokeWidth="1.5" 
+            strokeLinecap="round" 
+            className={`${selectedButton !== 'demo' ? 'group-hover:stroke-white' : ''}`}
+          />
+          <path 
+            d="M11.992 17H12.001" 
+            stroke="currentColor" 
+            strokeWidth="2" 
+            strokeLinecap="round" 
+            strokeLinejoin="round" 
+            className={`${selectedButton !== 'demo' ? 'group-hover:stroke-white' : ''}`}
+          />
+        </svg>
+      </div>
+      <span className={`ml-4 text-[0.8rem] font-light ${
+        selectedButton === 'demo' ? 'text-white' : 'text-[#a2a2a2] group-hover:text-white'
+      }`}>Demo</span>
+    </li>
+  )}
         </div>  
       </div>
     </div>
-  )
+  );
 }
