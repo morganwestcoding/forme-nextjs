@@ -1,3 +1,5 @@
+// Modal.tsx
+
 'use client';
 
 import { useCallback, useEffect, useState } from "react";
@@ -6,7 +8,7 @@ import ModalButton from "./ModalButton";
 
 interface ModalProps {
   id?: string;  
-  modalContentId?: string;  // Add this prop
+  modalContentId?: string;  
   isOpen?: boolean;
   onClose: () => void;
   onSubmit: () => void;
@@ -76,10 +78,43 @@ const Modal: React.FC<ModalProps> = ({
 
   return (
     <>
-      <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none bg-neutral-800/70">
+      <div 
+        className="
+          justify-center 
+          items-center 
+          flex 
+          overflow-x-hidden 
+          overflow-y-auto 
+          fixed 
+          inset-0 
+          z-50 
+          outline-none 
+          focus:outline-none 
+          bg-neutral-800/70
+        "
+      >
         <div className={`relative ${className || 'w-full md:w-4/6 lg:w-3/6 xl:w-2/5'} my-6 mx-auto h-full lg:h-auto md:h-auto`}>
           <div className={`translate duration-300 h-full ${showModal ? 'translate-y-0' : 'translate-y-full'} ${showModal ? 'opacity-100' : 'opacity-0'}`}>
-            <div id={id} className="translate h-full lg:h-auto md:h-auto border-0 rounded-2xl relative flex flex-col w-full bg-black bg-opacity-55 backdrop-blur-md outline-none focus:outline-none">
+            <div 
+              id={id} 
+              className="
+                translate 
+                h-full 
+                lg:h-auto 
+                md:h-auto 
+                border-0 
+                rounded-2xl 
+                relative 
+                flex 
+                flex-col 
+                w-full 
+                bg-black 
+                bg-opacity-55 
+                backdrop-blur-md 
+                outline-none 
+                focus:outline-none
+              "
+            >
               <div className="flex items-center p-6 rounded-t justify-center relative border-b-[1px]">
                 <div 
                   id="modal-close"
@@ -92,9 +127,11 @@ const Modal: React.FC<ModalProps> = ({
                   {title}
                 </div>
               </div>
-              <div id={modalContentId} className="flex flex-col flex-1">
-                <div className="relative p-6 text-white flex-auto">
-                  {body}
+              <div id={`${modalContentId}-wrapper`} className="flex flex-col flex-1">
+                <div id={modalContentId} className="flex flex-col flex-1">
+                  <div className="relative p-6 text-white flex-auto">
+                    {body}
+                  </div>
                 </div>
                 {(actionLabel || secondaryActionLabel) && (
                   <div className="flex flex-col gap-2 p-6">

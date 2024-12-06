@@ -22,6 +22,10 @@ import EmployeeSelector from '../inputs/EmployeeSelector';
 import StoreHours, { StoreHourType }  from '../inputs/StoreHours';
 import ImageUploadGrid from '../inputs/ImageUploadGrid';
 
+interface RentModalProps {
+  onStepChange?: (step: number) => void;
+}
+
 enum STEPS {
   CATEGORY = 0,
   LOCATION = 1,
@@ -32,7 +36,9 @@ enum STEPS {
   EMPLOYEE = 6,
 }
 
-const RentModal = () => {
+const RentModal: React.FC<RentModalProps> = ({ 
+  onStepChange 
+}) => {
   const router = useRouter();
   const rentModal = useRentModal();
   const listing = rentModal.listing;
@@ -99,6 +105,12 @@ const RentModal = () => {
       setStoreHours(listing.storeHours || []);
     }
   }, [listing, setValue]);
+
+  useEffect(() => {
+    if (onStepChange) {
+      onStepChange(step);
+    }
+  }, [step, onStepChange]);
 
   const category = watch('category');
   const imageSrc = watch('imageSrc');
@@ -350,8 +362,8 @@ const RentModal = () => {
 
   return (
     <Modal
-    id="rent-modal"
-    modalContentId="modal-content-with-actions"
+      id="rent-modal"
+      modalContentId="modal-content-with-actions"
       disabled={isLoading}
       isOpen={rentModal.isOpen}
       title={isEditMode ? "Edit your listing" : "Join the fun!"}
