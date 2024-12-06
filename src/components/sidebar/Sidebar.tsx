@@ -198,7 +198,7 @@ export default function Sidebar() {
             </div>
           </div>
           {!isDemoHidden && (
-    <li className={`group flex items-center justify-start mt-4 p-2 rounded-lg border transition-colors duration-250 ${
+    <li className={`group flex items-center justify-start mt-8 p-2 rounded-lg border transition-colors duration-250 ${
       selectedButton === 'demo' ? 'bg-[#5E6365] border-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#DFE2E2] hover:border-[#DFE2E2]'
     } w-36`} 
     onClick={() => {

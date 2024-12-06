@@ -1,5 +1,3 @@
-// DemoModal.tsx
-
 'use client';
 
 import { useCallback, useState } from "react";
@@ -8,69 +6,16 @@ import Modal from "./Modal";
 import Heading from "../Heading";
 import useDemoModal from "@/app/hooks/useDemoModal";
 import useRentModal from "@/app/hooks/useRentModal";
-import Joyride, { CallBackProps, STATUS, Step } from 'react-joyride';
 
 const DemoModal = () => {
   const demoModal = useDemoModal();
   const rentModal = useRentModal();
   const [isLoading, setIsLoading] = useState(false);
-  const [runTour, setRunTour] = useState(false);
-
-  const steps: Step[] = [
-    {
-      target: '#add-listing-button',
-      content: 'Start here to create your business listing',
-      placement: 'left',
-      disableBeacon: true
-    },
-    {
-      target: '#modal-content-with-actions-wrapper',
-      content: 'Select a category that best describes your business',
-      placement: 'left'
-    },
-    {
-      target: '#modal-content-with-actions-wrapper',
-      content: 'Enter your business location details',
-      placement: 'left'
-    },
-    {
-      target: '#modal-content-with-actions-wrapper',
-      content: 'Add services you offer and their prices',
-      placement: 'left'
-    },
-    {
-      target: '#modal-content-with-actions-wrapper',
-      content: 'Set your operating hours for each day',
-      placement: 'left'
-    },
-    {
-      target: '#modal-content-with-actions-wrapper',
-      content: 'Add your business details and description',
-      placement: 'left'
-    },
-    {
-      target: '#modal-content-with-actions-wrapper',
-      content: 'Add your team members',
-      placement: 'left'
-    }
-  ];
-
-  const handleJoyrideCallback = (data: CallBackProps) => {
-    const { status, index, type } = data;
-  
-    if (index === 0 && type === 'step:after') {
-      rentModal.onOpen();
-    }
-  
-    if (status === STATUS.FINISHED || status === STATUS.SKIPPED) {
-      setRunTour(false);
-    }
-  };
 
   const handleListingDemo = useCallback(() => {
     demoModal.onClose();
-    setRunTour(true);
-  }, [demoModal]);
+    rentModal.onOpen();
+  }, [demoModal, rentModal]);
 
   const hideDemo = useCallback(() => {
     localStorage.setItem('hideDemoButton', 'true');
@@ -166,7 +111,7 @@ const DemoModal = () => {
             key={index}
             onClick={demo.onClick}
             className="
-              p-3.5
+              p-4
               border
               rounded-lg
               hover:shadow-md
@@ -231,40 +176,18 @@ const DemoModal = () => {
   );
 
   return (
-    <>
-      <Joyride
-        steps={steps}
-        run={runTour}
-        continuous
-        showProgress
-        showSkipButton
-        hideCloseButton
-        callback={handleJoyrideCallback}
-        styles={{
-          options: {
-            arrowColor: '#1a1a1a',
-            backgroundColor: '#1a1a1a',
-            overlayColor: 'rgba(0, 0, 0, 0.85)',
-            primaryColor: '#78C3FB',
-            textColor: '#fff',
-            width: 300,
-            zIndex: 1000,
-          }
-        }}
-      />
-      <Modal
-        disabled={isLoading}
-        isOpen={demoModal.isOpen}
-        title="Demo Directory"
-        actionLabel="Exit"
-        secondaryActionLabel="Hide Demos"
-        onClose={demoModal.onClose}
-        onSubmit={demoModal.onClose}
-        secondaryAction={hideDemo}
-        body={bodyContent}
-        footer={footerContent}
-      />
-    </>
+    <Modal
+      disabled={isLoading}
+      isOpen={demoModal.isOpen}
+      title="Demo Directory"
+      actionLabel="Exit"
+      secondaryActionLabel="Hide Demos"
+      onClose={demoModal.onClose}
+      onSubmit={demoModal.onClose}
+      secondaryAction={hideDemo}
+      body={bodyContent}
+      footer={footerContent}
+    />
   );
 }
 

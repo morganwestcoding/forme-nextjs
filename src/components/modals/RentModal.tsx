@@ -22,10 +22,6 @@ import EmployeeSelector from '../inputs/EmployeeSelector';
 import StoreHours, { StoreHourType }  from '../inputs/StoreHours';
 import ImageUploadGrid from '../inputs/ImageUploadGrid';
 
-interface RentModalProps {
-  onStepChange?: (step: number) => void;
-}
-
 enum STEPS {
   CATEGORY = 0,
   LOCATION = 1,
@@ -36,9 +32,7 @@ enum STEPS {
   EMPLOYEE = 6,
 }
 
-const RentModal: React.FC<RentModalProps> = ({ 
-  onStepChange 
-}) => {
+const RentModal = () => {
   const router = useRouter();
   const rentModal = useRentModal();
   const listing = rentModal.listing;
@@ -105,12 +99,6 @@ const RentModal: React.FC<RentModalProps> = ({
       setStoreHours(listing.storeHours || []);
     }
   }, [listing, setValue]);
-
-  useEffect(() => {
-    if (onStepChange) {
-      onStepChange(step);
-    }
-  }, [step, onStepChange]);
 
   const category = watch('category');
   const imageSrc = watch('imageSrc');
@@ -216,7 +204,7 @@ const RentModal: React.FC<RentModalProps> = ({
   }, [step]);
 
   let bodyContent = (
-    <div id="category-section" className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8">
       <Heading
         title={isEditMode ? "Edit your establishment" : "Define your establishment"}
         subtitle="Pick a category"
@@ -238,7 +226,7 @@ const RentModal: React.FC<RentModalProps> = ({
 
   if (step === STEPS.LOCATION) {
     bodyContent = (
-      <div id="location-section" className="flex flex-col gap-8">
+      <div className="flex flex-col gap-8">
         <Heading
           title="Where is your place located?"
           subtitle="Help guests find you!"
@@ -255,7 +243,7 @@ const RentModal: React.FC<RentModalProps> = ({
 
   if (step === STEPS.INFO) {
     bodyContent = (
-      <div id="services-section" className="flex flex-col gap-8">
+      <div className="flex flex-col gap-8">
         <Heading
           title="Share some basics about your place"
           subtitle="What amenities do you have?"
@@ -265,14 +253,14 @@ const RentModal: React.FC<RentModalProps> = ({
           onServicesChange={handleServicesChange} 
           existingServices={services}
         />
-        <div id="add-service-button"></div>
+        <div ></div>
       </div>
     );
   }
 
   if (step === STEPS.IMAGES) {
     bodyContent = (
-      <div id="images-section" className="flex flex-col gap-8">
+      <div className="flex flex-col gap-8">
         <Heading
           title={isEditMode ? "Update your photos" : "Add photos of your place"}
           subtitle="Show guests what your place looks like!"
@@ -290,7 +278,7 @@ const RentModal: React.FC<RentModalProps> = ({
 
   if (step === STEPS.DESCRIPTION) {
     bodyContent = (
-      <div id="description-section" className="flex flex-col gap-3">
+      <div className="flex flex-col gap-3">
         <Heading
           title="How would you describe your place?"
           subtitle="Short and sweet works best!"
@@ -331,13 +319,13 @@ const RentModal: React.FC<RentModalProps> = ({
 
   if (step === STEPS.HOURS) {
     bodyContent = (
-      <div id="hours-section" className="flex flex-col gap-8">
+      <div className="flex flex-col gap-8">
         <Heading
           title="Share your store hours"
           subtitle="What hours each day is your store open?"
         />
         <StoreHours 
-          id="store-hours"
+    
           onChange={(hours) => setStoreHours(hours)}
         />
       </div>
@@ -346,13 +334,13 @@ const RentModal: React.FC<RentModalProps> = ({
 
   if (step === STEPS.EMPLOYEE) {
     bodyContent = (
-      <div id="employees-section" className="flex flex-col gap-8">
+      <div  className="flex flex-col gap-8">
         <Heading
           title={isEditMode ? "Update your employees" : "Add your employees"}
           subtitle="Let us know who is available for work!"
         />
         <EmployeeSelector 
-          id="employee-selector"
+        
           onEmployeesChange={handleEmployeesChange} 
           existingEmployees={employees}
         />
@@ -362,8 +350,8 @@ const RentModal: React.FC<RentModalProps> = ({
 
   return (
     <Modal
-      id="rent-modal"
-      modalContentId="modal-content-with-actions"
+    id="rent-modal"
+    modalContentId="modal-content-with-actions"
       disabled={isLoading}
       isOpen={rentModal.isOpen}
       title={isEditMode ? "Edit your listing" : "Join the fun!"}
