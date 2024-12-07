@@ -23,8 +23,8 @@ interface PostData {
   createdAt: string;
   content: string;
   imageSrc: string | null;
-  mediaUrl?: string;
-  mediaType?: MediaType;
+  mediaUrl?: string | null; 
+  mediaType?: MediaType | null;  // Changed to match SafePost type
   category: string;
   location?: string | null;
   likes: string[];

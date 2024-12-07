@@ -93,9 +93,9 @@ const MediaUpload: React.FC<MediaUploadProps> = ({ onMediaUpload, currentMedia }
         >
           {!mediaPreview ? (
             <div className="flex flex-col items-center justify-center">
-              <TbPhotoPlus size={50} />
+              <TbPhotoPlus size={25} />
               <div className="font-semibold text-lg mt-4">
-                Upload media (Image/Video/GIF)
+                Upload media
               </div>
             </div>
           ) : (

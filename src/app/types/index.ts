@@ -99,6 +99,7 @@ export type SafePost = Omit<
   category?: string;
   user: SafeUser;
   imageSrc: string | null;
+  mediaType?: MediaType | null;
   likes: string[]; 
   bookmarks: string[]; 
   hiddenBy: string[]; // Add this line
