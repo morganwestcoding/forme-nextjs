@@ -7,7 +7,6 @@ import Avatar from '../ui/avatar';
 import { SafeUser, MediaData } from '@/app/types';
 import axios from 'axios';
 import Link from 'next/link';
-import Image from 'next/image';
 import PostCategorySelect from '../inputs/PostCategorySelect';
 import AttachmentModal from '../modals/AttachmentModal';
 import useAttachmentModal from '@/app/hooks/useAttachmentModal';
@@ -114,33 +113,69 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
       </div>
       
       <div className="mt-2 flex items-center justify-between">
+        <div className="flex items-center" />
         <div className="flex items-center">
-          {location && (
-            <div className="mr-2 text-sm text-gray-600">
-              {location.label}
-            </div>
-          )}
-        </div>
-        <div className="flex items-center">
-          {mediaData?.url && (
-            <div className="mx-2 w-10 h-10 overflow-hidden">
-              <Image 
-                src={mediaData.url} 
-                alt="Uploaded" 
-                width={40} 
-                height={40} 
-                className="w-full h-full object-cover rounded-md"
-              />
-            </div>
-          )}
           <div 
-            className='group hover:bg-white hover:bg-opacity-55 rounded-full border bg-black bg-opacity-5 border-white p-3 px-3 mr-2 cursor-pointer'
+            className={`
+              group 
+              hover:bg-white 
+              hover:bg-opacity-55 
+              rounded-full 
+              border 
+              ${mediaData || location ? 'bg-green-500' : 'bg-black bg-opacity-5'} 
+              border-white 
+              p-3 
+              px-3 
+              mr-2 
+              cursor-pointer
+              transition-colors
+              duration-500
+              ease-in-out
+            `}
             onClick={attachmentModal.onOpen}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" color="#ffffff" fill="none">
-              <path d="M9.5 14.5L14.5 9.49995" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              <path d="M16.8463 14.6095L19.4558 12C21.5147 9.94108 21.5147 6.60298 19.4558 4.54411C17.397 2.48524 14.0589 2.48524 12 4.54411L9.39045 7.15366M14.6095 16.8463L12 19.4558C9.94113 21.5147 6.60303 21.5147 4.54416 19.4558C2.48528 17.3969 2.48528 14.0588 4.54416 12L7.1537 9.39041" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
+            {(mediaData || location) ? (
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                viewBox="0 0 24 24" 
+                width="18" 
+                height="18" 
+                color="#ffffff" 
+                fill="none"
+                className="transition-opacity duration-700 ease-in-out"
+              >
+                <path 
+                  d="M20 6L9 17L4 12" 
+                  stroke="currentColor" 
+                  strokeWidth="2" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round"
+                />
+              </svg>
+            ) : (
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                viewBox="0 0 24 24" 
+                width="18" 
+                height="18" 
+                color="#ffffff" 
+                fill="none"
+                className="transition-opacity duration-700 ease-in-out"
+              >
+                <path 
+                  d="M9.5 14.5L14.5 9.49995" 
+                  stroke="currentColor" 
+                  strokeWidth="1.5" 
+                  strokeLinecap="round" 
+                />
+                <path 
+                  d="M16.8463 14.6095L19.4558 12C21.5147 9.94108 21.5147 6.60298 19.4558 4.54411C17.397 2.48524 14.0589 2.48524 12 4.54411L9.39045 7.15366M14.6095 16.8463L12 19.4558C9.94113 21.5147 6.60303 21.5147 4.54416 19.4558C2.48528 17.3969 2.48528 14.0588 4.54416 12L7.1537 9.39041" 
+                  stroke="currentColor" 
+                  strokeWidth="1.5" 
+                  strokeLinecap="round" 
+                />
+              </svg>
+            )}
           </div>
           <PostCategorySelect
             onCategorySelected={setCategory}
