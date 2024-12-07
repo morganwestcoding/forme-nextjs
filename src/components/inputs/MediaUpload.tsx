@@ -15,29 +15,30 @@ const MediaUpload: React.FC<MediaUploadProps> = ({ onMediaUpload, currentMedia }
   const [mediaPreview, setMediaPreview] = useState<MediaData | null>(currentMedia || null);
 
   const handleUpload = useCallback((result: any) => {
-    // Get the base URL
     let url = result.info.secure_url;
     const resourceType = result.info.resource_type;
     const format = result.info.format;
     
     // For images, modify the URL to include crop parameters
     if (resourceType === 'image') {
-      // Add Cloudinary transformations to force square crop
       const transformationString = '/c_crop,g_center,h_800,w_800';
       url = url.replace('/upload/', `/upload${transformationString}/`);
     }
     
-    let type: MediaType = 'image';
+    // Properly type the mediaType based on your MediaType type
+    let type: MediaType;
     if (resourceType === 'video') {
       type = 'video';
     } else if (format === 'gif') {
       type = 'gif';
+    } else {
+      type = 'image';
     }
-
-    const mediaData = { url, type };
+  
+    const mediaData: MediaData = { url, type };
     setMediaPreview(mediaData);
     onMediaUpload(mediaData);
-}, [onMediaUpload]);
+  }, [onMediaUpload]);
 
   const renderPreview = () => {
     if (!mediaPreview) return null;
