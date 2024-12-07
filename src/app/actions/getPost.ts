@@ -1,6 +1,6 @@
 // getPosts.ts
 import prisma from "@/app/libs/prismadb";
-import { SafePost, SafeUser } from '@/app/types';
+import { SafePost, SafeUser, MediaType } from '@/app/types';
 import getCurrentUser from "./getCurrentUser";
 
 export interface IPostsParams {
@@ -70,6 +70,8 @@ export default async function getPosts(params: IPostsParams): Promise<SafePost[]
         id: post.id,
         content: post.content,
         imageSrc: post.imageSrc,
+        mediaUrl: post.mediaUrl || null,
+        mediaType: (post.mediaType as MediaType) || null,
         location: post.location,
         tag: post.tag,
         photo: post.photo,

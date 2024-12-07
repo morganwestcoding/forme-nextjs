@@ -3,43 +3,49 @@
 import React, { useState } from 'react';
 import { useForm, SubmitHandler, FieldValues } from 'react-hook-form';
 import Modal from './Modal';
-import AddPostImage from '../inputs/AddPostImage';
+import MediaUpload from '../inputs/MediaUpload';
 import AddPostLocation from '../inputs/AddPostLocation';
+import { MediaData } from '@/app/types';
 
 interface AttachmentModalProps {
-    setImageSrc: (imageSrc: string) => void;
+    setMediaData: (mediaData: MediaData | null) => void;
     setLocation: (location: { label: string; value: string } | null) => void; 
-    isOpen: boolean; // Indicates whether the modal is open
-    onClose: () => void; // Function to close the modal
+    isOpen: boolean;
+    onClose: () => void;
 }
 
-const AttachmentModal: React.FC<AttachmentModalProps> = ({ setImageSrc, setLocation, isOpen, onClose }) => {
+const AttachmentModal: React.FC<AttachmentModalProps> = ({ 
+    setMediaData, 
+    setLocation, 
+    isOpen, 
+    onClose 
+}) => {
     const [isLoading, setIsLoading] = useState(false);
-    const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<FieldValues>({
+    const { handleSubmit, setValue, watch, formState: { errors } } = useForm<FieldValues>({
         defaultValues: {
-            imageSrc: '',
-            location: '',
+            mediaData: null,
+            location: null,
         }
     });
 
-    const imageSrc = watch('imageSrc');
+    const mediaData = watch('mediaData');
     const location = watch('location');
 
     const onSubmit: SubmitHandler<FieldValues> = data => {
         setIsLoading(true);
-        setImageSrc(data.imageSrc);
+        setMediaData(data.mediaData);
         setLocation(data.location);
         setIsLoading(false);
-        onClose(); // Close the modal after submitting
+        onClose();
     };
 
     const modalBody = (
         <div className="flex gap-4">
             <div className="flex flex-col w-1/2">
-                <div className="mb-2 text-center font-medium text-white">Add Image</div>
+                <div className="mb-2 text-center font-medium text-white">Add Media</div>
                 <div className="w-full" style={{ maxWidth: '300px', margin: '0 auto' }}>
-                    <AddPostImage
-                        onImageUpload={(value) => setValue('imageSrc', value)}
+                    <MediaUpload
+                        onMediaUpload={(data: MediaData) => setValue('mediaData', data)}
                     />
                 </div>
             </div>
@@ -55,8 +61,8 @@ const AttachmentModal: React.FC<AttachmentModalProps> = ({ setImageSrc, setLocat
     return (
         <Modal
             disabled={isLoading}
-            isOpen={isOpen} // Pass the isOpen prop to control modal visibility
-            onClose={onClose} // Pass the onClose prop to handle modal close
+            isOpen={isOpen}
+            onClose={onClose}
             title="Update Attachments"
             actionLabel="Save"
             onSubmit={handleSubmit(onSubmit)}

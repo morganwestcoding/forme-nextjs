@@ -122,6 +122,8 @@ model Post {
   category  String
   userId    String   @db.ObjectId
   createdAt DateTime @default(now())
+  mediaUrl    String?
+  mediaType   String?  // 'image' | 'video' | 'gif'
   likes     String[] @db.ObjectId // Add this line
   bookmarks String[] @db.ObjectId  // Add this line
   hiddenBy  String[] @db.ObjectId  // Add this line

@@ -11,11 +11,11 @@ interface LocationSelection {
 }
 
 interface AddPostLocationProps {
-  onLocationSubmit: (location: string | null) => void; // Update the type
+  onLocationSubmit: (location: { label: string; value: string }) => void;
 }
 
 const AddPostLocation: React.FC<AddPostLocationProps> = ({ onLocationSubmit }) => {
-  const [selectedCountry] = useState<string>('6252001'); // Assuming United States for simplicity
+  const [selectedCountry] = useState<string>('6252001');
   const [selectedState, setSelectedState] = useState<LocationSelection | null>(null);
   const [selectedCity, setSelectedCity] = useState<LocationSelection | null>(null);
 
@@ -24,14 +24,19 @@ const AddPostLocation: React.FC<AddPostLocationProps> = ({ onLocationSubmit }) =
 
   const handleStateChange = (selectedOption: LocationSelection | null) => {
     setSelectedState(selectedOption);
-    setSelectedCity(null); // Reset city when state changes
+    setSelectedCity(null);
   };
 
   const handleCityChange = (selectedOption: LocationSelection | null) => {
     setSelectedCity(selectedOption);
-    // Combine state and city into a single string for location
-    const location = selectedOption ? `${selectedOption.label}, ${selectedState?.label}` : null;
-    onLocationSubmit(location);
+    if (selectedOption && selectedState) {
+      // Format the location object as expected by the parent component
+      const locationObject = {
+        label: `${selectedOption.label}, ${selectedState.label}`,
+        value: `${selectedOption.label}, ${selectedState.label}`
+      };
+      onLocationSubmit(locationObject);
+    }
   };
 
   const customStyles: StylesConfig<LocationSelection, false> = {
@@ -41,13 +46,13 @@ const AddPostLocation: React.FC<AddPostLocationProps> = ({ onLocationSubmit }) =
       backdropFilter: 'blur(8px)',
       borderRadius: '0.5rem',
       padding: '0.5rem',
-      maxHeight: '250px', // This helps ensure consistent height with 5 items
+      maxHeight: '250px',
     }),
     menuList: (styles) => ({
       ...styles,
       backgroundColor: 'transparent',
       padding: '0',
-      maxHeight: '220px', // Approximately height for 5 items
+      maxHeight: '220px',
       overflowY: 'auto',
       '&::-webkit-scrollbar': {
         width: '6px',
@@ -136,11 +141,3 @@ const AddPostLocation: React.FC<AddPostLocationProps> = ({ onLocationSubmit }) =
 };
 
 export default AddPostLocation;
-
-
-
-
-
-
-
-

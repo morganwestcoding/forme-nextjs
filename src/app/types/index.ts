@@ -1,5 +1,18 @@
 import {Listing , User, Reservation, Post} from '@prisma/client'
 
+// Add the new media types
+export type MediaType = 'image' | 'video' | 'gif';
+
+export interface MediaData {
+  url: string;
+  type: MediaType;
+}
+
+export interface PostMedia {
+  mediaUrl?: string;
+  mediaType?: MediaType;
+}
+
 export type SafeService = {
   id: string;
   serviceName: string;

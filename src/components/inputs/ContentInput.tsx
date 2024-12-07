@@ -1,23 +1,20 @@
 import React from 'react';
-import { SafeUser } from '@/app/types';
-import Image from 'next/image';
+import { SafeUser, MediaData } from '@/app/types';
 
 interface ContentInputProps {
     currentUser: SafeUser | null;
-    imageSrc?: string;
-    location?: { label: string; value: string } | null;
     content: string;
     setContent: (content: string) => void;
-    setImageSrc: (imageSrc: string) => void;
+    location?: { label: string; value: string } | null;
     setLocation: (location: { label: string; value: string } | null) => void;
 }
 
 const ContentInput: React.FC<ContentInputProps> = ({ 
     currentUser, 
-    imageSrc, 
-    location, 
     content, 
-    setContent 
+    setContent,
+    location,
+    setLocation 
 }) => {
     const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setContent(event.target.value);

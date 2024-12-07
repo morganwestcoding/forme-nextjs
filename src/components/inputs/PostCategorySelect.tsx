@@ -1,3 +1,4 @@
+// PostCategorySelect.tsx
 'use client';
 
 import React, { useState } from 'react';
@@ -7,20 +8,29 @@ import SendRoundedIcon from '@mui/icons-material/SendRounded';
 
 interface PostCategorySelectProps {
   onCategorySelected: (category: string) => void;
-  disabled?: boolean; // Add disabled prop
+  onSubmit: () => void; // Add this
+  disabled?: boolean;
 }
 
 const PostCategorySelect: React.FC<PostCategorySelectProps> = ({
   onCategorySelected,
-  disabled = false // Default to false if not provided
+  onSubmit,
+  disabled = false
 }) => {
   const [showCategories, setShowCategories] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
   const handleCategorySelect = (category: string) => {
-    if (disabled) return; // Prevent selection if disabled
+    if (disabled) return;
+    
+    // Set the category first
     onCategorySelected(category);
     setShowCategories(false);
+    
+    // Add a small delay before submitting to ensure state is updated
+    setTimeout(() => {
+      onSubmit();
+    }, 0);
   };
 
   return (
@@ -45,29 +55,29 @@ const PostCategorySelect: React.FC<PostCategorySelectProps> = ({
         onMouseLeave={() => !disabled && setIsHovered(false)}
         disabled={disabled}
       >
-        {showCategories && 
-          categories.map((category) => (
-            <div 
-              key={category.label} 
-              className={`
-                mr-1 
-                w-4 
-                h-4 
-                rounded-full 
-                transition-all 
-                duration-700 
-                ease-in-out 
-                ${category.color}
-                ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
-              `}
-              onClick={(e) => {
-                e.stopPropagation();
+        {showCategories && categories.map((category) => (
+          <div 
+            key={category.label} 
+            className={`
+              mr-1 
+              w-4 
+              h-4 
+              rounded-full 
+              transition-all 
+              duration-700 
+              ease-in-out 
+              ${category.color}
+              ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
+            `}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!disabled) {
                 handleCategorySelect(category.label);
-              }}
-              title={category.label}
-            />
-          ))
-        }
+              }
+            }}
+            title={category.label}
+          />
+        ))}
         <span className={`
           font-light 
           text-[#717171] 
