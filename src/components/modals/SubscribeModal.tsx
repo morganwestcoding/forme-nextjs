@@ -34,7 +34,6 @@ const SubscribeModal = () => {
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     try {
       setIsLoading(true);
-      // Add payment processing logic here
       await axios.post('/api/subscribe');
       toast.success('Successfully subscribed!');
       subscribeModal.onClose();
@@ -47,14 +46,14 @@ const SubscribeModal = () => {
   };
 
   const bodyContent = (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 -mb-4">
       <Heading
         title="Upgrade to Plus"
         subtitle="Do more with unlimited blocks, files, automations & integrations."
       />
       <div className="flex flex-col gap-4">
         <div>
-          <label className="text-neutral-600">Account Name</label>
+          <label className="text-white text-sm block mb-2">Account Name</label>
           <Input
             id="accountName"
             disabled={isLoading}
@@ -62,12 +61,13 @@ const SubscribeModal = () => {
             errors={errors}
             required
             label="Account Name"
+            
           />
         </div>
 
         <div>
-          <label className="text-neutral-600">Payment Method</label>
-          <div className="grid grid-cols-3 gap-4 mt-2">
+          <label className="text-white text-sm">Payment Method</label>
+          <div className="grid grid-cols-2 gap-4 mt-2">
             <div
               onClick={() => setSelectedPayment('credit')}
               className={`
@@ -85,7 +85,7 @@ const SubscribeModal = () => {
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                 </svg>
-                <span>Credit Card</span>
+                <span className="text-sm">Credit Card</span>
               </div>
             </div>
 
@@ -106,35 +106,14 @@ const SubscribeModal = () => {
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
-                <span>Bank Transfer</span>
-              </div>
-            </div>
-
-            <div
-              onClick={() => setSelectedPayment('points')}
-              className={`
-                p-4 
-                flex 
-                flex-col 
-                items-center 
-                border 
-                rounded-lg 
-                cursor-pointer
-                ${selectedPayment === 'points' ? 'border-rose-500' : 'border-neutral-200'}
-              `}
-            >
-              <div className="flex flex-col items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span>Cosmic Points</span>
+                <span className="text-sm">Bank Transfer</span>
               </div>
             </div>
           </div>
         </div>
 
         {selectedPayment === 'credit' && (
-          <div className="flex flex-col gap-4 -mb-4">
+          <div className="flex flex-col gap-4">
             <Input
               id="cardNumber"
               label="Card Number"
