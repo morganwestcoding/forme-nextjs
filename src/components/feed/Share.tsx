@@ -1,16 +1,17 @@
+// components/feed/Share.tsx
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import ContentInput from '../inputs/ContentInput';
 import Avatar from '../ui/avatar';
 import { SafeUser, MediaData } from '@/app/types';
-import Image from 'next/image';
-import { categories } from "../Categories";
-import Link from 'next/link';
 import axios from 'axios';
+import Link from 'next/link';
+import Image from 'next/image';
 import PostCategorySelect from '../inputs/PostCategorySelect';
 import AttachmentModal from '../modals/AttachmentModal';
 import useAttachmentModal from '@/app/hooks/useAttachmentModal';
+import { categories } from '@/components/Categories';
 import { usePostStore } from '@/app/hooks/usePostStore';
 import { toast } from 'react-hot-toast';
 
@@ -19,13 +20,22 @@ interface ShareProps {
   categoryLabel?: string;
 }
 
+interface PostData {
+  content: string;
+  category: string;
+  userId: string | undefined;
+  mediaUrl: string | null;
+  mediaType: string | null;
+  location: string | null;
+}
+
 const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
-  const [content, setContent] = useState('');
+  const attachmentModal = useAttachmentModal();
   const [mediaData, setMediaData] = useState<MediaData | null>(null);
+  const [content, setContent] = useState('');
   const [location, setLocation] = useState<{ label: string; value: string } | null>(null);
   const [category, setCategory] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const attachmentModal = useAttachmentModal();
   const addPost = usePostStore((state) => state.addPost);
 
   const selectedCategory = categories.find(cat => cat.label === categoryLabel);
@@ -36,20 +46,16 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
       return;
     }
 
-    if (!category) {
-      toast.error('Please select a category');
-      return;
-    }
-
     try {
       setIsSubmitting(true);
+
       const postData = {
-        content,
-        mediaUrl: mediaData?.url,
-        mediaType: mediaData?.type,
-        location: location?.value,
+        content: content.trim(),
         category,
         userId: currentUser?.id,
+        mediaUrl: mediaData?.url || null,
+        mediaType: mediaData?.type || null,
+        location: location?.value || null
       };
 
       const response = await axios.post('/api/post', postData);
@@ -68,42 +74,21 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
       toast.success('Post created successfully!');
     } catch (error) {
       console.error('Error submitting post:', error);
-      toast.error('Something went wrong while creating your post');
+      if (axios.isAxiosError(error) && error.response) {
+        toast.error(error.response.data || 'Something went wrong while creating your post');
+      } else {
+        toast.error('Something went wrong while creating your post');
+      }
     } finally {
       setIsSubmitting(false);
     }
   }, [content, mediaData, location, category, currentUser, addPost]);
 
-  const renderPreview = () => {
-    if (!mediaData) return null;
-
-    switch (mediaData.type) {
-      case 'video':
-        return (
-          <div className="mx-2 w-10 h-10 overflow-hidden">
-            <video 
-              src={mediaData.url}
-              className="w-full h-full object-cover rounded-md"
-            />
-          </div>
-        );
-      case 'gif':
-      case 'image':
-        return (
-          <div className="mx-2 w-10 h-10 overflow-hidden">
-            <Image 
-              src={mediaData.url}
-              alt="Media preview"
-              width={40}
-              height={40}
-              className="w-full h-full object-cover rounded-md"
-            />
-          </div>
-        );
-      default:
-        return null;
+  useEffect(() => {
+    if (category && content.trim()) {
+      handlePostSubmit();
     }
-  };
+  }, [category, content, handlePostSubmit]);
 
   if (!currentUser) {
     return null;
@@ -137,7 +122,17 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
           )}
         </div>
         <div className="flex items-center">
-          {renderPreview()}
+          {mediaData?.url && (
+            <div className="mx-2 w-10 h-10 overflow-hidden">
+              <Image 
+                src={mediaData.url} 
+                alt="Uploaded" 
+                width={40} 
+                height={40} 
+                className="w-full h-full object-cover rounded-md"
+              />
+            </div>
+          )}
           <div 
             className='group hover:bg-white hover:bg-opacity-55 rounded-full border bg-black bg-opacity-5 border-white p-3 px-3 mr-2 cursor-pointer'
             onClick={attachmentModal.onOpen}
@@ -148,10 +143,8 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
             </svg>
           </div>
           <PostCategorySelect
-  onCategorySelected={setCategory}
-  onSubmit={handlePostSubmit} // Add this
-  disabled={isSubmitting}
-/>
+            onCategorySelected={setCategory}
+          />
         </div>
       </div>
 
