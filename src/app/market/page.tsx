@@ -1,15 +1,18 @@
 // app/market/page.tsx
-import Market from './market';
+import MarketContent from './MarketContent';
 import MarketWrapper from './MarketWrapper';
 
-export default function MarketPage({ 
-  searchParams 
-}: {
+interface MarketPageProps {
   searchParams: { [key: string]: string | string[] | undefined }
-}) {
+}
+
+async function MarketPage({ searchParams }: MarketPageProps) {
   return (
     <MarketWrapper>
-      <Market searchParams={searchParams} />
+      {/* @ts-expect-error Async Server Component */}
+      <MarketContent searchParams={searchParams} />
     </MarketWrapper>
   );
 }
+
+export default MarketPage;

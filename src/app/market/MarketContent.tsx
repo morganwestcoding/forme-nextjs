@@ -9,7 +9,7 @@ import Pagination from '@/components/pagination/Pagination';
 import { useFilter } from '@/FilterContext';
 import Container from '@/components/Container';
 
-interface MarketProps {
+interface MarketContentProps {
   searchParams: IListingsParams & {
     page?: string;
   };
@@ -17,7 +17,7 @@ interface MarketProps {
 
 const ITEMS_PER_PAGE = 10;
 
-const Market = async ({ searchParams }: MarketProps) => {
+const MarketContent = async ({ searchParams }: MarketContentProps) => {
   const currentPage = Number(searchParams.page) || 1;
   
   // Fetch all listings first
@@ -117,4 +117,4 @@ const Market = async ({ searchParams }: MarketProps) => {
   );
 };
 
-export default Market;
+export default MarketContent;

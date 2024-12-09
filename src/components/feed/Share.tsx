@@ -96,10 +96,10 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
  }
 
  return (
-   <div className={`w-full h-auto rounded-2xl shadow transition-colors duration-250 ${selectedCategory ? selectedCategory.color : 'bg-[#78C3FB]'} p-6`}>
+   <div className={`w-full h-auto rounded-2xl shadow-sm transition-colors duration-250 ${selectedCategory ? selectedCategory.color : 'bg-[#78C3FB]'} p-6`}>
      <div className="flex items-start">
        <Link href={`/profile/${currentUser?.id}`} passHref>
-         <div className='drop-shadow-md mt-1 mr-3'>
+         <div className='drop-shadow mt-1 mr-3'>
            <Avatar src={currentUser?.image ?? undefined} />
          </div>
        </Link>

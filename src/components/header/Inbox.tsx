@@ -25,13 +25,13 @@ const Inbox: React.FC<InboxProps> = ({ currentUser }) => {
           rounded-full 
           p-3 
           cursor-pointer 
-          shadow-lg
+          shadow-sm
           transform
           transition-all
           duration-500
           ease-out
           hover:shadow-[#5E6365]/50
-          hover:shadow-md
+          hover:shadow-sm
           overflow-hidden
           group
           before:content-['']

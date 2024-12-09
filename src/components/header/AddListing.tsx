@@ -30,13 +30,13 @@ const AddListing: React.FC<AddListingProps> = ({}) => {
         rounded-full 
         p-3 
         cursor-pointer 
-        shadow
+        shadow-sm
         transform
         transition-all
         duration-500
         ease-out
         hover:shadow-[#5E6365]/50
-        hover:shadow-md
+        hover:shadow-sm
         overflow-hidden
         group
         before:content-['']
