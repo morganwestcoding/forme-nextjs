@@ -14,7 +14,7 @@ interface FavoritesClientProps {
   totalResults: number;
 }
 
-const ITEMS_PER_PAGE = 8;
+const ITEMS_PER_PAGE = 10;
 
 
 
@@ -30,7 +30,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
       <div className="pt-2 h-[calc(100vh-80px)] flex flex-col">
         <div className="
          pt-6
-          flex-1
+        flex-1
           grid 
           grid-cols-1 
           sm:grid-cols-2 
@@ -41,13 +41,13 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
           gap-6
         ">
           {listings.map((listing: any) => (
-            <div key={listing.id} className="flex justify-center">
+         
               <ListingCard
                 categories={categories}
                 currentUser={currentUser}
                 data={listing}
               />
-            </div>
+     
           ))}
         </div>
         <div className="flex justify-center w-full pt-4">
