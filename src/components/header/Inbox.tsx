@@ -23,7 +23,9 @@ const Inbox: React.FC<InboxProps> = ({ currentUser }) => {
           justify-center 
           bg-[#5E6365]
           rounded-full 
-          p-3 
+          p-3
+                border
+      border-[#5E6365]
           cursor-pointer 
           shadow-sm
           transform
@@ -57,8 +59,8 @@ const Inbox: React.FC<InboxProps> = ({ currentUser }) => {
         <svg 
           xmlns="http://www.w3.org/2000/svg" 
           viewBox="0 0 24 24" 
-          width={19} 
-          height={19} 
+          width={18} 
+          height={18} 
           className="
             relative
             z-10

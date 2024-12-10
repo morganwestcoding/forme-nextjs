@@ -28,49 +28,25 @@ const AddListing: React.FC<AddListingProps> = ({}) => {
         justify-center 
         bg-[#5E6365]
         rounded-full 
-        p-3 
+        p-3
+              border
+      border-[#5E6365]
         cursor-pointer 
         shadow-sm
-        transform
-        transition-all
-        duration-500
-        ease-out
-        hover:shadow-[#5E6365]/50
-        hover:shadow-sm
         overflow-hidden
         group
-        before:content-['']
-        before:absolute
-        before:w-12
-        before:h-12
-        before:bg-white/10
-        before:top-1/2
-        before:left-1/2
-        before:-translate-x-1/2
-        before:-translate-y-1/2
-        before:rounded-full
-        before:scale-0
-        before:opacity-0
-        hover:before:scale-150
-        hover:before:opacity-100
-        before:transition-all
-        before:duration-500
-        before:ease-out
       " 
       onClick={onRent}
     >
       <svg 
         xmlns="http://www.w3.org/2000/svg" 
         viewBox="0 0 24 24" 
-        width="19" 
-        height="19" 
+        width="18" 
+        height="18" 
         className="
           relative
           z-10
           text-white 
-          transition-transform 
-          duration-500 
-          group-hover:scale-110
         "
         fill="none"
       >

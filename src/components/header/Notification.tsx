@@ -64,7 +64,9 @@ const Notifications: React.FC = () => {
       justify-center 
       bg-[#5E6365]
       rounded-full 
-      p-3 
+      p-3
+      border
+      border-[#5E6365]
       cursor-pointer 
       shadow-sm
       transform
@@ -97,8 +99,8 @@ const Notifications: React.FC = () => {
     <svg 
       xmlns="http://www.w3.org/2000/svg" 
       viewBox="0 0 24 24" 
-      width="19" 
-      height="19" 
+      width="18" 
+      height="18" 
       className="
         relative
         z-10
@@ -153,7 +155,7 @@ const Notifications: React.FC = () => {
           w-64 
           mt-1 
           rounded-lg
-          shadow-lg 
+          shadow-sm
           transform 
           -translate-x-1/2 
           left-1/2
