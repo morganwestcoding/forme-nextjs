@@ -233,7 +233,7 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
     <>
       {!isHidden && (
         <>
-          <div className='w-full h-auto rounded-2xl drop-shadow-sm bg-[#ffffff] p-6 mr-8 my-4 relative cursor-pointer' onClick={openModal}>
+          <div className='w-full h-auto rounded-2xl drop-shadow-sm bg-[#ffffff] p-6 mr-0 md:mr-8 my-4 relative cursor-pointer' onClick={openModal}>
             <div className="absolute top-4 right-6">
               <DropdownMenu>
                 <DropdownMenuTrigger>

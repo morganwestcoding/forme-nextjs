@@ -32,7 +32,7 @@ export default function Rightbar() {
   const subscribeModal = useSubscribeModal();
 
   return (
-    <div className="flex flex-col justify-end bg-transparent gap-3 h-auto mt-8">
+    <div className="hidden md:flex flex-col justify-end bg-transparent gap-3 h-auto mt-8">
       <div className="w-full rounded-2xl drop-shadow-sm bg-[#ffffff] p-6 relative"
       onClick={() => subscribeModal.onOpen()}>
         <div className="flex flex-col">

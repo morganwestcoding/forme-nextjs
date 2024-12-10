@@ -67,7 +67,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
     <ClientProviders>
       <Container>
       <div className="flex w-full">
-  <div className={`flex-none w-[55%] ${currentUser ? 'mt-8' : 'mt-4'} mr-1`}>
+  <div className={`flex-none w-full md:w-[55%]  ${currentUser ? 'mt-8' : 'mt-4'} mr-1`}>
     <Share currentUser={currentUser} categoryLabel={selectedCategory || undefined} />
     {storePosts.map((post) => (
       <Post 
@@ -78,7 +78,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
       />
     ))}
   </div>
-  <div className="flex-grow w-[45%] ml-4">
+  <div className="hidden md:block md:flex-grow md:w-[45%] ml-4">
     <Rightbar />
   </div>
 </div>
