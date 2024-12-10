@@ -54,7 +54,7 @@ export default async function RootLayout({
                 <div className="fixed w-52">
                   <Sidebar />
                 </div>
-                <div className="flex-1 ml-52"> 
+                <div className="flex-1 md:ml-52"> 
                   <Header currentUser={currentUser} />
                     {children}
                   
