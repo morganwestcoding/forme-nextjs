@@ -8,7 +8,7 @@ export const categories = [
   {
     label: 'Massage',
     color: 'bg-[#D4B185]',
-    description: 'This property is in the countryside!',
+    description: 'This storefront provides Massages!',
     gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
   },
   {
