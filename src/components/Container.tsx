@@ -12,7 +12,7 @@ const Container: React.FC<ContainerProps> = ({
         max-w-[2520px]
         mx-auto
         px-4
-        sm:px-6
+        sm:px-8
         md:px-24
         ">
             {children}
