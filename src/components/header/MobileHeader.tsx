@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Container from "../Container";
 import UserButton from "../UserButton";
 import { SafePost, SafeUser } from "@/app/types";
-import Logo from "./Logo";
+import Logo from './Logo';
 
 interface MobileHeaderProps {
   currentUser?: SafeUser | null;
@@ -31,7 +31,9 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
             </svg>
           </button>
 
-          <Logo />
+          <div className="absolute left-1/2 transform -translate-x-1/2 z-10">
+            <Logo />
+          </div>
 
           <div className="flex items-center space-x-4">
             <button 
