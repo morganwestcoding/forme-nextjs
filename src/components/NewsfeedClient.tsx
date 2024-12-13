@@ -78,7 +78,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
       />
     ))}
   </div>
-  <div className="hidden md:block md:flex-grow md:w-[45%] ml-4">
+  <div className="flex-grow w-[45%] ml-4">
     <Rightbar />
   </div>
 </div>
