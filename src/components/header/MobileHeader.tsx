@@ -19,7 +19,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
   const router = useRouter();
 
   return (
-    <div className="fixed top-0 left-0 right-0 bg-white z-50">
+    <div className="fixed top-0 left-0 right-0 bg-white z-50 h-17 px-4">
       <Container>
         <div className="flex items-center justify-between py-4">
           <button 
@@ -32,7 +32,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
           </button>
 
           <div className="absolute left-1/2 transform -translate-x-1/2 z-10">
-            <Logo />
+            <Logo isMobile/>
           </div>
 
           <div className="flex items-center space-x-4">
