@@ -31,7 +31,7 @@ const UserButton: React.FC<UserButtonProps> = ({
   const profileModal = useProfileModal();
 
   return (      
-    <div className="inline-flex items-center justify-center rounded-full drop-shadow-md text-sm font-medium">
+    <div className="inline-flex items-center justify-center rounded-full drop-shadow text-sm font-medium">
       <DropdownMenu>   
         <DropdownMenuTrigger className="outline-none">
           <div className="relative w-11 h-11 rounded-full overflow-hidden">
