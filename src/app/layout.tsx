@@ -57,7 +57,7 @@ export default async function RootLayout({
                 </div>
                 <div className="flex-1 md:ml-52">
                   <Header currentUser={currentUser} />
-                  <main className="pt-16 md:pt-0 pb-16 md:pb-0"> {/* Add padding bottom for mobile nav */}
+                  <main className="md:pt-0 pb-16 md:pb-0"> {/* Add padding bottom for mobile nav */}
                     {children}
                   </main>
                 </div>
