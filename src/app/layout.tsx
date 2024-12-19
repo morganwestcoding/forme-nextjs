@@ -22,6 +22,7 @@ import ForgotPasswordModal from '@/components/modals/ForgotPasswordModal';
 import ResetPasswordModal from '@/components/modals/ResetPasswordModal';
 import SubscribeModal from '@/components/modals/SubscribeModal';
 import DemoModal from '@/components/modals/DemoModal';
+import MobileNavBar from '@/components/header/MobileNavBar';
 
 
 export const metadata: Metadata = {
@@ -54,11 +55,14 @@ export default async function RootLayout({
                 <div className="fixed w-52">
                   <Sidebar />
                 </div>
-                <div className="flex-1 md:ml-52"> 
+                <div className="flex-1 md:ml-52">
                   <Header currentUser={currentUser} />
+                  <main className="pt-16 md:pt-0 pb-16 md:pb-0"> {/* Add padding bottom for mobile nav */}
                     {children}
-                  
+                  </main>
                 </div>
+                <MobileNavBar /> {/* Add the mobile nav bar */}
+              
               </div>
               <ToasterProvider/>
               <RentModal/>
