@@ -80,7 +80,7 @@ const Search: React.FC<SearchProps> = ({ onResultClick }) => {
          w-full 
          mt-1 
          rounded-lg
-         shadow-sm
+         shadow-sm-lg 
          bg-white 
          bg-opacity-75
          backdrop-blur-md 
