@@ -47,7 +47,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
     <div className="fixed top-0 flex h-screen z-50">
       <div className="flex flex-col items-center w-58 h-full px-6 pb-10 pt-8 bg-white backdrop-blur-full bg drop-shadow-sm rounded-tr-2xl" >
   <Logo/>
-  <div className="w-44 bg-slate-100 flex items-center justify-center p-2 mb-3 cursor-pointer rounded-lg hover:bg-[#DFE2E2] transition-colors duration-250">
+  <div className="w-44 bg-slate-100 flex items-center justify-center p-2 mb-2 cursor-pointer rounded-lg hover:bg-[#DFE2E2] transition-colors duration-250">
   <Avatar src={currentUser?.image ?? undefined} isSidebar />
   <div className="ml-3 flex flex-col justify-start">
     <span className="text-[#484848] text-xs font-medium">{currentUser?.name?.split(' ')[0]}</span>
@@ -64,7 +64,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
         
         <ul className="list-none m-0 p-0 flex flex-col items-center hover:text-white ">
           {/* Add this before your first menu item (Home) */}
-<li className={`group flex items-center justify-start mb-6 p-2 rounded-lg transition-colors duration-250 border ${
+<li className={`group flex items-center justify-start mb-4 p-2 rounded-lg transition-colors duration-250 border ${
   selectedButton === 'search' ? 'bg-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#DFE2E2]'
 } w-44`} 
 onClick={() => {
@@ -105,7 +105,8 @@ onClick={() => {
     selectedButton === 'search' ? 'text-white' : 'text-[#a2a2a2] group-hover:text-white'
   }`}>Search</span>
 </li>
-          <li className={`group flex items-center justify-start mb-3 p-2  rounded-lg  transition-colors duration-250 ${
+<div className="w-44 h-[1px] rounded-full bg-gray-200 mb-4"></div>
+          <li className={`group flex items-center justify-start mb-2 p-2  rounded-lg  transition-colors duration-250 ${
           selectedButton === 'home' ? 'bg-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#DFE2E2]'
           } w-44`}
           onClick={() => {
@@ -130,7 +131,7 @@ onClick={() => {
 
           {/* Market Icon */}
    
-          <li className={`group flex items-center justify-start mb-3 p-2 rounded-lg  transition-colors duration-250 ${
+          <li className={`group flex items-center justify-start mb-2 p-2 rounded-lg  transition-colors duration-250 ${
               selectedButton === 'market' ? 'bg-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#DFE2E2] hover:-[#DFE2E2]'
             } w-44`} 
             onClick={() => {
@@ -152,7 +153,7 @@ onClick={() => {
 
            {/* Favorites Icon */}
        
-           <li className={`group flex items-center justify-start mb-3 p-2 rounded-lg  transition-colors duration-250 ${
+           <li className={`group flex items-center justify-start mb-2 p-2 rounded-lg  transition-colors duration-250 ${
               selectedButton === 'favorites' ? 'bg-[#5E6365]': 'bg-[#ffffff] hover:bg-[#DFE2E2] hover:-[#DFE2E2]'
             } w-44`} 
             onClick={() => {
@@ -175,7 +176,7 @@ onClick={() => {
 
          {/* Job Icon with Tooltip */}
   
-         <li className={`group flex items-center justify-start mb-3 p-2 rounded-lg  transition-colors duration-250 ${
+         <li className={`group flex items-center justify-start mb-2 p-2 rounded-lg  transition-colors duration-250 ${
     selectedButton === 'jobs' ? 'bg-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#DFE2E2] hover:-[#DFE2E2]'
   } w-44`} 
   onClick={() => {
@@ -195,13 +196,15 @@ onClick={() => {
   }`}>Jobs</span>
 </li>
 
-          <li className={`group flex items-center justify-start mb-3 p-2 rounded-lg  transition-colors duration-250 ${
+          <li className={`group flex items-center justify-start mb-2 p-2 rounded-lg  transition-colors duration-250 ${
     selectedButton === 'bookings' ? 'bg-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#DFE2E2] hover:-[#DFE2E2]'
   } w-44`} 
   onClick={() => {
     router.push('/reservations');
     setSelectedButton('bookings');
   }}>
+        <div className="flex items-center justify-between w-full">
+      <div className="flex items-center">
   <div className="group flex flex-col rounded-full p-1 cursor-pointer">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={18} height={18} className="group-hover:text-white">
   {/* Base calendar shape */}
@@ -234,10 +237,14 @@ onClick={() => {
   </div>
   <span className={`ml-3 text-[0.8rem] font-light ${
     selectedButton === 'bookings' ? 'text-white' : 'text-[#a2a2a2] group-hover:text-white'
-  }`}>Bookings</span>
+  }`}>Bookings</span></div>
+<div className="bg-[#78C3FB] px-2 py-1 rounded-sm flex items-center justify-center">
+  <span className="text-white font-medium text-xs">5</span>
+</div>
+</div>
 </li>
 {/* Add this right after the Bookings button li element */}
-<li className={`group flex items-center justify-start mb-5 p-2 rounded-lg transition-colors duration-250 ${
+<li className={`group flex items-center justify-start mb-4 p-2 rounded-lg transition-colors duration-250 ${
   selectedButton === 'vendors' ? 'bg-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#DFE2E2] hover:-[#DFE2E2]'
 } w-44`} 
 onClick={() => {
@@ -297,6 +304,56 @@ onClick={() => {
   <span className={`ml-3 text-[0.8rem] font-light ${
     selectedButton === 'vendors' ? 'text-white' : 'text-[#a2a2a2] group-hover:text-white'
   }`}>Vendors</span>
+</li>
+      
+          <div className="w-44 h-[1px] rounded-full bg-gray-200 mb-4"></div>
+          <li className={`group flex items-center justify-start mb-2 p-2 rounded-lg transition-colors duration-250 ${
+  selectedButton === 'inbox' ? 'bg-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#DFE2E2] hover:-[#DFE2E2]'
+} w-44`} 
+onClick={() => {
+  router.push('/inbox');
+  setSelectedButton('inbox');
+}}>
+    <div className="flex items-center justify-between w-full">
+        <div className="flex items-center">
+            <div className="group flex flex-col rounded-full p-1 cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={18} height={18} color={selectedButton === 'inbox' ? "#ffffff" : "#a2a2a2"} fill="none" className="group-hover:text-white">
+                    <path d="M2 6L8.91302 9.91697C11.4616 11.361 12.5384 11.361 15.087 9.91697L22 6" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+                    <path d="M2.01577 13.4756C2.08114 16.5412 2.11383 18.0739 3.24496 19.2094C4.37608 20.3448 5.95033 20.3843 9.09883 20.4634C11.0393 20.5122 12.9607 20.5122 14.9012 20.4634C18.0497 20.3843 19.6239 20.3448 20.7551 19.2094C21.8862 18.0739 21.9189 16.5412 21.9842 13.4756C22.0053 12.4899 22.0053 11.5101 21.9842 10.5244C21.9189 7.45886 21.8862 5.92609 20.7551 4.79066C19.6239 3.65523 18.0497 3.61568 14.9012 3.53657C12.9607 3.48781 11.0393 3.48781 9.09882 3.53656C5.95033 3.61566 4.37608 3.65521 3.24495 4.79065C2.11382 5.92608 2.08114 7.45885 2.01576 10.5244C1.99474 11.5101 1.99475 12.4899 2.01577 13.4756Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+                </svg>
+            </div>
+            <span className={`ml-3 text-[0.8rem] font-light ${
+                selectedButton === 'inbox' ? 'text-white' : 'text-[#a2a2a2] group-hover:text-white'
+            }`}>Inbox</span>
+        </div>
+        <div className="bg-[#78C3FB] px-2 py-1 rounded-sm flex items-center justify-center">
+  <span className="text-white font-medium text-xs">21</span>
+</div>
+    </div>
+</li>
+<li className={`group flex items-center justify-start mb-2 p-2 rounded-lg transition-colors duration-250 ${
+  selectedButton === 'notifications' ? 'bg-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#DFE2E2] hover:-[#DFE2E2]'
+} w-44`} 
+onClick={() => {
+  router.push('/notifications');
+  setSelectedButton('notifications');
+}}>
+    <div className="flex items-center justify-between w-full">
+        <div className="flex items-center">
+            <div className="group flex flex-col rounded-full p-1 cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={18} height={18} color={selectedButton === 'notifications' ? "#ffffff" : "#a2a2a2"} fill="none" className="group-hover:text-white">
+                    <path d="M2.52992 14.7696C2.31727 16.1636 3.268 17.1312 4.43205 17.6134C8.89481 19.4622 15.1052 19.4622 19.5679 17.6134C20.732 17.1312 21.6827 16.1636 21.4701 14.7696C21.3394 13.9129 20.6932 13.1995 20.2144 12.5029C19.5873 11.5793 19.525 10.5718 19.5249 9.5C19.5249 5.35786 16.1559 2 12 2C7.84413 2 4.47513 5.35786 4.47513 9.5C4.47503 10.5718 4.41272 11.5793 3.78561 12.5029C3.30684 13.1995 2.66061 13.9129 2.52992 14.7696Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M8 19C8.45849 20.7252 10.0755 22 12 22C13.9245 22 15.5415 20.7252 16 19" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+            </div>
+            <span className={`ml-3 text-[0.8rem] font-light ${
+                selectedButton === 'notifications' ? 'text-white' : 'text-[#a2a2a2] group-hover:text-white'
+            }`}>Notifications</span>
+        </div>
+        <div className="bg-[#78C3FB] px-2 py-1 rounded-sm flex items-center justify-center">
+  <span className="text-white font-medium text-xs">112</span>
+</div>
+    </div>
 </li>
           </ul>
 
