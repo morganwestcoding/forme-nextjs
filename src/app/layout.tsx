@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Roboto } from 'next/font/google'
+import { Inter } from 'next/font/google'
 import './globals.css'
 import Header from '../components/header/Header'
 import RegisterModal from '@/components/RegisterModal';
@@ -32,9 +32,9 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
-const font = Roboto({
-  subsets: ["latin"],
-  weight: "400"
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
 })
 
 export default async function RootLayout({
@@ -50,7 +50,7 @@ export default async function RootLayout({
       <CategoryProvider>
         <ClientProviders>
           <html lang="en">
-            <body className={font.className}>
+            <body className={inter.className}>
               <div className="min-h-screen flex"> 
                 <div className="fixed w-52">
                   <Sidebar />
