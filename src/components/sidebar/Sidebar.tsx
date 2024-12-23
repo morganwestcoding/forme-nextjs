@@ -6,6 +6,12 @@ import { categories } from '../Categories';
 import { useState } from "react";
 import { useCategory } from "@/CategoryContext";
 import useDemoModal from "@/app/hooks/useDemoModal";
+import Avatar from "../ui/avatar";
+import { SafeUser } from "@/app/types";
+
+interface SidebarProps {
+  currentUser?: SafeUser | null;
+}
 
 interface Category {
   label: string;
@@ -15,7 +21,7 @@ interface Category {
 }
 export const dynamic = 'force-dynamic';
 
-export default function Sidebar() {
+const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
   const router = useRouter();
   const demoModal = useDemoModal();
   const [selectedButton, setSelectedButton] = useState('home');
@@ -39,15 +45,69 @@ export default function Sidebar() {
   return (
 
     <div className="fixed top-0 flex h-screen z-50">
-      <div className="flex flex-col items-center w-52 h-full px-10 pb-10 pt-8 bg-white backdrop-blur-full bg drop-shadow-sm rounded-tr-2xl" >
-        <Logo/>
-        <div className="flex flex-col items-center w-full">
-          <span className="mb-5 text-[#a2a2a2] text-[0.8rem] font-light ">Menu</span>
+      <div className="flex flex-col items-center w-58 h-full px-6 pb-10 pt-8 bg-white backdrop-blur-full bg drop-shadow-sm rounded-tr-2xl" >
+  <Logo/>
+  <div className="w-44 bg-slate-100 flex items-center justify-center p-2 mb-3 cursor-pointer rounded-lg hover:bg-[#DFE2E2] transition-colors duration-250">
+  <Avatar src={currentUser?.image ?? undefined} isSidebar />
+  <div className="ml-3 flex flex-col justify-start">
+    <span className="text-[#484848] text-xs font-medium">{currentUser?.name?.split(' ')[0]}</span>
+    <span className="text-[#a2a2a2] text-xs">Premium</span>
+  </div>
+  <div className="ml-auto">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#a2a2a2]">
+      <path d="M6 9l6 6 6-6"/>
+    </svg>
+  </div>
+</div>
+
+        <div className="flex flex-col w-full">
         
         <ul className="list-none m-0 p-0 flex flex-col items-center hover:text-white ">
+          {/* Add this before your first menu item (Home) */}
+<li className={`group flex items-center justify-start mb-6 p-2 rounded-lg transition-colors duration-250 border ${
+  selectedButton === 'search' ? 'bg-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#DFE2E2]'
+} w-44`} 
+onClick={() => {
+  router.push('/search');
+  setSelectedButton('search');
+}}>
+  <div className="group flex flex-col rounded-full p-1 cursor-pointer">
+    <svg 
+      xmlns="http://www.w3.org/2000/svg" 
+      viewBox="0 0 24 24" 
+      width={18} 
+      height={18} 
+      color={selectedButton === 'search' ? "#ffffff" : "#a2a2a2"}
+      fill="none"
+      className="group-hover:text-white"
+    >
+      <path 
+        d="M14 14L16.5 16.5" 
+        stroke="currentColor" 
+        strokeWidth="1.5" 
+        strokeLinejoin="round" 
+      />
+      <path 
+        d="M16.4333 18.5252C15.8556 17.9475 15.8556 17.0109 16.4333 16.4333C17.0109 15.8556 17.9475 15.8556 18.5252 16.4333L21.5667 19.4748C22.1444 20.0525 22.1444 20.9891 21.5667 21.5667C20.9891 22.1444 20.0525 22.1444 19.4748 21.5667L16.4333 18.5252Z" 
+        stroke="currentColor" 
+        strokeWidth="1.5" 
+        strokeLinecap="round" 
+      />
+      <path 
+        d="M16 9C16 5.13401 12.866 2 9 2C5.13401 2 2 5.13401 2 9C2 12.866 5.13401 16 9 16C12.866 16 16 12.866 16 9Z" 
+        stroke="currentColor" 
+        strokeWidth="1.5" 
+        strokeLinejoin="round" 
+      />
+    </svg>
+  </div>
+  <span className={`ml-3 text-[0.8rem] font-light ${
+    selectedButton === 'search' ? 'text-white' : 'text-[#a2a2a2] group-hover:text-white'
+  }`}>Search</span>
+</li>
           <li className={`group flex items-center justify-start mb-3 p-2  rounded-lg  transition-colors duration-250 ${
           selectedButton === 'home' ? 'bg-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#DFE2E2]'
-          } w-36`}
+          } w-44`}
           onClick={() => {
             router.push('/');
             setSelectedButton('home');
@@ -61,7 +121,7 @@ export default function Sidebar() {
             </svg>
           
           </div>
-          <span className={`ml-4 text-[0.8rem] font-light ${
+          <span className={`ml-3 text-[0.8rem] font-light ${
     selectedButton === 'home' ? 'text-white' : 'text-[#a2a2a2] group-hover:text-white'
   }`}>Home</span>
 
@@ -72,7 +132,7 @@ export default function Sidebar() {
    
           <li className={`group flex items-center justify-start mb-3 p-2 rounded-lg  transition-colors duration-250 ${
               selectedButton === 'market' ? 'bg-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#DFE2E2] hover:-[#DFE2E2]'
-            } w-36`} 
+            } w-44`} 
             onClick={() => {
               router.push('/market');
               setSelectedButton('market');
@@ -84,7 +144,7 @@ export default function Sidebar() {
             <path d="M17.7957 2.50294L6.14983 2.53202C4.41166 2.44248 3.966 3.78259 3.966 4.43768C3.966 5.02359 3.89055 5.87774 2.82524 7.4831C1.75993 9.08846 1.83998 9.56536 2.44071 10.6767C2.93928 11.5991 4.20741 11.9594 4.86862 12.02C6.96883 12.0678 7.99065 10.2517 7.99065 8.97523C9.03251 12.1825 11.9955 12.1825 13.3158 11.8157C14.6385 11.4483 15.7717 10.1331 16.0391 8.97523C16.195 10.4142 16.6682 11.2538 18.0663 11.8308C19.5145 12.4284 20.7599 11.515 21.3848 10.9294C22.0096 10.3439 22.4107 9.04401 21.2967 7.6153C20.5285 6.63001 20.2084 5.7018 20.1032 4.73977C20.0423 4.18234 19.9888 3.58336 19.5971 3.20219C19.0247 2.64515 18.2035 2.47613 17.7957 2.50294Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
             </div>
-            <span className={`ml-4 text-[0.8rem] font-light ${
+            <span className={`ml-3 text-[0.8rem] font-light ${
                 selectedButton === 'market' ? 'text-white' : 'text-[#a2a2a2] group-hover:text-white hover:-[#DFE2E2]'
               }`}>Market</span>
             </li>
@@ -94,7 +154,7 @@ export default function Sidebar() {
        
            <li className={`group flex items-center justify-start mb-3 p-2 rounded-lg  transition-colors duration-250 ${
               selectedButton === 'favorites' ? 'bg-[#5E6365]': 'bg-[#ffffff] hover:bg-[#DFE2E2] hover:-[#DFE2E2]'
-            } w-36`} 
+            } w-44`} 
             onClick={() => {
               router.push('/favorites');
               setSelectedButton('favorites');
@@ -106,7 +166,7 @@ export default function Sidebar() {
           </div>     
 
            
-          <span className={`ml-4 text-[0.8rem] font-light ${
+          <span className={`ml-3 text-[0.8rem] font-light ${
                 selectedButton === 'favorites' ? 'text-white' : 'text-[#a2a2a2] group-hover:text-white'
               }`}>Favorites</span>
      
@@ -117,7 +177,7 @@ export default function Sidebar() {
   
          <li className={`group flex items-center justify-start mb-3 p-2 rounded-lg  transition-colors duration-250 ${
     selectedButton === 'jobs' ? 'bg-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#DFE2E2] hover:-[#DFE2E2]'
-  } w-36`} 
+  } w-44`} 
   onClick={() => {
     router.push('/jobs');
     setSelectedButton('jobs');
@@ -130,15 +190,14 @@ export default function Sidebar() {
       <path d="M15.5 5.5L15.4227 5.23509C15.0377 3.91505 14.8452 3.25503 14.3869 2.87752C13.9286 2.5 13.3199 2.5 12.1023 2.5H11.8977C10.6801 2.5 10.0714 2.5 9.61309 2.87752C9.15478 3.25503 8.96228 3.91505 8.57727 5.23509L8.5 5.5" stroke="currentColor" strokeWidth="1.5" />
     </svg>
   </div>
-  <span className={`ml-4 text-[0.8rem] font-light ${
+  <span className={`ml-3 text-[0.8rem] font-light ${
     selectedButton === 'jobs' ? 'text-white' : 'text-[#a2a2a2] group-hover:text-white'
   }`}>Jobs</span>
 </li>
-        
 
-          <li className={`group flex items-center justify-start mb-5 p-2 rounded-lg  transition-colors duration-250 ${
+          <li className={`group flex items-center justify-start mb-3 p-2 rounded-lg  transition-colors duration-250 ${
     selectedButton === 'bookings' ? 'bg-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#DFE2E2] hover:-[#DFE2E2]'
-  } w-36`} 
+  } w-44`} 
   onClick={() => {
     router.push('/reservations');
     setSelectedButton('bookings');
@@ -148,8 +207,8 @@ export default function Sidebar() {
   {/* Base calendar shape */}
   <path 
     d="M2.5 12.2432C2.5 7.88594 2.5 5.70728 3.75212 4.35364C5.00424 3 7.01949 3 11.05 3H12.95C16.9805 3 18.9958 3 20.2479 4.35364C21.5 5.70728 21.5 7.88594 21.5 12.2432V12.7568C21.5 17.1141 21.5 19.2927 20.2479 20.6464C18.9958 22 16.9805 22 12.95 22H11.05C7.01949 22 5.00424 22 3.75212 20.6464C2.5 19.2927 2.5 17.1141 2.5 12.7568V12.2432Z" 
-    stroke={selectedButton === 'bookings' ? "#ffffff" : "#a2a2a2"} 
-    fill={selectedButton === 'bookings' ? "#ffffff" : "none"}
+    stroke={selectedButton === 'bookings' ? "#000000" : "#a2a2a2"} 
+    fill={selectedButton === 'bookings' ? "#000000" : "none"}
     strokeWidth="1.5" 
     className={`${selectedButton !== 'bookings' ? 'group-hover:stroke-white' : ''}`}
   />
@@ -173,20 +232,82 @@ export default function Sidebar() {
   />
 </svg>
   </div>
-  <span className={`ml-4 text-[0.8rem] font-light ${
+  <span className={`ml-3 text-[0.8rem] font-light ${
     selectedButton === 'bookings' ? 'text-white' : 'text-[#a2a2a2] group-hover:text-white'
   }`}>Bookings</span>
+</li>
+{/* Add this right after the Bookings button li element */}
+<li className={`group flex items-center justify-start mb-5 p-2 rounded-lg transition-colors duration-250 ${
+  selectedButton === 'vendors' ? 'bg-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#DFE2E2] hover:-[#DFE2E2]'
+} w-44`} 
+onClick={() => {
+  router.push('/vendors');
+  setSelectedButton('vendors');
+}}>
+  <div className="group flex flex-col rounded-full p-1 cursor-pointer">
+    <svg 
+      xmlns="http://www.w3.org/2000/svg" 
+      viewBox="0 0 24 24" 
+      width={18} 
+      height={18} 
+      color={selectedButton === 'vendors' ? "#ffffff" : "#a2a2a2"}
+      fill="none"
+      className="group-hover:text-white"
+    >
+      <path 
+        d="M8 16L16.7201 15.2733C19.4486 15.046 20.0611 14.45 20.3635 11.7289L21 6" 
+        stroke="currentColor" 
+        strokeWidth="1.5" 
+        strokeLinecap="round" 
+      />
+      <path 
+        d="M6 6H22" 
+        stroke="currentColor" 
+        strokeWidth="1.5" 
+        strokeLinecap="round" 
+      />
+      <circle 
+        cx="6" 
+        cy="20" 
+        r="2" 
+        stroke="currentColor" 
+        strokeWidth="1.5" 
+      />
+      <circle 
+        cx="17" 
+        cy="20" 
+        r="2" 
+        stroke="currentColor" 
+        strokeWidth="1.5" 
+      />
+      <path 
+        d="M8 20L15 20" 
+        stroke="currentColor" 
+        strokeWidth="1.5" 
+        strokeLinecap="round" 
+      />
+      <path 
+        d="M2 2H2.966C3.91068 2 4.73414 2.62459 4.96326 3.51493L7.93852 15.0765C8.08887 15.6608 7.9602 16.2797 7.58824 16.7616L6.63213 18" 
+        stroke="currentColor" 
+        strokeWidth="1.5" 
+        strokeLinecap="round" 
+      />
+    </svg>
+  </div>
+  <span className={`ml-3 text-[0.8rem] font-light ${
+    selectedButton === 'vendors' ? 'text-white' : 'text-[#a2a2a2] group-hover:text-white'
+  }`}>Vendors</span>
 </li>
           </ul>
 
 {/* Categories */}
 {/*<span className="mb-5 text-[#a2a2a2] text-[0.8rem] font-light">Genre</span>
-          <li className={`relative flex items-center justify-center mb-4 p-2 rounded-lg shadow w-36 h-20 transition-colors duration-250 ${selectedCategory ? categories.find(c => c.label === selectedCategory)?.color : 'bg-[#78C3FB]'}`}>
+          <li className={`relative flex items-center justify-center mb-4 p-2 rounded-lg shadow w-44 h-20 transition-colors duration-250 ${selectedCategory ? categories.find(c => c.label === selectedCategory)?.color : 'bg-[#78C3FB]'}`}>
             <span className="text-[#ffffff] text-[0.8rem] group-hover:text-white font-light text-center h-10 rounded-lg p-3 bg-black bg-opacity-10 backdrop-blur shadow">
               {selectedCategory || 'Default'}
             </span>
           </li>
-          <div className="w-36">
+          <div className="w-44">
             <div className="grid grid-cols-4 gap-1.5 rounded-xl grid-rows-2">
         {categories.map((item: Category) => (
           <div 
@@ -197,10 +318,10 @@ export default function Sidebar() {
         ))}
             </div>
           </div>*/}
-          {!isDemoHidden && (
+ {/*        {!isDemoHidden && (
     <li className={`group flex items-center justify-start mt-8 p-2 rounded-lg  transition-colors duration-250 ${
       selectedButton === 'demo' ? 'bg-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#DFE2E2] hover:-[#DFE2E2]'
-    } w-36`} 
+    } w-44`} 
     onClick={() => {
       setSelectedButton('demo');
       demoModal.onOpen();
@@ -240,13 +361,15 @@ export default function Sidebar() {
           />
         </svg>
       </div>
-      <span className={`ml-4 text-[0.8rem] font-light ${
+      <span className={`ml-3 text-[0.8rem] font-light ${
         selectedButton === 'demo' ? 'text-white' : 'text-[#a2a2a2] group-hover:text-white'
       }`}>Demo</span>
     </li>
-  )}
+  )}*/}
         </div>  
       </div>
     </div>
   );
 }
+
+export default Sidebar

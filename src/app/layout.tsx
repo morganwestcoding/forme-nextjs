@@ -53,10 +53,9 @@ export default async function RootLayout({
             <body className={inter.className}>
               <div className="min-h-screen flex"> 
                 <div className="fixed w-52">
-                  <Sidebar />
+                  <Sidebar currentUser={currentUser}/>
                 </div>
                 <div className="flex-1 md:ml-52">
-                  <Header currentUser={currentUser} />
                   <main className="md:pt-0 pb-16 md:pb-0"> {/* Add padding bottom for mobile nav */}
                     {children}
                   </main>

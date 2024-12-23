@@ -60,7 +60,7 @@ const PostCategorySelect: React.FC<PostCategorySelectProps> = ({
             title={category.label}
           />
         ))}
-        <span className="font-light text-[#717171] px-4">
+        <span className="font-light  px-4">
           Submit
         </span>
       </button>
