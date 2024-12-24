@@ -8,6 +8,8 @@ import { useCategory } from "@/CategoryContext";
 import useDemoModal from "@/app/hooks/useDemoModal";
 import Avatar from "../ui/avatar";
 import { SafeUser } from "@/app/types";
+import UserButton from "../UserButton";
+import { SafePost } from "@/app/types";
 
 interface SidebarProps {
   currentUser?: SafeUser | null;
@@ -47,18 +49,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
     <div className="fixed top-0 flex h-screen z-50">
       <div className="flex flex-col items-center w-58 h-full px-6 pb-10 pt-8 bg-white backdrop-blur-full bg drop-shadow-sm rounded-tr-2xl" >
   <Logo/>
-  <div className="w-44 bg-slate-100 flex items-center justify-center p-2 mb-2 cursor-pointer rounded-lg hover:bg-[#DFE2E2] transition-colors duration-250">
-  <Avatar src={currentUser?.image ?? undefined} isSidebar />
-  <div className="ml-3 flex flex-col justify-start">
-    <span className="text-[#484848] text-xs font-medium">{currentUser?.name?.split(' ')[0]}</span>
-    <span className="text-[#a2a2a2] text-xs">Premium</span>
-  </div>
-  <div className="ml-auto">
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#a2a2a2]">
-      <path d="M6 9l6 6 6-6"/>
-    </svg>
-  </div>
-</div>
+  <UserButton currentUser={currentUser} data={{} as SafePost} />
 
         <div className="flex flex-col w-full">
         
@@ -239,7 +230,7 @@ onClick={() => {
     selectedButton === 'bookings' ? 'text-white' : 'text-[#a2a2a2] group-hover:text-white'
   }`}>Bookings</span></div>
 <div className="bg-[#78C3FB] px-2 py-1 rounded-sm flex items-center justify-center">
-  <span className="text-white font-medium text-xs">5</span>
+  <span className="text-white text-xs">5</span>
 </div>
 </div>
 </li>
@@ -327,7 +318,7 @@ onClick={() => {
             }`}>Inbox</span>
         </div>
         <div className="bg-[#78C3FB] px-2 py-1 rounded-sm flex items-center justify-center">
-  <span className="text-white font-medium text-xs">21</span>
+  <span className="text-white text-xs">21</span>
 </div>
     </div>
 </li>
@@ -351,10 +342,11 @@ onClick={() => {
             }`}>Notifications</span>
         </div>
         <div className="bg-[#78C3FB] px-2 py-1 rounded-sm flex items-center justify-center">
-  <span className="text-white font-medium text-xs">112</span>
+  <span className="text-white text-xs">112</span>
 </div>
     </div>
 </li>
+
           </ul>
 
 {/* Categories */}
