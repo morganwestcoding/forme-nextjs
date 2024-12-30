@@ -52,7 +52,6 @@ export default async function RootLayout({
         <ClientProviders>
           <html lang="en">
             <body className={inter.className}>
-            <MobileTopBar currentUser={currentUser} /> 
               <div className="min-h-screen flex"> 
                 <div className="hidden md:block w-52">
                   <Sidebar currentUser={currentUser}/>

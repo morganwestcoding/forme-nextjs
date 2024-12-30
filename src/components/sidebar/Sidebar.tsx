@@ -11,6 +11,7 @@ import { SafeUser } from "@/app/types";
 import UserButton from "../UserButton";
 import { SafePost } from "@/app/types";
 import Search from "../header/Search";
+import FilterTab from "../FilterTab";
 
 interface SidebarProps {
   currentUser?: SafeUser | null;
@@ -34,6 +35,7 @@ isMobile }) => {
   const demoModal = useDemoModal();
   const [selectedButton, setSelectedButton] = useState('home');
   const { selectedCategory, setSelectedCategory } = useCategory();
+  const [filterActive, setFilterActive] = useState(false);
 
   const handleCategorySelect = (category: Category) => {
     if (selectedCategory === category.label) {
@@ -52,8 +54,8 @@ isMobile }) => {
 
   return (
 
-    <div className="fixed top-0 flex h-screen z-50">
-      <div className="flex flex-col items-center w-62 h-full px-6 pb-10 pt-8 bg-white backdrop-blur-full bg drop-shadow-sm rounded-tr-2xl" >
+    <div className="fixed top-0 flex h-screen z-20">
+      <div className="flex flex-col items-center w-62 h-full px-6 pb-10 pt-8 bg-white backdrop-blur-full bg drop-shadow-sm rounded-tr-2xl z-50" >
   
                 {isMobile && (
                   <>
@@ -415,7 +417,9 @@ onClick={() => {
       }`}>Demo</span>
     </li>
   )}*/}
-        </div>  
+        
+
+      </div>
       </div>
     </div>
   );

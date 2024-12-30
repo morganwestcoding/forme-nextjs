@@ -65,7 +65,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
 
   return (
     <ClientProviders>
-           <div className="mt-16 md:mt-0">
+     
       <Container>
       <div className="flex w-full">
   <div className={`flex-none w-full md:w-[55%]  ${currentUser ? 'mt-8' : 'mt-4'} mr-1`}>
@@ -84,7 +84,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
   </div>
 </div>
       </Container>
-      </div>
+     
     </ClientProviders>
   );
 };
