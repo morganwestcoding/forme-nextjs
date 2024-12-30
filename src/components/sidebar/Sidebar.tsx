@@ -10,9 +10,12 @@ import Avatar from "../ui/avatar";
 import { SafeUser } from "@/app/types";
 import UserButton from "../UserButton";
 import { SafePost } from "@/app/types";
+import Search from "../header/Search";
 
 interface SidebarProps {
   currentUser?: SafeUser | null;
+  onMobileClose?: () => void;  // Add this prop for mobile close handling
+  isMobile?: boolean;          // Add this to check if we're in mobile view
 }
 
 interface Category {
@@ -23,7 +26,10 @@ interface Category {
 }
 export const dynamic = 'force-dynamic';
 
-const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
+const Sidebar: React.FC<SidebarProps> = ({
+  currentUser,
+onMobileClose,
+isMobile }) => {
   const router = useRouter();
   const demoModal = useDemoModal();
   const [selectedButton, setSelectedButton] = useState('home');
@@ -47,7 +53,41 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
   return (
 
     <div className="fixed top-0 flex h-screen z-50">
-      <div className="flex flex-col items-center w-58 h-full px-6 pb-10 pt-8 bg-white backdrop-blur-full bg drop-shadow-sm rounded-tr-2xl" >
+      <div className="flex flex-col items-center w-62 h-full px-6 pb-10 pt-8 bg-white backdrop-blur-full bg drop-shadow-sm rounded-tr-2xl" >
+  
+                {isMobile && (
+                  <>
+          <div 
+            className="absolute top-4 right-6 cursor-pointer md:hidden mb-8"
+            onClick={onMobileClose}
+          >
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              viewBox="0 0 24 24" 
+              width="20" 
+              height="20" 
+              color="#a2a2a2" 
+              fill="none"
+            >
+              <path 
+                d="M3.99982 11.9998L19.9998 11.9998" 
+                stroke="currentColor" 
+                strokeWidth="1.5" 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+              />
+              <path 
+                d="M8.99963 17C8.99963 17 3.99968 13.3176 3.99966 12C3.99965 10.6824 8.99966 7 8.99966 7" 
+                stroke="currentColor" 
+                strokeWidth="1.5" 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+              />
+            </svg>
+          </div>
+              <div className="h-6" /> {/* Add a spacer */}
+              </>
+        )}
   <Logo/>
   <UserButton currentUser={currentUser} data={{} as SafePost} />
 
@@ -55,50 +95,10 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
         
         <ul className="list-none m-0 p-0 flex flex-col items-center hover:text-white ">
           {/* Add this before your first menu item (Home) */}
-<li className={`group flex items-center justify-start mb-4 p-2 rounded-lg transition-colors duration-250 border ${
-  selectedButton === 'search' ? 'bg-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#DFE2E2]'
-} w-44`} 
-onClick={() => {
-  router.push('/search');
-  setSelectedButton('search');
-}}>
-  <div className="group flex flex-col rounded-full p-1 cursor-pointer">
-    <svg 
-      xmlns="http://www.w3.org/2000/svg" 
-      viewBox="0 0 24 24" 
-      width={18} 
-      height={18} 
-      color={selectedButton === 'search' ? "#ffffff" : "#a2a2a2"}
-      fill="none"
-      className="group-hover:text-white"
-    >
-      <path 
-        d="M14 14L16.5 16.5" 
-        stroke="currentColor" 
-        strokeWidth="1.5" 
-        strokeLinejoin="round" 
-      />
-      <path 
-        d="M16.4333 18.5252C15.8556 17.9475 15.8556 17.0109 16.4333 16.4333C17.0109 15.8556 17.9475 15.8556 18.5252 16.4333L21.5667 19.4748C22.1444 20.0525 22.1444 20.9891 21.5667 21.5667C20.9891 22.1444 20.0525 22.1444 19.4748 21.5667L16.4333 18.5252Z" 
-        stroke="currentColor" 
-        strokeWidth="1.5" 
-        strokeLinecap="round" 
-      />
-      <path 
-        d="M16 9C16 5.13401 12.866 2 9 2C5.13401 2 2 5.13401 2 9C2 12.866 5.13401 16 9 16C12.866 16 16 12.866 16 9Z" 
-        stroke="currentColor" 
-        strokeWidth="1.5" 
-        strokeLinejoin="round" 
-      />
-    </svg>
-  </div>
-  <span className={`ml-3 text-[0.8rem] font-light ${
-    selectedButton === 'search' ? 'text-white' : 'text-[#a2a2a2] group-hover:text-white'
-  }`}>Search</span>
-</li>
+<Search/>
 <div className="w-44 h-[1px] rounded-full bg-gray-200 mb-4"></div>
           <li className={`group flex items-center justify-start mb-2 p-2  rounded-lg  transition-colors duration-250 ${
-          selectedButton === 'home' ? 'bg-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#DFE2E2]'
+          selectedButton === 'home' ? 'bg-gray-500' : 'bg-[#ffffff] hover:bg-gray-200'
           } w-44`}
           onClick={() => {
             router.push('/');
@@ -123,7 +123,7 @@ onClick={() => {
           {/* Market Icon */}
    
           <li className={`group flex items-center justify-start mb-2 p-2 rounded-lg  transition-colors duration-250 ${
-              selectedButton === 'market' ? 'bg-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#DFE2E2] hover:-[#DFE2E2]'
+              selectedButton === 'market' ? 'bg-gray-500' : 'bg-[#ffffff] hover:bg-gray-200 hover:-gray-200'
             } w-44`} 
             onClick={() => {
               router.push('/market');
@@ -137,7 +137,7 @@ onClick={() => {
           </svg>
             </div>
             <span className={`ml-3 text-[0.8rem] font-light ${
-                selectedButton === 'market' ? 'text-white' : 'text-[#a2a2a2] group-hover:text-white hover:-[#DFE2E2]'
+                selectedButton === 'market' ? 'text-white' : 'text-[#a2a2a2] group-hover:text-white hover:-gray-200'
               }`}>Market</span>
             </li>
         
@@ -145,7 +145,7 @@ onClick={() => {
            {/* Favorites Icon */}
        
            <li className={`group flex items-center justify-start mb-2 p-2 rounded-lg  transition-colors duration-250 ${
-              selectedButton === 'favorites' ? 'bg-[#5E6365]': 'bg-[#ffffff] hover:bg-[#DFE2E2] hover:-[#DFE2E2]'
+              selectedButton === 'favorites' ? 'bg-gray-500': 'bg-[#ffffff] hover:bg-gray-200 hover:-gray-200'
             } w-44`} 
             onClick={() => {
               router.push('/favorites');
@@ -168,7 +168,7 @@ onClick={() => {
          {/* Job Icon with Tooltip */}
   
          <li className={`group flex items-center justify-start mb-2 p-2 rounded-lg  transition-colors duration-250 ${
-    selectedButton === 'jobs' ? 'bg-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#DFE2E2] hover:-[#DFE2E2]'
+    selectedButton === 'jobs' ? 'bg-gray-500' : 'bg-[#ffffff] hover:bg-gray-200 hover:-gray-200'
   } w-44`} 
   onClick={() => {
     router.push('/jobs');
@@ -188,7 +188,7 @@ onClick={() => {
 </li>
 
           <li className={`group flex items-center justify-start mb-2 p-2 rounded-lg  transition-colors duration-250 ${
-    selectedButton === 'bookings' ? 'bg-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#DFE2E2] hover:-[#DFE2E2]'
+    selectedButton === 'bookings' ? 'bg-gray-500' : 'bg-[#ffffff] hover:bg-gray-200 hover:-gray-200'
   } w-44`} 
   onClick={() => {
     router.push('/reservations');
@@ -236,7 +236,7 @@ onClick={() => {
 </li>
 {/* Add this right after the Bookings button li element */}
 <li className={`group flex items-center justify-start mb-4 p-2 rounded-lg transition-colors duration-250 ${
-  selectedButton === 'vendors' ? 'bg-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#DFE2E2] hover:-[#DFE2E2]'
+  selectedButton === 'vendors' ? 'bg-gray-500' : 'bg-[#ffffff] hover:bg-gray-200 hover:-gray-200'
 } w-44`} 
 onClick={() => {
   router.push('/vendors');
@@ -299,7 +299,7 @@ onClick={() => {
       
           <div className="w-44 h-[1px] rounded-full bg-gray-200 mb-4"></div>
           <li className={`group flex items-center justify-start mb-2 p-2 rounded-lg transition-colors duration-250 ${
-  selectedButton === 'inbox' ? 'bg-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#DFE2E2] hover:-[#DFE2E2]'
+  selectedButton === 'inbox' ? 'bg-gray-500' : 'bg-[#ffffff] hover:bg-gray-200 hover:-gray-200'
 } w-44`} 
 onClick={() => {
   router.push('/inbox');
@@ -323,7 +323,7 @@ onClick={() => {
     </div>
 </li>
 <li className={`group flex items-center justify-start mb-2 p-2 rounded-lg transition-colors duration-250 ${
-  selectedButton === 'notifications' ? 'bg-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#DFE2E2] hover:-[#DFE2E2]'
+  selectedButton === 'notifications' ? 'bg-gray-500' : 'bg-[#ffffff] hover:bg-gray-200 hover:-gray-200'
 } w-44`} 
 onClick={() => {
   router.push('/notifications');
@@ -369,7 +369,7 @@ onClick={() => {
           </div>*/}
  {/*        {!isDemoHidden && (
     <li className={`group flex items-center justify-start mt-8 p-2 rounded-lg  transition-colors duration-250 ${
-      selectedButton === 'demo' ? 'bg-[#5E6365]' : 'bg-[#ffffff] hover:bg-[#DFE2E2] hover:-[#DFE2E2]'
+      selectedButton === 'demo' ? 'bg-gray-500' : 'bg-[#ffffff] hover:bg-gray-200 hover:-gray-200'
     } w-44`} 
     onClick={() => {
       setSelectedButton('demo');

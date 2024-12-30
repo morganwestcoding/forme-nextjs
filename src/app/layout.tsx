@@ -23,6 +23,7 @@ import ResetPasswordModal from '@/components/modals/ResetPasswordModal';
 import SubscribeModal from '@/components/modals/SubscribeModal';
 import DemoModal from '@/components/modals/DemoModal';
 import MobileNavBar from '@/components/header/MobileNavBar';
+import MobileTopBar from '@/components/header/MobileTopBar';
 
 
 export const metadata: Metadata = {
@@ -51,11 +52,12 @@ export default async function RootLayout({
         <ClientProviders>
           <html lang="en">
             <body className={inter.className}>
+            <MobileTopBar currentUser={currentUser} /> 
               <div className="min-h-screen flex"> 
-                <div className="fixed w-52">
+                <div className="hidden md:block w-52">
                   <Sidebar currentUser={currentUser}/>
                 </div>
-                <div className="flex-1 md:ml-52">
+                <div className="flex-1">
                   <main className="md:pt-0 pb-16 md:pb-0"> {/* Add padding bottom for mobile nav */}
                     {children}
                   </main>

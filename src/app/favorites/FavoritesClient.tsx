@@ -51,7 +51,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
      
           ))}
         </div>
-        <div className="flex justify-center w-full pt-4">
+        <div className="flex justify-center w-full pt-14">
           <div className="w-[500px]">
             <Pagination
               currentPage={currentPage}

@@ -41,9 +41,6 @@ const MobileNavBar: React.FC<MobileNavBarProps> = ({ currentUser }) => {
 
             {/* Right side with user controls */}
             <div className="flex items-center space-x-4">
-              <AddListing />
-              <Inbox currentUser={currentUser || null} />
-              <Notification />
               <UserButton currentUser={currentUser} data={{} as SafePost} />
             </div>
           </div>

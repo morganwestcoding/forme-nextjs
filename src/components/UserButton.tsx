@@ -15,6 +15,7 @@ import useLoginModal from "@/app/hooks/useLoginModal";
 import { SafePost, SafeUser } from "@/app/types";
 import useRentModal from "@/app/hooks/useRentModal";
 import useProfileModal from "@/app/hooks/useProfileModal";
+import useSubscribeModal from "@/app/hooks/useSubscribeModal";
 
 interface UserButtonProps {
   currentUser?: SafeUser | null 
@@ -29,6 +30,8 @@ const UserButton: React.FC<UserButtonProps> = ({
   const registerModal = useRegisterModal();
   const rentModal = useRentModal();
   const profileModal = useProfileModal();
+  const SubscribeModal = useSubscribeModal();
+  
 
   return (      
     <DropdownMenu>   
@@ -100,7 +103,7 @@ const UserButton: React.FC<UserButtonProps> = ({
                 duration-200
               "
             >
-              Manage Listings
+              My Listings
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => router.push('/trips')}
@@ -118,6 +121,28 @@ const UserButton: React.FC<UserButtonProps> = ({
               My Appointments
             </DropdownMenuItem>
             <DropdownMenuItem
+  onClick={() => {
+    console.log('Rent modal clicked');
+    rentModal.onOpen();
+  }}
+  className="
+    p-3 
+    text-black 
+    hover:bg-gray-500 
+    hover:bg-opacity-25 
+    rounded-md 
+    cursor-pointer 
+    transition 
+    duration-200
+  "
+>
+  Add Listing
+</DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                console.log('Subscribe clicked');
+                SubscribeModal.onOpen();
+              }}
               className="
                 p-3 
                 text-black 
