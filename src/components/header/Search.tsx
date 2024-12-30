@@ -50,19 +50,10 @@ const Search: React.FC<SearchProps> = ({ onResultClick }) => {
 
   return (
     <div className="relative w-44">
-      <div className="flex items-center relative">
-        <input
-          type="text"
-          className={`w-full group flex items-center justify-start mb-2 p-2 pl-10 rounded-lg transition-colors duration-250 ${
-            isSearchFocused ? 'bg-gray-500 text-white placeholder-white' : 'bg-[#ffffff] hover:bg-gray-200'
-          } text-[0.8rem] font-light focus:outline-none`}
-          placeholder="Search"
-          value={searchTerm}
-          onChange={handleInputChange}
-          onFocus={() => setIsSearchFocused(true)}
-          onBlur={() => setIsSearchFocused(false)}
-        />
-        <div className="absolute left-2 top-1/2 -translate-y-1/2">
+      <div className={`group flex items-center justify-start mb-2 p-2 rounded-lg transition-colors border duration-250 ${
+        isSearchFocused ? 'bg-gray-500' : 'bg-[#ffffff] hover:bg-gray-200'
+      }`}>
+        <div className="group flex flex-col rounded-full p-1 cursor-pointer">
           <svg 
             xmlns="http://www.w3.org/2000/svg" 
             viewBox="0 0 24 24" 
@@ -92,9 +83,17 @@ const Search: React.FC<SearchProps> = ({ onResultClick }) => {
             />
           </svg>
         </div>
-        <div className="absolute right-2 top-1/2 -translate-y-1/2">
-          <Filter />
-        </div>
+        <input
+          type="text"
+          className={`ml-3 bg-transparent w-full text-[0.8rem] font-light focus:outline-none ${
+            isSearchFocused ? 'text-white placeholder-white' : 'text-[#a2a2a2] placeholder-[#a2a2a2]'
+          }`}
+          placeholder="Search"
+          value={searchTerm}
+          onChange={handleInputChange}
+          onFocus={() => setIsSearchFocused(true)}
+          onBlur={() => setIsSearchFocused(false)}
+        />
       </div>
 
       {searchResults.length > 0 && (
