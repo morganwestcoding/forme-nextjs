@@ -57,8 +57,8 @@ const Search: React.FC<SearchProps> = ({ onResultClick }) => {
           <svg 
             xmlns="http://www.w3.org/2000/svg" 
             viewBox="0 0 24 24" 
-            width={18} 
-            height={18} 
+            width={19} 
+            height={19} 
             color={isSearchFocused ? "#ffffff" : "#a2a2a2"}
             fill="none"
             className="group-hover:text-white"
