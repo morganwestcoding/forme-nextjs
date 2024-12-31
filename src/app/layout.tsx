@@ -61,7 +61,7 @@ export default async function RootLayout({
                     {children}
                   </main>
                 </div>
-                <MobileNavBar /> {/* Add the mobile nav bar */}
+                <MobileNavBar  currentUser={currentUser} /> {/* Add the mobile nav bar */}
               
               </div>
               <ToasterProvider/>

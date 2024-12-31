@@ -16,7 +16,7 @@ function Attachment() {
       }`}
       onClick={handleExtensionToggle} // Add click handler
     >
-      <AttachFileOutlinedIcon className="w-4 h-4 text-[#ffffff]" />
+      <AttachFileOutlinedIcon height={19} width={19} className=" text-[#ffffff]" />
     </div>
   );
 }
