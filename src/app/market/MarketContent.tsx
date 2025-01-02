@@ -94,7 +94,8 @@ const MarketContent = async ({ searchParams }: MarketContentProps) => {
           2xl:grid-cols-6
           gap-4
           sm:gap-6
-      place-items-center 
+      [max-width:390px]:grid-cols-1
+      [max-width:390px]:place-items-center
       px-2
         ">
           {paginatedListings.map((listing: any) => (
