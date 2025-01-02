@@ -81,7 +81,7 @@ const MarketContent = async ({ searchParams }: MarketContentProps) => {
 
   return (
     <Container>
-      <div className="pt-2 h-[calc(100vh-80px)] flex flex-col">
+      <div className="pt-2 flex flex-col">
         <div className="
           pt-6
           flex-1
@@ -94,9 +94,6 @@ const MarketContent = async ({ searchParams }: MarketContentProps) => {
           2xl:grid-cols-6
           gap-4
           sm:gap-6
-  [max-width:390px]:flex
-  [max-width:390px]:flex-col
-  [max-width:390px]:items-center
       px-2
         ">
           {paginatedListings.map((listing: any) => (
