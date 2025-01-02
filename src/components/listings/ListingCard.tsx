@@ -113,7 +113,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
   const stateAcronym = state ? getStateAcronym(state) : '';
 
   return (
-    <div className="col-span-1">
+    <div className="col-span-1  flex justify-center">
       <div className={`
         bg-[#ffffff] 
         rounded-2xl 
