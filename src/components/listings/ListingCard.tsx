@@ -124,6 +124,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
   ${reservation ? 'w-80' : 'w-52 md:w-48'}
         transition-all 
         duration-300
+        mx-auto
       `}>
         {!reservation && (
           <>
