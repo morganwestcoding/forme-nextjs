@@ -121,7 +121,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
         flex-col 
         gap-2 
         shadow-sm
-  ${reservation ? 'w-80' : 'w-56 md:w-48'}
+  ${reservation ? 'w-80' : 'w-52 md:w-48'}
         transition-all 
         duration-300
       `}>

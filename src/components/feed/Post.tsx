@@ -259,7 +259,7 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
 
             <div className="flex items-center">
               <Link href={`/profile/${post.user.id}`} passHref>
-                <div className='drop-shadow'>
+                <div className='drop-shadow rounded-full'>
                   <Avatar src={post.user.image ?? undefined} />
                 </div>
               </Link>
