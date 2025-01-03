@@ -63,14 +63,15 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
         <div className="pt-2 flex-1">
           <div 
             className="
-              pt-6 
-              grid 
-              grid-cols-1 
-              sm:grid-cols-2 
-              md:grid-cols-3
-              lg:grid-cols-3
-              gap-9
-              mb-32
+          pt-6
+          flex-1
+          grid 
+          grid-cols-1
+          lg:grid-cols-2
+          xl:grid-cols-3
+          2xl:grid-cols-3
+          gap-4
+      px-4
             "
           >
             {reservations.map((reservation: any) => (
@@ -88,15 +89,6 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
               />
             ))}
           </div>
-          <div className="flex justify-center w-full pt-6">
-          <div className="w-[500px]">
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              totalResults={totalResults}
-            />
-          </div>
-        </div>
       </div>
       </ClientProviders>
     </Container>

@@ -29,16 +29,15 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
     <Container>
       <div className="pt-2 h-[calc(100vh-80px)] flex flex-col">
         <div className="
-         pt-6
-        flex-1
+          pt-6
+          flex-1
           grid 
-          grid-cols-1 
-          sm:grid-cols-2 
-          md:grid-cols-3 
-          lg:grid-cols-4
-          xl:grid-cols-5
-          2xl:grid-cols-6
-          gap-6
+          grid-cols-1
+          lg:grid-cols-2
+          xl:grid-cols-3
+          2xl:grid-cols-3
+          gap-4
+      px-4
         ">
           {listings.map((listing: any) => (
          
@@ -50,15 +49,6 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
               />
      
           ))}
-        </div>
-        <div className="flex justify-center w-full pt-14">
-          <div className="w-[500px]">
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              totalResults={totalResults}
-            />
-          </div>
         </div>
       </div>
     </Container>
