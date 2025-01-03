@@ -123,10 +123,12 @@ const ListingCard: React.FC<ListingCardProps> = ({
         flex-col 
         gap-2 
         shadow-sm
-        ${reservation ? 'w-80' : 'w-full max-w-[400px]'} 
+  ${reservation ? 'w-80' : 'w-full max-w-[400px]'} 
+    min-w-[275px]
         transition-all 
         duration-300
         mx-auto
+         relative 
         pb-4
       `}>
 {!reservation && (
@@ -217,20 +219,40 @@ const ListingCard: React.FC<ListingCardProps> = ({
 
 {/* Right side: Services Badge */}
 {data.services && data.services.length > 0 && (
-  <div className="inline-flex items-center gap-2 px-3 py-3 bg-neutral-100 rounded-md hover:bg-neutral-200 transition">
+  <div className="inline-flex items-center gap-2 px-3 py-3 bg-neutral-100 rounded-lg hover:bg-neutral-200 transition">
     <div className="flex gap-1.5">
+    <button
+        onClick={(e) => {
+          e.stopPropagation();
+          setCurrentServiceIndex(prev => 
+            prev === 0 ? data.services.length - 1 : prev - 1
+          );
+        }}
+        className="text-neutral-400 hover:text-neutral-600 transition cursor-pointer"
+      >
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" color="#a2a2a2" fill="none">
     <path d="M15 6C15 6 9.00001 10.4189 9 12C8.99999 13.5812 15 18 15 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
 </svg>
+</button>
       <span className="text-xs text-neutral-600">
         {data.services[currentServiceIndex].serviceName}
       </span>
       <span className="text-xs font-medium">
         ${data.services[currentServiceIndex].price}
       </span>
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          setCurrentServiceIndex(prev => 
+            prev === data.services.length - 1 ? 0 : prev + 1
+          );
+        }}
+        className="text-neutral-400 hover:text-neutral-600 transition cursor-pointer"
+      >
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" color="#a2a2a2" fill="none">
     <path d="M9.00005 6C9.00005 6 15 10.4189 15 12C15 13.5812 9 18 9 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
 </svg>
+</button>
     </div>
 
   </div>

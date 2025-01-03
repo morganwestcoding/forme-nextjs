@@ -87,8 +87,6 @@ const MarketContent = async ({ searchParams }: MarketContentProps) => {
           flex-1
           grid 
           grid-cols-1
-          sm:grid-cols-2
-          md:grid-cols-2 
           lg:grid-cols-2
           xl:grid-cols-3
           2xl:grid-cols-3
@@ -105,6 +103,7 @@ const MarketContent = async ({ searchParams }: MarketContentProps) => {
           ))}
         </div>
         <div className="flex justify-center w-full pt-14">
+
         </div>
       </div>
     </Container>
