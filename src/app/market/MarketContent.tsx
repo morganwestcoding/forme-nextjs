@@ -88,13 +88,12 @@ const MarketContent = async ({ searchParams }: MarketContentProps) => {
           grid 
           grid-cols-1
           sm:grid-cols-2
-          md:grid-cols-3 
-          lg:grid-cols-4
-          xl:grid-cols-5
-          2xl:grid-cols-6
+          md:grid-cols-2 
+          lg:grid-cols-2
+          xl:grid-cols-3
+          2xl:grid-cols-3
           gap-4
-          sm:gap-6
-      px-2
+      px-4
         ">
           {paginatedListings.map((listing: any) => (
             <ListingCard

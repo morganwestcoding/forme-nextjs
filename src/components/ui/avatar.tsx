@@ -14,7 +14,7 @@ const Avatar: React.FC<AvatarProps> = ({ src, isSidebar }) => {
   return (
     <div className={`relative ${isSidebar ? 'w-10 h-10 rounded-lg' : 'w-11 h-11 rounded-full'} overflow-hidden`}>
       <Image
-        layout="fill"
+        fill
         objectFit="cover" 
         alt="Avatar"
         src={imageSrc}

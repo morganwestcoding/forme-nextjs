@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, useRef, useEffect } from "react";
+
 import useRentModal from "@/app/hooks/useRentModal";
 import axios from "axios";
 import { toast } from "react-hot-toast";
@@ -91,6 +92,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
   };
 
   const currentService = data.services[currentServiceIndex];
+  const servicesContainerRef = useRef<HTMLDivElement>(null);
   const categoryColor = categories.find(cat => cat.label === data.category)?.color || 'bg-gray-200';
 
   const getStateAcronym = (state: string) => {
@@ -113,7 +115,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
   const stateAcronym = state ? getStateAcronym(state) : '';
 
   return (
-    <div className="col-span-1  flex justify-center">
+    <div className="col-span-1 flex justify-center">
       <div className={`
         bg-[#ffffff] 
         rounded-2xl 
@@ -121,10 +123,11 @@ const ListingCard: React.FC<ListingCardProps> = ({
         flex-col 
         gap-2 
         shadow-sm
-  ${reservation ? 'w-80' : 'w-52 md:w-48'}
+        ${reservation ? 'w-80' : 'w-full max-w-[400px]'} 
         transition-all 
         duration-300
         mx-auto
+        pb-4
       `}>
         {!reservation && (
           <>
@@ -134,7 +137,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
               rounded-t-2xl
               cursor-pointer 
               group
-              h-28
+              h-32
               w-full
             ">
               <Image
@@ -158,7 +161,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
               </div>
             </div>
 
-            <div className="px-4 pt-1 pb-1">
+            <div className="px-6 pt-3 pb-2">
               <div 
                 className={`w-8 h-5 ${categoryColor} shadow-sm rounded-md flex items-center justify-center`} 
                 title={data.category}
@@ -172,15 +175,55 @@ const ListingCard: React.FC<ListingCardProps> = ({
         )}
 
         {!reservation && (
-          <>
-            <div className="font-medium text-sm capitalize px-4">
-              {data.title}
+          <div className="flex justify-between items-start px-6 pb-2">
+            {/* Left side: Title and Location */}
+            <div className="flex flex-col">
+              <div className="font-medium text-sm capitalize">
+                {data.title}
+              </div>
+              <div className="font-light text-xs text-neutral-500">
+                {city}, {stateAcronym}
+              </div>
             </div>
-            <div className="font-light text-xs px-4 text-neutral-500 pb-2">
-              {city}, {stateAcronym}
-            </div>
-          </>
-        )}
+
+            {/* Right side: Services */}
+            {data.services && data.services.length > 0 && (
+      <div className="inline-flex items-center gap-2 px-3 py-3 bg-neutral-100 rounded-lg hover:bg-neutral-200 transition">
+        <span className="text-xs text-neutral-600">
+          {data.services[currentServiceIndex].serviceName}
+        </span>
+        <span className="text-xs font-medium">
+          ${data.services[currentServiceIndex].price}
+        </span>
+        <button 
+          onClick={(e) => {
+            e.stopPropagation();
+            setCurrentServiceIndex((prev) => 
+              prev === data.services.length - 1 ? 0 : prev + 1
+            );
+          }}
+          className="text-neutral-400 hover:text-neutral-600"
+        >
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            viewBox="0 0 24 24" 
+            width="16" 
+            height="16" 
+            fill="none"
+          >
+            <path 
+              d="M9 6C9 6 15 10.4189 15 12C15 13.5812 9 18 9 18" 
+              stroke="currentColor" 
+              strokeWidth="1.5" 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+            />
+          </svg>
+        </button>
+      </div>
+    )}
+  </div>
+)}
 
         {reservation && (
           <>
@@ -204,7 +247,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
 
             <div className="px-4 pb-4">
               <div className="space-y-3">
-                {/* Reservation Header */}
                 <div className="flex items-center gap-3 border-t border-neutral-100 pb-3 pt-3 -mx-4 px-6">
                   <Avatar src={reservation.user.image || undefined} />
                   <div className="flex-1">
@@ -214,9 +256,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
                   </div>
                 </div>
 
-                {/* Reservation Details */}
                 <div className="space-y-3">
-                  {/* Service & Employee */}
                   <div className="grid grid-cols-2 gap-3 text-sm">
                     <div className="bg-neutral-50 p-3 rounded-lg">
                       <div className="text-neutral-500 mb-1">Service</div>
@@ -232,7 +272,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
                     </div>
                   </div>
 
-                  {/* Date & Time */}
                   <div className="grid grid-cols-2 gap-3 text-sm border-b border-neutral-100 -mx-4 px-4 pb-3">
                     <div className="bg-neutral-50 p-3 rounded-lg">
                       <div className="text-neutral-500 mb-1">Date</div>
@@ -246,7 +285,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
                     </div>
                   </div>
 
-                  {/* Note if exists */}
                   {reservation.note && (
                     <div className="bg-neutral-50 p-3 rounded-lg text-sm">
                       <div className="text-neutral-500 mb-1">Note</div>
@@ -254,7 +292,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
                     </div>
                   )}
 
-                  {/* Total Price */}
                   <div className="flex justify-between items-center pt-2">
                     <span className="text-sm text-neutral-500">Total</span>
                     <span className="text-base font-semibold">
@@ -265,33 +302,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
               </div>
             </div>
           </>
-        )}
-        
-        {data.services && data.services.length > 0 && !reservation && (
-          <div className="border-t flex justify-between text-xs capitalize items-center pb-3.5 pt-4 px-4">
-            <button 
-              className="mr-2" 
-              onClick={handlePreviousService}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#a2a2a2" fill="none">
-                <path d="M15 6C15 6 9.00001 10.4189 9 12C8.99999 13.5812 15 18 15 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </button>
-            <div className="text-center text-[#7d8085] font-normal">
-              <span className="block mb-1">
-                {data.services[currentServiceIndex].serviceName}
-              </span>
-              <span>${data.services[currentServiceIndex].price}</span>
-            </div>
-            <button 
-              className="ml-2" 
-              onClick={handleNextService}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#a2a2a2" fill="none">
-                <path d="M9.00005 6C9.00005 6 15 10.4189 15 12C15 13.5812 9 18 9 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </button>
-          </div>
         )}
 
         {onAction && actionLabel && !showAcceptDecline && (
@@ -305,7 +315,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
           </div>
         )}
 
-        {/* Accept/Decline buttons */}
         {reservation && showAcceptDecline && (
           <div className="p-4 -mt-5">
             {reservation.status === 'accepted' ? (
