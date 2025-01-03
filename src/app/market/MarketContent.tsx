@@ -102,9 +102,6 @@ const MarketContent = async ({ searchParams }: MarketContentProps) => {
             />
           ))}
         </div>
-        <div className="flex justify-center w-full pt-14">
-
-        </div>
       </div>
     </Container>
   );

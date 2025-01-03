@@ -27,7 +27,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
 }) => {
   return (
     <Container>
-      <div className="pt-2 h-[calc(100vh-80px)] flex flex-col">
+      <div className="pt-2 flex flex-col">
         <div className="
           pt-6
           flex-1

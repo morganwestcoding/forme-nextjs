@@ -68,7 +68,16 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
      
       <Container>
       <div className="flex w-full">
-  <div className={`flex-none w-full md:w-[55%]  ${currentUser ? 'mt-8' : 'mt-4'} mr-1`}>
+      <div className={`
+    flex-none 
+    w-full 
+    md:w-[55%]  
+    ${currentUser ? 'mt-8' : 'mt-4'} 
+    space-y-4  // Add this to control vertical spacing between posts
+    px-4       // Add consistent padding
+    md:pr-8 
+    md:pl-0
+  `}>
     <Share currentUser={currentUser} categoryLabel={selectedCategory || undefined} />
     {storePosts.map((post) => (
       <Post 
