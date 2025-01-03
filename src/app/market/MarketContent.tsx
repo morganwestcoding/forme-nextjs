@@ -105,13 +105,6 @@ const MarketContent = async ({ searchParams }: MarketContentProps) => {
           ))}
         </div>
         <div className="flex justify-center w-full pt-14">
-          <div className="w-[500px]">
-            <Pagination 
-              currentPage={currentPage}
-              totalPages={totalPages}
-              totalResults={filteredListings.length}
-            />
-          </div>
         </div>
       </div>
     </Container>
