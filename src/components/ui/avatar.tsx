@@ -4,15 +4,14 @@ import Image from 'next/image';
 
 interface AvatarProps {
   src?: string;
-  isSidebar?: boolean;
 }
 
-const Avatar: React.FC<AvatarProps> = ({ src, isSidebar }) => {
+const Avatar: React.FC<AvatarProps> = ({ src }) => {
   const defaultImage = "/people/rooster.jpg";
   const imageSrc = src || defaultImage;
 
   return (
-    <div className={`relative ${isSidebar ? 'w-10 h-10 rounded-lg' : 'w-11 h-11 rounded-full'} overflow-hidden`}>
+    <div className="relative w-11 h-11 rounded-full overflow-hidden">
       <Image
         fill
         objectFit="cover" 
