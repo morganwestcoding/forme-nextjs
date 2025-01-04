@@ -257,12 +257,8 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
               </DropdownMenu>
             </div>
 
-            <div className="flex items-center">
-              <Link href={`/profile/${post.user.id}`} passHref>
-       
-                  <Avatar src={post.user.image ?? undefined} />
-              
-              </Link>
+            <div className="flex items-center">     
+                  <Avatar src={post.user.image ?? undefined} />      
               <div className="ml-3 flex flex-col">
                 <div className="flex items-center pb-1">
                   <span className="font-medium pr-1 text-sm text-[#484848] flex items-center">

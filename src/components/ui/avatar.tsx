@@ -14,10 +14,11 @@ const Avatar: React.FC<AvatarProps> = ({ src }) => {
     <div className="relative w-11 h-11 rounded-full overflow-hidden">
       <Image
         fill
-        objectFit="cover" 
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        priority
         alt="Avatar"
         src={imageSrc}
-        className='object-cover'
+        className="object-cover rounded-full"  // Add rounded-full here too
       />
     </div>
   );
