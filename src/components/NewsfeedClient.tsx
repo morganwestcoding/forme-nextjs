@@ -73,8 +73,8 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
     w-full 
     md:w-[55%]  
     ${currentUser ? 'mt-8' : 'mt-4'} 
-    space-y-4  // Add this to control vertical spacing between posts
-    px-4       // Add consistent padding
+    space-y-4
+    px-4       
     md:pr-8 
     md:pl-0
   `}>
