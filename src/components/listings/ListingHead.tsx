@@ -99,34 +99,39 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
             </div>
           </div>
           
-          {isOwner && (
-  <div className="absolute top-4 right-6">
-    <DropdownMenu>
-      <DropdownMenuTrigger>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" color="#5E6365" fill="none">
-          <path d="M11.9959 12H12.0049" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-          <path d="M17.9998 12H18.0088" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-          <path d="M5.99981 12H6.00879" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent>
-        <DropdownMenuItem 
-          onClick={handleEditClick} 
-          className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
-        >
-          Edit Listing
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+          <div className="flex items-start gap-4">
+    <button className="px-4 py-3 border border-white rounded-lg text-white text-sm hover:bg-opacity-20 transition">
+      Store Hours
+    </button>
+    {isOwner && (
+      <div>
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" color="#5E6365" fill="none">
+              <path d="M11.9959 12H12.0049" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M17.9998 12H18.0088" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M5.99981 12H6.00879" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem 
+              onClick={handleEditClick} 
+              className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+            >
+              Edit Listing
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    )}
   </div>
-)}
-        </div>
-        <StoreHours/>
+</div>
+
         <ListingGalleryImage listing={listing} currentUser={currentUser} />
         
-        <div className="px-6">
+        <div className="px-6 ">
           <h2 className="text-xl font-bold text-white mb-2">About Us</h2>
-          <p className="text-xs text-white mb-6 line-clamp-4 overflow-hidden">
+          <p className="text-xs text-white line-clamp-4 overflow-hidden">
             {description}
           </p>
           
