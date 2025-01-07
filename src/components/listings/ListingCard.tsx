@@ -9,6 +9,7 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import { format } from 'date-fns';
 import Avatar from "../ui/avatar";
+import useListingDetailsModal from "@/app/hooks/useListingDetailsModal";
 
 import { 
   SafeListing, 
@@ -50,6 +51,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
   const router = useRouter();
   const pathname = usePathname();
   const rentModal = useRentModal();
+  const listingDetailsModal = useListingDetailsModal(); 
   const [currentServiceIndex, setCurrentServiceIndex] = useState(0);
 
   const handleNextService = (e: React.MouseEvent) => {
@@ -143,7 +145,10 @@ const ListingCard: React.FC<ListingCardProps> = ({
       w-full
     ">
       <Image
-        onClick={() => router.push(`/listings/${data.id}`)} 
+    onClick={(e) => {
+      e.stopPropagation();
+      listingDetailsModal.onOpen(data);
+    }} 
         fill
         className="
           object-cover 

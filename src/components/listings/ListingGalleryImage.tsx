@@ -83,7 +83,7 @@ const ListingGalleryImage: React.FC<ListingGalleryImageProps> = ({ listing, curr
 
   return (
     <div className="w-full">
-      <div className="bg-white rounded-2xl overflow-hidden relative pb-6">   
+      <div className=" overflow-hidden relative pb-6">   
         <div className="grid grid-cols-4 gap-3 px-6">
           {images.length > 0 ? (
             images.map((image, index) => (

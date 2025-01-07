@@ -70,11 +70,11 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
 
   return (
     <div className="w-full">
-      <div className="bg-white rounded-2xl shadow-sm overflow-hidden relative">
+      <div className="overflow-hidden relative">
         <div className="px-6 pt-6 flex justify-between items-start">
           <div className="flex flex-col items-start">
             <div className="flex items-center">
-              <h1 className="text-xl font-black text-gray-800 mr-2">{title}</h1>
+              <h1 className="text-xl font-black text-white mr-2">{title}</h1>
               <HeartButton 
                 listingId={id} 
                 currentUser={currentUser} 
@@ -85,8 +85,8 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
               </svg>
             </div>
             <div className="flex items-center mb-6 font-mono">
-              <p className="text-sm text-gray-600">
-                {city}, {stateAcronym}
+              <p className="text-sm text-white">
+              {listing.address} {city}, {stateAcronym} {listing.zipCode}
               </p>
               <div 
                 className={`w-8 h-5 ${categoryColor} shadow-sm rounded-md flex items-center justify-center ml-2`} 
@@ -121,30 +121,17 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
   </div>
 )}
         </div>
-        
+        <StoreHours/>
         <ListingGalleryImage listing={listing} currentUser={currentUser} />
         
         <div className="px-6">
-          <h2 className="text-xl font-bold text-gray-800 mb-2">About Us</h2>
-          <p className="text-xs text-gray-700 mb-6 line-clamp-4 overflow-hidden">
+          <h2 className="text-xl font-bold text-white mb-2">About Us</h2>
+          <p className="text-xs text-white mb-6 line-clamp-4 overflow-hidden">
             {description}
           </p>
           
-          <div className="flex justify-between items-center mb-6 mt-4">
-            {address && (
-              <div className="flex items-center pb-2 pt-2 rounded-lg shadow-sm bg-white border flex-grow mt-2.5">
-                <span className="text-xs font-light text-[#a2a2a2] truncate flex-grow text-center p-2">
-                  {listing.address} {city}, {stateAcronym} {listing.zipCode}
-                </span>
-              </div>
-            )}
-          </div>
         </div>
       </div>
-      <StoreHours 
-        storeHours={listing.storeHours}
-        category={listing.category}
-      />
     </div>
   );
 };

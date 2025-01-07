@@ -24,6 +24,7 @@ import SubscribeModal from '@/components/modals/SubscribeModal';
 import DemoModal from '@/components/modals/DemoModal';
 import MobileNavBar from '@/components/header/MobileNavBar';
 import MobileTopBar from '@/components/header/MobileTopBar';
+import ListingDetailsModal from '@/components/modals/ListingDetailsModal';
 
 
 export const metadata: Metadata = {
@@ -74,9 +75,11 @@ export default async function RootLayout({
               <ForgotPasswordModal/> 
               <ResetPasswordModal/>
               <MessageModal />
+              <ListingDetailsModal/>
               <SubscribeModal/>
               <DemoModal/>
               <FilterModal/>
+              
             </body>
           </html>
         </ClientProviders>
