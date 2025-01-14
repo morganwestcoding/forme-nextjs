@@ -2,26 +2,36 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import useSubscribeModal from "@/app/hooks/useSubscribeModal";
+import MorphingText from "./MorphingText";
+import RotatingText from "./RotatingText";
 
 const articles = [
   {
     title: "Crush The Curve",
-    description: "Crush the Curve revolutionizes fitness with results-driven, cutting-edge workouts.",
+    author: "The Fitness Hour",
+    views: "120K views",
+    timeAgo: "3 hours ago",
     imageSrc: "/assets/wellness.jpg",
   },
   {
     title: "Iron And Age",
-    description: "Iron and Edge delivers bold workouts and fitness tips for modern men.",
+    author: "Strength Central",
+    views: "85K views",
+    timeAgo: "5 hours ago",
     imageSrc: "/assets/fit.jpg",
   },
   {
     title: "Lather, Razor, Repeat, Refine",
-    description: "Explore the latest trends, techniques, and tips for mastering the art of barbering.",
+    author: "Barber Talk",
+    views: "95K views",
+    timeAgo: "8 hours ago",
     imageSrc:"/assets/barber.jpg",
   },
   {
     title: "Pure Tranquil Escape",
-    description: "Indulge in luxurious treatments designed to rejuvenate your body and calm your mind.",
+    author: "Wellness Channel",
+    views: "110K views",
+    timeAgo: "10 hours ago",
     imageSrc: "/assets/spa.jpg",
   },
 ];
@@ -33,31 +43,45 @@ export default function Rightbar() {
 
   return (
     <div className="hidden md:flex flex-col justify-end bg-transparent gap-3 h-auto mt-8">
-      <div className="w-full rounded-2xl drop-shadow-sm bg-[#ffffff] p-6 relative"
-      onClick={() => subscribeModal.onOpen()}>
-        <div className="flex flex-col">
-          <div className="flex items-center justify-between mb-2">
-            <div className="text-lg font-bold">Subscribe today</div>
-          </div>
-          <div className="text-sm font-normal text-gray-600"> 
+<div 
+  className="w-full rounded-2xl overflow-hidden cursor-pointer relative"
+  onClick={() => subscribeModal.onOpen()}
+>
+  <div className="relative h-32 bg-white flex items-center justify-center">
+  <RotatingText />
+  </div>
+</div>
 
-          Access priority features, advanced analytics, and exclusive early access to innovations, keeping you ahead.
-          </div>
-        </div>
-      </div>
-
-      <div className="w-full flex flex-col justify-start rounded-2xl shadow-sm bg-[#ffffff] p-0 mx-0 overflow-hidden pb-5">
-        <div className="px-6 py-6 text-lg font-bold">What&apos;s Happening</div>
+<div className="w-full flex flex-col justify-start rounded-2xl p-0 mx-0 overflow-hidden pb-5">
+        <div className=" pt-4 pb-4 text-lg font-bold">What&apos;s Happening</div>
         <hr />
-        {articles.map((article, index) => (
-          <div key={index} className="flex justify-between items-center hover:bg-[#D5D7D8] hover:text-white w-full px-6 py-4" onClick={() => router.push('/articles')}>
-            <div>
-              <h3 className="text-base font-semibold">{article.title}</h3>
-              <p className="text-sm pr-4">{article.description}</p>
+        <div className="grid grid-cols-2 gap-4">
+          {articles.map((article, index) => (
+            <div 
+              key={index} 
+              className="flex flex-col hover:bg-[#D5D7D8] rounded-xl cursor-pointer transition-colors" 
+              onClick={() => router.push('/articles')}
+            >
+              <div 
+                className="w-full h-32 bg-gray-300 rounded-xl mb-3" 
+                style={{ 
+                  backgroundImage: `url(${article.imageSrc})`, 
+                  backgroundSize: 'cover', 
+                  backgroundPosition: 'center' 
+                }}
+              />
+              <div className="flex flex-col">
+                <h3 className="text-sm font-semibold line-clamp-2 mb-1">{article.title}</h3>
+                <p className="text-xs text-gray-500">{article.author}</p>
+                <div className="flex items-center text-xs text-gray-500">
+                  <span>{article.views}</span>
+                  <span className="mx-1">•</span>
+                  <span>{article.timeAgo}</span>
+                </div>
+              </div>
             </div>
-            <div className="w-20 h-20 bg-gray-300 rounded-xl drop-shadow flex-shrink-0" style={{ backgroundImage: `url(${article.imageSrc})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );

@@ -162,39 +162,52 @@ const ListingClient: React.FC<ListingClientProps> = ({
   return ( 
     <Container>
       <div className="max-w-full">
-        <div className="flex gap-6 items-start mt-8">
-          <div className="w-[60%]">
+        <div className="flex flex-col gap-6 mt-8">
+          {/* Full-width ListingHead */}
+          <div className="w-full">
             <ListingHead 
               listing={listing}
               currentUser={currentUser}
             />
-          </div>
-          <div className="w-[40%]">
-            <ListingRightBar
-              description={listing.description}
-              listing={listing}
-              selectedServices={selectedServices}
-              toggleServiceSelection={toggleServiceSelection}
-              totalPrice={totalPrice}
-              onCreateReservation={onCreateReservation}
-              isLoading={isLoading}
-              disabledDates={disabledDates}
-              currentUser={currentUser}
-              reservations={reservations}
-              selectedService={selectedService}
-              selectedEmployee={selectedEmployee}
-              date={date}
-              time={time}
-              onServiceChange={handleServiceChange}
-              onEmployeeChange={handleEmployeeChange}
-              onDateChange={handleDateChange}
-              onTimeChange={handleTimeChange}
-            />
+          {/* About Us and Booking section side by side */}
+          <div className="flex gap-6 mt-3">
+            {/* About Us section */}
+            <div className="w-[60%] pt-3">
+              <h2 className="text-xl font-bold text-black mb-2">About Us</h2>
+              <p className="text-xs text-black">
+                {listing.description}
+              </p>
+            </div>
+            
+            {/* Booking section */}
+            <div className="w-[40%]">
+              <ListingRightBar
+                description={listing.description}
+                listing={listing}
+                selectedServices={selectedServices}
+                toggleServiceSelection={toggleServiceSelection}
+                totalPrice={totalPrice}
+                onCreateReservation={onCreateReservation}
+                isLoading={isLoading}
+                disabledDates={disabledDates}
+                currentUser={currentUser}
+                reservations={reservations}
+                selectedService={selectedService}
+                selectedEmployee={selectedEmployee}
+                date={date}
+                time={time}
+                onServiceChange={handleServiceChange}
+                onEmployeeChange={handleEmployeeChange}
+                onDateChange={handleDateChange}
+                onTimeChange={handleTimeChange}
+              />
+            </div>
           </div>
         </div>
       </div>
-    </Container>
-  );
+    </div>
+  </Container>
+);
 }
  
 export default ListingClient;

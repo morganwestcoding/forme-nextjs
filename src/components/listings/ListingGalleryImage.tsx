@@ -83,8 +83,8 @@ const ListingGalleryImage: React.FC<ListingGalleryImageProps> = ({ listing, curr
 
   return (
     <div className="w-full">
-      <div className=" overflow-hidden relative pb-6">   
-        <div className="grid grid-cols-4 gap-3 px-6">
+      <div className=" overflow-hidden relative">   
+        <div className="grid grid-cols-4 gap-3">
           {images.length > 0 ? (
             images.map((image, index) => (
               <div 
@@ -93,7 +93,7 @@ const ListingGalleryImage: React.FC<ListingGalleryImageProps> = ({ listing, curr
                 onMouseEnter={() => setHoveredImageIndex(index)}
                 onMouseLeave={() => setHoveredImageIndex(null)}
               >
-                <div className="aspect-w-1 aspect-h-1 w-full">
+                <div className="aspect-w-2 aspect-h-2 w-full">
                   <Image
                     src={image}
                     layout="fill"

@@ -145,10 +145,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
       w-full
     ">
       <Image
-    onClick={(e) => {
-      e.stopPropagation();
-      listingDetailsModal.onOpen(data);
-    }} 
+        onClick={() => router.push(`/listings/${data.id}`)} 
         fill
         className="
           object-cover 
@@ -169,7 +166,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
     </div>
 
     {/* Replace this div with the new one that includes rating */}
-    <div className="flex justify-between items-center px-6 pt-3 pb-2">
+    <div className="flex justify-between items-center px-6 pt-3 pb-1">
       <div 
         className={`w-8 h-5 ${categoryColor} shadow-sm rounded-md flex items-center justify-center`} 
         title={data.category}
@@ -181,7 +178,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
       {/* Add rating here */}
   {/* Rating with 5 stars */}
   <div className="flex items-center gap-0.5">
-  <span className=" text-sm font-semibold mr-2 text-neutral-700">
+  <span className=" text-sm font-medium mr-1 text-black">
           5.0
         </span>
     {[1, 2, 3, 4, 5].map((_, index) => (
