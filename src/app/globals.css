@@ -110,7 +110,7 @@
     @apply border-border;
   }
   html, body {
-    @apply text-foreground bg-[#e6edf3] ;
+    @apply text-foreground bg-[#f3f3f3] ;
     min-height: 100vh;
   }
 }

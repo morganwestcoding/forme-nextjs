@@ -15,7 +15,7 @@ const Logo = ({ isMobile }: LogoProps) => {
     <Link href="/" prefetch={false} className='overflow-hidden'>
       <Image
         alt="ForMe Logo"
-        className={isMobile ? 'block w-6 h-9' : 'hidden md:block mb-6 mt-1'}
+        className={isMobile ? 'block w-6 h-9' : 'hidden md:block mb-6 mt-1 invert'}
         height={isMobile ? "20" : "28"}
         width={isMobile ? "20" : "28"}
         src="/logos/black.png"

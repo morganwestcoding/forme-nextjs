@@ -133,6 +133,7 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
              transition-colors
              duration-500
              ease-in-out
+             bg-black bg-opacity-60
            `}
            onClick={attachmentModal.onOpen}
          >

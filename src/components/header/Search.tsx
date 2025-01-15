@@ -50,8 +50,8 @@ const Search: React.FC<SearchProps> = ({ onResultClick }) => {
 
   return (
     <div className="relative w-44">
-      <div className={`group flex items-center justify-start mb-2 p-2 rounded-lg transition-colors border duration-250 ${
-        isSearchFocused ? 'bg-gray-500' : 'bg-[#ffffff] hover:bg-gray-200'
+      <div className={`group flex items-center justify-start mb-2 p-2 rounded-lg transition-colors border border-white duration-250 ${
+        isSearchFocused ? 'bg-gray-500' : 'bg-transport hover:bg-gray-200'
       }`}>
         <div className="group flex flex-col rounded-full p-1 cursor-pointer">
           <svg 
@@ -59,7 +59,7 @@ const Search: React.FC<SearchProps> = ({ onResultClick }) => {
             viewBox="0 0 24 24" 
             width={19} 
             height={19} 
-            color={isSearchFocused ? "#ffffff" : "#a2a2a2"}
+            color={isSearchFocused ? "#ffffff" : "#ffffff"}
             fill="none"
             className="group-hover:text-white"
           >
@@ -86,7 +86,7 @@ const Search: React.FC<SearchProps> = ({ onResultClick }) => {
         <input
           type="text"
           className={`ml-3 bg-transparent w-full text-[0.8rem] font-light focus:outline-none ${
-            isSearchFocused ? 'text-white placeholder-white' : 'text-[#a2a2a2] placeholder-[#a2a2a2]'
+            isSearchFocused ? 'text-white placeholder-white' : 'text-[#a2a2a2] placeholder-[#ffffff]'
           }`}
           placeholder="Search"
           value={searchTerm}

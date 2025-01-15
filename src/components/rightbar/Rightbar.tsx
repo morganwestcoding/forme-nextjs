@@ -75,7 +75,7 @@ export default function Rightbar() {
                 <p className="text-xs text-gray-500">{article.author}</p>
                 <div className="flex items-center text-xs text-gray-500">
                   <span>{article.views}</span>
-                  <span className="mx-1">•</span>
+                  <span className="mx-1">&middot;</span>
                   <span>{article.timeAgo}</span>
                 </div>
               </div>

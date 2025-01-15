@@ -174,7 +174,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
             {/* About Us section */}
             <div className="w-[60%] pt-3">
               <h2 className="text-xl font-bold text-black mb-2">About Us</h2>
-              <p className="text-xs text-black">
+              <p className="text-sm text-black">
                 {listing.description}
               </p>
             </div>
