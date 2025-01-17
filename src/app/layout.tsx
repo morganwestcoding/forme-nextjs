@@ -25,6 +25,7 @@ import DemoModal from '@/components/modals/DemoModal';
 import MobileNavBar from '@/components/header/MobileNavBar';
 import MobileTopBar from '@/components/header/MobileTopBar';
 import ListingDetailsModal from '@/components/modals/ListingDetailsModal';
+import InboxModal from '@/components/modals/InboxModal';
 
 
 export const metadata: Metadata = {
@@ -67,6 +68,7 @@ export default async function RootLayout({
               </div>
               <ToasterProvider/>
               <RentModal/>
+              <InboxModal/>
               <ProfileModal/>
               <LoginModal/>
               <RegisterModal/>

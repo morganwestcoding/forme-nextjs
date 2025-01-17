@@ -124,9 +124,9 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
              hover:bg-opacity-55 
              rounded-full 
              border 
-             ${mediaData || location ? 'bg-green-500' : 'bg-slate-100 bg-opacity-20'} 
-             border-white
-             border-dashed
+             ${mediaData || location ? 'bg-green-500' : 'bg-slate-100'} 
+             border-[#6B7280]
+            
              p-3
              px-3 
              mr-2 
@@ -142,8 +142,8 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
              <svg 
                xmlns="http://www.w3.org/2000/svg" 
                viewBox="0 0 24 24" 
-               width="18" 
-               height="18" 
+               width="19" 
+               height="19" 
                color="#ffffff" 
                fill="none"
                className="transition-opacity duration-800 ease-in-out"
@@ -155,9 +155,9 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
              <svg 
                xmlns="http://www.w3.org/2000/svg" 
                viewBox="0 0 24 24" 
-               width="18" 
-               height="18" 
-               color="#ffffff" 
+               width="19" 
+               height="19" 
+               color="#6B7280" 
                fill="none"
                className="transition-opacity duration-800 ease-in-out"
 

@@ -209,7 +209,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
           <div className="flex justify-between items-start px-6 pb-2">
             {/* Left side: Title and Location */}
             <div className="flex flex-col">
-              <div className="font-medium text-sm capitalize">
+              <div className="pt-1 font-medium text-xs capitalize">
                 {data.title}
               </div>
               <div className="font-light text-xs text-neutral-500">
@@ -221,7 +221,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
 
 {/* Right side: Services Badge */}
 {data.services && data.services.length > 0 && (
-  <div className="inline-flex items-center gap-2 px-3 py-3 bg-slate-100 border-white border rounded-lg hover:bg-neutral-200 transition">
+  <div className="inline-flex items-center gap-2 px-3 py-3 bg-slate-50 border-[#6B7280] border rounded-lg hover:bg-neutral-200 transition">
     <div className="flex gap-1.5">
     <button
         onClick={(e) => {

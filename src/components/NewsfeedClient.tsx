@@ -79,6 +79,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
     md:pr-8 
     md:pl-0
   `}>
+    
                 <NewsfeedFilter 
               onFilterChange={(filter) => {
                 // Handle filter change logic here

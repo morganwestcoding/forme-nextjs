@@ -52,8 +52,8 @@ export default function Rightbar() {
   </div>
 </div>
 
-<div className="w-full flex flex-col justify-start rounded-2xl p-0 mx-0 overflow-hidden pb-5">
-        <div className=" pt-4 pb-4 text-lg font-bold">What&apos;s Happening</div>
+<div className="w-full flex flex-col justify-start pt-2 p-0 mx-0 overflow-hidden pb-5">
+        <div className="pb-4 text-lg font-bold">What&apos;s Happening</div>
         <hr />
         <div className="grid grid-cols-2 gap-4">
           {articles.map((article, index) => (

@@ -1,28 +1,36 @@
+// components/modals/InboxModal.tsx
 'use client'
+
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { SafeUser, SafeConversation } from "@/app/types";
 import useMessageModal from "@/app/hooks/useMessageModal";
-import Modal from '../modals/Modal';
+import Modal from './Modal';
 import UserSearch from '../UserSearch';
+import useInboxModal from '@/app/hooks/useInboxModal';
+import getCurrentUser from '@/app/actions/getCurrentUser';
 
-interface InboxModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  currentUser: SafeUser | null;
-}
-
-const InboxModal: React.FC<InboxModalProps> = ({ isOpen, onClose, currentUser }) => {
+const InboxModal = () => {
   const [conversations, setConversations] = useState<SafeConversation[]>([]);
+  const [currentUser, setCurrentUser] = useState<SafeUser | null>(null);
   const messageModal = useMessageModal();
+  const inboxModal = useInboxModal();
 
   useEffect(() => {
-    if (isOpen && currentUser) {
+    const loadUser = async () => {
+      const user = await getCurrentUser();
+      setCurrentUser(user);
+    };
+    loadUser();
+  }, []);
+
+  useEffect(() => {
+    if (inboxModal.isOpen && currentUser) {
       fetchConversations();
     }
-  }, [isOpen, currentUser]);
+  }, [inboxModal.isOpen, currentUser]);
 
   const fetchConversations = async () => {
     try {
@@ -38,7 +46,7 @@ const InboxModal: React.FC<InboxModalProps> = ({ isOpen, onClose, currentUser })
     try {
       await axios.post('/api/messages/read', { conversationId });
       messageModal.onOpen(conversationId, otherUserId);
-      onClose();
+      inboxModal.onClose();
     } catch (error) {
       console.error('Error updating message read status:', error);
       toast.error('Failed to update message status');
@@ -85,7 +93,7 @@ const InboxModal: React.FC<InboxModalProps> = ({ isOpen, onClose, currentUser })
       <div className="mb-4">
         <UserSearch onResultClick={startNewConversation} />
       </div>
-      <div className="h-full overflow-y-auto space-y-4 custom-scrollbar pr-2"> {/* Added pr-2 for scrollbar spacing */}
+      <div className="h-full overflow-y-auto space-y-4 custom-scrollbar pr-2">
         {conversations.map((conversation) => (
           <div 
             key={conversation.id}
@@ -149,8 +157,8 @@ const InboxModal: React.FC<InboxModalProps> = ({ isOpen, onClose, currentUser })
     <>
       <style>{styles}</style>
       <Modal
-        isOpen={isOpen}
-        onClose={onClose}
+        isOpen={inboxModal.isOpen}
+        onClose={inboxModal.onClose}
         onSubmit={() => {}}
         title="Inbox"
         body={bodyContent}
