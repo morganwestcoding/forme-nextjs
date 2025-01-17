@@ -11,6 +11,7 @@ import { usePostStore } from '@/app/hooks/usePostStore';
 import { useCategory } from '@/CategoryContext';
 import { useFilter } from '@/FilterContext';
 import Container from './Container';
+import NewsfeedFilter from './feed/NewsfeedFilter';
 
 interface NewsfeedClientProps {
   initialPosts: SafePost[];
@@ -71,13 +72,19 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
       <div className={`
     flex-none 
     w-full 
-    md:w-[55%]  
+    md:w-[57%]  
     ${currentUser ? 'mt-8' : 'mt-4'} 
     space-y-4
     px-4       
     md:pr-8 
     md:pl-0
   `}>
+                <NewsfeedFilter 
+              onFilterChange={(filter) => {
+                // Handle filter change logic here
+                console.log('Filter changed to:', filter);
+              }} 
+            />
     <Share currentUser={currentUser} categoryLabel={selectedCategory || undefined} />
     {storePosts.map((post) => (
       <Post 
@@ -88,7 +95,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
       />
     ))}
   </div>
-  <div className="flex-grow w-[45%] ml-4">
+  <div className="flex-grow w-[43%]">
     <Rightbar />
   </div>
 </div>
