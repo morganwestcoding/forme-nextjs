@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import Logo from "../header/Logo";
 import { categories } from '../Categories';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCategory } from "@/CategoryContext";
 import useDemoModal from "@/app/hooks/useDemoModal";
 import Avatar from "../ui/avatar";
@@ -12,11 +12,12 @@ import UserButton from "../UserButton";
 import { SafePost } from "@/app/types";
 import Search from "../header/Search";
 import FilterTab from "../FilterTab";
+import axios from 'axios';
 
 interface SidebarProps {
   currentUser?: SafeUser | null;
-  onMobileClose?: () => void;  // Add this prop for mobile close handling
-  isMobile?: boolean;          // Add this to check if we're in mobile view
+  onMobileClose?: () => void;  
+  isMobile?: boolean;          
 }
 
 interface Category {
@@ -36,6 +37,23 @@ isMobile }) => {
   const [selectedButton, setSelectedButton] = useState('home');
   const { selectedCategory, setSelectedCategory } = useCategory();
   const [filterActive, setFilterActive] = useState(false);
+  const [reservationCount, setReservationCount] = useState(0); // Add this state
+
+    // Add this useEffect hook
+    useEffect(() => {
+      const fetchReservationCount = async () => {
+        if (currentUser) {
+          try {
+            const response = await axios.get('/api/reservations/count');
+            setReservationCount(response.data);
+          } catch (error) {
+            console.error('Error fetching reservation count:', error);
+          }
+        }
+      };
+  
+      fetchReservationCount();
+    }, [currentUser]);
 
   const handleCategorySelect = (category: Category) => {
     if (selectedCategory === category.label) {
@@ -240,9 +258,11 @@ isMobile }) => {
         selectedButton === 'bookings' ? 'text-white' : 'text-[#6B7280] group-hover:text-white'
       }`}>Bookings</span>
     </div>
-    <div className="bg-[#78C3FB] px-2 py-1 rounded-sm flex items-center justify-center">
-      <span className="text-white text-xs">5</span>
-    </div>
+    {reservationCount > 0 && (
+            <div className="bg-[#78C3FB] px-2 py-1 rounded-sm flex items-center justify-center">
+              <span className="text-white text-xs">{reservationCount}</span>
+            </div>
+          )}
   </div>
 </li>
 {/* Add this right after the Bookings button li element */}
