@@ -4,21 +4,22 @@ import Image from 'next/image';
 
 interface AvatarProps {
   src?: string;
+  className?: string; 
 }
 
-const Avatar: React.FC<AvatarProps> = ({ src }) => {
+const Avatar: React.FC<AvatarProps> = ({ src, className = "rounded-full"  }) => {
   const defaultImage = "/people/rooster.jpg";
   const imageSrc = src || defaultImage;
 
   return (
-    <div className="relative w-11 h-11 rounded-full overflow-hidden">
+    <div className={`relative w-11 h-11 overflow-hidden ${className}`}>
       <Image
         fill
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         priority
         alt="Avatar"
         src={imageSrc}
-        className="object-cover rounded-full"  // Add rounded-full here too
+        className={`object-cover ${className}`}
       />
     </div>
   );

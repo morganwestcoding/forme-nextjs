@@ -35,33 +35,34 @@ const UserButton: React.FC<UserButtonProps> = ({
 
   return (      
     <DropdownMenu>   
-      <DropdownMenuTrigger className="w-44 bg-slate-100 flex items-center justify-center p-2 mb-2 cursor-pointer rounded-lg hover:bg-[#DFE2E2] transition-colors duration-250 outline-none">
- 
-        <Avatar  src={currentUser?.image ?? undefined} />
-      
-        <div className="ml-3 flex flex-col justify-start">
-          <span className="text-[#484848] text-xs font-medium">
-            {currentUser?.name?.split(' ')[0]}
-          </span>
-          <span className="text-[#a2a2a2] text-xs">Premium</span>
-        </div>
-        <div className="ml-auto">
-          <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            width="16" 
-            height="16" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="2" 
-            strokeLinecap="round" 
-            strokeLinejoin="round" 
-            className="text-[#a2a2a2]"
-          >
-            <path d="M6 9l6 6 6-6"/>
-          </svg>
-        </div>
-      </DropdownMenuTrigger>
+<DropdownMenuTrigger className="w-44 flex items-center justify-center p-2 mb-2 cursor-pointer rounded-lg hover:bg-[#DFE2E2] transition-colors duration-250 outline-none">
+  <Avatar 
+    src={currentUser?.image ?? undefined} 
+    className="rounded-lg"
+  />
+<div className="ml-3 flex flex-col items-start">
+  <span className="text-[#484848] text-xs font-medium -ml-[0.5px]">
+    {currentUser?.name?.split(' ')[0]}
+  </span>
+  <span className="text-[#6B7280] text-xs">Premium</span>
+</div>
+  <div className="ml-auto">
+    <svg 
+      xmlns="http://www.w3.org/2000/svg" 
+      width="16" 
+      height="16" 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2" 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      className="text-[#6B7280]"
+    >
+      <path d="M6 9l6 6 6-6"/>
+    </svg>
+  </div>
+</DropdownMenuTrigger>
       <DropdownMenuContent 
         className="
           w-44

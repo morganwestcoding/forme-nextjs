@@ -124,8 +124,9 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
              hover:bg-opacity-55 
              rounded-full 
              border 
-             ${mediaData || location ? 'bg-green-500' : 'bg-black bg-opacity-5'} 
-             border-white 
+             ${mediaData || location ? 'bg-green-500' : 'bg-slate-100 bg-opacity-20'} 
+             border-white
+             border-dashed
              p-3
              px-3 
              mr-2 
@@ -133,7 +134,7 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
              transition-colors
              duration-500
              ease-in-out
-             bg-black bg-opacity-60
+             
            `}
            onClick={attachmentModal.onOpen}
          >

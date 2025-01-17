@@ -26,9 +26,9 @@ const PostCategorySelect: React.FC<PostCategorySelectProps> = ({
           rounded-md 
           bg-[#ffffff] 
           hover:bg-white 
-          text-[#4d4d4d] 
+          text-[#6B7280] 
           text-xs 
-          font-medium 
+        
           shadow-sm
           p-3.5 
           py-3.5 

@@ -23,7 +23,7 @@ const HeartButton: React.FC<HeartButtonProps> = ({
     return (
       <div
         onClick={toggleFavorite}
-        className="relative hover:opacity-80 transition cursor-pointer"
+        className="flex items-center justify-center rounded-full p-3 cursor-pointer border border-dashed border-[#6B7280] shadow-sm relative hover:opacity-80 transition"
       >
         <svg 
           xmlns="http://www.w3.org/2000/svg" 
@@ -48,7 +48,7 @@ const HeartButton: React.FC<HeartButtonProps> = ({
   return (
     <div
       onClick={toggleFavorite}
-      className="relative hover:opacity-80 transition cursor-pointer"
+className="relative hover:opacity-80 transition cursor-pointer rounded-full border border-dashed border-[#6B7280] p-3 shadow-sm"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
