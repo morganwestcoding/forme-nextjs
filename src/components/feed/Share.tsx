@@ -125,8 +125,9 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
              rounded-full 
              border 
              ${mediaData || location ? 'bg-green-500' : 'bg-slate-100'} 
-             border-[#6B7280]
-            
+             border-white
+            bg-slate-50
+            bg-opacity-20
              p-3
              px-3 
              mr-2 
@@ -157,7 +158,7 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
                viewBox="0 0 24 24" 
                width="19" 
                height="19" 
-               color="#6B7280" 
+               color="#ffffff" 
                fill="none"
                className="transition-opacity duration-800 ease-in-out"
 
