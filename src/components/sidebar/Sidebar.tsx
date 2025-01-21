@@ -117,7 +117,7 @@ isMobile }) => {
         
         <ul className="list-none m-0 p-0 flex flex-col items-center hover:text-white ">
           {/* Add this before your first menu item (Home) */}
-          <div className="w-44 h-[1px] rounded-full bg-gray-200 mb-4 mt-1"></div>
+          <div className="w-44 h-[1px] rounded-full bg-[#6B7280] mb-4 mt-1"></div>
 <Search/>
 
           <li className={` group flex items-center justify-start mb-2 p-2  rounded-lg  transition-colors duration-250 shadow-sm ${
@@ -330,9 +330,9 @@ onClick={() => {
   }`}>Vendors</span>
 </li>
       
-          <div className="w-44 h-[1px] rounded-full bg-gray-200 mb-4"></div>
+          <div className="w-44 h-[1px] rounded-full bg-[#6B7280] mb-4"></div>
           <li 
-  className={` group flex items-center bg-gray-50 justify-start mb-2 p-2 rounded-lg transition-colors duration-250 ${
+  className={` group flex items-center shadow-sm bg-gray-50 justify-start mb-2 p-2 rounded-lg transition-colors duration-250 ${
     selectedButton === 'inbox' ? 'bg-gray-500' : ' hover:bg-gray-200 hover:-gray-200'
   } w-44`} 
   onClick={() => {

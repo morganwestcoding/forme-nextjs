@@ -35,7 +35,7 @@ const UserButton: React.FC<UserButtonProps> = ({
 
   return (      
     <DropdownMenu>   
-<DropdownMenuTrigger className="w-44 flex items-center justify-center p-2 mb-2 cursor-pointer rounded-lg hover:bg-[#DFE2E2] transition-colors duration-250 outline-none">
+<DropdownMenuTrigger className="w-44 flex items-center justify-center p-2 mb-2 cursor-pointer rounded-lg  hover:bg-[#DFE2E2] transition-colors duration-250 outline-none">
   <Avatar 
     src={currentUser?.image ?? undefined} 
     className="rounded-lg"
