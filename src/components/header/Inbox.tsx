@@ -86,11 +86,7 @@ const Inbox: React.FC<InboxProps> = ({ currentUser }) => {
           />
         </svg>
       </div>
-      <InboxModal 
-        isOpen={isOpen} 
-        onClose={() => setIsOpen(false)} 
-        currentUser={currentUser} 
-      />
+
     </>
   )
 }

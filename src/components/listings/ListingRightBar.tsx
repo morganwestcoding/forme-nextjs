@@ -57,7 +57,7 @@ const InputField: React.FC<InputFieldProps> = ({
         placeholder={placeholder}
         disabled={disabled}
         className={`
-          w-full 
+          w-full
           h-10 
           border 
           text-sm 

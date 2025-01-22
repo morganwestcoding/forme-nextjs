@@ -170,17 +170,47 @@ const ListingClient: React.FC<ListingClientProps> = ({
               currentUser={currentUser}
             />
           {/* About Us and Booking section side by side */}
-          <div className="flex gap-6 mt-3">
+          <div className="flex gap-6 mt-2">
             {/* About Us section */}
             <div className="w-[60%] pt-3">
               <h2 className="text-xl font-bold text-black mb-2">About Us</h2>
               <p className="text-sm text-black">
                 {listing.description}
               </p>
+              {/* Services Section */}
+<div className="mt-8">
+  <h2 className="text-xl font-bold text-black mb-4">Services</h2>
+  <div className="grid grid-cols-3 gap-6">
+    {/* Each service card */}
+    <div className="bg-slate-100 p-4 rounded-lg">
+      <h3 className="font-medium mb-2">Haircut</h3>
+      <div className="flex justify-between items-center">
+        <span className="text-sm text-neutral-500">45 min</span>
+        <span className="font-medium">$30</span>
+      </div>
+    </div>
+
+    <div className="bg-slate-100 p-4 rounded-lg">
+      <h3 className="font-medium mb-2">Beard Trim</h3>
+      <div className="flex justify-between items-center">
+        <span className="text-sm text-neutral-500">30 min</span>
+        <span className="font-medium">$20</span>
+      </div>
+    </div>
+
+    <div className="bg-slate-100 p-4 rounded-lg">
+      <h3 className="font-medium mb-2">Full Service</h3>
+      <div className="flex justify-between items-center">
+        <span className="text-sm text-neutral-500">1 hour</span>
+        <span className="font-medium">$45</span>
+      </div>
+    </div>
+  </div>
+</div>
             </div>
             
             {/* Booking section */}
-            <div className="w-[40%]">
+            <div className="w-[40%] mt-2">
               <ListingRightBar
                 description={listing.description}
                 listing={listing}

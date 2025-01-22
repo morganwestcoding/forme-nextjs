@@ -136,13 +136,21 @@ const ListingCard: React.FC<ListingCardProps> = ({
           <>
   
   <div className="relative overflow-hidden rounded-t-2xl cursor-pointer group h-32 w-full">
-  <Image
-    onClick={() => router.push(`/listings/${data.id}`)} 
-    fill
-    className="object-cover w-full h-full group-hover:scale-110 transition"
-    src={data.imageSrc}
-    alt="Listing"
-  />
+  <div className="absolute inset-0 overflow-hidden rounded-t-2xl">
+    <Image
+      onClick={() => router.push(`/listings/${data.id}`)} 
+      fill
+      className="
+        object-cover 
+        w-full
+        h-full
+        group-hover:scale-110 
+        transition
+      "
+      src={data.imageSrc}
+      alt="Listing"
+    />
+  </div>
   {/* Category on left */}
   <div className="absolute top-4 left-6">
     <div 
@@ -269,7 +277,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
             e.stopPropagation();
             router.push(`/listings/${data.id}`);
           }}
-          className="bg-[#78C3FB] ml-2 shadow-sm text-[#ffffff] text-[0.8rem] px-6 py-3   rounded-lg transition hover:opacity-80"
+          className="bg-gray-600 font-light ml-2 shadow-sm text-[#ffffff] text-[0.8rem] px-6 py-3   rounded-lg transition hover:opacity-80"
         >
           Reserve
         </button>

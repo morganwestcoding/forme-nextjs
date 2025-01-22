@@ -34,7 +34,7 @@ const NewsfeedFilter: React.FC<NewsfeedFilterProps> = ({
     <input
       type="text"
       placeholder="Search"
-      className="w-full text-[#6B7280] placeholder:text-[#6B7280] border border-[#6B7280] rounded-lg p-3 pl-12 bg-slate-100 text-sm shadow-sm"
+      className="w-full text-[#6B7280] placeholder:text-[#6B7280] border rounded-lg p-3 pl-12 bg-slate-100 text-sm shadow-sm"
     />
   </div>
 </div>
