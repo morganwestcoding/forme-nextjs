@@ -59,19 +59,20 @@ const InputField: React.FC<InputFieldProps> = ({
         className={`
           w-full
           h-10 
-          border 
+          shadow-sm
           text-sm 
           rounded-sm
           block 
           py-6 
+          
           px-12 
-          placeholder-[#a2a2a2]
+          placeholder-gray-500
           text-center
           transition-colors
           duration-250
           ${isSelected 
             ? 'bg-[#5E6365] text-white border-[#5E6365]' 
-            : 'bg-white border-[#e2e8f0] hover:bg-[#e2e8f0]'
+            : 'bg-slate-100  border-[#e2e8f0] hover:bg-[#e2e8f0]'
           }
           ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
           ${showHoverEffect ? 'hover:placeholder-white' : ''}
@@ -228,7 +229,7 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
         />
 
         {showEmployeeDropdown && (
-          <div className="absolute z-50 bg-slate-100 border border-gray-300 rounded-md shadow-lg w-[calc(100%-3rem)]">
+          <div className="absolute z-50 bg-slate-100rounded-md shadow-lg w-[calc(100%-3rem)]">
             {employeeOptions.map((option) => (
               <div
                 key={option.value}

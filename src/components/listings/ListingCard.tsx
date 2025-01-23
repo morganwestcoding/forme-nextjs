@@ -119,7 +119,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
     <div className="col-span-1 flex justify-center">
       <div className={`
         bg-[#ffffff] 
-        rounded-2xl 
+        rounded-lg
         flex 
         flex-col 
         gap-2 
@@ -135,8 +135,8 @@ const ListingCard: React.FC<ListingCardProps> = ({
         {!reservation && (
           <>
   
-  <div className="relative overflow-hidden rounded-t-2xl cursor-pointer group h-32 w-full">
-  <div className="absolute inset-0 overflow-hidden rounded-t-2xl">
+  <div className="relative overflow-hidden rounded-t-lg cursor-pointer group h-32 w-full">
+  <div className="absolute inset-0 overflow-hidden rounded-t-lg">
     <Image
       onClick={() => router.push(`/listings/${data.id}`)} 
       fill
@@ -243,11 +243,11 @@ const ListingCard: React.FC<ListingCardProps> = ({
     
   {/* Service and Reserve Button Container */}
 <div className="flex justify-between items-center px-6 pb-2 gap 1.5">
-  <div className="flex flex-1 rounded-lg p-3 bg-slate-100 shadow-sm">
+  <div className="flex flex-1 rounded-md p-3 bg-slate-100 shadow-sm">
     {data.services && data.services.length > 0 && (
       <div className="flex w-full">
         {/* Service Section */}
-        <div className="inline-flex items-center py-3 flex-1 w-36 rounded-lg bg-white shadow-sm ">
+        <div className="inline-flex items-center py-3 flex-1 w-36 rounded-md bg-white shadow-sm ">
           <div className="w-full flex justify-center gap-1.5">
             <span className="text-xs text-black">
               {data.services[currentServiceIndex].serviceName}
@@ -277,7 +277,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
             e.stopPropagation();
             router.push(`/listings/${data.id}`);
           }}
-          className="bg-gray-600 font-light ml-2 shadow-sm text-[#ffffff] text-[0.8rem] px-6 py-3   rounded-lg transition hover:opacity-80"
+          className="bg-gray-600 font-light ml-2 shadow-sm text-[#ffffff] text-[0.8rem] px-6 py-3   rounded-md transition hover:opacity-80"
         >
           Reserve
         </button>
