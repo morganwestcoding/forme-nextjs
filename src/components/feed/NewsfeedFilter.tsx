@@ -19,7 +19,7 @@ const NewsfeedFilter: React.FC<NewsfeedFilterProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-xl p-6 mb-4 shadow-sm">
+    <div className="bg-white rounded-lg p-6 mb-4 shadow-sm">
       {/* Search and Filter Row */}
 
       <div className="flex items-center gap-3 mb-4">

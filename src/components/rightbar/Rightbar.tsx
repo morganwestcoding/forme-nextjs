@@ -44,7 +44,7 @@ export default function Rightbar() {
   return (
     <div className="hidden md:flex flex-col justify-end bg-transparent gap-3 h-auto mt-8">
 <div 
-  className="w-full rounded-2xl overflow-hidden cursor-pointer relative"
+  className="w-full rounded-lg overflow-hidden cursor-pointer relative"
   onClick={() => subscribeModal.onOpen()}
 >
   <div className="relative h-32 bg-white flex items-center justify-center">
@@ -54,16 +54,16 @@ export default function Rightbar() {
 
 <div className="w-full flex flex-col justify-start pt-2 p-0 mx-0 overflow-hidden pb-5">
         <div className="pb-4 text-lg font-bold">What&apos;s Happening</div>
-        <hr />
+  
         <div className="grid grid-cols-2 gap-4">
           {articles.map((article, index) => (
             <div 
               key={index} 
-              className="flex flex-col hover:bg-[#D5D7D8] rounded-xl cursor-pointer transition-colors" 
+              className="flex flex-col hover:bg-[#D5D7D8] rounded-lg cursor-pointer transition-colors" 
               onClick={() => router.push('/articles')}
             >
               <div 
-                className="w-full h-32 bg-gray-300 rounded-xl mb-3" 
+                className="w-full h-32 bg-gray-300 rounded-lg mb-3" 
                 style={{ 
                   backgroundImage: `url(${article.imageSrc})`, 
                   backgroundSize: 'cover', 

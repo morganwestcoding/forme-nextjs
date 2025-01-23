@@ -120,8 +120,8 @@ isMobile }) => {
           <div className="w-44 h-[1px] rounded-full bg-[#6B7280] mb-4 mt-1"></div>
 <Search/>
 
-          <li className={` group flex items-center justify-start mb-2 p-2  rounded-lg  transition-colors duration-250 shadow-sm ${
-          selectedButton === 'home' ? 'bg-gray-500' : 'bg-gray-50 hover:bg-gray-200'
+          <li className={` group flex items-center justify-start mb-2 p-2  rounded-md  transition-colors duration-250 shadow-sm ${
+          selectedButton === 'home' ? 'bg-gray-500' : 'bg-slate-100 hover:bg-gray-200'
           } w-44`}
           onClick={() => {
             router.push('/');
@@ -145,8 +145,8 @@ isMobile }) => {
 
           {/* Market Icon */}
    
-          <li className={` group flex items-center justify-start mb-2 p-2 rounded-lg  transition-colors duration-250 shadow-sm ${
-              selectedButton === 'market' ? 'bg-gray-500' : 'bg-gray-50 hover:bg-gray-200 hover:-gray-200'
+          <li className={` group flex items-center justify-start mb-2 p-2 rounded-md  transition-colors duration-250 shadow-sm ${
+              selectedButton === 'market' ? 'bg-gray-500' : 'bg-slate-100 hover:bg-gray-200 hover:-gray-200'
             } w-44`} 
             onClick={() => {
               router.push('/market');
@@ -167,8 +167,8 @@ isMobile }) => {
 
            {/* Favorites Icon */}
        
-           <li className={` group flex items-center justify-start mb-2 p-2 rounded-lg  transition-colors duration-250 shadow-sm ${
-              selectedButton === 'favorites' ? 'bg-gray-500': 'bg-gray-50 hover:bg-gray-200 hover:-gray-200'
+           <li className={` group flex items-center justify-start mb-2 p-2 rounded-md  transition-colors duration-250 shadow-sm ${
+              selectedButton === 'favorites' ? 'bg-gray-500': 'bg-slate-100 hover:bg-gray-200 hover:-gray-200'
             } w-44`} 
             onClick={() => {
               router.push('/favorites');
@@ -190,14 +190,14 @@ isMobile }) => {
 
          {/* Job Icon with Tooltip */}
   
-         <li className={` group flex items-center justify-start mb-2 p-2 rounded-lg  transition-colors duration-250 ${
-    selectedButton === 'jobs' ? 'bg-gray-500' : 'bg-gray-50 hover:bg-gray-200 hover:-gray-200'
+         <li className={` group flex items-center justify-start mb-2 p-2 rounded-md  transition-colors duration-250 ${
+    selectedButton === 'jobs' ? 'bg-gray-500' : 'bg-slate-100 hover:bg-gray-200 hover:-gray-200'
   } w-44`} 
   onClick={() => {
     router.push('/jobs');
     setSelectedButton('jobs');
   }}>
-  <div className="group flex flex-col rounded-lg p-1 cursor-pointer">
+  <div className="group flex flex-col rounded-md p-1 cursor-pointer">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={20} height={20} color={selectedButton === 'jobs' ? "#ffffff" : "#6B7280"}  fill={"none"} className="group-hover:text-white">
       <path d="M10 12.3333C10 12.0233 10 11.8683 10.0341 11.7412C10.1265 11.3961 10.3961 11.1265 10.7412 11.0341C10.8683 11 11.0233 11 11.3333 11H12.6667C12.9767 11 13.1317 11 13.2588 11.0341C13.6039 11.1265 13.8735 11.3961 13.9659 11.7412C14 11.8683 14 12.0233 14 12.3333V13C14 14.1046 13.1046 15 12 15C10.8954 15 10 14.1046 10 13V12.3333Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
       <path d="M13.8016 13C14.1132 12.9095 14.4666 12.8005 14.88 12.673L19.0512 11.3866C20.5358 10.9288 21.2624 10.131 21.4204 8.74977C21.4911 8.13198 21.5265 7.82308 21.4768 7.57022C21.3349 6.84864 20.7289 6.26354 19.9213 6.06839C19.6383 6 19.283 6 18.5724 6H5.42757C4.717 6 4.36172 6 4.07871 6.06839C3.27111 6.26354 2.6651 6.84864 2.52323 7.57022C2.47351 7.82308 2.50886 8.13198 2.57956 8.74977C2.73764 10.131 3.46424 10.9288 4.94882 11.3866L9.11996 12.673C9.53336 12.8005 9.88684 12.9095 10.1984 13" stroke="currentColor" strokeWidth="1.5" />
@@ -210,8 +210,8 @@ isMobile }) => {
   }`}>Jobs</span>
 </li>
 
-<li className={` group flex shadow-sm items-center justify-start mb-2 p-2 rounded-lg  transition-colors duration-250 ${
-    selectedButton === 'bookings' ? 'bg-gray-500' : 'bg-gray-50 hover:bg-gray-200 hover:-gray-200'
+<li className={` group flex shadow-sm items-center justify-start mb-2 p-2 rounded-md  transition-colors duration-250 ${
+    selectedButton === 'bookings' ? 'bg-gray-500' : 'bg-slate-100 hover:bg-gray-200 hover:-gray-200'
   } w-44`} 
   onClick={() => {
     router.push('/reservations');
@@ -268,8 +268,8 @@ isMobile }) => {
   </div>
 </li>
 {/* Add this right after the Bookings button li element */}
-<li className={` group flex items-center justify-start shadow-sm mb-4 p-2 rounded-lg transition-colors duration-250 ${
-  selectedButton === 'vendors' ? 'bg-gray-500' : 'bg-gray-50 hover:bg-gray-200 hover:-gray-200'
+<li className={` group flex items-center justify-start shadow-sm mb-4 p-2 rounded-md transition-colors duration-250 ${
+  selectedButton === 'vendors' ? 'bg-gray-500' : 'bg-slate-100 hover:bg-gray-200 hover:-gray-200'
 } w-44`} 
 onClick={() => {
   router.push('/vendors');
@@ -332,7 +332,7 @@ onClick={() => {
       
           <div className="w-44 h-[1px] rounded-full bg-[#6B7280] mb-4"></div>
           <li 
-  className={` group flex items-center shadow-sm bg-gray-50 justify-start mb-2 p-2 rounded-lg transition-colors duration-250 ${
+  className={` group flex items-center shadow-sm bg-slate-100 justify-start mb-2 p-2 rounded-md transition-colors duration-250 ${
     selectedButton === 'inbox' ? 'bg-gray-500' : ' hover:bg-gray-200 hover:-gray-200'
   } w-44`} 
   onClick={() => {
@@ -357,7 +357,7 @@ onClick={() => {
 </div>
     </div>
 </li>
-<li className={` group flex items-center justify-start bg-gray-50 shadow-sm mb-2 p-2 rounded-lg transition-colors duration-250 ${
+<li className={` group flex items-center justify-start bg-slate-100 shadow-sm mb-2 p-2 rounded-md transition-colors duration-250 ${
   selectedButton === 'notifications' ? 'bg-gray-500' : 'hover:bg-gray-200 hover:-gray-200'
 } w-44`} 
 onClick={() => {
@@ -386,8 +386,8 @@ onClick={() => {
 
 {/* Categories */}
 {/*<span className="mb-5 text-[#ffffff] text-[0.8rem] font-light">Genre</span>
-          <li className={`relative flex items-center justify-center mb-4 p-2 rounded-lg shadow w-44 h-20 transition-colors duration-250 ${selectedCategory ? categories.find(c => c.label === selectedCategory)?.color : 'bg-[#78C3FB]'}`}>
-            <span className="text-[#ffffff] text-[0.8rem] group-hover:text-white font-light text-center h-10 rounded-lg p-3 bg-black bg-opacity-10 backdrop-blur shadow">
+          <li className={`relative flex items-center justify-center mb-4 p-2 rounded-md shadow w-44 h-20 transition-colors duration-250 ${selectedCategory ? categories.find(c => c.label === selectedCategory)?.color : 'bg-[#78C3FB]'}`}>
+            <span className="text-[#ffffff] text-[0.8rem] group-hover:text-white font-light text-center h-10 rounded-md p-3 bg-black bg-opacity-10 backdrop-blur shadow">
               {selectedCategory || 'Default'}
             </span>
           </li>
@@ -403,14 +403,14 @@ onClick={() => {
             </div>
           </div>*/}
  {/*        {!isDemoHidden && (
-    <li className={`group flex items-center justify-start mt-8 p-2 rounded-lg  transition-colors duration-250 ${
+    <li className={`group flex items-center justify-start mt-8 p-2 rounded-md  transition-colors duration-250 ${
       selectedButton === 'demo' ? 'bg-gray-500' : 'bg-[#ffffff] hover:bg-gray-200 hover:-gray-200'
     } w-44`} 
     onClick={() => {
       setSelectedButton('demo');
       demoModal.onOpen();
     }}>
-      <div className="group flex flex-col rounded-lg p-1 cursor-pointer">
+      <div className="group flex flex-col rounded-md p-1 cursor-pointer">
         <svg 
           xmlns="http://www.w3.org/2000/svg" 
           viewBox="0 0 24 24" 

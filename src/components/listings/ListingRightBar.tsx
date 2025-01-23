@@ -61,7 +61,7 @@ const InputField: React.FC<InputFieldProps> = ({
           h-10 
           border 
           text-sm 
-          rounded-lg 
+          rounded-sm
           block 
           py-6 
           px-12 
@@ -188,7 +188,7 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
 
   return (
     <div className="flex flex-col justify-end bg-transparent gap-4 h-auto">
-      <div className="w-full rounded-2xl shadow-sm bg-[#ffffff] px-8 md:px-6 pt-6 pb-6 relative">
+      <div className="w-full rounded-lg shadow-sm bg-[#ffffff] px-8 md:px-6 pt-6 pb-6 relative">
         <div className="mb-4">
           <h2 className="text-xl font-bold mb-1">Booking</h2>
           <p className="text-sm text-gray-500">Reserve your spot before its too late!</p>
@@ -203,7 +203,7 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
         />
 
         {showServiceDropdown && (
-          <div className="absolute z-50 bg-white border border-gray-300 rounded-md shadow-lg w-[calc(100%-3rem)]">
+          <div className="absolute z-50  border border-gray-300 rounded-md shadow-lg w-[calc(100%-3rem)]">
             {serviceOptions.map((option) => (
               <div
                 key={option.value}
@@ -228,7 +228,7 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
         />
 
         {showEmployeeDropdown && (
-          <div className="absolute z-50 bg-white border border-gray-300 rounded-md shadow-lg w-[calc(100%-3rem)]">
+          <div className="absolute z-50 bg-slate-100 border border-gray-300 rounded-md shadow-lg w-[calc(100%-3rem)]">
             {employeeOptions.map((option) => (
               <div
                 key={option.value}

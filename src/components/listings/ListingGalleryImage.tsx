@@ -93,7 +93,7 @@ const ListingGalleryImage: React.FC<ListingGalleryImageProps> = ({ listing, curr
                 onMouseEnter={() => setHoveredImageIndex(index)}
                 onMouseLeave={() => setHoveredImageIndex(null)}
               >
-                <div className="aspect-w-2 aspect-h-2 w-full">
+                <div className="aspect-w-3 aspect-h-3 w-full">
                   <Image
                     src={image}
                     layout="fill"

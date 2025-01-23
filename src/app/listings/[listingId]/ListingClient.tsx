@@ -170,9 +170,9 @@ const ListingClient: React.FC<ListingClientProps> = ({
               currentUser={currentUser}
             />
           {/* About Us and Booking section side by side */}
-          <div className="flex gap-6 mt-2">
+          <div className="flex gap-6 mt-6">
             {/* About Us section */}
-            <div className="w-[60%] pt-3">
+            <div className="w-[60%] bg-white rounded-lg shadow-sm p-6">
               <h2 className="text-xl font-bold text-black mb-2">About Us</h2>
               <p className="text-sm text-black">
                 {listing.description}
@@ -180,9 +180,9 @@ const ListingClient: React.FC<ListingClientProps> = ({
               {/* Services Section */}
 <div className="mt-8">
   <h2 className="text-xl font-bold text-black mb-4">Services</h2>
-  <div className="grid grid-cols-3 gap-6">
+  <div className="grid grid-cols-3 gap-4">
     {/* Each service card */}
-    <div className="bg-slate-100 p-4 rounded-lg">
+    <div className="bg-slate-100 p-4 rounded-sm">
       <h3 className="font-medium mb-2">Haircut</h3>
       <div className="flex justify-between items-center">
         <span className="text-sm text-neutral-500">45 min</span>
@@ -190,7 +190,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
       </div>
     </div>
 
-    <div className="bg-slate-100 p-4 rounded-lg">
+    <div className="bg-slate-100 p-4 rounded-sm">
       <h3 className="font-medium mb-2">Beard Trim</h3>
       <div className="flex justify-between items-center">
         <span className="text-sm text-neutral-500">30 min</span>
@@ -198,7 +198,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
       </div>
     </div>
 
-    <div className="bg-slate-100 p-4 rounded-lg">
+    <div className="bg-slate-100 p-4 rounded-sm">
       <h3 className="font-medium mb-2">Full Service</h3>
       <div className="flex justify-between items-center">
         <span className="text-sm text-neutral-500">1 hour</span>
@@ -210,7 +210,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
             </div>
             
             {/* Booking section */}
-            <div className="w-[40%] mt-2">
+            <div className="w-[40%]">
               <ListingRightBar
                 description={listing.description}
                 listing={listing}
