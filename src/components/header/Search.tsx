@@ -50,7 +50,7 @@ const Search: React.FC<SearchProps> = ({ onResultClick }) => {
 
   return (
     <div className="relative w-44">
-  <div className={` group flex items-center justify-start mb-3 p-2 rounded-lg transition-colors duration-250 shadow-sm shadow-slate-300 ${
+  <div className={` group flex items-center justify-start mb-2 p-2 rounded-lg transition-colors duration-250 shadow-sm shadow-slate-300 ${
     isSearchFocused ? 'bg-gray-500' : 'bg-slate-50 hover:bg-gray-200'
   } w-44`}>
     <div className="group flex flex-col rounded-full p-1 cursor-pointer">
