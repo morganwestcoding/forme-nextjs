@@ -120,7 +120,7 @@ isMobile }) => {
           <div className="w-44 h-[1px] rounded-full bg-[#6B7280] mb-4 mt-1"></div>
 <Search/>
 
-          <li className={` group flex items-center justify-start mb-2 p-2  rounded-md  transition-colors duration-250 shadow-sm shadow-slate-300 ${
+          <li className={` group flex items-center justify-start mb-3 p-2  rounded-md  transition-colors duration-250 shadow-sm shadow-slate-300 ${
           selectedButton === 'home' ? 'bg-gray-500' : 'bg-slate-50 hover:bg-gray-200'
           } w-44`}
           onClick={() => {
@@ -145,7 +145,7 @@ isMobile }) => {
 
           {/* Market Icon */}
    
-          <li className={` group flex items-center justify-start mb-2 p-2 rounded-md  transition-colors duration-250 shadow-sm shadow-slate-300 ${
+          <li className={` group flex items-center justify-start mb-3 p-2 rounded-md  transition-colors duration-250 shadow-sm shadow-slate-300 ${
               selectedButton === 'market' ? 'bg-gray-500' : 'bg-slate-50 hover:bg-gray-200 hover:-gray-200'
             } w-44`} 
             onClick={() => {
@@ -167,7 +167,7 @@ isMobile }) => {
 
            {/* Favorites Icon */}
        
-           <li className={` group flex items-center justify-start mb-2 p-2 rounded-md  transition-colors duration-250 shadow-sm shadow-slate-300 ${
+           <li className={` group flex items-center justify-start mb-3 p-2 rounded-md  transition-colors duration-250 shadow-sm shadow-slate-300 ${
               selectedButton === 'favorites' ? 'bg-gray-500': 'bg-slate-50 hover:bg-gray-200 hover:-gray-200'
             } w-44`} 
             onClick={() => {
@@ -190,7 +190,7 @@ isMobile }) => {
 
          {/* Job Icon with Tooltip */}
   
-         <li className={` group flex items-center justify-start mb-2 p-2 rounded-md shadow-sm shadow-slate-300 transition-colors duration-250 ${
+         <li className={` group flex items-center justify-start mb-3 p-2 rounded-md shadow-sm shadow-slate-300 transition-colors duration-250 ${
     selectedButton === 'jobs' ? 'bg-gray-500' : 'bg-slate-50 hover:bg-gray-200 hover:-gray-200'
   } w-44`} 
   onClick={() => {
@@ -210,7 +210,7 @@ isMobile }) => {
   }`}>Jobs</span>
 </li>
 
-<li className={` group flex shadow-sm shadow-slate-300 items-center justify-start mb-2 p-2 rounded-md  transition-colors duration-250 ${
+<li className={` group flex shadow-sm shadow-slate-300 items-center justify-start mb-3 p-2 rounded-md  transition-colors duration-250 ${
     selectedButton === 'bookings' ? 'bg-gray-500' : 'bg-slate-50 hover:bg-gray-200 hover:-gray-200'
   } w-44`} 
   onClick={() => {
@@ -332,7 +332,7 @@ onClick={() => {
       
           <div className="w-44 h-[1px] rounded-full bg-[#6B7280] mb-4"></div>
           <li 
-  className={` group flex items-center shadow-sm shadow-slate-300 bg-slate-50 justify-start mb-2 p-2 rounded-md transition-colors duration-250 ${
+  className={` group flex items-center shadow-sm shadow-slate-300 bg-slate-50 justify-start mb-3 p-2 rounded-md transition-colors duration-250 ${
     selectedButton === 'inbox' ? 'bg-gray-500' : ' hover:bg-gray-200 hover:-gray-200'
   } w-44`} 
   onClick={() => {
@@ -357,7 +357,7 @@ onClick={() => {
 </div>
     </div>
 </li>
-<li className={` group flex items-center justify-start bg-slate-50 shadow-sm shadow-slate-300 mb-2 p-2 rounded-md transition-colors duration-250 ${
+<li className={` group flex items-center justify-start bg-slate-50 shadow-sm shadow-slate-300 mb-3 p-2 rounded-md transition-colors duration-250 ${
   selectedButton === 'notifications' ? 'bg-gray-500' : 'hover:bg-gray-200 hover:-gray-200'
 } w-44`} 
 onClick={() => {
