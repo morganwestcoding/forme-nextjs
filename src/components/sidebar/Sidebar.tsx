@@ -75,7 +75,7 @@ isMobile }) => {
   return (
 
     <div className="fixed top-0 flex h-screen z-20">
-      <div className="flex flex-col items-center w-62 h-full px-6 pb-10 pt-8 bg-white shadow-sm  z-50" >
+      <div className="flex flex-col items-center w-62 h-full px-6 pb-10 pt-8 bg-white shadow-sm shadow-slate-300  z-50" >
   
                 {isMobile && (
                   <>
@@ -120,8 +120,8 @@ isMobile }) => {
           <div className="w-44 h-[1px] rounded-full bg-[#6B7280] mb-4 mt-1"></div>
 <Search/>
 
-          <li className={` group flex items-center justify-start mb-2 p-2  rounded-md  transition-colors duration-250 shadow-sm ${
-          selectedButton === 'home' ? 'bg-gray-500' : 'bg-slate-100 hover:bg-gray-200'
+          <li className={` group flex items-center justify-start mb-2 p-2  rounded-md  transition-colors duration-250 shadow-sm shadow-slate-300 ${
+          selectedButton === 'home' ? 'bg-gray-500' : 'bg-slate-50 hover:bg-gray-200'
           } w-44`}
           onClick={() => {
             router.push('/');
@@ -145,8 +145,8 @@ isMobile }) => {
 
           {/* Market Icon */}
    
-          <li className={` group flex items-center justify-start mb-2 p-2 rounded-md  transition-colors duration-250 shadow-sm ${
-              selectedButton === 'market' ? 'bg-gray-500' : 'bg-slate-100 hover:bg-gray-200 hover:-gray-200'
+          <li className={` group flex items-center justify-start mb-2 p-2 rounded-md  transition-colors duration-250 shadow-sm shadow-slate-300 ${
+              selectedButton === 'market' ? 'bg-gray-500' : 'bg-slate-50 hover:bg-gray-200 hover:-gray-200'
             } w-44`} 
             onClick={() => {
               router.push('/market');
@@ -167,8 +167,8 @@ isMobile }) => {
 
            {/* Favorites Icon */}
        
-           <li className={` group flex items-center justify-start mb-2 p-2 rounded-md  transition-colors duration-250 shadow-sm ${
-              selectedButton === 'favorites' ? 'bg-gray-500': 'bg-slate-100 hover:bg-gray-200 hover:-gray-200'
+           <li className={` group flex items-center justify-start mb-2 p-2 rounded-md  transition-colors duration-250 shadow-sm shadow-slate-300 ${
+              selectedButton === 'favorites' ? 'bg-gray-500': 'bg-slate-50 hover:bg-gray-200 hover:-gray-200'
             } w-44`} 
             onClick={() => {
               router.push('/favorites');
@@ -190,8 +190,8 @@ isMobile }) => {
 
          {/* Job Icon with Tooltip */}
   
-         <li className={` group flex items-center justify-start mb-2 p-2 rounded-md  transition-colors duration-250 ${
-    selectedButton === 'jobs' ? 'bg-gray-500' : 'bg-slate-100 hover:bg-gray-200 hover:-gray-200'
+         <li className={` group flex items-center justify-start mb-2 p-2 rounded-md shadow-sm shadow-slate-300 transition-colors duration-250 ${
+    selectedButton === 'jobs' ? 'bg-gray-500' : 'bg-slate-50 hover:bg-gray-200 hover:-gray-200'
   } w-44`} 
   onClick={() => {
     router.push('/jobs');
@@ -210,8 +210,8 @@ isMobile }) => {
   }`}>Jobs</span>
 </li>
 
-<li className={` group flex shadow-sm items-center justify-start mb-2 p-2 rounded-md  transition-colors duration-250 ${
-    selectedButton === 'bookings' ? 'bg-gray-500' : 'bg-slate-100 hover:bg-gray-200 hover:-gray-200'
+<li className={` group flex shadow-sm shadow-slate-300 items-center justify-start mb-2 p-2 rounded-md  transition-colors duration-250 ${
+    selectedButton === 'bookings' ? 'bg-gray-500' : 'bg-slate-50 hover:bg-gray-200 hover:-gray-200'
   } w-44`} 
   onClick={() => {
     router.push('/reservations');
@@ -268,8 +268,8 @@ isMobile }) => {
   </div>
 </li>
 {/* Add this right after the Bookings button li element */}
-<li className={` group flex items-center justify-start shadow-sm mb-4 p-2 rounded-md transition-colors duration-250 ${
-  selectedButton === 'vendors' ? 'bg-gray-500' : 'bg-slate-100 hover:bg-gray-200 hover:-gray-200'
+<li className={` group flex items-center justify-start shadow-sm shadow-slate-300 mb-4 p-2 rounded-md transition-colors duration-250 ${
+  selectedButton === 'vendors' ? 'bg-gray-500' : 'bg-slate-50 hover:bg-gray-200 hover:-gray-200'
 } w-44`} 
 onClick={() => {
   router.push('/vendors');
@@ -332,7 +332,7 @@ onClick={() => {
       
           <div className="w-44 h-[1px] rounded-full bg-[#6B7280] mb-4"></div>
           <li 
-  className={` group flex items-center shadow-sm bg-slate-100 justify-start mb-2 p-2 rounded-md transition-colors duration-250 ${
+  className={` group flex items-center shadow-sm shadow-slate-300 bg-slate-50 justify-start mb-2 p-2 rounded-md transition-colors duration-250 ${
     selectedButton === 'inbox' ? 'bg-gray-500' : ' hover:bg-gray-200 hover:-gray-200'
   } w-44`} 
   onClick={() => {
@@ -357,7 +357,7 @@ onClick={() => {
 </div>
     </div>
 </li>
-<li className={` group flex items-center justify-start bg-slate-100 shadow-sm mb-2 p-2 rounded-md transition-colors duration-250 ${
+<li className={` group flex items-center justify-start bg-slate-50 shadow-sm shadow-slate-300 mb-2 p-2 rounded-md transition-colors duration-250 ${
   selectedButton === 'notifications' ? 'bg-gray-500' : 'hover:bg-gray-200 hover:-gray-200'
 } w-44`} 
 onClick={() => {

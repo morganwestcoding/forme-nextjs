@@ -34,15 +34,15 @@ const NewsfeedFilter: React.FC<NewsfeedFilterProps> = ({
     <input
       type="text"
       placeholder="Search"
-      className="w-full text-[#6B7280] placeholder:text-[#6B7280] rounded-md p-3 pl-12 bg-slate-200 text-sm shadow-sm"
+      className="w-full text-[#6B7280] placeholder:text-[#6B7280] rounded-lg p-3 pl-12 bg-slate-50 shadow-slate-300 text-sm shadow-sm"
     />
   </div>
 </div>
       {/* Filter Buttons */}
       <ul className="flex flex-row space-x-2">
         <li 
-          className={`group flex items-center shadow-sm justify-center p-3 rounded-md transition-colors duration-250 cursor-pointer ${
-            selectedFilter === 'following' ? 'bg-gray-500' : 'bg-slate-100 hover:bg-gray-200'
+          className={`group flex items-center shadow-sm  justify-center p-3 rounded-md shadow-slate-300 transition-colors duration-250 cursor-pointer ${
+            selectedFilter === 'following' ? 'bg-gray-500' : 'bg-slate-50 hover:bg-gray-200'
           } flex-1`}
           onClick={() => handleFilterClick('following')}
         >
@@ -52,8 +52,8 @@ const NewsfeedFilter: React.FC<NewsfeedFilterProps> = ({
         </li>
 
         <li 
-          className={`group flex items-center shadow-sm justify-center p-3 rounded-md transition-colors duration-250 cursor-pointer ${
-            selectedFilter === 'for-you' ? 'bg-gray-500' : 'bg-slate-100 hover:bg-gray-200'
+          className={`group flex items-center shadow-sm shadow-slate-300 justify-center p-3 rounded-md transition-colors duration-250 cursor-pointer ${
+            selectedFilter === 'for-you' ? 'bg-gray-500' : 'bg-slate-50 hover:bg-gray-200'
           } flex-1`}
           onClick={() => handleFilterClick('for-you')}
         >
@@ -63,8 +63,8 @@ const NewsfeedFilter: React.FC<NewsfeedFilterProps> = ({
         </li>
 
         <li 
-          className={`group flex items-center shadow-sm justify-center p-3 rounded-md transition-colors duration-250 cursor-pointer ${
-            selectedFilter === 'likes' ? 'bg-gray-500' : 'bg-slate-100 hover:bg-gray-200'
+          className={`group flex items-center shadow-sm shadow-slate-300 justify-center p-3 rounded-md transition-colors duration-250 cursor-pointer ${
+            selectedFilter === 'likes' ? 'bg-gray-500' : 'bg-slate-50 hover:bg-gray-200'
           } flex-1`}
           onClick={() => handleFilterClick('likes')}
         >
@@ -74,8 +74,8 @@ const NewsfeedFilter: React.FC<NewsfeedFilterProps> = ({
         </li>
 
         <li 
-          className={`group flex items-center justify-center p-2 rounded-md transition-colors duration-250 cursor-pointer ${
-            selectedFilter === 'bookmarks' ? 'bg-gray-500' : 'bg-slate-100 hover:bg-gray-200'
+          className={`group flex items-center shadow-slate-300 shadow-sm justify-center p-2 rounded-md transition-colors duration-250 cursor-pointer ${
+            selectedFilter === 'bookmarks' ? 'bg-gray-500' : 'bg-slate-50 hover:bg-gray-200'
           } flex-1`}
           onClick={() => handleFilterClick('bookmarks')}
         >

@@ -76,7 +76,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
         <div className="flex justify-between items-start bg-white shadow-sm rounded-lg pt-6 pb-5 px-6 mb-5">
           {/* Left Column */}
           <div className="flex flex-col items-start flex-1">
-          <div className={`px-3 py-2 ${categoryColor} rounded-sm flex items-center justify-center w-fit mb-2`} title={category}>
+          <div className={`px-3 py-2 ${categoryColor} rounded-sm shadow-sm shadow-slate-300 flex items-center justify-center w-fit mb-2`} title={category}>
   <span className="text-white text-xs capitalize">
     {category}  
   </span>
@@ -95,14 +95,14 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
             <div className="flex items-start">
               <div className="flex items-center gap-2">
                 {/* Heart Button */}
-                <div className="flex items-center justify-center rounded-full p-3  cursor-pointer shadow-sm border ">
+                <div className="flex items-center justify-center rounded-full p-3  cursor-pointer shadow-sm bg-slate-50 shadow-slate-300 ">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="19" height="19" color="#6B7280" fill="#ffffff">
                     <path d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                   </svg>
                 </div>
                 
                 {/* Close/X Button */}
-                <div className="flex items-center justify-center rounded-full p-3  cursor-pointer shadow-sm border ">
+                <div className="flex items-center justify-center rounded-full p-3  cursor-pointer shadow-sm bg-slate-50 shadow-slate-300 ">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="19" height="19" color="#6B7280" fill="#ffffff">
                     <path d="M18 7C18.7745 7.16058 19.3588 7.42859 19.8284 7.87589C21 8.99181 21 10.7879 21 14.38C21 17.9721 21 19.7681 19.8284 20.8841C18.6569 22 16.7712 22 13 22H11C7.22876 22 5.34315 22 4.17157 20.8841C3 19.7681 3 17.9721 3 14.38C3 10.7879 3 8.99181 4.17157 7.87589C4.64118 7.42859 5.2255 7.16058 6 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                     <path d="M12.0253 2.00052L12 14M12.0253 2.00052C11.8627 1.99379 11.6991 2.05191 11.5533 2.17492C10.6469 2.94006 9 4.92886 9 4.92886M12.0253 2.00052C12.1711 2.00657 12.3162 2.06476 12.4468 2.17508C13.3531 2.94037 15 4.92886 15 4.92886" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -110,7 +110,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
                 </div>
 
                 {/* Third Button */}
-                <div className="flex items-center border justify-center  rounded-full p-3 cursor-pointer shadow-sm  ">
+                <div className="flex items-center justify-center  rounded-full p-3 cursor-pointer  shadow-sm bg-slate-50 shadow-slate-300  ">
                   <svg 
                     xmlns="http://www.w3.org/2000/svg" 
                     viewBox="0 0 24 24" 
@@ -127,7 +127,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
 
                   </svg>
                 </div>
-                <div className="flex items-center justify-center rounded-full  p-3 cursor-pointer shadow-sm border">
+                <div className="flex items-center justify-center rounded-full  p-3 cursor-pointer  shadow-sm bg-slate-50 shadow-slate-300">
                   <svg 
                     xmlns="http://www.w3.org/2000/svg" 
                     viewBox="0 0 24 24" 
@@ -147,7 +147,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
 {/* Right Column - Rating Stats */}
 <div className="flex flex-col items-start w-96 gap-4">
   {/* Top Rating Section */}
-  <div className="flex items-center gap-8 w-full pt-5 px-5 shadow-sm bg-slate-100 rounded-lg pb-4">
+  <div className="flex items-center gap-8 w-full pt-5 px-5 shadow-sm bg-slate-50 shadow-slate-300 rounded-md pb-4">
     {/* Average Rating */}
     <div className="flex flex-col items-center">
       <span className="text-4xl font-light text-gray-700">4.8</span>

@@ -23,7 +23,7 @@ const ContentInput: React.FC<ContentInputProps> = ({
     return (
         <div className="flex flex-col w-full">
             <textarea
-                className="ml-3  placeholder:text-[#6B7280] text-sm py-2 px-3 rounded-lg flex-1 min-h-[50px] drop-shadow-sm mb-2"
+                className="ml-3  placeholder:text-[#6B7280] text-sm py-2 px-3 rounded-md flex-1 min-h-[50px] shadow-sm mb-2"
                 placeholder={`${currentUser ? currentUser.name : 'User'}, what's on your mind?`}
                 value={content}
                 onChange={handleInputChange}

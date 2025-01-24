@@ -60,8 +60,9 @@ const InputField: React.FC<InputFieldProps> = ({
           w-full
           h-10 
           shadow-sm
+          shadow-slate-300
           text-sm 
-          rounded-sm
+          rounded-md
           block 
           py-6 
           
@@ -72,7 +73,7 @@ const InputField: React.FC<InputFieldProps> = ({
           duration-250
           ${isSelected 
             ? 'bg-[#5E6365] text-white border-[#5E6365]' 
-            : 'bg-slate-100  border-[#e2e8f0] hover:bg-[#e2e8f0]'
+            : 'bg-slate-50  hover:bg-[#e2e8f0]'
           }
           ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
           ${showHoverEffect ? 'hover:placeholder-white' : ''}

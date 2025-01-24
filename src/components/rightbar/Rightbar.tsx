@@ -63,11 +63,12 @@ export default function Rightbar() {
               onClick={() => router.push('/articles')}
             >
               <div 
-                className="w-full h-32 bg-gray-300 rounded-lg mb-3" 
+                className="w-full h-32 shadow-sm shadow-slate-300 rounded-lg mb-3" 
                 style={{ 
                   backgroundImage: `url(${article.imageSrc})`, 
                   backgroundSize: 'cover', 
                   backgroundPosition: 'center' 
+                  
                 }}
               />
               <div className="flex flex-col">
