@@ -39,51 +39,51 @@ const NewsfeedFilter: React.FC<NewsfeedFilterProps> = ({
   </div>
 </div>
       {/* Filter Buttons */}
-      <ul className="flex flex-row space-x-2">
-        <li 
-          className={`group flex items-center shadow-sm  justify-center p-3 rounded-md shadow-slate-300 transition-colors duration-250 cursor-pointer ${
-            selectedFilter === 'following' ? 'bg-gray-500' : 'bg-slate-50 hover:bg-gray-200'
-          } flex-1`}
-          onClick={() => handleFilterClick('following')}
-        >
-          <span className={`text-[0.8rem] ${
-            selectedFilter === 'following' ? 'text-white' : 'text-[#6B7280] group-hover:text-white'
-          }`}>Following</span>
-        </li>
+      <ul className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+  <li 
+    className={`group flex items-center shadow-sm justify-center p-3 rounded-md shadow-slate-300 transition-colors duration-250 cursor-pointer ${
+      selectedFilter === 'following' ? 'bg-gray-500' : 'bg-slate-50 hover:bg-gray-200'
+    } md:flex-1`}
+    onClick={() => handleFilterClick('following')}
+  >
+    <span className={`text-[0.8rem] ${
+      selectedFilter === 'following' ? 'text-white' : 'text-[#6B7280] group-hover:text-white'
+    }`}>Following</span>
+  </li>
 
-        <li 
-          className={`group flex items-center shadow-sm shadow-slate-300 justify-center p-3 rounded-md transition-colors duration-250 cursor-pointer ${
-            selectedFilter === 'for-you' ? 'bg-gray-500' : 'bg-slate-50 hover:bg-gray-200'
-          } flex-1`}
-          onClick={() => handleFilterClick('for-you')}
-        >
-          <span className={`text-[0.8rem]  ${
-            selectedFilter === 'for-you' ? 'text-white' : 'text-[#6B7280] group-hover:text-white'
-          }`}>For You</span>
-        </li>
+  <li 
+    className={`group flex items-center shadow-sm shadow-slate-300 justify-center p-3 rounded-md transition-colors duration-250 cursor-pointer ${
+      selectedFilter === 'for-you' ? 'bg-gray-500' : 'bg-slate-50 hover:bg-gray-200'
+    } md:flex-1`}
+    onClick={() => handleFilterClick('for-you')}
+  >
+    <span className={`text-[0.8rem] ${
+      selectedFilter === 'for-you' ? 'text-white' : 'text-[#6B7280] group-hover:text-white'
+    }`}>For You</span>
+  </li>
 
-        <li 
-          className={`group flex items-center shadow-sm shadow-slate-300 justify-center p-3 rounded-md transition-colors duration-250 cursor-pointer ${
-            selectedFilter === 'likes' ? 'bg-gray-500' : 'bg-slate-50 hover:bg-gray-200'
-          } flex-1`}
-          onClick={() => handleFilterClick('likes')}
-        >
-          <span className={`text-[0.8rem] ${
-            selectedFilter === 'likes' ? 'text-white' : 'text-[#6B7280] group-hover:text-white'
-          }`}>Likes</span>
-        </li>
+  <li 
+    className={`group flex items-center shadow-sm shadow-slate-300 justify-center p-3 rounded-md transition-colors duration-250 cursor-pointer ${
+      selectedFilter === 'likes' ? 'bg-gray-500' : 'bg-slate-50 hover:bg-gray-200'
+    } md:flex-1`}
+    onClick={() => handleFilterClick('likes')}
+  >
+    <span className={`text-[0.8rem] ${
+      selectedFilter === 'likes' ? 'text-white' : 'text-[#6B7280] group-hover:text-white'
+    }`}>Likes</span>
+  </li>
 
-        <li 
-          className={`group flex items-center shadow-slate-300 shadow-sm justify-center p-2 rounded-md transition-colors duration-250 cursor-pointer ${
-            selectedFilter === 'bookmarks' ? 'bg-gray-500' : 'bg-slate-50 hover:bg-gray-200'
-          } flex-1`}
-          onClick={() => handleFilterClick('bookmarks')}
-        >
-          <span className={`text-[0.8rem]  ${
-            selectedFilter === 'bookmarks' ? 'text-white' : 'text-[#6B7280] group-hover:text-white'
-          }`}>Bookmarks</span>
-        </li>
-      </ul>
+  <li 
+    className={`group flex items-center shadow-slate-300 shadow-sm justify-center p-3 rounded-md transition-colors duration-250 cursor-pointer ${
+      selectedFilter === 'bookmarks' ? 'bg-gray-500' : 'bg-slate-50 hover:bg-gray-200'
+    } md:flex-1`}
+    onClick={() => handleFilterClick('bookmarks')}
+  >
+    <span className={`text-[0.8rem] ${
+      selectedFilter === 'bookmarks' ? 'text-white' : 'text-[#6B7280] group-hover:text-white'
+    }`}>Bookmarks</span>
+  </li>
+</ul>
     </div>
   );
 };
