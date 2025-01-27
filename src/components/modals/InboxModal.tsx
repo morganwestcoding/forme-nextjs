@@ -14,17 +14,9 @@ import getCurrentUser from '@/app/actions/getCurrentUser';
 
 const InboxModal = () => {
   const [conversations, setConversations] = useState<SafeConversation[]>([]);
-  const [currentUser, setCurrentUser] = useState<SafeUser | null>(null);
   const messageModal = useMessageModal();
   const inboxModal = useInboxModal();
-
-  useEffect(() => {
-    const loadUser = async () => {
-      const user = await getCurrentUser();
-      setCurrentUser(user);
-    };
-    loadUser();
-  }, []);
+  const currentUser = inboxModal.currentUser;
 
   useEffect(() => {
     if (inboxModal.isOpen && currentUser) {
@@ -35,6 +27,7 @@ const InboxModal = () => {
   const fetchConversations = async () => {
     try {
       const response = await axios.get('/api/conversations');
+      console.log('Conversations response:', response.data); // Add this for debugging
       setConversations(response.data);
     } catch (error) {
       console.error('Error fetching conversations:', error);
