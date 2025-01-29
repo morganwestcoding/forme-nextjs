@@ -49,8 +49,8 @@ const Search: React.FC<SearchProps> = ({ onResultClick }) => {
 
   return (
     <div className="flex-grow relative">
-      <div className="ml-1 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="19" height="19" color="#6B7280" fill="none">
+      <div className="ml-1 absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-500">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="19" height="19" color="#71717A" fill="none">
           <path d="M14 14L16.5 16.5" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
           <path d="M16.4333 18.5252C15.8556 17.9475 15.8556 17.0109 16.4333 16.4333C17.0109 15.8556 17.9475 15.8556 18.5252 16.4333L21.5667 19.4748C22.1444 20.0525 22.1444 20.9891 21.5667 21.5667C20.9891 22.1444 20.0525 22.1444 19.4748 21.5667L16.4333 18.5252Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
           <path d="M16 9C16 5.13401 12.866 2 9 2C5.13401 2 2 5.13401 2 9C2 12.866 5.13401 16 9 16C12.866 16 16 12.866 16 9Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" fill='#ffffff' />
@@ -63,7 +63,7 @@ const Search: React.FC<SearchProps> = ({ onResultClick }) => {
         onChange={handleInputChange}
         onFocus={() => setIsSearchFocused(true)}
         onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
-        className="w-full text-[#6B7280] placeholder:text-[#6B7280] border bg-transparent bg-slate-100 border-[#6B7280] rounded-lg p-3 pl-12 text-sm shadow-sm"
+        className="w-full text-[#71717A] placeholder:text-[#71717A] border  bg-slate-50 border-[#71717A] rounded-lg p-3 pl-12 text-sm shadow-sm"
       />
       {searchResults.length > 0 && (
         <div className="absolute z-10 w-full mt-1 rounded-lg shadow-sm-lg bg-white bg-opacity-90 backdrop-blur-md border-none overflow-hidden">

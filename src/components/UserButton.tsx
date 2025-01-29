@@ -41,10 +41,10 @@ const UserButton: React.FC<UserButtonProps> = ({
     className="rounded-sm"
   />
 <div className="ml-3 flex flex-col items-start">
-  <span className="text-[#484848] text-xs font-medium -ml-[0.5px]">
+  <span className="text-black text-xs font-medium -ml-[0.5px]">
     {currentUser?.name?.split(' ')[0]}
   </span>
-  <span className="text-[#6B7280] text-xs">Premium</span>
+  <span className="text-[#71717A] text-xs">Premium</span>
 </div>
   <div className="ml-auto">
     <svg 
@@ -57,7 +57,7 @@ const UserButton: React.FC<UserButtonProps> = ({
       strokeWidth="2" 
       strokeLinecap="round" 
       strokeLinejoin="round" 
-      className="text-[#6B7280]"
+      className="text-[#71717A]"
     >
 
     <path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />

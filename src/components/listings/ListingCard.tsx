@@ -243,13 +243,12 @@ const ListingCard: React.FC<ListingCardProps> = ({
     
   {/* Service and Reserve Button Container */}
 <div className="flex justify-between items-center px-6 pb-2 gap 1.5">
-  <div className="flex flex-1 rounded-md p-3 bg-slate-100 shadow-sm">
     {data.services && data.services.length > 0 && (
       <div className="flex w-full">
         {/* Service Section */}
-        <div className="inline-flex items-center py-3 flex-1 w-36 rounded-md bg-white shadow-slate-300 shadow-sm ">
+        <div className="inline-flex items-center py-3 flex-1 w-36 rounded-md bg-slate-100 shadow-sm ">
           <div className="w-full flex justify-center gap-1.5">
-            <span className="text-xs text-black">
+            <span className="text-xs text-neutral-500">
               {data.services[currentServiceIndex].serviceName}
             </span>
             <span className="text-xs font-medium text-black">
@@ -277,13 +276,13 @@ const ListingCard: React.FC<ListingCardProps> = ({
             e.stopPropagation();
             router.push(`/listings/${data.id}`);
           }}
-          className="bg-gray-600 font-light ml-2 shadow-sm text-[#ffffff] text-[0.8rem] px-6 py-3   rounded-md transition hover:opacity-80"
+          className="bg-slate-500 font-light ml-2 shadow-sm text-[#ffffff] text-[0.8rem] px-6 py-3   rounded-md transition hover:opacity-80"
         >
           Reserve
         </button>
       </div>
     )}
-  </div>
+
 </div>
      
 
