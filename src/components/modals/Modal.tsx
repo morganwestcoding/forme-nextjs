@@ -103,13 +103,13 @@ const Modal: React.FC<ModalProps> = ({
                 lg:h-auto 
                 md:h-auto 
                 border-0 
-                rounded-2xl 
+                rounded-lg 
                 relative 
                 flex 
                 flex-col 
                 w-full 
-                bg-black 
-                bg-opacity-55 
+                bg-white
+              
                 backdrop-blur-md 
                 outline-none 
                 focus:outline-none
@@ -121,15 +121,15 @@ const Modal: React.FC<ModalProps> = ({
                   className="p-1 border-0 hover:opacity-70 transition absolute right-9" 
                   onClick={handleClose}
                 >
-                  <X size={18} className="text-white"/>
+                  <X size={18} className="text-black"/>
                 </div>
-                <div className="text-lg text-white font-medium">
+                <div className="text-lg text-black font-medium">
                   {title}
                 </div>
               </div>
               <div id={`${modalContentId}-wrapper`} className="flex flex-col flex-1">
                 <div id={modalContentId} className="flex flex-col flex-1">
-                  <div className="relative p-6 text-white flex-auto">
+                  <div className="relative p-6 text-black flex-auto">
                     {body}
                   </div>
                 </div>

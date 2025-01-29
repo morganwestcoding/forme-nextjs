@@ -4,6 +4,7 @@ import { useState } from "react";
 import useSubscribeModal from "@/app/hooks/useSubscribeModal";
 import MorphingText from "./MorphingText";
 import RotatingText from "./RotatingText";
+import Search from "../header/Search";
 
 const articles = [
   {
@@ -43,14 +44,8 @@ export default function Rightbar() {
 
   return (
     <div className="hidden md:flex flex-col justify-end bg-transparent gap-3 h-auto mt-8">
-<div 
-  className="w-full rounded-lg overflow-hidden cursor-pointer relative"
-  onClick={() => subscribeModal.onOpen()}
->
-  <div className="relative h-32 bg-white flex items-center justify-center">
-  <RotatingText />
-  </div>
-</div>
+      <Search/>
+
 
 <div className="w-full flex flex-col justify-start pt-2 p-0 mx-0 overflow-hidden pb-5">
         <div className="pb-4 text-lg font-bold">What&apos;s Happening</div>
@@ -84,6 +79,14 @@ export default function Rightbar() {
           ))}
         </div>
       </div>
+      <div 
+  className="w-full rounded-lg overflow-hidden cursor-pointer relative"
+  onClick={() => subscribeModal.onOpen()}
+>
+  <div className="relative h-32 bg-white flex items-center justify-center">
+  <RotatingText />
+  </div>
+</div>
     </div>
   );
 }

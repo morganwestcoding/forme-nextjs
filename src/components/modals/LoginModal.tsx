@@ -95,9 +95,10 @@ const LoginModal = () => {
         className="
           text-center
           text-sm
-          text-neutral-500
+          text-neutral-400
           cursor-pointer
           hover:underline
+          -mb-4
         "
         onClick={onForgotPassword}
       >
@@ -115,17 +116,18 @@ const LoginModal = () => {
           flex-row 
           justify-center 
           gap-2
-          text-neutral-500
+          text-black
           text-center 
-          mt-4 
+     
           font-light
+          text-sm
         "
       >
         <div>First time using ForMe?</div>
         <div 
           onClick={onToggle} 
           className="
-            text-neutral-800 
+            text-neutral-500 
             cursor-pointer 
             hover:underline
           "

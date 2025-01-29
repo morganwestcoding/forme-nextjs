@@ -35,7 +35,7 @@ const UserButton: React.FC<UserButtonProps> = ({
 
   return (      
     <DropdownMenu>   
-<DropdownMenuTrigger className="w-44 flex items-center justify-center p-2 mb-2 cursor-pointer rounded-sm  hover:bg-[#DFE2E2] transition-colors duration-250 outline-none">
+<DropdownMenuTrigger className="w-44 flex items-center justify-center p-2 bg-slate-100 mb-2 cursor-pointer rounded-md  hover:bg-[#DFE2E2] transition-colors duration-250 outline-none">
   <Avatar 
     src={currentUser?.image ?? undefined} 
     className="rounded-sm"
@@ -59,7 +59,8 @@ const UserButton: React.FC<UserButtonProps> = ({
       strokeLinejoin="round" 
       className="text-[#6B7280]"
     >
-      <path d="M6 9l6 6 6-6"/>
+
+    <path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
     </svg>
   </div>
 </DropdownMenuTrigger>

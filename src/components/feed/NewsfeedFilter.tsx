@@ -1,43 +1,33 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { SafeUser, SafeListing } from '@/app/types';
-
-type SearchResult = SafeUser | SafeListing;
 
 interface NewsfeedFilterProps {
   onFilterChange?: (filter: string) => void;
 }
 
-const NewsfeedFilter: React.FC<NewsfeedFilterProps> = ({
-  onFilterChange
-}) => {
+const NewsfeedFilter: React.FC<NewsfeedFilterProps> = ({ onFilterChange }) => {
   const router = useRouter();
   const [selectedFilter, setSelectedFilter] = useState('for-you');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
-  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [indicatorStyle, setIndicatorStyle] = useState({ width: 0, left: 0 });
+  const buttonRefs = useRef<(HTMLLIElement | null)[]>([]);
 
   useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
-      if (searchTerm) {
-        fetchSearchResults();
-      } else {
-        setSearchResults([]);
-      }
-    }, 300);
+    updateIndicatorPosition();
+  }, [selectedFilter]);
 
-    return () => clearTimeout(delayDebounceFn);
-  }, [searchTerm]);
+  const updateIndicatorPosition = () => {
+    const activeButton = buttonRefs.current.find(
+      (ref) => ref?.getAttribute('data-filter') === selectedFilter
+    );
 
-  const fetchSearchResults = async () => {
-    try {
-      const response = await axios.get<SearchResult[]>(`/api/search?term=${searchTerm}`);
-      setSearchResults(response.data);
-    } catch (error) {
-      console.error('Error fetching search results:', error);
+    if (activeButton) {
+      const { offsetLeft, offsetWidth } = activeButton;
+      setIndicatorStyle({
+        width: offsetWidth,
+        left: offsetLeft,
+      });
     }
   };
 
@@ -48,129 +38,37 @@ const NewsfeedFilter: React.FC<NewsfeedFilterProps> = ({
     }
   };
 
-  const isUser = (result: SearchResult): result is SafeUser => {
-    return 'email' in result;
-  };
-
   return (
-    <div className="bg-white rounded-lg p-6 mb-4 shadow-sm">
-      {/* Search and Filter Row */}
-      <div className="flex items-center gap-3 mb-4">
-        <div className="flex-grow relative">
-          <div className="ml-1 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="19" height="19" color="#6B7280" fill="none">
-              <path d="M14 14L16.5 16.5" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-              <path d="M16.4333 18.5252C15.8556 17.9475 15.8556 17.0109 16.4333 16.4333C17.0109 15.8556 17.9475 15.8556 18.5252 16.4333L21.5667 19.4748C22.1444 20.0525 22.1444 20.9891 21.5667 21.5667C20.9891 22.1444 20.0525 22.1444 19.4748 21.5667L16.4333 18.5252Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              <path d="M16 9C16 5.13401 12.866 2 9 2C5.13401 2 2 5.13401 2 9C2 12.866 5.13401 16 9 16C12.866 16 16 12.866 16 9Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-            </svg>
-          </div>
-            <input
-              type="text"
-              placeholder="Search"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              onFocus={() => setIsSearchFocused(true)}
-              onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
-              className="w-full text-[#6B7280] placeholder:text-[#6B7280] rounded-lg p-3 pl-12 bg-slate-50 shadow-slate-300 text-sm shadow-sm"
-            />
-            {searchResults.length > 0 && (
-              <div className="absolute z-10 w-full mt-1 rounded-lg shadow-sm-lg bg-white bg-opacity-90 backdrop-blur-md border-none overflow-hidden">
-                <div className="max-h-96 overflow-y-auto">
-                  {searchResults.map((result, index) => (
-                    <div 
-                      key={result.id} 
-                      className={`
-                        p-4 
-                        hover:bg-gray-500 
-                        hover:bg-opacity-25 
-                        cursor-pointer 
-                        ${index !== searchResults.length - 1 ? 'border-b border-gray-500 border-opacity-25' : ''}
-                        ${index === 0 ? 'rounded-t-lg' : ''}
-                        ${index === searchResults.length - 1 ? 'rounded-b-lg' : ''}
-                        transition
-                        duration-200
-                      `}
-                      onClick={() => {
-                        setSearchTerm('');
-                        setSearchResults([]);
-                        router.push(`/search?q=${encodeURIComponent(result.id)}`);
-                      }}
-                    >
-                      {isUser(result) ? (
-                        <div className="flex items-center">
-                          {result.image && (
-                            <img src={result.image} alt={result.name || 'User'} className="w-8 h-8 rounded-full mr-2" />
-                          )}
-                          <div>
-                            <div className="font-semibold text-black">{result.name}</div>
-                            <div className="text-sm text-gray-600">{result.email}</div>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="flex items-center">
-                          {result.imageSrc && (
-                            <img src={result.imageSrc} alt={result.title} className="w-8 h-8 object-cover rounded-md mr-2" />
-                          )}
-                          <div>
-                            <div className="font-semibold text-black">{result.title}</div>
-                            <div className="text-sm text-gray-600">{result.category}</div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-  
-        </div>
-      </div>
-      {/* Filter Buttons */}
-      <ul className="grid grid-cols-2 lg:grid-cols-4 gap-2">
-  <li 
-    className={`group flex items-center shadow-sm justify-center p-3 rounded-md shadow-slate-300 transition-colors duration-250 cursor-pointer ${
-      selectedFilter === 'following' ? 'bg-gray-500' : 'bg-slate-50 hover:bg-gray-200'
-    } md:flex-1`}
-    onClick={() => handleFilterClick('following')}
-  >
-    <span className={`text-[0.8rem] ${
-      selectedFilter === 'following' ? 'text-white' : 'text-[#6B7280] group-hover:text-white'
-    }`}>Following</span>
-  </li>
-
-  <li 
-    className={`group flex items-center shadow-sm shadow-slate-300 justify-center p-3 rounded-md transition-colors duration-250 cursor-pointer ${
-      selectedFilter === 'for-you' ? 'bg-gray-500' : 'bg-slate-50 hover:bg-gray-200'
-    } md:flex-1`}
-    onClick={() => handleFilterClick('for-you')}
-  >
-    <span className={`text-[0.8rem] ${
-      selectedFilter === 'for-you' ? 'text-white' : 'text-[#6B7280] group-hover:text-white'
-    }`}>For You</span>
-  </li>
-
-  <li 
-    className={`group flex items-center shadow-sm shadow-slate-300 justify-center p-3 rounded-md transition-colors duration-250 cursor-pointer ${
-      selectedFilter === 'likes' ? 'bg-gray-500' : 'bg-slate-50 hover:bg-gray-200'
-    } md:flex-1`}
-    onClick={() => handleFilterClick('likes')}
-  >
-    <span className={`text-[0.8rem] ${
-      selectedFilter === 'likes' ? 'text-white' : 'text-[#6B7280] group-hover:text-white'
-    }`}>Likes</span>
-  </li>
-
-  <li 
-    className={`group flex items-center shadow-slate-300 shadow-sm justify-center p-3 rounded-md transition-colors duration-250 cursor-pointer ${
-      selectedFilter === 'bookmarks' ? 'bg-gray-500' : 'bg-slate-50 hover:bg-gray-200'
-    } md:flex-1`}
-    onClick={() => handleFilterClick('bookmarks')}
-  >
-    <span className={`text-[0.8rem] ${
-      selectedFilter === 'bookmarks' ? 'text-white' : 'text-[#6B7280] group-hover:text-white'
-    }`}>Bookmarks</span>
-  </li>
-</ul>
+    <div className="relative bg-slate-500 w-full rounded-md px-4">
+      <ul className="flex items-center justify-between w-full relative">
+        {['Following', 'For You', 'Likes', 'Bookmarks'].map((filter, index) => (
+          <li
+            key={filter.toLowerCase().replace(' ', '-')}
+            ref={(el) => (buttonRefs.current[index] = el)}
+            data-filter={filter.toLowerCase().replace(' ', '-')}
+            className={`
+              flex-1 text-center py-4 cursor-pointer select-none
+              transition-colors duration-200 ease-in-out
+              ${selectedFilter === filter.toLowerCase().replace(' ', '-')
+                ? 'text-white'
+                : 'text-gray-400 hover:text-gray-200'
+              }
+            `}
+            onClick={() => handleFilterClick(filter.toLowerCase().replace(' ', '-'))}
+          >
+            <span className="text-[0.8rem] whitespace-nowrap">{filter}</span>
+          </li>
+        ))}
+        
+        {/* Animated Indicator */}
+        <div
+          className="absolute bottom-0 h-[3.5px] bg-[#78C3FB] rounded-t-sm transition-all duration-300 ease-in-out"
+          style={{
+            width: `${indicatorStyle.width}px`,
+            left: `${indicatorStyle.left}px`,
+          }}
+        />
+      </ul>
     </div>
   );
 };

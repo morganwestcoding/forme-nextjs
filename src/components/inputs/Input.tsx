@@ -90,8 +90,8 @@ const Input: React.FC<InputProps> = ({
           p-4
           pt-6 
           font-light
-          border-white 
-          bg-transparent
+          border-neutral-500
+          bg-slate-100
           border
           rounded-md
           outline-none
