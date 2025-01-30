@@ -5,23 +5,33 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 interface LogoProps {
-  isMobile?: boolean;
+  variant?: 'horizontal' | 'vertical';
 }
 
-const Logo = ({ isMobile }: LogoProps) => {
+const Logo = ({ variant = 'horizontal' }: LogoProps) => {
   const router = useRouter();
 
   return (
     <Link href="/" prefetch={false} className='overflow-hidden'>
-      <Image
-        alt="ForMe Logo"
-        className={isMobile ? 'block w-6 h-9' : 'hidden md:block mb-6 mt-1'}
-        height={isMobile ? "20" : "28"}
-        width={isMobile ? "20" : "28"}
-        src="/logos/black.png"
-      />
+      {variant === 'horizontal' ? (
+        <Image
+          alt="ForMe Logo"
+          className="h-6 w-20" 
+          height={32}
+          width={140}
+          src="/logos/forme-long.png"
+        />
+      ) : (
+        <Image
+          alt="ForMe Logo"
+          className="block w-7 h-11 mb-7" 
+          height={36}
+          width={24}
+          src="/logos/black.png"
+        />
+      )}
     </Link>
   )
 }
 
-export default Logo
+export default Logo;

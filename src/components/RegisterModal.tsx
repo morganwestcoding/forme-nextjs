@@ -19,13 +19,15 @@ import Modal from "./modals/Modal";
 import Input from "./inputs/Input";
 import Heading from "./Heading";
 import ProfileLocationInput from "./inputs/ProfileLocationInput";
+import Logo from "./header/Logo";
 
 enum STEPS {
   ACCOUNT = 0,
   LOCATION = 1,
   BIOGRAPHY = 2,
-  SUBSCRIPTION = 4,
-  IMAGES = 5,
+  IMAGES = 3,
+  SUBSCRIPTION = 4
+
 }
 
 const RegisterModal= () => {
@@ -79,7 +81,7 @@ const RegisterModal= () => {
   };
 
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
-    if (step !== STEPS.IMAGES) {
+    if (step !== STEPS.SUBSCRIPTION) {
       return onNext();
     }
      
@@ -155,20 +157,7 @@ const RegisterModal= () => {
     );
   }
 
-  if (step === STEPS.SUBSCRIPTION) {
-    bodyContent = (
-      <div className="flex flex-col pb-3">
-        <Heading
-          title="Choose your subscription"
-          subtitle="Select the plan that best fits your needs"
-        />
-        <SubscriptionInput
-          onChange={(value) => setCustomValue('subscription', value)}
-          value={watch('subscription')}
-        />
-      </div>
-    )
-  }
+
 
   if (step === STEPS.BIOGRAPHY) {
     bodyContent = (
@@ -193,17 +182,50 @@ const RegisterModal= () => {
     bodyContent = (
       <div className="flex flex-col gap-8">
         <Heading
-          title="Add a photo of your place"
-          subtitle="Show guests what your place looks like!"
+          title="Add your profile images"
+          subtitle="Make your profile stand out!"
         />
-        <ImageUpload
-          onChange={(value) => setCustomValue('image', value)}
-          value={image}
-    />
-    <ImageUpload
-          onChange={(value) => setCustomValue('imageSrc', value)}
-          value={imageSrc}
-    />
+        <div className="grid grid-cols-2">
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-full flex flex-col items-center">
+              <ImageUpload
+                onChange={(value) => setCustomValue('image', value)}
+                value={image}
+                className="rounded-full bg-slate-50 w-32 h-32 overflow-hidden"
+              />
+              <label className="mt-4 text-neutral-500 text-sm font-light">
+                Profile Picture
+              </label>
+            </div>
+          </div>
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-full flex flex-col items-center">
+              <ImageUpload
+                onChange={(value) => setCustomValue('imageSrc', value)}
+                value={imageSrc}
+                className="rounded-lg bg-slate-50 h-32 w-56 aspect-video overflow-hidden"
+              />
+              <label className="mt-4 text-neutral-500 font-light text-sm">
+                Profile Background
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  };
+
+  if (step === STEPS.SUBSCRIPTION) {
+    bodyContent = (
+      <div className="flex flex-col">
+        <Heading
+          title="Choose your subscription"
+          subtitle="Select the plan that best fits your needs"
+        />
+        <SubscriptionInput
+          onChange={(value) => setCustomValue('subscription', value)}
+          value={watch('subscription')}
+        />
       </div>
     )
   }
@@ -240,7 +262,7 @@ const RegisterModal= () => {
     disabled={isLoading}
     isOpen={registerModal.isOpen}
     title="Register"
-    actionLabel={step === STEPS.IMAGES ? "Create" : "Continue"}
+    actionLabel={step === STEPS.SUBSCRIPTION ? "Create" : "Continue"}
     secondaryAction={step !== STEPS.ACCOUNT ? onBack : undefined}
     secondaryActionLabel={step !== STEPS.ACCOUNT ? "Back" : undefined}
     onClose={registerModal.onClose}

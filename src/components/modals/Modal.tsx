@@ -51,6 +51,7 @@ const Modal: React.FC<ModalProps> = ({
     }
   
     setShowModal(false);
+    
     setTimeout(() => {
       onClose();
     }, 300)
@@ -90,7 +91,7 @@ const Modal: React.FC<ModalProps> = ({
           z-50 
           outline-none 
           focus:outline-none 
-          bg-neutral-800/70
+          bg-neutral-800/90
     
         "
       >
@@ -110,21 +111,23 @@ const Modal: React.FC<ModalProps> = ({
                 flex-col 
                 w-full 
                 bg-white
-                pt-4
                 backdrop-blur-md 
                 outline-none 
                 focus:outline-none
               "
             >
-              <div className="flex items-center rounded-t justify-center relative">
-                <div 
-                  id="modal-close"
-                  className="p-1 border-0 hover:opacity-70 transition absolute  top-6 right-6" 
-                  onClick={handleClose}
-                >
-                  <X size={24} className="text-black"/>
-                </div>
-              </div>
+  <div className="relative w-full">
+    <button 
+      onClick={(e) => {
+        e.stopPropagation();
+        handleClose();
+      }}
+      className="absolute right-4 top-4 p-1 hover:opacity-70 transition z-10"
+    >
+      <X size={18} className="text-black" />
+    </button>
+  </div>
+
               <div id={`${modalContentId}-wrapper`} className="flex flex-col flex-1">
                 <div id={modalContentId} className="flex flex-col flex-1">
                   <div className="relative p-6 text-black flex-auto">

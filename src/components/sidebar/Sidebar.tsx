@@ -110,7 +110,7 @@ isMobile }) => {
               <div className="h-6" /> {/* Add a spacer */}
               </>
         )}
-  <Logo/>
+<Logo variant="vertical" />
   <UserButton currentUser={currentUser} data={{} as SafePost} />
 
         <div className="flex flex-col w-full">

@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface SubscriptionInputProps {
   onChange: (value: string) => void;
@@ -91,99 +92,114 @@ const SubscriptionInput: React.FC<SubscriptionInputProps> = ({
   };
 
   return (
-    <div className="w-full max-h-[50vh]">
-      <div className="grid grid-cols-2 gap-4 pt-2">
-        {subscriptionTiers.map((tier) => (
-          <div
-            key={tier.title}
-            onClick={() => handleCardClick(tier.title)}
-            className={`
-              relative cursor-pointer 
-              rounded-lg transition-all duration-300
-              ${expandedCard === tier.title ? 'col-span-2 h-[400px]' : 'h-[125px]'}
-              ${value === tier.title.toLowerCase() 
-                ? 'border-2 border-black' 
-                : 'border border-neutral-200'}
-            `}
-          >
-            <div 
-              className="absolute inset-0 rounded-lg bg-cover bg-center
-                transition-all duration-300 
-                brightness-75 saturate-120 contrast-85"
-              style={{ backgroundImage: `url(${tier.background})` }}
-            />
-            <div className="absolute inset-0 bg-black/40 rounded-lg hover:bg-black/30 transition-all duration-300" />
-            
-            {expandedCard === tier.title ? (
-              // Expanded view
-              <div className="absolute inset-0 p-6 flex flex-col text-white">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <span className="text-gray-300 text-xs uppercase tracking-wider">
-                      {tier.category}
-                    </span>
-                    <h3 className="text-white text-sm font-bold mt-2 mb-1">
-                      {tier.title}
-                    </h3>
-                    <p className="text-white/90 text-sm mb-4">
-                      {tier.price}
-                    </p>
-                  </div>
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setExpandedCard(null);
-                    }}
-                    className="text-white/80 hover:text-white"
-                  >
-                    ✕
-                  </button>
-                </div>
-                
-                <p className="text-white/90 text-sm mb-6">
-                  {tier.fullDescription}
-                </p>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <ul className="text-white/80 text-sm space-y-2">
-                    <h4 className="font-semibold text-white mb-2">Features:</h4>
-                    {tier.features.map((feature, index) => (
-                      <li key={index} className="flex items-center">
-                        <span className="mr-2">✓</span>
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-                  
-                  <div className="flex flex-col justify-end">
+    <div className="w-full max-h-[55vh] overflow-y-auto -mb-4 mt-2">
+      <div className="grid grid-cols-2 gap-3 relative">
+        <AnimatePresence>
+          {subscriptionTiers.map((tier) => (
+            <motion.div
+              key={tier.title}
+              layout
+              initial={{ opacity: 1, scale: 1 }}
+              animate={{
+                opacity: expandedCard ? (expandedCard === tier.title ? 1 : 0) : 1,
+                scale: expandedCard === tier.title ? 1 : 1,
+                gridColumn: expandedCard === tier.title ? '1 / span 2' : 'auto',
+              }}
+              exit={{ opacity: 0 }}
+              transition={{
+                opacity: { duration: 0.3 },
+                layout: { duration: 0.3 }
+              }}
+              onClick={() => handleCardClick(tier.title)}
+              style={{
+                display: expandedCard && expandedCard !== tier.title ? 'none' : 'block',
+              }}
+              className={`
+                relative cursor-pointer 
+                rounded-xl transition-all duration-300
+                ${expandedCard === tier.title ? 'h-[400px]' : 'h-[125px]'}
+                ${value === tier.title.toLowerCase() 
+                  ? '' 
+                  : ''}
+              `}
+            >
+              <div 
+                className="absolute inset-0 rounded-xl bg-cover bg-center
+                  transition-all duration-300 
+                  brightness-75 saturate-120 contrast-85"
+                style={{ backgroundImage: `url(${tier.background})` }}
+              />
+              <div className="absolute inset-0 bg-black/40 rounded-xl hover:bg-black/30 transition-all duration-300" />
+              
+              {expandedCard === tier.title ? (
+                <div className="absolute inset-0 p-6 flex flex-col text-white">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <span className="text-gray-300 text-sm uppercase tracking-wider">
+                        {tier.category}
+                      </span>
+                      <h3 className="text-white text-sm font-bold mt-2 mb-1">
+                        {tier.title}
+                      </h3>
+                      <p className="text-white/90 text-sm">
+                        {tier.price}
+                      </p>
+                    </div>
                     <button 
-                      className="bg-white text-black rounded-lg py-3 px-6 hover:bg-gray-100 transition"
                       onClick={(e) => {
                         e.stopPropagation();
-                        onChange(tier.title.toLowerCase());
+                        setExpandedCard(null);
                       }}
+                      className="text-white/80 hover:text-white"
                     >
-                      Select Plan
+                      ✕
                     </button>
                   </div>
+                  
+                  <p className="text-white/90 text-sm">
+                    {tier.fullDescription}
+                  </p>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <ul className="text-white/80 text-sm space-y-2">
+                      <h4 className="font-semibold text-white mb-2">Features:</h4>
+                      {tier.features.map((feature, index) => (
+                        <li key={index} className="flex items-center">
+                          <span className="mr-2">✓</span>
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
+                    
+                    <div className="flex flex-col justify-end">
+                      <button 
+                        className="bg-white text-black rounded-lg py-3 px-6 hover:bg-gray-100 transition"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onChange(tier.title.toLowerCase());
+                        }}
+                      >
+                        Select Plan
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ) : (
-              // Collapsed view - simplified
-              <div className="absolute inset-0 p-6 flex flex-col items-center justify-center text-center">
-                <span className="text-gray-300 text-sm uppercase tracking-wider">
-                  {tier.category}
-                </span>
-                <h3 className="text-white text-base font-bold mt-2 mb-1">
-                  {tier.title}
-                </h3>
-                <p className="text-white/90 text-sm">
-                  {tier.price}
-                </p>
-              </div>
-            )}
-          </div>
-        ))}
+              ) : (
+                <div className="absolute inset-0 px-6 flex flex-col items-center justify-center text-center">
+                  <span className="text-gray-300 text-sm uppercase tracking-wider">
+                    {tier.category}
+                  </span>
+                  <h3 className="text-white text-sm font-bold mt-2 mb-1">
+                    {tier.title}
+                  </h3>
+                  <p className="text-white/90 text-sm">
+                    {tier.price}
+                  </p>
+                </div>
+              )}
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
     </div>
   );
