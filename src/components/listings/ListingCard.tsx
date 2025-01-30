@@ -154,7 +154,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
   {/* Category on left */}
   <div className="absolute top-4 left-6">
     <div 
-      className={`py-2 w-20 backdrop-blur-sm bg-opacity-70  shadow-sm rounded-md border border-white flex items-center justify-center`} 
+      className={`py-2 w-20  bg-opacity-50  shadow-sm rounded-md border bg-black border-white flex items-center justify-center`} 
       title={data.category}
     >
       <span className="text-white text-xs font-extralight capitalize">
@@ -166,7 +166,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
 {/* Remove the existing circle container div and replace with this */}
 <div className="absolute bottom-3 right-6 flex items-center gap-1">
   {/* Heart Icon */}
-  <div className="flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm p-3 rounded-full">
+  <div className="flex items-center justify-center bg-black bg-opacity-50  p-3 rounded-full">
     <svg 
       xmlns="http://www.w3.org/2000/svg" 
       viewBox="0 0 24 24" 
@@ -186,7 +186,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
   </div>
 
   {/* First Star */}
-  <div className="flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm p-3 rounded-full">
+  <div className="flex items-center justify-center bg-black bg-opacity-50  p-3 rounded-full">
     <svg 
       xmlns="http://www.w3.org/2000/svg" 
       viewBox="0 0 24 24" 
@@ -207,7 +207,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
   </div>
 
   {/* Second Star */}
-  <div className="flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm p-3 rounded-full">
+  <div className="flex items-center justify-center bg-black bg-opacity-50  p-3 rounded-full">
     <svg 
       xmlns="http://www.w3.org/2000/svg" 
       viewBox="0 0 24 24" 
@@ -227,7 +227,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
 
     {/* Title and Location - Now positioned at bottom center of image */}
 
-    <div className="flex flex-col items-center backdrop-blur-sm px-4 py-2 rounded-lg">
+    <div className="flex flex-col items-center  px-4 py-2 rounded-lg">
       <div className="font-medium text-sm text-black capitalize">
         {data.title}
       </div>
@@ -246,9 +246,9 @@ const ListingCard: React.FC<ListingCardProps> = ({
     {data.services && data.services.length > 0 && (
       <div className="flex w-full">
         {/* Service Section */}
-        <div className="inline-flex items-center py-3 flex-1 w-36 rounded-md bg-slate-100 shadow-sm ">
+        <div className="inline-flex items-center py-3 flex-1 w-36 rounded-md bg-slate-100 shadow-gray-300 shadow-sm ">
           <div className="w-full flex justify-center gap-1.5">
-            <span className="text-xs text-neutral-500">
+            <span className="text-xs text-black">
               {data.services[currentServiceIndex].serviceName}
             </span>
             <span className="text-xs font-medium text-black">
@@ -276,7 +276,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
             e.stopPropagation();
             router.push(`/listings/${data.id}`);
           }}
-          className="bg-slate-500 font-light ml-2 shadow-sm text-[#ffffff] text-[0.8rem] px-6 py-3   rounded-md transition hover:opacity-80"
+          className="bg-[#F9AE8B]  ml-2 shadow-sm shadow-grey-300 text-[#ffffff] text-[0.8rem] px-6 py-3   rounded-md transition hover:opacity-80"
         >
           Reserve
         </button>

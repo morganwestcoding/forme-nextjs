@@ -73,7 +73,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
     flex-none 
     w-full 
     md:w-[57%]  
-    ${currentUser ? 'mt-8' : 'mt-4'} 
+mt-8
     space-y-4
     px-4       
     md:pr-8 

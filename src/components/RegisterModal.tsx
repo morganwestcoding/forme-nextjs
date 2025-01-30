@@ -6,6 +6,7 @@ import { signIn } from "next-auth/react";
 import { FcGoogle } from "react-icons/fc";
 import { useCallback, useState } from "react";
 import { toast } from "react-hot-toast";
+import SubscriptionInput from "./inputs/SubscriptionInput";
 import { 
   FieldValues, 
   SubmitHandler,
@@ -23,7 +24,8 @@ enum STEPS {
   ACCOUNT = 0,
   LOCATION = 1,
   BIOGRAPHY = 2,
-  IMAGES = 3,
+  SUBSCRIPTION = 4,
+  IMAGES = 5,
 }
 
 const RegisterModal= () => {
@@ -48,7 +50,8 @@ const RegisterModal= () => {
       location: '',
       bio: '',
       image: '',
-      imageSrc: ''
+      imageSrc: '',
+      subscription: ''  // Add this
     },
   });
 
@@ -142,14 +145,29 @@ const RegisterModal= () => {
     bodyContent = (
       <div className="flex flex-col gap-8">
         <Heading
-          title="Where is your place located?"
-          subtitle="Help guests find you!"
+          title="Where are you located?"
+          subtitle="This helps us show you the best experiences near you."
         />
         <ProfileLocationInput // Use ListLocationSelect component
           onLocationSubmit={(value) => setValue('location', value)}
         />  
       </div>
     );
+  }
+
+  if (step === STEPS.SUBSCRIPTION) {
+    bodyContent = (
+      <div className="flex flex-col pb-3">
+        <Heading
+          title="Choose your subscription"
+          subtitle="Select the plan that best fits your needs"
+        />
+        <SubscriptionInput
+          onChange={(value) => setCustomValue('subscription', value)}
+          value={watch('subscription')}
+        />
+      </div>
+    )
   }
 
   if (step === STEPS.BIOGRAPHY) {
@@ -194,18 +212,6 @@ const RegisterModal= () => {
   const footerContent = (
     <div className="flex flex-col gap-4 mt-3">
       <hr />
-  <ModalButton 
-        outline 
-        label="Continue with Google"
-        icon={FcGoogle}
-        onClick={() => signIn('google')} 
-      />
-      <ModalButton 
-        outline 
-        label="Continue with Github"
-        icon={AiFillGithub}
-        onClick={() => signIn('github')}
-  />
       <div 
         className="
           text-black
@@ -231,14 +237,16 @@ const RegisterModal= () => {
 
   return (
     <Modal
-      disabled={isLoading}
-      isOpen={registerModal.isOpen}
-      title="Register"
-      actionLabel="Continue"
-      onClose={registerModal.onClose}
-      onSubmit={handleSubmit(onSubmit)}
-      body={bodyContent}
-      footer={footerContent}
+    disabled={isLoading}
+    isOpen={registerModal.isOpen}
+    title="Register"
+    actionLabel={step === STEPS.IMAGES ? "Create" : "Continue"}
+    secondaryAction={step !== STEPS.ACCOUNT ? onBack : undefined}
+    secondaryActionLabel={step !== STEPS.ACCOUNT ? "Back" : undefined}
+    onClose={registerModal.onClose}
+    onSubmit={handleSubmit(onSubmit)}
+    body={bodyContent}
+    footer={footerContent}
     />
   );
 }

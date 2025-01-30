@@ -179,13 +179,13 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
     {/* Rating Bars */}
     <div className="flex flex-col gap-2 flex-1">
       {[5, 4, 3, 2, 1].map((rating) => (
-        <div key={rating} className="flex items-center gap-2">
+        <div key={rating} className="flex items-center gap-2 ">
           <span className="text-xs text-gray-500 w-3">{rating}</span>
           <div className="flex-1 h-2 bg-gray-200 overflow-hidden">
             <div 
-              className={`h-full ${
-                rating > 3 ? 'bg-green-400' : 
-                rating > 2 ? 'bg-yellow-400' : 'bg-red-400'
+              className={`h-full rounded-full ${
+                rating > 3 ? 'bg-[#F9AE8B]' : 
+                rating > 2 ? 'bg-[#F79264]' : 'bg-[#F5773D]'
               }`}
               style={{ width: `${(6 - rating) * 20}%` }}
             />

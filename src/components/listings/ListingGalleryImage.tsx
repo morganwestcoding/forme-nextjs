@@ -93,13 +93,13 @@ const ListingGalleryImage: React.FC<ListingGalleryImageProps> = ({ listing, curr
                 onMouseEnter={() => setHoveredImageIndex(index)}
                 onMouseLeave={() => setHoveredImageIndex(null)}
               >
-                <div className="aspect-w-3 aspect-h-3 w-full">
+                <div className="aspect-w-3 aspect-h-2 w-full">
                   <Image
                     src={image}
                     layout="fill"
                     objectFit="cover"
                     alt={`Gallery image ${index + 1}`}
-                    className="rounded-lg shadow-sm"
+                    className="rounded-md shadow-sm"
                   />
                 </div>
                 {isEditMode && (

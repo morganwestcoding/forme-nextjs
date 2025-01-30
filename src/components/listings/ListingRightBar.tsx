@@ -73,7 +73,7 @@ const InputField: React.FC<InputFieldProps> = ({
           duration-250
           ${isSelected 
             ? 'bg-[#5E6365] text-white border-[#5E6365]' 
-            : 'bg-slate-100  hover:bg-[#e2e8f0]'
+            : 'bg-slate-50 shadow-gray-300  hover:bg-[#e2e8f0]'
           }
           ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
           ${showHoverEffect ? 'hover:placeholder-white' : ''}

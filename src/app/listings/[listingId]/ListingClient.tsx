@@ -182,7 +182,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
   <h2 className="text-xl font-bold text-black mb-4">Services</h2>
   <div className="grid grid-cols-3 gap-4">
     {/* Each service card */}
-    <div className="bg-slate-100 shadow-sm  p-4 rounded-md">
+    <div className="bg-slate-50 shadow-sm shadow-gray-300 p-4 rounded-md">
       <h3 className="font-medium text-sm mb-2">Haircut</h3>
       <div className="flex justify-between items-center">
         <span className="text-sm text-neutral-500">45 min</span>
@@ -190,7 +190,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
       </div>
     </div>
 
-    <div className="bg-slate-100 shadow-sm  p-4 rounded-md">
+    <div className="bg-slate-50 shadow-sm shadow-gray-300 p-4 rounded-md">
       <h3 className="font-medium text-sm mb-2">Beard Trim</h3>
       <div className="flex justify-between items-center">
         <span className="text-sm text-neutral-500">30 min</span>
@@ -198,7 +198,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
       </div>
     </div>
 
-    <div className="bg-slate-100 shadow-sm  p-4 rounded-md">
+    <div className="bg-slate-50 shadow-gray-300 shadow-sm p-4 rounded-md">
       <h3 className="font-medium text-sm mb-2">Full Service</h3>
       <div className="flex justify-between items-center">
         <span className="text-sm text-neutral-500">1 hour</span>

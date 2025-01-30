@@ -91,6 +91,7 @@ const Modal: React.FC<ModalProps> = ({
           outline-none 
           focus:outline-none 
           bg-neutral-800/70
+    
         "
       >
         <div className={`relative ${className || 'w-full md:w-4/6 lg:w-3/6 xl:w-2/5'} my-6 mx-auto h-full lg:h-auto md:h-auto`}>
@@ -109,22 +110,19 @@ const Modal: React.FC<ModalProps> = ({
                 flex-col 
                 w-full 
                 bg-white
-              
+                pt-4
                 backdrop-blur-md 
                 outline-none 
                 focus:outline-none
               "
             >
-              <div className="flex items-center p-6 rounded-t justify-center relative border-b-[1px]">
+              <div className="flex items-center rounded-t justify-center relative">
                 <div 
                   id="modal-close"
-                  className="p-1 border-0 hover:opacity-70 transition absolute right-9" 
+                  className="p-1 border-0 hover:opacity-70 transition absolute  top-6 right-6" 
                   onClick={handleClose}
                 >
-                  <X size={18} className="text-black"/>
-                </div>
-                <div className="text-lg text-black font-medium">
-                  {title}
+                  <X size={24} className="text-black"/>
                 </div>
               </div>
               <div id={`${modalContentId}-wrapper`} className="flex flex-col flex-1">

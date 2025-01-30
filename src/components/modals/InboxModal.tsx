@@ -105,10 +105,10 @@ const InboxModal = () => {
               </div>
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-white truncate">
+              <h3 className="font-semibold text-black truncate">
                 {conversation.otherUser.name}
               </h3>
-              <p className="text-sm text-gray-400 truncate max-w-[200px]">
+              <p className="text-sm text-neutral-500 font-light truncate max-w-[200px]">
                 {conversation.lastMessage?.content}
               </p>
             </div>

@@ -75,7 +75,7 @@ isMobile }) => {
   return (
 
     <div className="fixed top-0 flex h-screen z-20">
-      <div className="flex flex-col items-center w-62 h-full px-6 pb-10 pt-8 bg-white    z-50" >
+      <div className="flex flex-col items-center w-62 h-full px-6 pb-10 pt-8 bg-white z-50" >
   
                 {isMobile && (
                   <>
@@ -117,7 +117,7 @@ isMobile }) => {
         
         <ul className="list-none m-0 p-0 flex flex-col items-center hover:text-white ">
           {/* Add this before your first menu item (Home) */}
-          <div className="w-44 h-[1px] rounded-full bg-[#71717A] mb-4 mt-1"></div>
+          <div className="w-44 h-[1px] rounded-full bg-[#71717A] text-neutral-500 mb-4 mt-1"></div>
           <li className={` group flex items-center justify-start mb-2.5 p-2 rounded-md   transition-colors duration-250 ${
     selectedButton === 'explore' ? 'bg-slate-500' : ' hover:bg-gray-200 hover:-gray-200'
   } w-44`} 
@@ -370,7 +370,7 @@ onClick={() => {
                 selectedButton === 'inbox' ? 'text-white' : 'text-[#71717A]  group-hover:text-white'
             }`}>Inbox</span>
         </div>
-        <div className="bg-[#78C3FB] px-2 py-1 rounded-sm flex items-center justify-center">
+        <div className="bg-[#F9AE8B] px-2 py-1 rounded-sm flex items-center justify-center">
   <span className="text-white text-xs">21</span>
 </div>
     </div>
@@ -394,7 +394,7 @@ onClick={() => {
                 selectedButton === 'notifications' ? 'text-white' : 'text-[#71717A] group-hover:text-white'
             }`}>Notifications</span>
         </div>
-        <div className="bg-[#78C3FB] px-2 py-1 rounded-sm flex items-center justify-center">
+        <div className="bg-[#F9AE8B] px-2 py-1 rounded-sm flex items-center justify-center">
   <span className="text-white text-xs">112</span>
 </div>
     </div>

@@ -87,9 +87,9 @@ const Input: React.FC<InputProps> = ({
         className={`
           peer
           w-full
-          p-4
+          p-3
           pt-6 
-          font-light
+    
           border-neutral-500
           bg-slate-50
           border
@@ -111,6 +111,7 @@ const Input: React.FC<InputProps> = ({
           duration-150 
           transform 
           -translate-y-3 
+        
           top-5 
           origin-[0] 
           ${formatPrice ? 'left-9' : 'left-4'}
@@ -118,7 +119,7 @@ const Input: React.FC<InputProps> = ({
           peer-placeholder-shown:translate-y-0 
           peer-focus:scale-75
           peer-focus:-translate-y-4
-          ${errors[id] ? 'text-rose-500' : 'text-zinc-400'}
+          ${errors[id] ? 'text-rose-500' : 'text-neutral-500'}
         `}
       >
         {label}
