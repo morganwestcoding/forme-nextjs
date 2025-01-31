@@ -43,7 +43,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
             </div>
   
             <div className="absolute left-1/2 transform -translate-x-1/2 z-10">
-              <Logo isMobile/>
+              <Logo/>
             </div>
   
             <div className="flex items-center">
