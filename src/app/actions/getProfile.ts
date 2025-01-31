@@ -30,6 +30,7 @@ export default async function getProfile(): Promise<SafeUser | null> {
       isSubscribed: currentUser.isSubscribed ?? false,
       subscriptionStartDate: currentUser.subscriptionStartDate ?? null,
       subscriptionEndDate: currentUser.subscriptionEndDate ?? null,
+      subscriptionTier: currentUser.subscriptionTier ?? null, // Add this line
     };
   } catch (error) {
     console.error("Error in getProfile:", error);
