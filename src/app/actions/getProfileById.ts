@@ -42,7 +42,8 @@ export default async function getProfileById(params: IParams): Promise<SafeUser 
      resetTokenExpiry: user.resetTokenExpiry ?? null,
      isSubscribed: user.isSubscribed ?? false,
      subscriptionStartDate: user.subscriptionStartDate ?? null,
-     subscriptionEndDate: user.subscriptionEndDate ?? null
+     subscriptionEndDate: user.subscriptionEndDate ?? null,
+     subscriptionTier: user.subscriptionTier ?? null  // Add this line
    };
  } catch (error) {
    console.error("Error fetching user profile by ID:", error);
