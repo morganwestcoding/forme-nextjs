@@ -80,23 +80,52 @@ const RegisterModal= () => {
     setStep((currentStep) => currentStep - 1);
   };
 
-  const onSubmit: SubmitHandler<FieldValues> = (data) => {
+  const validatePassword = (password: string) => {
+    return {
+      hasMinLength: password.length >= 6,
+      hasMaxLength: password.length <= 18,
+      hasUpperCase: /[A-Z]/.test(password),
+      hasLowerCase: /[a-z]/.test(password),
+      hasNumber: /[0-9]/.test(password),
+      hasSpecialChar: /[!@#$%^&*(),]/.test(password)
+    };
+  };
+
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     if (step !== STEPS.SUBSCRIPTION) {
+      if (step === STEPS.ACCOUNT) {
+        // Validate password
+        const passwordValidation = validatePassword(data.password);
+        if (!Object.values(passwordValidation).every(Boolean)) {
+          toast.error('Password does not meet requirements');
+          return;
+        }
+
+        // Check if email exists
+        try {
+          const response = await axios.get(`/api/check-email?email=${data.email}`);
+          if (response.data.exists) {
+            toast.error('Email already exists');
+            return;
+          }
+        } catch (error) {
+          toast.error('Error checking email');
+          return;
+        }
+      }
       return onNext();
     }
-     
+    
     setIsLoading(true);
 
     axios.post('/api/register', data)
     .then(() => {
       toast.success('Registered!');
-      
       setStep(STEPS.ACCOUNT);
       registerModal.onClose();
       loginModal.onOpen();
     })
     .catch((error: any) => {
-      // Extract the error message properly
       let errorMessage = 'Something went wrong!';
       
       if (error.response?.data) {
@@ -110,7 +139,7 @@ const RegisterModal= () => {
     .finally(() => {
       setIsLoading(false);
     });
-  };
+  }
 
   const onToggle = useCallback(() => {
     registerModal.onClose();
@@ -131,6 +160,7 @@ const RegisterModal= () => {
         register={register}
         errors={errors}
         required
+        type="email"
       />
       <Input
         id="name"
@@ -148,6 +178,7 @@ const RegisterModal= () => {
         register={register}
         errors={errors}
         required
+      
       />
     </div>
   );

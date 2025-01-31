@@ -8,6 +8,7 @@ import {
 import { BiDollar } from "react-icons/bi";
 import { useState, useEffect } from 'react';
 
+
 interface InputProps {
   id: string;
   label: string;
@@ -20,6 +21,15 @@ interface InputProps {
   errors: FieldErrors
   maxLength?: number;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+interface PasswordValidation {
+  hasMinLength: boolean;
+  hasMaxLength: boolean;
+  hasUpperCase: boolean;
+  hasLowerCase: boolean;
+  hasNumber: boolean;
+  hasSpecialChar: boolean;
 }
 
 const Input: React.FC<InputProps> = ({
@@ -36,6 +46,26 @@ const Input: React.FC<InputProps> = ({
   onChange
 }) => {
   const [charCount, setCharCount] = useState(0);
+  const [passwordValidation, setPasswordValidation] = useState<PasswordValidation>({
+    hasMinLength: false,
+    hasMaxLength: true,
+    hasUpperCase: false,
+    hasLowerCase: false,
+    hasNumber: false,
+    hasSpecialChar: false
+  });
+
+
+  const validatePassword = (password: string) => {
+    setPasswordValidation({
+      hasMinLength: password.length >= 6,
+      hasMaxLength: password.length <= 18,
+      hasUpperCase: /[A-Z]/.test(password),
+      hasLowerCase: /[a-z]/.test(password),
+      hasNumber: /[0-9]/.test(password),
+      hasSpecialChar: /[!@#$%^&*(),]/.test(password)
+    });
+  };
 
   useEffect(() => {
     if (maxLength) {
@@ -50,6 +80,31 @@ const Input: React.FC<InputProps> = ({
       if (e.target.value.length > maxLength) {
         e.target.value = e.target.value.slice(0, maxLength);
         setCharCount(maxLength);
+      }
+    }
+  
+    // Handle password validation if input type is password
+    if (type === "password") {
+      const password = e.target.value;
+      setPasswordValidation({
+        hasMinLength: password.length >= 6,
+        hasMaxLength: password.length <= 18,
+        hasUpperCase: /[A-Z]/.test(password),
+        hasLowerCase: /[a-z]/.test(password),
+        hasNumber: /[0-9]/.test(password),
+        hasSpecialChar: /[!@#$%^&*(),]/.test(password)
+      });
+    }
+  
+    // Handle email validation if input type is email
+    if (type === "email") {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const isValidEmail = emailRegex.test(e.target.value);
+      if (!isValidEmail && e.target.value !== '') {
+        errors[id] = {
+          type: 'manual',
+          message: 'Please enter a valid email address'
+        };
       }
     }
     
@@ -80,6 +135,19 @@ const Input: React.FC<InputProps> = ({
           maxLength: maxLength ? {
             value: maxLength,
             message: `Maximum ${maxLength} characters allowed`
+          } : undefined,
+          validate: type === "password" ? {
+            hasRequirements: (value) => {
+              const validation = {
+                hasMinLength: value.length >= 6,
+                hasMaxLength: value.length <= 18,
+                hasUpperCase: /[A-Z]/.test(value),
+                hasLowerCase: /[a-z]/.test(value),
+                hasNumber: /[0-9]/.test(value),
+                hasSpecialChar: /[!@#$%^&*(),]/.test(value)
+              };
+              return Object.values(validation).every(Boolean) || "Password does not meet requirements";
+            }
           } : undefined
         })}
         placeholder={placeholder} 
@@ -89,7 +157,6 @@ const Input: React.FC<InputProps> = ({
           w-full
           p-3
           pt-6 
-    
           border-neutral-500
           bg-slate-50
           border
@@ -127,6 +194,101 @@ const Input: React.FC<InputProps> = ({
       {maxLength && (
         <span className="absolute top-2 right-2 text-xs text-gray-500">
           {charCount}/{maxLength}
+        </span>
+      )}
+      {type === "password" && (
+ <div className="mt-4 -mb-6 p-3 py-6 bg-slate-50 rounded-lg border border-neutral-200">
+ <div className="grid grid-cols-2 gap-3">
+   <div className={`
+     flex items-center gap-2 transition-colors duration-200
+     ${passwordValidation.hasMinLength && passwordValidation.hasMaxLength 
+       ? 'text-green-500' 
+       : 'text-neutral-500'
+     }
+   `}>
+     <div className={`
+       h-2 w-2 rounded-full transition-colors duration-200
+       ${passwordValidation.hasMinLength && passwordValidation.hasMaxLength 
+         ? 'bg-green-500' 
+         : 'bg-neutral-300'
+       }
+     `}/>
+     <span className="text-xs">6-18 characters</span>
+   </div>
+
+   <div className={`
+     flex items-center gap-2 transition-colors duration-200
+     ${passwordValidation.hasUpperCase 
+       ? 'text-green-500' 
+       : 'text-neutral-500'
+     }
+   `}>
+     <div className={`
+       h-2 w-2 rounded-full transition-colors duration-200
+       ${passwordValidation.hasUpperCase 
+         ? 'bg-green-500' 
+         : 'bg-neutral-300'
+       }
+     `}/>
+     <span className="text-xs">Uppercase letter</span>
+   </div>
+
+   <div className={`
+     flex items-center gap-2 transition-colors duration-200
+     ${passwordValidation.hasLowerCase 
+       ? 'text-green-500' 
+       : 'text-neutral-500'
+     }
+   `}>
+     <div className={`
+       h-2 w-2 rounded-full transition-colors duration-200
+       ${passwordValidation.hasLowerCase 
+         ? 'bg-green-500' 
+         : 'bg-neutral-300'
+       }
+     `}/>
+     <span className="text-xs">Lowercase letter</span>
+   </div>
+
+   <div className={`
+     flex items-center gap-2 transition-colors duration-200
+     ${passwordValidation.hasNumber 
+       ? 'text-green-500' 
+       : 'text-neutral-500'
+     }
+   `}>
+     <div className={`
+       h-2 w-2 rounded-full transition-colors duration-200
+       ${passwordValidation.hasNumber 
+         ? 'bg-green-500' 
+         : 'bg-neutral-300'
+       }
+     `}/>
+     <span className="text-xs">Number</span>
+   </div>
+
+   <div className={`
+     flex items-center gap-2 transition-colors duration-200 col-span-2
+     ${passwordValidation.hasSpecialChar 
+       ? 'text-green-500' 
+       : 'text-neutral-500'
+     }
+   `}>
+     <div className={`
+       h-2 w-2 rounded-full transition-colors duration-200
+       ${passwordValidation.hasSpecialChar 
+         ? 'bg-green-500' 
+         : 'bg-neutral-300'
+       }
+     `}/>
+     <span className="text-xs">Special character (!@#$%^&*())</span>
+   </div>
+ </div>
+</div>
+      )}
+      {type === "email" && errors[id] && (
+        <span className="text-rose-500 text-xs mt-1">
+          Please enter a valid email address
         </span>
       )}
     </div>
