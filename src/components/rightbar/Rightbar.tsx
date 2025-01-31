@@ -58,7 +58,7 @@ export default function Rightbar() {
               onClick={() => router.push('/articles')}
             >
               <div 
-                className="w-full h-32 shadow-sm shadow-slate-300 rounded-lg -mb-1" 
+                className="w-full h-24 shadow-sm shadow-slate-300 rounded-t-lg -mb-1" 
                 style={{ 
                   backgroundImage: `url(${article.imageSrc})`, 
                   backgroundSize: 'cover', 
@@ -67,7 +67,7 @@ export default function Rightbar() {
                 }}
               />
               <div className="flex flex-col p-4 bg-white rounded-b-lg ">
-                <h3 className="text-sm font-semibold line-clamp-2 mb-1">{article.title}</h3>
+                <h3 className="text-xs font-semibold mb-1">{article.title}</h3>
                 <p className="text-xs text-gray-500">{article.author}</p>
                 <div className="flex items-center text-xs text-gray-500">
                   <span>{article.views}</span>

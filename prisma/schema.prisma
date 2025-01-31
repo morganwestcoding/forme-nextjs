@@ -31,6 +31,7 @@ model User {
   isSubscribed    Boolean @default(false)
   subscriptionStartDate DateTime?
   subscriptionEndDate DateTime?
+  subscriptionTier String? // Add this field
   following    String[]      @db.ObjectId
   followers    String[]      @db.ObjectId
   comments Comment[]

@@ -31,6 +31,7 @@ export default async function getCurrentUser() {
       emailVerified: currentUser.emailVerified?.toISOString() || null,
       bio: currentUser.bio || "No Bio Provided Yet.." ,
       isSubscribed: currentUser.isSubscribed, 
+      subscriptionTier: currentUser.subscriptionTier, // Add this
       location: currentUser.location,
       image: currentUser.image,
       imageSrc: currentUser.imageSrc,

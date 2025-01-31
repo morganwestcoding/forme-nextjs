@@ -56,6 +56,7 @@ const Search: React.FC<SearchProps> = ({ onResultClick }) => {
           <path d="M16 9C16 5.13401 12.866 2 9 2C5.13401 2 2 5.13401 2 9C2 12.866 5.13401 16 9 16C12.866 16 16 12.866 16 9Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" fill='#ffffff' />
         </svg>
       </div>
+
       <input
         type="text"
         placeholder="Search"
@@ -63,8 +64,16 @@ const Search: React.FC<SearchProps> = ({ onResultClick }) => {
         onChange={handleInputChange}
         onFocus={() => setIsSearchFocused(true)}
         onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
-        className="w-full text-[#71717A] placeholder:text-[#71717A] border bg-white border-[#F9AE8B] rounded-lg p-3 pl-12 text-sm shadow-sm"
+        className="w-full text-[#71717A] placeholder:text-[#71717A] border bg-white border-neutral-500 rounded-lg p-4 pl-12 pr-24 text-sm shadow-sm shadow-gray-300"
       />
+
+      <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
+        <div className="flex items-center gap-1 px-2 py-1 rounded-md bg-gray-50 shadow-sm shadow-gray-300">
+          <span className="text-xs text-gray-500">⌘</span>
+          <span className="text-xs text-gray-500">K</span>
+        </div>
+      </div>
+
       {searchResults.length > 0 && (
         <div className="absolute z-10 w-full mt-1 rounded-lg shadow-sm-lg bg-white bg-opacity-90 backdrop-blur-md border-none overflow-hidden">
           <div className="max-h-96 overflow-y-auto">

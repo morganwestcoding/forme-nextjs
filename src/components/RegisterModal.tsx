@@ -95,13 +95,22 @@ const RegisterModal= () => {
       registerModal.onClose();
       loginModal.onOpen();
     })
-    .catch((error) => {
-      toast.error(error);
+    .catch((error: any) => {
+      // Extract the error message properly
+      let errorMessage = 'Something went wrong!';
+      
+      if (error.response?.data) {
+        errorMessage = error.response.data;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      toast.error(errorMessage);
     })
     .finally(() => {
       setIsLoading(false);
-    })
-  }
+    });
+  };
 
   const onToggle = useCallback(() => {
     registerModal.onClose();

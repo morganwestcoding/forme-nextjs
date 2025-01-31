@@ -83,56 +83,59 @@ const SubscriptionInput: React.FC<SubscriptionInputProps> = ({
 
   return (
     <div className="w-full max-h-[70vh] overflow-y-auto -mb-4 mt-2">
-    <div className="grid grid-cols-2 gap-3">
-      {subscriptionTiers.map((tier) => (
-        <div
-          key={tier.title}
-          onClick={() => {
-            if (expandedCard === tier.title) {
-              setExpandedCard(null);
-            } else {
-              setExpandedCard(tier.title);
-              onChange(tier.title.toLowerCase());
-            }
-          }}
-          className={`
-            relative 
-            cursor-pointer 
-            rounded-md 
-            overflow-hidden
-            transition-all 
-            duration-700
-            ease-in-out
-            ${expandedCard === tier.title ? 
-              'col-span-2 h-[400px] opacity-100' : 
-              expandedCard ? 
-                'opacity-0 pointer-events-none absolute' : // Changed to absolute positioning
-                'h-[125px] hover:shadow-lg opacity-100'
-            }
-          `}
-        >
-        <div 
-          className={`
-            absolute 
-            inset-0 
-            bg-cover 
-            bg-center
-            transition-all 
-            duration-700
-            ease-in-out
-            ${expandedCard === tier.title ? 'scale-100' : 'hover:scale-110'}
-          `}
-          style={{ backgroundImage: `url(${tier.background})` }}
-        />
+      <div className="grid grid-cols-2 gap-3">
+        {subscriptionTiers.map((tier) => (
+          <div
+            key={tier.title}
+            onClick={() => {
+              if (expandedCard === tier.title) {
+                setExpandedCard(null);
+              } else {
+                setExpandedCard(tier.title);
+              }
+            }}
+            className={`
+              relative 
+              cursor-pointer 
+              rounded-md 
+              overflow-hidden
+              transition-all 
+              duration-700
+              ease-in-out
+              ${expandedCard === tier.title ? 
+                'col-span-2 h-[400px] opacity-100' : 
+                expandedCard ? 
+                  'opacity-0 pointer-events-none absolute' : 
+                  'h-[125px] hover:shadow-lg opacity-100'
+              }
+            `}
+          >
             <div 
-              className="
+              className={`
                 absolute 
                 inset-0 
-                bg-black/55
+                bg-cover 
+                bg-center
+                transition-all 
+                duration-700
+                ease-in-out
+                ${expandedCard === tier.title ? 'scale-100' : 'hover:scale-110'}
+              `}
+              style={{ backgroundImage: `url(${tier.background})` }}
+            />
+            <div 
+              className={`
+                absolute 
+                inset-0 
                 transition-all 
                 duration-300
-                hover:bg-black/60
-              "
+                ${expandedCard ? 
+                  'bg-black/55 hover:bg-black/60' :
+                  value === tier.title.toLowerCase() ?
+                    'bg-green-500/50 hover:bg-green-500/50' :
+                    'bg-black/55 hover:bg-black/60'
+                }
+              `}
             />
             
             {expandedCard === tier.title ? (
@@ -174,20 +177,46 @@ const SubscriptionInput: React.FC<SubscriptionInputProps> = ({
                       </li>
                     ))}
                   </ul>
+                  
+                  <div className="flex justify-end items-end">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onChange(tier.title.toLowerCase());
+                        setExpandedCard(null);
+                      }}
+                      className={`
+                        p-2 rounded-full transition-all duration-300
+                        ${value === tier.title.toLowerCase() 
+                          ? 'bg-green-500 hover:bg-green-600' 
+                          : 'bg-white hover:bg-gray-100'
+                        }
+                      `}
+                    >
+                      {value === tier.title.toLowerCase() ? (
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                      ) : (
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M12 5v14M5 12h14"></path>
+                        </svg>
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
             ) : (
               <div className="
-    absolute 
-    inset-0 
-    px-6 
-    flex 
-    flex-col 
-    items-center 
-    justify-center 
-    text-center
-              "
-              >
+                absolute 
+                inset-0 
+                px-6 
+                flex 
+                flex-col 
+                items-center 
+                justify-center 
+                text-center
+              ">
                 <span className="text-gray-300 text-sm font-extralight tracking-wider mb-1">
                   {tier.category}
                 </span>

@@ -87,6 +87,7 @@ export type SafeUser = Omit<
   resetTokenExpiry: Date | null;
   subscriptionStartDate: Date | null;
   subscriptionEndDate: Date | null;
+  subscriptionTier?: string | null;  // Add this
   
 };
 

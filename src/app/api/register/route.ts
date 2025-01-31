@@ -12,12 +12,17 @@ export async function POST(
     email,
     password,
     location,
+    subscription,
     bio,
     image,
     imageSrc,
    } = body;
 
    const hashedPassword = await bcrypt.hash(password, 12);
+
+   const isSubscribed = subscription !== 'bronze (customer)';
+   const now = new Date();
+   const thirtyDaysFromNow = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
 
    const user = await prisma.user.create({
     data: {
@@ -27,7 +32,13 @@ export async function POST(
       location,
       bio,
       image,
-      imageSrc
+      imageSrc,
+      isSubscribed,
+      subscriptionTier: subscription,
+      ...(isSubscribed && {
+        subscriptionStartDate: now,
+        subscriptionEndDate: thirtyDaysFromNow
+      })
     }
   });
 
