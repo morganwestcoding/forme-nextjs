@@ -1,6 +1,5 @@
 'use client';
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 
 interface SubscriptionInputProps {
   onChange: (value: string) => void;
@@ -15,10 +14,10 @@ const SubscriptionInput: React.FC<SubscriptionInputProps> = ({
 
   const subscriptionTiers = [
     {
-      title: 'Customer',
+      title: 'Bronze (Customer)',
       price: 'Free',
       category: 'Basic Access',
-      background: 'https://images.unsplash.com/photo-1557177324-56c542165309?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80',
+      background: 'https://images.unsplash.com/photo-1556740758-90de374c12ad?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
       features: [
         'Basic App Access',
         'Limited Profile Features',
@@ -28,10 +27,10 @@ const SubscriptionInput: React.FC<SubscriptionInputProps> = ({
       fullDescription: 'Perfect for users who want to explore the platform and access basic features. Browse through professionals and make basic bookings.'
     },
     {
-      title: 'Silver',
+      title: 'Silver (Pro Tier 1)',
       price: '$29.99/month',
       category: 'Professional',
-      background: 'https://images.unsplash.com/photo-1557187666-4fd70cf76254?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60',
+      background: 'https://images.unsplash.com/photo-1573588546512-2ace898aa480?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
       features: [
         'Everything in Customer, plus...',
         'Post Photos & Manage Profile',
@@ -41,10 +40,10 @@ const SubscriptionInput: React.FC<SubscriptionInputProps> = ({
       fullDescription: 'Ideal for professionals starting their journey. Get essential tools to showcase your services and connect with potential customers.'
     },
     {
-      title: 'Gold',
+      title: 'Gold (Pro Tier 2)',
       price: '$59.99/month',
       category: 'Featured Professional',
-      background: 'https://images.unsplash.com/photo-1556680262-9990363a3e6d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60',
+      background: 'https://images.unsplash.com/photo-1517637633369-e4cc28755e01?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
       features: [
         'Includes Silver, plus...',
         'Be Seen by Customers',
@@ -54,10 +53,10 @@ const SubscriptionInput: React.FC<SubscriptionInputProps> = ({
       fullDescription: 'Take your business to the next level with enhanced visibility and features. Get featured placement and reach more customers in your area.'
     },
     {
-      title: 'Platinum',
+      title: 'Platinum (Pro Tier 3)',
       price: '$99.99/month',
       category: 'Premium Professional',
-      background: 'https://images.unsplash.com/photo-1557004396-66e4174d7bf6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60',
+      background: 'https://images.unsplash.com/photo-1540496905036-5937c10647cc?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
       features: [
         'Includes Gold, plus...',
         'Guaranteed 8 Customers Monthly',
@@ -67,10 +66,10 @@ const SubscriptionInput: React.FC<SubscriptionInputProps> = ({
       fullDescription: 'Our premium tier for serious professionals. Get guaranteed customers, priority placement, and exclusive features to maximize your success.'
     },
     {
-      title: 'Enterprise',
+      title: 'Diamond (Enterprise)',
       price: 'Custom Pricing',
       category: 'Business Solutions',
-      background: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60',
+      background: 'https://media.istockphoto.com/id/532401256/photo/london-skyscrapers-skyline-view.jpg?s=612x612&w=0&k=20&c=-1K5D7v9-5srsEO8bwaYnBnRtO2iCKJ5ll2h8wFsiP0=',
       features: [
         'Everything in Platinum, plus...',
         'Multi-User Access',
@@ -82,124 +81,126 @@ const SubscriptionInput: React.FC<SubscriptionInputProps> = ({
     }
   ];
 
-  const handleCardClick = (title: string) => {
-    if (expandedCard === title) {
-      setExpandedCard(null);
-    } else {
-      setExpandedCard(title);
-      onChange(title.toLowerCase());
-    }
-  };
-
   return (
-    <div className="w-full max-h-[55vh] overflow-y-auto -mb-4 mt-2">
-      <div className="grid grid-cols-2 gap-3 relative">
-        <AnimatePresence>
-          {subscriptionTiers.map((tier) => (
-            <motion.div
-              key={tier.title}
-              layout
-              initial={{ opacity: 1, scale: 1 }}
-              animate={{
-                opacity: expandedCard ? (expandedCard === tier.title ? 1 : 0) : 1,
-                scale: expandedCard === tier.title ? 1 : 1,
-                gridColumn: expandedCard === tier.title ? '1 / span 2' : 'auto',
-              }}
-              exit={{ opacity: 0 }}
-              transition={{
-                opacity: { duration: 0.3 },
-                layout: { duration: 0.3 }
-              }}
-              onClick={() => handleCardClick(tier.title)}
-              style={{
-                display: expandedCard && expandedCard !== tier.title ? 'none' : 'block',
-              }}
-              className={`
-                relative cursor-pointer 
-                rounded-xl transition-all duration-300
-                ${expandedCard === tier.title ? 'h-[400px]' : 'h-[125px]'}
-                ${value === tier.title.toLowerCase() 
-                  ? '' 
-                  : ''}
-              `}
-            >
-              <div 
-                className="absolute inset-0 rounded-xl bg-cover bg-center
-                  transition-all duration-300 
-                  brightness-75 saturate-120 contrast-85"
-                style={{ backgroundImage: `url(${tier.background})` }}
-              />
-              <div className="absolute inset-0 bg-black/40 rounded-xl hover:bg-black/30 transition-all duration-300" />
-              
-              {expandedCard === tier.title ? (
-                <div className="absolute inset-0 p-6 flex flex-col text-white">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <span className="text-gray-300 text-sm uppercase tracking-wider">
-                        {tier.category}
-                      </span>
-                      <h3 className="text-white text-sm font-bold mt-2 mb-1">
-                        {tier.title}
-                      </h3>
-                      <p className="text-white/90 text-sm">
-                        {tier.price}
-                      </p>
-                    </div>
-                    <button 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setExpandedCard(null);
-                      }}
-                      className="text-white/80 hover:text-white"
-                    >
-                      ✕
-                    </button>
+    <div className="w-full max-h-[70vh] overflow-y-auto -mb-4 mt-2">
+    <div className="grid grid-cols-2 gap-3">
+      {subscriptionTiers.map((tier) => (
+        <div
+          key={tier.title}
+          onClick={() => {
+            if (expandedCard === tier.title) {
+              setExpandedCard(null);
+            } else {
+              setExpandedCard(tier.title);
+              onChange(tier.title.toLowerCase());
+            }
+          }}
+          className={`
+            relative 
+            cursor-pointer 
+            rounded-md 
+            overflow-hidden
+            transition-all 
+            duration-700
+            ease-in-out
+            ${expandedCard === tier.title ? 
+              'col-span-2 h-[400px] opacity-100' : 
+              expandedCard ? 
+                'opacity-0 pointer-events-none absolute' : // Changed to absolute positioning
+                'h-[125px] hover:shadow-lg opacity-100'
+            }
+          `}
+        >
+        <div 
+          className={`
+            absolute 
+            inset-0 
+            bg-cover 
+            bg-center
+            transition-all 
+            duration-700
+            ease-in-out
+            ${expandedCard === tier.title ? 'scale-100' : 'hover:scale-110'}
+          `}
+          style={{ backgroundImage: `url(${tier.background})` }}
+        />
+            <div 
+              className="
+                absolute 
+                inset-0 
+                bg-black/55
+                transition-all 
+                duration-300
+                hover:bg-black/60
+              "
+            />
+            
+            {expandedCard === tier.title ? (
+              <div className="absolute inset-0 p-6 flex flex-col text-white">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <span className="text-gray-300 text-sm uppercase tracking-wider">
+                      {tier.category}
+                    </span>
+                    <h3 className="text-white text-sm font-bold mt-2 mb-1">
+                      {tier.title}
+                    </h3>
+                    <p className="text-white/90 text-sm">
+                      {tier.price}
+                    </p>
                   </div>
-                  
-                  <p className="text-white/90 text-sm">
-                    {tier.fullDescription}
-                  </p>
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    <ul className="text-white/80 text-sm space-y-2">
-                      <h4 className="font-semibold text-white mb-2">Features:</h4>
-                      {tier.features.map((feature, index) => (
-                        <li key={index} className="flex items-center">
-                          <span className="mr-2">✓</span>
-                          {feature}
-                        </li>
-                      ))}
-                    </ul>
-                    
-                    <div className="flex flex-col justify-end">
-                      <button 
-                        className="bg-white text-black rounded-lg py-3 px-6 hover:bg-gray-100 transition"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onChange(tier.title.toLowerCase());
-                        }}
-                      >
-                        Select Plan
-                      </button>
-                    </div>
-                  </div>
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setExpandedCard(null);
+                    }}
+                    className="text-white/80 hover:text-white"
+                  >
+                    ✕
+                  </button>
                 </div>
-              ) : (
-                <div className="absolute inset-0 px-6 flex flex-col items-center justify-center text-center">
-                  <span className="text-gray-300 text-sm uppercase tracking-wider">
-                    {tier.category}
-                  </span>
-                  <h3 className="text-white text-sm font-bold mt-2 mb-1">
-                    {tier.title}
-                  </h3>
-                  <p className="text-white/90 text-sm">
-                    {tier.price}
-                  </p>
+                
+                <p className="text-white/90 text-sm mt-4">
+                  {tier.fullDescription}
+                </p>
+                
+                <div className="grid grid-cols-2 gap-4 mt-4">
+                  <ul className="text-white/80 text-sm space-y-2">
+                    <h4 className="font-semibold text-white mb-2">Features:</h4>
+                    {tier.features.map((feature, index) => (
+                      <li key={index} className="flex items-center">
+                        <span className="mr-2">✓</span>
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              )}
-            </motion.div>
-          ))}
-        </AnimatePresence>
+              </div>
+            ) : (
+              <div className="
+    absolute 
+    inset-0 
+    px-6 
+    flex 
+    flex-col 
+    items-center 
+    justify-center 
+    text-center
+              "
+              >
+                <span className="text-gray-300 text-sm font-extralight tracking-wider mb-1">
+                  {tier.category}
+                </span>
+                <h3 className="text-white text-sm font-semibold mb-1">
+                  {tier.title}
+                </h3>
+                <p className="text-white/90 text-sm font-thin">
+                  {tier.price}
+                </p>
+              </div>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );

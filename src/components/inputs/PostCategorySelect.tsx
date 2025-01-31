@@ -29,8 +29,8 @@ const PostCategorySelect: React.FC<PostCategorySelectProps> = ({
           text-[#6B7280] 
           text-[0.8rem]
           shadow-sm
-          p-3
-          py-3
+          p-3.5
+      
           flex 
           items-center
           transition-opacity

@@ -163,12 +163,12 @@ const RegisterModal= () => {
     bodyContent = (
       <div className="flex flex-col gap-8">
         <Heading
-          title="Share some basics about your place"
-          subtitle="What amenitis do you have?"
+          title="Tell us about yourself"
+          subtitle="What makes you unique?"
         />
          <Input
           id="bio"
-          label="bio"
+          label="About you"
           disabled={isLoading}
           register={register}
           errors={errors}

@@ -246,7 +246,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
     {data.services && data.services.length > 0 && (
       <div className="flex w-full">
         {/* Service Section */}
-        <div className="inline-flex items-center py-3 flex-1 w-36 rounded-md bg-slate-100 shadow-gray-300 shadow-sm ">
+        <div className="inline-flex items-center py-3 flex-1 w-36 rounded-md bg-slate-50 shadow-gray-300 shadow-sm ">
           <div className="w-full flex justify-center gap-1.5">
             <span className="text-xs text-black">
               {data.services[currentServiceIndex].serviceName}
