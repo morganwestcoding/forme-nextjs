@@ -8,7 +8,7 @@ interface AvatarProps {
 }
 
 const Avatar: React.FC<AvatarProps> = ({ src, className = "rounded-full"  }) => {
-  const defaultImage = "/people/rooster.jpg";
+  const defaultImage = "/people/rooster.webp";
   const imageSrc = src || defaultImage;
 
   return (

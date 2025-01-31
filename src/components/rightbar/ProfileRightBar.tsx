@@ -46,16 +46,16 @@ const ProfileRightbar: React.FC<ProfileRightbarProps> = ({ user, listings  }) =>
             </p>
           </div>
           <div className="flex justify-between items-center">
-            <div className="flex items-center pb-2 pt-2 rounded-lg shadow-sm bg-white border px-2 flex-grow mr-2">
+            <div className="flex items-center rounded-lg shadow-sm bg-slate-50 p-3 flex-grow mr-2 shadow-gray-300 ">
               <div className="flex items-center justify-center p-1 cursor-pointer">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="19" height="19" color="#a2a2a2" fill="none">
                   <path d="M13.6177 21.367C13.1841 21.773 12.6044 22 12.0011 22C11.3978 22 10.8182 21.773 10.3845 21.367C6.41302 17.626 1.09076 13.4469 3.68627 7.37966C5.08963 4.09916 8.45834 2 12.0011 2C15.5439 2 18.9126 4.09916 20.316 7.37966C22.9082 13.4393 17.599 17.6389 13.6177 21.367Z" stroke="currentColor" strokeWidth="1.5" />
                   <path d="M15.5 11C15.5 12.933 13.933 14.5 12 14.5C10.067 14.5 8.5 12.933 8.5 11C8.5 9.067 10.067 7.5 12 7.5C13.933 7.5 15.5 9.067 15.5 11Z" stroke="currentColor" strokeWidth="1.5" />
                 </svg>
               </div>
-              <span className="ml-2 text-xs font-light text-[#a2a2a2]">{city}, {stateAcronym}</span>
+              <span className="ml-2 text-xs font-light text-neutral-500  ">{city}, {stateAcronym}</span>
             </div>
-            <div className="flex items-center pb-2 pt-2 rounded-lg shadow-sm bg-white border px-2 flex-grow">
+            <div className="flex items-center p-3 rounded-lg shadow-sm bg-slate-50 flex-grow shadow-gray-300">
               <div className="flex items-center justify-center p-1 cursor-pointer">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={19} height={19} color={"#a2a2a2"} fill={"none"}>
                   <path d="M11 13H16M8 13H8.00898M13 17H8M16 17H15.991" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -64,7 +64,7 @@ const ProfileRightbar: React.FC<ProfileRightbarProps> = ({ user, listings  }) =>
                   <path d="M3 8H21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
-              <span className="ml-2 text-xs font-light text-[#a2a2a2]">Joined {formattedDate}</span>
+              <span className="ml-2 text-xs font-light text-neutral-500 ">Joined {formattedDate}</span>
             </div>
           </div>
         </div>
