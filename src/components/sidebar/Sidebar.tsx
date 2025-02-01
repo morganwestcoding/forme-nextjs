@@ -14,7 +14,6 @@ import Search from "../header/Search";
 import FilterTab from "../FilterTab";
 import axios from 'axios';
 import useInboxModal from '@/app/hooks/useInboxModal';
-import { Rocket } from 'lucide-react';
 
 interface SidebarProps {
   currentUser?: SafeUser | null;
@@ -118,8 +117,7 @@ isMobile }) => {
         <div className="flex flex-col w-full">
         
         <ul className="list-none m-0 p-0 flex flex-col items-center hover:text-white ">
-          {/* Add this before your first menu item (Home) */}
-          <li className={` group flex items-center justify-start mb-2.5 mt-2 p-2 rounded-md   transition-colors duration-250 ${
+        <li className={` group flex items-center justify-start mb-2.5 mt-2 p-2 rounded-md transition-colors duration-250 ${
     selectedButton === 'explore' ? 'bg-slate-500' : ' hover:bg-gray-200 hover:text-white transition-all'
   } w-44`} 
   onClick={() => {
@@ -127,19 +125,33 @@ isMobile }) => {
     setSelectedButton('explore');
   }}>
   <div className="group flex items-center justify-center w-8 h-8 rounded-full p-1 cursor-pointer transition-colors">
-
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={20} height={20} color={selectedButton === 'explore' ? "#ffffff" : "#71717A"}  fill={"none"} className="group-hover:text-white">
-  
-
-    <path d="M12 22C6.47715 22 2 17.5228 2 12C2 9.20746 3.14465 6.68227 4.99037 4.86802M12 22C11.037 21.2864 11.1907 20.4555 11.6738 19.6247C12.4166 18.3474 12.4166 18.3474 12.4166 16.6444C12.4166 14.9414 13.4286 14.1429 17 14.8571C18.6047 15.1781 19.7741 12.9609 21.8573 13.693M12 22C16.9458 22 21.053 18.4096 21.8573 13.693M21.8573 13.693C21.9511 13.1427 22 12.5771 22 12C22 7.11857 18.5024 3.05405 13.8766 2.17579M13.8766 2.17579C14.3872 3.11599 14.1816 4.23551 13.1027 4.66298C11.3429 5.3603 12.6029 6.64343 11.1035 7.4356C10.1038 7.96372 8.6044 7.83152 7.10496 6.24716C6.31517 5.41264 5.83966 4.95765 4.99037 4.86802M13.8766 2.17579C13.2687 2.06039 12.6414 2 12 2C9.26969 2 6.79495 3.09421 4.99037 4.86802" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
-
-
-
-    </svg>
+  <svg 
+  xmlns="http://www.w3.org/2000/svg"
+  width="24" 
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none" 
+  stroke="currentColor"
+  strokeWidth="1.5"
+  strokeLinecap="round"
+  strokeLinejoin="round"
+  color={selectedButton === 'explore' ? "#ffffff" : "#71717A"} 
+  className="group-hover:stroke-white lucide lucide-rocket"
+>
+  <circle
+    cx="16"
+    cy="8"
+    r="0.5"
+    fill={selectedButton === 'explore' ? "#ffffff" : "#71717A"}
+  />
+  <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"></path>
+  <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"  ></path>
+  <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" ></path>
+</svg>
   </div>
   <span className={`ml-3 text-[0.8rem] font-light ${
     selectedButton === 'explore' ? 'text-white' : 'text-[#71717A] group-hover:text-white'
-  }`}>Explore</span>
+  }`}>Discover</span>
 </li>
 
           <li className={` group flex items-center justify-start mb-2.5 p-2  rounded-md  transition-colors duration-250   ${
@@ -151,10 +163,9 @@ isMobile }) => {
           }}
           >
             <div className="group flex items-center justify-center w-8 h-8 rounded-full p-1 cursor-pointer transition-colors" >
-            
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={20} height={20} color={selectedButton === 'home' ? "#ffffff" : "#71717A"} fill={selectedButton === 'home' ? "#ffffff" : "none"} className="group-hover:text-white">
                 <path d="M9.06165 4.82633L3.23911 9.92134C2.7398 10.3583 3.07458 11.1343 3.76238 11.1343C4.18259 11.1343 4.52324 11.4489 4.52324 11.8371V15.0806C4.52324 17.871 4.52324 19.2662 5.46176 20.1331C6.40029 21 7.91082 21 10.9319 21H13.0681C16.0892 21 17.5997 21 18.5382 20.1331C19.4768 19.2662 19.4768 17.871 19.4768 15.0806V11.8371C19.4768 11.4489 19.8174 11.1343 20.2376 11.1343C20.9254 11.1343 21.2602 10.3583 20.7609 9.92134L14.9383 4.82633C13.5469 3.60878 12.8512 3 12 3C11.1488 3 10.4531 3.60878 9.06165 4.82633Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                <path className={`${selectedButton !== 'home' ? 'group-hover:stroke-white' : ''}`} d="M12 16H12.009" stroke={selectedButton === 'home' ? "#71717A" : "#71717A"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <path className={`${selectedButton !== 'home' ? 'group-hover:stroke-white' : ''}`} d="M12 16H12.009" stroke={selectedButton === 'home' ? "#71717A" : "#71717A"} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           
           </div>
@@ -177,7 +188,7 @@ isMobile }) => {
           <div className="group flex items-center justify-center w-8 h-8 rounded-full p-1 cursor-pointer transition-colors" >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={20} height={20} color={selectedButton === 'market' ? "#ffffff" : "#71717A"}  fill={selectedButton === 'market' ? "#64748B" : "none"}  className=" group-hover:text-white">
             <path d="M3 10.9871V15.4925C3 18.3243 3 19.7403 3.87868 20.62C4.75736 21.4998 6.17157 21.4998 9 21.4998H15C17.8284 21.4998 19.2426 21.4998 20.1213 20.62C21 19.7403 21 18.3243 21 15.4925V10.9871" stroke="currentColor" strokeWidth="1.5" fill={selectedButton === 'market' ? "#ffffff" : "none"}  />
-            <path className={`${selectedButton !== 'market' ? 'group-hover:stroke-white' : 'none'}`} d="M15 16.9768C14.3159 17.584 13.2268 17.9768 12 17.9768C10.7732 17.9768 9.68409 17.584 9 16.9768" stroke={selectedButton === 'market' ? "#71717A" : "#64748B"} strokeWidth="1.5" strokeLinecap="round" />
+            <path className={`${selectedButton !== 'market' ? 'group-hover:stroke-white' : 'none'}`} d="M12 16.9768C14.3159 17.584 13.2268 17.9768 12 17.9768C10.7732 17.9768 9.68409 17.584 9 16.9768" stroke={selectedButton === 'market' ? "#71717A" : "#64748B"} strokeWidth="1.5" strokeLinecap="round" />
             <path d="M17.7957 2.50294L6.14983 2.53202C4.41166 2.44248 3.966 3.78259 3.966 4.43768C3.966 5.02359 3.89055 5.87774 2.82524 7.4831C1.75993 9.08846 1.83998 9.56536 2.44071 10.6767C2.93928 11.5991 4.20741 11.9594 4.86862 12.02C6.96883 12.0678 7.99065 10.2517 7.99065 8.97523C9.03251 12.1825 11.9955 12.1825 13.3158 11.8157C14.6385 11.4483 15.7717 10.1331 16.0391 8.97523C16.195 10.4142 16.6682 11.2538 18.0663 11.8308C19.5145 12.4284 20.7599 11.515 21.3848 10.9294C22.0096 10.3439 22.4107 9.04401 21.2967 7.6153C20.5285 6.63001 20.2084 5.7018 20.1032 4.73977C20.0423 4.18234 19.9888 3.58336 19.5971 3.20219C19.0247 2.64515 18.2035 2.47613 17.7957 2.50294Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
             </div>
