@@ -54,9 +54,14 @@ const UserButton: React.FC<UserButtonProps> = ({
               </span>
             </>
           ) : (
-            <span className="text-black text-xs">
-              Get Started
+            <div className="flex flex-col items-start">
+            <span className="text-black text-xs font-medium -ml-[0.5px]">
+              Login
             </span>
+            <span className="text-[#71717A] text-xs">
+              Free Version
+            </span>
+          </div>
           )}
         </div>
         <div className="ml-auto">

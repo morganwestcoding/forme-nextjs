@@ -233,11 +233,11 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
     <>
       {!isHidden && (
         <>
-         <div className='w-full h-auto rounded-lg shadow-sm bg-[#ffffff] p-6 md:mr-8 my-4 relative cursor-pointer' onClick={openModal}>
-            <div className="absolute top-4 right-6">
+         <div className='w-full h-auto rounded-lg shadow-sm bg-[#ffffff] p-6 md:mr-6 my-4 relative cursor-pointer' onClick={openModal}>
+            <div className="absolute top-4 right-3">
               <DropdownMenu>
                 <DropdownMenuTrigger>
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" color="#71717A" fill="none">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" color="#71717A" fill="none" className='rotate-90'>
                     <path d="M11.9959 12H12.0049" stroke="currentColor" strokeWidth="2.75" strokeLinecap="round" strokeLinejoin="round" />
                     <path d="M17.9998 12H18.0088" stroke="currentColor" strokeWidth="2.75" strokeLinecap="round" strokeLinejoin="round" />
                     <path d="M5.99981 12H6.00879" stroke="currentColor" strokeWidth="2.75" strokeLinecap="round" strokeLinejoin="round" />

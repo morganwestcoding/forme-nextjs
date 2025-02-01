@@ -14,6 +14,7 @@ import Search from "../header/Search";
 import FilterTab from "../FilterTab";
 import axios from 'axios';
 import useInboxModal from '@/app/hooks/useInboxModal';
+import { Rocket } from 'lucide-react';
 
 interface SidebarProps {
   currentUser?: SafeUser | null;
@@ -110,6 +111,7 @@ isMobile }) => {
               <div className="h-6" /> {/* Add a spacer */}
               </>
         )}
+
 <Logo variant="vertical" />
   <UserButton currentUser={currentUser} data={{} as SafePost} />
 
@@ -117,7 +119,7 @@ isMobile }) => {
         
         <ul className="list-none m-0 p-0 flex flex-col items-center hover:text-white ">
           {/* Add this before your first menu item (Home) */}
-          <li className={` group flex items-center justify-start mb-2.5 p-2 rounded-md   transition-colors duration-250 ${
+          <li className={` group flex items-center justify-start mb-2.5 mt-2 p-2 rounded-md   transition-colors duration-250 ${
     selectedButton === 'explore' ? 'bg-slate-500' : ' hover:bg-gray-200 hover:text-white transition-all'
   } w-44`} 
   onClick={() => {
@@ -126,14 +128,17 @@ isMobile }) => {
   }}>
   <div className="group flex items-center justify-center w-8 h-8 rounded-full p-1 cursor-pointer transition-colors">
 
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={20} height={20} color={selectedButton === 'jobs' ? "#ffffff" : "#71717A"}  fill={"none"} className="group-hover:text-white">
-    <path d="M12.4014 8.29796L15.3213 7.32465C16.2075 7.02924 16.6507 6.88153 16.8846 7.11544C17.1185 7.34935 16.9708 7.79247 16.6753 8.67871L15.702 11.5986C15.1986 13.1088 14.9469 13.8639 14.4054 14.4054C13.8639 14.9469 13.1088 15.1986 11.5986 15.702L8.67871 16.6753C7.79247 16.9708 7.34935 17.1185 7.11544 16.8846C6.88153 16.6507 7.02924 16.2075 7.32465 15.3213L8.29796 12.4014C8.80136 10.8912 9.05306 10.1361 9.59457 9.59457C10.1361 9.05306 10.8912 8.80136 12.4014 8.29796Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-    <path d="M12 12L11.9936 12.0064" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-    <path d="M2.5 12C2.5 7.52166 2.5 5.28249 3.89124 3.89124C5.28249 2.5 7.52166 2.5 12 2.5C16.4783 2.5 18.7175 2.5 20.1088 3.89124C21.5 5.28249 21.5 7.52166 21.5 12C21.5 16.4783 21.5 18.7175 20.1088 20.1088C18.7175 21.5 16.4783 21.5 12 21.5C7.52166 21.5 5.28249 21.5 3.89124 20.1088C2.5 18.7175 2.5 16.4783 2.5 12Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={20} height={20} color={selectedButton === 'explore' ? "#ffffff" : "#71717A"}  fill={"none"} className="group-hover:text-white">
+  
+
+    <path d="M12 22C6.47715 22 2 17.5228 2 12C2 9.20746 3.14465 6.68227 4.99037 4.86802M12 22C11.037 21.2864 11.1907 20.4555 11.6738 19.6247C12.4166 18.3474 12.4166 18.3474 12.4166 16.6444C12.4166 14.9414 13.4286 14.1429 17 14.8571C18.6047 15.1781 19.7741 12.9609 21.8573 13.693M12 22C16.9458 22 21.053 18.4096 21.8573 13.693M21.8573 13.693C21.9511 13.1427 22 12.5771 22 12C22 7.11857 18.5024 3.05405 13.8766 2.17579M13.8766 2.17579C14.3872 3.11599 14.1816 4.23551 13.1027 4.66298C11.3429 5.3603 12.6029 6.64343 11.1035 7.4356C10.1038 7.96372 8.6044 7.83152 7.10496 6.24716C6.31517 5.41264 5.83966 4.95765 4.99037 4.86802M13.8766 2.17579C13.2687 2.06039 12.6414 2 12 2C9.26969 2 6.79495 3.09421 4.99037 4.86802" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
+
+
+
     </svg>
   </div>
   <span className={`ml-3 text-[0.8rem] font-light ${
-    selectedButton === 'jobs' ? 'text-white' : 'text-[#71717A] group-hover:text-white'
+    selectedButton === 'explore' ? 'text-white' : 'text-[#71717A] group-hover:text-white'
   }`}>Explore</span>
 </li>
 

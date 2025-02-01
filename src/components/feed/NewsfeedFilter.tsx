@@ -62,7 +62,7 @@ const NewsfeedFilter: React.FC<NewsfeedFilterProps> = ({ onFilterChange }) => {
         
         {/* Animated Indicator */}
         <div
-          className="absolute bottom-0 h-[3.5px] bg-[#78C3FB] rounded-t-sm transition-all duration-300 ease-in-out"
+          className="absolute bottom-0 h-1 bg-[#78C3FB] rounded-t-sm transition-all duration-300 ease-in-out"
           style={{
             width: `${indicatorStyle.width}px`,
             left: `${indicatorStyle.left}px`,
