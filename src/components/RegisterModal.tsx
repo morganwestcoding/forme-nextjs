@@ -206,14 +206,16 @@ const RegisterModal= () => {
           title="Tell us about yourself"
           subtitle="What makes you unique?"
         />
-         <Input
-          id="bio"
-          label="About you"
-          disabled={isLoading}
-          register={register}
-          errors={errors}
-          required
-        />
+      <Input
+        id="bio"
+        label="Tell Us About You..."
+        disabled={isLoading}
+        register={register}
+        errors={errors}
+        required
+        maxLength={300}
+        type="textarea" // Add this
+      />
       </div>
     )
   }

@@ -6,7 +6,7 @@ import {
   UseFormRegister 
 } from "react-hook-form";
 import { BiDollar } from "react-icons/bi";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, ChangeEvent } from 'react';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 
 interface InputProps {
@@ -20,7 +20,7 @@ interface InputProps {
   register: UseFormRegister<FieldValues>,
   errors: FieldErrors
   maxLength?: number;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 }
 
 interface PasswordValidation {
@@ -62,7 +62,7 @@ const Input: React.FC<InputProps> = ({
     }
   }, [maxLength]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     if (maxLength) {
       setCharCount(e.target.value.length);
       if (e.target.value.length > maxLength) {
@@ -104,52 +104,87 @@ const Input: React.FC<InputProps> = ({
       {formatPrice && (
         <BiDollar size={24} className="text-neutral-700 absolute top-5 left-2" />
       )}
-      <div className="relative">
-        <input
-          id={id}
-          disabled={disabled}
-          {...register(id, { 
-            required,
-            maxLength: maxLength ? {
-              value: maxLength,
-              message: `Maximum ${maxLength} characters allowed`
-            } : undefined,
-            validate: type === "password" ? {
-              hasRequirements: (value) => {
-                const validation = {
-                  hasMinLength: value.length >= 6,
-                  hasMaxLength: value.length <= 18,
-                  hasUpperCase: /[A-Z]/.test(value),
-                  hasLowerCase: /[a-z]/.test(value),
-                  hasNumber: /[0-9]/.test(value),
-                  hasSpecialChar: /[!@#$%^&*(),]/.test(value)
-                };
-                return Object.values(validation).every(Boolean) || "Password does not meet requirements";
-              }
-            } : undefined
-          })}
-          placeholder={placeholder} 
-          type={type === "password" ? (showPassword ? "text" : "password") : type}
-          className={`
-            peer
-            w-full
-            p-3
-            pt-6 
-            border-neutral-500
-            bg-slate-50
-            border
-            rounded-md
-            outline-none
-            transition
-            disabled:opacity-70
-            disabled:cursor-not-allowed
-            ${formatPrice ? 'pl-9' : 'pl-4'}
-            ${type === "password" ? 'pr-12' : 'pr-4'}
-            ${errors[id] ? 'border-rose-500' : 'border-neutral-300'}
-            ${errors[id] ? 'focus:border-rose-500' : 'focus:border-black'}
-          `}
-          onChange={handleChange}
-        />
+       <div className="relative">
+        {id === 'bio' ? (
+          <textarea
+            id={id}
+            disabled={disabled}
+            {...register(id, { 
+              required,
+              maxLength: maxLength ? {
+                value: maxLength,
+                message: `Maximum ${maxLength} characters allowed`
+              } : undefined
+            })}
+            placeholder={placeholder}
+            className={`
+              peer
+              w-full
+              p-3
+              pt-6 
+              border-neutral-500
+              bg-slate-50
+              border
+              rounded-md
+              outline-none
+              transition
+              resize-none
+              h-[200px]
+              disabled:opacity-70
+              disabled:cursor-not-allowed
+              ${formatPrice ? 'pl-9' : 'pl-4'}
+              ${errors[id] ? 'border-rose-500' : 'border-neutral-300'}
+              ${errors[id] ? 'focus:border-rose-500' : 'focus:border-black'}
+            `}
+            onChange={handleChange}
+          />
+        ) : (
+          <input
+            id={id}
+            disabled={disabled}
+            {...register(id, { 
+              required,
+              maxLength: maxLength ? {
+                value: maxLength,
+                message: `Maximum ${maxLength} characters allowed`
+              } : undefined,
+              validate: type === "password" ? {
+                hasRequirements: (value) => {
+                  const validation = {
+                    hasMinLength: value.length >= 6,
+                    hasMaxLength: value.length <= 18,
+                    hasUpperCase: /[A-Z]/.test(value),
+                    hasLowerCase: /[a-z]/.test(value),
+                    hasNumber: /[0-9]/.test(value),
+                    hasSpecialChar: /[!@#$%^&*(),]/.test(value)
+                  };
+                  return Object.values(validation).every(Boolean) || "Password does not meet requirements";
+                }
+              } : undefined
+            })}
+            placeholder={placeholder} 
+            type={type === "password" ? (showPassword ? "text" : "password") : type}
+            className={`
+              peer
+              w-full
+              p-3
+              pt-6 
+              border-neutral-500
+              bg-slate-50
+              border
+              rounded-md
+              outline-none
+              transition
+              disabled:opacity-70
+              disabled:cursor-not-allowed
+              ${formatPrice ? 'pl-9' : 'pl-4'}
+              ${type === "password" ? 'pr-12' : 'pr-4'}
+              ${errors[id] ? 'border-rose-500' : 'border-neutral-300'}
+              ${errors[id] ? 'focus:border-rose-500' : 'focus:border-black'}
+            `}
+            onChange={handleChange}
+          />
+        )}
         {type === "password" && (
           <button
             type="button"

@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import Select from 'react-select';
 import useStates from '@/app/hooks/useStates';
 import useCities from '@/app/hooks/useCities';
+import MapComponent from '../MapComponent';
 
 interface LocationSelection {
   label: string;
@@ -14,21 +15,25 @@ interface ProfileLocationInputProps {
 }
 
 const ProfileLocationInput: React.FC<ProfileLocationInputProps> = ({ onLocationSubmit }) => {
-  const [selectedCountry] = useState<string>('6252001');
   const [selectedState, setSelectedState] = useState<LocationSelection | null>(null);
   const [selectedCity, setSelectedCity] = useState<LocationSelection | null>(null);
+  const [currentLocation, setCurrentLocation] = useState<string | null>(null);
 
-  const states = useStates(selectedCountry);
-  const cities = useCities(selectedState?.value ?? '');
+  const { states, loading: statesLoading } = useStates('US');
+  const { cities, loading: citiesLoading } = useCities(selectedState?.value ?? '');
 
   const handleStateChange = (selectedOption: LocationSelection | null) => {
     setSelectedState(selectedOption);
     setSelectedCity(null);
+    setCurrentLocation(null);
   };
 
   const handleCityChange = (selectedOption: LocationSelection | null) => {
     setSelectedCity(selectedOption);
-    const location = selectedOption ? `${selectedOption.label}, ${selectedState?.label}` : null;
+    const location = selectedOption 
+      ? `${selectedOption.label}, ${selectedState?.label}` 
+      : null;
+    setCurrentLocation(location);
     onLocationSubmit(location);
   };
 
@@ -56,32 +61,34 @@ const ProfileLocationInput: React.FC<ProfileLocationInputProps> = ({ onLocationS
       !relative !w-full
       ${state.isFocused ? 'peer-focus:border-black' : ''}
     `
-};
+  };
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3 -mt-4">
+           <div className="flex flex-col gap-3">
       <div className="relative">
         <Select
           options={states}
           value={selectedState}
           onChange={handleStateChange}
           placeholder=" "
+          isLoading={statesLoading}
           classNames={selectClasses}
-          getOptionLabel={(option) => option.label}
-          getOptionValue={(option) => option.value}
+          getOptionLabel={(option: LocationSelection) => option.label}
+          getOptionValue={(option: LocationSelection) => option.value}
           noOptionsMessage={() => "No states found"}
         />
-<label className={`
-  absolute 
-  text-sm
-  duration-150 
-  transform 
-  top-5 
-  left-4
-  origin-[0] 
-  text-neutral-500
-  ${selectedState ? 'scale-100 -translate-y-3 ' : 'translate-y-0'}
-`}>
+        <label className={`
+          absolute 
+          text-sm
+          duration-150 
+          transform 
+          top-5 
+          left-4
+          origin-[0] 
+          text-neutral-500
+          ${selectedState ? 'scale-100 -translate-y-3 ' : 'translate-y-0'}
+        `}>
           State
         </label>
       </div>
@@ -91,25 +98,32 @@ const ProfileLocationInput: React.FC<ProfileLocationInputProps> = ({ onLocationS
           value={selectedCity}
           onChange={handleCityChange}
           placeholder=" "
+          isLoading={citiesLoading}
           classNames={selectClasses}
-          getOptionLabel={(option) => option.label}
-          getOptionValue={(option) => option.value}
-          noOptionsMessage={() => "No cities found"}
+          getOptionLabel={(option: LocationSelection) => option.label}
+          getOptionValue={(option: LocationSelection) => option.value}
+          noOptionsMessage={() => selectedState ? "No cities found" : "Please select a state first"}
+          isDisabled={!selectedState}
         />
         <label className={`
-    absolute 
-  text-sm
-  duration-150 
-  transform 
-  top-5 
-  left-4
-  origin-[0] 
-  text-neutral-500
+          absolute 
+          text-sm
+          duration-150 
+          transform 
+          top-5 
+          left-4
+          origin-[0] 
+          text-neutral-500
           ${selectedCity ? 'scale-100 -translate-y-3' : 'translate-y-0'}
         `}>
           City
         </label>
       </div>
+      </div>
+
+        <div className="mt-4">
+          <MapComponent location={currentLocation} />
+        </div>
     </div>
   );
 };
