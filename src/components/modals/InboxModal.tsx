@@ -82,8 +82,8 @@ const InboxModal = () => {
   `;
 
   const bodyContent = (
-    <div className="flex flex-col h-[450px] pb-2">
-      <div className="mb-4">
+    <div className="flex flex-col h-[550px] pb-2">
+      <div className="mb-4 mt-8">
         <UserSearch onResultClick={startNewConversation} />
       </div>
       <div className="h-full overflow-y-auto space-y-4 custom-scrollbar pr-2">

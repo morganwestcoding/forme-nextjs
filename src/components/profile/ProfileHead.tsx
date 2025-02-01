@@ -80,7 +80,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({ user, currentUser }) => {
                 <CreateChatButton currentUser={currentUser} otherUserId={user.id} />
                 </>
               ) : (
-                <button className='font-light text-[#717171] rounded-lg text-xs bg-[#ffffff] border p-2.5 px-6 ml-5 shadow-sm w-40'>
+                <button className='font-light text-[#717171] rounded-lg text-xs bg-slate-50 shadow-gray-300 p-2.5 px-6 ml-5 shadow-sm w-40'>
                   Edit Profile
                 </button>
               )}

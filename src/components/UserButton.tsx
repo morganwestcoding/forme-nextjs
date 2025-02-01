@@ -1,11 +1,12 @@
 "use client";
+
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-  } from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu"
 import Avatar from "./ui/avatar";
 import { signOut } from "next-auth/react";
 import { useCallback, useState } from "react";
@@ -19,7 +20,7 @@ import useSubscribeModal from "@/app/hooks/useSubscribeModal";
 
 interface UserButtonProps {
   currentUser?: SafeUser | null 
-  data: SafePost;
+  data?: SafePost;
 }
 
 const UserButton: React.FC<UserButtonProps> = ({
@@ -31,38 +32,51 @@ const UserButton: React.FC<UserButtonProps> = ({
   const rentModal = useRentModal();
   const profileModal = useProfileModal();
   const SubscribeModal = useSubscribeModal();
-  
+
+  const formatTier = (tier: string | null | undefined) => {
+    if (!tier) return 'Free';
+    const baseTier = tier.split(' ')[0];
+    return baseTier.charAt(0).toUpperCase() + baseTier.slice(1).toLowerCase();
+  };
 
   return (      
     <DropdownMenu>   
-<DropdownMenuTrigger className="w-44 flex items-center justify-center p-2 bg-slate-50 shadow-sm shadow-gray-300 mb-2 cursor-pointer rounded-md  hover:bg-[#DFE2E2] transition-colors duration-250 outline-none">
-  <Avatar 
-    src={currentUser?.image ?? undefined} 
-  />
-<div className="ml-3 flex flex-col items-start">
-  <span className="text-black text-xs font-medium -ml-[0.5px]">
-    {currentUser?.name?.split(' ')[0]}
-  </span>
-  <span className="text-[#71717A] text-xs">Premium</span>
-</div>
-  <div className="ml-auto">
-    <svg 
-      xmlns="http://www.w3.org/2000/svg" 
-      width="16" 
-      height="16" 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke="currentColor" 
-      strokeWidth="2" 
-      strokeLinecap="round" 
-      strokeLinejoin="round" 
-      className="text-[#71717A]"
-    >
+      <DropdownMenuTrigger className="w-44 flex items-center justify-center p-2 bg-slate-50 shadow-sm shadow-gray-300 mb-2 cursor-pointer rounded-md hover:bg-[#DFE2E2] transition-colors duration-250 outline-none">
+        <Avatar src={currentUser?.image ?? undefined} />
+        <div className="ml-3 flex flex-col items-start">
+          {currentUser ? (
+            <>
+              <span className="text-black text-xs font-medium -ml-[0.5px]">
+                {currentUser.name?.split(' ')[0]}
+              </span>
+              <span className="text-[#71717A] text-xs">
+                {formatTier(currentUser.subscriptionTier)}
+              </span>
+            </>
+          ) : (
+            <span className="text-black text-xs">
+              Get Started
+            </span>
+          )}
+        </div>
+        <div className="ml-auto">
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            width="16" 
+            height="16" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            strokeWidth="2" 
+            strokeLinecap="round" 
+            strokeLinejoin="round" 
+            className="text-[#71717A]"
+          >
+            <path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </div>
+      </DropdownMenuTrigger>
 
-    <path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-    </svg>
-  </div>
-</DropdownMenuTrigger>
       <DropdownMenuContent 
         className="
           w-44
@@ -124,23 +138,23 @@ const UserButton: React.FC<UserButtonProps> = ({
               My Appointments
             </DropdownMenuItem>
             <DropdownMenuItem
-  onClick={() => {
-    console.log('Rent modal clicked');
-    rentModal.onOpen();
-  }}
-  className="
-    p-3 
-    text-black 
-    hover:bg-gray-500 
-    hover:bg-opacity-25 
-    rounded-md 
-    cursor-pointer 
-    transition 
-    duration-200
-  "
->
-  Add Listing
-</DropdownMenuItem>
+              onClick={() => {
+                console.log('Rent modal clicked');
+                rentModal.onOpen();
+              }}
+              className="
+                p-3 
+                text-black 
+                hover:bg-gray-500 
+                hover:bg-opacity-25 
+                rounded-md 
+                cursor-pointer 
+                transition 
+                duration-200
+              "
+            >
+              Add Listing
+            </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => {
                 console.log('Subscribe clicked');
