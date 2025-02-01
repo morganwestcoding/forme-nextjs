@@ -117,7 +117,6 @@ isMobile }) => {
         
         <ul className="list-none m-0 p-0 flex flex-col items-center hover:text-white ">
           {/* Add this before your first menu item (Home) */}
-          <div className="w-44 h-[1px] rounded-full bg-[#71717A] text-neutral-500 mb-4 mt-1"></div>
           <li className={` group flex items-center justify-start mb-2.5 p-2 rounded-md   transition-colors duration-250 ${
     selectedButton === 'explore' ? 'bg-slate-500' : ' hover:bg-gray-200 hover:text-white transition-all'
   } w-44`} 
@@ -286,7 +285,7 @@ isMobile }) => {
   </div>
 </li>
 {/* Add this right after the Appointments button li element */}
-<li className={` group flex items-center justify-start   mb-4 p-2 rounded-md transition-colors duration-250 ${
+<li className={` group flex items-center justify-start   mb-2.5 p-2 rounded-md transition-colors duration-250 ${
   selectedButton === 'vendors' ? 'bg-slate-500' : ' hover:bg-gray-200 hover:text-white transition-all'
 } w-44`} 
 onClick={() => {
@@ -347,8 +346,6 @@ onClick={() => {
     selectedButton === 'vendors' ? 'text-white' : 'text-[#71717A] group-hover:text-white'
   }`}>Vendors</span>
 </li>
-      
-          <div className="w-44 h-[1px] rounded-full bg-[#71717A] mb-4"></div>
           <li 
   className={` group flex items-center    justify-start mb-2.5 p-2 rounded-md transition-colors duration-250 ${
     selectedButton === 'inbox' ? 'bg-slate-500' : ' hover:bg-gray-200 hover:text-white transition-all'
@@ -375,7 +372,7 @@ onClick={() => {
 </div>
     </div>
 </li>
-<li className={` group flex items-center justify-start    mb-2.5 p-2 rounded-md transition-colors duration-250 ${
+<li className={` group flex items-center justify-start  p-2 rounded-md transition-colors duration-250 ${
   selectedButton === 'notifications' ? 'bg-slate-500' : 'hover:bg-gray-200 hover:text-white transition-all'
 } w-44`} 
 onClick={() => {
@@ -398,6 +395,7 @@ onClick={() => {
 </div>
     </div>
 </li>
+
 
           </ul>
 
