@@ -149,7 +149,7 @@ isMobile }) => {
   <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" ></path>
 </svg>
   </div>
-  <span className={`ml-3 text-[0.8rem] font-light ${
+  <span className={`ml-3 text-sm font-light ${
     selectedButton === 'explore' ? 'text-white' : 'text-[#71717A] group-hover:text-white'
   }`}>Discover</span>
 </li>
@@ -169,7 +169,7 @@ isMobile }) => {
             </svg>
           
           </div>
-          <span className={`ml-3 text-[0.8rem] font-light ${
+          <span className={`ml-3 text-sm font-light ${
     selectedButton === 'home' ? 'text-white' : 'text-[#71717A] group-hover:text-white'
   }`}>Home</span>
 
@@ -192,7 +192,7 @@ isMobile }) => {
             <path d="M17.7957 2.50294L6.14983 2.53202C4.41166 2.44248 3.966 3.78259 3.966 4.43768C3.966 5.02359 3.89055 5.87774 2.82524 7.4831C1.75993 9.08846 1.83998 9.56536 2.44071 10.6767C2.93928 11.5991 4.20741 11.9594 4.86862 12.02C6.96883 12.0678 7.99065 10.2517 7.99065 8.97523C9.03251 12.1825 11.9955 12.1825 13.3158 11.8157C14.6385 11.4483 15.7717 10.1331 16.0391 8.97523C16.195 10.4142 16.6682 11.2538 18.0663 11.8308C19.5145 12.4284 20.7599 11.515 21.3848 10.9294C22.0096 10.3439 22.4107 9.04401 21.2967 7.6153C20.5285 6.63001 20.2084 5.7018 20.1032 4.73977C20.0423 4.18234 19.9888 3.58336 19.5971 3.20219C19.0247 2.64515 18.2035 2.47613 17.7957 2.50294Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
             </div>
-            <span className={`ml-3 text-[0.8rem] font-light ${
+            <span className={`ml-3 text-sm font-light ${
                 selectedButton === 'market' ? 'text-white' : 'text-[#71717A] group-hover:text-white hover:-gray-200'
               }`}>Market</span>
             </li>
@@ -214,7 +214,7 @@ isMobile }) => {
           </div>     
 
            
-          <span className={`ml-3 text-[0.8rem] font-light ${
+          <span className={`ml-3 text-sm font-light ${
                 selectedButton === 'favorites' ? 'text-white' : 'text-[#71717A] group-hover:text-white'
               }`}>Favorites</span>
      
@@ -238,7 +238,7 @@ isMobile }) => {
       <path d="M15.5 5.5L15.4227 5.23509C15.0377 3.91505 14.8452 3.25503 14.3869 2.87752C13.9286 2.5 13.3199 2.5 12.1023 2.5H11.8977C10.6801 2.5 10.0714 2.5 9.61309 2.87752C9.15478 3.25503 8.96228 3.91505 8.57727 5.23509L8.5 5.5" stroke="currentColor" strokeWidth="1.5" />
     </svg>
   </div>
-  <span className={`ml-3 text-[0.8rem] font-light ${
+  <span className={`ml-3 text-sm font-light ${
     selectedButton === 'jobs' ? 'text-white' : 'text-[#71717A] group-hover:text-white'
   }`}>Jobs</span>
 </li>
@@ -289,7 +289,7 @@ isMobile }) => {
           />
         </svg>
       </div>
-      <span className={`ml-3 text-[0.8rem] font-light ${
+      <span className={`ml-3 text-sm font-light ${
         selectedButton === 'Appointments' ? 'text-white' : 'text-[#71717A] group-hover:text-white'
       }`}>Appointments</span>
     </div>
@@ -358,7 +358,7 @@ onClick={() => {
       />
     </svg>
   </div>
-  <span className={`ml-3 text-[0.8rem] font-light ${
+  <span className={`ml-3 text-sm font-light ${
     selectedButton === 'vendors' ? 'text-white' : 'text-[#71717A] group-hover:text-white'
   }`}>Vendors</span>
 </li>
@@ -379,7 +379,7 @@ onClick={() => {
                     <path d="M2.01577 13.4756C2.08114 16.5412 2.11383 18.0739 3.24496 19.2094C4.37608 20.3448 5.95033 20.3843 9.09883 20.4634C11.0393 20.5122 12.9607 20.5122 14.9012 20.4634C18.0497 20.3843 19.6239 20.3448 20.7551 19.2094C21.8862 18.0739 21.9189 16.5412 21.9842 13.4756C22.0053 12.4899 22.0053 11.5101 21.9842 10.5244C21.9189 7.45886 21.8862 5.92609 20.7551 4.79066C19.6239 3.65523 18.0497 3.61568 14.9012 3.53657C12.9607 3.48781 11.0393 3.48781 9.09882 3.53656C5.95033 3.61566 4.37608 3.65521 3.24495 4.79065C2.11382 5.92608 2.08114 7.45885 2.01576 10.5244C1.99474 11.5101 1.99475 12.4899 2.01577 13.4756Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
                 </svg>
             </div>
-            <span className={`ml-3 text-[0.8rem] font-light ${
+            <span className={`ml-3 text-sm font-light ${
                 selectedButton === 'inbox' ? 'text-white' : 'text-[#71717A]  group-hover:text-white'
             }`}>Inbox</span>
         </div>
@@ -403,7 +403,7 @@ onClick={() => {
                     <path d="M8 19C8.45849 20.7252 10.0755 22 12 22C13.9245 22 15.5415 20.7252 16 19" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
             </div>
-            <span className={`ml-3 text-[0.8rem] font-light ${
+            <span className={`ml-3 text-sm font-light ${
                 selectedButton === 'notifications' ? 'text-white' : 'text-[#71717A] group-hover:text-white'
             }`}>Notifications</span>
         </div>
@@ -416,9 +416,9 @@ onClick={() => {
           </ul>
 
 {/* Categories */}
-{/*<span className="mb-5 text-[#ffffff] text-[0.8rem] font-light">Genre</span>
+{/*<span className="mb-5 text-[#ffffff] text-sm font-light">Genre</span>
           <li className={`relative flex items-center justify-center mb-4 p-2 rounded-md shadow w-44 h-20 transition-colors duration-250 ${selectedCategory ? categories.find(c => c.label === selectedCategory)?.color : 'bg-[#78C3FB]'}`}>
-            <span className="text-[#ffffff] text-[0.8rem] group-hover:text-white font-light text-center h-10 rounded-md p-3 bg-black bg-opacity-10 backdrop-blur shadow">
+            <span className="text-[#ffffff] text-sm group-hover:text-white font-light text-center h-10 rounded-md p-3 bg-black bg-opacity-10 backdrop-blur shadow">
               {selectedCategory || 'Default'}
             </span>
           </li>
@@ -476,7 +476,7 @@ onClick={() => {
           />
         </svg>
       </div>
-      <span className={`ml-3 text-[0.8rem] font-light ${
+      <span className={`ml-3 text-sm font-light ${
         selectedButton === 'demo' ? 'text-white' : 'text-[#ffffff] group-hover:text-white'
       }`}>Demo</span>
     </li>

@@ -56,7 +56,7 @@ const NewsfeedFilter: React.FC<NewsfeedFilterProps> = ({ onFilterChange }) => {
             `}
             onClick={() => handleFilterClick(filter.toLowerCase().replace(' ', '-'))}
           >
-            <span className="text-[0.8rem] whitespace-nowrap">{filter}</span>
+            <span className="text-sm whitespace-nowrap">{filter}</span>
           </li>
         ))}
         

@@ -63,11 +63,11 @@ const MarketContent = ({ searchParams, listings, currentUser }: MarketContentPro
       <table className="w-full bg-white rounded-lg shadow-gray-300 p-6">
         <thead>
           <tr className="border-b border-gray-100">
-            <th className="py-4 px-4 text-left text-sm font-medium text-gray-600 w-[30%]">Listing</th>
-            <th className="py-4 px-4 text-left text-sm font-medium text-gray-600 w-[15%]">Category</th>
-            <th className="py-4 px-4 text-left text-sm font-medium text-gray-600 w-[20%]">Location</th>
-            <th className="py-4 px-4 text-left text-sm font-medium text-gray-600 w-[20%]">Services</th>
-            <th className="py-4 px-4 text-left text-sm font-medium text-gray-600 w-[15%]">Actions</th>
+            <th className="py-6 px-6 text-left text-sm font-medium text-gray-600 w-[30%]">Listing</th>
+            <th className="py-6 px-4 text-left text-sm font-medium text-gray-600 w-[15%]">Category</th>
+            <th className="py-6 px-4 text-left text-sm font-medium text-gray-600 w-[20%]">Location</th>
+            <th className="py-6 px-4 text-left text-sm font-medium text-gray-600 w-[20%]">Services</th>
+            <th className="py-6 px-4 text-left text-sm font-medium text-gray-600 w-[15%]">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -78,7 +78,7 @@ const MarketContent = ({ searchParams, listings, currentUser }: MarketContentPro
 
             return (
               <tr key={listing.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                <td className="py-4 px-4">
+                <td className="py-4 px-6">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-md overflow-hidden">
                       <img 

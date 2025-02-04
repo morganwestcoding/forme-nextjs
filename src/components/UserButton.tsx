@@ -46,7 +46,7 @@ const UserButton: React.FC<UserButtonProps> = ({
         <div className="ml-3 flex flex-col items-start">
           {currentUser ? (
             <>
-              <span className="text-black text-xs font-medium -ml-[0.5px]">
+              <span className="text-black text-sm font-medium -ml-[0.5px]">
                 {currentUser.name?.split(' ')[0]}
               </span>
               <span className="text-[#71717A] text-xs">

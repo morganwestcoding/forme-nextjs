@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import Select, { StylesConfig } from 'react-select';
+import Select, { StylesConfig, GroupBase } from 'react-select';
 import useStates from '@/app/hooks/useStates';
 import useCities from '@/app/hooks/useCities';
 import { SafeUser } from '@/app/types';
@@ -19,8 +19,18 @@ const AddPostLocation: React.FC<AddPostLocationProps> = ({ onLocationSubmit }) =
   const [selectedState, setSelectedState] = useState<LocationSelection | null>(null);
   const [selectedCity, setSelectedCity] = useState<LocationSelection | null>(null);
 
-  const states = useStates(selectedCountry);
-  const cities = useCities(selectedState?.value ?? '');
+  const { states, loading: statesLoading } = useStates(selectedCountry);
+  const { cities, loading: citiesLoading } = useCities(selectedState?.value ?? '');
+
+  const stateOptions: LocationSelection[] = states.map(state => ({
+    label: state.label,
+    value: state.value
+  }));
+
+  const cityOptions: LocationSelection[] = cities.map(city => ({
+    label: city.label,
+    value: city.value
+  }));
 
   const handleStateChange = (selectedOption: LocationSelection | null) => {
     setSelectedState(selectedOption);
@@ -30,7 +40,6 @@ const AddPostLocation: React.FC<AddPostLocationProps> = ({ onLocationSubmit }) =
   const handleCityChange = (selectedOption: LocationSelection | null) => {
     setSelectedCity(selectedOption);
     if (selectedOption && selectedState) {
-      // Format the location object as expected by the parent component
       const locationObject = {
         label: `${selectedOption.label}, ${selectedState.label}`,
         value: `${selectedOption.label}, ${selectedState.label}`
@@ -112,29 +121,56 @@ const AddPostLocation: React.FC<AddPostLocationProps> = ({ onLocationSubmit }) =
       height: '58px',
       padding: '0 8px 0 0.5rem',
     }),
+    dropdownIndicator: (styles) => ({
+      ...styles,
+      color: 'white',
+      '&:hover': {
+        color: 'rgba(255, 255, 255, 0.7)',
+      },
+    }),
+    indicatorSeparator: (styles) => ({
+      ...styles,
+      backgroundColor: 'white',
+    }),
+    loadingIndicator: (styles) => ({
+      ...styles,
+      color: 'white',
+    }),
+    loadingMessage: (styles) => ({
+      ...styles,
+      color: 'white',
+    }),
+    noOptionsMessage: (styles) => ({
+      ...styles,
+      color: 'white',
+    }),
   };
 
   return (
     <div>
       <Select
-        options={states}
+        options={stateOptions}
         value={selectedState}
         onChange={handleStateChange}
         placeholder="Select State"
         styles={customStyles}
+        isLoading={statesLoading}
         getOptionLabel={(option) => option.label}
         getOptionValue={(option) => option.value}
         className='mb-3 w-full'
+        noOptionsMessage={() => "No states found"}
       />
       <Select
-        options={cities}
+        options={cityOptions}
         value={selectedCity}
         onChange={handleCityChange}
         placeholder="Select City"
         styles={customStyles}
+        isLoading={citiesLoading}
         isDisabled={!selectedState}
         getOptionLabel={(option) => option.label}
         getOptionValue={(option) => option.value}
+        noOptionsMessage={() => selectedState ? "No cities found" : "Please select a state first"}
       />
     </div>
   );
