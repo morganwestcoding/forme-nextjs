@@ -34,12 +34,23 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({
   const [selectedState, setSelectedState] = useState<LocationSelection | null>(null);
   const [selectedCity, setSelectedCity] = useState<LocationSelection | null>(null);
 
-  const states = useStates(selectedCountry);
-  const cities = useCities(selectedState?.value ?? '');
+  const { states, loading: statesLoading } = useStates(selectedCountry);
+  const { cities, loading: citiesLoading } = useCities(selectedState?.value ?? '');
+
+  const stateOptions: LocationSelection[] = states.map(state => ({
+    label: state.label,
+    value: state.value
+  }));
+
+  const cityOptions: LocationSelection[] = cities.map(city => ({
+    label: city.label,
+    value: city.value
+  }));
 
   const handleStateChange = (selectedOption: LocationSelection | null) => {
     setSelectedState(selectedOption);
-    updateLocation(selectedOption, selectedCity);
+    setSelectedCity(null);
+    updateLocation(selectedOption, null);
   };
 
   const handleCityChange = (selectedOption: LocationSelection | null) => {
@@ -138,6 +149,29 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({
       height: '58px',
       padding: '0 8px 0 0.5rem',
     }),
+    dropdownIndicator: (styles) => ({
+      ...styles,
+      color: 'white',
+      '&:hover': {
+        color: 'rgba(255, 255, 255, 0.7)',
+      },
+    }),
+    indicatorSeparator: (styles) => ({
+      ...styles,
+      backgroundColor: 'white',
+    }),
+    loadingIndicator: (styles) => ({
+      ...styles,
+      color: 'white',
+    }),
+    loadingMessage: (styles) => ({
+      ...styles,
+      color: 'white',
+    }),
+    noOptionsMessage: (styles) => ({
+      ...styles,
+      color: 'white',
+    }),
   };
 
   return (
@@ -153,26 +187,30 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm rounded-2xl">
         <Select
           id="state-select"
-          options={states}
+          options={stateOptions}
           value={selectedState}
           onChange={handleStateChange}
           placeholder="State"
           styles={customStyles}
+          isLoading={statesLoading}
           getOptionLabel={(option) => option.label}
           getOptionValue={(option) => option.value}
           className='text-sm rounded-2xl'
+          noOptionsMessage={() => "No states found"}
         />
         <Select
           id="city-select"
-          options={cities}
+          options={cityOptions}
           value={selectedCity}
           onChange={handleCityChange}
           placeholder="City"
           styles={customStyles}
+          isLoading={citiesLoading}
           getOptionLabel={(option) => option.label}
           getOptionValue={(option) => option.value}
           isDisabled={!selectedState}
           className='text-sm rounded-2xl'
+          noOptionsMessage={() => selectedState ? "No cities found" : "Please select a state first"}
         />
         <Input
           id="zipCode"
