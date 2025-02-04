@@ -1,107 +1,183 @@
-import React from 'react';
+// components/market/MarketContent.tsx
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import ClientProviders from '@/components/ClientProviders';
-import getCurrentUser from '@/app/actions/getCurrentUser';
 import EmptyState from '@/components/EmptyState';
 import ListingCard from '@/components/listings/ListingCard';
 import { categories } from '@/components/Categories';
-import getListings, { IListingsParams } from "@/app/actions/getListings";
-import Pagination from '@/components/pagination/Pagination';
-import { useFilter } from '@/FilterContext';
 import Container from '@/components/Container';
+import MarketHeader from './MarketHeader';
+import { SafeListing, SafeUser } from '@/app/types';
 
 interface MarketContentProps {
-  searchParams: IListingsParams & {
+  searchParams: {
+    userId?: string;
+    locationValue?: string;
+    category?: string;
+    state?: string;
+    city?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    order?: 'asc' | 'desc';
     page?: string;
+  };
+  listings: SafeListing[];
+  currentUser: SafeUser | null;
+}
+
+interface ViewState {
+  mode: 'grid' | 'list';
+  filters: {
+    category: string;
+    minPrice?: number;
+    maxPrice?: number;
+    sortBy?: 'price' | 'date' | 'name';
+    sortOrder?: 'asc' | 'desc';
+    city?: string;
+    state?: string;
   };
 }
 
-const ITEMS_PER_PAGE = 10;
+const MarketContent = ({ searchParams, listings, currentUser }: MarketContentProps) => {
+  const router = useRouter();
+  const [viewState, setViewState] = useState<ViewState>({
+    mode: 'grid',
+    filters: {
+      category: 'all',
+    }
+  });
 
-const MarketContent = async ({ searchParams }: MarketContentProps) => {
-  const currentPage = Number(searchParams.page) || 1;
-  
-  // Fetch all listings first
-  const listings = await getListings(searchParams);
-  const currentUser = await getCurrentUser();
+  const [expandedServices, setExpandedServices] = useState<{ [key: string]: boolean }>({});
 
-  // Apply filters
-  let filteredListings = [...listings];
+  const toggleServices = (listingId: string) => {
+    setExpandedServices(prev => ({
+      ...prev,
+      [listingId]: !prev[listingId]
+    }));
+  };
 
-  // Apply location filters from searchParams
-  if (searchParams.state || searchParams.city) {
-    filteredListings = filteredListings.filter(listing => {
-      if (!listing.location) return false;
-      
-      const listingLocation = listing.location.toLowerCase();
-      const stateMatches = !searchParams.state || 
-        listingLocation.includes(searchParams.state.toLowerCase());
-      const cityMatches = !searchParams.city || 
-        listingLocation.includes(searchParams.city.toLowerCase());
-      
-      return stateMatches && cityMatches;
-    });
-  }
+  const renderListView = () => (
+    <div className="w-full">
+      <table className="w-full bg-white rounded-lg shadow-gray-300 p-6">
+        <thead>
+          <tr className="border-b border-gray-100">
+            <th className="py-4 px-4 text-left text-sm font-medium text-gray-600 w-[30%]">Listing</th>
+            <th className="py-4 px-4 text-left text-sm font-medium text-gray-600 w-[15%]">Category</th>
+            <th className="py-4 px-4 text-left text-sm font-medium text-gray-600 w-[20%]">Location</th>
+            <th className="py-4 px-4 text-left text-sm font-medium text-gray-600 w-[20%]">Services</th>
+            <th className="py-4 px-4 text-left text-sm font-medium text-gray-600 w-[15%]">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {listings.map((listing: SafeListing) => {
+            const mainService = listing.services[0];
+            const hasMoreServices = listing.services.length > 1;
+            const isExpanded = expandedServices[listing.id] || false;
 
-  // Apply price filters
-  if (searchParams.minPrice || searchParams.maxPrice) {
-    filteredListings = filteredListings.filter(listing => {
-      // Get the minimum service price for the listing
-      const minServicePrice = Math.min(...listing.services.map(service => service.price));
-      
-      // Check if price is within range
-      const aboveMin = !searchParams.minPrice || minServicePrice >= Number(searchParams.minPrice);
-      const belowMax = !searchParams.maxPrice || minServicePrice <= Number(searchParams.maxPrice);
-      
-      return aboveMin && belowMax;
-    });
-  }
-
-  // Apply sort
-  if (searchParams.order) {
-    filteredListings.sort((a, b) => {
-      const dateA = new Date(a.createdAt).getTime();
-      const dateB = new Date(b.createdAt).getTime();
-      return searchParams.order === 'asc' ? dateA - dateB : dateB - dateA;
-    });
-  }
-
-  const totalPages = Math.ceil(filteredListings.length / ITEMS_PER_PAGE);
-  const paginatedListings = filteredListings.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
+            return (
+              <tr key={listing.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                <td className="py-4 px-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-md overflow-hidden">
+                      <img 
+                        src={listing.imageSrc} 
+                        alt={listing.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-sm">{listing.title}</h3>
+                    </div>
+                  </div>
+                </td>
+                <td className="py-4 px-4">
+                  <span className="text-sm text-gray-600">{listing.category}</span>
+                </td>
+                <td className="py-4 px-4">
+                  <span className="text-sm text-gray-600">{listing.location}</span>
+                </td>
+                <td className="py-4 px-4">
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2">
+                      <div className="text-sm">
+                        <span className="text-gray-600">{mainService.serviceName}</span>
+                        <span className="text-gray-400 mx-2">·</span>
+                        <span className="font-medium">${mainService.price}</span>
+                      </div>
+                      {hasMoreServices && (
+                        <button 
+                          onClick={() => toggleServices(listing.id)}
+                          className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+                        >
+                          <svg 
+                            xmlns="http://www.w3.org/2000/svg" 
+                            width="16" 
+                            height="16" 
+                            viewBox="0 0 24 24" 
+                            fill="none" 
+                            stroke="currentColor" 
+                            className={`transform transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                          >
+                            <path d="M6 9l6 6 6-6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </button>
+                      )}
+                    </div>
+                    {isExpanded && (
+                      <div className="pl-2 space-y-1 mt-1 border-l-2 border-gray-100">
+                        {listing.services.slice(1).map((service) => (
+                          <div key={service.id} className="text-sm">
+                            <span className="text-gray-600">{service.serviceName}</span>
+                            <span className="text-gray-400 mx-2">·</span>
+                            <span className="font-medium">${service.price}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </td>
+                <td className="py-4 px-4">
+                  <button 
+                    onClick={() => router.push(`/listings/${listing.id}`)}
+                    className="bg-[#F9AE8B] text-white px-4 py-1.5 rounded-md text-sm hover:opacity-90 transition-opacity"
+                  >
+                    View Details
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
   );
-
-  if (filteredListings.length === 0) {
-    return (
-      <ClientProviders>
-        <EmptyState showReset />
-      </ClientProviders>
-    );
-  }
 
   return (
     <Container>
-      <div className="pt-2 flex flex-col">
-        <div className="
-          pt-6
-          flex-1
-          grid 
-          grid-cols-1
-          lg:grid-cols-2
-          xl:grid-cols-3
-          2xl:grid-cols-3
-          gap-4
-      px-4
-        ">
-          {paginatedListings.map((listing: any) => (
-            <ListingCard
-              currentUser={currentUser}
-              key={listing.id}
-              data={listing}
-              categories={categories}
-            />
-          ))}
-        </div>
+      <MarketHeader 
+        viewMode={viewState.mode}
+        onViewModeChange={(mode: ViewState['mode']) => setViewState(prev => ({ ...prev, mode }))}
+        filters={viewState.filters}
+        onFilterChange={(filters: ViewState['filters']) => setViewState(prev => ({ ...prev, filters }))}
+      />
+      
+      <div className="flex flex-col">
+        {viewState.mode === 'grid' ? (
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-4">
+            {listings.map((listing: SafeListing) => (
+              <ListingCard
+                currentUser={currentUser}
+                key={listing.id}
+                data={listing}
+                categories={categories}
+              />
+            ))}
+          </div>
+        ) : (
+          renderListView()
+        )}
       </div>
     </Container>
   );

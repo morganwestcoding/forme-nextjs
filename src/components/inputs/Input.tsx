@@ -20,7 +20,9 @@ interface InputProps {
   register: UseFormRegister<FieldValues>,
   errors: FieldErrors
   maxLength?: number;
+  showPasswordValidation?: boolean;
   onChange?: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  
 }
 
 interface PasswordValidation {
@@ -43,7 +45,8 @@ const Input: React.FC<InputProps> = ({
   required,
   errors,
   maxLength,
-  onChange
+  onChange,
+  showPasswordValidation = false 
 }) => {
   const [charCount, setCharCount] = useState(0);
   const [showPassword, setShowPassword] = useState(false);
@@ -185,19 +188,19 @@ const Input: React.FC<InputProps> = ({
             onChange={handleChange}
           />
         )}
-        {type === "password" && (
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setShowPassword(!showPassword);
-            }}
-            className="absolute right-6 top-[20px] text-neutral-600 hover:text-neutral-800 transition-colors"
-          >
-            {showPassword ? <FiEyeOff size={19} /> : <FiEye size={19} />}
-          </button>
-        )}
+{type === "password" && (
+  <button
+    type="button"
+    onClick={(e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setShowPassword(!showPassword);
+    }}
+    className="absolute right-6 top-[20px] text-neutral-600 hover:text-neutral-800 transition-colors"
+  >
+    {showPassword ? <FiEyeOff size={19} /> : <FiEye size={19} />}
+  </button>
+)}
         <label 
           className={`
             absolute 
@@ -223,7 +226,7 @@ const Input: React.FC<InputProps> = ({
           {charCount}/{maxLength}
         </span>
       )}
-      {type === "password" && (
+      {type === "password" && showPasswordValidation && (
         <div className="mt-4 -mb-6 p-3 py-6 bg-slate-50 rounded-lg border border-neutral-200">
           <div className="grid grid-cols-2 gap-3">
             <div className={`

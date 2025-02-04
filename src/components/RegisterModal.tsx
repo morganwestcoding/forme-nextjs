@@ -177,6 +177,7 @@ const RegisterModal= () => {
         disabled={isLoading}
         register={register}
         errors={errors}
+        showPasswordValidation={true}
         required
       
       />
