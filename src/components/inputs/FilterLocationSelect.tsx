@@ -1,8 +1,7 @@
-// components/inputs/FilterLocationSelect.tsx
 'use client';
 
 import React, { useState } from 'react';
-import Select, { StylesConfig } from 'react-select';
+import Select, { StylesConfig, GroupBase } from 'react-select';
 import useStates from '@/app/hooks/useStates';
 import useCities from '@/app/hooks/useCities';
 
@@ -25,8 +24,18 @@ const FilterLocationSelect: React.FC<FilterLocationSelectProps> = ({
   const [selectedState, setSelectedState] = useState<LocationSelection | null>(null);
   const [selectedCity, setSelectedCity] = useState<LocationSelection | null>(null);
 
-  const states = useStates(selectedCountry);
-  const cities = useCities(selectedState?.value ?? '');
+  const { states, loading: statesLoading } = useStates(selectedCountry);
+  const { cities, loading: citiesLoading } = useCities(selectedState?.value ?? '');
+
+  const stateOptions: LocationSelection[] = states.map(state => ({
+    label: state.label,
+    value: state.value
+  }));
+
+  const cityOptions: LocationSelection[] = cities.map(city => ({
+    label: city.label,
+    value: city.value
+  }));
 
   const handleStateChange = (selectedOption: LocationSelection | null) => {
     setSelectedState(selectedOption);
@@ -36,16 +45,25 @@ const FilterLocationSelect: React.FC<FilterLocationSelectProps> = ({
         state: selectedOption.label,
         city: '',
       });
+    } else {
+      onLocationSubmit(null);
     }
   };
 
   const handleCityChange = (selectedOption: LocationSelection | null) => {
     setSelectedCity(selectedOption);
-    if (selectedState && selectedOption) {
-      onLocationSubmit({
-        state: selectedState.label,
-        city: selectedOption.label,
-      });
+    if (selectedState) {
+      if (selectedOption) {
+        onLocationSubmit({
+          state: selectedState.label,
+          city: selectedOption.label,
+        });
+      } else {
+        onLocationSubmit({
+          state: selectedState.label,
+          city: '',
+        });
+      }
     }
   };
 
@@ -122,12 +140,23 @@ const FilterLocationSelect: React.FC<FilterLocationSelectProps> = ({
       height: '58px',
       padding: '0 8px 0 0.5rem',
     }),
+    dropdownIndicator: (styles) => ({
+      ...styles,
+      color: 'white',
+      '&:hover': {
+        color: 'rgba(255, 255, 255, 0.7)',
+      },
+    }),
+    indicatorSeparator: (styles) => ({
+      ...styles,
+      backgroundColor: 'white',
+    }),
   };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
       <Select
-        options={states}
+        options={stateOptions}
         value={selectedState}
         onChange={handleStateChange}
         placeholder="State"
@@ -135,10 +164,12 @@ const FilterLocationSelect: React.FC<FilterLocationSelectProps> = ({
         getOptionLabel={(option) => option.label}
         getOptionValue={(option) => option.value}
         className='text-sm rounded-2xl'
+        isLoading={statesLoading}
         isClearable
+        noOptionsMessage={() => "No states found"}
       />
       <Select
-        options={cities}
+        options={cityOptions}
         value={selectedCity}
         onChange={handleCityChange}
         placeholder="City"
@@ -146,8 +177,10 @@ const FilterLocationSelect: React.FC<FilterLocationSelectProps> = ({
         getOptionLabel={(option) => option.label}
         getOptionValue={(option) => option.value}
         isDisabled={!selectedState}
+        isLoading={citiesLoading}
         className='text-sm rounded-2xl'
         isClearable
+        noOptionsMessage={() => selectedState ? "No cities found" : "Please select a state first"}
       />
     </div>
   );
