@@ -39,7 +39,7 @@ const EventCard = ({ event }: EventCardProps) => {
           />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
         </div>
-        <span className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm text-xs px-2 py-1 rounded-md">
+        <span className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm text-xs px-2 py-1 rounded-sm">
           {event.category}
         </span>
       </div>

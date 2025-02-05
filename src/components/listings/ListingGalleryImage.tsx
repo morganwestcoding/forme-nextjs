@@ -120,7 +120,7 @@ const ListingGalleryImage: React.FC<ListingGalleryImageProps> = ({ listing, curr
               </div>
             ))
           ) : (
-            <div className="relative aspect-w-1 aspect-h-1 w-full border-2 border-gray-300 rounded-lg">
+            <div className="relative aspect-w-3 aspect-h-2 w-full border-2 border-gray-300 rounded-lg">
               <div className="absolute inset-0 flex flex-col items-center justify-center">
                 <p className="text-gray-400 mb-4">No images</p>
                 <GridGalleryButton />

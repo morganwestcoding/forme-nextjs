@@ -49,6 +49,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
   const [isLiked, setIsLiked] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
 
+  
   // Create array of all images including main image
   const allImages = [data.imageSrc, ...(data.galleryImages || [])];
   const hasMultipleImages = allImages.length > 1;
@@ -120,9 +121,9 @@ const ListingCard: React.FC<ListingCardProps> = ({
               <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
               
               {/* Category Tag */}
-              <div className="absolute top-4 left-6 z-10">
-                <div className="px-4 py-1.5 bg-black/50 backdrop-blur-sm rounded-md">
-                  <span className="text-white text-sm font-medium capitalize">
+              <div className="absolute top-6 left-6 z-10">
+                <div className="px-3 py-1.5 backdrop-blur-sm bg-black/50 rounded-md">
+                  <span className="text-white text-xs capitalize">
                     {data.category}
                   </span>
                 </div>
@@ -140,10 +141,10 @@ const ListingCard: React.FC<ListingCardProps> = ({
                     e.stopPropagation();
                     setIsSaved(!isSaved);
                   }}
-                  className="p-3 rounded-full bg-black/50 backdrop-blur-sm hover:bg-black/60 transition"
+                  className="p-3.5 rounded-full bg-black/50 borde border-opacity-50 backdrop-blur-sm hover:bg-black/60 transition"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="21" height="21" color="#ffffff" fill="none">
-                    <path d="M18.7083 7C20.1334 8.59227 21 10.6949 21 13C21 17.9706 16.9706 22 12 22C7.02944 22 3 17.9706 3 13C3 10.6949 3.86656 8.59227 5.29168 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                    <path d="M18.7083 7C20.1334 8.59227 21 10.6949 21 13C21 17.9706 16.9706 22 12 22C7.02944 22 3 17.9706 3 13C3 10.6949 3.86656 8.59227 5.29168 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" fill="rgba(0, 0, 0, 0.35)" />
                     <path d="M12.0253 2.00052L12 14M12.0253 2.00052C11.8627 1.99379 11.6991 2.05191 11.5533 2.17492C10.6469 2.94006 9 4.92886 9 4.92886M12.0253 2.00052C12.1711 2.00657 12.3162 2.06476 12.4468 2.17508C13.3531 2.94037 15 4.92886 15 4.92886" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </button>

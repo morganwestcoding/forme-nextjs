@@ -6,7 +6,7 @@ import Share from '@/components/feed/Share';
 import ClientProviders from '@/components/ClientProviders';
 import Post from '@/components/feed/Post';
 import { categories } from '@/components/Categories';
-import { SafePost, SafeUser } from '@/app/types';
+import { SafePost, SafeUser, SafeListing } from '@/app/types';
 import { usePostStore } from '@/app/hooks/usePostStore';
 import { useCategory } from '@/CategoryContext';
 import { useFilter } from '@/FilterContext';
@@ -17,12 +17,15 @@ interface NewsfeedClientProps {
   initialPosts: SafePost[];
   currentUser: SafeUser | null;
   categoryToUse?: string;
+  listings: SafeListing[]; // Add this
 }
 
 const NewsfeedClient: React.FC<NewsfeedClientProps> = ({ 
   initialPosts, 
   currentUser, 
-  categoryToUse 
+  categoryToUse,
+  listings 
+
 }) => {
   const setPosts = usePostStore((state) => state.setPosts);
   const storePosts = usePostStore((state) => state.posts);
@@ -97,7 +100,8 @@ mt-8
     ))}
   </div>
   <div className="flex-grow w-[43%]">
-    <Rightbar />
+  <Rightbar listings={listings} 
+   currentUser={currentUser} />
   </div>
 </div>
       </Container>
