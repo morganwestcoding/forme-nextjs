@@ -48,7 +48,7 @@ const EventCard = ({ event }: EventCardProps) => {
       <div className="flex-1 p-3 relative">
         {/* Top Section */}
         <div className="flex justify-between items-start">
-          <span className="text-gray-500 text-xs">{event.date} • {event.time}</span>
+          <span className="text-neutral-500 text-xs font-light">{event.date} • {event.time}</span>
           <div className="flex gap-2 opacity-0 -translate-y-1 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
             <svg 
               fill="#888888" 
@@ -79,17 +79,17 @@ const EventCard = ({ event }: EventCardProps) => {
         <h3 className="text-sm font-medium mt-2 line-clamp-2">
           {event.title}
         </h3>
-        <span className="text-xs text-neutral-500 font-light">{event.description}</span>
+        <span className="text-xs text-neutral-500 ">{event.description}</span>
 
         {/* Bottom Section - Default */}
-        <div className="absolute bottom-3 left-3 right-3 flex justify-between text-xs text-gray-500 transition-all duration-300 opacity-100 group-hover:opacity-0 group-hover:translate-y-2">
+        <div className="absolute bottom-3 left-3 right-3 flex justify-between font-light text-xs text-neutral-500 transition-all duration-300 opacity-100 group-hover:opacity-0 group-hover:translate-y-2">
           <span>{event.location}</span>
           <span>{event.price}</span>
         </div>
 
         {/* Bottom Section - Reveal */}
         <div className="absolute bottom-3 left-3 right-3 flex justify-between text-xs transition-all duration-300 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0">
-          <span className="text-gray-500">#{event.category} #Event</span>
+          <span className="text-neutral-500">#{event.category} #Event</span>
           <span className="text-[#41C1F2] hover:text-[#41C1F2]/80 transition-colors">
             VIEW EVENT
           </span>

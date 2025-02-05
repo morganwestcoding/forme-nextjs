@@ -45,8 +45,13 @@ const ListingCard: React.FC<ListingCardProps> = ({
   const rentModal = useRentModal();
   const listingDetailsModal = useListingDetailsModal();
   const [currentServiceIndex, setCurrentServiceIndex] = useState(0);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+
+  // Create array of all images including main image
+  const allImages = [data.imageSrc, ...(data.galleryImages || [])];
+  const hasMultipleImages = allImages.length > 1;
 
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -70,6 +75,11 @@ const ListingCard: React.FC<ListingCardProps> = ({
     e.stopPropagation();
     if (disabled || !actionId || !onAction) return;
     onAction(actionId);
+  };
+
+  const handleImageChange = (index: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentImageIndex(index);
   };
 
   const getStateAcronym = (state: string) => {
@@ -97,55 +107,72 @@ const ListingCard: React.FC<ListingCardProps> = ({
         {!reservation && (
           <>
             {/* Image Section */}
-{/* Image Section */}
-<div className="relative h-[155px] w-full group">
-  <Image
-    onClick={() => router.push(`/listings/${data.id}`)} 
-    fill
-    className="object-cover w-full h-full transition-transform duration-300"
-    src={data.imageSrc}
-    alt="Listing"
-  />
-  
-  {/* Gradient Overlay - Move this before the interactive elements */}
-  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-  
-  {/* Category Tag - Now will appear on top of gradient */}
-  <div className="absolute top-4 left-6 z-10">
-    <div className="px-4 py-1.5 bg-black/50 backdrop-blur-sm rounded-md">
-      <span className="text-white text-sm font-medium capitalize">
-        {data.category}
-      </span>
-    </div>
-  </div>
+            <div className="relative h-[155px] w-full group">
+              <Image
+                onClick={() => router.push(`/listings/${data.id}`)} 
+                fill
+                className="object-cover w-full h-full transition-transform duration-300"
+                src={allImages[currentImageIndex]}
+                alt="Listing"
+              />
+              
+              {/* Gradient Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+              
+              {/* Category Tag */}
+              <div className="absolute top-4 left-6 z-10">
+                <div className="px-4 py-1.5 bg-black/50 backdrop-blur-sm rounded-md">
+                  <span className="text-white text-sm font-medium capitalize">
+                    {data.category}
+                  </span>
+                </div>
+              </div>
 
-  {/* Action Buttons - Now will appear on top of gradient */}
-  <div className="absolute top-4 right-6 flex items-center gap-2 z-10">
-    <HeartButton 
-      listingId={data.id}
-      currentUser={currentUser}
-    />
-    <button 
-      onClick={(e) => {
-        e.stopPropagation();
-        setIsSaved(!isSaved);
-      }}
-      className="p-3 rounded-full bg-black/50 backdrop-blur-sm hover:bg-black/60 transition"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="21" height="21" color="#ffffff" fill="none">
-        <path d="M18.7083 7C20.1334 8.59227 21 10.6949 21 13C21 17.9706 16.9706 22 12 22C7.02944 22 3 17.9706 3 13C3 10.6949 3.86656 8.59227 5.29168 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-        <path d="M12.0253 2.00052L12 14M12.0253 2.00052C11.8627 1.99379 11.6991 2.05191 11.5533 2.17492C10.6469 2.94006 9 4.92886 9 4.92886M12.0253 2.00052C12.1711 2.00657 12.3162 2.06476 12.4468 2.17508C13.3531 2.94037 15 4.92886 15 4.92886" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    </button>
+              {/* Action Buttons */}
+              <div className="absolute top-4 right-6 flex items-center gap-2 z-10">
+                <HeartButton 
+                  listingId={data.id}
+                  currentUser={currentUser}
+                />
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsSaved(!isSaved);
+                  }}
+                  className="p-3 rounded-full bg-black/50 backdrop-blur-sm hover:bg-black/60 transition"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="21" height="21" color="#ffffff" fill="none">
+                    <path d="M18.7083 7C20.1334 8.59227 21 10.6949 21 13C21 17.9706 16.9706 22 12 22C7.02944 22 3 17.9706 3 13C3 10.6949 3.86656 8.59227 5.29168 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                    <path d="M12.0253 2.00052L12 14M12.0253 2.00052C11.8627 1.99379 11.6991 2.05191 11.5533 2.17492C10.6469 2.94006 9 4.92886 9 4.92886M12.0253 2.00052C12.1711 2.00657 12.3162 2.06476 12.4468 2.17508C13.3531 2.94037 15 4.92886 15 4.92886" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Image Navigation Dots */}
+{/* Image Navigation Dots */}
+{hasMultipleImages && (
+  <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 z-10 bg-black/30 backdrop-blur-sm rounded-full px-3 py-1.5 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+    {allImages.map((_, index) => (
+      <button
+        key={index}
+        onClick={(e) => handleImageChange(index, e)}
+        className={`w-2 h-2 rounded-full transition-all duration-200
+          ${currentImageIndex === index 
+            ? 'bg-white' 
+            : 'bg-white/40 hover:bg-white/60'
+          }
+        `}
+      />
+    ))}
   </div>
-</div>
+)}
+            </div>
 
             {/* Content Section */}
-            <div className="px-6 pt-6 pb-5 ">
-              {/* Header */}
+            <div className="px-6 pt-6 pb-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex flex-col">
-                  <h3 className="font-semibold  text-gray-900">
+                  <h3 className="font-semibold text-gray-900">
                     {data.title}
                   </h3>
                   <p className="text-sm text-gray-500">
@@ -154,9 +181,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
                 </div>
               </div>
 
-              {/* Services and Reserve Section */}
               <div className="space-y-4">
-                {/* Service Carousel with Indicator Dots */}
                 <div className="relative">
                   <div className="bg-gray-50 rounded-md p-3">
                     <div className="flex items-center justify-between">
@@ -169,7 +194,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
                         </div>
                       </div>
                       
-                      {/* Service Navigation */}
                       <div className="flex items-center gap-2">
                         {data.services.map((_, index) => (
                           <button
@@ -190,20 +214,16 @@ const ListingCard: React.FC<ListingCardProps> = ({
                   </div>
                 </div>
 
-                {/* Action Buttons Container */}
                 <div className="flex items-center gap-2">
-                  {/* Quick Book Button */}
                   <button 
                     onClick={(e) => {
                       e.stopPropagation();
-                      // Quick book logic here
                     }}
                     className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3.5 px-4 rounded-xl transition-all duration-300 text-sm font-medium"
                   >
                     Quick Book
                   </button>
                   
-                  {/* Reserve Button */}
                   <button 
                     onClick={() => router.push(`/listings/${data.id}`)}
                     className="flex-1 bg-gradient-to-r from-[#F9AE8B] to-[#FFC5A8] text-white py-3.5 px-4 rounded-xl transition-all duration-300 
@@ -231,6 +251,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
             </div>
           </>
         )}
+
 
         {/* Reservation View */}
         {reservation && (
