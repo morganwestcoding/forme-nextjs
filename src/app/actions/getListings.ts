@@ -57,6 +57,11 @@ export default async function getListings(params: IListingsParams) {
         services: true,
         employees: true,
         storeHours: true,
+        user: {
+          select: {
+            favoriteIds: true
+          }
+        }
       },
       orderBy: {
         createdAt: order === 'asc' ? 'asc' : 'desc',
@@ -83,6 +88,7 @@ export default async function getListings(params: IListingsParams) {
     const safeListings = listings.map((listing) => ({
       ...listing,
       createdAt: listing.createdAt.toISOString(),
+      favoriteIds: listing.user.favoriteIds || [], // Add this line
       employees: listing.employees.map(employee => ({
         id: employee.id,
         fullName: employee.fullName
@@ -92,6 +98,13 @@ export default async function getListings(params: IListingsParams) {
         openTime: hour.openTime,
         closeTime: hour.closeTime,
         isClosed: hour.isClosed
+      })),
+      services: listing.services.map(service => ({
+        id: service.id,
+        serviceName: service.serviceName,
+        price: service.price,
+        category: service.category,
+        listingId: service.listingId
       }))
     }));
 

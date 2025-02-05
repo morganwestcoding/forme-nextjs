@@ -50,7 +50,7 @@ const Search: React.FC<SearchProps> = ({ onResultClick }) => {
   return (
     <div className="flex-grow relative">
       <div className="ml-1 absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-500">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="19" height="19" color="#71717A" fill="none">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="21" height="21" color="#71717A" fill="none">
           <path d="M14 14L16.5 16.5" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
           <path d="M16.4333 18.5252C15.8556 17.9475 15.8556 17.0109 16.4333 16.4333C17.0109 15.8556 17.9475 15.8556 18.5252 16.4333L21.5667 19.4748C22.1444 20.0525 22.1444 20.9891 21.5667 21.5667C20.9891 22.1444 20.0525 22.1444 19.4748 21.5667L16.4333 18.5252Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
           <path d="M16 9C16 5.13401 12.866 2 9 2C5.13401 2 2 5.13401 2 9C2 12.866 5.13401 16 9 16C12.866 16 16 12.866 16 9Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" fill='#ffffff' />
@@ -69,8 +69,8 @@ const Search: React.FC<SearchProps> = ({ onResultClick }) => {
 
       <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
         <div className="flex items-center gap-1 px-2 py-1 rounded-md bg-[#F9AE8B] shadow-sm shadow-gray-300">
-          <span className="text-xs text-white">⌘</span>
-          <span className="text-xs text-white">K</span>
+          <span className="text-sm text-white">⌘</span>
+          <span className="text-sm text-white">K</span>
         </div>
       </div>
 

@@ -18,6 +18,7 @@ async function MarketPage({ searchParams }: MarketPageProps) {
         searchParams={searchParams} 
         listings={listings}
         currentUser={currentUser}
+        
       />
     </MarketWrapper>
   );

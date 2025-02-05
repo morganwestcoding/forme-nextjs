@@ -26,6 +26,7 @@ export type SafeListing = Omit<Listing, "createdAt"> & {
   services: SafeService[];
   galleryImages: string[]; 
   phoneNumber?: string | null;
+  favoriteIds: string[];
   website?: string | null;
   address?: string | null; 
   employees: {

@@ -133,6 +133,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
                 <HeartButton 
                   listingId={data.id}
                   currentUser={currentUser}
+                  favoriteIds={data.favoriteIds}
                 />
                 <button 
                   onClick={(e) => {

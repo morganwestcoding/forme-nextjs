@@ -7,12 +7,14 @@ interface HeartButtonProps {
   listingId: string;
   currentUser?: SafeUser | null;
   variant?: 'default' | 'listingHead';
+  favoriteIds?: string[]; // Add this to track number of favorites
 }
 
 const HeartButton: React.FC<HeartButtonProps> = ({
   listingId,
   currentUser,
-  variant = 'default'
+  variant = 'default',
+  favoriteIds = []
 }) => {
   const { hasFavorited, toggleFavorite } = useFavorite({
     listingId,
@@ -23,19 +25,7 @@ const HeartButton: React.FC<HeartButtonProps> = ({
     return (
       <div
         onClick={toggleFavorite}
-        className="         
-          flex 
-          mr-6
-          items-center 
-          justify-center 
-          bg-[#5E6365]
-          rounded-full 
-          p-3
-          border
-          border-[#5E6365]
-          cursor-pointer 
-          shadow-sm relative hover:opacity-80 transition"
-          
+        className="relative flex mr-6 items-center justify-center bg-[#5E6365] rounded-full p-3 border border-[#5E6365] cursor-pointer shadow-sm hover:opacity-80 transition"
       >
         <svg 
           xmlns="http://www.w3.org/2000/svg" 
@@ -52,6 +42,11 @@ const HeartButton: React.FC<HeartButtonProps> = ({
             strokeLinecap="round" 
           />
         </svg>
+        {favoriteIds.length > 0 && (
+          <div className="absolute -top-1 -right-2 bg-[#78C3FB] rounded-full w-5 h-5 flex items-center justify-center text-xs font-thin text-white shadow">
+            {favoriteIds.length}
+          </div>
+        )}
       </div>
     );
   }
@@ -59,7 +54,7 @@ const HeartButton: React.FC<HeartButtonProps> = ({
   return (
     <div
       onClick={toggleFavorite}
-className="relative bg-opacity-50 hover:opacity-80 transition cursor-pointer rounded-full p-3 shadow-sm bg-black"
+      className="relative bg-opacity-50 hover:opacity-80 transition cursor-pointer rounded-full p-3 shadow-sm bg-black"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -76,6 +71,11 @@ className="relative bg-opacity-50 hover:opacity-80 transition cursor-pointer rou
           fill={hasFavorited ? '#E45358' : 'rgba(0, 0, 0, 0.35)'}
         />
       </svg>
+      {favoriteIds.length > 0 && (
+        <div className="absolute -top-1 -right-2 bg-[#78C3FB] rounded-full w-5 h-5 flex items-center justify-center text-xs font-thin text-white shadow">
+          {favoriteIds.length}
+        </div>
+      )}
     </div>
   );
 }
