@@ -63,64 +63,71 @@ export default function Rightbar({ listings = [], currentUser }: RightbarProps) 
 
       return () => clearInterval(interval);
     }
-  }, [listings.length]);
+  }, [listings?.length]);
 
-  const currentStores = listings.slice(currentIndex, currentIndex + 4);
+    // Add null check for listings
+    if (!listings || listings.length === 0) {
+      console.log('No listings available');
+      return null;
+    }
+  
+
+    const currentStores = listings?.slice(currentIndex, Math.min(currentIndex + 4, listings.length)) || [];
+    const totalPages = Math.ceil(listings.length / 4); // Add this line before return
 
   return (
     <div className="hidden md:flex flex-col gap-6 h-auto mt-8 w-full">
       <Search />
 
       {/* Trending Stores Section */}
-      {listings.length > 0 && (
-        <div className="w-full rounded-xl overflow-hidden shadow-sm bg-white">
-          <div className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold">Trending Stores</h2>
-              <button 
-                className="text-sm text-gray-500 hover:text-[#F9AE8B] transition-colors"
-                onClick={() => router.push('/listings')}
-              >
-                View all
-              </button>
-            </div>
+      <div className="w-full rounded-xl overflow-hidden shadow-sm bg-white">
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold">Trending Stores</h2>
+            <button 
+              className="text-sm text-gray-500 hover:text-[#F9AE8B] transition-colors"
+              onClick={() => router.push('/listings')}
+            >
+              View all
+            </button>
+          </div>
 
-            <div className="grid grid-cols-4 gap-2">
-              {currentStores.map((store) => (
-                <div 
-                  key={store.id}
-                  onClick={() => router.push(`/listings/${store.id}`)}
-                  className="aspect-square relative rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition group"
-                >
-                  <Image
-                    fill
-                    src={store.imageSrc}
-                    alt={store.title}
-                    className="object-cover transition group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                </div>
+          <div className="grid grid-cols-4 gap-2">
+            {currentStores.map((listing, index) => (
+              <div 
+                key={index}
+                onClick={() => router.push(`/listings/${listing.id}`)}
+                className="aspect-w-1 aspect-h-1 w-full"
+              >
+                <div
+                  className="w-full h-full bg-gray-300 rounded-lg"
+                  style={{ 
+                    backgroundImage: `url(${listing.imageSrc})`, 
+                    backgroundSize: 'cover', 
+                    backgroundPosition: 'center'
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+
+          {listings.length > 4 && (
+            <div className="flex justify-center gap-2 mt-4">
+              {Array.from({ length: totalPages }).map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setCurrentIndex(idx * 4)}
+                  className={`w-2 h-2 rounded-md transition-all duration-300 
+                    ${currentIndex === idx * 4 
+                      ? 'bg-[#F9AE8B] w-6' 
+                      : 'bg-gray-300 hover:bg-gray-400'
+                    }`}
+                />
               ))}
             </div>
-
-            {listings.length > 4 && (
-              <div className="flex justify-center gap-2 mt-4">
-                {Array.from({ length: Math.ceil(listings.length / 4) }).map((_, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setCurrentIndex(idx * 4)}
-                    className={`w-2 h-2 rounded-md transition-all duration-300 
-                      ${currentIndex === idx * 4 
-                        ? 'bg-[#F9AE8B] w-6' 
-                        : 'bg-gray-300 hover:bg-gray-400'
-                      }`}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
+          )}
         </div>
-      )}
+      </div>
 
             {/* Subscribe Banner */}
             <div 

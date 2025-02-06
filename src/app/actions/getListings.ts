@@ -25,8 +25,6 @@ export default async function getListings(params: IListingsParams) {
       order
     } = params;
 
-    console.log('Params received in getListings:', params);
-
     let query: any = {};
 
     if (userId) {
@@ -49,26 +47,20 @@ export default async function getListings(params: IListingsParams) {
       };
     }
 
-    console.log('Query for listings:', query);
-
     let listings = await prisma.listing.findMany({
       where: query,
       include: {
+        user: true, // Include full user data
         services: true,
         employees: true,
-        storeHours: true,
-        user: {
-          select: {
-            favoriteIds: true
-          }
-        }
+        storeHours: true
       },
       orderBy: {
         createdAt: order === 'asc' ? 'asc' : 'desc',
       },
     });
 
-    // Apply price filter after fetching (since we need to check services)
+    // Price filtering if needed
     if (minPrice || maxPrice) {
       listings = listings.filter(listing => {
         const listingPrices = listing.services.map(service => service.price);
@@ -82,13 +74,16 @@ export default async function getListings(params: IListingsParams) {
       });
     }
 
-    console.log('Listings found:', listings.length);
-    console.log('Sample listing:', listings[0]);
-
     const safeListings = listings.map((listing) => ({
       ...listing,
       createdAt: listing.createdAt.toISOString(),
-      favoriteIds: listing.user.favoriteIds || [], // Add this line
+      favoriteIds: [], 
+      user: {
+        ...listing.user,
+        createdAt: listing.user.createdAt.toISOString(),
+        updatedAt: listing.user.updatedAt.toISOString(),
+        emailVerified: listing.user.emailVerified?.toISOString() || null,
+      },
       employees: listing.employees.map(employee => ({
         id: employee.id,
         fullName: employee.fullName
@@ -108,9 +103,11 @@ export default async function getListings(params: IListingsParams) {
       }))
     }));
 
+    console.log('Fetched listings count:', safeListings.length);
     return safeListings;
+
   } catch (error: any) {
-    console.error("Error in getListings:", error.message);
-    throw new Error("Failed to fetch listings.");
+    console.error("Error in getListings:", error);
+    throw new Error(`Failed to fetch listings: ${error.message}`);
   }
 }
