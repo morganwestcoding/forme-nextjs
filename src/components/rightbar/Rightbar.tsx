@@ -80,8 +80,8 @@ export default function Rightbar({ listings = [], currentUser }: RightbarProps) 
       <Search />
 
       {/* Trending Stores Section */}
-      <div className="w-full rounded-xl overflow-hidden shadow-sm bg-white">
-        <div className="p-6">
+      <div className="w-full ">
+     
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Trending Stores</h2>
             <button 
@@ -126,7 +126,7 @@ export default function Rightbar({ listings = [], currentUser }: RightbarProps) 
               ))}
             </div>
           )}
-        </div>
+    
       </div>
 
             {/* Subscribe Banner */}
@@ -140,8 +140,8 @@ export default function Rightbar({ listings = [], currentUser }: RightbarProps) 
       </div>
 
       {/* Events Section */}
-      <div className="w-full rounded-xl overflow-hidden shadow-sm bg-white">
-        <div className="p-6">
+      <div className="w-full">
+      
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Upcoming Events</h2>
             <button 
@@ -152,13 +152,13 @@ export default function Rightbar({ listings = [], currentUser }: RightbarProps) 
             </button>
           </div>
 
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col">
             {events.map((event, index) => (
               <EventCard key={index} event={event} />
             ))}
           </div>
         </div>
-      </div>
+  
 
 
     </div>

@@ -8,7 +8,7 @@ import MapComponent from '../MapComponent';
 interface LocationSelection {
   label: string;
   value: string;
-}
+} 
 
 interface ProfileLocationInputProps {
   onLocationSubmit: (location: string | null) => void;
