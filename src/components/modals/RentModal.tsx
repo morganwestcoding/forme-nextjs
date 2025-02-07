@@ -183,9 +183,7 @@ const RentModal = () => {
   };
 
   const modalWidthClasses = useMemo(() => {
-    if (step === STEPS.HOURS) {
-      return 'w-full md:w-[950px]'
-    }
+
     return 'w-full md:w-4/6 lg:w-3/6 xl:w-2/5'
   }, [step]);
 
@@ -209,7 +207,7 @@ const RentModal = () => {
         title={isEditMode ? "Edit your establishment" : "Define your establishment"}
         subtitle="Pick a category"
       />
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[50vh] overflow-y-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[50vh] -mt-4 overflow-y-auto">
         {categories.map((item) => (
           <div key={item.label} className="col-span-1">
             <CategoryInput
@@ -271,6 +269,7 @@ const RentModal = () => {
           onGalleryChange={(values) => setCustomValue('galleryImages', values)}
           value={imageSrc}
           galleryImages={watch('galleryImages') || []}
+          
         />
       </div>
     );
@@ -325,7 +324,6 @@ const RentModal = () => {
           subtitle="What hours each day is your store open?"
         />
         <StoreHours 
-    
           onChange={(hours) => setStoreHours(hours)}
         />
       </div>

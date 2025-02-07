@@ -78,7 +78,7 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({
 
   const selectClasses = {
     control: (state: any) => `
-      !w-full !p-3 !pt-3.5
+      !w-full !p-2.5 !pt-2.5
       !bg-slate-50 !border !border-neutral-500
       !rounded-md !outline-none !transition
       ${state.isFocused ? '!border-black' : '!border-neutral-500'}
@@ -90,8 +90,8 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({
       !text-black hover:!text-neutral-500
       !font-normal
     `,
-    singleValue: () => '!text-black pt-3.5',
-    input: () => '!text-neutral-500 !font-normal pt-10',
+    singleValue: () => '!text-black',
+    input: () => '!text-neutral-500 !font-normal',
     placeholder: () => '!text-neutral-500 !text-sm !font-normal', 
     menu: () => '!bg-white !rounded-md !border !border-neutral-200 !shadow-md !mt-1',
     menuList: () => '!p-0',
@@ -103,7 +103,7 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({
   };
 
   return (
-    <div id={id} className="flex flex-col gap-3 text-sm">
+    <div id={id} className="flex flex-col gap-3 text-sm -mt-4">
       <Input
         id="address"
         label="Street"

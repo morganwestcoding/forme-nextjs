@@ -39,21 +39,21 @@ const ImageUploadGrid: React.FC<ImageUploadGridProps> = ({
  }, [onChange, onGalleryChange, selectedBox, galleryImages]);
 
  return (
-   <div id={id} className="flex flex-col w-full gap-4">
+   <div id={id} className="flex flex-col w-full gap-4 -mt-4">
      <div className="flex w-full gap-4">
        <div id="profile-picture-label" className="w-56">
-         <div className="text-white font-medium text-base text-center">
+         <div className="text-neutral-500 font-light text-base text-center">
            Profile Picture
          </div>
        </div>
        <div id="gallery-label" className="flex-1">
-         <div className="text-white font-medium text-base text-center">
+         <div className="text-neutral-500 font-light text-base text-center">
            Gallery Images
          </div>
        </div>
      </div>
 
-     <div className="flex w-full gap-4 h-[220px]">
+     <div className="flex w-full gap-4 h-[220px] bg-slate-50">
        <div id="main-image-upload" className="h-56 w-56 aspect-square">
          <CldUploadWidget 
            onUpload={handleUpload} 
@@ -73,8 +73,8 @@ const ImageUploadGrid: React.FC<ImageUploadGridProps> = ({
                  hover:opacity-70
                  transition
                  border-dashed 
-                 border-2 
-                 border-neutral-300
+                 border
+                 border-neutral-500
                  flex
                  flex-col
                  justify-center
@@ -84,12 +84,12 @@ const ImageUploadGrid: React.FC<ImageUploadGridProps> = ({
                  rounded-lg
                "
              >
-               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" color="#ffffff" fill="none">
+               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" color="#71717A" fill="none">
                  <circle cx="7.5" cy="7.5" r="1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                  <path d="M2.5 12C2.5 7.52166 2.5 5.28249 3.89124 3.89124C5.28249 2.5 7.52166 2.5 12 2.5C16.4783 2.5 18.7175 2.5 20.1088 3.89124C21.5 5.28249 21.5 7.52166 21.5 12C21.5 16.4783 21.5 18.7175 20.1088 20.1088C18.7175 21.5 16.4783 21.5 12 21.5C7.52166 21.5 5.28249 21.5 3.89124 20.1088C2.5 18.7175 2.5 16.4783 2.5 12Z" stroke="currentColor" strokeWidth="1.5" />
                  <path d="M5 21C9.37246 15.775 14.2741 8.88406 21.4975 13.5424" stroke="currentColor" strokeWidth="1.5" />
                </svg>
-               <div className="font-medium text-sm">
+               <div className="font-light text-neutral-500 text-sm">
                  Storefront Picture
                </div>
                {value && (
@@ -107,7 +107,7 @@ const ImageUploadGrid: React.FC<ImageUploadGridProps> = ({
          </CldUploadWidget>
        </div>
 
-       <div id="gallery-grid" className="h-56 w-56 flex-1 grid grid-cols-2 gap-2">
+       <div id="gallery-grid" className="h-56 w-56 flex-1 grid grid-cols-2 bg-slate-50 gap-2">
          {Array.from({ length: 4 }).map((_, index) => (
            <CldUploadWidget 
              key={index}
@@ -128,8 +128,8 @@ const ImageUploadGrid: React.FC<ImageUploadGridProps> = ({
                    hover:opacity-70
                    transition
                    border-dashed 
-                   border-2 
-                   border-neutral-300
+                   border
+                   border-neutral-500
                    flex
                    flex-col
                    justify-center
@@ -140,12 +140,12 @@ const ImageUploadGrid: React.FC<ImageUploadGridProps> = ({
                    rounded-lg
                  "
                >
-                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#ffffff" fill="none">
+                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#71717A" fill="none">
                    <circle cx="7.5" cy="7.5" r="1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                    <path d="M2.5 12C2.5 7.52166 2.5 5.28249 3.89124 3.89124C5.28249 2.5 7.52166 2.5 12 2.5C16.4783 2.5 18.7175 2.5 20.1088 3.89124C21.5 5.28249 21.5 7.52166 21.5 12C21.5 16.4783 21.5 18.7175 20.1088 20.1088C18.7175 21.5 16.4783 21.5 12 21.5C7.52166 21.5 5.28249 21.5 3.89124 20.1088C2.5 18.7175 2.5 16.4783 2.5 12Z" stroke="currentColor" strokeWidth="1.5" />
                    <path d="M5 21C9.37246 15.775 14.2741 8.88406 21.4975 13.5424" stroke="currentColor" strokeWidth="1.5" />
                  </svg>
-                 <div className="font-medium text-sm">
+                 <div className="font-light text-neutral-500 text-sm">
                    Gallery
                  </div>
                  {galleryImages[index] && (
