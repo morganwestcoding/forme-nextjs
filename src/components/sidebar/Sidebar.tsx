@@ -74,8 +74,8 @@ isMobile }) => {
 
   return (
 
-    <div className="fixed top-0 flex h-screen z-20 md:relative">
-      <div className="flex flex-col items-center w-62 md:w-72 h-full px-6 pb-10 pt-8 bg-white z-50" >
+    <div className="w-full">
+    <div className="flex flex-col items-center w-56 h-full px-6 pb-10 pt-8 bg-white z-50">
   
                 {isMobile && (
                   <>
