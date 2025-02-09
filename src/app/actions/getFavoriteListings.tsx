@@ -25,6 +25,7 @@ export default async function getFavoriteListings() {
     const safeFavorites = favorites.map((favorite) => ({
       ...favorite,
       createdAt: favorite.createdAt.toISOString(),
+      favoriteIds: currentUser?.favoriteIds || [], // Add this line
       services: favorite.services.map(service => ({
         id: service.id,
         serviceName: service.serviceName,
@@ -45,7 +46,9 @@ export default async function getFavoriteListings() {
       phoneNumber: favorite.phoneNumber || null,
       website: favorite.website || null,
       address: favorite.address || null,
-      zipCode: favorite.zipCode || null
+      zipCode: favorite.zipCode || null,
+      city: favorite.location?.split(',')[0]?.trim() || null,  // Add this
+      state: favorite.location?.split(',')[1]?.trim() || null  // Add this
     }));
 
     console.log('Safe favorites:', safeFavorites);

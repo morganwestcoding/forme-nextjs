@@ -74,34 +74,35 @@ export default async function getListings(params: IListingsParams) {
       });
     }
 
-    const safeListings = listings.map((listing) => ({
-      ...listing,
-      createdAt: listing.createdAt.toISOString(),
-      favoriteIds: [], 
-      user: {
-        ...listing.user,
-        createdAt: listing.user.createdAt.toISOString(),
-        updatedAt: listing.user.updatedAt.toISOString(),
-        emailVerified: listing.user.emailVerified?.toISOString() || null,
-      },
-      employees: listing.employees.map(employee => ({
-        id: employee.id,
-        fullName: employee.fullName
-      })),
-      storeHours: listing.storeHours.map(hour => ({
-        dayOfWeek: hour.dayOfWeek,
-        openTime: hour.openTime,
-        closeTime: hour.closeTime,
-        isClosed: hour.isClosed
-      })),
-      services: listing.services.map(service => ({
-        id: service.id,
-        serviceName: service.serviceName,
-        price: service.price,
-        category: service.category,
-        listingId: service.listingId
-      }))
-    }));
+// getListings.ts
+const safeListings = listings.map((listing) => ({
+  ...listing,
+  createdAt: listing.createdAt.toISOString(),
+  favoriteIds: [], 
+  services: listing.services.map(service => ({
+    id: service.id,
+    serviceName: service.serviceName,
+    price: service.price,
+    category: service.category
+  })),
+  employees: listing.employees.map(employee => ({
+    id: employee.id,
+    fullName: employee.fullName
+  })),
+  storeHours: listing.storeHours.map(hour => ({
+    dayOfWeek: hour.dayOfWeek,
+    openTime: hour.openTime,
+    closeTime: hour.closeTime,
+    isClosed: hour.isClosed
+  })),
+  galleryImages: listing.galleryImages || [],
+  phoneNumber: listing.phoneNumber || null,
+  website: listing.website || null,
+  address: listing.address || null,
+  zipCode: listing.zipCode || null,
+  city: listing.location?.split(',')[0]?.trim() || null,
+  state: listing.location?.split(',')[1]?.trim() || null
+}));
 
     console.log('Fetched listings count:', safeListings.length);
     return safeListings;
