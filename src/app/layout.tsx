@@ -55,7 +55,7 @@ export default async function RootLayout({
           <html lang="en">
             <body className={inter.className}>
               <div className="min-h-screen flex"> 
-                <div className="hidden md:block w-52">
+                <div className="hidden md:block w-52 ">
                   <Sidebar currentUser={currentUser}/>
                 </div>
                 <div className="flex-1">

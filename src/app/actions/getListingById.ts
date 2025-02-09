@@ -27,12 +27,13 @@ export default async function getListingById(params: IParams) {
     return {
       ...listing,
       createdAt: listing.createdAt.toISOString(),
-      user: {
-        ...listing.user,
-        createdAt: listing.user.createdAt.toISOString(),
-        updatedAt: listing.user.updatedAt.toISOString(),
-        emailVerified: listing.user.emailVerified?.toISOString() || null,
-      },
+      favoriteIds: [], // Added missing required field
+      services: listing.services.map(service => ({
+        id: service.id,
+        serviceName: service.serviceName,
+        price: service.price,
+        category: service.category
+      })),
       employees: listing.employees.map(employee => ({
         id: employee.id,
         fullName: employee.fullName
@@ -42,7 +43,20 @@ export default async function getListingById(params: IParams) {
         openTime: hour.openTime,
         closeTime: hour.closeTime,
         isClosed: hour.isClosed
-      }))
+      })),
+      galleryImages: listing.galleryImages || [], // Added missing required field
+      phoneNumber: listing.phoneNumber || null,
+      website: listing.website || null,
+      address: listing.address || null,
+      zipCode: listing.zipCode || null,
+      city: listing.location?.split(',')[0]?.trim() || null,
+      state: listing.location?.split(',')[1]?.trim() || null,
+      user: {
+        ...listing.user,
+        createdAt: listing.user.createdAt.toISOString(),
+        updatedAt: listing.user.updatedAt.toISOString(),
+        emailVerified: listing.user.emailVerified?.toISOString() || null,
+      }
     };
     
   } catch (error: any) {
