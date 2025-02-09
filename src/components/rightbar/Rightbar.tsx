@@ -92,7 +92,7 @@ export default function Rightbar({ listings = [], currentUser }: RightbarProps) 
             </button>
           </div>
 
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-4 gap-2 -mb-3">
             {currentStores.map((listing, index) => (
               <div 
                 key={index}
@@ -117,11 +117,6 @@ export default function Rightbar({ listings = [], currentUser }: RightbarProps) 
                 <button
                   key={idx}
                   onClick={() => setCurrentIndex(idx * 4)}
-                  className={`w-2 h-2 rounded-md transition-all duration-300 
-                    ${currentIndex === idx * 4 
-                      ? 'bg-[#F9AE8B] w-6' 
-                      : 'bg-gray-300 hover:bg-gray-400'
-                    }`}
                 />
               ))}
             </div>
@@ -131,7 +126,7 @@ export default function Rightbar({ listings = [], currentUser }: RightbarProps) 
 
             {/* Subscribe Banner */}
             <div 
-        className="relative rounded-xl overflow-hidden cursor-pointer bg-slate-800 shadow-sm"
+        className="relative rounded-lg overflow-hidden cursor-pointer bg-slate-800 shadow-sm"
         onClick={() => subscribeModal.onOpen()}
       >
         <div className="relative h-32 flex items-center justify-center">
