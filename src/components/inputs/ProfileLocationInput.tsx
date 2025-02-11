@@ -49,16 +49,16 @@ const ProfileLocationInput: React.FC<ProfileLocationInputProps> = ({ onLocationS
       ${state.isFocused ? '!bg-neutral-100' : '!bg-white'}
       ${state.isSelected ? '!bg-neutral-200 !text-black' : ''}
       !text-black hover:!text-neutral-500
-      !font-normal
+      !font-normal!  
     `,
     singleValue: () => '!text-black pt-2',
     input: () => '!text-neutral-500 !font-normal',
     placeholder: () => '!text-neutral-500 !text-sm !font-normal', 
-    menu: () => '!bg-white !rounded-md !border !border-neutral-200 !shadow-md !mt-1',
+    menu: () => '!bg-white !rounded-md !border !border-neutral-200 !shadow-md !mt-1 !z-[9999] ',
     menuList: () => '!p-0',
     valueContainer: () => '!p-0',
     container: (state: any) => `
-      !relative !w-full
+      !relative !w-full !
       ${state.isFocused ? 'peer-focus:border-black' : ''}
     `
   };

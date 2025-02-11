@@ -6,25 +6,31 @@ import useStates from '@/app/hooks/useStates';
 import useCities from '@/app/hooks/useCities';
 import Input from '../inputs/Input';
 import { FieldValues, UseFormRegister, FieldErrors } from "react-hook-form";
+import MapComponent from '../MapComponent';
+import AddressAutocomplete from '../AddressAutocomplete';
 
 interface LocationSelection {
   label: string;
   value: string;
 }
 
-interface ListLocationSelectProps {
+interface ListLocationInputProps {
   onLocationSubmit: (location: {
     state: string;
     city: string;
     address: string;
     zipCode: string;
+    coordinates?: {
+      lat: number;
+      lng: number;
+    };
   } | null) => void;
   register: UseFormRegister<FieldValues>;
   errors: FieldErrors;
   id?: string;
 }
 
-const ListLocationSelect: React.FC<ListLocationSelectProps> = ({ 
+const ListLocationInput: React.FC<ListLocationInputProps> = ({ 
   onLocationSubmit, 
   register, 
   errors,
@@ -33,52 +39,66 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({
   const [selectedCountry] = useState<string>('6252001');
   const [selectedState, setSelectedState] = useState<LocationSelection | null>(null);
   const [selectedCity, setSelectedCity] = useState<LocationSelection | null>(null);
+  const [coordinates, setCoordinates] = useState<{lat: number; lng: number} | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { states, loading: statesLoading } = useStates(selectedCountry);
   const { cities, loading: citiesLoading } = useCities(selectedState?.value ?? '');
 
-  const stateOptions: LocationSelection[] = states.map(state => ({
-    label: state.label,
-    value: state.value
-  }));
+  const labelClasses = `
+  absolute 
+  text-sm
+  duration-150 
+  transform 
+  top-2
+  left-4
+  origin-[0] 
+  text-neutral-500
+`;
 
-  const cityOptions: LocationSelection[] = cities.map(city => ({
-    label: city.label,
-    value: city.value
-  }));
-
-  const handleStateChange = (selectedOption: LocationSelection | null) => {
-    setSelectedState(selectedOption);
-    setSelectedCity(null);
-    updateLocation(selectedOption, null);
-  };
-
-  const handleCityChange = (selectedOption: LocationSelection | null) => {
-    setSelectedCity(selectedOption);
-    updateLocation(selectedState, selectedOption);
-  };
-
-  const updateLocation = (state: LocationSelection | null, city: LocationSelection | null) => {
-    const address = (document.getElementById('address') as HTMLInputElement)?.value;
-    const zipCode = (document.getElementById('zipCode') as HTMLInputElement)?.value;
-
-    if (state && city && address && zipCode) {
-      onLocationSubmit({
-        state: state.label,
-        city: city.label,
-        address,
-        zipCode,
-      });
+  const handleAddressSelect = (addressData: {
+    address: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    coordinates: {
+      lat: number;
+      lng: number;
+    };
+  }) => {
+    // Find matching state option
+    const stateOption = states.find(s => s.label === addressData.state);
+    if (stateOption) {
+      setSelectedState(stateOption);
+      
+      // Create direct city option instead of using cities API
+      const cityOption: LocationSelection = {
+        label: addressData.city,
+        value: addressData.city
+      };
+      setSelectedCity(cityOption);
     }
-  };
-
-  const handleInputChange = () => {
-    updateLocation(selectedState, selectedCity);
+  
+    setCoordinates(addressData.coordinates);
+  
+    // Update form values
+    const zipInput = document.getElementById('zipCode') as HTMLInputElement;
+    if (zipInput) {
+      zipInput.value = addressData.zipCode;
+    }
+  
+    onLocationSubmit({
+      address: addressData.address,
+      city: addressData.city,
+      state: addressData.state,
+      zipCode: addressData.zipCode,
+      coordinates: addressData.coordinates
+    });
   };
 
   const selectClasses = {
     control: (state: any) => `
-      !w-full !p-2.5 !pt-2.5
+      !w-full !p-3 !pt-3.5
       !bg-slate-50 !border !border-neutral-500
       !rounded-md !outline-none !transition
       ${state.isFocused ? '!border-black' : '!border-neutral-500'}
@@ -88,43 +108,41 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({
       ${state.isFocused ? '!bg-neutral-100' : '!bg-white'}
       ${state.isSelected ? '!bg-neutral-200 !text-black' : ''}
       !text-black hover:!text-neutral-500
-      !font-normal
+      !font-normal!  
     `,
-    singleValue: () => '!text-black',
-    input: () => '!text-neutral-500 !font-normal',
+    singleValue: () => '!text-black !pt-2',
+    input: () => '!text-neutral-500 !font-normal! py-2 ',
     placeholder: () => '!text-neutral-500 !text-sm !font-normal', 
-    menu: () => '!bg-white !rounded-md !border !border-neutral-200 !shadow-md !mt-1',
+    menu: () => '!bg-white !rounded-md !border !border-neutral-200 !shadow-md !mt-1 !z-[9999] ',
     menuList: () => '!p-0',
     valueContainer: () => '!p-0',
     container: (state: any) => `
-      !relative !w-full
+      !relative !w-full !
       ${state.isFocused ? 'peer-focus:border-black' : ''}
     `
   };
 
   return (
     <div id={id} className="flex flex-col gap-3 text-sm -mt-4">
-      <Input
+      <AddressAutocomplete
         id="address"
-        label="Street"
+        label="Street Address"
         register={register}
-        errors={errors}
         required
-        onChange={handleInputChange}
+        disabled={isLoading}
+        onAddressSelect={handleAddressSelect}
+        
       />
+      
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
         <div className="relative">
           <Select
             id="state-select"
-            options={stateOptions}
+            options={states}
             value={selectedState}
-            onChange={handleStateChange}
-            placeholder=" "
+            isDisabled={true}  // Disabled since it's auto-filled
             classNames={selectClasses}
-            isLoading={statesLoading}
-            getOptionLabel={(option) => option.label}
-            getOptionValue={(option) => option.value}
-            noOptionsMessage={() => "No states found"}
+            placeholder=" "
           />
           <label className={`
             absolute 
@@ -144,16 +162,11 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({
         <div className="relative">
           <Select
             id="city-select"
-            options={cityOptions}
+            options={cities}
             value={selectedCity}
-            onChange={handleCityChange}
-            placeholder=" "
+            isDisabled={true}  // Disabled since it's auto-filled
             classNames={selectClasses}
-            isLoading={citiesLoading}
-            getOptionLabel={(option) => option.label}
-            getOptionValue={(option) => option.value}
-            isDisabled={!selectedState}
-            noOptionsMessage={() => selectedState ? "No cities found" : "Please select a state first"}
+            placeholder=" "
           />
           <label className={`
             absolute 
@@ -176,11 +189,19 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({
           register={register}
           errors={errors}
           required
-          onChange={handleInputChange}
+          disabled={true}  // Disabled since it's auto-filled
+          
+        />
+      </div>
+
+      <div className="mt-4">
+        <MapComponent 
+          coordinates={coordinates || { lat: 34.0522, lng: -118.2437 }}
+          zoom={coordinates ? 15 : 10}
         />
       </div>
     </div>
   );
 };
 
-export default ListLocationSelect;
+export default ListLocationInput;

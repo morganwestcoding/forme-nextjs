@@ -1,14 +1,22 @@
-// components/MapComponent.tsx
 'use client';
 import { useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 interface MapComponentProps {
-  location: string | null;
+  location?: string | null;
+  coordinates?: {
+    lat: number;
+    lng: number;
+  } | null;
+  zoom?: number;
 }
 
-const MapComponent: React.FC<MapComponentProps> = ({ location }) => {
+const MapComponent: React.FC<MapComponentProps> = ({ 
+  location,
+  coordinates,
+  zoom = 12
+}) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const marker = useRef<mapboxgl.Marker | null>(null);
@@ -29,17 +37,38 @@ const MapComponent: React.FC<MapComponentProps> = ({ location }) => {
       map.current = new mapboxgl.Map({
         container: mapContainer.current,
         style: 'mapbox://styles/mapbox/streets-v11',
-        center: [defaultLocation.lng, defaultLocation.lat],
-        zoom: defaultLocation.zoom
+        center: coordinates 
+          ? [coordinates.lng, coordinates.lat]
+          : [defaultLocation.lng, defaultLocation.lat],
+        zoom: coordinates ? zoom : defaultLocation.zoom
       });
 
       // Add default marker
       marker.current = new mapboxgl.Marker()
-        .setLngLat([defaultLocation.lng, defaultLocation.lat])
+        .setLngLat(coordinates 
+          ? [coordinates.lng, coordinates.lat]
+          : [defaultLocation.lng, defaultLocation.lat])
         .addTo(map.current);
     }
 
-    if (location) {
+    // Handle direct coordinates
+    if (coordinates) {
+      if (marker.current) {
+        marker.current.remove();
+      }
+      
+      marker.current = new mapboxgl.Marker()
+        .setLngLat([coordinates.lng, coordinates.lat])
+        .addTo(map.current);
+
+      map.current?.flyTo({
+        center: [coordinates.lng, coordinates.lat],
+        zoom: zoom,
+        essential: true
+      });
+    }
+    // Handle location string
+    else if (location) {
       fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(location)}.json?access_token=${mapboxgl.accessToken}`)
         .then(response => response.json())
         .then(data => {
@@ -56,7 +85,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ location }) => {
 
             map.current?.flyTo({
               center: [lng, lat],
-              zoom: 12,
+              zoom: zoom,
               essential: true
             });
           }
@@ -72,7 +101,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ location }) => {
         map.current = null;
       }
     };
-  }, [location]);
+  }, [location, coordinates, zoom]);
 
   return (
     <div 
