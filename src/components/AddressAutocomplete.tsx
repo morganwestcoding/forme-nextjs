@@ -131,7 +131,7 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
   bg-slate-50 
   border-neutral-500
   border
-  rounded-md
+  rounded-sm
   outline-none
   transition
   disabled:opacity-70

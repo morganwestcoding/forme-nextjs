@@ -128,7 +128,7 @@ const Input: React.FC<InputProps> = ({
               border-neutral-500
               bg-slate-50
               border
-              rounded-md
+              rounded-sm
               outline-none
               transition
               resize-none
@@ -175,7 +175,7 @@ const Input: React.FC<InputProps> = ({
               border-neutral-500
               bg-slate-50
               border
-              rounded-md
+              rounded-sm
               outline-none
               transition
               disabled:opacity-70

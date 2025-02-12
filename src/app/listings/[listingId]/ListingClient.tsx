@@ -178,33 +178,19 @@ const ListingClient: React.FC<ListingClientProps> = ({
                 {listing.description}
               </p>
               {/* Services Section */}
-<div className="mt-8">
-  <h2 className="text-xl font-bold text-black mb-4">Services</h2>
+              <div className="mt-8">
+  <h2 className="text-xl font-semibold mb-4">Services</h2>
   <div className="grid grid-cols-3 gap-4">
-    {/* Each service card */}
-    <div className="bg-gray-50  p-4 rounded-md">
-      <h3 className="font-medium text-sm mb-2">Haircut</h3>
-      <div className="flex justify-between items-center">
-        <span className="text-sm text-neutral-500">45 min</span>
-        <span className="font-medium">$30</span>
+    {listing.services.map(service => (
+      <div key={service.id} 
+           className="p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition">
+        <h3 className="font-medium mb-2">{service.serviceName}</h3>
+        <div className="flex justify-between text-sm">
+          <span className="text-gray-500">10Min</span>
+          <span className="font-medium">${service.price}</span>
+        </div>
       </div>
-    </div>
-
-    <div className="bg-gray-50  p-4 rounded-md">
-      <h3 className="font-medium text-sm mb-2">Beard Trim</h3>
-      <div className="flex justify-between items-center">
-        <span className="text-sm text-neutral-500">30 min</span>
-        <span className="font-medium">$20</span>
-      </div>
-    </div>
-
-    <div className="bg-gray-50  p-4 rounded-md">
-      <h3 className="font-medium text-sm mb-2">Full Service</h3>
-      <div className="flex justify-between items-center">
-        <span className="text-sm text-neutral-500">1 hour</span>
-        <span className="font-medium">$45</span>
-      </div>
-    </div>
+    ))}
   </div>
 </div>
             </div>

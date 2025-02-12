@@ -100,7 +100,7 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
      !bg-slate-50 
      !border 
      !border-neutral-500
-     !rounded-md 
+     !rounded-sm
      !outline-none 
      !transition
      !h-[60px]
@@ -116,7 +116,7 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
    singleValue: () => '!text-black pt-3.5',
    input: () => '!text-neutral-500 !font-normal',
    placeholder: () => '!text-neutral-500 !text-sm !font-normal', 
-   menu: () => '!bg-white !rounded-md !border !border-neutral-200 !shadow-md !mt-1',
+   menu: () => '!bg-white !rounded-sm !border !border-neutral-200 !shadow-md !mt-1',
    menuList: () => '!p-0',
    valueContainer: () => '!p-0',
    container: (state: any) => `
@@ -151,7 +151,7 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
                  bg-slate-50 
                  border-neutral-500
                  border
-                 rounded-md
+                 rounded-sm
                  outline-none
                  transition
                  disabled:opacity-70
@@ -197,7 +197,7 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
                  bg-slate-50 
                  border-neutral-500
                  border
-                 rounded-md
+                 rounded-sm
                  outline-none
                  transition
                  disabled:opacity-70

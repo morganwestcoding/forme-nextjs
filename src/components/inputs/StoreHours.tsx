@@ -48,7 +48,7 @@ const selectClasses = {
    !bg-slate-50 
    !border 
    !border-neutral-500
-   !rounded-md 
+   !rounded-sm
    !outline-none 
    !transition
    !h-[60px]
@@ -66,7 +66,7 @@ const selectClasses = {
  valueContainer: () => '!p-0 !h-full !items-center',
  indicatorsContainer: () => '!h-full !items-center',
  placeholder: () => '!text-neutral-500 !text-sm !font-normal', 
- menu: () => '!bg-white !rounded-md !border !border-neutral-200 !shadow-md !mt-1',
+ menu: () => '!bg-white !rounded-sm !border !border-neutral-200 !shadow-md !mt-1',
  menuList: () => '!p-0',
  container: (state: any) => `
    !relative !w-full
@@ -140,7 +140,7 @@ const StoreHours: React.FC<StoreHoursProps> = ({ onChange, id }) => {
         className="
           w-[60px]
           h-[60px]
-          rounded-md
+          rounded-sm
           border
           border-neutral-500
           bg-slate-50
@@ -195,7 +195,7 @@ const StoreHours: React.FC<StoreHoursProps> = ({ onChange, id }) => {
           className={`
             h-[60px]
             w-[100px]
-            rounded-md
+            rounded-sm
             border
             text-sm
             font-light
@@ -226,7 +226,7 @@ const StoreHours: React.FC<StoreHoursProps> = ({ onChange, id }) => {
          px-6 
          border 
          border-neutral-500 
-         rounded-md 
+         rounded-sm
          bg-slate-50
          h-[60px]
        "

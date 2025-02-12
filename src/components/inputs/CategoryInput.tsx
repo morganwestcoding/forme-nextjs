@@ -17,7 +17,7 @@ const CategoryInput: React.FC<CategoryInputProps> = ({
     <div
       onClick={() => onClick(label)}
       className={`
-        rounded-lg
+        rounded-sm
         border
         p-4
         flex

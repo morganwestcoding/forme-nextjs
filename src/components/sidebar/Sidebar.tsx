@@ -75,7 +75,7 @@ isMobile }) => {
   return (
 
     <div className="h-screen overflow-y-auto">
-    <div className="flex flex-col items-center w-56 h-full px-6 pb-10 pt-8 bg-white z-50">
+    <div className="flex flex-col items-center w-56 h-full px-6 pb-10 pt-10 bg-white z-50">
   
                 {isMobile && (
                   <>
