@@ -294,7 +294,7 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
                   {post.location && (
                     <span>{city}, {stateAcronym}</span>
                   )}
-                  <span className={`ml-2 py-1.5 px-3 rounded text-white  flex items-center justify-center text-xs ${categoryColor}`}>
+                  <span className={`ml-2 py-2 px-3 rounded-md text-white  flex items-center justify-center text-xs ${categoryColor}`}>
                     {post.category}
                   </span>
                 </div>

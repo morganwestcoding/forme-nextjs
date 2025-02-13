@@ -63,18 +63,19 @@ const InputField: React.FC<InputFieldProps> = ({
           py-4
           px-4
           text-sm
-          rounded-xl
+          rounded-md
           border
+          border-neutral-500
           outline-none
           transition-all
           duration-300
           ${isSelected 
-            ? 'bg-gradient-to-r from-[#5E6365] to-[#5E6365]/90 text-white border-transparent shadow-md' 
+            ? 'bg-gradient-to-r from-[#5E6365] to-[#5E6365]/90 text-white border-transparent shadow-sm' 
             : 'bg-white border-gray-100 hover:border-gray-200 shadow-sm'
           }
           ${disabled 
             ? 'opacity-50 cursor-not-allowed' 
-            : 'cursor-pointer hover:shadow-md'
+            : 'cursor-pointer hover:shadow-sm'
           }
           ${showHoverEffect && !isSelected
             ? 'hover:bg-gray-50/80' 
@@ -133,11 +134,12 @@ const InputField: React.FC<InputFieldProps> = ({
             className="w-5 h-5"
             fill="none"
             stroke="currentColor"
+            color='#71717A'
           >
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
-              strokeWidth={2}
+              strokeWidth={1.5}
               d="M19 9l-7 7-7-7"
             />
           </svg>
@@ -254,7 +256,7 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
 
   return (
     <div className="flex flex-col justify-end bg-transparent gap-4 h-auto">
-      <div className="w-full rounded-xl shadow-sm bg-white px-8 md:px-6 pt-6 pb-6 relative">
+      <div className="w-full rounded-md shadow-sm bg-white px-8 md:px-6 pt-6 pb-6 relative">
         <div className="mb-6">
           <h2 className="text-xl font-bold mb-1">Booking</h2>
           <p className="text-sm text-gray-500">Reserve your spot before its too late!</p>
@@ -270,7 +272,7 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
         />
 
         {showServiceDropdown && (
-          <div className="absolute z-50 w-[calc(100%-3rem)] bg-white rounded-xl shadow-lg 
+          <div className="absolute z-50 w-[calc(100%-3rem)] bg-white rounded-md shadow-lg 
                         border border-gray-100 overflow-hidden animate-in slide-in-from-top-2 duration-300">
             {serviceOptions.map((option) => (
               <div
@@ -303,7 +305,7 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
         />
 
         {showEmployeeDropdown && (
-          <div className="absolute z-50 w-[calc(100%-3rem)] bg-white rounded-xl shadow-lg 
+          <div className="absolute z-50 w-[calc(100%-3rem)] bg-white rounded-md shadow-lg 
                         border border-gray-100 overflow-hidden animate-in slide-in-from-top-2 duration-300">
             {employeeOptions.map((option) => (
               <div
@@ -328,11 +330,11 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
           isSelected={!!date}
           showHoverEffect={true}
           icon={
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2" strokeWidth={2}/>
-              <line x1="16" y1="2" x2="16" y2="6" strokeWidth={2}/>
-              <line x1="8" y1="2" x2="8" y2="6" strokeWidth={2}/>
-              <line x1="3" y1="10" x2="21" y2="10" strokeWidth={2}/>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" color='#71717A'>
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2" strokeWidth={1.5}/>
+              <line x1="16" y1="2" x2="16" y2="6" strokeWidth={1.5}/>
+              <line x1="8" y1="2" x2="8" y2="6" strokeWidth={1.5}/>
+              <line x1="3" y1="10" x2="21" y2="10" strokeWidth={1.5}/>
             </svg>
           }
         />
@@ -360,15 +362,15 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
           disabled={!date}
           isSelected={!!time}
           icon={
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor">
-              <circle cx="12" cy="12" r="10" strokeWidth={2}/>
-              <polyline points="12 6 12 12 16 14" strokeWidth={2}/>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" color='#71717A'>
+              <circle cx="12" cy="12" r="10" strokeWidth={1.5}/>
+              <polyline points="12 6 12 12 16 14" strokeWidth={1.5}/>
             </svg>
           }
         />
 
         {showTimeDropdown && date && (
-          <div className="absolute z-50 w-[calc(100%-3rem)] bg-white rounded-xl shadow-lg 
+          <div className="absolute z-50 w-[calc(100%-3rem)] bg-white rounded-md shadow-lg 
                         border border-gray-100 overflow-hidden animate-in slide-in-from-top-2 duration-300">
             <div className="grid grid-cols-3 gap-1 p-2">
               {timeOptions.map((option) => {
@@ -405,7 +407,7 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
         )}
 
         <div className="mt-6 space-y-4">
-          <div className="flex justify-between items-center py-4 px-4 bg-gray-50 rounded-xl">
+          <div className="flex justify-between items-center py-4 px-4 bg-gray-50 rounded-md">
             <span className="text-gray-600">Total Price</span>
             <span className="text-xl font-semibold">${totalPrice}</span>
           </div>
@@ -414,11 +416,11 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
             disabled={isLoading || !date || !time || !selectedService || !selectedEmployee}
             onClick={onCreateReservation}
             className={`
-              w-full py-4 px-4 rounded-xl transition-all duration-300 
+              w-full py-4 px-4 rounded-md transition-all duration-300 
               flex items-center justify-center gap-2
               ${isLoading || !date || !time || !selectedService || !selectedEmployee
                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                : 'bg-gradient-to-r from-[#F9AE8B] to-[#FFC5A8] text-white shadow-md hover:shadow-lg hover:from-[#F9AE8B] hover:to-[#F9AE8B]'
+                : 'bg-gradient-to-r from-[#F9AE8B] to-[#FFC5A8] text-white shadow-sm hover:shadow-lg hover:from-[#F9AE8B] hover:to-[#F9AE8B]'
               }
             `}
           >
@@ -433,7 +435,7 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
               <path 
                 strokeLinecap="round" 
                 strokeLinejoin="round" 
-                strokeWidth={2} 
+                strokeWidth={1.5} 
                 d="M5 12h14M12 5l7 7-7 7"
               />
             </svg>
