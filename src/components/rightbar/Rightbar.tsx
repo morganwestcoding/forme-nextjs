@@ -124,7 +124,7 @@ export default function Rightbar({ listings = [], currentUser }: RightbarProps) 
     
       </div>
 
-            {/* Subscribe Banner */}
+            {/* 
             <div 
         className="relative rounded-lg overflow-hidden cursor-pointer bg-slate-800 shadow-sm"
         onClick={() => subscribeModal.onOpen()}
@@ -133,6 +133,7 @@ export default function Rightbar({ listings = [], currentUser }: RightbarProps) 
           <RotatingText />
         </div>
       </div>
+      */}
 
       {/* Events Section */}
       <div className="w-full">
