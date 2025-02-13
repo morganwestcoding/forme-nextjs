@@ -70,13 +70,13 @@ const ListingGalleryImage: React.FC<ListingGalleryImageProps> = ({ listing, curr
                 onMouseEnter={() => setHoveredImageIndex(index)}
                 onMouseLeave={() => setHoveredImageIndex(null)}
               >
-                <div className="aspect-w-3 aspect-h-2 w-full overflow-hidden rounded-lg">
+                <div className="aspect-w-3 aspect-h-2 w-full overflow-hidden rounded-sm">
                   <Image
                     src={image}
                     layout="fill"
                     objectFit="cover"
                     alt={`Gallery image ${index + 1}`}
-                    className="rounded-lg shadow-sm transform transition-all duration-500 group-hover:scale-110"
+                    className="rounded-sm shadow-sm transform transition-all duration-500 group-hover:scale-110"
                   />
                   {/* Gradient Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/40 opacity-0 transition-all duration-300 group-hover:opacity-100" />

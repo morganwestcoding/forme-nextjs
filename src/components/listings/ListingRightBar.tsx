@@ -36,6 +36,7 @@ interface InputFieldProps {
   disabled?: boolean;
   isSelected: boolean;
   showHoverEffect?: boolean;
+  icon?: React.ReactNode;
 }
 
 const InputField: React.FC<InputFieldProps> = ({ 
@@ -45,40 +46,103 @@ const InputField: React.FC<InputFieldProps> = ({
   placeholder, 
   disabled = false, 
   isSelected,
-  showHoverEffect = false
+  showHoverEffect = false,
+  icon
 }) => (
-  <div className="mb-3 relative">
+  <div className="mb-4 relative group">
     <div className="relative flex items-center">
       <input
         type="text"
         value={value || ''}
         onClick={onClick}
         readOnly={readOnly}
-        placeholder={placeholder}
+        placeholder=""
         disabled={disabled}
         className={`
           w-full
-          h-10 
-          shadow-sm
-         
-          text-sm 
-          rounded-md
-          block 
-          py-6 
-          
-          px-12 
-          placeholder-neutral-500
-          text-center
-          transition-colors
-          duration-250
+          py-4
+          px-4
+          text-sm
+          rounded-xl
+          border
+          outline-none
+          transition-all
+          duration-300
           ${isSelected 
-            ? 'bg-[#5E6365] text-white border-[#5E6365]' 
-            : 'bg-slate-50 shadow-gray-300  hover:bg-[#e2e8f0]'
+            ? 'bg-gradient-to-r from-[#5E6365] to-[#5E6365]/90 text-white border-transparent shadow-md' 
+            : 'bg-white border-gray-100 hover:border-gray-200 shadow-sm'
           }
-          ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-          ${showHoverEffect ? 'hover:placeholder-white' : ''}
+          ${disabled 
+            ? 'opacity-50 cursor-not-allowed' 
+            : 'cursor-pointer hover:shadow-md'
+          }
+          ${showHoverEffect && !isSelected
+            ? 'hover:bg-gray-50/80' 
+            : ''
+          }
+          ${value ? 'pt-6 pb-2' : 'py-4'}
         `}
       />
+      
+      {/* Floating Label */}
+      <span className={`
+        absolute 
+        left-4
+        transition-all 
+        duration-300
+        pointer-events-none
+        ${value 
+          ? 'text-xs top-2' 
+          : 'text-sm top-1/2 -translate-y-1/2'
+        }
+        ${isSelected 
+          ? 'text-white/80' 
+          : 'text-gray-400'
+        }
+      `}>
+        {placeholder}
+      </span>
+
+      {/* Value Text */}
+      {value && (
+        <span className={`
+          absolute 
+          left-4 
+          bottom-2.5
+          text-sm
+          pointer-events-none
+          ${isSelected ? 'text-white' : 'text-gray-900'}
+        `}>
+          {value}
+        </span>
+      )}
+
+      {/* Dropdown Icon */}
+      <div className={`
+        absolute 
+        right-4 
+        transition-transform
+        duration-300
+        ${isSelected ? 'text-white' : 'text-gray-400'}
+        ${showHoverEffect ? 'group-hover:translate-y-0.5' : ''}
+      `}>
+        {icon || (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
+        )}
+      </div>
     </div>
   </div>
 );
@@ -190,11 +254,12 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
 
   return (
     <div className="flex flex-col justify-end bg-transparent gap-4 h-auto">
-      <div className="w-full rounded-lg shadow-sm bg-[#ffffff] px-8 md:px-6 pt-6 pb-6 relative">
-        <div className="mb-4">
+      <div className="w-full rounded-xl shadow-sm bg-white px-8 md:px-6 pt-6 pb-6 relative">
+        <div className="mb-6">
           <h2 className="text-xl font-bold mb-1">Booking</h2>
           <p className="text-sm text-gray-500">Reserve your spot before its too late!</p>
         </div>
+
         <InputField
           value={selectedService ? selectedService.label : undefined}
           onClick={() => setShowServiceDropdown(!showServiceDropdown)}
@@ -205,21 +270,29 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
         />
 
         {showServiceDropdown && (
-          <div className="absolute z-50  border border-gray-300 rounded-md shadow-lg w-[calc(100%-3rem)]">
+          <div className="absolute z-50 w-[calc(100%-3rem)] bg-white rounded-xl shadow-lg 
+                        border border-gray-100 overflow-hidden animate-in slide-in-from-top-2 duration-300">
             {serviceOptions.map((option) => (
               <div
                 key={option.value}
-                className="p-2 hover:bg-[#e2e8f0] cursor-pointer text-center transition-colors duration-250"
+                className="p-4 hover:bg-gray-50 cursor-pointer border-b border-gray-50 last:border-none"
                 onClick={() => {
                   onServiceChange(option);
                   setShowServiceDropdown(false);
                 }}
               >
-                {option.label}
+                <div className="flex justify-between items-center">
+                  <div>
+                    <p className="font-medium text-gray-900">{option.label.split(' - ')[0]}</p>
+                    <p className="text-sm text-gray-500">45 min</p>
+                  </div>
+                  <span className="text-base font-semibold">${option.price}</span>
+                </div>
               </div>
             ))}
           </div>
         )}
+
         <InputField
           value={selectedEmployee ? selectedEmployee.label : undefined}
           onClick={() => setShowEmployeeDropdown(!showEmployeeDropdown)}
@@ -230,21 +303,23 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
         />
 
         {showEmployeeDropdown && (
-          <div className="absolute z-50 bg-slate-100rounded-md shadow-lg w-[calc(100%-3rem)]">
+          <div className="absolute z-50 w-[calc(100%-3rem)] bg-white rounded-xl shadow-lg 
+                        border border-gray-100 overflow-hidden animate-in slide-in-from-top-2 duration-300">
             {employeeOptions.map((option) => (
               <div
                 key={option.value}
-                className="p-2 hover:bg-[#e2e8f0] cursor-pointer text-center transition-colors duration-250"
+                className="p-4 hover:bg-gray-50 cursor-pointer border-b border-gray-50 last:border-none"
                 onClick={() => {
                   onEmployeeChange(option);
                   setShowEmployeeDropdown(false);
                 }}
               >
-                {option.label}
+                <span className="text-gray-900">{option.label}</span>
               </div>
             ))}
           </div>
         )}
+
         <InputField
           value={date ? format(date, 'PP') : undefined}
           onClick={() => setShowCalendar(!showCalendar)}
@@ -252,12 +327,18 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
           placeholder="Pick a date"
           isSelected={!!date}
           showHoverEffect={true}
+          icon={
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2" strokeWidth={2}/>
+              <line x1="16" y1="2" x2="16" y2="6" strokeWidth={2}/>
+              <line x1="8" y1="2" x2="8" y2="6" strokeWidth={2}/>
+              <line x1="3" y1="10" x2="21" y2="10" strokeWidth={2}/>
+            </svg>
+          }
         />
+
         {showCalendar && (
-          <div 
-            ref={calendarRef} 
-            className="absolute z-50 w-[calc(100%-3rem)]"
-          >
+          <div ref={calendarRef} className="absolute z-50 w-[calc(100%-3rem)]">
             <Calendar
               value={date || new Date()}
               onChange={(newDate) => {
@@ -270,6 +351,7 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
             />
           </div>
         )}
+
         <InputField
           value={time ? timeOptions.find(option => option.value === time)?.label : undefined}
           onClick={() => setShowTimeDropdown(!showTimeDropdown)}
@@ -277,48 +359,86 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
           placeholder={date ? "Select time..." : "Pick a date first"}
           disabled={!date}
           isSelected={!!time}
+          icon={
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor">
+              <circle cx="12" cy="12" r="10" strokeWidth={2}/>
+              <polyline points="12 6 12 12 16 14" strokeWidth={2}/>
+            </svg>
+          }
         />
 
         {showTimeDropdown && date && (
-          <div className="absolute z-50 bg-white border border-gray-300 rounded-md shadow-lg w-[calc(100%-3rem)]">
-            {timeOptions.map((option) => {
-              const isBooked = bookedTimes.includes(option.value);
-
-              return (
-                <div
-                  key={option.value}
-                  className={`
-                    p-2 
-                    text-center
-                    transition-colors 
-                    duration-250
-                    ${isBooked 
-                      ? 'line-through decoration-1 text-gray-400' 
-                      : 'hover:bg-[#e2e8f0] cursor-pointer'
-                    }
-                  `}
-                  onClick={() => {
-                    if (!isBooked) {
-                      onTimeChange(option.value);
-                      setShowTimeDropdown(false);
-                    }
-                  }}
-                >
-                  {option.label}
-                </div>
-              );
-            })}
+          <div className="absolute z-50 w-[calc(100%-3rem)] bg-white rounded-xl shadow-lg 
+                        border border-gray-100 overflow-hidden animate-in slide-in-from-top-2 duration-300">
+            <div className="grid grid-cols-3 gap-1 p-2">
+              {timeOptions.map((option) => {
+                const isBooked = bookedTimes.includes(option.value);
+                return (
+                  <div
+                    key={option.value}
+                    className={`
+                      p-3
+                      rounded-lg
+                      text-center
+                      transition-all
+                      duration-250
+                      ${isBooked 
+                        ? 'opacity-50 cursor-not-allowed bg-gray-50' 
+                        : 'hover:bg-gray-50 cursor-pointer'
+                      }
+                    `}
+                    onClick={() => {
+                      if (!isBooked) {
+                        onTimeChange(option.value);
+                        setShowTimeDropdown(false);
+                      }
+                    }}
+                  >
+                    <span className={isBooked ? 'text-gray-400' : 'text-gray-600'}>
+                      {option.label}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
-        <div className="flex justify-between items-center mb-3">
-          <span>Total Price:</span>
-          <span>${totalPrice}</span>
+
+        <div className="mt-6 space-y-4">
+          <div className="flex justify-between items-center py-4 px-4 bg-gray-50 rounded-xl">
+            <span className="text-gray-600">Total Price</span>
+            <span className="text-xl font-semibold">${totalPrice}</span>
+          </div>
+          
+          <button
+            disabled={isLoading || !date || !time || !selectedService || !selectedEmployee}
+            onClick={onCreateReservation}
+            className={`
+              w-full py-4 px-4 rounded-xl transition-all duration-300 
+              flex items-center justify-center gap-2
+              ${isLoading || !date || !time || !selectedService || !selectedEmployee
+                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                : 'bg-gradient-to-r from-[#F9AE8B] to-[#FFC5A8] text-white shadow-md hover:shadow-lg hover:from-[#F9AE8B] hover:to-[#F9AE8B]'
+              }
+            `}
+          >
+            <span>Reserve Now</span>
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              className="w-4 h-4"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M5 12h14M12 5l7 7-7 7"
+              />
+            </svg>
+          </button>
         </div>
-        <ModalButton
-          disabled={isLoading || !date || !time || !selectedService || !selectedEmployee}
-          label="Reserve"
-          onClick={onCreateReservation}
-        />
       </div>
     </div>
   );

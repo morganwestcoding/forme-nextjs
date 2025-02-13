@@ -184,9 +184,9 @@ const ListingClient: React.FC<ListingClientProps> = ({
     {listing.services.map(service => (
       <div key={service.id} 
            className="p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition">
-        <h3 className="font-medium mb-2">{service.serviceName}</h3>
+        <h3 className="font-medium text-sm mb-2">{service.serviceName}</h3>
         <div className="flex justify-between text-sm">
-          <span className="text-gray-500">10Min</span>
+          <span className="text-gray-500">10min</span>
           <span className="font-medium">${service.price}</span>
         </div>
       </div>
