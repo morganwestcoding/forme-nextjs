@@ -79,7 +79,7 @@ const MarketHeader = ({
                 <div className="space-y-4">
                   {/* Categories */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-neutral-500 mb-1">
                       Category
                     </label>
                     <select 

@@ -1,26 +1,26 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { FieldValues, UseFormRegister } from "react-hook-form";
+import { FieldValues, UseFormRegister, FieldErrors } from "react-hook-form";
 
 interface AddressAutocompleteProps {
-  id: string;
-  label: string;
-  register: UseFormRegister<FieldValues>;
-  required?: boolean;
-  disabled?: boolean;
-  onAddressSelect: (address: {
-    address: string;
-    city: string;
-    state: string;
-    zipCode: string;
-    coordinates: {
-      lat: number;
-      lng: number;
-    };
-  }) => void;
-}
-
+    id: string;
+    label: string;
+    register: UseFormRegister<FieldValues>;
+    required?: boolean;
+    disabled?: boolean;
+    errors: FieldErrors;  // Add this line
+    onAddressSelect: (address: {
+      address: string;
+      city: string;
+      state: string;
+      zipCode: string;
+      coordinates: {
+        lat: number;
+        lng: number;
+      };
+    }) => void;
+  }
 interface Suggestion {
   place_name: string;
   geometry: {
@@ -122,60 +122,51 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
         disabled={disabled}
         placeholder=" "
         className="
-  peer
-  w-full 
-  p-4
-  pl-4  // Align with state label
-  pt-6  // More space for label
-  font-light 
-  bg-slate-50 
-  border-neutral-500
-  border
-  rounded-sm
-  outline-none
-  transition
-  disabled:opacity-70
-  disabled:cursor-not-allowed
-  text-black
-  h-[60px]
+          peer
+          w-full 
+          p-4
+          pl-4
+          pt-6
+          font-light 
+          bg-slate-50 
+          border-neutral-500
+          border
+          rounded-sm
+          outline-none
+          transition
+          disabled:opacity-70
+          disabled:cursor-not-allowed
+          text-black
+          h-[60px]
         "
       />
-      <label className={`
-        absolute 
-        text-sm
-        duration-150 
-        transform 
-        top-5 
-        left-4
-        origin-[0] 
-        text-neutral-500
-        ${query ? 'scale-100 -translate-y-3' : 'translate-y-0'}
-      `}>
+      <label 
+        className="
+          absolute 
+          text-sm
+          duration-150 
+          transform 
+          -translate-y-3 
+          top-5 
+          left-4
+          origin-[0] 
+          text-neutral-500
+          peer-placeholder-shown:scale-100 
+          peer-placeholder-shown:translate-y-0 
+          peer-focus:scale-75
+          peer-focus:-translate-y-4
+        "
+      >
         {label}
       </label>
 
+      {/* Suggestions dropdown remains the same */}
       {showSuggestions && suggestions.length > 0 && (
-        <div className="
-          absolute 
-          w-full 
-          bg-white 
-          shadow-md 
-          rounded-md 
-          mt-1 
-          z-[9999] 
-          max-h-[200px] 
-          overflow-y-auto
-        ">
+        <div className="absolute w-full bg-white shadow-md rounded-md mt-1 z-[9999] max-h-[200px] overflow-y-auto">
           {suggestions.map((suggestion, index) => (
             <div
               key={index}
-              className="
-                p-3
-                hover:bg-neutral-100
-                cursor-pointer
-                text-sm
-                text-neutral-600
-              "
+              className="p-3 hover:bg-neutral-100 cursor-pointer text-sm text-neutral-600"
               onClick={() => handleSuggestionClick(suggestion)}
             >
               {suggestion.place_name}

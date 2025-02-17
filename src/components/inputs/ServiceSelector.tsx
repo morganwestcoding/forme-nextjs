@@ -114,6 +114,11 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
      !font-normal
    `,
    singleValue: () => '!text-black pt-3.5',
+  dropdownIndicator: (state: any) => `
+  !px-2  // Padding around the chevron
+`,
+indicatorSeparator: () => `!hidden`,
+
    input: () => '!text-neutral-500 !font-normal',
    placeholder: () => '!text-neutral-500 !text-sm !font-normal', 
    menu: () => '!bg-white !rounded-sm !border !border-neutral-200 !shadow-md !mt-1',
@@ -122,6 +127,7 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
    container: (state: any) => `
      !relative !w-full
      ${state.isFocused ? 'peer-focus:border-black' : ''}
+
    `
  };
 

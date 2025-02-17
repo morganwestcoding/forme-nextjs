@@ -55,7 +55,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
                   <div className="flex items-center gap-2">
                     <div className="flex items-center">
                       <div className="flex items-center gap-1.5 rounded-l-md px-4 py-2 border border-neutral-500">
-                        <span className="font-semibold text-gray-900">5.0</span>
+                        <span className="text-sm text-gray-900">5.0</span>
                         <svg 
                           xmlns="http://www.w3.org/2000/svg" 
                           viewBox="0 0 24 24" 
@@ -67,8 +67,8 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
                           <path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z" />
                         </svg>
                       </div>
-                      <div className="bg-gray-50 rounded-r-md px-4 py-2 border-y border-r border-neutral-500">
-                        <span className="text-sm text-gray-600 font-medium capitalize">{category}</span>
+                      <div className="bg-gray-50 rounded-r-md px-4 py-1.5 border-y border-r border-neutral-500">
+                        <span className="text-sm text-gray-600 font-light capitalize">{category}</span>
                       </div>
                     </div>
 
@@ -114,7 +114,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
                   <h1 className="text-xl font-semibold text-gray-900 capitalize">
                     {title} 
                   </h1>
-                  <p className="text-gray-500 text-sm flex items-center gap-2">
+                  <p className="text-gray-500 text-sm font-light flex items-center gap-2">
                     <span>{address} {city}, {stateAcronym} {listing.zipCode}</span> 
                   </p>
                 </div>
@@ -141,6 +141,30 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
                     <path d="M12 8V12L14 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </button>
+                <button 
+    onClick={isOwner ? () => rentModal.onOpen(listing) : undefined}
+    className="bg-gradient-to-r from-[#F9AE8B] to-[#FFC5A8] text-white py-2.5 px-4 rounded-md transition-all duration-300 
+      hover:shadow-md hover:from-[#F9AE8B] hover:to-[#F9AE8B] text-sm font-medium
+      flex items-center justify-center gap-2"
+  >
+    <span>{isOwner ? 'Edit Listing' : 'Follow'}</span>
+    {!isOwner && (
+      <svg 
+        xmlns="http://www.w3.org/2000/svg" 
+        viewBox="0 0 24 24" 
+        fill="none" 
+        stroke="currentColor" 
+        className="w-4 h-4"
+      >
+        <path 
+          strokeLinecap="round" 
+          strokeLinejoin="round" 
+          strokeWidth={2} 
+          d="M12 4v16m8-8H4"
+        />
+      </svg>
+    )}
+  </button>
               </div>
             </div>
           </div>

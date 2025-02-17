@@ -45,17 +45,6 @@ const ListLocationInput: React.FC<ListLocationInputProps> = ({
   const { states, loading: statesLoading } = useStates(selectedCountry);
   const { cities, loading: citiesLoading } = useCities(selectedState?.value ?? '');
 
-  const labelClasses = `
-  absolute 
-  text-sm
-  duration-150 
-  transform 
-  top-2
-  left-4
-  origin-[0] 
-  text-neutral-500
-`;
-
   const handleAddressSelect = (addressData: {
     address: string;
     city: string;
@@ -66,12 +55,9 @@ const ListLocationInput: React.FC<ListLocationInputProps> = ({
       lng: number;
     };
   }) => {
-    // Find matching state option
     const stateOption = states.find(s => s.label === addressData.state);
     if (stateOption) {
       setSelectedState(stateOption);
-      
-      // Create direct city option instead of using cities API
       const cityOption: LocationSelection = {
         label: addressData.city,
         value: addressData.city
@@ -81,7 +67,6 @@ const ListLocationInput: React.FC<ListLocationInputProps> = ({
   
     setCoordinates(addressData.coordinates);
   
-    // Update form values
     const zipInput = document.getElementById('zipCode') as HTMLInputElement;
     if (zipInput) {
       zipInput.value = addressData.zipCode;
@@ -96,13 +81,7 @@ const ListLocationInput: React.FC<ListLocationInputProps> = ({
     });
   };
 
-  const selectClasses = {
-    control: (state: any) => `
-      !w-full !pl-3 !pb-1 !pt-4
-      !bg-slate-50 !border !border-neutral-500
-      !rounded-sm !outline-none !transition
-      ${state.isFocused ? '!border-black' : '!border-neutral-500'}
-    `,
+  const baseSelectClasses = {
     option: (state: any) => `
       !py-4 !px-4 !cursor-pointer
       ${state.isFocused ? '!bg-neutral-100' : '!bg-white'}
@@ -110,16 +89,17 @@ const ListLocationInput: React.FC<ListLocationInputProps> = ({
       !text-black hover:!text-neutral-500
       !font-normal!  
     `,
+    dropdownIndicator: () => `
+      !flex !items-center !pb-3 !px-4
+    `,
+    indicatorSeparator: () => `!hidden`,
     singleValue: () => '!text-black',
-    input: () => '!text-neutral-500 !font-normal! ',
+    input: () => '!text-neutral-500 !font-normal!',
     placeholder: () => '!text-neutral-500 !text-sm !font-normal', 
-    menu: () => '!bg-white !rounded-sm !border !border-neutral-500 !shadow-md !mt-1 !z-[9999] ',
+    menu: () => '!bg-white !rounded-sm !shadow-md !mt-1 !z-[9999]',
     menuList: () => '!p-0',
     valueContainer: () => '!p-0.5',
-    container: (state: any) => `
-      !relative !w-full !
-      ${state.isFocused ? 'peer-focus:border-neutral-500' : ''}
-    `
+    container: () => '!relative !w-full'
   };
 
   return (
@@ -131,7 +111,7 @@ const ListLocationInput: React.FC<ListLocationInputProps> = ({
         required
         disabled={isLoading}
         onAddressSelect={handleAddressSelect}
-        
+        errors={errors}
       />
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
@@ -140,19 +120,28 @@ const ListLocationInput: React.FC<ListLocationInputProps> = ({
             id="state-select"
             options={states}
             value={selectedState}
-            isDisabled={true}  // Disabled since it's auto-filled
-            classNames={selectClasses}
+            isSearchable={false} 
+            onChange={(option) => setSelectedState(option)}
+            classNames={{
+              ...baseSelectClasses,
+              control: (state: any) => `
+                !w-full !pl-3 !pb-1 !pt-3
+                !bg-slate-50 !border !border-neutral-500
+                !rounded-sm !outline-none !transition
+                !ring-0 !outline-0 !box-shadow-none
+                ${state.isFocused ? '!border-black' : '!border-neutral-500'}
+                ${errors['state'] ? '!border-rose-500' : ''}
+              `
+            }}
             placeholder=" "
           />
           <label className={`
             absolute 
-             left-4
+            left-4
             text-sm
             duration-150 
             transform 
-    
             top-5 
-  
             origin-[0] 
             text-neutral-500
             ${selectedState ? 'scale-100 -translate-y-3' : 'translate-y-0'}
@@ -166,8 +155,19 @@ const ListLocationInput: React.FC<ListLocationInputProps> = ({
             id="city-select"
             options={cities}
             value={selectedCity}
-            isDisabled={true}  // Disabled since it's auto-filled
-            classNames={selectClasses}
+            isSearchable={false} 
+            onChange={(option) => setSelectedCity(option)}
+            classNames={{
+              ...baseSelectClasses,
+              control: (state: any) => `
+                !w-full !pl-3 !pb-1 !pt-3
+                !bg-slate-50 !border !border-neutral-500
+                !rounded-sm !outline-none !transition
+                !ring-0 !outline-0 !box-shadow-none
+                ${state.isFocused ? '!border-black' : '!border-neutral-500'}
+                ${errors['city'] ? '!border-rose-500' : ''}
+              `
+            }}
             placeholder=" "
           />
           <label className={`
@@ -191,8 +191,6 @@ const ListLocationInput: React.FC<ListLocationInputProps> = ({
           register={register}
           errors={errors}
           required
-          disabled={true}  // Disabled since it's auto-filled
-          
         />
       </div>
 

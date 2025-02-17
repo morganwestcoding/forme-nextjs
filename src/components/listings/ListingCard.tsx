@@ -124,7 +124,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
   
   {/* Category Tag */}
   <div className="absolute top-6 left-6 z-10">
-    <div className="px-3 py-1.5 backdrop-blur-sm bg-black/50 rounded-md border border-white/20
+    <div className="px-3 py-1.5 backdrop-blur-sm bg-black/50 rounded-md
                     transition-all duration-300 transform group-hover:translate-y-0 group-hover:opacity-100
                     shadow-lg">
       <span className="text-white text-xs capitalize">
@@ -182,7 +182,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
 
             {/* Content Section */}
             <div className="px-6 pt-6 pb-5">
-              <div className="flex items-start justify-between mb-4">
+              <div className="flex items-start justify-between mb-3">
                 <div className="flex flex-col">
                   <h3 className="font-semibold text-gray-900">
                     {data.title}
@@ -231,14 +231,14 @@ const ListingCard: React.FC<ListingCardProps> = ({
                     onClick={(e) => {
                       e.stopPropagation();
                     }}
-                    className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3.5 px-4 rounded-xl transition-all duration-300 text-sm font-medium"
+                    className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3.5 px-4 rounded-md transition-all duration-300 text-sm font-medium"
                   >
                     Quick Book
                   </button>
                   
                   <button 
                     onClick={() => router.push(`/listings/${data.id}`)}
-                    className="flex-1 bg-gradient-to-r from-[#F9AE8B] to-[#FFC5A8] text-white py-3.5 px-4 rounded-xl transition-all duration-300 
+                    className="flex-1 bg-gradient-to-r from-[#F9AE8B] to-[#FFC5A8] text-white py-3.5 px-4 rounded-md transition-all duration-300 
                       hover:shadow-md hover:from-[#F9AE8B] hover:to-[#F9AE8B] text-sm font-medium
                       flex items-center justify-center gap-2"
                   >

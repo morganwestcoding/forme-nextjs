@@ -32,6 +32,24 @@ enum STEPS {
   EMPLOYEE = 6,
 }
 
+const initialServices: Service[] = [
+  { serviceName: '', price: 0, category: '' },
+  { serviceName: '', price: 0, category: '' },
+  { serviceName: '', price: 0, category: '' },
+];
+
+const initialEmployees: string[] = ['', '', ''];
+
+const initialStoreHours: StoreHourType[] = [
+  { dayOfWeek: 'Monday', openTime: '8:00 AM', closeTime: '8:00 PM', isClosed: false },
+  { dayOfWeek: 'Tuesday', openTime: '8:00 AM', closeTime: '8:00 PM', isClosed: false },
+  { dayOfWeek: 'Wednesday', openTime: '8:00 AM', closeTime: '8:00 PM', isClosed: false },
+  { dayOfWeek: 'Thursday', openTime: '8:00 AM', closeTime: '8:00 PM', isClosed: false },
+  { dayOfWeek: 'Friday', openTime: '8:00 AM', closeTime: '8:00 PM', isClosed: false },
+  { dayOfWeek: 'Saturday', openTime: '8:00 AM', closeTime: '8:00 PM', isClosed: false },
+  { dayOfWeek: 'Sunday', openTime: '8:00 AM', closeTime: '8:00 PM', isClosed: false },
+];
+
 const RentModal = () => {
   const router = useRouter();
   const rentModal = useRentModal();
@@ -40,30 +58,11 @@ const RentModal = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState(STEPS.CATEGORY);
-
-  const [services, setServices] = useState<Service[]>(
-    listing?.services || [
-      { serviceName: '', price: 0, category: '' },
-      { serviceName: '', price: 0, category: '' },
-      { serviceName: '', price: 0, category: '' },
-    ]
-  );
-
+  const [services, setServices] = useState<Service[]>(listing?.services || initialServices);
   const [employees, setEmployees] = useState<string[]>(
-    listing?.employees.map(emp => emp.fullName) || ['', '', '']
+    listing?.employees.map(emp => emp.fullName) || initialEmployees
   );
-
-  const [storeHours, setStoreHours] = useState<StoreHourType[]>(
-    listing?.storeHours || [
-      { dayOfWeek: 'Monday', openTime: '8:00 AM', closeTime: '8:00 PM', isClosed: false },
-      { dayOfWeek: 'Tuesday', openTime: '8:00 AM', closeTime: '8:00 PM', isClosed: false },
-      { dayOfWeek: 'Wednesday', openTime: '8:00 AM', closeTime: '8:00 PM', isClosed: false },
-      { dayOfWeek: 'Thursday', openTime: '8:00 AM', closeTime: '8:00 PM', isClosed: false },
-      { dayOfWeek: 'Friday', openTime: '8:00 AM', closeTime: '8:00 PM', isClosed: false },
-      { dayOfWeek: 'Saturday', openTime: '8:00 AM', closeTime: '8:00 PM', isClosed: false },
-      { dayOfWeek: 'Sunday', openTime: '8:00 AM', closeTime: '8:00 PM', isClosed: false },
-    ]
-  );
+  const [storeHours, setStoreHours] = useState<StoreHourType[]>(listing?.storeHours || initialStoreHours);
 
   const { 
     register, 
@@ -88,6 +87,31 @@ const RentModal = () => {
       galleryImages: listing?.galleryImages || [],
     }
   });
+
+  const handleClose = useCallback(() => {
+    // Reset form to initial values
+    reset({
+      category: '',
+      location: null,
+      address: '',
+      zipCode: '',
+      imageSrc: '',
+      title: '',
+      description: '',
+      phoneNumber: '',
+      website: '',
+      galleryImages: [],
+    });
+    
+    // Reset all state to initial values
+    setStep(STEPS.CATEGORY);
+    setServices(initialServices);
+    setEmployees(initialEmployees);
+    setStoreHours(initialStoreHours);
+
+    // Close the modal
+    rentModal.onClose();
+  }, [reset, rentModal]);
 
   useEffect(() => {
     if (listing) {
@@ -350,18 +374,18 @@ const RentModal = () => {
     <Modal
     id="rent-modal"
     modalContentId="modal-content-with-actions"
-      disabled={isLoading}
-      isOpen={rentModal.isOpen}
-      title={isEditMode ? "Edit your listing" : "Join the fun!"}
-      actionLabel={actionLabel}
-      actionId="submit-button"
-      onSubmit={handleSubmit(onSubmit)}
-      secondaryActionLabel={secondaryActionLabel}
-      secondaryAction={step === STEPS.CATEGORY ? undefined : onBack}
-      onClose={rentModal.onClose}
-      body={bodyContent}
-      className={modalWidthClasses}
-    />
+    disabled={isLoading}
+    isOpen={rentModal.isOpen}
+    title={isEditMode ? "Edit your listing" : "Join the fun!"}
+    actionLabel={actionLabel}
+    actionId="submit-button"
+    onSubmit={handleSubmit(onSubmit)}
+    secondaryActionLabel={secondaryActionLabel}
+    secondaryAction={step === STEPS.CATEGORY ? undefined : onBack}
+    onClose={handleClose}  // Changed from rentModal.onClose to handleClose
+    body={bodyContent}
+    className={modalWidthClasses}
+  />
   );
 }
 
