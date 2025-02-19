@@ -26,7 +26,7 @@ const EventCard = ({ event }: EventCardProps) => {
   return (
     <div 
       onClick={() => router.push('/events')}
-      className="group relative bg-white rounded-md h-[125px] w-full mb-6 flex overflow-hidden shadow-sm 
+      className="group relative bg-white rounded-md h-[125px] w-full mb-4 flex overflow-hidden shadow-sm 
         transition-all duration-300 hover:shadow cursor-pointer"
     >
       {/* Image Section */}

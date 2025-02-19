@@ -216,7 +216,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
                             }}
                             className={`w-2 h-2 rounded-md transition-all duration-300 
                               ${currentServiceIndex === index 
-                                ? 'bg-[#F9AE8B] w-6' 
+                                ? 'bg-[#F08080] w-6' 
                                 : 'bg-gray-300 hover:bg-gray-400'
                               }`}
                           />
@@ -238,8 +238,8 @@ const ListingCard: React.FC<ListingCardProps> = ({
                   
                   <button 
                     onClick={() => router.push(`/listings/${data.id}`)}
-                    className="flex-1 bg-gradient-to-r from-[#F9AE8B] to-[#FFC5A8] text-white py-3.5 px-4 rounded-md transition-all duration-300 
-                      hover:shadow-md hover:from-[#F9AE8B] hover:to-[#F9AE8B] text-sm font-medium
+                    className="flex-1 bg-[#F08080] text-white py-3.5 px-4 rounded-md transition-all duration-300 
+                      hover:shadow-md hover:from-[#F08080] hover:to-[#F08080] text-sm font-medium
                       flex items-center justify-center gap-2"
                   >
                     <span>Reserve</span>

@@ -85,7 +85,7 @@ export default function Rightbar({ listings = [], currentUser }: RightbarProps) 
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Trending Stores</h2>
             <button 
-              className="text-sm text-gray-500 hover:text-[#F9AE8B] transition-colors"
+              className="text-sm text-gray-500 hover:text-[#F08080] transition-colors"
               onClick={() => router.push('/listings')}
             >
               View all
@@ -100,7 +100,7 @@ export default function Rightbar({ listings = [], currentUser }: RightbarProps) 
                 className="aspect-w-1 aspect-h-1 w-full"
               >
                 <div
-                  className="w-full h-full bg-gray-300 rounded-lg"
+                  className="w-full h-full bg-gray-300 shadow-sm rounded-md"
                   style={{ 
                     backgroundImage: `url(${listing.imageSrc})`, 
                     backgroundSize: 'cover', 
@@ -141,7 +141,7 @@ export default function Rightbar({ listings = [], currentUser }: RightbarProps) 
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Upcoming Events</h2>
             <button 
-              className="text-sm text-gray-500 hover:text-[#F9AE8B] transition-colors"
+              className="text-sm text-gray-500 hover:text-[#F08080] transition-colors"
               onClick={() => router.push('/events')}
             >
               View all

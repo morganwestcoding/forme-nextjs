@@ -13,7 +13,7 @@ const Container: React.FC<ContainerProps> = ({
         max-w-[500px]
         md:max-w-[2520px]
         mx-auto
-        md:px-24
+        md:px-14
         ">
             {children}
         </div>

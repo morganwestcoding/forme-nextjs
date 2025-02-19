@@ -8,6 +8,7 @@ import { SafeUser, MediaData } from '@/app/types';
 import axios from 'axios';
 import Link from 'next/link';
 import PostCategorySelect from '../inputs/PostCategorySelect';
+import FuturisticCategory from './FuturisticCategory';
 import AttachmentModal from '../modals/AttachmentModal';
 import useAttachmentModal from '@/app/hooks/useAttachmentModal';
 import { categories } from '@/components/Categories';
@@ -93,7 +94,7 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
 
 
  return (
-   <div className={`w-full h-auto rounded-lg shadow-sm transition-colors duration-250 ${selectedCategory ? selectedCategory.color : 'bg-[#F9AE8B]'} p-6`}>
+   <div className={`w-full h-auto rounded-lg shadow-sm transition-colors duration-250 ${selectedCategory ? selectedCategory.color : 'bg-gray-200'} p-6`}>
      <div className="flex items-start">
        <Link href={`/profile/${currentUser?.id}`} passHref>
          <div className='drop-shadow mt-1 mr-3 border border-white rounded-full'>
@@ -112,7 +113,12 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
      </div>
      
      <div className="mt-2 flex items-center justify-between">
-       <div className="flex items-center" />
+     <div className="flex items-center">
+          <FuturisticCategory 
+            initialCategory={selectedCategory?.label || "All"}
+            onCategoryChange={(newCategory) => setCategory(newCategory)}
+          />
+        </div>
        <div className="flex items-center">
          <div 
            className={`
@@ -121,10 +127,10 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
              hover:bg-opacity-55 
              rounded-full 
              border 
-             ${mediaData || location ? 'bg-green-500' : 'bg-slate-100'} 
-             border-white
-            bg-slate-50
-            bg-opacity-20
+             ${mediaData || location ? 'bg-green-500' : 'bg-slate-50'} 
+             border-neutral-500
+       
+
              p-3
              px-3 
              mr-2 
@@ -155,7 +161,7 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
                viewBox="0 0 24 24" 
                width="19" 
                height="19" 
-               color="#ffffff" 
+               color="#71717A" 
                fill="none"
                className="transition-opacity duration-800 ease-in-out"
 

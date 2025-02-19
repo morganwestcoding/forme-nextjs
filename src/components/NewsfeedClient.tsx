@@ -80,7 +80,7 @@ mt-8
     space-y-4
     px-4       
     md:pr-8 
-    md:pl-0
+
   `}>
     
                 <NewsfeedFilter 

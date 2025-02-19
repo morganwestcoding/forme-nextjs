@@ -64,11 +64,11 @@ const Search: React.FC<SearchProps> = ({ onResultClick }) => {
         onChange={handleInputChange}
         onFocus={() => setIsSearchFocused(true)}
         onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
-        className="w-full text-[#71717A] placeholder:text-[#71717A] border bg-slate-50 border-neutral-500 rounded-lg p-3.5 pl-12 pr-24 text-sm shadow-sm shadow-gray-300"
+        className="w-full text-[#71717A] placeholder:text-[#71717A] border bg-slate-50 border-neutral-500 rounded-lg p-3.5 pl-12 pr-24 text-sm shadow-sm"
       />
 
       <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
-        <div className="flex items-center gap-1 px-2 py-1 rounded-md bg-[#F9AE8B] shadow-sm shadow-gray-300">
+        <div className="flex items-center gap-1 px-2 py-1 rounded-md bg-[#5FBFF9] shadow-sm">
           <span className="text-sm text-white">⌘</span>
           <span className="text-sm text-white">K</span>
         </div>
