@@ -123,7 +123,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
                   opacity-0 transition-all duration-300 group-hover:opacity-100" />
   
   {/* Category Tag */}
-  <div className="absolute top-6 left-6 z-10">
+  <div className="absolute top-4 left-6 z-10">
     <div className="px-3 py-1.5 backdrop-blur-sm bg-black/50 rounded-md
                     transition-all duration-300 transform group-hover:translate-y-0 group-hover:opacity-100
                     shadow-lg">
@@ -216,7 +216,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
                             }}
                             className={`w-2 h-2 rounded-md transition-all duration-300 
                               ${currentServiceIndex === index 
-                                ? 'bg-[#F08080] w-6' 
+                                ? 'bg-[#5FBFF9] w-6' 
                                 : 'bg-gray-300 hover:bg-gray-400'
                               }`}
                           />
@@ -231,15 +231,15 @@ const ListingCard: React.FC<ListingCardProps> = ({
                     onClick={(e) => {
                       e.stopPropagation();
                     }}
-                    className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3.5 px-4 rounded-md transition-all duration-300 text-sm font-medium"
+                    className="flex-1 bg-gray-200 hover:bg-gray-200 text-gray-700 py-3.5 px-4 rounded-md transition-all duration-300 text-sm font-medium"
                   >
                     Quick Book
                   </button>
                   
                   <button 
                     onClick={() => router.push(`/listings/${data.id}`)}
-                    className="flex-1 bg-[#F08080] text-white py-3.5 px-4 rounded-md transition-all duration-300 
-                      hover:shadow-md hover:from-[#F08080] hover:to-[#F08080] text-sm font-medium
+                    className="flex-1 bg-[#5FBFF9] text-white py-3.5 px-4 rounded-md transition-all duration-300 
+                      hover:shadow-md hover:from-[#5FBFF9] hover:to-[#5FBFF9] text-sm font-medium
                       flex items-center justify-center gap-2"
                   >
                     <span>Reserve</span>

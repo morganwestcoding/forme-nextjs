@@ -39,7 +39,7 @@ const NewsfeedFilter: React.FC<NewsfeedFilterProps> = ({ onFilterChange }) => {
   };
 
   return (
-    <div className="relative bg-[#2A2B2E] w-full rounded-md px-4">
+    <div className="relative bg-[#333745] w-full rounded-md px-4">
       <ul className="flex items-center justify-between w-full relative">
         {['Following', 'For You', 'Likes', 'Bookmarks'].map((filter, index) => (
           <li
@@ -62,7 +62,7 @@ const NewsfeedFilter: React.FC<NewsfeedFilterProps> = ({ onFilterChange }) => {
         
         {/* Animated Indicator */}
         <div
-          className="absolute bottom-0 h-1  bg-[#5FBFF9]  rounded-t-sm transition-all duration-300 ease-in-out"
+          className="absolute bottom-0 h-1  bg-[#0CD498]  rounded-t-sm transition-all duration-300 ease-in-out"
           style={{
             width: `${indicatorStyle.width}px`,
             left: `${indicatorStyle.left}px`,

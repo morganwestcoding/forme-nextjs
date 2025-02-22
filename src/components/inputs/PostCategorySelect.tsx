@@ -24,7 +24,7 @@ const PostCategorySelect: React.FC<PostCategorySelectProps> = ({
       <button 
         className={`
           rounded-md 
-          bg-slate-50
+          bg-white
           hover:bg-white 
           text-[#6B7280] 
           text-sm

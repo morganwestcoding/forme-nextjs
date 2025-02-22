@@ -1,6 +1,6 @@
-'use client';
+'use client'
 
-import { useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import qs from 'query-string';
 import { useRouter, useSearchParams } from "next/navigation";
@@ -23,16 +23,16 @@ const FuturisticCategory: React.FC<FuturisticCategoryProps> = ({
   const handleCategorySelect = useCallback((label: string) => {
     setSelectedCategory(label);
     setIsOpen(false);
-    
+
     let currentQuery = {};
     if (params) {
-      currentQuery = qs.parse(params.toString())
+      currentQuery = qs.parse(params.toString());
     }
 
     const updatedQuery: any = {
       ...currentQuery,
       category: label
-    }
+    };
 
     if (params?.get('category') === label) {
       delete updatedQuery.category;
@@ -47,64 +47,115 @@ const FuturisticCategory: React.FC<FuturisticCategoryProps> = ({
     if (onCategoryChange) onCategoryChange(label);
   }, [router, params, onCategoryChange]);
 
-  const selectedCategoryColor = categories.find(c => c.label === selectedCategory)?.color || 'bg-gray-200';
+  const selectedCategoryColor = categories.find(c => c.label === selectedCategory)?.color || 'bg-gray-500';
+  const colorWithoutBg = selectedCategoryColor.replace('bg-', '');
 
   return (
     <div className="relative">
-      {/* Selected Category Display */}
       <motion.div
-  onClick={() => setIsOpen(!isOpen)}
-  className={`
-    ${selectedCategoryColor}
-    rounded-md
-    p-3
-    px-4
-    cursor-pointer
-    flex
-    items-center
-    justify-between
-    group
-    shadow-sm
-    transition-all
-    duration-1000
-    w-[120px]
-  `}
-  whileHover={{ scale: 1.02 }}
-  whileTap={{ scale: 0.98 }}
->
-  <span className="text-white text-sm truncate">{selectedCategory}</span>
-  <motion.div
-    animate={{ rotate: isOpen ? 180 : 0 }}
-    transition={{ duration: 0.3 }}
-  >
-    <svg 
-      xmlns="http://www.w3.org/2000/svg" 
-      width="16" 
-      height="16" 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke="white" 
-      strokeWidth="2"
-    >
-      <path d="M6 9l6 6 6-6"/>
-    </svg>
-  </motion.div>
-</motion.div>
-      {/* Dropdown */}
+        onClick={() => setIsOpen(!isOpen)}
+        className="rounded-lg cursor-pointer relative group overflow-hidden"
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+      >
+        {/* Main button container */}
+        <div className={`
+          flex items-center gap-3 px-4 py-2.5 
+          bg-gray-900 border border-gray-700
+          min-w-[160px] relative
+        `}>
+          {/* Animated color indicator */}
+          <motion.div
+            className={`w-3 h-3 rounded-full ${selectedCategoryColor}`}
+            initial={{ scale: 0.8 }}
+            animate={{
+              scale: [0.8, 1.1, 0.8],
+              rotate: [0, 180, 360]
+            }}
+            transition={{
+              duration: 3,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          >
+            <motion.div
+              className="absolute inset-0 rounded-full"
+              style={{
+                background: `radial-gradient(circle, ${colorWithoutBg}, transparent)`,
+                filter: "blur(6px)"
+              }}
+              animate={{
+                opacity: [0.4, 0.7, 0.4]
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            />
+          </motion.div>
+
+          {/* Category text */}
+          <span className="text-white text-sm font-medium">
+            {selectedCategory}
+          </span>
+
+          {/* Animated borders */}
+          <motion.div
+            className="absolute inset-0 rounded-lg"
+            style={{
+              background: `linear-gradient(90deg, transparent, ${colorWithoutBg}, transparent)`,
+              filter: "blur(2px)"
+            }}
+            animate={{
+              opacity: [0.1, 0.3, 0.1],
+              scale: [1, 1.02, 1]
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+        </div>
+      </motion.div>
+
+      {/* Dropdown menu */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.2 }}
-            className="absolute top-full left-0 mt-2 w-[300px] bg-white rounded-lg shadow-xl p-3 z-50"
+            transition={{ duration: 0.3 }}
+            className="absolute top-full left-0 mt-2 w-[300px] bg-gray-900 rounded-lg shadow-xl p-3 z-50 border border-gray-700"
           >
             <div className="grid grid-cols-3 gap-2">
+              <motion.div
+                whileHover={{ scale: 1.05, opacity: 0.9 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => handleCategorySelect('All')}
+                className="bg-gray-500 p-2 rounded-lg cursor-pointer text-center transition-all duration-300 relative overflow-hidden"
+              >
+                <motion.div
+                  className="absolute inset-0 bg-white opacity-10"
+                  animate={{
+                    scale: [1, 1.2, 1],
+                    opacity: [0.1, 0.2, 0.1]
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                />
+                <span className="text-white text-sm relative z-10">All</span>
+              </motion.div>
+
               {categories.map((category) => (
                 <motion.div
                   key={category.label}
-                  whileHover={{ scale: 1.05 }}
+                  whileHover={{ scale: 1.05, opacity: 0.9 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => handleCategorySelect(category.label)}
                   className={`
@@ -115,9 +166,25 @@ const FuturisticCategory: React.FC<FuturisticCategoryProps> = ({
                     text-center
                     transition-all
                     duration-300
+                    relative
+                    overflow-hidden
                   `}
                 >
-                  <span className="text-white text-sm">{category.label}</span>
+                  <motion.div
+                    className="absolute inset-0 bg-white opacity-10"
+                    animate={{
+                      scale: [1, 1.2, 1],
+                      opacity: [0.1, 0.2, 0.1]
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                  />
+                  <span className="text-white text-sm relative z-10">
+                    {category.label}
+                  </span>
                 </motion.div>
               ))}
             </div>

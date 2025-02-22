@@ -143,8 +143,8 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
                 </button>
                 <button 
     onClick={isOwner ? () => rentModal.onOpen(listing) : undefined}
-    className="bg-gradient-to-r from-[#F9AE8B] to-[#FFC5A8] text-white py-2.5 px-4 rounded-md transition-all duration-300 
-      hover:shadow-md hover:from-[#F9AE8B] hover:to-[#F9AE8B] text-sm font-medium
+    className="bg-[#5FBFF9]  text-white py-2.5 px-4 rounded-md transition-all duration-300 
+      hover:shadow-md hover:from-[#5FBFF9] hover:to-[#5FBFF9] text-sm font-medium
       flex items-center justify-center gap-2"
   >
     <span>{isOwner ? 'Edit Listing' : 'Follow'}</span>

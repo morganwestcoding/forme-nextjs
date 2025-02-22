@@ -68,7 +68,7 @@ const Search: React.FC<SearchProps> = ({ onResultClick }) => {
       />
 
       <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
-        <div className="flex items-center gap-1 px-2 py-1 rounded-md bg-[#5FBFF9] shadow-sm">
+        <div className="flex items-center gap-1 px-2 py-1 rounded-md bg-[#0CD498] shadow-sm">
           <span className="text-sm text-white">⌘</span>
           <span className="text-sm text-white">K</span>
         </div>

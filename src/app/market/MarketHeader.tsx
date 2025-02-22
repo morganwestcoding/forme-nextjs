@@ -49,7 +49,7 @@ const MarketHeader = ({
             <button 
               onClick={() => setIsFilterOpen(!isFilterOpen)}
               className={`
-                flex items-center gap-2 py-3 px-4 rounded-md bg-slate-500
+                flex items-center gap-2 py-3.5 px-4 rounded-md bg-[#2A2B2E]
                 transition-colors duration-200 ease-in-out
                 ${isFilterOpen ? 'text-white' : 'text-gray-400 hover:text-gray-200'}
               `}
@@ -161,12 +161,12 @@ const MarketHeader = ({
           </div>
 
           {/* View Toggle Buttons */}
-          <div className="relative bg-slate-500 rounded-md px-2">
+          <div className="relative bg-[#2A2B2E] rounded-md px-2">
             <div className="flex items-center relative">
               <button
                 onClick={() => onViewModeChange('grid')}
                 className={`
-                  py-3 px-4 relative z-10 cursor-pointer select-none
+                  py-3.5 px-4 relative z-10 cursor-pointer select-none
                   transition-colors duration-200 ease-in-out
                   ${viewMode === 'grid' 
                     ? 'text-white' 
