@@ -57,7 +57,7 @@ const CircleSpinner = ({ color, isTransitioning, prevColor }: {
   const darkerPreviousColor = lightenColor(previousColor, -40);
 
   return (
-    <div className="relative w-8 h-8">
+    <div className="relative w-7 h-7">
       <svg
         viewBox="0 0 24 24"
         fill="none"

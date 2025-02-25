@@ -1,15 +1,15 @@
-// components/feed/Share.tsx (with improved button layout)
+// components/feed/Share.tsx (with location button and fixed posting behavior)
 'use client';
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import ContentInput from '../inputs/ContentInput';
 import Avatar from '../ui/avatar';
 import { SafeUser, MediaData } from '@/app/types';
 import axios from 'axios';
 import Link from 'next/link';
-import PostCategorySelect from '../inputs/PostCategorySelect';
 import FuturisticCategory from './FuturisticCategory';
 import AttachmentModal from '../modals/AttachmentModal';
+import LocationModal from '../modals/LocationModal'; // You'll need to create this
 import useAttachmentModal from '@/app/hooks/useAttachmentModal';
 import { categories } from '@/components/Categories';
 import { usePostStore } from '@/app/hooks/usePostStore';
@@ -33,6 +33,7 @@ interface PostData {
 
 const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
  const attachmentModal = useAttachmentModal();
+ const [locationModalOpen, setLocationModalOpen] = useState(false);
  const [mediaData, setMediaData] = useState<MediaData | null>(null);
  const [content, setContent] = useState('');
  const [location, setLocation] = useState<{ label: string; value: string } | null>(null);
@@ -66,13 +67,11 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
  }, [params, categoryLabel]);
 
  const accentColor = getAccentColor();
- const bgAccentColor = `bg-[${accentColor}]`;
  const selectedCategory = categories.find(cat => cat.label === categoryLabel);
 
  const handlePostSubmit = useCallback(async () => {
    if (!content.trim()) {
      toast.error('Please write something');
-     setCategory(''); // Reset category if no content
      return;
    }
 
@@ -81,7 +80,7 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
 
      const postData = {
        content: content.trim(),
-       category,
+       category: category || (selectedCategory?.label || 'All'),
        userId: currentUser?.id,
        mediaUrl: mediaData?.url || null,
        mediaType: mediaData?.type || null,
@@ -112,14 +111,7 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
    } finally {
      setIsSubmitting(false);
    }
- }, [content, mediaData, location, category, currentUser, addPost]);
-
- useEffect(() => {
-   if (category && content.trim()) {
-     handlePostSubmit();
-     setCategory(''); // Reset category after submission
-   }
- }, [category, handlePostSubmit, content]); // Only watch for category changes
+ }, [content, mediaData, location, category, currentUser, addPost, selectedCategory]);
 
  // Button effect variants
  const buttonVariants = {
@@ -128,7 +120,8 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
    tap: { scale: 0.98 }
  };
 
- const hasAttachments = mediaData || location;
+ const hasAttachments = mediaData !== null;
+ const hasLocation = location !== null;
 
  return (
    <div 
@@ -166,6 +159,74 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
 
        {/* Right side - Action Buttons */}
        <div className="flex items-center space-x-2 relative">
+         {/* Location Button */}
+         <motion.div 
+           className="relative"
+           variants={buttonVariants}
+           initial="idle"
+           whileHover="hover"
+           whileTap="tap"
+           onMouseEnter={() => setHoverState('location')}
+           onMouseLeave={() => setHoverState(null)}
+         >
+           <motion.div
+             className={`
+               flex items-center justify-center
+               rounded-full 
+               p-3
+               cursor-pointer
+               transition-colors
+               duration-300
+               ease-in-out
+               ${hasLocation ? '' : 'hover:bg-white hover:bg-opacity-15'}
+             `}
+             style={{ 
+               backgroundColor: hasLocation ? accentColor : 'white',
+               boxShadow: '0 1px 8px rgba(0,0,0,0.08)'
+             }}
+             onClick={() => setLocationModalOpen(true)}
+           >
+             <svg 
+               xmlns="http://www.w3.org/2000/svg" 
+               viewBox="0 0 24 24" 
+               width="19" 
+               height="19" 
+               style={{ color: hasLocation ? 'white' : (hoverState === 'location' ? accentColor : '#71717A') }}
+               fill="none"
+             >
+               <path 
+                 d="M12 12.5C13.6569 12.5 15 11.1569 15 9.5C15 7.84315 13.6569 6.5 12 6.5C10.3431 6.5 9 7.84315 9 9.5C9 11.1569 10.3431 12.5 12 12.5Z" 
+                 stroke="currentColor" 
+                 strokeWidth="1.5" 
+                 strokeLinecap="round" 
+                 strokeLinejoin="round"
+               />
+               <path 
+                 d="M12 22C14 19 20 16.4183 20 10C20 5.58172 16.4183 2 12 2C7.58172 2 4 5.58172 4 10C4 16.4183 10 19 12 22Z" 
+                 stroke="currentColor" 
+                 strokeWidth="1.5" 
+                 strokeLinecap="round" 
+                 strokeLinejoin="round"
+               />
+             </svg>
+           </motion.div>
+           
+           {/* Tooltip */}
+           <AnimatePresence>
+             {hoverState === 'location' && (
+               <motion.div
+                 initial={{ opacity: 0, y: 5 }}
+                 animate={{ opacity: 1, y: 0 }}
+                 exit={{ opacity: 0, y: 5 }}
+                 transition={{ duration: 0.2 }}
+                 className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap bg-gray-800 text-white text-xs rounded px-2 py-1 z-10"
+               >
+                 {hasLocation ? 'Change location' : 'Add location'}
+               </motion.div>
+             )}
+           </AnimatePresence>
+         </motion.div>
+
          {/* Attachment Button */}
          <motion.div 
            className="relative"
@@ -239,38 +300,7 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
                  transition={{ duration: 0.2 }}
                  className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap bg-gray-800 text-white text-xs rounded px-2 py-1 z-10"
                >
-                 Add attachment
-               </motion.div>
-             )}
-           </AnimatePresence>
-         </motion.div>
-
-         {/* Post Category Select */}
-         <motion.div 
-           className="relative"
-           variants={buttonVariants}
-           initial="idle"
-           whileHover="hover"
-           whileTap="tap"
-           onMouseEnter={() => setHoverState('category')}
-           onMouseLeave={() => setHoverState(null)}
-         >
-           <PostCategorySelect
-             onCategorySelected={setCategory}
-             accentColor={accentColor}
-           />
-           
-           {/* Tooltip */}
-           <AnimatePresence>
-             {hoverState === 'category' && (
-               <motion.div
-                 initial={{ opacity: 0, y: 5 }}
-                 animate={{ opacity: 1, y: 0 }}
-                 exit={{ opacity: 0, y: 5 }}
-                 transition={{ duration: 0.2 }}
-                 className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap bg-gray-800 text-white text-xs rounded px-2 py-1 z-10"
-               >
-                 Select category
+                 {hasAttachments ? 'Change attachment' : 'Add attachment'}
                </motion.div>
              )}
            </AnimatePresence>
@@ -279,7 +309,7 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
          {/* Post Button */}
          {content.trim() && (
            <motion.button
-             className="flex items-center justify-center rounded-full px-4 py-2 text-white text-sm font-medium transition-colors duration-300"
+             className="flex items-center justify-center rounded-lg px-4 py-2.5 text-white text-sm font-medium transition-colors duration-300"
              style={{ backgroundColor: accentColor }}
              variants={buttonVariants}
              initial="idle"
@@ -288,17 +318,31 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
              onClick={() => handlePostSubmit()}
              disabled={isSubmitting}
            >
-             {isSubmitting ? 'Posting...' : 'Post'}
+             {isSubmitting ? (
+               // Simple loading indicator instead of text
+               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"/>
+             ) : 'Post'}
            </motion.button>
          )}
        </div>
      </div>
 
+     {/* Modals */}
      <AttachmentModal
        isOpen={attachmentModal.isOpen}
        onClose={attachmentModal.onClose}
        setMediaData={setMediaData}
        setLocation={setLocation}
+     />
+     
+     {/* Location Modal */}
+     <LocationModal
+       isOpen={locationModalOpen}
+       onClose={() => setLocationModalOpen(false)}
+       onLocationSelected={(location) => {
+         setLocation(location);
+         setLocationModalOpen(false);
+       }}
      />
    </div>
  );
