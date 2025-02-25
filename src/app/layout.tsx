@@ -26,6 +26,7 @@ import MobileNavBar from '@/components/header/MobileNavBar';
 import MobileTopBar from '@/components/header/MobileTopBar';
 import ListingDetailsModal from '@/components/modals/ListingDetailsModal';
 import InboxModal from '@/components/modals/InboxModal';
+import { ColorProvider } from './context/ColorContext';
 
 
 export const metadata: Metadata = {
@@ -52,6 +53,7 @@ export default async function RootLayout({
     <FilterProvider>
       <CategoryProvider>
         <ClientProviders>
+        <ColorProvider>
           <html lang="en">
             <body className={inter.className}>
               <div className="min-h-screen flex"> 
@@ -84,6 +86,7 @@ export default async function RootLayout({
               
             </body>
           </html>
+          </ColorProvider>
         </ClientProviders>
       </CategoryProvider>
     </FilterProvider>

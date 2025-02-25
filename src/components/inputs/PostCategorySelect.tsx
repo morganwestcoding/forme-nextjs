@@ -24,13 +24,13 @@ const PostCategorySelect: React.FC<PostCategorySelectProps> = ({
       <button 
         className={`
           rounded-md 
+          border
           bg-white
           hover:bg-white 
           text-[#6B7280] 
           text-sm
-          shadow-sm
+          
           p-3
-      
           flex 
           items-center
           transition-opacity

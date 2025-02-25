@@ -127,11 +127,8 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
              hover:bg-white 
              hover:bg-opacity-55 
              rounded-full 
-             border 
-             ${mediaData || location ? 'bg-green-500' : 'bg-slate-50'} 
-             border-neutral-500
-       
-
+        
+             ${mediaData || location ? 'bg-green-500' : 'bg-white'} 
              p-3
              px-3 
              mr-2 

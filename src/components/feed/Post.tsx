@@ -1,4 +1,5 @@
 'use client'
+import { useSearchParams } from 'next/navigation';
 import React, { useState, useCallback, useEffect } from 'react';
 import Avatar from '../ui/avatar';
 import { SafeUser, SafeComment, MediaType } from '@/app/types';
@@ -69,6 +70,35 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
 
   const categoryColor = categories.find(cat => cat.label === post.category)?.color || 'bg-[#0CD498]';
   const badgeColor = categoryColor.replace('bg-[', '').replace(']', '') || '#0CD498';
+
+  const params = useSearchParams();
+
+  const getAccentColor = () => {
+    // Check if a category is selected in the URL
+    const categoryParam = params?.get('category');
+    
+    if (categoryParam) {
+      // If this post matches the selected category, use its color
+      if (categoryParam === post.category) {
+        const categoryData = categories.find(cat => cat.label === post.category);
+        if (categoryData) {
+          return categoryData.color.replace('bg-[', '').replace(']', '');
+        }
+      } else {
+        // If any category is selected (even if not this post's category), 
+        // still use the selected category color
+        const categoryData = categories.find(cat => cat.label === categoryParam);
+        if (categoryData) {
+          return categoryData.color.replace('bg-[', '').replace(']', '');
+        }
+      }
+    }
+    
+    // Default color when no category is selected or "All" is selected
+    return '#0CD498';
+  };
+  
+  const accentColor = getAccentColor();
 
   const handleLike = useCallback(async () => {
     if (!currentUser) {
@@ -264,29 +294,29 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
                   <span className="font-medium pr-1 text-sm text-[#484848] flex items-center">
                     {post.user.name}
                     {post.user.isSubscribed && (
-                      <svg 
-                        xmlns="http://www.w3.org/2000/svg" 
-                        viewBox="0 0 24 24" 
-                        width="21" 
-                        height="21" 
-                        className="inline-block ml-1 relative"
-                        style={{ color: '#0CD498' }}
-                        fill="none"
-                      >
-                        <path 
-                          d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z" 
-                          stroke="currentColor" 
-                          strokeWidth="1.5"
-                        />
-                        <path 
-                          d="M9 12.8929C9 12.8929 10.2 13.5447 10.8 14.5C10.8 14.5 12.6 10.75 15 9.5" 
-                          stroke="currentColor" 
-                          strokeWidth="1.5" 
-                          strokeLinecap="round" 
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    )}
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    viewBox="0 0 24 24" 
+    width="21" 
+    height="21" 
+    className="inline-block ml-1 relative"
+    style={{ color: accentColor }}
+    fill="none"
+  >
+    <path 
+      d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z" 
+      stroke="currentColor" 
+      strokeWidth="1.5"
+    />
+    <path 
+      d="M9 12.8929C9 12.8929 10.2 13.5447 10.8 14.5C10.8 14.5 12.6 10.75 15 9.5" 
+      stroke="currentColor" 
+      strokeWidth="1.5" 
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+    />
+  </svg>
+)}
                   </span>
                   <span className="text-sm text-neutral-500">&middot; {formattedDate || 'Loading time...'}</span>
                 </div>
@@ -294,9 +324,12 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
                   {post.location && (
                     <span>{city}, {stateAcronym}</span>
                   )}
-                  <span className={`ml-2 py-2 px-3 rounded-sm text-white  flex items-center justify-center text-xs ${categoryColor}`}>
-                    {post.category}
-                  </span>
+<span 
+  className="ml-2 py-2 px-3 rounded-sm text-white flex items-center justify-center text-xs"
+  style={{ backgroundColor: badgeColor }}
+>
+  {post.category}
+</span>
                 </div>
               </div>
             </div>
@@ -329,9 +362,13 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
   {/* Like Button */}
   <div 
     onClick={(e) => { e.stopPropagation(); handleLike(); }}
+    style={{
+      background: isLiked ? `linear-gradient(to top right, ${accentColor}33, ${accentColor}11)` : '',
+      boxShadow: isLiked ? `0 0 12px ${accentColor}33` : ''
+    }}
     className={`flex items-center justify-center p-3 rounded-full cursor-pointer transition-all duration-300 relative
       ${isLiked 
-        ? 'bg-gradient-to-tr from-[#0CD498]/20 to-[#0CD498]/10 shadow-[0_0_12px_rgba(12,212,152,0.2)]' 
+        ? '' 
         : 'bg-gray-50 border border-gray-100 hover:shadow-[0_0_12px_rgba(0,0,0,0.05)]'
       }`}
   >
@@ -340,8 +377,8 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
       viewBox="0 0 24 24" 
       width={20} 
       height={20}
-      className={`transition-colors duration-300 ${isLiked ? "text-[#0CD498]" : "text-neutral-600"}`}
-      fill={isLiked ? "#0CD498" : "none"}
+      style={{ color: isLiked ? accentColor : 'rgb(82 82 91)' }}
+      fill={isLiked ? accentColor : "none"}
       stroke="currentColor"
       strokeWidth="1.5"
     >
@@ -349,7 +386,10 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
       <path d="M15.4787 7.80626L15.2124 8.66634C14.9942 9.37111 14.8851 9.72349 14.969 10.0018C15.0369 10.2269 15.1859 10.421 15.389 10.5487C15.64 10.7065 16.0197 10.7065 16.7791 10.7065H17.1831C19.7532 10.7065 21.0382 10.7065 21.6452 11.4673C21.7145 11.5542 21.7762 11.6467 21.8296 11.7437C22.2965 12.5921 21.7657 13.7351 20.704 16.0211C19.7297 18.1189 19.2425 19.1678 18.338 19.7852C18.2505 19.8449 18.1605 19.9013 18.0683 19.9541C17.116 20.5 15.9362 20.5 13.5764 20.5H13.0646C10.2057 20.5 8.77628 20.5 7.88814 19.6395C7 18.7789 7 17.3939 7 14.6239V13.6503C7 12.1946 7 11.4668 7.25834 10.8006C7.51668 10.1344 8.01135 9.58664 9.00069 8.49112L13.0921 3.96056C13.1947 3.84694 13.246 3.79012 13.2913 3.75075C13.7135 3.38328 14.3652 3.42464 14.7344 3.84235C14.774 3.8871 14.8172 3.94991 14.9036 4.07554C15.0388 4.27205 15.1064 4.37031 15.1654 4.46765C15.6928 5.33913 15.8524 6.37436 15.6108 7.35715C15.5838 7.46692 15.5488 7.5801 15.4787 7.80626Z" strokeLinecap="round"/>
     </svg>
     {likes.length > 0 && (
-      <span className="absolute -top-1 -right-1 bg-[#0CD498] rounded-full min-w-[18px] h-[18px] flex items-center justify-center text-[11px] font-medium text-white shadow-sm">
+      <span 
+        className="absolute -top-1 -right-1 rounded-full min-w-[18px] h-[18px] flex items-center justify-center text-[11px] font-medium text-white shadow-sm"
+        style={{ backgroundColor: accentColor }}
+      >
         {likes.length}
       </span>
     )}
@@ -358,26 +398,30 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
   {/* Bookmark Button */}
   <div
     onClick={(e) => { e.stopPropagation(); handleBookmark(); }}
-    className={`flex items-center justify-center p-3 rounded-full cursor-pointer transition-all duration-300 relative
-      ${isBookmarked 
-        ? 'bg-gradient-to-tr from-[#0CD498]/20 to-[#0CD498]/10 shadow-[0_0_12px_rgba(12,212,152,0.2)]' 
-        : 'bg-gray-50 border border-gray-100 hover:shadow-[0_0_12px_rgba(0,0,0,0.05)]'
-      }`}
+    style={{
+      background: isBookmarked ? `linear-gradient(to top right, ${accentColor}33, ${accentColor}11)` : 'rgb(249 250 251)',
+      boxShadow: isBookmarked ? `0 0 12px ${accentColor}33` : '',
+      border: isBookmarked ? 'none' : '1px solid rgb(243 244 246)'
+    }}
+    className="flex items-center justify-center p-3 rounded-full cursor-pointer transition-all duration-300 relative"
   >
     <svg 
       xmlns="http://www.w3.org/2000/svg" 
       viewBox="0 0 24 24" 
       width={20} 
       height={20}
-      className={`transition-colors duration-300 ${isBookmarked ? "text-[#0CD498]" : "text-neutral-600"}`}
-      fill={isBookmarked ? "#0CD498" : "none"}
+      style={{ color: isBookmarked ? accentColor : 'rgb(82 82 91)' }}
+      fill={isBookmarked ? accentColor : "none"}
       stroke="currentColor"
       strokeWidth="1.5"
     >
       <path d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z" strokeLinecap="round"/>
     </svg>
     {bookmarks.length > 0 && (
-      <span className="absolute -top-1 -right-1 bg-[#0CD498] rounded-full min-w-[18px] h-[18px] flex items-center justify-center text-[11px] font-medium text-white shadow-sm">
+      <span 
+        className="absolute -top-1 -right-1 rounded-full min-w-[18px] h-[18px] flex items-center justify-center text-[11px] font-medium text-white shadow-sm"
+        style={{ backgroundColor: accentColor }}
+      >
         {bookmarks.length}
       </span>
     )}

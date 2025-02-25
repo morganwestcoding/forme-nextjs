@@ -4,7 +4,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { SafeUser, SafeListing } from '@/app/types';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { categories } from '@/components/Categories'; // Make sure to import your categories
 
 type SearchResult = SafeUser | SafeListing;
 
@@ -14,9 +15,27 @@ interface SearchProps {
 
 const Search: React.FC<SearchProps> = ({ onResultClick }) => {
   const router = useRouter();
+  const params = useSearchParams();
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+
+  // Determine accent color based on selected category in URL
+  const getAccentColor = () => {
+    const categoryParam = params?.get('category');
+    
+    if (categoryParam) {
+      const categoryData = categories.find(cat => cat.label === categoryParam);
+      if (categoryData) {
+        return categoryData.color.replace('bg-[', '').replace(']', '');
+      }
+    }
+    
+    // Default color when no category is selected or "All" is selected
+    return '#0CD498';
+  };
+
+  const accentColor = getAccentColor();
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
@@ -64,18 +83,21 @@ const Search: React.FC<SearchProps> = ({ onResultClick }) => {
         onChange={handleInputChange}
         onFocus={() => setIsSearchFocused(true)}
         onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
-        className="w-full text-[#71717A] placeholder:text-[#71717A] border bg-slate-50 border-neutral-500 rounded-lg p-3.5 pl-12 pr-24 text-sm shadow-sm"
+        className="w-full text-[#71717A] placeholder:text-[#71717A] bg-white rounded-lg p-4 pl-12 pr-24 text-sm shadow-sm"
       />
 
       <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
-        <div className="flex items-center gap-1 px-2 py-1 rounded-md bg-[#0CD498] shadow-sm">
+        <div 
+          className="flex items-center gap-1 px-2 py-1 rounded-md shadow-sm"
+          style={{ backgroundColor: accentColor }}
+        >
           <span className="text-sm text-white">⌘</span>
           <span className="text-sm text-white">K</span>
         </div>
       </div>
 
       {searchResults.length > 0 && (
-        <div className="absolute z-10 w-full mt-1 rounded-lg shadow-sm-lg bg-white bg-opacity-90 backdrop-blur-md border-none overflow-hidden">
+        <div className="absolute z-10 w-full mt-1 rounded-lg shadow-sm-lg bg-white bg-opacity-90 backdrop-blur-md overflow-hidden">
           <div className="max-h-96 overflow-y-auto">
             {searchResults.map((result, index) => (
               <div 

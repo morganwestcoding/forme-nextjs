@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import qs from 'query-string';
 import { useRouter, useSearchParams } from "next/navigation";
 import { categories } from '@/components/Categories';
+import { useColorContext } from '@/app/context/ColorContext';
 
 interface CategoryButtonProps {
   onCategoryChange?: (category: string) => void;
@@ -196,6 +197,7 @@ const CategoryButton: React.FC<CategoryButtonProps> = ({
   const [isTransitioning, setIsTransitioning] = useState(false);
   const router = useRouter();
   const params = useSearchParams();
+  const { updateAccentColor } = useColorContext();
 
   const handleCategorySelect = useCallback((label: string) => {
     setPrevCategory(selectedCategory);
@@ -213,12 +215,29 @@ const CategoryButton: React.FC<CategoryButtonProps> = ({
     }
 
     const updatedQuery: any = {
-      ...currentQuery,
-      category: label
+      ...currentQuery
     };
-
-    if (params?.get('category') === label) {
+    
+    // Special handling for "All" category - remove the category param entirely
+    if (label === 'All') {
       delete updatedQuery.category;
+      // Set default color when "All" is selected
+      updateAccentColor('bg-[#0CD498]');
+    } else {
+      updatedQuery.category = label;
+      
+      // Update global accent color based on category
+      const categoryData = categories.find(cat => cat.label === label);
+      if (categoryData) {
+        updateAccentColor(categoryData.color);
+      }
+      
+      // If the same category is clicked again, remove the filter
+      if (params?.get('category') === label) {
+        delete updatedQuery.category;
+        // Reset to default color when filter is removed
+        updateAccentColor('bg-[#0CD498]');
+      }
     }
 
     const url = qs.stringifyUrl({
@@ -228,7 +247,7 @@ const CategoryButton: React.FC<CategoryButtonProps> = ({
 
     router.push(url);
     if (onCategoryChange) onCategoryChange(label);
-  }, [router, params, onCategoryChange, selectedCategory]);
+  }, [router, params, onCategoryChange, selectedCategory, updateAccentColor]);
 
   const selectedCategoryColor = categories.find(c => c.label === selectedCategory)?.color || 'bg-[#0CD498]';
   const prevCategoryColor = categories.find(c => c.label === prevCategory)?.color || 'bg-[#0CD498]';

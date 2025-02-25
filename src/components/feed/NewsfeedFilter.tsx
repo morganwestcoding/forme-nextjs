@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useColorContext } from '@/app/context/ColorContext';
 
 interface NewsfeedFilterProps {
   onFilterChange?: (filter: string) => void;
@@ -12,6 +13,7 @@ const NewsfeedFilter: React.FC<NewsfeedFilterProps> = ({ onFilterChange }) => {
   const [selectedFilter, setSelectedFilter] = useState('for-you');
   const [indicatorStyle, setIndicatorStyle] = useState({ width: 0, left: 0 });
   const buttonRefs = useRef<(HTMLLIElement | null)[]>([]);
+  const { hexColor } = useColorContext();
 
   useEffect(() => {
     updateIndicatorPosition();
@@ -60,12 +62,13 @@ const NewsfeedFilter: React.FC<NewsfeedFilterProps> = ({ onFilterChange }) => {
           </li>
         ))}
         
-        {/* Animated Indicator */}
+        {/* Animated Indicator with dynamic color from context */}
         <div
-          className="absolute bottom-0 h-1  bg-[#0CD498]  rounded-t-sm transition-all duration-300 ease-in-out"
+          className="absolute bottom-0 h-1 rounded-t-sm transition-all duration-300 ease-in-out"
           style={{
             width: `${indicatorStyle.width}px`,
             left: `${indicatorStyle.left}px`,
+            backgroundColor: hexColor,
           }}
         />
       </ul>
