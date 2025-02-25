@@ -155,7 +155,7 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
      </div>
      
      {/* Advanced Button Bar */}
-     <div className="mt-4 flex items-center justify-between">
+     <div className="mt-4 flex items-center justify-between -mb-2">
        {/* Left side - Category Button */}
        <div className="flex items-center">
          <FuturisticCategory 
