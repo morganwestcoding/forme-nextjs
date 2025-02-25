@@ -92,7 +92,7 @@ export default function Rightbar({ listings = [], currentUser }: RightbarProps) 
             </button>
           </div>
 
-          <div className="grid grid-cols-4 gap-2 -mb-3">
+          <div className="grid grid-cols-4 gap-2 -mb-5">
             {currentStores.map((listing, index) => (
               <div 
                 key={index}
@@ -124,7 +124,7 @@ export default function Rightbar({ listings = [], currentUser }: RightbarProps) 
     
       </div>
 
-            {/* 
+         
             <div 
         className="relative rounded-lg overflow-hidden cursor-pointer bg-slate-800 shadow-sm"
         onClick={() => subscribeModal.onOpen()}
@@ -133,12 +133,12 @@ export default function Rightbar({ listings = [], currentUser }: RightbarProps) 
           <RotatingText />
         </div>
       </div>
-      */}
+  
 
       {/* Events Section */}
       <div className="w-full">
       
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-4 -mt-2">
             <h2 className="text-lg font-semibold">Upcoming Events</h2>
             <button 
               className="text-sm text-gray-500 hover:text-[#F08080] transition-colors"
