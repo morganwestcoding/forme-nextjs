@@ -1,7 +1,6 @@
-// components/feed/Share.tsx (with location button and fixed posting behavior)
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import ContentInput from '../inputs/ContentInput';
 import Avatar from '../ui/avatar';
 import { SafeUser, MediaData } from '@/app/types';
@@ -9,7 +8,7 @@ import axios from 'axios';
 import Link from 'next/link';
 import FuturisticCategory from './FuturisticCategory';
 import AttachmentModal from '../modals/AttachmentModal';
-import LocationModal from '../modals/LocationModal'; // You'll need to create this
+import LocationModal from '../modals/LocationModal';
 import useAttachmentModal from '@/app/hooks/useAttachmentModal';
 import { categories } from '@/components/Categories';
 import { usePostStore } from '@/app/hooks/usePostStore';
@@ -30,6 +29,34 @@ interface PostData {
  mediaType: string | null;
  location: string | null;
 }
+
+// Custom tooltip component 
+const CustomTooltip = ({ 
+  content, 
+  isVisible 
+}: { 
+  content: string; 
+  isVisible: boolean 
+}) => (
+  isVisible && (
+    <div 
+      className="absolute bottom-[-30px] left-1/2 transform -translate-x-1/2 whitespace-nowrap"
+      style={{
+        position: 'absolute',
+        backgroundColor: 'rgba(31, 41, 55, 0.95)',
+        color: 'white',
+        fontSize: '0.75rem',
+        borderRadius: '0.25rem',
+        padding: '0.25rem 0.5rem',
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+        pointerEvents: 'none' as 'none',
+        zIndex: 99999
+      }}
+    >
+      {content}
+    </div>
+  )
+);
 
 const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
  const attachmentModal = useAttachmentModal();
@@ -125,7 +152,7 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
 
  return (
    <div 
-     className={`w-full h-auto rounded-lg shadow-sm transition-colors duration-250 ${selectedCategory ? selectedCategory.color : 'bg-gray-200'} p-6`}
+     className={`w-full h-auto rounded-lg shadow-sm transition-colors duration-250 ${selectedCategory ? selectedCategory.color : 'bg-[#0CD498]'} p-6`}
      style={{ 
        background: selectedCategory ? undefined : `linear-gradient(45deg, ${accentColor}15, ${accentColor}30)`
      }}
@@ -159,152 +186,138 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
 
        {/* Right side - Action Buttons */}
        <div className="flex items-center space-x-2 relative">
-         {/* Location Button */}
-         <motion.div 
-           className="relative"
-           variants={buttonVariants}
-           initial="idle"
-           whileHover="hover"
-           whileTap="tap"
-           onMouseEnter={() => setHoverState('location')}
-           onMouseLeave={() => setHoverState(null)}
-         >
-           <motion.div
-             className={`
-               flex items-center justify-center
-               rounded-full 
-               p-3
-               cursor-pointer
-               transition-colors
-               duration-300
-               ease-in-out
-               ${hasLocation ? '' : 'hover:bg-white hover:bg-opacity-15'}
-             `}
-             style={{ 
-               backgroundColor: hasLocation ? accentColor : 'white',
-               boxShadow: '0 1px 8px rgba(0,0,0,0.08)'
-             }}
-             onClick={() => setLocationModalOpen(true)}
+         {/* Location Button with Tooltip */}
+         <div className="inline-block relative">
+           <motion.div 
+             className="relative"
+             variants={buttonVariants}
+             initial="idle"
+             whileHover="hover"
+             whileTap="tap"
+             onMouseEnter={() => setHoverState('location')}
+             onMouseLeave={() => setHoverState(null)}
            >
-             <svg 
-               xmlns="http://www.w3.org/2000/svg" 
-               viewBox="0 0 24 24" 
-               width="19" 
-               height="19" 
-               style={{ color: hasLocation ? 'white' : (hoverState === 'location' ? accentColor : '#71717A') }}
-               fill="none"
+             <motion.div
+               className={`
+                 flex items-center justify-center
+                 rounded-full 
+                 p-3
+                 cursor-pointer
+                 transition-colors
+                 duration-300
+                 ease-in-out
+                 ${hasLocation ? '' : 'hover:bg-white hover:bg-opacity-15'}
+               `}
+               style={{ 
+                 backgroundColor: hasLocation ? accentColor : 'white',
+                 boxShadow: '0 1px 8px rgba(0,0,0,0.08)'
+               }}
+               onClick={() => setLocationModalOpen(true)}
              >
-               <path 
-                 d="M12 12.5C13.6569 12.5 15 11.1569 15 9.5C15 7.84315 13.6569 6.5 12 6.5C10.3431 6.5 9 7.84315 9 9.5C9 11.1569 10.3431 12.5 12 12.5Z" 
-                 stroke="currentColor" 
-                 strokeWidth="1.5" 
-                 strokeLinecap="round" 
-                 strokeLinejoin="round"
-               />
-               <path 
-                 d="M12 22C14 19 20 16.4183 20 10C20 5.58172 16.4183 2 12 2C7.58172 2 4 5.58172 4 10C4 16.4183 10 19 12 22Z" 
-                 stroke="currentColor" 
-                 strokeWidth="1.5" 
-                 strokeLinecap="round" 
-                 strokeLinejoin="round"
-               />
-             </svg>
-           </motion.div>
-           
-           {/* Tooltip */}
-           <AnimatePresence>
-             {hoverState === 'location' && (
-               <motion.div
-                 initial={{ opacity: 0, y: 5 }}
-                 animate={{ opacity: 1, y: 0 }}
-                 exit={{ opacity: 0, y: 5 }}
-                 transition={{ duration: 0.2 }}
-                 className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap bg-gray-800 text-white text-xs rounded px-2 py-1 z-10"
+               <svg 
+                 xmlns="http://www.w3.org/2000/svg" 
+                 viewBox="0 0 24 24" 
+                 width="19" 
+                 height="19" 
+                 style={{ color: hasLocation ? 'white' : (hoverState === 'location' ? accentColor : '#71717A') }}
+                 fill="none"
                >
-                 {hasLocation ? 'Change location' : 'Add location'}
-               </motion.div>
-             )}
-           </AnimatePresence>
-         </motion.div>
+                 <path 
+                   d="M12 12.5C13.6569 12.5 15 11.1569 15 9.5C15 7.84315 13.6569 6.5 12 6.5C10.3431 6.5 9 7.84315 9 9.5C9 11.1569 10.3431 12.5 12 12.5Z" 
+                   stroke="currentColor" 
+                   strokeWidth="1.5" 
+                   strokeLinecap="round" 
+                   strokeLinejoin="round"
+                 />
+                 <path 
+                   d="M12 22C14 19 20 16.4183 20 10C20 5.58172 16.4183 2 12 2C7.58172 2 4 5.58172 4 10C4 16.4183 10 19 12 22Z" 
+                   stroke="currentColor" 
+                   strokeWidth="1.5" 
+                   strokeLinecap="round" 
+                   strokeLinejoin="round"
+                 />
+               </svg>
+             </motion.div>
+             
+             {/* Custom tooltip component */}
+             <CustomTooltip 
+               content={hasLocation ? 'Change location' : 'Add location'} 
+               isVisible={hoverState === 'location'} 
+             />
+           </motion.div>
+         </div>
 
-         {/* Attachment Button */}
-         <motion.div 
-           className="relative"
-           variants={buttonVariants}
-           initial="idle"
-           whileHover="hover"
-           whileTap="tap"
-           onMouseEnter={() => setHoverState('attachment')}
-           onMouseLeave={() => setHoverState(null)}
-         >
-           <motion.div
-             className={`
-               flex items-center justify-center
-               rounded-full 
-               p-3
-               cursor-pointer
-               transition-colors
-               duration-300
-               ease-in-out
-               ${hasAttachments ? '' : 'hover:bg-white hover:bg-opacity-15'}
-             `}
-             style={{ 
-               backgroundColor: hasAttachments ? accentColor : 'white',
-               boxShadow: '0 1px 8px rgba(0,0,0,0.08)'
-             }}
-             onClick={attachmentModal.onOpen}
+         {/* Attachment Button with Tooltip */}
+         <div className="inline-block relative">
+           <motion.div 
+             className="relative"
+             variants={buttonVariants}
+             initial="idle"
+             whileHover="hover"
+             whileTap="tap"
+             onMouseEnter={() => setHoverState('attachment')}
+             onMouseLeave={() => setHoverState(null)}
            >
-             {hasAttachments ? (
-               <svg 
-                 xmlns="http://www.w3.org/2000/svg" 
-                 viewBox="0 0 24 24" 
-                 width="19" 
-                 height="19" 
-                 color="#ffffff" 
-                 fill="none"
-               >
-                 <path d="M5 14.5C5 14.5 6.5 14.5 8.5 18C8.5 18 14.0588 8.83333 19 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-               </svg>
-             ) : (
-               <svg 
-                 xmlns="http://www.w3.org/2000/svg" 
-                 viewBox="0 0 24 24" 
-                 width="19" 
-                 height="19" 
-                 style={{ color: hoverState === 'attachment' ? accentColor : '#71717A' }}
-                 fill="none"
-               >
-                 <path 
-                   d="M9.5 14.5L14.5 9.49995" 
-                   stroke="currentColor" 
-                   strokeWidth="1.5" 
-                   strokeLinecap="round" 
-                 />
-                 <path 
-                   d="M16.8463 14.6095L19.4558 12C21.5147 9.94108 21.5147 6.60298 19.4558 4.54411C17.397 2.48524 14.0589 2.48524 12 4.54411L9.39045 7.15366M14.6095 16.8463L12 19.4558C9.94113 21.5147 6.60303 21.5147 4.54416 19.4558C2.48528 17.3969 2.48528 14.0588 4.54416 12L7.1537 9.39041" 
-                   stroke="currentColor" 
-                   strokeWidth="1.5" 
-                   strokeLinecap="round" 
-                 />
-               </svg>
-             )}
+             <motion.div
+               className={`
+                 flex items-center justify-center
+                 rounded-full 
+                 p-3
+                 cursor-pointer
+                 transition-colors
+                 duration-300
+                 ease-in-out
+                 ${hasAttachments ? '' : 'hover:bg-white hover:bg-opacity-15'}
+               `}
+               style={{ 
+                 backgroundColor: hasAttachments ? accentColor : 'white',
+                 boxShadow: '0 1px 8px rgba(0,0,0,0.08)'
+               }}
+               onClick={attachmentModal.onOpen}
+             >
+               {hasAttachments ? (
+                 <svg 
+                   xmlns="http://www.w3.org/2000/svg" 
+                   viewBox="0 0 24 24" 
+                   width="19" 
+                   height="19" 
+                   color="#ffffff" 
+                   fill="none"
+                 >
+                   <path d="M5 14.5C5 14.5 6.5 14.5 8.5 18C8.5 18 14.0588 8.83333 19 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                 </svg>
+               ) : (
+                 <svg 
+                   xmlns="http://www.w3.org/2000/svg" 
+                   viewBox="0 0 24 24" 
+                   width="19" 
+                   height="19" 
+                   style={{ color: hoverState === 'attachment' ? accentColor : '#71717A' }}
+                   fill="none"
+                 >
+                   <path 
+                     d="M9.5 14.5L14.5 9.49995" 
+                     stroke="currentColor" 
+                     strokeWidth="1.5" 
+                     strokeLinecap="round" 
+                   />
+                   <path 
+                     d="M16.8463 14.6095L19.4558 12C21.5147 9.94108 21.5147 6.60298 19.4558 4.54411C17.397 2.48524 14.0589 2.48524 12 4.54411L9.39045 7.15366M14.6095 16.8463L12 19.4558C9.94113 21.5147 6.60303 21.5147 4.54416 19.4558C2.48528 17.3969 2.48528 14.0588 4.54416 12L7.1537 9.39041" 
+                     stroke="currentColor" 
+                     strokeWidth="1.5" 
+                     strokeLinecap="round" 
+                   />
+                 </svg>
+               )}
+             </motion.div>
+             
+             {/* Custom tooltip component */}
+             <CustomTooltip 
+               content={hasAttachments ? 'Change attachment' : 'Add attachment'} 
+               isVisible={hoverState === 'attachment'} 
+             />
            </motion.div>
-           
-           {/* Tooltip */}
-           <AnimatePresence>
-             {hoverState === 'attachment' && (
-               <motion.div
-                 initial={{ opacity: 0, y: 5 }}
-                 animate={{ opacity: 1, y: 0 }}
-                 exit={{ opacity: 0, y: 5 }}
-                 transition={{ duration: 0.2 }}
-                 className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap bg-gray-800 text-white text-xs rounded px-2 py-1 z-10"
-               >
-                 {hasAttachments ? 'Change attachment' : 'Add attachment'}
-               </motion.div>
-             )}
-           </AnimatePresence>
-         </motion.div>
+         </div>
 
          {/* Post Button */}
          {content.trim() && (
