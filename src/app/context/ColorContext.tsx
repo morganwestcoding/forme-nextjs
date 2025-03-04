@@ -14,8 +14,8 @@ interface ColorContextType {
 
 // Create context with a default value
 const ColorContext = createContext<ColorContextType>({
-  accentColor: 'bg-[#0CD498]',
-  hexColor: '#0CD498',
+  accentColor: 'bg-[#60A5FA]',
+  hexColor: '#60A5FA',
   updateAccentColor: () => {},
 });
 
@@ -27,14 +27,14 @@ interface ColorProviderProps {
 }
 
 export const ColorProvider = ({ children }: ColorProviderProps) => {
-  const [accentColor, setAccentColor] = useState<string>('bg-[#0CD498]');
-  const [hexColor, setHexColor] = useState<string>('#0CD498');
+  const [accentColor, setAccentColor] = useState<string>('bg-[#60A5FA]');
+  const [hexColor, setHexColor] = useState<string>('#60A5FA');
   const params = useSearchParams();
 
   // Extract hex color from bg-[#xxx] format
   const getHexColor = (bgColor: string): string => {
     const match = bgColor.match(/#[A-Fa-f0-9]{6}/);
-    return match ? match[0] : '#0CD498';
+    return match ? match[0] : '#60A5FA';
   };
 
   // Update accent color based on URL params
@@ -48,8 +48,8 @@ export const ColorProvider = ({ children }: ColorProviderProps) => {
       }
     } else {
       // Default color when no category is selected
-      setAccentColor('bg-[#0CD498]');
-      setHexColor('#0CD498');
+      setAccentColor('bg-[#60A5FA]');
+      setHexColor('#60A5FA');
     }
   }, [params]);
 

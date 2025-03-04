@@ -68,8 +68,8 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
     setFormattedDate(formatCreatedAt(post.createdAt));
   }, [post.createdAt]);
 
-  const categoryColor = categories.find(cat => cat.label === post.category)?.color || 'bg-[#0CD498]';
-  const badgeColor = categoryColor.replace('bg-[', '').replace(']', '') || '#0CD498';
+  const categoryColor = categories.find(cat => cat.label === post.category)?.color || 'bg-[#60A5FA]';
+  const badgeColor = categoryColor.replace('bg-[', '').replace(']', '') || '#60A5FA';
 
   const params = useSearchParams();
 
@@ -95,7 +95,7 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
     }
     
     // Default color when no category is selected or "All" is selected
-    return '#0CD498';
+    return '#60A5FA';
   };
   
   const accentColor = getAccentColor();
@@ -263,7 +263,7 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
     <>
       {!isHidden && (
         <>
-         <div className='w-full h-auto rounded-lg shadow-sm bg-[#ffffff] p-6 md:mr-6 my-4 relative cursor-pointer' onClick={openModal}>
+         <div className='w-full h-auto rounded-lg shadow-sm bg-[#ffffff] z-1 p-6 md:mr-6 my-4 relative cursor-pointer' onClick={openModal}>
             <div className="absolute top-4 right-3">
               <DropdownMenu>
                 <DropdownMenuTrigger>

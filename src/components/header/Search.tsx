@@ -32,7 +32,7 @@ const Search: React.FC<SearchProps> = ({ onResultClick }) => {
     }
     
     // Default color when no category is selected or "All" is selected
-    return '#0CD498';
+    return '#60A5FA';
   };
 
   const accentColor = getAccentColor();

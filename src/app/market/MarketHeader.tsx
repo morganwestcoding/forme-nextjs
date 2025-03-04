@@ -49,7 +49,7 @@ const MarketHeader = ({
             <button 
               onClick={() => setIsFilterOpen(!isFilterOpen)}
               className={`
-                flex items-center gap-2 py-3.5 px-4 rounded-md bg-[#2A2B2E]
+                flex items-center gap-2 py-3.5 px-4 rounded-md bg-[#333745]
                 transition-colors duration-200 ease-in-out
                 ${isFilterOpen ? 'text-white' : 'text-gray-400 hover:text-gray-200'}
               `}
@@ -150,7 +150,7 @@ const MarketHeader = ({
                     </button>
                     <button 
                       onClick={() => setIsFilterOpen(false)}
-                      className="px-3 py-1.5 text-sm bg-[#F9AE8B] text-white rounded-md"
+                      className="px-3 py-1.5 text-sm bg-[#60A5FA] text-white rounded-md"
                     >
                       Apply
                     </button>
@@ -161,7 +161,7 @@ const MarketHeader = ({
           </div>
 
           {/* View Toggle Buttons */}
-          <div className="relative bg-[#2A2B2E] rounded-md px-2">
+          <div className="relative bg-[#333745] rounded-md px-2">
             <div className="flex items-center relative">
               <button
                 onClick={() => onViewModeChange('grid')}
@@ -219,7 +219,7 @@ const MarketHeader = ({
 
               {/* Animated Indicator */}
               <div
-                className="absolute bottom-0 h-1 bg-[#78C3FB] rounded-t-sm transition-all duration-300 ease-in-out"
+                className="absolute bottom-0 h-1 bg-[#60A5FA] rounded-t-sm transition-all duration-300 ease-in-out"
                 style={{
                   width: '50%',
                   left: viewMode === 'list' ? '50%' : '0%',

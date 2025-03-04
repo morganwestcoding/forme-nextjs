@@ -90,7 +90,7 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
    }
    
    // Default color
-   return '#0CD498';
+   return '#60A5FA';
  }, [params, categoryLabel]);
 
  const accentColor = getAccentColor();
@@ -152,7 +152,7 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
 
  return (
    <div 
-     className={`w-full h-auto rounded-lg shadow-sm transition-colors duration-250 ${selectedCategory ? selectedCategory.color : 'bg-[#0CD498]'} p-6`}
+     className={`w-full h-auto rounded-lg shadow-sm transition-colors duration-250 ${selectedCategory ? selectedCategory.color : 'bg-[#60A5FA]'} p-6`}
      style={{ 
        background: selectedCategory ? undefined : `linear-gradient(45deg, ${accentColor}15, ${accentColor}30)`
      }}

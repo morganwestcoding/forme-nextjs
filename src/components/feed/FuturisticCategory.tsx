@@ -31,7 +31,7 @@ const CircleSpinner = ({ color, isTransitioning, prevColor }: {
 
   const getHexColor = (bgColor: string) => {
     const match = bgColor.match(/#[A-Fa-f0-9]{6}/);
-    return match ? match[0] : '#0CD498';
+    return match ? match[0] : '#60A5FA'; // Changed default color to gray
   };
 
   const currentColor = getHexColor(color);
@@ -189,7 +189,7 @@ const CircleSpinner = ({ color, isTransitioning, prevColor }: {
 
 const CategoryButton: React.FC<CategoryButtonProps> = ({
   onCategoryChange,
-  initialCategory = "All"
+  initialCategory = "Default" // Changed from "All" to "Default"
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
@@ -198,10 +198,10 @@ const CategoryButton: React.FC<CategoryButtonProps> = ({
   const router = useRouter();
   const params = useSearchParams();
   const { updateAccentColor } = useColorContext();
-  const defaultColor = 'bg-[#0CD498]';
+  const defaultColor = 'bg-[#60A5FA]'; // Changed from #0CD498 to a nice gray
 
   const handleCategorySelect = useCallback((label: string) => {
-    const isSameCategory = params?.get('category') === label || (label === 'All' && !params?.get('category'));
+    const isSameCategory = params?.get('category') === label || (label === 'Default' && !params?.get('category'));
     
     // Update previous category before changing the selected one
     setPrevCategory(selectedCategory);
@@ -210,7 +210,7 @@ const CategoryButton: React.FC<CategoryButtonProps> = ({
     setIsTransitioning(true);
     
     // Always update the selectedCategory
-    setSelectedCategory(isSameCategory ? 'All' : label);
+    setSelectedCategory(isSameCategory ? 'Default' : label);
     setIsOpen(false);
 
     setTimeout(() => {
@@ -226,17 +226,17 @@ const CategoryButton: React.FC<CategoryButtonProps> = ({
       ...currentQuery
     };
     
-    // Handle repeated category selection - reset to All and default color
+    // Handle repeated category selection - reset to Default and default color
     if (isSameCategory) {
       delete updatedQuery.category;
       updateAccentColor(defaultColor);
-      // Force reset the selected category to "All"
-      setSelectedCategory('All');
+      // Force reset the selected category to "Default"
+      setSelectedCategory('Default');
       setPrevCategory(label);
-    } else if (label === 'All') {
-      // Special handling for "All" category - remove the category param entirely
+    } else if (label === 'Default') {
+      // Special handling for "Default" category - remove the category param entirely
       delete updatedQuery.category;
-      // Set default color when "All" is selected
+      // Set default color when "Default" is selected
       updateAccentColor(defaultColor);
     } else {
       updatedQuery.category = label;
@@ -254,15 +254,15 @@ const CategoryButton: React.FC<CategoryButtonProps> = ({
     }, { skipNull: true });
 
     router.push(url);
-    if (onCategoryChange) onCategoryChange(isSameCategory ? 'All' : label);
+    if (onCategoryChange) onCategoryChange(isSameCategory ? 'Default' : label);
   }, [router, params, onCategoryChange, selectedCategory, updateAccentColor]);
 
-  // Use the default color if "All" is selected or if it's the same category selected twice
-  const selectedCategoryColor = selectedCategory === 'All' 
+  // Use the default color if "Default" is selected or if it's the same category selected twice
+  const selectedCategoryColor = selectedCategory === 'Default' 
     ? defaultColor
     : categories.find(c => c.label === selectedCategory)?.color || defaultColor;
     
-  const prevCategoryColor = prevCategory === 'All'
+  const prevCategoryColor = prevCategory === 'Default'
     ? defaultColor 
     : categories.find(c => c.label === prevCategory)?.color || defaultColor;
 
@@ -302,10 +302,10 @@ const CategoryButton: React.FC<CategoryButtonProps> = ({
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => handleCategorySelect('All')}
-                className="bg-[#0CD498] p-2 rounded-lg cursor-pointer text-center"
+                onClick={() => handleCategorySelect('Default')}
+                className="bg-[#60A5FA] p-2 rounded-lg cursor-pointer text-center" // Changed color
               >
-                <span className="text-white text-sm">All</span>
+                <span className="text-white text-sm">Default</span>
               </motion.div>
 
               {categories.map((category) => (
