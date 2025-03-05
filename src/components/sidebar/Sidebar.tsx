@@ -1,6 +1,6 @@
 "use client"
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import Logo from "../header/Logo";
 import { categories } from '../Categories';
 import { useState, useEffect } from "react";
@@ -35,12 +35,34 @@ const Sidebar: React.FC<SidebarProps> = ({
   isMobile = false
 }) => {
   const router = useRouter();
+  const pathname = usePathname();
   const demoModal = useDemoModal();
-  const [selectedButton, setSelectedButton] = useState('home');
+  const [selectedButton, setSelectedButton] = useState('');
   const { selectedCategory, setSelectedCategory } = useCategory();
   const [filterActive, setFilterActive] = useState(false);
   const [reservationCount, setReservationCount] = useState(0);
   const inboxModal = useInboxModal();
+
+  // Set the selected button based on the current path
+  useEffect(() => {
+    if (pathname === '/') {
+      setSelectedButton('home');
+    } else if (pathname === '/explore') {
+      setSelectedButton('explore');
+    } else if (pathname === '/market') {
+      setSelectedButton('market');
+    } else if (pathname === '/favorites') {
+      setSelectedButton('favorites');
+    } else if (pathname === '/jobs') {
+      setSelectedButton('jobs');
+    } else if (pathname === '/reservations') {
+      setSelectedButton('Appointments');
+    } else if (pathname === '/vendors') {
+      setSelectedButton('vendors');
+    } else if (pathname === '/notifications') {
+      setSelectedButton('notifications');
+    }
+  }, [pathname]);
 
   // Add this useEffect hook
   useEffect(() => {
@@ -73,32 +95,34 @@ const Sidebar: React.FC<SidebarProps> = ({
     return false;
   });
 
-  // Handler for navigation and modals
+  // Handler for navigation and modals with explicit sidebar closing
   const handleNavigate = (route: string, buttonId: string) => {
     // Update selected button state
     setSelectedButton(buttonId);
     
-    // Navigate to the route
-    router.push(route);
-    
-    // Close sidebar if on mobile
+    // Close sidebar if on mobile - do this BEFORE navigation
     if (isMobile && onMobileClose) {
       onMobileClose();
     }
+    
+    // Navigate to the route
+    router.push(route);
   };
 
-  // Handler for modal opening
+  // Handler for modal opening with explicit sidebar closing
   const handleModalOpen = (modalFunction: () => void, buttonId: string) => {
     // Update selected button state
     setSelectedButton(buttonId);
     
-    // Open the modal
-    modalFunction();
-    
-    // Close sidebar if on mobile
+    // Close sidebar if on mobile - do this BEFORE opening modal
     if (isMobile && onMobileClose) {
       onMobileClose();
     }
+    
+    // Open the modal with a slight delay to ensure sidebar closes first
+    setTimeout(() => {
+      modalFunction();
+    }, 10);
   };
 
   return (
@@ -115,7 +139,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 viewBox="0 0 24 24" 
                 width="20" 
                 height="20" 
-                color="#ffffff" 
+                color="#000000" 
                 fill="none"
               >
                 <path 
@@ -139,10 +163,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         )}
 
         <Logo variant="vertical" />
-        {/* Pass down the onMobileClose prop to UserButton */}
-        <div onClick={() => isMobile && onMobileClose && onMobileClose()}>
-          <UserButton currentUser={currentUser} data={{} as SafePost} />
-        </div>
+        <UserButton currentUser={currentUser} data={{} as SafePost} onMobileClose={onMobileClose} />
 
         <div className="flex flex-col w-full">
           <ul className="list-none m-0 p-0 flex flex-col items-center hover:text-white ">
@@ -165,9 +186,9 @@ const Sidebar: React.FC<SidebarProps> = ({
                   color={selectedButton === 'explore' ? "#ffffff" : "#71717A"} 
                   className="group-hover:stroke-white lucide lucide-rocket"
                 >
-                  <path d="M9.49811 15L16.9981 7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                  <path d="M8.00634 7.67888L15.327 4.21881C18.3688 2.78111 19.8897 2.06226 20.8598 2.78341C21.8299 3.50455 21.5527 5.14799 20.9984 8.43486L20.0435 14.0968C19.6811 16.246 19.4998 17.3205 18.6989 17.7891C17.8979 18.2577 16.8574 17.8978 14.7765 17.178L8.41077 14.9762C4.51917 13.6301 2.57337 12.9571 2.50019 11.6365C2.427 10.3159 4.28678 9.43692 8.00634 7.67888Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                  <path d="M9.49811 15.5V17.7274C9.49811 20.101 9.49811 21.2878 10.2083 21.4771C10.9185 21.6663 11.6664 20.6789 13.1622 18.7039L13.9981 17.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                  <path d="M9.49811 15L16.9981 7.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M8.00634 7.67888L15.327 4.21881C18.3688 2.78111 19.8897 2.06226 20.8598 2.78341C21.8299 3.50455 21.5527 5.14799 20.9984 8.43486L20.0435 14.0968C19.6811 16.246 19.4998 17.3205 18.6989 17.7891C17.8979 18.2577 16.8574 17.8978 14.7765 17.178L8.41077 14.9762C4.51917 13.6301 2.57337 12.9571 2.50019 11.6365C2.427 10.3159 4.28678 9.43692 8.00634 7.67888Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M9.49811 15.5V17.7274C9.49811 20.101 9.49811 21.2878 10.2083 21.4771C10.9185 21.6663 11.6664 20.6789 13.1622 18.7039L13.9981 17.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
               <span className={`ml-3 text-sm font-light ${
@@ -230,7 +251,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             >
               <div className="group flex items-center justify-center w-8 h-8 rounded-full p-1 cursor-pointer transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={20} height={20} color={selectedButton === 'jobs' ? "#ffffff" : "#71717A"}  fill={"none"} className="group-hover:text-white">
-                  <path d="M10 12.3333C10 12.0233 10 11.8683 10.0341 11.7412C10.1265 11.3961 10.3961 11.1265 10.7412 11.0341C10.8683 11 11.0233 11 11.3333 11H12.6667C12.9767 11 13.1317 11 13.2588 11.0341C13.6039 11.1265 13.8735 11.3961 13.9659 11.7412C14 11.8683 14 12.0233 14 12.3333V13C14 14.1046 13.1046 15 12 15C10.8954 15 10 14.1046 10 13V12.3333Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M10 12.3333C10 12.0233 10 11.8683 10.0341 11.7412C10.1265 11.3961 10.3961 11.1265 10.7412 11.0341C10.8683 11 11.0233 11 11.3333 11H12.6667C12.9767 11 13.1317 11 13.2588 11.0341C13.6039 11.1265 13.8735 11.3961 13.9659 11.7412C14 11.8683 14 12.0233 1412.3333V13C14 14.1046 13.1046 15 12 15C10.8954 15 10 14.1046 10 13V12.3333Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   <path d="M13.8016 13C14.1132 12.9095 14.4666 12.8005 14.88 12.673L19.0512 11.3866C20.5358 10.9288 21.2624 10.131 21.4204 8.74977C21.4911 8.13198 21.5265 7.82308 21.4768 7.57022C21.3349 6.84864 20.7289 6.26354 19.9213 6.06839C19.6383 6 19.283 6 18.5724 6H5.42757C4.717 6 4.36172 6 4.07871 6.06839C3.27111 6.26354 2.6651 6.84864 2.52323 7.57022C2.47351 7.82308 2.50886 8.13198 2.57956 8.74977C2.73764 10.131 3.46424 10.9288 4.94882 11.3866L9.11996 12.673C9.53336 12.8005 9.88684 12.9095 10.1984 13" stroke="currentColor" strokeWidth="1.5" />
                   <path d="M3.46283 11L3.26658 13.1723C2.91481 17.0662 2.73892 19.0131 3.86734 20.2566C4.99576 21.5 6.93851 21.5 10.824 21.5H13.176C17.0615 21.5 19.0042 21.5 20.1327 20.2566C21.2611 19.0131 21.0852 17.0662 20.7334 13.1723L20.5372 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   <path d="M15.5 5.5L15.4227 5.23509C15.0377 3.91505 14.8452 3.25503 14.3869 2.87752C13.9286 2.5 13.3199 2.5 12.1023 2.5H11.8977C10.6801 2.5 10.0714 2.5 9.61309 2.87752C9.15478 3.25503 8.96228 3.91505 8.57727 5.23509L8.5 5.5" stroke="currentColor" strokeWidth="1.5" />
@@ -241,7 +262,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               }`}>Jobs</span>
             </li>
 
-            <li className={` group flex   items-center justify-start mb-2.5 p-2 rounded-md  transition-colors duration-250 ${
+            <li className={` group flex items-center justify-start mb-2.5 p-2 rounded-md  transition-colors duration-250 ${
               selectedButton === 'Appointments' ? 'bg-[#333745]' : ' hover:bg-gray-200 hover:text-white transition-all'
               } w-44`} 
               onClick={() => handleNavigate('/reservations', 'Appointments')}
@@ -292,7 +313,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               </div>
             </li>
 
-            <li className={` group flex items-center justify-start   mb-2.5 p-2 rounded-md transition-colors duration-250 ${
+            <li className={` group flex items-center justify-start mb-2.5 p-2 rounded-md transition-colors duration-250 ${
               selectedButton === 'vendors' ? 'bg-[#333745]' : ' hover:bg-gray-200 hover:text-white transition-all'
               } w-44`} 
               onClick={() => handleNavigate('/vendors', 'vendors')}

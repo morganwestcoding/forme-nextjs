@@ -56,9 +56,7 @@ const UserButton: React.FC<UserButtonProps> = ({
 
   const handleButtonClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (isMobile) {
-      setIsOpen(!isOpen);
-    }
+    setIsOpen(!isOpen);
   };
 
   const formatTier = (tier: string | null | undefined) => {
@@ -67,21 +65,77 @@ const UserButton: React.FC<UserButtonProps> = ({
     return baseTier.charAt(0).toUpperCase() + baseTier.slice(1).toLowerCase();
   };
 
-  // Handler for navigation with mobile sidebar closing
-  const handleAction = useCallback((callback: () => void) => {
-    return (e: React.MouseEvent) => {
-      e.stopPropagation();
-      setIsOpen(false);
-      
-      // Close the mobile sidebar if we're on mobile
-      if (isMobile && onMobileClose) {
-        onMobileClose();
-      }
-      
-      // Execute the original callback
-      callback();
-    };
-  }, [isMobile, onMobileClose]);
+  // Handle profile navigation
+  const handleProfileClick = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsOpen(false);
+    if (onMobileClose) onMobileClose();
+    router.push(`/profile/${currentUser?.id}`);
+  }, [currentUser?.id, router, onMobileClose]);
+
+  // Handle listings navigation
+  const handleListingsClick = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsOpen(false);
+    if (onMobileClose) onMobileClose();
+    router.push('/properties');
+  }, [router, onMobileClose]);
+
+  // Handle appointments navigation
+  const handleAppointmentsClick = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsOpen(false);
+    if (onMobileClose) onMobileClose();
+    router.push('/trips');
+  }, [router, onMobileClose]);
+
+  // Handle add listing modal
+  const handleAddListingClick = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsOpen(false);
+    if (onMobileClose) onMobileClose();
+    rentModal.onOpen();
+  }, [rentModal, onMobileClose]);
+
+  // Handle subscription modal
+  const handleSubscriptionClick = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsOpen(false);
+    if (onMobileClose) onMobileClose();
+    SubscribeModal.onOpen();
+  }, [SubscribeModal, onMobileClose]);
+
+  // Handle sign out
+  const handleSignOutClick = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsOpen(false);
+    if (onMobileClose) onMobileClose();
+    signOut();
+  }, [onMobileClose]);
+
+  // Handle login modal
+  const handleLoginClick = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsOpen(false);
+    if (onMobileClose) onMobileClose();
+    loginModal.onOpen();
+  }, [loginModal, onMobileClose]);
+
+  // Handle register modal
+  const handleRegisterClick = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsOpen(false);
+    if (onMobileClose) onMobileClose();
+    registerModal.onOpen();
+  }, [registerModal, onMobileClose]);
 
   return (      
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>   
@@ -151,7 +205,7 @@ const UserButton: React.FC<UserButtonProps> = ({
         {currentUser ? (
           <>
             <DropdownMenuItem
-              onClick={handleAction(() => router.push(`/profile/${currentUser.id}`))}
+              onClick={handleProfileClick}
               className="
                 p-3 
                 text-black 
@@ -167,7 +221,7 @@ const UserButton: React.FC<UserButtonProps> = ({
             </DropdownMenuItem>
 
             <DropdownMenuItem
-              onClick={handleAction(() => router.push('/properties'))}
+              onClick={handleListingsClick}
               className="
                 p-3 
                 text-black 
@@ -183,7 +237,7 @@ const UserButton: React.FC<UserButtonProps> = ({
             </DropdownMenuItem>
             
             <DropdownMenuItem
-              onClick={handleAction(() => router.push('/trips'))}
+              onClick={handleAppointmentsClick}
               className="
                 p-3 
                 text-black 
@@ -199,10 +253,7 @@ const UserButton: React.FC<UserButtonProps> = ({
             </DropdownMenuItem>
             
             <DropdownMenuItem
-              onClick={handleAction(() => {
-                console.log('Rent modal clicked');
-                rentModal.onOpen();
-              })}
+              onClick={handleAddListingClick}
               className="
                 p-3 
                 text-black 
@@ -218,10 +269,7 @@ const UserButton: React.FC<UserButtonProps> = ({
             </DropdownMenuItem>
             
             <DropdownMenuItem
-              onClick={handleAction(() => {
-                console.log('Subscribe clicked');
-                SubscribeModal.onOpen();
-              })}
+              onClick={handleSubscriptionClick}
               className="
                 p-3 
                 text-black 
@@ -239,7 +287,7 @@ const UserButton: React.FC<UserButtonProps> = ({
             <DropdownMenuSeparator className="my-2 bg-gray-500 bg-opacity-25"/>
             
             <DropdownMenuItem
-              onClick={handleAction(() => signOut())}
+              onClick={handleSignOutClick}
               className="
                 p-3 
                 text-black 
@@ -257,7 +305,7 @@ const UserButton: React.FC<UserButtonProps> = ({
         ) : (
           <>
             <DropdownMenuItem
-              onClick={handleAction(() => loginModal.onOpen())}
+              onClick={handleLoginClick}
               className="
                 p-3 
                 text-black 
@@ -273,7 +321,7 @@ const UserButton: React.FC<UserButtonProps> = ({
             </DropdownMenuItem>
             
             <DropdownMenuItem
-              onClick={handleAction(() => registerModal.onOpen())}
+              onClick={handleRegisterClick}
               className="
                 p-3 
                 text-black 
