@@ -37,7 +37,7 @@ const ModalButton: React.FC<ModalButtonProps> = ({
         shadow-sm
         shadow-gray-300
         w-full
-        ${isEditButton ? 'bg-white border-[#e2e8f0] text-[#5E6365] hover:bg-[#e2e8f0]' : outline ? 'bg-slate-500 text-white' : ' bg-[#F08080] text-white'}
+        ${isEditButton ? 'bg-white border-[#e2e8f0] text-[#5E6365] hover:bg-[#e2e8f0]' : outline ? 'bg-gray-400 text-white' : ' bg-[#60A5FA] text-white'}
         ${outline ? 'text-black' : isEditButton ? 'text-[#5E6365]' : 'text-white'}
         ${small ? 'text-sm' : 'text-md'}
         ${small ? 'py-1' : 'py-3'}
