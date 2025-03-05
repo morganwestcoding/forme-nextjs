@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import { categories } from '../Categories';
 import { useCategory } from "@/CategoryContext";
 import useDemoModal from "@/app/hooks/useDemoModal";
@@ -19,9 +19,29 @@ interface MobileNavBarProps {
 
 const MobileNavBar: React.FC<MobileNavBarProps> = ({ currentUser }) => {
     const router = useRouter();
+    const pathnameValue = usePathname();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isAnimating, setIsAnimating] = useState(false);
+    const [activeTab, setActiveTab] = useState('home');
   
+    // Set active tab based on current path
+    useEffect(() => {
+      // Handle potential null pathname
+      if (!pathnameValue) return;
+      
+      const pathname = pathnameValue;
+      
+      if (pathname === '/') {
+        setActiveTab('home');
+      } else if (pathname === '/market') {
+        setActiveTab('market');
+      } else if (pathname === '/explore') {
+        setActiveTab('explore');
+      } else if (pathname.startsWith('/profile')) {
+        setActiveTab('profile');
+      }
+    }, [pathnameValue]);
+
     const handleOpenSidebar = () => {
       setIsAnimating(true);
       requestAnimationFrame(() => {
@@ -38,6 +58,11 @@ const MobileNavBar: React.FC<MobileNavBarProps> = ({ currentUser }) => {
       setTimeout(() => {
         setIsAnimating(false);
       }, 300);
+    };
+
+    const navigateTo = (route: string, tab: string) => {
+      setActiveTab(tab);
+      router.push(route);
     };
   
     return (
@@ -69,41 +94,156 @@ const MobileNavBar: React.FC<MobileNavBarProps> = ({ currentUser }) => {
         )}
   
         <div className="md:hidden fixed bottom-0 left-0 right-0 z-50">
-          <div className="bg-black rounded-t-sm bg-opacity-80 w-full py-4">
-              <div className="flex items-center justify-between px-4">
-                  <button onClick={handleOpenSidebar} className="text-white">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#ffffff" fill="#a2a2a2">
-                    <path d="M4 5L20 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-    <path d="M4 12L20 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-    <path d="M4 19L20 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                  </button>
+          {/* Navbar Background with Blur Effect */}
+          <div className="bg-gray-900 bg-opacity-90 backdrop-blur-lg w-full py-4 border-t border-gray-800 px-5">
+            <div className="flex items-center justify-between relative">
+              {/* Menu Button */}
+              <button 
+                onClick={handleOpenSidebar} 
+                className={`flex flex-col items-center justify-center w-14 h-14 transition-all duration-300 ${activeTab === 'menu' ? 'text-[#60A5FA]' : 'text-gray-400'}`}
+              >
+                <div className="w-6 h-6 mb-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                    <path d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                </div>
+                <span className="text-xs font-medium">Menu</span>
+              </button>
 
-  
-                  <button onClick={() => router.push('/market')} className="text-white relative">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" color="#ffffff" fill="#a2a2a2" fillOpacity={0.15}>
-    <path d="M3.00003 10.9871V15.4925C3.00003 18.3243 3.00003 19.7403 3.87871 20.62C4.75739 21.4998 6.1716 21.4998 9.00003 21.4998H15C17.8284 21.4998 19.2426 21.4998 20.1213 20.62C21 19.7403 21 18.3243 21 15.4925V10.9871" stroke="currentColor" stroke-width="1" />
-    <path d="M17.7957 2.50294L6.14986 2.53202C4.41169 2.44248 3.96603 3.78259 3.96603 4.43768C3.96603 5.02359 3.89058 5.87774 2.82527 7.4831C1.75996 9.08846 1.84001 9.56536 2.44074 10.6767C2.93931 11.5991 4.20744 11.9594 4.86865 12.02C6.96886 12.0678 7.99068 10.2517 7.99068 8.97523C9.03254 12.1825 11.9956 12.1825 13.3158 11.8157C14.6386 11.4483 15.7717 10.1331 16.0391 8.97523C16.195 10.4142 16.6682 11.2538 18.0663 11.8308C19.5145 12.4284 20.7599 11.515 21.3848 10.9294C22.0097 10.3439 22.4107 9.04401 21.2968 7.6153C20.5286 6.63001 20.2084 5.7018 20.1033 4.73977C20.0423 4.18234 19.9888 3.58336 19.5972 3.20219C19.0248 2.64515 18.2036 2.47613 17.7957 2.50294Z" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" />
-    <path d="M12 16H12.009" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-</svg>
-                  </button>
-                  <button onClick={() => router.push('/')} className="text-white relative">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" color="#ffffff" fill="#a2a2a2" fillOpacity={0.15}>
-    <path d="M9.06165 4.82633L3.23911 9.92134C2.7398 10.3583 3.07458 11.1343 3.76238 11.1343C4.18259 11.1343 4.52324 11.4489 4.52324 11.8371V15.0806C4.52324 17.871 4.52324 19.2662 5.46176 20.1331C6.40029 21 7.91082 21 10.9319 21H13.0681C16.0892 21 17.5997 21 18.5382 20.1331C19.4768 19.2662 19.4768 17.871 19.4768 15.0806V11.8371C19.4768 11.4489 19.8174 11.1343 20.2376 11.1343C20.9254 11.1343 21.2602 10.3583 20.7609 9.92134L14.9383 4.82633C13.5469 3.60878 12.8512 3 12 3C11.1488 3 10.4531 3.60878 9.06165 4.82633Z" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" />
-    <path d="M12 16H12.009" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-</svg>
-                  </button>
-                           <button onClick={() => router.push('/market')} className="text-white relative">
-                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" color="#ffffff" fill="#a2a2a2" fillOpacity={0.15}>
-    <path d="M14.236 5.29178C14.236 4.77191 14.236 4.51198 14.1789 4.29871C14.0238 3.71997 13.5717 3.26793 12.9931 3.11285C12.4315 2.96238 11.5684 2.96238 11.0068 3.11285C10.4281 3.26793 9.97609 3.71997 9.82101 4.29871C9.76387 4.51198 9.76387 4.77191 9.76387 5.29178C9.76387 6.34588 9.76387 9.109 9.43641 9.43647C9.10894 9.76393 6.34582 9.76393 5.29172 9.76393C4.77185 9.76393 4.51192 9.76393 4.29865 9.82107C3.71991 9.97615 3.26787 10.4282 3.11279 11.0069C2.96232 11.5685 2.96232 12.4315 3.11279 12.9931C3.26787 13.5718 3.71991 14.0239 4.29865 14.1789C4.51192 14.2361 4.77185 14.2361 5.29172 14.2361C6.34582 14.2361 9.10894 14.2361 9.43641 14.5635C9.76387 14.891 9.76387 15.418 9.76387 16.4721C9.76387 16.992 9.76387 19.4881 9.82101 19.7013C9.97609 20.28 10.4281 20.7321 11.0068 20.8871C11.5684 21.0376 12.4315 21.0376 12.9931 20.8871C13.5717 20.7321 14.0238 20.28 14.1789 19.7013C14.236 19.4881 14.236 16.992 14.236 16.4721C14.236 15.418 14.236 14.891 14.5635 14.5635C14.8909 14.2361 17.654 14.2361 18.7082 14.2361C19.228 14.2361 19.488 14.2361 19.7013 14.1789C20.28 14.0239 20.732 13.5718 20.8871 12.9931C21.0376 12.4315 21.0376 11.5685 20.8871 11.0069C20.732 10.4282 20.28 9.97615 19.7013 9.82107C19.488 9.76393 19.228 9.76393 18.7082 9.76393C17.654 9.76393 14.8909 9.76393 14.5635 9.43647C14.236 9.109 14.236 6.34588 14.236 5.29178Z" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" />
-</svg>
-                  </button>
-                  <MobileUserButton currentUser={currentUser} />
-     
+              {/* Market Button */}
+              <button 
+                onClick={() => navigateTo('/market', 'market')} 
+                className={`flex flex-col items-center justify-center w-14 h-14 transition-all duration-300 ${activeTab === 'market' ? 'text-[#60A5FA]' : 'text-gray-400'}`}
+              >
+                <div className="w-6 h-6 mb-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M3 10.9871V15.4925C3 18.3243 3 19.7403 3.87868 20.62C4.75736 21.4998 6.17157 21.4998 9 21.4998H15C17.8284 21.4998 19.2426 21.4998 20.1213 20.62C21 19.7403 21 18.3243 21 15.4925V10.9871" />
+                    <path d="M17.7957 2.50294L6.14983 2.53202C4.41166 2.44248 3.966 3.78259 3.966 4.43768C3.966 5.02359 3.89055 5.87774 2.82524 7.4831C1.75993 9.08846 1.83998 9.56536 2.44071 10.6767C2.93928 11.5991 4.20741 11.9594 4.86862 12.02C6.96883 12.0678 7.99065 10.2517 7.99065 8.97523C9.03251 12.1825 11.9955 12.1825 13.3158 11.8157C14.6385 11.4483 15.7717 10.1331 16.0391 8.97523C16.195 10.4142 16.6682 11.2538 18.0663 11.8308C19.5145 12.4284 20.7599 11.515 21.3848 10.9294C22.0096 10.3439 22.4107 9.04401 21.2967 7.6153C20.5285 6.63001 20.2084 5.7018 20.1032 4.73977C20.0423 4.18234 19.9888 3.58336 19.5971 3.20219C19.0247 2.64515 18.2035 2.47613 17.7957 2.50294Z" />
+                  </svg>
+                </div>
+                <span className="text-xs font-medium">Market</span>
+              </button>
+
+              {/* Center Home Button with Animation */}
+              <div className="absolute left-1/2 -translate-x-1/2 -translate-y-5">
+                <button 
+                  onClick={() => navigateTo('/', 'home')} 
+                  className="relative flex items-center justify-center"
+                >
+                  {/* Outer Glow Animation */}
+                  <div className={`absolute inset-0 rounded-full ${activeTab === 'home' ? 'animate-pulse-slow opacity-100' : 'opacity-0'} transition-opacity duration-300 bg-[#60A5FA] blur-md`}></div>
+                  
+                  {/* Pulse Rings - Only visible when active */}
+                  {activeTab === 'home' && (
+                    <>
+                      <div className="absolute w-full h-full rounded-full bg-[#60A5FA] opacity-20 animate-ping-slow"></div>
+                      <div className="absolute w-full h-full rounded-full bg-[#60A5FA] opacity-30 animate-ping-slower"></div>
+                    </>
+                  )}
+                  
+                  {/* Main Button Background */}
+                  <div className={`relative flex items-center justify-center w-16 h-16 rounded-full ${activeTab === 'home' ? 'bg-[#60A5FA]' : 'bg-gray-800'} shadow-lg transition-all duration-300 z-10`}>
+                    {/* Icon */}
+                    <svg 
+                      xmlns="http://www.w3.org/2000/svg" 
+                      viewBox="0 0 24 24" 
+                      width="32" 
+                      height="32" 
+                      fill="none" 
+                      stroke={activeTab === 'home' ? 'white' : '#60A5FA'} 
+                      strokeWidth="2" 
+                      className="transition-all duration-300"
+                    >
+                      <path d="M9.06165 4.82633L3.23911 9.92134C2.7398 10.3583 3.07458 11.1343 3.76238 11.1343C4.18259 11.1343 4.52324 11.4489 4.52324 11.8371V15.0806C4.52324 17.871 4.52324 19.2662 5.46176 20.1331C6.40029 21 7.91082 21 10.9319 21H13.0681C16.0892 21 17.5997 21 18.5382 20.1331C19.4768 19.2662 19.4768 17.871 19.4768 15.0806V11.8371C19.4768 11.4489 19.8174 11.1343 20.2376 11.1343C20.9254 11.1343 21.2602 10.3583 20.7609 9.92134L14.9383 4.82633C13.5469 3.60878 12.8512 3 12 3C11.1488 3 10.4531 3.60878 9.06165 4.82633Z" />
+                    </svg>
+                  </div>
+                </button>
               </div>
 
+              {/* Explore Button */}
+              <button 
+                onClick={() => navigateTo('/explore', 'explore')} 
+                className={`flex flex-col items-center justify-center w-14 h-14 transition-all duration-300 ${activeTab === 'explore' ? 'text-[#60A5FA]' : 'text-gray-400'}`}
+              >
+                <div className="w-6 h-6 mb-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M14.236 5.292C14.236 4.772 14.236 4.512 14.179 4.299C14.024 3.72 13.572 3.268 12.993 3.113C12.432 2.962 11.569 2.962 11.007 3.113C10.428 3.268 9.976 3.72 9.821 4.299C9.764 4.512 9.764 4.772 9.764 5.292C9.764 6.346 9.764 9.109 9.436 9.436C9.109 9.764 6.346 9.764 5.292 9.764C4.772 9.764 4.512 9.764 4.299 9.821C3.72 9.976 3.268 10.428 3.113 11.007C2.962 11.568 2.962 12.432 3.113 12.993C3.268 13.572 3.72 14.024 4.299 14.179C4.512 14.236 4.772 14.236 5.292 14.236C6.346 14.236 9.109 14.236 9.436 14.564C9.764 14.891 9.764 15.418 9.764 16.472C9.764 16.992 9.764 19.488 9.821 19.701C9.976 20.28 10.428 20.732 11.007 20.887C11.568 21.038 12.432 21.038 12.993 20.887C13.572 20.732 14.024 20.28 14.179 19.701C14.236 19.488 14.236 16.992 14.236 16.472C14.236 15.418 14.236 14.891 14.564 14.564C14.891 14.236 17.654 14.236 18.708 14.236C19.228 14.236 19.488 14.236 19.701 14.179C20.28 14.024 20.732 13.572 20.887 12.993C21.038 12.432 21.038 11.568 20.887 11.007C20.732 10.428 20.28 9.976 19.701 9.821C19.488 9.764 19.228 9.764 18.708 9.764C17.654 9.764 14.891 9.764 14.564 9.436C14.236 9.109 14.236 6.346 14.236 5.292Z" />
+                  </svg>
+                </div>
+                <span className="text-xs font-medium">Explore</span>
+              </button>
+
+              {/* Profile Button */}
+              <button 
+                onClick={() => navigateTo(`/profile/${currentUser?.id || ''}`, 'profile')} 
+                className={`flex flex-col items-center justify-center w-14 h-14 transition-all duration-300 ${activeTab === 'profile' ? 'text-[#60A5FA]' : 'text-gray-400'}`}
+              >
+                <div className="w-6 h-6 mb-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z" />
+                    <path d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z" />
+                  </svg>
+                </div>
+                <span className="text-xs font-medium">Profile</span>
+              </button>
+            </div>
           </div>
+          
+          {/* Add bottom padding for home indicator on newer iOS devices */}
+          <div className="h-5 bg-gray-900"></div>
         </div>
+
+        {/* Define animations in global styles */}
+        <style jsx global>{`
+          @keyframes ping-slow {
+            0% {
+              transform: scale(1);
+              opacity: 0.3;
+            }
+            50% {
+              opacity: 0;
+            }
+            100% {
+              transform: scale(1.5);
+              opacity: 0;
+            }
+          }
+          
+          @keyframes ping-slower {
+            0% {
+              transform: scale(1);
+              opacity: 0.2;
+            }
+            50% {
+              opacity: 0;
+            }
+            100% {
+              transform: scale(1.8);
+              opacity: 0;
+            }
+          }
+          
+          @keyframes pulse-slow {
+            0%, 100% {
+              opacity: 0.5;
+            }
+            50% {
+              opacity: 0.8;
+            }
+          }
+          
+          .animate-ping-slow {
+            animation: ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+          }
+          
+          .animate-ping-slower {
+            animation: ping-slower 2.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+          }
+          
+          .animate-pulse-slow {
+            animation: pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+          }
+        `}</style>
       </>
     );
   };
