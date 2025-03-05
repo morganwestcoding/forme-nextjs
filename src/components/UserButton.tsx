@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import Avatar from "./ui/avatar";
 import { signOut } from "next-auth/react";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import useRegisterModal from "@/app/hooks/useRegisterModal";
 import useLoginModal from "@/app/hooks/useLoginModal";
@@ -32,6 +32,31 @@ const UserButton: React.FC<UserButtonProps> = ({
   const rentModal = useRentModal();
   const profileModal = useProfileModal();
   const SubscribeModal = useSubscribeModal();
+  const [isOpen, setIsOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile device
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    // Check on initial load
+    checkMobile();
+    
+    // Add resize listener
+    window.addEventListener('resize', checkMobile);
+    
+    // Clean up
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const handleButtonClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isMobile) {
+      setIsOpen(!isOpen);
+    }
+  };
 
   const formatTier = (tier: string | null | undefined) => {
     if (!tier) return 'Free';
@@ -39,9 +64,22 @@ const UserButton: React.FC<UserButtonProps> = ({
     return baseTier.charAt(0).toUpperCase() + baseTier.slice(1).toLowerCase();
   };
 
+  const handleMenuItemClick = useCallback((callback: () => void) => {
+    return (e: React.MouseEvent) => {
+      e.stopPropagation();
+      setIsOpen(false);
+      callback();
+    };
+  }, []);
+
   return (      
-    <DropdownMenu>   
-      <DropdownMenuTrigger className="w-44 flex items-center justify-center p-2 bg-gray-100 shadow-sm mb-2 cursor-pointer rounded-md hover:bg-[#DFE2E2] transition-colors duration-250 outline-none">
+    <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>   
+      <DropdownMenuTrigger 
+        className="w-44 flex items-center justify-center p-2 bg-gray-100 shadow-sm mb-2 cursor-pointer rounded-md hover:bg-[#DFE2E2] transition-colors duration-250 outline-none touch-manipulation" 
+        onClick={handleButtonClick}
+        data-state={isOpen ? 'open' : 'closed'}
+        aria-expanded={isOpen}
+      >
         <Avatar src={currentUser?.image ?? undefined} />
         <div className="ml-3 flex flex-col items-start">
           {currentUser ? (
@@ -75,7 +113,7 @@ const UserButton: React.FC<UserButtonProps> = ({
             strokeWidth="2" 
             strokeLinecap="round" 
             strokeLinejoin="round" 
-            className="text-[#71717A]"
+            className={`text-[#71717A] transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
           >
             <path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
@@ -92,12 +130,17 @@ const UserButton: React.FC<UserButtonProps> = ({
           p-2 
           shadow-lg 
           border-none
+          z-[100]
         "
+        sideOffset={5}
+        align="center"
+        onEscapeKeyDown={() => setIsOpen(false)}
+        onPointerDownOutside={() => setIsOpen(false)}
       >
         {currentUser ? (
           <>
             <DropdownMenuItem
-              onClick={() => router.push(`/profile/${currentUser.id}`)}
+              onClick={handleMenuItemClick(() => router.push(`/profile/${currentUser.id}`))}
               className="
                 p-3 
                 text-black 
@@ -113,7 +156,7 @@ const UserButton: React.FC<UserButtonProps> = ({
             </DropdownMenuItem>
 
             <DropdownMenuItem
-              onClick={() => router.push('/properties')}
+              onClick={handleMenuItemClick(() => router.push('/properties'))}
               className="
                 p-3 
                 text-black 
@@ -128,7 +171,7 @@ const UserButton: React.FC<UserButtonProps> = ({
               My Listings
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => router.push('/trips')}
+              onClick={handleMenuItemClick(() => router.push('/trips'))}
               className="
                 p-3 
                 text-black 
@@ -143,10 +186,10 @@ const UserButton: React.FC<UserButtonProps> = ({
               My Appointments
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => {
+              onClick={handleMenuItemClick(() => {
                 console.log('Rent modal clicked');
                 rentModal.onOpen();
-              }}
+              })}
               className="
                 p-3 
                 text-black 
@@ -161,10 +204,10 @@ const UserButton: React.FC<UserButtonProps> = ({
               Add Listing
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => {
+              onClick={handleMenuItemClick(() => {
                 console.log('Subscribe clicked');
                 SubscribeModal.onOpen();
-              }}
+              })}
               className="
                 p-3 
                 text-black 
@@ -180,7 +223,7 @@ const UserButton: React.FC<UserButtonProps> = ({
             </DropdownMenuItem>
             <DropdownMenuSeparator className="my-2 bg-gray-500 bg-opacity-25"/>
             <DropdownMenuItem
-              onClick={() => signOut()}
+              onClick={handleMenuItemClick(() => signOut())}
               className="
                 p-3 
                 text-black 
@@ -198,7 +241,7 @@ const UserButton: React.FC<UserButtonProps> = ({
         ) : (
           <>
             <DropdownMenuItem
-              onClick={loginModal.onOpen}
+              onClick={handleMenuItemClick(() => loginModal.onOpen())}
               className="
                 p-3 
                 text-black 
@@ -213,7 +256,7 @@ const UserButton: React.FC<UserButtonProps> = ({
               Login
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={registerModal.onOpen}
+              onClick={handleMenuItemClick(() => registerModal.onOpen())}
               className="
                 p-3 
                 text-black 
