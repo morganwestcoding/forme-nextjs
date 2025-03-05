@@ -19,12 +19,15 @@ import useProfileModal from "@/app/hooks/useProfileModal";
 import useSubscribeModal from "@/app/hooks/useSubscribeModal";
 
 interface UserButtonProps {
-  currentUser?: SafeUser | null 
+  currentUser?: SafeUser | null;
   data?: SafePost;
+  onMobileClose?: () => void;  // Add this prop for mobile sidebar closing
 }
 
 const UserButton: React.FC<UserButtonProps> = ({
-  currentUser
+  currentUser,
+  data,
+  onMobileClose
 }) => {
   const router = useRouter();
   const loginModal = useLoginModal();
@@ -64,13 +67,21 @@ const UserButton: React.FC<UserButtonProps> = ({
     return baseTier.charAt(0).toUpperCase() + baseTier.slice(1).toLowerCase();
   };
 
-  const handleMenuItemClick = useCallback((callback: () => void) => {
+  // Handler for navigation with mobile sidebar closing
+  const handleAction = useCallback((callback: () => void) => {
     return (e: React.MouseEvent) => {
       e.stopPropagation();
       setIsOpen(false);
+      
+      // Close the mobile sidebar if we're on mobile
+      if (isMobile && onMobileClose) {
+        onMobileClose();
+      }
+      
+      // Execute the original callback
       callback();
     };
-  }, []);
+  }, [isMobile, onMobileClose]);
 
   return (      
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>   
@@ -140,7 +151,7 @@ const UserButton: React.FC<UserButtonProps> = ({
         {currentUser ? (
           <>
             <DropdownMenuItem
-              onClick={handleMenuItemClick(() => router.push(`/profile/${currentUser.id}`))}
+              onClick={handleAction(() => router.push(`/profile/${currentUser.id}`))}
               className="
                 p-3 
                 text-black 
@@ -156,7 +167,7 @@ const UserButton: React.FC<UserButtonProps> = ({
             </DropdownMenuItem>
 
             <DropdownMenuItem
-              onClick={handleMenuItemClick(() => router.push('/properties'))}
+              onClick={handleAction(() => router.push('/properties'))}
               className="
                 p-3 
                 text-black 
@@ -170,8 +181,9 @@ const UserButton: React.FC<UserButtonProps> = ({
             >
               My Listings
             </DropdownMenuItem>
+            
             <DropdownMenuItem
-              onClick={handleMenuItemClick(() => router.push('/trips'))}
+              onClick={handleAction(() => router.push('/trips'))}
               className="
                 p-3 
                 text-black 
@@ -185,8 +197,9 @@ const UserButton: React.FC<UserButtonProps> = ({
             >
               My Appointments
             </DropdownMenuItem>
+            
             <DropdownMenuItem
-              onClick={handleMenuItemClick(() => {
+              onClick={handleAction(() => {
                 console.log('Rent modal clicked');
                 rentModal.onOpen();
               })}
@@ -203,8 +216,9 @@ const UserButton: React.FC<UserButtonProps> = ({
             >
               Add Listing
             </DropdownMenuItem>
+            
             <DropdownMenuItem
-              onClick={handleMenuItemClick(() => {
+              onClick={handleAction(() => {
                 console.log('Subscribe clicked');
                 SubscribeModal.onOpen();
               })}
@@ -221,9 +235,11 @@ const UserButton: React.FC<UserButtonProps> = ({
             >
               Subscription
             </DropdownMenuItem>
+            
             <DropdownMenuSeparator className="my-2 bg-gray-500 bg-opacity-25"/>
+            
             <DropdownMenuItem
-              onClick={handleMenuItemClick(() => signOut())}
+              onClick={handleAction(() => signOut())}
               className="
                 p-3 
                 text-black 
@@ -241,7 +257,7 @@ const UserButton: React.FC<UserButtonProps> = ({
         ) : (
           <>
             <DropdownMenuItem
-              onClick={handleMenuItemClick(() => loginModal.onOpen())}
+              onClick={handleAction(() => loginModal.onOpen())}
               className="
                 p-3 
                 text-black 
@@ -255,8 +271,9 @@ const UserButton: React.FC<UserButtonProps> = ({
             >
               Login
             </DropdownMenuItem>
+            
             <DropdownMenuItem
-              onClick={handleMenuItemClick(() => registerModal.onOpen())}
+              onClick={handleAction(() => registerModal.onOpen())}
               className="
                 p-3 
                 text-black 
