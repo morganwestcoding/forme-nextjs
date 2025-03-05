@@ -48,7 +48,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
-
   
   // Create array of all images including main image
   const allImages = [data.imageSrc, ...(data.galleryImages || [])];
@@ -102,103 +101,108 @@ const ListingCard: React.FC<ListingCardProps> = ({
   const [city, state] = data.location?.split(',').map(s => s.trim()) || [];
   const stateAcronym = state ? getStateAcronym(state) : '';
 
+  // Don't display category tag if it's the default category
+  const shouldDisplayCategory = data.category && data.category !== 'Default' && data.category !== 'All';
+
   return (
-    <div className="col-span-1 flex justify-center w-full max-w-[550px] mx-auto">
-      <div className="bg-white rounded-lg flex flex-col w-full shadow-sm transition-all duration-300 overflow-hidden">
+    <div className="col-span-1 flex justify-center w-full max-w-[350px] mx-auto">
+      <div className="bg-white rounded-xl flex flex-col w-full shadow-sm transition-all duration-300 overflow-hidden hover:shadow-md">
         {!reservation && (
           <>
-{/* Image Section */}
-<div className="relative h-[155px] w-full group cursor-pointer overflow-hidden">
-  <Image
-    onClick={() => router.push(`/listings/${data.id}`)} 
-    fill
-    className="object-cover w-full h-full transform transition-all duration-500 
-              group-hover:scale-110"
-    src={allImages[currentImageIndex]}
-    alt="Listing"
-  />
-  
-  {/* Gradient Overlay */}
-  <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/50 
-                  opacity-0 transition-all duration-300 group-hover:opacity-100" />
-  
-  {/* Category Tag */}
-  <div className="absolute top-4 left-6 z-10">
-    <div className="px-3 py-1.5 backdrop-blur-sm bg-black/50 rounded-md
-                    transition-all duration-300 transform group-hover:translate-y-0 group-hover:opacity-100
-                    shadow-lg">
-      <span className="text-white text-xs capitalize">
-        {data.category}
-      </span>
-    </div>
-  </div>
+            {/* Image Section */}
+            <div className="relative h-[175px] w-full group cursor-pointer overflow-hidden">
+              <Image
+                onClick={() => router.push(`/listings/${data.id}`)} 
+                fill
+                className="object-cover w-full h-full transform transition-all duration-500 
+                          group-hover:scale-110"
+                src={allImages[currentImageIndex]}
+                alt="Listing"
+              />
+              
+              {/* Gradient Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/50 
+                            opacity-0 transition-all duration-300 group-hover:opacity-100" />
+              
+                              {/* Category Tag - Only show if not default */}
+              {shouldDisplayCategory && (
+                <div className="absolute top-4 left-4 z-10">
+                  <div className="px-3 py-2 backdrop-blur-sm bg-black/50 rounded-md
+                                transition-all duration-300 transform group-hover:translate-y-0 group-hover:opacity-100
+                                shadow-lg">
+                    <span className="text-white text-xs capitalize">
+                      {data.category}
+                    </span>
+                  </div>
+                </div>
+              )}
 
-  {/* Action Buttons */}
-  <div className="absolute top-4 right-6 flex items-center gap-2 z-10 
-                  opacity-0 translate-y-2 transition-all duration-300 
-                  group-hover:opacity-100 group-hover:translate-y-0">
-    <HeartButton 
-      listingId={data.id}
-      currentUser={currentUser}
-      favoriteIds={data.favoriteIds}
-    />
-    <button 
-      onClick={(e) => {
-        e.stopPropagation();
-        setIsSaved(!isSaved);
-      }}
-      className="p-3.5 rounded-full bg-black/50 border border-white/20 backdrop-blur-sm 
-                hover:bg-black/60 transition-all duration-300 shadow-lg
-                transform scale-90 group-hover:scale-100"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="21" height="21" color="#ffffff" fill="none">
-        <path d="M18.7083 7C20.1334 8.59227 21 10.6949 21 13C21 17.9706 16.9706 22 12 22C7.02944 22 3 17.9706 3 13C3 10.6949 3.86656 8.59227 5.29168 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" fill="rgba(0, 0, 0, 0.35)" />
-        <path d="M12.0253 2.00052L12 14M12.0253 2.00052C11.8627 1.99379 11.6991 2.05191 11.5533 2.17492C10.6469 2.94006 9 4.92886 9 4.92886M12.0253 2.00052C12.1711 2.00657 12.3162 2.06476 12.4468 2.17508C13.3531 2.94037 15 4.92886 15 4.92886" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    </button>
-  </div>
+              {/* Action Buttons */}
+              <div className="absolute top-4 right-4 flex items-center gap-2 z-10 
+                            opacity-0 translate-y-2 transition-all duration-300 
+                            group-hover:opacity-100 group-hover:translate-y-0">
+                <HeartButton 
+                  listingId={data.id}
+                  currentUser={currentUser}
+                  favoriteIds={data.favoriteIds}
+                />
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsSaved(!isSaved);
+                  }}
+                  className="p-2 rounded-full bg-black/50 border border-white/20 backdrop-blur-sm 
+                            hover:bg-black/60 transition-all duration-300 shadow-lg
+                            transform scale-90 group-hover:scale-100"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="21" height="21" color="#ffffff" fill="none">
+                    <path d="M18.7083 7C20.1334 8.59227 21 10.6949 21 13C21 17.9706 16.9706 22 12 22C7.02944 22 3 17.9706 3 13C3 10.6949 3.86656 8.59227 5.29168 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" fill="rgba(0, 0, 0, 0.35)" />
+                    <path d="M12.0253 2.00052L12 14M12.0253 2.00052C11.8627 1.99379 11.6991 2.05191 11.5533 2.17492C10.6469 2.94006 9 4.92886 9 4.92886M12.0253 2.00052C12.1711 2.00657 12.3162 2.06476 12.4468 2.17508C13.3531 2.94037 15 4.92886 15 4.92886" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+              </div>
 
-  {/* Image Navigation Dots */}
-  {hasMultipleImages && (
-    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 z-10 
-                    bg-black/30 backdrop-blur-sm rounded-full px-3 py-1.5 
-                    opacity-0 transition-all duration-300 
-                    group-hover:opacity-100 transform scale-95 group-hover:scale-100">
-      {allImages.map((_, index) => (
-        <button
-          key={index}
-          onClick={(e) => handleImageChange(index, e)}
-          className={`w-2 h-2 rounded-full transition-all duration-200
-            ${currentImageIndex === index 
-              ? 'bg-white scale-110' 
-              : 'bg-white/40 hover:bg-white/60'
-            }
-          `}
-        />
-      ))}
-    </div>
-  )}
-</div>
+              {/* Image Navigation Dots */}
+              {hasMultipleImages && (
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-10 
+                                bg-black/30 backdrop-blur-sm rounded-full px-2.5 py-1.5 
+                                opacity-0 transition-all duration-300 
+                                group-hover:opacity-100 transform scale-95 group-hover:scale-100">
+                  {allImages.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={(e) => handleImageChange(index, e)}
+                      className={`w-1.5 h-1.5 rounded-full transition-all duration-200
+                        ${currentImageIndex === index 
+                          ? 'bg-white scale-110' 
+                          : 'bg-white/40 hover:bg-white/60'
+                        }
+                      `}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
 
             {/* Content Section */}
-            <div className="px-6 pt-6 pb-5">
+            <div className="px-4 pt-4 pb-4">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex flex-col">
-                  <h3 className="font-semibold text-gray-900">
+                  <h3 className="font-medium text-gray-900 text-base">
                     {data.title}
                   </h3>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-xs text-gray-500 mt-1">
                     {city}, {stateAcronym}
                   </p>
                 </div>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <div className="relative">
-                  <div className="bg-gray-50 rounded-md p-3">
+                  <div className="bg-gray-50 rounded-lg p-3">
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
-                        <div className="text-sm text-gray-500 mb-1">
+                        <div className="text-xs text-gray-500 mb-1">
                           {data.services[currentServiceIndex].serviceName}
                         </div>
                         <div className="font-semibold text-sm">
@@ -214,9 +218,9 @@ const ListingCard: React.FC<ListingCardProps> = ({
                               e.stopPropagation();
                               setCurrentServiceIndex(index);
                             }}
-                            className={`w-2 h-2 rounded-md transition-all duration-300 
+                            className={`w-2 h-2 rounded-full transition-all duration-300 
                               ${currentServiceIndex === index 
-                                ? 'bg-[#60A5FA] w-6' 
+                                ? 'bg-[#60A5FA] w-7 h-2' 
                                 : 'bg-gray-300 hover:bg-gray-400'
                               }`}
                           />
@@ -226,21 +230,48 @@ const ListingCard: React.FC<ListingCardProps> = ({
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 mt-3">
+                  {/* Quick Book Button - Redesigned */}
                   <button 
                     onClick={(e) => {
                       e.stopPropagation();
                     }}
-                    className="flex-1 bg-gray-200 hover:bg-gray-200 text-gray-700 py-3.5 px-4 rounded-md transition-all duration-300 text-sm font-medium"
+                    className="flex-1 bg-gray-100 text-gray-700 py-3.5 px-4 rounded-lg text-xs font-medium
+                              hover:bg-gray-200 hover:shadow-sm transition-all duration-200 
+                              flex items-center justify-center"
                   >
-                    Quick Book
+                    <svg 
+                      xmlns="http://www.w3.org/2000/svg" 
+                      viewBox="0 0 24 24" 
+                      width="14" 
+                      height="14" 
+                      className="mr-1.5"
+                      fill="none" 
+                      stroke="currentColor" 
+                      strokeWidth="2"
+                      strokeLinecap="round" 
+                      strokeLinejoin="round"
+                    >
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                      <line x1="16" y1="2" x2="16" y2="6"></line>
+                      <line x1="8" y1="2" x2="8" y2="6"></line>
+                      <line x1="3" y1="10" x2="21" y2="10"></line>
+                      <path d="M8 14h.01"></path>
+                      <path d="M12 14h.01"></path>
+                      <path d="M16 14h.01"></path>
+                      <path d="M8 18h.01"></path>
+                      <path d="M12 18h.01"></path>
+                      <path d="M16 18h.01"></path>
+                    </svg>
+                    <span>Quick Book</span>
                   </button>
                   
+                  {/* Reserve Button - Redesigned */}
                   <button 
                     onClick={() => router.push(`/listings/${data.id}`)}
-                    className="flex-1 bg-[#60A5FA] text-white py-3.5 px-4 rounded-md transition-all duration-300 
-                      hover:shadow-md hover:from-[#60A5FA] hover:to-[#60A5FA] text-sm font-medium
-                      flex items-center justify-center gap-2"
+                    className="flex-1 bg-[#60A5FA] text-white py-3.5 px-4 rounded-lg text-xs font-medium
+                              shadow-sm hover:shadow-md hover:bg-[#4287f5] transition-all duration-200
+                              flex items-center justify-center"
                   >
                     <span>Reserve</span>
                     <svg 
@@ -248,14 +279,12 @@ const ListingCard: React.FC<ListingCardProps> = ({
                       viewBox="0 0 24 24" 
                       fill="none" 
                       stroke="currentColor" 
-                      className="w-4 h-4"
+                      className="w-3.5 h-3.5 ml-1.5"
+                      strokeWidth="2"
+                      strokeLinecap="round" 
+                      strokeLinejoin="round"
                     >
-                      <path 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round" 
-                        strokeWidth={2} 
-                        d="M5 12h14M12 5l7 7-7 7"
-                      />
+                      <path d="M5 12h14M12 5l7 7-7 7" />
                     </svg>
                   </button>
                 </div>
@@ -263,7 +292,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
             </div>
           </>
         )}
-
 
         {/* Reservation View */}
         {reservation && (
@@ -280,27 +308,27 @@ const ListingCard: React.FC<ListingCardProps> = ({
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2">
               <div className="bg-gray-50 p-3 rounded-lg">
-                <span className="text-sm text-gray-500 block mb-1">Service</span>
-                <span className="font-medium">{reservation.serviceName}</span>
+                <span className="text-xs text-gray-500 block mb-1">Service</span>
+                <span className="font-medium text-sm">{reservation.serviceName}</span>
               </div>
               <div className="bg-gray-50 p-3 rounded-lg">
-                <span className="text-sm text-gray-500 block mb-1">Time</span>
-                <span className="font-medium">{reservation.time}</span>
+                <span className="text-xs text-gray-500 block mb-1">Time</span>
+                <span className="font-medium text-sm">{reservation.time}</span>
               </div>
             </div>
 
             {reservation.note && (
               <div className="bg-gray-50 p-3 rounded-lg">
-                <span className="text-sm text-gray-500 block mb-1">Note</span>
+                <span className="text-xs text-gray-500 block mb-1">Note</span>
                 <p className="text-sm">{reservation.note}</p>
               </div>
             )}
 
             <div className="flex justify-between items-center pt-2 border-t border-gray-100">
-              <span className="text-gray-500">Total</span>
-              <span className="font-semibold text-lg">${reservation.totalPrice}</span>
+              <span className="text-gray-500 text-sm">Total</span>
+              <span className="font-semibold text-base">${reservation.totalPrice}</span>
             </div>
 
             {/* Accept/Decline Buttons */}
@@ -312,9 +340,24 @@ const ListingCard: React.FC<ListingCardProps> = ({
                     onAccept?.();
                   }}
                   disabled={disabled}
-                  className="flex-1 bg-green-500 text-white font-medium py-2 rounded-lg hover:bg-green-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 bg-[#60A5FA] text-white font-medium py-3.5 rounded-lg 
+                           hover:bg-[#4287f5] hover:shadow-md transition-all 
+                           disabled:opacity-50 disabled:cursor-not-allowed text-sm
+                           flex items-center justify-center"
                 >
-                  Accept
+                  <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    className="w-4 h-4 mr-1.5"
+                    strokeWidth="2"
+                    strokeLinecap="round" 
+                    strokeLinejoin="round"
+                  >
+                    <path d="M20 6L9 17l-5-5" />
+                  </svg>
+                  <span>Accept</span>
                 </button>
                 <button
                   onClick={(e) => {
@@ -322,9 +365,24 @@ const ListingCard: React.FC<ListingCardProps> = ({
                     onDecline?.();
                   }}
                   disabled={disabled}
-                  className="flex-1 bg-red-500 text-white font-medium py-2 rounded-lg hover:bg-red-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 bg-gray-200 text-gray-700 font-medium py-3.5 rounded-lg 
+                           hover:bg-gray-300 hover:shadow-sm transition-all 
+                           disabled:opacity-50 disabled:cursor-not-allowed text-sm
+                           flex items-center justify-center"
                 >
-                  Decline
+                  <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    className="w-4 h-4 mr-1.5"
+                    strokeWidth="2"
+                    strokeLinecap="round" 
+                    strokeLinejoin="round"
+                  >
+                    <path d="M18 6L6 18M6 6l12 12" />
+                  </svg>
+                  <span>Decline</span>
                 </button>
               </div>
             )}
