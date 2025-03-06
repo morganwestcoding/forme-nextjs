@@ -1,4 +1,3 @@
-// getPosts.ts
 import prisma from "@/app/libs/prismadb";
 import { SafePost, SafeUser, MediaType } from '@/app/types';
 import getCurrentUser from "./getCurrentUser";
@@ -12,9 +11,10 @@ export interface IPostsParams {
   state?: string;
   city?: string;
   order?: 'asc' | 'desc';
+  filter?: 'following' | 'for-you' | 'likes' | 'bookmarks';
 }
 
-export default async function getPosts(params: IPostsParams): Promise<SafePost[]> {
+export default async function getPosts(params: IPostsParams) {
   try {
     const { 
       userId, 
@@ -24,12 +24,16 @@ export default async function getPosts(params: IPostsParams): Promise<SafePost[]
       category,
       state,
       city,
-      order 
+      order,
+      filter = 'for-you'
     } = params;
     
     const currentUser = await getCurrentUser();
 
-    console.log('Starting getPosts with currentUser:', currentUser?.id);
+    // If filter mode requires current user but none exists, return empty array
+    if ((filter === 'following' || filter === 'likes' || filter === 'bookmarks') && !currentUser) {
+      return [];
+    }
 
     let query: any = {};
 
@@ -42,9 +46,41 @@ export default async function getPosts(params: IPostsParams): Promise<SafePost[]
 
     // Location filtering
     if (state || city) {
-      query.location = {
-        contains: state || city,
-        mode: 'insensitive'
+      const locationFilters = [];
+      
+      if (state) {
+        locationFilters.push({
+          location: {
+            contains: state,
+            mode: 'insensitive'
+          }
+        });
+      }
+      
+      if (city) {
+        locationFilters.push({
+          location: {
+            contains: city,
+            mode: 'insensitive'
+          }
+        });
+      }
+      
+      if (locationFilters.length > 0) {
+        query.AND = locationFilters;
+      }
+    }
+
+    // Apply specific filter types
+    if (filter === 'likes' && currentUser) {
+      // Posts that the current user has liked
+      query.likes = {
+        has: currentUser.id
+      };
+    } else if (filter === 'bookmarks' && currentUser) {
+      // Posts that the current user has bookmarked
+      query.bookmarks = {
+        has: currentUser.id
       };
     }
 
@@ -56,13 +92,24 @@ export default async function getPosts(params: IPostsParams): Promise<SafePost[]
       },
     });
 
-    console.log('Total posts without filter:', allPosts.length);
+    let filteredPosts = allPosts;
 
-    const filteredPosts = currentUser 
-      ? allPosts.filter(post => !post.hiddenBy?.includes(currentUser.id))
-      : allPosts;
-
-    console.log('Posts after filtering:', filteredPosts.length);
+    // Apply post-query filters
+    if (currentUser) {
+      // First filter out hidden posts for all views
+      filteredPosts = filteredPosts.filter(post => !post.hiddenBy?.includes(currentUser.id));
+      
+      // Then apply the following filter if selected
+      if (filter === 'following') {
+        // Only show posts from users the current user is following
+        filteredPosts = filteredPosts.filter(post => 
+          // Include posts from users the current user follows
+          currentUser.following.includes(post.userId) ||
+          // Also include the current user's own posts
+          post.userId === currentUser.id
+        );
+      }
+    }
 
     const safePosts = filteredPosts.map((post) => {
       const user = post.user;
@@ -98,7 +145,6 @@ export default async function getPosts(params: IPostsParams): Promise<SafePost[]
       };
     });
 
-    console.log('Final safe posts:', safePosts.length);
     return safePosts;
 
   } catch (error) {
