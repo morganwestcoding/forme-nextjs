@@ -48,7 +48,16 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
         
         // Construct query parameters
         const params: any = {};
-        if (selectedCategory) params.category = selectedCategory;
+        
+        // Get category from URL parameters instead of selectedCategory context
+        const categoryParam = searchParams?.get('category');
+        if (categoryParam) {
+          params.category = categoryParam;
+        } else if (selectedCategory && selectedCategory !== 'Default') {
+          // Fall back to selectedCategory from context if not in URL
+          params.category = selectedCategory;
+        }
+        
         if (filterParam) params.filter = filterParam;
         
         // Apply location filters
@@ -69,7 +78,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
     };
 
     fetchPosts();
-  }, [selectedCategory, filterParam, filters, setPosts]);
+  }, [selectedCategory, filterParam, filters, setPosts, searchParams]);
 
   // Helper function to get appropriate empty state message
   const getEmptyStateMessage = () => {
@@ -119,7 +128,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
             
             {/* Share Component - only show in For You and Following tabs */}
             {(filterParam === 'for-you' || filterParam === 'following') && (
-              <Share currentUser={currentUser} categoryLabel={selectedCategory || undefined} />
+              <Share currentUser={currentUser} categoryLabel={searchParams?.get('category') || selectedCategory || undefined} />
             )}
             
             {/* Posts Feed */}
