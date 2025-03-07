@@ -1,22 +1,20 @@
-// app/Explore/page.tsx
-
-import EmptyState from "@/components/EmptyState";
-import ClientProviders from "@/components/ClientProviders";
 import getCurrentUser from "@/app/actions/getCurrentUser";
+import getListings from "@/app/actions/getListings";
+import ExploreClient from "./ExploreClient";
 
 export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
 
-const Explore = async () => {
+const ExplorePage = async () => {
   const currentUser = await getCurrentUser();
-
+  const listings = await getListings({ });
+  
   return (
-    <ClientProviders>
-      <EmptyState
-        title="This page is coming soon!"
-        subtitle="Check back later for new features."
-      />
-    </ClientProviders>
+    <ExploreClient
+      initialListings={listings}
+      currentUser={currentUser}
+    />
   );
-}
- 
-export default Explore;
+};
+
+export default ExplorePage;
