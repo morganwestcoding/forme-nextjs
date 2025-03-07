@@ -165,7 +165,16 @@ const MarketContent = ({ searchParams, listings, currentUser }: MarketContentPro
       
       <div className="flex flex-col">
         {viewState.mode === 'grid' ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-6">
+          <div className="
+            flex-1
+            grid 
+            grid-cols-1
+            lg:grid-cols-2
+            xl:grid-cols-3
+            2xl:grid-cols-3
+            gap-4
+            px-4
+          ">
             {listings.map((listing: SafeListing) => (
               <ListingCard
                 currentUser={currentUser}

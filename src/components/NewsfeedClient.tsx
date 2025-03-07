@@ -128,7 +128,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
             
             {/* Share Component - only show in For You and Following tabs */}
             {(filterParam === 'for-you' || filterParam === 'following') && (
-              <Share currentUser={currentUser} categoryLabel={searchParams?.get('category') || selectedCategory || undefined} />
+            <Share currentUser={currentUser} categoryLabel={selectedCategory || undefined} />
             )}
             
             {/* Posts Feed */}

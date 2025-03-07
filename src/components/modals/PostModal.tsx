@@ -165,7 +165,7 @@ const PostModal: React.FC<PostModalProps> = ({
   };
 
   const bodyContent = (
-    <div className="flex flex-col max-h-[70vh] relative">
+    <div className="flex flex-col max-h-[75vh] relative">
       {/* Header - User info */}
       <div className="flex items-center mb-5">
         <Link href={`/profile/${post.user.id}`} passHref>
@@ -321,32 +321,31 @@ const PostModal: React.FC<PostModalProps> = ({
       </div>
   
       {/* Comment input */}
-      <div className="sticky bottom-0 bg-white pt-2 border-t border-gray-100">
-        <div className="flex items-center gap-2">
-          <div className="flex-shrink-0">
-            <Avatar src={currentUser?.image ?? undefined} />
-          </div>
-          <div className="flex-grow relative rounded-full overflow-hidden border border-gray-200 bg-gray-50 flex items-center">
-            <input 
-              type="text" 
-              placeholder="Add a comment..." 
-              className="w-full bg-transparent text-[#484848] rounded-full px-4 py-2 focus:outline-none text-sm"
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              onKeyPress={handleKeyPress}
-              disabled={isSubmitting}
-            />
-            <button
-              onClick={handleSubmitComment}
-              disabled={!comment.trim() || isSubmitting}
-              className={`px-4 py-2 text-white rounded-full disabled:opacity-50 disabled:cursor-not-allowed transition mr-1 text-sm`}
-              style={{ backgroundColor: comment.trim() ? badgeColor : '#E5E7EB' }}
-            >
-              {isSubmitting ? 'Posting...' : 'Post'}
-            </button>
-          </div>
-        </div>
-      </div>
+{/* Comment input */}
+<div className="border-t border-gray-200 -mx-6 my-2"></div>
+<div className="sticky bottom-0 bg-white pt-2 ">
+  <div className="flex items-center gap-2">
+    <div className="flex-grow">
+      <input 
+        type="text" 
+        placeholder="Add a comment..." 
+        className="w-full bg-gray-100 text-[#484848] rounded-lg px-4 py-3 focus:outline-none text-sm shadow-sm"
+        value={comment}
+        onChange={(e) => setComment(e.target.value)}
+        onKeyPress={handleKeyPress}
+        disabled={isSubmitting}
+      />
+    </div>
+    <button
+      onClick={handleSubmitComment}
+      disabled={!comment.trim() || isSubmitting}
+      className={`px-5 py-3 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition text-sm flex-shrink-0`}
+      style={{ backgroundColor: comment.trim() ? badgeColor : '#E5E7EB' }}
+    >
+      {isSubmitting ? 'Posting...' : 'Post'}
+    </button>
+  </div>
+</div>
     </div>
   );
 

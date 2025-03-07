@@ -37,7 +37,7 @@ const MarketHeader = ({
   };
 
   return (
-    <div className="w-full py-6 mt-2">
+<div className="w-full py-6 mt-2 px-4">
       <div className="flex items-center justify-between gap-4">
         <div className="flex-1 max-w-md">
           <Search />
