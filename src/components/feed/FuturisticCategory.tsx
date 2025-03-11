@@ -274,7 +274,7 @@ const CategoryButton: React.FC<CategoryButtonProps> = ({
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
       >
-        <div className="flex items-center justify-between bg-[#333745] rounded-lg shadow-md w-36 px-4 py-2 border border-gray-800">
+        <div className="flex items-center justify-between bg-[#4A5568] rounded-lg shadow-md w-36 px-4 py-2">
           <div className="text-white text-sm mr-2 truncate">
             {selectedCategory}
           </div>

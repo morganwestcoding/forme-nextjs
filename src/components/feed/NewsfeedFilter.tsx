@@ -78,7 +78,7 @@ const NewsfeedFilter: React.FC<NewsfeedFilterProps> = ({ onFilterChange }) => {
   };
 
   return (
-    <div className="relative bg-[#333745] w-full rounded-md px-4">
+    <div className="relative bg-[#4A5568] w-full rounded-md px-4">
       <ul className="flex items-center justify-between w-full relative">
         {['Following', 'For You', 'Likes', 'Bookmarks'].map((filter, index) => {
           const filterValue = filter.toLowerCase().replace(' ', '-');

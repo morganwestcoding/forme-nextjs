@@ -168,7 +168,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         <div className="flex flex-col w-full">
           <ul className="list-none m-0 p-0 flex flex-col items-center hover:text-white ">
             <li className={` group flex items-center justify-start mb-2.5 mt-2 p-2 rounded-md transition-colors duration-250 ${
-              selectedButton === 'explore' ? 'bg-[#333745]' : ' hover:bg-gray-200 hover:text-white transition-all'
+              selectedButton === 'explore' ? 'bg-[#4A5568]' : ' hover:bg-gray-200 hover:text-white transition-all'
             } w-44`} 
               onClick={() => handleNavigate('/explore', 'explore')}
             >
@@ -197,7 +197,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             </li>
 
             <li className={` group flex items-center justify-start mb-2.5 p-2  rounded-md  transition-colors duration-250   ${
-              selectedButton === 'home' ? 'bg-[#333745]' : ' hover:bg-gray-200'
+              selectedButton === 'home' ? 'bg-[#4A5568]' : ' hover:bg-gray-200'
               } w-44`}
               onClick={() => handleNavigate('/', 'home')}
             >
@@ -213,12 +213,12 @@ const Sidebar: React.FC<SidebarProps> = ({
             </li>
 
             <li className={` group flex items-center justify-start mb-2.5 p-2 rounded-md  transition-colors duration-250   ${
-              selectedButton === 'market' ? 'bg-[#333745]' : ' hover:bg-gray-200 hover:text-white transition-all'
+              selectedButton === 'market' ? 'bg-[#4A5568]' : ' hover:bg-gray-200 hover:text-white transition-all'
               } w-44`} 
               onClick={() => handleNavigate('/market', 'market')}
             >
               <div className="group flex items-center justify-center w-8 h-8 rounded-full p-1 cursor-pointer transition-colors" >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={20} height={20} color={selectedButton === 'market' ? "#ffffff" : "#71717A"}  fill={selectedButton === 'market' ? "#333745" : "none"}  className=" group-hover:text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={20} height={20} color={selectedButton === 'market' ? "#ffffff" : "#71717A"}  fill={selectedButton === 'market' ? "#4A5568" : "none"}  className=" group-hover:text-white">
                   <path d="M3 10.9871V15.4925C3 18.3243 3 19.7403 3.87868 20.62C4.75736 21.4998 6.17157 21.4998 9 21.4998H15C17.8284 21.4998 19.2426 21.4998 20.1213 20.62C21 19.7403 21 18.3243 21 15.4925V10.9871" stroke="currentColor" strokeWidth="1.5" fill={selectedButton === 'market' ? "#ffffff" : "none"}  />
                   <path className={`${selectedButton !== 'market' ? 'group-hover:stroke-white' : 'none'}`} d="M15 16.9768C14.3159 17.584 13.2268 17.9768 12 17.9768C10.7732 17.9768 9.68409 17.584 9 16.9768" stroke={selectedButton === 'market' ? "#71717A" : "#64748B"} strokeWidth="1.5" strokeLinecap="round" />
                   <path d="M17.7957 2.50294L6.14983 2.53202C4.41166 2.44248 3.966 3.78259 3.966 4.43768C3.966 5.02359 3.89055 5.87774 2.82524 7.4831C1.75993 9.08846 1.83998 9.56536 2.44071 10.6767C2.93928 11.5991 4.20741 11.9594 4.86862 12.02C6.96883 12.0678 7.99065 10.2517 7.99065 8.97523C9.03251 12.1825 11.9955 12.1825 13.3158 11.8157C14.6385 11.4483 15.7717 10.1331 16.0391 8.97523C16.195 10.4142 16.6682 11.2538 18.0663 11.8308C19.5145 12.4284 20.7599 11.515 21.3848 10.9294C22.0096 10.3439 22.4107 9.04401 21.2967 7.6153C20.5285 6.63001 20.2084 5.7018 20.1032 4.73977C20.0423 4.18234 19.9888 3.58336 19.5971 3.20219C19.0247 2.64515 18.2035 2.47613 17.7957 2.50294Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -230,7 +230,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             </li>
             
             <li className={` group flex items-center justify-start mb-2.5 p-2 rounded-md  transition-colors duration-250   ${
-              selectedButton === 'favorites' ? 'bg-[#333745]': ' hover:bg-gray-200 hover:text-white transition-all'
+              selectedButton === 'favorites' ? 'bg-[#4A5568]': ' hover:bg-gray-200 hover:text-white transition-all'
               } w-44`} 
               onClick={() => handleNavigate('/favorites', 'favorites')}
             >
@@ -245,7 +245,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             </li>
             
             <li className={` group flex items-center justify-start mb-2.5 p-2 rounded-md   transition-colors duration-250 ${
-              selectedButton === 'jobs' ? 'bg-[#333745]' : ' hover:bg-gray-200 hover:text-white transition-all'
+              selectedButton === 'jobs' ? 'bg-[#4A5568]' : ' hover:bg-gray-200 hover:text-white transition-all'
               } w-44`} 
               onClick={() => handleNavigate('/jobs', 'jobs')}
             >
@@ -263,7 +263,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             </li>
 
             <li className={` group flex items-center justify-start mb-2.5 p-2 rounded-md  transition-colors duration-250 ${
-              selectedButton === 'Appointments' ? 'bg-[#333745]' : ' hover:bg-gray-200 hover:text-white transition-all'
+              selectedButton === 'Appointments' ? 'bg-[#4A5568]' : ' hover:bg-gray-200 hover:text-white transition-all'
               } w-44`} 
               onClick={() => handleNavigate('/bookings/reservations', 'Appointments')}
             >
@@ -314,7 +314,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             </li>
 
             <li className={` group flex items-center justify-start mb-2.5 p-2 rounded-md transition-colors duration-250 ${
-              selectedButton === 'vendors' ? 'bg-[#333745]' : ' hover:bg-gray-200 hover:text-white transition-all'
+              selectedButton === 'vendors' ? 'bg-[#4A5568]' : ' hover:bg-gray-200 hover:text-white transition-all'
               } w-44`} 
               onClick={() => handleNavigate('/vendors', 'vendors')}
             >
@@ -375,7 +375,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             
             <li 
               className={` group flex items-center justify-start mb-2.5 p-2 rounded-md transition-colors duration-250 ${
-                selectedButton === 'inbox' ? 'bg-[#333745]' : ' hover:bg-gray-200 hover:text-white transition-all'
+                selectedButton === 'inbox' ? 'bg-[#4A5568]' : ' hover:bg-gray-200 hover:text-white transition-all'
               } w-44`} 
               onClick={() => handleModalOpen(() => inboxModal.onOpen(currentUser), 'inbox')}
             >
@@ -395,7 +395,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             </li>
             
             <li className={` group flex items-center justify-start  p-2 rounded-md transition-colors duration-250 ${
-              selectedButton === 'notifications' ? 'bg-[#333745]' : 'hover:bg-gray-200 hover:text-white transition-all'
+              selectedButton === 'notifications' ? 'bg-[#4A5568]' : 'hover:bg-gray-200 hover:text-white transition-all'
               } w-44`} 
               onClick={() => handleNavigate('/notifications', 'notifications')}
             >

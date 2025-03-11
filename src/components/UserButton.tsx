@@ -235,23 +235,6 @@ const UserButton: React.FC<UserButtonProps> = ({
             >
               My Listings
             </DropdownMenuItem>
-            
-            <DropdownMenuItem
-              onClick={handleAppointmentsClick}
-              className="
-                p-3 
-                text-black 
-                hover:bg-gray-500 
-                hover:bg-opacity-25 
-                rounded-md 
-                cursor-pointer 
-                transition 
-                duration-200
-              "
-            >
-              My Appointments
-            </DropdownMenuItem>
-            
             <DropdownMenuItem
               onClick={handleAddListingClick}
               className="
@@ -282,6 +265,34 @@ const UserButton: React.FC<UserButtonProps> = ({
               "
             >
               Subscription
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="
+                p-3 
+                text-black 
+                hover:bg-gray-500 
+                hover:bg-opacity-25 
+                rounded-md 
+                cursor-pointer 
+                transition 
+                duration-200
+              "
+            >
+              Analytics
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="
+                p-3 
+                text-black 
+                hover:bg-gray-500 
+                hover:bg-opacity-25 
+                rounded-md 
+                cursor-pointer 
+                transition 
+                duration-200
+              "
+            >
+              Licensing
             </DropdownMenuItem>
             
             <DropdownMenuSeparator className="my-2 bg-gray-500 bg-opacity-25"/>
