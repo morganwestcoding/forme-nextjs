@@ -293,8 +293,8 @@ const ListingCard: React.FC<ListingCardProps> = ({
           </>
         )}
 
-        {/* Reservation View */}
-        {reservation && (
+ {/* Reservation View */}
+ {reservation && (
           <div className="p-4 flex flex-col gap-4">
             <div className="flex items-center gap-3">
               <Avatar />
@@ -316,6 +316,16 @@ const ListingCard: React.FC<ListingCardProps> = ({
               <div className="bg-gray-50 p-3 rounded-lg">
                 <span className="text-xs text-gray-500 block mb-1">Time</span>
                 <span className="font-medium text-sm">{reservation.time}</span>
+              </div>
+              <div className="bg-gray-50 p-3 rounded-lg">
+                <span className="text-xs text-gray-500 block mb-1">Employee</span>
+                <span className="font-medium text-sm">
+                  {reservation.listing.employees.find(emp => emp.id === reservation.employeeId)?.fullName || "Not assigned"}
+                </span>
+              </div>
+              <div className="bg-gray-50 p-3 rounded-lg">
+                <span className="text-xs text-gray-500 block mb-1">Date</span>
+                <span className="font-medium text-sm">{format(new Date(reservation.date), 'MMM d, yyyy')}</span>
               </div>
             </div>
 
