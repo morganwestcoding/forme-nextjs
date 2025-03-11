@@ -7,8 +7,7 @@ import { useRouter } from "next/navigation";
 import { categories } from '@/components/Categories';
 import { SafeReservation, SafeUser } from "@/app/types";
 import ListingCard from "@/components/listings/ListingCard";
-import ClientProviders from "@/components/ClientProviders";
-import Container from "@/components/Container";
+import Heading from "@/components/Heading";
 import Pagination from "@/components/pagination/Pagination";
 
 interface ReservationsClientProps {
@@ -18,8 +17,6 @@ interface ReservationsClientProps {
   totalPages: number;
   totalResults: number;
 }
-
-const ITEMS_PER_PAGE = 3; 
 
 const ReservationsClient: React.FC<ReservationsClientProps> = ({
   reservations,
@@ -58,40 +55,52 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
   }, [router]);
 
   return (
-    <Container>
-      <ClientProviders>
-        <div className="pt-2 flex-1">
-          <div 
-            className="
-          pt-6
-          flex-1
-          grid 
-          grid-cols-1
-          lg:grid-cols-2
-          xl:grid-cols-3
-          2xl:grid-cols-3
-          gap-4
-      px-4
-            "
-          >
-            {reservations.map((reservation: any) => (
-              <ListingCard
-                key={reservation.id}
-                data={reservation.listing}
-                reservation={reservation}
-                actionId={reservation.id}
-                disabled={processingId === reservation.id}
-                currentUser={currentUser}
-                categories={categories}
-                onAccept={() => onAccept(reservation.id)}
-                onDecline={() => onDecline(reservation.id)}
-                showAcceptDecline={true}
-              />
-            ))}
-          </div>
+    <div className="pt-2 flex-1">
+        <div className="px-4"> 
+      <Heading
+        title={`Reservations (${totalResults})`}
+        subtitle="Bookings received for your listings"
+      />
       </div>
-      </ClientProviders>
-    </Container>
+      <div 
+        className="
+        pt-6
+        flex-1
+        grid 
+        grid-cols-1
+        lg:grid-cols-2
+        xl:grid-cols-3
+        2xl:grid-cols-3
+        gap-4
+        px-4
+        "
+      >
+        {reservations.map((reservation: any) => (
+          <ListingCard
+            key={reservation.id}
+            data={reservation.listing}
+            reservation={reservation}
+            actionId={reservation.id}
+            disabled={processingId === reservation.id}
+            currentUser={currentUser}
+            categories={categories}
+            onAccept={() => onAccept(reservation.id)}
+            onDecline={() => onDecline(reservation.id)}
+            showAcceptDecline={true}
+          />
+        ))}
+      </div>
+      
+      {totalPages > 1 && (
+        <div className="mt-10">
+          <Pagination 
+            currentPage={currentPage} 
+            totalPages={totalPages}
+            totalResults={totalResults}
+          />
+        </div>
+      )}
+    </div>
   );
 }
 

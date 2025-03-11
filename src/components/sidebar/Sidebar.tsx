@@ -265,7 +265,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             <li className={` group flex items-center justify-start mb-2.5 p-2 rounded-md  transition-colors duration-250 ${
               selectedButton === 'Appointments' ? 'bg-[#333745]' : ' hover:bg-gray-200 hover:text-white transition-all'
               } w-44`} 
-              onClick={() => handleNavigate('/reservations', 'Appointments')}
+              onClick={() => handleNavigate('/bookings/reservations', 'Appointments')}
             >
               <div className="flex items-center justify-between w-full">
                 <div className="flex items-center">

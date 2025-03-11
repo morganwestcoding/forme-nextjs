@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import Header from '../components/header/Header'
 import RegisterModal from '@/components/RegisterModal';
 import ToasterProvider from './providers/ToasterProvider';
 import LoginModal from '@/components/modals/LoginModal';
@@ -23,7 +22,6 @@ import ResetPasswordModal from '@/components/modals/ResetPasswordModal';
 import SubscribeModal from '@/components/modals/SubscribeModal';
 import DemoModal from '@/components/modals/DemoModal';
 import MobileNavBar from '@/components/header/MobileNavBar';
-import MobileTopBar from '@/components/header/MobileTopBar';
 import ListingDetailsModal from '@/components/modals/ListingDetailsModal';
 import InboxModal from '@/components/modals/InboxModal';
 import { ColorProvider } from './context/ColorContext';

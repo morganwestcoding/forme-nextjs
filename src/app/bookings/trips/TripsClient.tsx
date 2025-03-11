@@ -6,12 +6,9 @@ import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { categories } from '@/components/Categories';
 import { SafeReservation, SafeUser } from "@/app/types";
-import Container from "@/components/Container";
-import Pagination from "@/components/pagination/Pagination";
-
 import Heading from "@/components/Heading";
 import ListingCard from "@/components/listings/ListingCard";
-
+import Pagination from "@/components/pagination/Pagination";
 
 interface TripsClientProps {
   reservations: SafeReservation[],
@@ -21,17 +18,12 @@ interface TripsClientProps {
   totalResults: number;
 }
 
-const ITEMS_PER_PAGE = 3; 
-
-export const dynamic = 'force-dynamic';
-
 const TripsClient: React.FC<TripsClientProps> = ({
   reservations,
   currentUser,
   currentPage,
   totalPages,
   totalResults
-  
 }) => {
   const router = useRouter();
   const [deletingId, setDeletingId] = useState('');
@@ -53,24 +45,28 @@ const TripsClient: React.FC<TripsClientProps> = ({
   }, [router]);
 
   return (
-    <Container>
-      <div className="pt-2 flex-1">
+    <div className="pt-2 flex-1">
+        <div className="px-4"> 
+      <Heading
+        title={`Trips (${totalResults})`}
+        subtitle="Your bookings at other locations"
+      />
+      </div>
       <div 
         className="
-          pt-6
-          flex-1
-          grid 
-          grid-cols-1
-          lg:grid-cols-2
-          xl:grid-cols-3
-          2xl:grid-cols-3
-          gap-4
-      px-4
+        pt-6
+        flex-1
+        grid 
+        grid-cols-1
+        lg:grid-cols-2
+        xl:grid-cols-3
+        2xl:grid-cols-3
+        gap-4
+        px-4
         "
       >
         {reservations.map((reservation: any) => (
           <ListingCard
-            categories={categories}
             key={reservation.id}
             data={reservation.listing}
             reservation={reservation}
@@ -79,12 +75,22 @@ const TripsClient: React.FC<TripsClientProps> = ({
             disabled={deletingId === reservation.id}
             actionLabel="Cancel reservation"
             currentUser={currentUser}
+            categories={categories}
           />
         ))}
       </div>
-      </div>
-    </Container>
-   );
+      
+      {totalPages > 1 && (
+        <div className="mt-10">
+          <Pagination 
+            currentPage={currentPage} 
+            totalPages={totalPages}
+            totalResults={totalResults}
+          />
+        </div>
+      )}
+    </div>
+  );
 }
  
 export default TripsClient;

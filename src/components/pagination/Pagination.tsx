@@ -8,6 +8,7 @@ interface PaginationProps {
   currentPage: number;
   totalPages: number;
   totalResults: number;
+
 }
 
 const Pagination = ({ currentPage, totalPages, totalResults }: PaginationProps) => {
