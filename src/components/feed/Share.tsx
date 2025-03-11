@@ -9,6 +9,7 @@ import Link from 'next/link';
 import FuturisticCategory from './FuturisticCategory';
 import AttachmentModal from '../modals/AttachmentModal';
 import LocationModal from '../modals/LocationModal';
+import PostCategoryModal from '../modals/PostCategoryModal'; // Import the new modal
 import useAttachmentModal from '@/app/hooks/useAttachmentModal';
 import { categories } from '@/components/Categories';
 import { usePostStore } from '@/app/hooks/usePostStore';
@@ -61,6 +62,7 @@ const CustomTooltip = ({
 const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
  const attachmentModal = useAttachmentModal();
  const [locationModalOpen, setLocationModalOpen] = useState(false);
+ const [categoryModalOpen, setCategoryModalOpen] = useState(false); // Add state for category modal
  const [mediaData, setMediaData] = useState<MediaData | null>(null);
  const [content, setContent] = useState('');
  const [location, setLocation] = useState<{ label: string; value: string } | null>(null);
@@ -96,7 +98,19 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
  const accentColor = getAccentColor();
  const selectedCategory = categories.find(cat => cat.label === categoryLabel);
 
- const handlePostSubmit = useCallback(async () => {
+ // New function to handle initial post submission click
+ const handlePostClick = useCallback(() => {
+   if (!content.trim()) {
+     toast.error('Please write something');
+     return;
+   }
+   
+   // Open category modal
+   setCategoryModalOpen(true);
+ }, [content]);
+
+ // Actual post submission with category
+ const handlePostSubmit = useCallback(async (selectedCat: string | null) => {
    if (!content.trim()) {
      toast.error('Please write something');
      return;
@@ -105,9 +119,11 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
    try {
      setIsSubmitting(true);
 
+     const finalCategory = selectedCat || category || (selectedCategory?.label || ''); // Use empty string instead of 'All'
+
      const postData = {
        content: content.trim(),
-       category: category || (selectedCategory?.label || 'All'),
+       category: finalCategory,
        userId: currentUser?.id,
        mediaUrl: mediaData?.url || null,
        mediaType: mediaData?.type || null,
@@ -328,7 +344,7 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
              initial="idle"
              whileHover="hover"
              whileTap="tap"
-             onClick={() => handlePostSubmit()}
+             onClick={handlePostClick} // Changed to open category modal first
              disabled={isSubmitting}
            >
              {isSubmitting ? (
@@ -355,6 +371,16 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
        onLocationSelected={(location) => {
          setLocation(location);
          setLocationModalOpen(false);
+       }}
+     />
+
+     {/* Category Selection Modal */}
+     <PostCategoryModal
+       isOpen={categoryModalOpen}
+       onClose={() => setCategoryModalOpen(false)}
+       onSubmit={(selectedCat) => {
+         handlePostSubmit(selectedCat);
+         setCategoryModalOpen(false);
        }}
      />
    </div>

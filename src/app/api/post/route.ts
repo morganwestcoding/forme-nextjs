@@ -31,12 +31,15 @@ export async function POST(request: Request) {
         category 
     });
 
-    if (!content || !category) {
-        return new Response(
-            `Missing required fields: ${!content ? 'content' : ''} ${!category ? 'category' : ''}`, 
-            { status: 400 }
-        );
+    // Check if content exists
+    if (!content) {
+        return new Response("Missing required field: content", { status: 400 });
     }
+
+    // Use empty string if no category or if category is "All" or "Default"
+    const finalCategory = category && category !== "All" && category !== "Default" 
+        ? category 
+        : "";
 
     // Validate mediaType if provided
     if (mediaType && !['image', 'video', 'gif'].includes(mediaType)) {
@@ -55,7 +58,7 @@ export async function POST(request: Request) {
                 mediaType,
                 location,
                 tag,
-                category,
+                category: finalCategory,
                 userId: currentUser.id,
                 likes: [],
                 bookmarks: [],
@@ -74,7 +77,9 @@ export async function POST(request: Request) {
     } 
 }
 
+// Rest of your GET function and other exports remain unchanged
 export async function GET(request: Request) {
+    // Your existing GET implementation
     try {
         const { searchParams } = new URL(request.url);
         const userId = searchParams.get('userId');

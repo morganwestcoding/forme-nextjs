@@ -296,7 +296,7 @@ const CategoryButton: React.FC<CategoryButtonProps> = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.2 }}
-            className="absolute top-full left-0 mt-2 w-[300px] bg-gray-900 rounded-lg shadow-xl p-3 z-50 border border-gray-800"
+            className="absolute top-full left-0 mt-2 w-[300px] bg-white rounded-lg shadow-xl p-3 z-50"
           >
             <div className="grid grid-cols-3 gap-2">
               <motion.div
