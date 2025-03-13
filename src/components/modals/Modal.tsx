@@ -1,5 +1,3 @@
-// Modal.tsx
-
 'use client';
 
 import { useCallback, useEffect, useState } from "react";
@@ -43,6 +41,17 @@ const Modal: React.FC<ModalProps> = ({
 
   useEffect(() => {
     setShowModal(isOpen);
+    
+    // Prevent body scrolling when modal is open
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [isOpen]);
 
   const handleClose = useCallback(() => {
@@ -78,7 +87,22 @@ const Modal: React.FC<ModalProps> = ({
   }
 
   return (
-    <>
+    <div 
+      className="
+        fixed 
+        inset-0 
+        z-50
+        bg-neutral-800/90
+      "
+      style={{
+        position: 'fixed',
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0,
+        zIndex: 9999,
+      }}
+    >
       <div 
         className="
           justify-center 
@@ -87,12 +111,9 @@ const Modal: React.FC<ModalProps> = ({
           overflow-x-hidden 
           overflow-y-auto 
           fixed 
-          inset-0 
-          z-50 
+          inset-0
           outline-none 
           focus:outline-none 
-          bg-neutral-800/90
-    
         "
       >
         <div className={`relative ${className || 'w-full md:w-4/6 lg:w-3/6 xl:w-2/5'} my-2 mx-auto h-full lg:h-auto md:h-auto`}>
@@ -116,17 +137,17 @@ const Modal: React.FC<ModalProps> = ({
                 focus:outline-none
               "
             >
-  <div className="relative w-full">
-    <button 
-      onClick={(e) => {
-        e.stopPropagation();
-        handleClose();
-      }}
-      className="absolute right-4 top-4 p-1 hover:opacity-70 transition z-10"
-    >
-      <X size={18} className="text-black" />
-    </button>
-  </div>
+              <div className="relative w-full">
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleClose();
+                  }}
+                  className="absolute right-4 top-4 p-1 hover:opacity-70 transition z-10"
+                >
+                  <X size={18} className="text-black" />
+                </button>
+              </div>
 
               <div id={`${modalContentId}-wrapper`} className="flex flex-col flex-1">
                 <div id={modalContentId} className="flex flex-col flex-1">
@@ -163,7 +184,7 @@ const Modal: React.FC<ModalProps> = ({
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

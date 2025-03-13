@@ -15,7 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
-import PostModal from '../modals/PostModal';
+import usePostModal from '@/app/hooks/usePostModal';
 import getComments from '@/app/actions/getComments';
 
 interface PostData {
@@ -25,7 +25,7 @@ interface PostData {
   content: string;
   imageSrc: string | null;
   mediaUrl?: string | null; 
-  mediaType?: MediaType | null;  // Changed to match SafePost type
+  mediaType?: MediaType | null;
   category: string;
   location?: string | null;
   likes: string[];
@@ -44,9 +44,8 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
   const [likes, setLikes] = useState(post.likes);
   const [bookmarks, setBookmarks] = useState(post.bookmarks);
   const [isHidden, setIsHidden] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [comments, setComments] = useState<SafeComment[]>([]);
   const router = useRouter();
+  const postModal = usePostModal();
 
   useEffect(() => {
     const formatCreatedAt = (createdAt: string) => {
@@ -170,28 +169,27 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
     }
   }, [currentUser, post.id]);
 
-  const fetchComments = useCallback(async () => {
+  const openPostModal = useCallback(async () => {
+    // First, set all the data
+    postModal.setPost({
+      ...post,
+      likes,
+      bookmarks,
+    });
+    postModal.setCurrentUser(currentUser);
+    
+    // Then fetch comments
     try {
-      const fetchedComments = await getComments(post.id);
-      setComments(fetchedComments);
+      const comments = await getComments(post.id);
+      postModal.setComments(comments);
     } catch (error) {
       console.error('Error fetching comments:', error);
-      toast.error('Failed to load comments');
+      postModal.setComments([]);
     }
-  }, [post.id]);
-
-  const openModal = useCallback(() => {
-    setIsModalOpen(true);
-    fetchComments();
-  }, [fetchComments]);
-
-  const closeModal = useCallback(() => {
-    setIsModalOpen(false);
-  }, []);
-
-  const handleCommentAdded = useCallback((newComment: SafeComment) => {
-    setComments(prevComments => [newComment, ...prevComments]);
-  }, []);
+    
+    // Finally, open the modal
+    postModal.onOpen();
+  }, [post, likes, bookmarks, currentUser, postModal]);
 
   const getStateAcronym = (state: string) => {
     const stateMap: {[key: string]: string} = {
@@ -262,180 +260,172 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
   return (
     <>
       {!isHidden && (
-        <>
-         <div className='w-full h-auto rounded-lg shadow-sm bg-[#ffffff] z-1 p-6 md:mr-6 my-4 relative cursor-pointer' onClick={openModal}>
-            <div className="absolute top-4 right-3">
-              <DropdownMenu>
-                <DropdownMenuTrigger>
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" color="#71717A" fill="none" className='rotate-90'>
-                    <path d="M11.9959 12H12.0049" stroke="currentColor" strokeWidth="2.75" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M17.9998 12H18.0088" stroke="currentColor" strokeWidth="2.75" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M5.99981 12H6.00879" stroke="currentColor" strokeWidth="2.75" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  {currentUser && currentUser.id === post.user.id ? (
-                    <DropdownMenuItem onClick={handleDelete} className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
-                      Delete Post
-                    </DropdownMenuItem>
-                  ) : (
-                    <DropdownMenuItem onClick={handleNotInterested} className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
-                      Not Interested
-                    </DropdownMenuItem>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+        <div className='w-full h-auto rounded-lg shadow-sm bg-[#ffffff] z-1 p-6 md:mr-6 my-4 relative cursor-pointer' onClick={openPostModal}>
+          <div className="absolute top-4 right-3">
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" color="#71717A" fill="none" className='rotate-90'>
+                  <path d="M11.9959 12H12.0049" stroke="currentColor" strokeWidth="2.75" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M17.9998 12H18.0088" stroke="currentColor" strokeWidth="2.75" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M5.99981 12H6.00879" stroke="currentColor" strokeWidth="2.75" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                {currentUser && currentUser.id === post.user.id ? (
+                  <DropdownMenuItem onClick={handleDelete} className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+                    Delete Post
+                  </DropdownMenuItem>
+                ) : (
+                  <DropdownMenuItem onClick={handleNotInterested} className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+                    Not Interested
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
 
-            <div className="flex items-center">     
-                  <Avatar src={post.user.image ?? undefined} />      
-              <div className="ml-3 flex flex-col">
-                <div className="flex items-center pb-1">
-                  <span className="font-medium pr-1 text-sm text-[#484848] flex items-center">
-                    {post.user.name}
-                    {post.user.isSubscribed && (
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    viewBox="0 0 24 24" 
-    width="21" 
-    height="21" 
-    className="inline-block ml-1 relative"
-    style={{ color: accentColor }}
-    fill="none"
-  >
-    <path 
-      d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z" 
-      stroke="currentColor" 
-      strokeWidth="1.5"
-    />
-    <path 
-      d="M9 12.8929C9 12.8929 10.2 13.5447 10.8 14.5C10.8 14.5 12.6 10.75 15 9.5" 
-      stroke="currentColor" 
-      strokeWidth="1.5" 
-      strokeLinecap="round" 
-      strokeLinejoin="round"
-    />
-  </svg>
-)}
-                  </span>
-                  <span className="text-sm text-neutral-500">&middot; {formattedDate || 'Loading time...'}</span>
-                </div>
-                <div className={`flex text-sm items-center ${post.location ? 'text-gray-600' : '-ml-2'}`}>
-                  {post.location && (
-                    <span>{city}, {stateAcronym}</span>
+          <div className="flex items-center">     
+            <Avatar src={post.user.image ?? undefined} />      
+            <div className="ml-3 flex flex-col">
+              <div className="flex items-center pb-1">
+                <span className="font-medium pr-1 text-sm text-[#484848] flex items-center">
+                  {post.user.name}
+                  {post.user.isSubscribed && (
+                    <svg 
+                      xmlns="http://www.w3.org/2000/svg" 
+                      viewBox="0 0 24 24" 
+                      width="21" 
+                      height="21" 
+                      className="inline-block ml-1 relative"
+                      style={{ color: accentColor }}
+                      fill="none"
+                    >
+                      <path 
+                        d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z" 
+                        stroke="currentColor" 
+                        strokeWidth="1.5"
+                      />
+                      <path 
+                        d="M9 12.8929C9 12.8929 10.2 13.5447 10.8 14.5C10.8 14.5 12.6 10.75 15 9.5" 
+                        stroke="currentColor" 
+                        strokeWidth="1.5" 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round"
+                      />
+                    </svg>
                   )}
-<span 
-  className="ml-2 py-2 px-3 rounded-sm text-white flex items-center justify-center text-xs"
-  style={{ backgroundColor: badgeColor }}
->
-  {post.category}
-</span>
-                </div>
+                </span>
+                <span className="text-sm text-neutral-500">&middot; {formattedDate || 'Loading time...'}</span>
+              </div>
+              <div className={`flex text-sm items-center ${post.location ? 'text-gray-600' : '-ml-2'}`}>
+                {post.location && (
+                  <span>{city}, {stateAcronym}</span>
+                )}
+                <span 
+                  className="ml-2 py-2 px-3 rounded-sm text-white flex items-center justify-center text-xs"
+                  style={{ backgroundColor: badgeColor }}
+                >
+                  {post.category}
+                </span>
               </div>
             </div>
+          </div>
 
-            <div className="mt-3 relative">
-              <p className='text-sm text-[#000000] mb-3'>{post.content}</p>
-              
-              {renderMedia()}
+          <div className="mt-3 relative">
+            <p className='text-sm text-[#000000] mb-3'>{post.content}</p>
+            
+            {renderMedia()}
 
-              <div className="bottom-0 left-0 flex gap-4 p-2 -ml-2 -mb-4 mt-1.5">
-  {/* Comment Button */}
-  <div className="flex items-center justify-center p-3 rounded-full cursor-pointer transition-all duration-300
-    bg-gray-50 border border-gray-100
-    hover:shadow-[0_0_12px_rgba(0,0,0,0.05)]">
-    <svg 
-      xmlns="http://www.w3.org/2000/svg" 
-      viewBox="0 0 24 24" 
-      width={20} 
-      height={20} 
-      className="text-neutral-600"
-      fill="none" 
-      stroke="currentColor"
-      strokeWidth="1.5"
-    >
-      <path d="M6.09881 19C4.7987 18.8721 3.82475 18.4816 3.17157 17.8284C2 16.6569 2 14.7712 2 11V10.5C2 6.72876 2 4.84315 3.17157 3.67157C4.34315 2.5 6.22876 2.5 10 2.5H14C17.7712 2.5 19.6569 2.5 20.8284 3.67157C22 4.84315 22 6.72876 22 10.5V11C22 14.7712 22 16.6569 20.8284 17.8284C19.6569 19 17.7712 19 14 19C13.4395 19.0125 12.9931 19.0551 12.5546 19.155C11.3562 19.4309 10.2465 20.0441 9.14987 20.5789C7.58729 21.3408 6.806 21.7218 6.31569 21.3651C5.37769 20.6665 6.29454 18.5019 6.5 17.5"/>
-      <path d="M8 13.5H16M8 8.5H12" strokeLinecap="round"/>
-    </svg>
-  </div>
+            <div className="bottom-0 left-0 flex gap-4 p-2 -ml-2 -mb-4 mt-1.5">
+              {/* Comment Button */}
+              <div className="flex items-center justify-center p-3 rounded-full cursor-pointer transition-all duration-300
+                bg-gray-50 border border-gray-100
+                hover:shadow-[0_0_12px_rgba(0,0,0,0.05)]">
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  viewBox="0 0 24 24" 
+                  width={20} 
+                  height={20} 
+                  className="text-neutral-600"
+                  fill="none" 
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                >
+                  <path d="M6.09881 19C4.7987 18.8721 3.82475 18.4816 3.17157 17.8284C2 16.6569 2 14.7712 2 11V10.5C2 6.72876 2 4.84315 3.17157 3.67157C4.34315 2.5 6.22876 2.5 10 2.5H14C17.7712 2.5 19.6569 2.5 20.8284 3.67157C22 4.84315 22 6.72876 22 10.5V11C22 14.7712 22 16.6569 20.8284 17.8284C19.6569 19 17.7712 19 14 19C13.4395 19.0125 12.9931 19.0551 12.5546 19.155C11.3562 19.4309 10.2465 20.0441 9.14987 20.5789C7.58729 21.3408 6.806 21.7218 6.31569 21.3651C5.37769 20.6665 6.29454 18.5019 6.5 17.5"/>
+                  <path d="M8 13.5H16M8 8.5H12" strokeLinecap="round"/>
+                </svg>
+              </div>
 
-  {/* Like Button */}
-{/* Like Button */}
-<div 
-  onClick={(e) => { e.stopPropagation(); handleLike(); }}
-  className="flex items-center justify-center p-3 rounded-full cursor-pointer transition-all duration-300 relative
-    bg-gray-50 border border-gray-100 hover:shadow-[0_0_12px_rgba(0,0,0,0.05)]"
->
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    viewBox="0 0 24 24" 
-    width={20} 
-    height={20}
-    style={{ color: isLiked ? accentColor : 'rgb(82 82 91)' }}
-    fill={isLiked ? accentColor : "none"}
-    stroke="currentColor"
-    strokeWidth="1.5"
-  >
-  <path d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-  </svg>
-  {likes.length > 0 && (
-    <span 
-      className="absolute -top-1 -right-1 rounded-full min-w-[18px] h-[18px] flex items-center justify-center text-[11px] font-medium text-white shadow-sm"
-      style={{ backgroundColor: accentColor }}
-    >
-      {likes.length}
-    </span>
-  )}
-</div>
+              {/* Like Button */}
+              <div 
+                onClick={(e) => { e.stopPropagation(); handleLike(); }}
+                style={{
+                  background: isLiked ? `linear-gradient(to top right, ${accentColor}33, ${accentColor}11)` : '',
+                  boxShadow: isLiked ? `0 0 12px ${accentColor}33` : ''
+                }}
+                className={`flex items-center justify-center p-3 rounded-full cursor-pointer transition-all duration-300 relative
+                  ${isLiked 
+                    ? '' 
+                    : 'bg-gray-50 border border-gray-100 hover:shadow-[0_0_12px_rgba(0,0,0,0.05)]'
+                  }`}
+              >
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  viewBox="0 0 24 24" 
+                  width={20} 
+                  height={20}
+                  style={{ color: isLiked ? accentColor : 'rgb(82 82 91)' }}
+                  fill={isLiked ? accentColor : "none"}
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                >
+                <path d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+                {likes.length > 0 && (
+                  <span 
+                    className="absolute -top-1 -right-1 rounded-full min-w-[18px] h-[18px] flex items-center justify-center text-[11px] font-medium text-white shadow-sm"
+                    style={{ backgroundColor: accentColor }}
+                  >
+                    {likes.length}
+                  </span>
+                )}
+              </div>
 
-{/* Bookmark Button */}
-<div
-  onClick={(e) => { e.stopPropagation(); handleBookmark(); }}
-  className="flex items-center justify-center p-3 rounded-full cursor-pointer transition-all duration-300 relative
-    bg-gray-50 border border-gray-100 hover:shadow-[0_0_12px_rgba(0,0,0,0.05)]"
->
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    viewBox="0 0 24 24" 
-    width={20} 
-    height={20}
-    style={{ color: isBookmarked ? accentColor : 'rgb(82 82 91)' }}
-    fill={isBookmarked ? accentColor : "none"}
-    stroke="currentColor"
-    strokeWidth="1.5"
-  >
-  <path d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-  <path d="M4 7H20" stroke="currentColor" strokeWidth="1.5" />
-  </svg>
-  {bookmarks.length > 0 && (
-    <span 
-      className="absolute -top-1 -right-1 rounded-full min-w-[18px] h-[18px] flex items-center justify-center text-[11px] font-medium text-white shadow-sm"
-      style={{ backgroundColor: accentColor }}
-    >
-      {bookmarks.length}
-    </span>
-  )}
-</div>
-</div>
+              {/* Bookmark Button */}
+              <div
+                onClick={(e) => { e.stopPropagation(); handleBookmark(); }}
+                style={{
+                  background: isBookmarked ? `linear-gradient(to top right, ${accentColor}33, ${accentColor}11)` : 'rgb(249 250 251)',
+                  boxShadow: isBookmarked ? `0 0 12px ${accentColor}33` : '',
+                  border: isBookmarked ? 'none' : '1px solid rgb(243 244 246)'
+                }}
+                className="flex items-center justify-center p-3 rounded-full cursor-pointer transition-all duration-300 relative"
+              >
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  viewBox="0 0 24 24" 
+                  width={20} 
+                  height={20}
+                  style={{ color: isBookmarked ? accentColor : 'rgb(82 82 91)' }}
+                  fill={isBookmarked ? accentColor : "none"}
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                >
+                <path d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M4 7H20" stroke="currentColor" strokeWidth="1.5" />
+                </svg>
+                {bookmarks.length > 0 && (
+                  <span 
+                    className="absolute -top-1 -right-1 rounded-full min-w-[18px] h-[18px] flex items-center justify-center text-[11px] font-medium text-white shadow-sm"
+                    style={{ backgroundColor: accentColor }}
+                  >
+                    {bookmarks.length}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
-          <PostModal
-            isOpen={isModalOpen}
-            onClose={closeModal}
-            post={{
-              ...post,
-              likes,
-              bookmarks,
-              location: post.location ? `${city}, ${stateAcronym}` : undefined
-            }}
-            currentUser={currentUser}
-            onLike={handleLike}
-            onBookmark={handleBookmark}
-            comments={comments}
-            onCommentAdded={handleCommentAdded}
-            refreshComments={fetchComments}
-          />
-        </>
+        </div>
       )}
     </>
   );
