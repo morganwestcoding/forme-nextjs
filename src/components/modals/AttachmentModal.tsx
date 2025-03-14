@@ -42,7 +42,7 @@ const AttachmentModal: React.FC<AttachmentModalProps> = ({
     const modalBody = (
         <div className="flex gap-4">
             <div className="flex flex-col w-1/2">
-                <div className="mb-2 text-center font-medium text-white">Add Media</div>
+                <div className="mb-2 text-center font-medium ">Add Media</div>
                 <div className="w-full" style={{ maxWidth: '300px', margin: '0 auto' }}>
                     <MediaUpload
                         onMediaUpload={(data: MediaData) => setValue('mediaData', data)}

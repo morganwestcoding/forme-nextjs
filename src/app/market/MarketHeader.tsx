@@ -49,7 +49,7 @@ const MarketHeader = ({
             <button 
               onClick={() => setIsFilterOpen(!isFilterOpen)}
               className={`
-                flex items-center gap-2 py-3.5 px-4 rounded-md bg-[#4A5568]
+                flex items-center gap-2 py-3 px-4 rounded-md bg-[#4A5568]
                 transition-colors duration-200 ease-in-out
                 ${isFilterOpen ? 'text-white' : 'text-gray-400 hover:text-gray-200'}
               `}
@@ -166,7 +166,7 @@ const MarketHeader = ({
               <button
                 onClick={() => onViewModeChange('grid')}
                 className={`
-                  py-3.5 px-4 relative z-10 cursor-pointer select-none
+                  py-3 px-4 relative z-10 cursor-pointer select-none
                   transition-colors duration-200 ease-in-out
                   ${viewMode === 'grid' 
                     ? 'text-white' 

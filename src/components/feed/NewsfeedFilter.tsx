@@ -88,7 +88,7 @@ const NewsfeedFilter: React.FC<NewsfeedFilterProps> = ({ onFilterChange }) => {
               ref={(el) => (buttonRefs.current[index] = el)}
               data-filter={filterValue}
               className={`
-                flex-1 text-center py-3.5 cursor-pointer select-none
+                flex-1 text-center py-3 cursor-pointer select-none
                 transition-colors duration-200 ease-in-out
                 ${selectedFilter === filterValue
                   ? 'text-white'
