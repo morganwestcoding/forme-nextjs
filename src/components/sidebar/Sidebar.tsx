@@ -166,9 +166,9 @@ const Sidebar: React.FC<SidebarProps> = ({
 
         <Logo variant="vertical" />
 
-        <div className="flex flex-col w-full mt-3">
+        <div className="flex flex-col w-full ">
           {/* Explore & Discover */}
-          <div className="mb-6">
+          <div className="mb-6 mt-3">
             <div className="text-xs text-neutral-400 uppercase mb-2 px-3 font-medium">Explore & Discover</div>
             <ul className="list-none m-0 p-0 flex flex-col items-start space-y-1">
               <li className="relative w-full">
