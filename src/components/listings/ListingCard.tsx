@@ -104,36 +104,36 @@ const ListingCard: React.FC<ListingCardProps> = ({
   // Don't display category tag if it's the default category
   const shouldDisplayCategory = data.category && data.category !== 'Default' && data.category !== 'All';
 
-// Add this to your ListingCard component
-const getStatusBadgeStyles = (status: string) => {
-  switch(status) {
-    case 'accepted':
-      return 'bg-green-100 text-green-800';
-    case 'declined':
-      return 'bg-red-100 text-red-800';
-    default: // pending or any other state
-      return 'bg-yellow-100 text-yellow-800';
-  }
-};
+  // Add this to your ListingCard component
+  const getStatusBadgeStyles = (status: string) => {
+    switch(status) {
+      case 'accepted':
+        return 'bg-green-100 text-green-800';
+      case 'declined':
+        return 'bg-red-100 text-red-800';
+      default: // pending or any other state
+        return 'bg-yellow-100 text-yellow-800';
+    }
+  };
 
-const getStatusText = (status: string) => {
-  switch(status) {
-    case 'accepted':
-      return 'accepted';
-    case 'declined':
-      return 'declined';
-    default: // pending or any other state
-      return '...pending';
-  }
-};
+  const getStatusText = (status: string) => {
+    switch(status) {
+      case 'accepted':
+        return 'accepted';
+      case 'declined':
+        return 'declined';
+      default: // pending or any other state
+        return '...pending';
+    }
+  };
 
   return (
     <div className="col-span-1 flex justify-center w-full max-w-[350px] mx-auto">
-      <div className="bg-white rounded-xl flex flex-col w-full transition-all duration-300 overflow-hidden border hover:shadow-md">
+      <div className="bg-white rounded-xl flex flex-col w-full transition-all duration-300 overflow-hidden hover:shadow-md">
         {!reservation && (
           <>
-            {/* Image Section */}
-            <div className="relative h-[175px] w-full group cursor-pointer overflow-hidden">
+            {/* Image Section - No border, full width */}
+            <div className="relative h-[175px] w-full group cursor-pointer overflow-hidden rounded-t-xl">
               <Image
                 onClick={() => router.push(`/listings/${data.id}`)} 
                 fill
@@ -147,7 +147,7 @@ const getStatusText = (status: string) => {
               <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/50 
                             opacity-0 transition-all duration-300 group-hover:opacity-100" />
               
-                              {/* Category Tag - Only show if not default */}
+              {/* Category Tag - Only show if not default */}
               {shouldDisplayCategory && (
                 <div className="absolute top-4 left-4 z-10">
                   <div className="px-3 py-2 backdrop-blur-sm bg-black/50 rounded-md
@@ -207,8 +207,8 @@ const getStatusText = (status: string) => {
               )}
             </div>
 
-            {/* Content Section */}
-            <div className="px-4 pt-4 pb-4">
+            {/* Content Section - With border only on sides and bottom */}
+            <div className="px-4 pt-4 pb-4 border-x border-b rounded-b-xl">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex flex-col">
                   <h3 className="font-medium text-gray-900 text-base">
@@ -336,118 +336,118 @@ const getStatusText = (status: string) => {
           </>
         )}
 
-{/* Reservation View */}
-{reservation && (
-  <div className="p-4 flex flex-col gap-4">
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-3">
-      <Avatar src={reservation.user.image ?? undefined} />
-        <div>
-          <h3 className="font-medium text-gray-900">
-            {reservation.user.name}
-          </h3>
-          <p className="text-sm text-gray-500">
-            {format(new Date(reservation.date), 'PP')}
-          </p>
-        </div>
-      </div>
-      
-      {/* Status Badge */}
-      <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusBadgeStyles(reservation.status)}`}>
-        {getStatusText(reservation.status)}
-      </span>
-    </div>
-    
-    <div className="grid grid-cols-2 gap-2">
-      <div className="bg-gray-50 p-3 rounded-lg">
-        <span className="text-xs text-gray-500 block mb-1">Service</span>
-        <span className="font-medium text-sm">{reservation.serviceName}</span>
-      </div>
-      <div className="bg-gray-50 p-3 rounded-lg">
-        <span className="text-xs text-gray-500 block mb-1">Time</span>
-        <span className="font-medium text-sm">{reservation.time}</span>
-      </div>
-      <div className="bg-gray-50 p-3 rounded-lg">
-        <span className="text-xs text-gray-500 block mb-1">Employee</span>
-        <span className="font-medium text-sm">
-          {reservation.listing.employees.find(emp => emp.id === reservation.employeeId)?.fullName || "Not assigned"}
-        </span>
-      </div>
-      <div className="bg-gray-50 p-3 rounded-lg">
-        <span className="text-xs text-gray-500 block mb-1">Date</span>
-        <span className="font-medium text-sm">{format(new Date(reservation.date), 'MMM d, yyyy')}</span>
-      </div>
-    </div>
+        {/* Reservation View */}
+        {reservation && (
+          <div className="p-4 flex flex-col gap-4 border rounded-xl">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Avatar src={reservation.user.image ?? undefined} />
+                <div>
+                  <h3 className="font-medium text-gray-900">
+                    {reservation.user.name}
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    {format(new Date(reservation.date), 'PP')}
+                  </p>
+                </div>
+              </div>
+              
+              {/* Status Badge */}
+              <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusBadgeStyles(reservation.status)}`}>
+                {getStatusText(reservation.status)}
+              </span>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-2">
+              <div className="bg-gray-50 p-3 rounded-lg">
+                <span className="text-xs text-gray-500 block mb-1">Service</span>
+                <span className="font-medium text-sm">{reservation.serviceName}</span>
+              </div>
+              <div className="bg-gray-50 p-3 rounded-lg">
+                <span className="text-xs text-gray-500 block mb-1">Time</span>
+                <span className="font-medium text-sm">{reservation.time}</span>
+              </div>
+              <div className="bg-gray-50 p-3 rounded-lg">
+                <span className="text-xs text-gray-500 block mb-1">Employee</span>
+                <span className="font-medium text-sm">
+                  {reservation.listing.employees.find(emp => emp.id === reservation.employeeId)?.fullName || "Not assigned"}
+                </span>
+              </div>
+              <div className="bg-gray-50 p-3 rounded-lg">
+                <span className="text-xs text-gray-500 block mb-1">Date</span>
+                <span className="font-medium text-sm">{format(new Date(reservation.date), 'MMM d, yyyy')}</span>
+              </div>
+            </div>
 
-    {reservation.note && (
-      <div className="bg-gray-50 p-3 rounded-lg">
-        <span className="text-xs text-gray-500 block mb-1">Note</span>
-        <p className="text-sm">{reservation.note}</p>
-      </div>
-    )}
+            {reservation.note && (
+              <div className="bg-gray-50 p-3 rounded-lg">
+                <span className="text-xs text-gray-500 block mb-1">Note</span>
+                <p className="text-sm">{reservation.note}</p>
+              </div>
+            )}
 
-    <div className="flex justify-between items-center pt-2 border-t border-gray-100">
-      <span className="text-gray-500 text-sm">Total</span>
-      <span className="font-semibold text-base">${reservation.totalPrice}</span>
-    </div>
+            <div className="flex justify-between items-center pt-2 border-t border-gray-100">
+              <span className="text-gray-500 text-sm">Total</span>
+              <span className="font-semibold text-base">${reservation.totalPrice}</span>
+            </div>
 
-    {/* Only show Accept/Decline Buttons if status is pending */}
-    {showAcceptDecline && reservation.status === 'pending' && (
-      <div className="flex gap-2 mt-2">
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onAccept?.();
-          }}
-          disabled={disabled}
-          className="flex-1 bg-[#60A5FA] text-white font-medium py-3.5 rounded-lg 
-                   hover:bg-[#4287f5] hover:shadow-md transition-all 
-                   disabled:opacity-50 disabled:cursor-not-allowed text-sm
-                   flex items-center justify-center"
-        >
-          <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
-            className="w-4 h-4 mr-1.5"
-            strokeWidth="2"
-            strokeLinecap="round" 
-            strokeLinejoin="round"
-          >
-            <path d="M20 6L9 17l-5-5" />
-          </svg>
-          <span>Accept</span>
-        </button>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onDecline?.();
-          }}
-          disabled={disabled}
-          className="flex-1 bg-gray-200 text-gray-700 font-medium py-3.5 rounded-lg 
-                   hover:bg-gray-300 hover:shadow-sm transition-all 
-                   disabled:opacity-50 disabled:cursor-not-allowed text-sm
-                   flex items-center justify-center"
-        >
-          <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
-            className="w-4 h-4 mr-1.5"
-            strokeWidth="2"
-            strokeLinecap="round" 
-            strokeLinejoin="round"
-          >
-            <path d="M18 6L6 18M6 6l12 12" />
-          </svg>
-          <span>Decline</span>
-        </button>
-      </div>
-    )}
-  </div>
-)}
+            {/* Only show Accept/Decline Buttons if status is pending */}
+            {showAcceptDecline && reservation.status === 'pending' && (
+              <div className="flex gap-2 mt-2">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onAccept?.();
+                  }}
+                  disabled={disabled}
+                  className="flex-1 bg-[#60A5FA] text-white font-medium py-3.5 rounded-lg 
+                          hover:bg-[#4287f5] hover:shadow-md transition-all 
+                          disabled:opacity-50 disabled:cursor-not-allowed text-sm
+                          flex items-center justify-center"
+                >
+                  <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    className="w-4 h-4 mr-1.5"
+                    strokeWidth="2"
+                    strokeLinecap="round" 
+                    strokeLinejoin="round"
+                  >
+                    <path d="M20 6L9 17l-5-5" />
+                  </svg>
+                  <span>Accept</span>
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDecline?.();
+                  }}
+                  disabled={disabled}
+                  className="flex-1 bg-gray-200 text-gray-700 font-medium py-3.5 rounded-lg 
+                          hover:bg-gray-300 hover:shadow-sm transition-all 
+                          disabled:opacity-50 disabled:cursor-not-allowed text-sm
+                          flex items-center justify-center"
+                >
+                  <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    className="w-4 h-4 mr-1.5"
+                    strokeWidth="2"
+                    strokeLinecap="round" 
+                    strokeLinejoin="round"
+                  >
+                    <path d="M18 6L6 18M6 6l12 12" />
+                  </svg>
+                  <span>Decline</span>
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -172,9 +172,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             <div className="text-xs text-neutral-400 uppercase mb-2 px-3 font-medium">Explore & Discover</div>
             <ul className="list-none m-0 p-0 flex flex-col items-start space-y-1">
               <li className="relative w-full">
-                {selectedButton === 'home' && (
-                  <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-blue-500"></div>
-                )}
+
                 <div 
                   className={`
                     flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
@@ -200,9 +198,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               </li>
 
               <li className="relative w-full">
-                {selectedButton === 'explore' && (
-                  <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-blue-500"></div>
-                )}
+     
                 <div 
                   className={`
                     flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
@@ -226,12 +222,11 @@ const Sidebar: React.FC<SidebarProps> = ({
                     Discover
                   </span>
                 </div>
+                
               </li>
 
               <li className="relative w-full">
-                {selectedButton === 'market' && (
-                  <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-blue-500"></div>
-                )}
+    
                 <div 
                   className={`
                     flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
@@ -264,9 +259,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             <div className="text-xs text-neutral-400 uppercase mb-2 px-3 font-medium">My Content</div>
             <ul className="list-none m-0 p-0 flex flex-col items-start space-y-1">
               <li className="relative w-full">
-                {selectedButton === 'favorites' && (
-                  <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-blue-500"></div>
-                )}
+    
                 <div 
                   className={`
                     flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
@@ -291,9 +284,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               </li>
 
               <li className="relative w-full">
-                {selectedButton === 'Appointments' && (
-                  <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-blue-500"></div>
-                )}
+      
                 <div 
                   className={`
                     flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
@@ -338,9 +329,8 @@ const Sidebar: React.FC<SidebarProps> = ({
               </li>
 
               <li className="relative w-full">
-                {selectedButton === 'analytics' && (
-                  <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-blue-500"></div>
-                )}
+      
+    
                 <div 
                   className={`
                     flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
@@ -374,9 +364,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             <div className="text-xs text-neutral-400 uppercase mb-2 px-3 font-medium">Opportunities</div>
             <ul className="list-none m-0 p-0 flex flex-col items-start space-y-1">
               <li className="relative w-full">
-                {selectedButton === 'jobs' && (
-                  <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-blue-500"></div>
-                )}
+      
                 <div 
                   className={`
                     flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
@@ -404,9 +392,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               </li>
 
               <li className="relative w-full">
-                {selectedButton === 'vendors' && (
-                  <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-blue-500"></div>
-                )}
+     
                 <div 
                   className={`
                     flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
@@ -474,9 +460,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             <div className="text-xs text-neutral-400 uppercase mb-2 px-3 font-medium">Connections</div>
             <ul className="list-none m-0 p-0 flex flex-col items-start space-y-1">
               <li className="relative w-full">
-                {selectedButton === 'inbox' && (
-                  <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-blue-500"></div>
-                )}
+         
                 <div 
                   className={`
                     flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
@@ -502,9 +486,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               </li>
               
               <li className="relative w-full">
-                {selectedButton === 'notifications' && (
-                  <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-blue-500"></div>
-                )}
+      
                 <div 
                   className={`
                     flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
