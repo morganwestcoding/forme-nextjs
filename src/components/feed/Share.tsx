@@ -9,13 +9,12 @@ import Link from 'next/link';
 import FuturisticCategory from './FuturisticCategory';
 import AttachmentModal from '../modals/AttachmentModal';
 import LocationModal from '../modals/LocationModal';
-import PostCategoryModal from '../modals/PostCategoryModal'; // Import the new modal
+import PostCategoryModal from '../modals/PostCategoryModal';
 import useAttachmentModal from '@/app/hooks/useAttachmentModal';
 import { categories } from '@/components/Categories';
 import { usePostStore } from '@/app/hooks/usePostStore';
 import { toast } from 'react-hot-toast';
 import { useSearchParams } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
 
 interface ShareProps {
  currentUser: SafeUser | null;
@@ -50,7 +49,7 @@ const CustomTooltip = ({
         borderRadius: '0.25rem',
         padding: '0.25rem 0.5rem',
         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-        pointerEvents: 'none' as 'none',
+        pointerEvents: 'none',
         zIndex: 99999
       }}
     >
@@ -62,7 +61,7 @@ const CustomTooltip = ({
 const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
  const attachmentModal = useAttachmentModal();
  const [locationModalOpen, setLocationModalOpen] = useState(false);
- const [categoryModalOpen, setCategoryModalOpen] = useState(false); // Add state for category modal
+ const [categoryModalOpen, setCategoryModalOpen] = useState(false);
  const [mediaData, setMediaData] = useState<MediaData | null>(null);
  const [content, setContent] = useState('');
  const [location, setLocation] = useState<{ label: string; value: string } | null>(null);
@@ -119,7 +118,7 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
    try {
      setIsSubmitting(true);
 
-     const finalCategory = selectedCat || category || (selectedCategory?.label || ''); // Use empty string instead of 'All'
+     const finalCategory = selectedCat || category || (selectedCategory?.label || '');
 
      const postData = {
        content: content.trim(),
@@ -155,13 +154,6 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
      setIsSubmitting(false);
    }
  }, [content, mediaData, location, category, currentUser, addPost, selectedCategory]);
-
- // Button effect variants
- const buttonVariants = {
-   idle: { scale: 1 },
-   hover: { scale: 1.05 },
-   tap: { scale: 0.98 }
- };
 
  const hasAttachments = mediaData !== null;
  const hasLocation = location !== null;
@@ -204,22 +196,18 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
        <div className="flex items-center space-x-2 relative">
          {/* Location Button with Tooltip */}
          <div className="inline-block relative">
-           <motion.div 
-             className="relative"
-             variants={buttonVariants}
-             initial="idle"
-             whileHover="hover"
-             whileTap="tap"
+           <div 
+             className="relative transition-transform duration-200 ease-in-out hover:scale-105 active:scale-95"
              onMouseEnter={() => setHoverState('location')}
              onMouseLeave={() => setHoverState(null)}
            >
-             <motion.div
+             <div
                className={`
                  flex items-center justify-center
                  rounded-full 
                  p-3
                  cursor-pointer
-                 transition-colors
+                 transition-all
                  duration-300
                  ease-in-out
                  ${hasLocation ? '' : 'hover:bg-white hover:bg-opacity-15'}
@@ -253,34 +241,30 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
                    strokeLinejoin="round"
                  />
                </svg>
-             </motion.div>
+             </div>
              
              {/* Custom tooltip component */}
              <CustomTooltip 
                content={hasLocation ? 'Change location' : 'Add location'} 
                isVisible={hoverState === 'location'} 
              />
-           </motion.div>
+           </div>
          </div>
 
          {/* Attachment Button with Tooltip */}
          <div className="inline-block relative">
-           <motion.div 
-             className="relative"
-             variants={buttonVariants}
-             initial="idle"
-             whileHover="hover"
-             whileTap="tap"
+           <div 
+             className="relative transition-transform duration-200 ease-in-out hover:scale-105 active:scale-95"
              onMouseEnter={() => setHoverState('attachment')}
              onMouseLeave={() => setHoverState(null)}
            >
-             <motion.div
+             <div
                className={`
                  flex items-center justify-center
                  rounded-full 
                  p-3
                  cursor-pointer
-                 transition-colors
+                 transition-all
                  duration-300
                  ease-in-out
                  ${hasAttachments ? '' : 'hover:bg-white hover:bg-opacity-15'}
@@ -325,33 +309,29 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
                    />
                  </svg>
                )}
-             </motion.div>
+             </div>
              
              {/* Custom tooltip component */}
              <CustomTooltip 
                content={hasAttachments ? 'Change attachment' : 'Add attachment'} 
                isVisible={hoverState === 'attachment'} 
              />
-           </motion.div>
+           </div>
          </div>
 
          {/* Post Button */}
          {content.trim() && (
-           <motion.button
-             className="flex items-center justify-center rounded-lg px-4 py-2.5 text-white text-sm font-medium transition-colors duration-300"
+           <button
+             className="flex items-center justify-center rounded-lg px-4 py-2.5 text-white text-sm font-medium transition-all duration-200 ease-in-out hover:scale-105 active:scale-95"
              style={{ backgroundColor: accentColor }}
-             variants={buttonVariants}
-             initial="idle"
-             whileHover="hover"
-             whileTap="tap"
-             onClick={handlePostClick} // Changed to open category modal first
+             onClick={handlePostClick}
              disabled={isSubmitting}
            >
              {isSubmitting ? (
                // Simple loading indicator instead of text
                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"/>
              ) : 'Post'}
-           </motion.button>
+           </button>
          )}
        </div>
      </div>

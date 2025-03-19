@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState, useCallback, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import qs from 'query-string';
 import { useRouter, useSearchParams } from "next/navigation";
 import { categories } from '@/components/Categories';
@@ -12,7 +11,7 @@ interface CategoryButtonProps {
   initialCategory?: string;
 }
 
-const CircleSpinner = ({ color, isTransitioning, prevColor }: { 
+const FuturisticSpinner = ({ color, isTransitioning, prevColor }: { 
   color: string, 
   isTransitioning: boolean,
   prevColor: string 
@@ -31,30 +30,11 @@ const CircleSpinner = ({ color, isTransitioning, prevColor }: {
 
   const getHexColor = (bgColor: string) => {
     const match = bgColor.match(/#[A-Fa-f0-9]{6}/);
-    return match ? match[0] : '#60A5FA'; // Changed default color to gray
+    return match ? match[0] : '#60A5FA';
   };
 
   const currentColor = getHexColor(color);
   const previousColor = getHexColor(prevColor);
-
-  // Function to lighten a color
-  const lightenColor = (color: string, percent: number): string => {
-    const num = parseInt(color.replace('#', ''), 16);
-    const amt = Math.round(2.55 * percent);
-    const R = (num >> 16) + amt;
-    const G = (num >> 8 & 0x00FF) + amt;
-    const B = (num & 0x0000FF) + amt;
-    return '#' + (
-      0x1000000 + 
-      (R < 255 ? (R < 0 ? 0 : R) : 255) * 0x10000 + 
-      (G < 255 ? (G < 0 ? 0 : G) : 255) * 0x100 + 
-      (B < 255 ? (B < 0 ? 0 : B) : 255)
-    ).toString(16).slice(1);
-  };
-
-  // Darker version for background
-  const darkerCurrentColor = lightenColor(currentColor, -40);
-  const darkerPreviousColor = lightenColor(previousColor, -40);
 
   return (
     <div className="relative w-7 h-7">
@@ -63,133 +43,118 @@ const CircleSpinner = ({ color, isTransitioning, prevColor }: {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        {/* Dark outline ring */}
+        {/* Base circle with subtle shadow */}
         <circle
           cx="12"
           cy="12"
-          r="10"
-          fill="#121212"
+          r="11"
+          fill="white"
+          filter="drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.1))"
         />
         
-        {/* Colored background circle (slightly smaller) with pulse */}
-        <motion.circle
-          cx="12"
-          cy="12"
-          r="9"
-          animate={{ 
-            fill: isTransitioning ? darkerPreviousColor : darkerCurrentColor,
-            scale: isTransitioning ? 1 : [0.97, 1, 0.97],
-            opacity: isTransitioning ? 1 : [0.8, 1, 0.8]
-          }}
-          transition={{
-            fill: {
-              duration: 0.8,
-              ease: "easeInOut"
-            },
-            scale: {
-              duration: 2,
-              repeat: Infinity,
-              ease: "easeInOut"
-            },
-            opacity: {
-              duration: 2,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }
-          }}
-        />
-
-        {/* Pulse rings */}
-        {[0, 1, 2].map((index) => (
-          <motion.circle
-            key={index}
-            cx="12"
-            cy="12"
-            r="10"
-            fill="none"
-            stroke={isTransitioning ? previousColor : currentColor}
-            strokeWidth="1"
-            initial={{ scale: 1 }}
-            animate={{ 
-              scale: [1, 1.15, 1],
-              opacity: [0.15, 0, 0.15],
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              delay: index * 0.6,
-              ease: "easeInOut"
-            }}
-          />
-        ))}
-
-        {/* Main circle outline */}
-        <motion.circle
-          cx="12"
-          cy="12"
-          r="9"
+        {/* Rotating ring */}
+        <circle 
+          cx="12" 
+          cy="12" 
+          r="8.5" 
+          stroke={isTransitioning ? previousColor : currentColor}
+          strokeWidth="0.75" 
+          strokeDasharray="4 2" 
           fill="none"
-          stroke={currentColor}
-          strokeWidth="1.5"
-          animate={{ 
-            opacity: isTransitioning ? 0 : 1,
-            stroke: isTransitioning ? previousColor : currentColor
+          className="animate-spin"
+          style={{ 
+            animationDuration: '8s',
+            transformOrigin: 'center'
           }}
-          transition={{ 
-            duration: 0.3
+        />
+        
+        {/* Inner rotating ring (opposite direction) */}
+        <circle 
+          cx="12" 
+          cy="12" 
+          r="6.5" 
+          stroke={isTransitioning ? previousColor : currentColor}
+          strokeWidth="0.5" 
+          strokeDasharray="1 1" 
+          fill="none"
+          className="animate-spin"
+          style={{ 
+            animationDuration: '4s',
+            animationDirection: 'reverse',
+            transformOrigin: 'center'
           }}
         />
 
-        {/* Drawing animation */}
+        {/* Main circle border */}
+        <circle
+          cx="12"
+          cy="12"
+          r="5"
+          stroke={isTransitioning ? previousColor : currentColor}
+          strokeWidth="1.5"
+          fill={isTransitioning ? 'white' : 'white'}
+          strokeOpacity={isTransitioning ? 0.7 : 1}
+        />
+        
+        {/* Animated arc that draws when changing category */}
         {isTransitioning && (
-          <motion.circle
-            cx="12"
-            cy="12"
-            r="9"
-            fill="none"
-            stroke={currentColor}
-            strokeWidth="1.5"
-            strokeDasharray="56.55"
-            initial={{ strokeDashoffset: 56.55 }}
-            animate={{ 
-              strokeDashoffset: 0,
-              opacity: [1, 1, 0.8, 1]
-            }}
-            transition={{
-              strokeDashoffset: {
-                duration: 0.8,
-                ease: "easeInOut"
-              },
-              opacity: {
-                duration: 0.4,
-                times: [0, 0.8, 0.9, 1],
-                ease: "easeInOut"
+          <>
+            <circle
+              cx="12"
+              cy="12"
+              r="5"
+              stroke={currentColor}
+              strokeWidth="1.5"
+              fill="none"
+              strokeDasharray="31.4"
+              className="origin-center animate-drawArc"
+              style={{
+                strokeDashoffset: 31.4,
+                animation: "drawArc 0.8s forwards ease-in-out"
+              }}
+            />
+            <style jsx>{`
+              @keyframes drawArc {
+                to {
+                  stroke-dashoffset: 0;
+                }
               }
-            }}
-          />
+            `}</style>
+          </>
         )}
 
-        {/* Inner dot */}
-        <motion.circle
+        {/* Pulsing inner dot */}
+        <circle
           cx="12"
           cy="12"
-          r="3"
-          animate={{ 
-            fill: showNewColor ? currentColor : previousColor
-          }}
-          transition={{
-            duration: 0.3,
-            ease: "easeInOut"
-          }}
+          r="2.5"
+          fill={showNewColor ? currentColor : previousColor}
+          className="animate-pulse"
+          style={{ animationDuration: '2s' }}
         />
+        
+        {/* Tech lines */}
+        {[45, 135, 225, 315].map((angle, i) => (
+          <line 
+            key={i}
+            x1="12"
+            y1="12"
+            x2={12 + 10 * Math.cos(angle * Math.PI / 180)}
+            y2={12 + 10 * Math.sin(angle * Math.PI / 180)}
+            stroke={isTransitioning ? previousColor : currentColor}
+            strokeWidth="0.4"
+            strokeOpacity="0.6"
+            strokeDasharray="1 1"
+          />
+        ))}
       </svg>
     </div>
   );
 };
 
-const CategoryButton: React.FC<CategoryButtonProps> = ({
+const FuturisticCategory: React.FC<CategoryButtonProps> = ({
   onCategoryChange,
-  initialCategory = "Default" // Changed from "All" to "Default"
+  initialCategory = "Default"
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
@@ -198,7 +163,7 @@ const CategoryButton: React.FC<CategoryButtonProps> = ({
   const router = useRouter();
   const params = useSearchParams();
   const { updateAccentColor } = useColorContext();
-  const defaultColor = 'bg-[#60A5FA]'; // Changed from #0CD498 to a nice gray
+  const defaultColor = 'bg-[#60A5FA]';
 
   const handleCategorySelect = useCallback((label: string) => {
     const isSameCategory = params?.get('category') === label || (label === 'Default' && !params?.get('category'));
@@ -268,71 +233,76 @@ const CategoryButton: React.FC<CategoryButtonProps> = ({
 
   return (
     <div className="relative">
-      <motion.div
+      <div
         onClick={() => setIsOpen(!isOpen)}
-        className="cursor-pointer"
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
+        className="cursor-pointer transition-transform duration-200 hover:scale-102 active:scale-98"
       >
-        <div className="flex items-center justify-between bg-[#4A5568] rounded-lg shadow-md w-36 px-4 py-2">
-          <div className="text-white text-sm mr-2 truncate">
+        <div className="flex items-center justify-between bg-white rounded-lg shadow-sm border border-gray-100 w-36 px-4 py-2">
+          <div className="text-neutral-500 text-sm mr-2 truncate font-medium">
             {selectedCategory}
           </div>
           
           <div className="relative flex-shrink-0">
-            <CircleSpinner 
+            <FuturisticSpinner 
               color={selectedCategoryColor}
               prevColor={prevCategoryColor}
               isTransitioning={isTransitioning}
             />
           </div>
         </div>
-      </motion.div>
+      </div>
 
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.2 }}
-            className="absolute top-full left-0 mt-2 w-[300px] bg-white rounded-lg shadow-xl p-3 z-50"
-          >
-            <div className="grid grid-cols-3 gap-2">
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => handleCategorySelect('Default')}
-                className="bg-[#60A5FA] p-2 rounded-lg cursor-pointer text-center" // Changed color
-              >
-                <span className="text-white text-sm">Default</span>
-              </motion.div>
-
-              {categories.map((category) => (
-                <motion.div
-                  key={category.label}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => handleCategorySelect(category.label)}
-                  className={`
-                    ${category.color}
-                    p-2
-                    rounded-lg
-                    cursor-pointer
-                    text-center
-                  `}
-                >
-                  <span className="text-white text-sm">
-                    {category.label}
-                  </span>
-                </motion.div>
-              ))}
+      {isOpen && (
+        <div 
+          className="absolute top-full left-0 mt-2 w-[300px] bg-white rounded-lg shadow-xl p-3 z-50 border border-gray-100 opacity-0 translate-y-[-20px] animate-slideDown"
+        >
+          <div className="grid grid-cols-3 gap-2">
+            <div
+              onClick={() => handleCategorySelect('Default')}
+              className="bg-[#60A5FA] p-2 rounded-lg cursor-pointer text-center transition-transform duration-200 hover:scale-105 active:scale-95"
+            >
+              <span className="text-white text-sm">Default</span>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+
+            {categories.map((category) => (
+              <div
+                key={category.label}
+                onClick={() => handleCategorySelect(category.label)}
+                className={`
+                  ${category.color}
+                  p-2
+                  rounded-lg
+                  cursor-pointer
+                  text-center
+                  transition-transform duration-200 hover:scale-105 active:scale-95
+                `}
+              >
+                <span className="text-white text-sm">
+                  {category.label}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <style jsx>{`
+        @keyframes slideDown {
+          0% {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-slideDown {
+          animation: slideDown 0.2s forwards ease-out;
+        }
+      `}</style>
     </div>
   );
 };
 
-export default CategoryButton;
+export default FuturisticCategory;
