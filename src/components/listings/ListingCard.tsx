@@ -129,7 +129,7 @@ const getStatusText = (status: string) => {
 
   return (
     <div className="col-span-1 flex justify-center w-full max-w-[350px] mx-auto">
-      <div className="bg-white rounded-xl flex flex-col w-full shadow-sm transition-all duration-300 overflow-hidden hover:shadow-md">
+      <div className="bg-white rounded-xl flex flex-col w-full transition-all duration-300 overflow-hidden border hover:shadow-md">
         {!reservation && (
           <>
             {/* Image Section */}
