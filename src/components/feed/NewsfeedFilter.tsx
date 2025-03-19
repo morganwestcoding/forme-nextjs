@@ -19,35 +19,54 @@ const NewsfeedFilter: React.FC<NewsfeedFilterProps> = ({ onFilterChange }) => {
     return filterParam || 'for-you';
   });
   
-  const [indicatorStyle, setIndicatorStyle] = useState({ width: 0, left: 0 });
-  const buttonRefs = useRef<(HTMLLIElement | null)[]>([]);
+  const [pillStyle, setPillStyle] = useState({ left: 0, width: 0 });
+  const [prevColor, setPrevColor] = useState('');
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const buttonRefs = useRef<(HTMLDivElement | null)[]>([]);
   const { hexColor } = useColorContext();
 
+  // Filter options configuration
+  const filterOptions = [
+    { label: 'Following', value: 'following' },
+    { label: 'For You', value: 'for-you' },
+    { label: 'Likes', value: 'likes' },
+    { label: 'Bookmarks', value: 'bookmarks' }
+  ];
+
+  // Update pill position and dimensions based on selected filter
   useEffect(() => {
-    // Update the indicator position whenever the component mounts or the filter changes
-    updateIndicatorPosition();
-    
-    // Add a resize listener to update the indicator when window is resized
-    window.addEventListener('resize', updateIndicatorPosition);
-    return () => window.removeEventListener('resize', updateIndicatorPosition);
+    updatePillPosition();
+    window.addEventListener('resize', updatePillPosition);
+    return () => window.removeEventListener('resize', updatePillPosition);
   }, [selectedFilter]);
 
-  const updateIndicatorPosition = () => {
-    const activeButton = buttonRefs.current.find(
-      (ref) => ref?.getAttribute('data-filter') === selectedFilter
-    );
-
-    if (activeButton) {
-      const { offsetLeft, offsetWidth } = activeButton;
-      setIndicatorStyle({
-        width: offsetWidth,
-        left: offsetLeft,
-      });
+  const updatePillPosition = () => {
+    const index = filterOptions.findIndex(option => option.value === selectedFilter);
+    if (index >= 0 && buttonRefs.current[index]) {
+      const button = buttonRefs.current[index];
+      if (button) {
+        setPillStyle({
+          left: button.offsetLeft,
+          width: button.offsetWidth
+        });
+      }
     }
   };
 
   const handleFilterClick = (filter: string) => {
+    if (filter === selectedFilter) return;
+    
+    // Save previous color before changing
+    setPrevColor(hexColor);
+    setIsTransitioning(true);
+    
+    // Update selected filter
     setSelectedFilter(filter);
+    
+    // Reset transition state after animation completes
+    setTimeout(() => {
+      setIsTransitioning(false);
+    }, 500);
     
     // Update URL with the selected filter
     let currentQuery = {};
@@ -78,40 +97,44 @@ const NewsfeedFilter: React.FC<NewsfeedFilterProps> = ({ onFilterChange }) => {
   };
 
   return (
-    <div className="relative bg-[#4A5568] w-full rounded-md px-4">
-      <ul className="flex items-center justify-between w-full relative">
-        {['Following', 'For You', 'Likes', 'Bookmarks'].map((filter, index) => {
-          const filterValue = filter.toLowerCase().replace(' ', '-');
+    <div className="bg-gray-100 border border-gray-100 rounded-lg p-1">
+      <div className="grid grid-cols-4 gap-1 relative">
+        {/* Animated pill that slides */}
+        <div 
+          className="absolute rounded-md shadow-sm transition-all duration-300 ease-in-out"
+          style={{
+            left: `${pillStyle.left}px`,
+            width: `${pillStyle.width}px`,
+            height: '40px', // Match the height of your buttons
+            backgroundColor: isTransitioning ? 
+              `linear-gradient(to right, ${prevColor}, ${hexColor})` : 
+              hexColor || '#60A5FA',
+            transition: 'left 0.3s ease, width 0.3s ease, background-color 0.5s ease',
+            zIndex: 0
+          }}
+        ></div>
+
+        {filterOptions.map((filter, index) => {
+          const isActive = selectedFilter === filter.value;
+          
           return (
-            <li
-              key={filterValue}
-              ref={(el) => (buttonRefs.current[index] = el)}
-              data-filter={filterValue}
-              className={`
-                flex-1 text-center py-3 cursor-pointer select-none
-                transition-colors duration-200 ease-in-out
-                ${selectedFilter === filterValue
-                  ? 'text-white'
-                  : 'text-gray-400 hover:text-gray-200'
-                }
-              `}
-              onClick={() => handleFilterClick(filterValue)}
+            <div
+              key={filter.value}
+              ref={el => buttonRefs.current[index] = el}
+              className="py-2 cursor-pointer transition-all duration-200 ease-out text-center"
+              onClick={() => handleFilterClick(filter.value)}
             >
-              <span className="text-sm whitespace-nowrap">{filter}</span>
-            </li>
+              {/* Text with higher z-index to ensure it's above the pill */}
+              <span className={`
+                relative z-10 text-sm whitespace-nowrap transition-colors duration-200
+                ${isActive ? 'text-white font-medium' : 'text-neutral-500'}
+              `}>
+                {filter.label}
+              </span>
+            </div>
           );
         })}
-        
-        {/* Animated Indicator with dynamic color from context */}
-        <div
-          className="absolute bottom-0 h-1 rounded-t-sm transition-all duration-300 ease-in-out"
-          style={{
-            width: `${indicatorStyle.width}px`,
-            left: `${indicatorStyle.left}px`,
-            backgroundColor: hexColor || '#60A5FA',
-          }}
-        />
-      </ul>
+      </div>
     </div>
   );
 };

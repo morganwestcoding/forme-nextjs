@@ -86,7 +86,7 @@ const Search: React.FC<SearchProps> = ({ onResultClick }) => {
         className="w-full text-[#71717A] placeholder:text-[#71717A] bg-white rounded-lg p-3.5 pl-12 pr-24 text-sm border"
       />
 
-      <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
+      <div className="absolute right-4 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
         <div 
           className="flex items-center gap-1 px-2 py-1 rounded-md shadow-sm"
           style={{ backgroundColor: accentColor }}
