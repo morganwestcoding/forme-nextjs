@@ -82,7 +82,7 @@ export default function Rightbar({ listings = [], currentUser }: RightbarProps) 
       {/* Trending Stores Section */}
       <div className="w-full ">
      
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-3.5">
             <h2 className="text-lg font-semibold">Trending Stores</h2>
             <button 
               className="text-sm text-gray-500 hover:text-[#F08080] transition-colors"
@@ -92,7 +92,7 @@ export default function Rightbar({ listings = [], currentUser }: RightbarProps) 
             </button>
           </div>
 
-          <div className="grid grid-cols-4 gap-2 -mb-5">
+          <div className="grid grid-cols-4 gap-2 ">
             {currentStores.map((listing, index) => (
               <div 
                 key={index}
@@ -112,7 +112,7 @@ export default function Rightbar({ listings = [], currentUser }: RightbarProps) 
           </div>
 
           {listings.length > 4 && (
-            <div className="flex justify-center gap-2 shadow-sm mt-4">
+            <div className="flex justify-center gap-2 shadow-sm">
               {Array.from({ length: totalPages }).map((_, idx) => (
                 <button
                   key={idx}
@@ -126,7 +126,7 @@ export default function Rightbar({ listings = [], currentUser }: RightbarProps) 
 
          
             <div 
-        className="relative rounded-lg overflow-hidden cursor-pointer bg-slate-800 shadow-sm"
+        className="relative rounded-lg overflow-hidden -mt-2 cursor-pointer bg-slate-800 shadow-sm"
         onClick={() => subscribeModal.onOpen()}
       >
         <div className="relative h-32 flex items-center justify-center">
