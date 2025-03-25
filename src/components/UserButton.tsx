@@ -202,6 +202,7 @@ const UserButton: React.FC<UserButtonProps> = ({
 
       <DropdownMenuContent 
         className="
+        ml-6
           w-44
           bg-white
           bg-opacity-90 

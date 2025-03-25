@@ -20,7 +20,7 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
           <div className="pl-6 pr-4 py-1 flex items-center">
             <Logo variant="vertical" />
           </div>
-          <div className="h-8 border-r pl-3 border-gray-300"></div>
+          <div className="h-8 border-r pl-2 border-gray-300"></div>
           <div className="px-3 py-1 flex items-center">
             <UserButton 
               currentUser={currentUser} 
