@@ -14,6 +14,7 @@ import Search from "../header/Search";
 import FilterTab from "../FilterTab";
 import axios from 'axios';
 import useInboxModal from '@/app/hooks/useInboxModal';
+import UnifiedHeader from "../header/UnifiedHeader";
 
 interface SidebarProps {
   currentUser?: SafeUser | null;
@@ -126,53 +127,54 @@ const Sidebar: React.FC<SidebarProps> = ({
       modalFunction();
     }, 10);
   };
-
   return (
     <div className="h-screen overflow-y-auto">
-      <div className="flex flex-col items-center w-56 h-full px-6 pb-10 pt-8 border-r bg-white z-50">
+      <div className="flex flex-col items-center w-56 h-full pb-10 border-r bg-white z-50">
+        {/* Top Bar Layout with Logo and UserButton */}
+        <UnifiedHeader 
+    currentUser={currentUser} 
+    onMobileClose={onMobileClose} 
+  />
+
+
+        {/* Mobile Close Button */}
         {isMobile && (
-          <>
-            <div 
-              className="absolute top-4 right-6 cursor-pointer md:hidden mb-8"
-              onClick={onMobileClose}
+          <div 
+            className="absolute top-4 right-6 cursor-pointer md:hidden"
+            onClick={onMobileClose}
+          >
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              viewBox="0 0 24 24" 
+              width="20" 
+              height="20" 
+              color="#000000" 
+              fill="none"
             >
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                viewBox="0 0 24 24" 
-                width="20" 
-                height="20" 
-                color="#000000" 
-                fill="none"
-              >
-                <path 
-                  d="M3.99982 11.9998L19.9998 11.9998" 
-                  stroke="currentColor" 
-                  strokeWidth="1.5" 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                />
-                <path 
-                  d="M8.99963 17C8.99963 17 3.99968 13.3176 3.99966 12C3.99965 10.6824 8.99966 7 8.99966 7" 
-                  stroke="currentColor" 
-                  strokeWidth="1.5" 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                />
-              </svg>
-            </div>
-            <div className="h-6" /> {/* Add a spacer */}
-          </>
+              <path 
+                d="M3.99982 11.9998L19.9998 11.9998" 
+                stroke="currentColor" 
+                strokeWidth="1.5" 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+              />
+              <path 
+                d="M8.99963 17C8.99963 17 3.99968 13.3176 3.99966 12C3.99965 10.6824 8.99966 7 8.99966 7" 
+                stroke="currentColor" 
+                strokeWidth="1.5" 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+              />
+            </svg>
+          </div>
         )}
 
-        <Logo variant="vertical" />
-
-        <div className="flex flex-col w-full ">
+        <div className="flex flex-col w-full px-6 pt-6">
           {/* Explore & Discover */}
-          <div className="mb-6 mt-3">
+          <div className="mb-6">
             <div className="text-xs text-neutral-400 uppercase mb-2 px-3 font-medium">Explore & Discover</div>
             <ul className="list-none m-0 p-0 flex flex-col items-start space-y-1">
               <li className="relative w-full">
-
                 <div 
                   className={`
                     flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
@@ -198,7 +200,6 @@ const Sidebar: React.FC<SidebarProps> = ({
               </li>
 
               <li className="relative w-full">
-     
                 <div 
                   className={`
                     flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
@@ -222,11 +223,9 @@ const Sidebar: React.FC<SidebarProps> = ({
                     Discover
                   </span>
                 </div>
-                
               </li>
 
               <li className="relative w-full">
-    
                 <div 
                   className={`
                     flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
@@ -253,13 +252,11 @@ const Sidebar: React.FC<SidebarProps> = ({
               </li>
             </ul>
           </div>
-
           {/* My Content */}
           <div className="mb-6">
             <div className="text-xs text-neutral-400 uppercase mb-2 px-3 font-medium">My Content</div>
             <ul className="list-none m-0 p-0 flex flex-col items-start space-y-1">
               <li className="relative w-full">
-    
                 <div 
                   className={`
                     flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
@@ -284,7 +281,6 @@ const Sidebar: React.FC<SidebarProps> = ({
               </li>
 
               <li className="relative w-full">
-      
                 <div 
                   className={`
                     flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
@@ -329,8 +325,6 @@ const Sidebar: React.FC<SidebarProps> = ({
               </li>
 
               <li className="relative w-full">
-      
-    
                 <div 
                   className={`
                     flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
@@ -359,12 +353,12 @@ const Sidebar: React.FC<SidebarProps> = ({
               </li>
             </ul>
           </div>
-  {/* Opportunities */}
-  <div className="mb-6">
+  
+          {/* Opportunities */}
+          <div className="mb-6">
             <div className="text-xs text-neutral-400 uppercase mb-2 px-3 font-medium">Opportunities</div>
             <ul className="list-none m-0 p-0 flex flex-col items-start space-y-1">
               <li className="relative w-full">
-      
                 <div 
                   className={`
                     flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
@@ -392,7 +386,6 @@ const Sidebar: React.FC<SidebarProps> = ({
               </li>
 
               <li className="relative w-full">
-     
                 <div 
                   className={`
                     flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
@@ -460,7 +453,6 @@ const Sidebar: React.FC<SidebarProps> = ({
             <div className="text-xs text-neutral-400 uppercase mb-2 px-3 font-medium">Connections</div>
             <ul className="list-none m-0 p-0 flex flex-col items-start space-y-1">
               <li className="relative w-full">
-         
                 <div 
                   className={`
                     flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
@@ -486,7 +478,6 @@ const Sidebar: React.FC<SidebarProps> = ({
               </li>
               
               <li className="relative w-full">
-      
                 <div 
                   className={`
                     flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer

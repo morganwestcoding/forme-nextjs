@@ -24,7 +24,7 @@ const Logo = ({ variant = 'horizontal' }: LogoProps) => {
       ) : (
         <Image
           alt="ForMe Logo"
-          className="block w-6 h-9 mb-6" 
+          className="block w-6 h-9" 
           height={36}
           width={24}
           src="/logos/black.png"

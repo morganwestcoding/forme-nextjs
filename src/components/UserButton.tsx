@@ -17,18 +17,21 @@ import { SafePost, SafeUser } from "@/app/types";
 import useRentModal from "@/app/hooks/useRentModal";
 import useProfileModal from "@/app/hooks/useProfileModal";
 import useSubscribeModal from "@/app/hooks/useSubscribeModal";
-import Image from "next/image";
 
 interface UserButtonProps {
   currentUser?: SafeUser | null;
   data?: SafePost;
   onMobileClose?: () => void;
+  compact?: boolean; 
+  noBg?: boolean; // Add this prop to control background visibility
 }
 
 const UserButton: React.FC<UserButtonProps> = ({
   currentUser,
   data,
-  onMobileClose
+  onMobileClose,
+  compact = false,
+  noBg = false
 }) => {
   const router = useRouter();
   const loginModal = useLoginModal();
@@ -82,15 +85,6 @@ const UserButton: React.FC<UserButtonProps> = ({
     setIsOpen(false);
     if (onMobileClose) onMobileClose();
     router.push('/properties');
-  }, [router, onMobileClose]);
-
-  // Handle analytics navigation
-  const handleAnalyticsClick = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsOpen(false);
-    if (onMobileClose) onMobileClose();
-    router.push('/analytics');
   }, [router, onMobileClose]);
 
   // Handle appointments navigation
@@ -147,109 +141,189 @@ const UserButton: React.FC<UserButtonProps> = ({
     registerModal.onOpen();
   }, [registerModal, onMobileClose]);
 
+  // Determine button class based on compact mode and noBg prop
+  const buttonClass = noBg 
+    ? "flex items-center justify-center p-2 cursor-pointer outline-none touch-manipulation"
+    : (compact 
+        ? "flex items-center justify-center p-2 bg-gray-100 shadow-sm cursor-pointer rounded-md hover:bg-[#DFE2E2] transition-colors duration-250 outline-none touch-manipulation"
+        : "w-44 flex items-center justify-center p-2 bg-gray-100 shadow-sm mb-2 cursor-pointer rounded-md hover:bg-[#DFE2E2] transition-colors duration-250 outline-none touch-manipulation");
+
   return (      
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>   
       <DropdownMenuTrigger 
-        className="w-full flex items-center justify-between p-3 bg-white mb-6 cursor-pointer rounded-md hover:bg-gray-50 transition-colors duration-200 outline-none" 
+        className={buttonClass}
         onClick={handleButtonClick}
         data-state={isOpen ? 'open' : 'closed'}
         aria-expanded={isOpen}
       >
-        <div className="w-4"></div> {/* Spacer to help center the logo */}
-        
-        <div className="flex items-center justify-center">
-          <Image
-            alt="ForMe Logo"
-            className="h-9 w-6"
-            height={28}
-            width={28}
-            src="/logos/black.png"
-          />
-        </div>
-        
-        <svg 
-          xmlns="http://www.w3.org/2000/svg" 
-          width="16" 
-          height="16" 
-          viewBox="0 0 24 24" 
-          fill="none" 
-          stroke="currentColor" 
-          strokeWidth="2" 
-          strokeLinecap="round" 
-          strokeLinejoin="round" 
-          className={`text-gray-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
-        >
-          <path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
+        <Avatar src={currentUser?.image ?? undefined} />
+        {!compact && (
+          <div className="ml-3 flex flex-col items-start">
+            {currentUser ? (
+              <>
+                <span className="text-black text-sm font-medium -ml-[0.5px]">
+                  {currentUser.name?.split(' ')[0]}
+                </span>
+                <span className="text-[#71717A] text-xs">
+                  {formatTier(currentUser.subscriptionTier)}
+                </span>
+              </>
+            ) : (
+              <div className="flex flex-col items-start">
+                <span className="text-black text-xs font-medium -ml-[0.5px]">
+                  Login
+                </span>
+                <span className="text-[#71717A] text-xs">
+                  Free Version
+                </span>
+              </div>
+            )}
+          </div>
+        )}
+        {!compact && (
+          <div className="ml-auto">
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              width="16" 
+              height="16" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2" 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              className={`text-[#71717A] transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+            >
+              <path d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
+        )}
       </DropdownMenuTrigger>
 
       <DropdownMenuContent 
         className="
-          w-56
+          w-44
           bg-white
+          bg-opacity-90 
+          backdrop-blur-lg
           rounded-lg 
-          py-1 
+          p-2 
           shadow-lg 
-          border border-gray-100
+          border-none
           z-[100]
         "
         sideOffset={5}
-        align="center"
+        align={compact ? "end" : "center"}
         onEscapeKeyDown={() => setIsOpen(false)}
         onPointerDownOutside={() => setIsOpen(false)}
       >
         {currentUser ? (
           <>
-            <div className="px-3 py-2">
-              <p className="text-sm font-medium text-gray-900">{currentUser.name}</p>
-              <p className="text-xs text-gray-500 truncate">{currentUser.email}</p>
-              <div className="text-xs text-blue-500 font-medium mt-1">
-                {formatTier(currentUser.subscriptionTier)}
-              </div>
-            </div>
-            
-            <DropdownMenuSeparator className="my-1 border-t border-gray-100"/>
-            
             <DropdownMenuItem
               onClick={handleProfileClick}
-              className="px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer"
+              className="
+                p-3 
+                text-black 
+                hover:bg-gray-500 
+                hover:bg-opacity-25 
+                rounded-md 
+                cursor-pointer 
+                transition 
+                duration-200
+              "
             >
               Profile
             </DropdownMenuItem>
 
             <DropdownMenuItem
               onClick={handleListingsClick}
-              className="px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer"
+              className="
+                p-3 
+                text-black 
+                hover:bg-gray-500 
+                hover:bg-opacity-25 
+                rounded-md 
+                cursor-pointer 
+                transition 
+                duration-200
+              "
             >
               My Listings
             </DropdownMenuItem>
-            
             <DropdownMenuItem
               onClick={handleAddListingClick}
-              className="px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer"
+              className="
+                p-3 
+                text-black 
+                hover:bg-gray-500 
+                hover:bg-opacity-25 
+                rounded-md 
+                cursor-pointer 
+                transition 
+                duration-200
+              "
             >
               Add Listing
             </DropdownMenuItem>
             
             <DropdownMenuItem
-              onClick={handleAnalyticsClick}
-              className="px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer"
-            >
-              Analytics
-            </DropdownMenuItem>
-            
-            <DropdownMenuItem
               onClick={handleSubscriptionClick}
-              className="px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer"
+              className="
+                p-3 
+                text-black 
+                hover:bg-gray-500 
+                hover:bg-opacity-25 
+                rounded-md 
+                cursor-pointer 
+                transition 
+                duration-200
+              "
             >
               Subscription
             </DropdownMenuItem>
+            <DropdownMenuItem
+              className="
+                p-3 
+                text-black 
+                hover:bg-gray-500 
+                hover:bg-opacity-25 
+                rounded-md 
+                cursor-pointer 
+                transition 
+                duration-200
+              "
+            >
+              Analytics
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="
+                p-3 
+                text-black 
+                hover:bg-gray-500 
+                hover:bg-opacity-25 
+                rounded-md 
+                cursor-pointer 
+                transition 
+                duration-200
+              "
+            >
+              Licensing
+            </DropdownMenuItem>
             
-            <DropdownMenuSeparator className="my-1 border-t border-gray-100"/>
+            <DropdownMenuSeparator className="my-2 bg-gray-500 bg-opacity-25"/>
             
             <DropdownMenuItem
               onClick={handleSignOutClick}
-              className="px-3 py-2 text-sm text-red-600 hover:bg-red-50 cursor-pointer"
+              className="
+                p-3 
+                text-black 
+                hover:bg-gray-500 
+                hover:bg-opacity-25 
+                rounded-md 
+                cursor-pointer 
+                transition 
+                duration-200
+              "
             >
               Sign Out
             </DropdownMenuItem>
@@ -258,16 +332,34 @@ const UserButton: React.FC<UserButtonProps> = ({
           <>
             <DropdownMenuItem
               onClick={handleLoginClick}
-              className="px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer"
+              className="
+                p-3 
+                text-black 
+                hover:bg-gray-500 
+                hover:bg-opacity-25 
+                rounded-md 
+                cursor-pointer 
+                transition 
+                duration-200
+              "
             >
               Login
             </DropdownMenuItem>
             
             <DropdownMenuItem
               onClick={handleRegisterClick}
-              className="px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer"
+              className="
+                p-3 
+                text-black 
+                hover:bg-gray-500 
+                hover:bg-opacity-25 
+                rounded-md 
+                cursor-pointer 
+                transition 
+                duration-200
+              "
             >
-              Sign Up
+              Signup
             </DropdownMenuItem>
           </>
         )}
