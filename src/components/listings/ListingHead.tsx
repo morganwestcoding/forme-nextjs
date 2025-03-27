@@ -44,7 +44,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
   return (
     <div className="w-full">
       <div className="overflow-hidden relative">
-        <div className="flex flex-col bg-white rounded-lg shadow-sm">
+        <div className="flex flex-col bg-white rounded-lg shadow-sm border">
           {/* Header Section */}
           <div className="p-8">
             <div className="flex justify-between items-start">

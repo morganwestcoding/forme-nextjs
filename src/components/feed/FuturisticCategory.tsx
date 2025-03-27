@@ -254,12 +254,12 @@ const FuturisticCategory: React.FC<CategoryButtonProps> = ({
 
       {isOpen && (
         <div 
-          className="absolute top-full left-0 mt-2 w-[300px] bg-white rounded-lg shadow-xl p-3 z-50 border border-gray-100 opacity-0 translate-y-[-20px] animate-slideDown"
+          className="absolute top-full left-0 mt-2 w-[300px] bg-white rounded-md shadow-xl p-3 z-50 border border-gray-100 opacity-0 translate-y-[-20px] animate-slideDown"
         >
           <div className="grid grid-cols-3 gap-2">
             <div
               onClick={() => handleCategorySelect('Default')}
-              className="bg-[#60A5FA] p-2 rounded-lg cursor-pointer text-center transition-transform duration-200 hover:scale-105 active:scale-95"
+              className="bg-[#60A5FA] p-2 rounded-md cursor-pointer text-center transition-transform duration-200 hover:scale-105 active:scale-95"
             >
               <span className="text-white text-sm">Default</span>
             </div>
@@ -271,7 +271,7 @@ const FuturisticCategory: React.FC<CategoryButtonProps> = ({
                 className={`
                   ${category.color}
                   p-2
-                  rounded-lg
+                  rounded-md
                   cursor-pointer
                   text-center
                   transition-transform duration-200 hover:scale-105 active:scale-95

@@ -86,16 +86,6 @@ const Search: React.FC<SearchProps> = ({ onResultClick }) => {
         className="w-full text-[#71717A] placeholder:text-[#71717A] bg-white rounded-lg p-3.5 pl-12 pr-24 text-sm border"
       />
 
-      <div className="absolute right-1 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
-        <div 
-          className="flex items-center gap-1 px-4 h-10 rounded-md shadow-sm"
-          style={{ backgroundColor: accentColor }}
-        >
-          <span className="text-sm text-white">⌘</span>
-          <span className="text-sm text-white">K</span>
-        </div>
-      </div>
-
       {searchResults.length > 0 && (
         <div className="absolute z-10 w-full mt-1 rounded-lg shadow-sm-lg bg-white bg-opacity-90 backdrop-blur-md overflow-hidden">
           <div className="max-h-96 overflow-y-auto">

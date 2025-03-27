@@ -172,7 +172,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
           {/* About Us and Booking section side by side */}
           <div className="flex gap-6 mt-6">
             {/* About Us section */}
-            <div className="w-[60%] bg-white rounded-lg shadow-sm p-6">
+            <div className="w-[60%] bg-white border rounded-lg shadow-sm p-6">
               <h2 className="text-xl font-bold text-black mb-2">About Us</h2>
               <p className="text-sm text-black">
                 {listing.description}
@@ -196,7 +196,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
             </div>
             
             {/* Booking section */}
-            <div className="w-[40%]">
+            <div className="w-[40%] border rounded-xl shadow-sm">
               <ListingRightBar
                 description={listing.description}
                 listing={listing}

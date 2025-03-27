@@ -14,14 +14,14 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
   onMobileClose
 }) => {
   return (
-    <div className="w-full px-4 py-4 border-b">
+    <div className="w-full px-4 pt-6 pb-2">
       <div className="flex items-center justify-center">
-        <div className="flex items-center bg-gray-100 rounded-md shadow-sm hover:bg-[#DFE2E2] transition-colors duration-250">
-          <div className="pl-6 pr-4 py-1 flex items-center">
+        <div className="flex items-center bg-gray-100 rounded-lg hover:bg-[#DFE2E2] transition-colors duration-250">
+          <div className="pl-5 pr-4 py-1 flex items-center">
             <Logo variant="vertical" />
           </div>
           <div className="h-8 border-r pl-2 border-gray-300"></div>
-          <div className="px-3 py-1 flex items-center">
+          <div className="px-2.5 py-1 flex items-center">
             <UserButton 
               currentUser={currentUser} 
               onMobileClose={onMobileClose} 
