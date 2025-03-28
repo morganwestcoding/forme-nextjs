@@ -73,7 +73,7 @@ const ListingGalleryImage: React.FC<ListingGalleryImageProps> = ({ listing, curr
 
   return (
     <div className="w-full h-full">
-      <div className="grid grid-cols-2 grid-rows-2 gap-1 h-full max-w-xs ml-auto">
+      <div className="grid grid-cols-2 grid-rows-2 gap-2 h-full max-w-xs ml-auto">
         {displayImages.slice(0, 4).map((image, index) => (
           <div 
             key={index} 
@@ -109,7 +109,7 @@ const ListingGalleryImage: React.FC<ListingGalleryImageProps> = ({ listing, curr
                 )}
 
                 {/* Action Buttons Container */}
-                <div className="absolute inset-0 flex items-center justify-center gap-2 opacity-0 translate-y-2 transition-all duration-300 hover:opacity-100 hover:translate-y-0">
+                <div className="absolute inset-0 flex items-center justify-center gap-4 opacity-0 translate-y-2 transition-all duration-300 hover:opacity-100 hover:translate-y-0">
                   {/* View Grid Button */}
                   <button 
                     className="p-2 rounded-full bg-black/50 backdrop-blur-sm border border-white/20 

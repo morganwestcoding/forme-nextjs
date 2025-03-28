@@ -42,109 +42,85 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
   return (
     <div className="w-full">
       <div className="relative">
-        <div className="flex flex-col bg-white rounded-lg border shadow-sm hover:shadow-md transition-all duration-300">
+        <div className="flex flex-col bg-white rounded-lg border shadow-lg hover:shadow-xl transition-all duration-300">
           <div className="p-5">
             <div className="flex flex-col md:flex-row gap-4">
               {/* Left Column - Info */}
-              <div className="flex-1 space-y-3 min-w-0">
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    {/* Rating button - standalone */}
-                    <div className="flex items-center gap-1.5 rounded-md px-3 py-2 bg-white border border-neutral-300 shadow-sm">
-                      <span className="text-sm font-medium text-gray-900">5.0</span>
-                      <svg 
-                        xmlns="http://www.w3.org/2000/svg" 
-                        viewBox="0 0 24 24" 
-                        width="14" 
-                        height="14" 
-                        className="text-[#F9AE8B]"
-                        fill="currentColor"
-                      > 
-                        <path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z" />
+              <div className="flex-1 min-w-0">
+                {/* Header Section with Category Badge */}
+                <div className="flex justify-between items-start mb-4">
+                  <div 
+                    className="py-2 px-3 rounded-md text-white text-xs font-medium shadow-sm"
+                    style={{ backgroundColor: badgeColor }}
+                  >
+                    {category}
+                  </div>
+         
+                </div>
+                
+                {/* Title and Location */}
+                <h1 className="text-xl font-semibold text-gray-900 mb-2">
+                  {title}
+                </h1>
+                <p className="text-gray-500 text-sm mb-14">
+                  {address}, {city}, {stateAcronym} {listing.zipCode}
+                </p>
+                
+                {/* Reviews and Statistics Section - Card Style */}
+                <div className="grid grid-cols-3 gap-3">
+                  {/* Rating Card */}
+                  <div className="bg-gray-50 rounded-lg p-3 shadow-sm flex flex-col items-center">
+                    <div className="flex items-center mb-1">
+                      <span className=" font-bold mr-1">5.0</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="#FFA570">
+                        <path d="M12 17.27L18.18 21L16.54 13.97L22 9.24L14.81 8.63L12 2L9.19 8.63L2 9.24L7.46 13.97L5.82 21L12 17.27Z" />
                       </svg>
                     </div>
-                    
-                    {/* Category button - standalone */}
-                    <div 
-                      className="py-2.5 px-3 rounded-md text-white text-xs font-medium shadow-sm"
-                      style={{ backgroundColor: badgeColor }}
-                    >
-                      {category}
-                    </div>
+                    <span className="text-xs text-gray-500">Rating</span>
                   </div>
-
-                  <h1 className="text-lg font-semibold text-gray-900 capitalize mb-1">
-                    {title}
-                  </h1>
-                  <p className="text-gray-500 text-xs font-light">
-                    <span>{address}, {city}, {stateAcronym} {listing.zipCode}</span> 
-                  </p>
-                </div>
-                
-                {/* Review avatars */}
-                <div className="flex items-center gap-2">
-                  <div className="flex -space-x-2">
-                    <div className="w-10 h-10 rounded-full border-2 border-white relative overflow-hidden">
-                      <Image 
-                        src="https://images.unsplash.com/photo-1589729132389-8f0e0b55b91e" 
-                        alt="Reviewer"
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                    <div className="w-10 h-10 rounded-full border-2 border-white relative overflow-hidden">
-                      <Image 
-                        src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04" 
-                        alt="Reviewer"
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                    <div className="w-10 h-10 rounded-full border-2 border-white relative overflow-hidden">
-                      <Image 
-                        src="https://images.unsplash.com/photo-1523477800337-966dbabe060b" 
-                        alt="Reviewer"
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                  </div>
-                  <span className="text-xs text-gray-500">
-                    1M+ reviews
-                  </span>
-                </div>
-                
-                {/* Action Buttons */}
-                <div className="flex items-center gap-2">
-                  {/* Heart Button */}
-                  <HeartButton 
-                    variant='listingHead' 
-                    listingId={id} 
-                    currentUser={currentUser}
-                    favoriteIds={listing.favoriteIds} 
-                  />
                   
-                  {/* Share Button */}
-                  <div className="flex items-center justify-center p-3 rounded-full cursor-pointer transition-all duration-300
-                bg-gray-50 border border-gray-100
-                hover:shadow-[0_0_12px_rgba(0,0,0,0.05)]">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" color="#52525B" fill="#ffffff">
-                      <path d="M18 7C18.7745 7.16058 19.3588 7.42859 19.8284 7.87589C21 8.99181 21 10.7879 21 14.38C21 17.9721 21 19.7681 19.8284 20.8841C18.6569 22 16.7712 22 13 22H11C7.22876 22 5.34315 22 4.17157 20.8841C3 19.7681 3 17.9721 3 14.38C3 10.7879 3 8.99181 4.17157 7.87589C4.64118 7.42859 5.2255 7.16058 6 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                      <path d="M12.0253 2.00052L12 14M12.0253 2.00052C11.8627 1.99379 11.6991 2.05191 11.5533 2.17492C10.6469 2.94006 9 4.92886 9 4.92886M12.0253 2.00052C12.1711 2.00657 12.3162 2.06476 12.4468 2.17508C13.3531 2.94037 15 4.92886 15 4.92886" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
+                  {/* Reviews Card */}
+                  <div className="bg-gray-50 rounded-lg p-3 shadow-sm flex flex-col items-center">
+                    <div className="font-semibold mb-1">1M+</div>
+                    <span className="text-xs text-gray-500">Reviews</span>
                   </div>
-
-                  {/* Clock Button */}
-                  <div className="flex items-center justify-center p-3 rounded-full cursor-pointer transition-all duration-300
-                bg-gray-50 border border-gray-100
-                hover:shadow-[0_0_12px_rgba(0,0,0,0.05)]">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" color="#52525B" fill="#ffffff">
-                      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
-                      <path d="M12 8V12L14 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
+                  
+                  {/* Booking Stats Card */}
+                  <div className="bg-gray-50 rounded-lg p-3 shadow-sm flex flex-col items-center">
+                    <div className="font-semibold mb-1">24k</div>
+                    <span className="text-xs text-gray-500">Likes</span>
                   </div>
                 </div>
-              </div>
+                
+             {/*  
+                <div className="flex items-center gap-2">
+               
+                  <button className="flex items-center justify-center gap-2 py-2 px-4 bg-gray-100 hover:bg-gray-200 transition rounded-full text-sm font-medium">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                      <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5z"/>
+                    </svg>
+                    Share
+                  </button>
+                  
+               
+                  <button className="flex items-center justify-center gap-2 py-2 px-4 bg-gray-100 hover:bg-gray-200 transition rounded-full text-sm font-medium">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                      <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5V2zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1H4z"/>
+                    </svg>
+                    Save
+                  </button>
+                  
+            
+                  <button className="flex items-center justify-center gap-2 py-2 px-4 bg-blue-600 hover:bg-blue-700 transition rounded-full text-sm font-medium text-white ml-auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                      <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/>
+                      <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/>
+                    </svg>
+                    Schedule
+                  </button>
+                </div>
+                */}
+              </div> 
               
               {/* Right Column - Gallery */}
               <div className="flex-1 min-w-0 relative">
