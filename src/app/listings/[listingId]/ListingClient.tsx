@@ -232,7 +232,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
             </div>
             
             {/* Right column - Booking section */}
-            <div className="w-[40%] border rounded-xl shadow-sm">
+            <div className="w-[40%]">
               <ListingRightBar
                 description={listing.description}
                 listing={listing}

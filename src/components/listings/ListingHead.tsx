@@ -50,13 +50,13 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
                 <div>
                   <div className="flex items-center gap-2 mb-2">
                     {/* Rating button - standalone */}
-                    <div className="flex items-center gap-1.5 rounded-md px-2 py-1 bg-white border border-neutral-300 shadow-sm">
-                      <span className="text-xs font-medium text-gray-900">5.0</span>
+                    <div className="flex items-center gap-1.5 rounded-md px-3 py-2 bg-white border border-neutral-300 shadow-sm">
+                      <span className="text-sm font-medium text-gray-900">5.0</span>
                       <svg 
                         xmlns="http://www.w3.org/2000/svg" 
                         viewBox="0 0 24 24" 
-                        width="12" 
-                        height="12" 
+                        width="14" 
+                        height="14" 
                         className="text-[#F9AE8B]"
                         fill="currentColor"
                       > 
@@ -66,7 +66,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
                     
                     {/* Category button - standalone */}
                     <div 
-                      className="py-1 px-2 rounded-md text-white text-xs font-medium shadow-sm"
+                      className="py-2.5 px-3 rounded-md text-white text-xs font-medium shadow-sm"
                       style={{ backgroundColor: badgeColor }}
                     >
                       {category}
@@ -84,7 +84,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
                 {/* Review avatars */}
                 <div className="flex items-center gap-2">
                   <div className="flex -space-x-2">
-                    <div className="w-6 h-6 rounded-full border-2 border-white relative overflow-hidden">
+                    <div className="w-10 h-10 rounded-full border-2 border-white relative overflow-hidden">
                       <Image 
                         src="https://images.unsplash.com/photo-1589729132389-8f0e0b55b91e" 
                         alt="Reviewer"
@@ -92,7 +92,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
                         className="object-cover"
                       />
                     </div>
-                    <div className="w-6 h-6 rounded-full border-2 border-white relative overflow-hidden">
+                    <div className="w-10 h-10 rounded-full border-2 border-white relative overflow-hidden">
                       <Image 
                         src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04" 
                         alt="Reviewer"
@@ -100,7 +100,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
                         className="object-cover"
                       />
                     </div>
-                    <div className="w-6 h-6 rounded-full border-2 border-white relative overflow-hidden">
+                    <div className="w-10 h-10 rounded-full border-2 border-white relative overflow-hidden">
                       <Image 
                         src="https://images.unsplash.com/photo-1523477800337-966dbabe060b" 
                         alt="Reviewer"
@@ -125,20 +125,20 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
                   />
                   
                   {/* Share Button */}
-                  <div className="flex items-center justify-center p-2 rounded-full cursor-pointer transition-all duration-300
-                    bg-gray-50 border border-gray-100
-                    hover:shadow-[0_0_12px_rgba(0,0,0,0.05)]">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" color="#52525B" fill="#ffffff">
+                  <div className="flex items-center justify-center p-3 rounded-full cursor-pointer transition-all duration-300
+                bg-gray-50 border border-gray-100
+                hover:shadow-[0_0_12px_rgba(0,0,0,0.05)]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" color="#52525B" fill="#ffffff">
                       <path d="M18 7C18.7745 7.16058 19.3588 7.42859 19.8284 7.87589C21 8.99181 21 10.7879 21 14.38C21 17.9721 21 19.7681 19.8284 20.8841C18.6569 22 16.7712 22 13 22H11C7.22876 22 5.34315 22 4.17157 20.8841C3 19.7681 3 17.9721 3 14.38C3 10.7879 3 8.99181 4.17157 7.87589C4.64118 7.42859 5.2255 7.16058 6 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                       <path d="M12.0253 2.00052L12 14M12.0253 2.00052C11.8627 1.99379 11.6991 2.05191 11.5533 2.17492C10.6469 2.94006 9 4.92886 9 4.92886M12.0253 2.00052C12.1711 2.00657 12.3162 2.06476 12.4468 2.17508C13.3531 2.94037 15 4.92886 15 4.92886" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
 
                   {/* Clock Button */}
-                  <div className="flex items-center justify-center p-2 rounded-full cursor-pointer transition-all duration-300
-                    bg-gray-50 border border-gray-100
-                    hover:shadow-[0_0_12px_rgba(0,0,0,0.05)]">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" color="#52525B" fill="#ffffff">
+                  <div className="flex items-center justify-center p-3 rounded-full cursor-pointer transition-all duration-300
+                bg-gray-50 border border-gray-100
+                hover:shadow-[0_0_12px_rgba(0,0,0,0.05)]">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" color="#52525B" fill="#ffffff">
                       <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
                       <path d="M12 8V12L14 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
