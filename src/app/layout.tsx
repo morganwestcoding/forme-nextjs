@@ -22,7 +22,6 @@ import ResetPasswordModal from '@/components/modals/ResetPasswordModal';
 import SubscribeModal from '@/components/modals/SubscribeModal';
 import DemoModal from '@/components/modals/DemoModal';
 import MobileNavBar from '@/components/header/MobileNavBar';
-import ListingDetailsModal from '@/components/modals/ListingDetailsModal';
 import InboxModal from '@/components/modals/InboxModal';
 import PostModal from '@/components/modals/PostModal';
 import { ColorProvider } from './context/ColorContext';
@@ -78,7 +77,6 @@ export default async function RootLayout({
               <ForgotPasswordModal/> 
               <ResetPasswordModal/>
               <MessageModal />
-              <ListingDetailsModal/>
               <SubscribeModal/>
               <DemoModal/>
               <PostModal/>
