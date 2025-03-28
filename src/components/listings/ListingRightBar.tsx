@@ -202,7 +202,7 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
     <div className="flex flex-col justify-end bg-transparent gap-4 h-auto">
       <div className="w-full rounded-lg shadow-sm bg-white border px-6 py-6 relative">
         <div className="mb-6">
-          <h2 className="text-2xl font-bold mb-1">Booking</h2>
+          <h2 className="text-lg font-bold mb-1">Booking</h2>
           <p className="text-gray-500">Reserve your spot before its too late!</p>
         </div>
 
@@ -345,8 +345,8 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
 
         <div className="mt-8 space-y-6">
           <div className="flex justify-between items-center">
-            <span className="text-gray-600 text-lg">Total Price</span>
-            <span className="text-2xl font-semibold">${totalPrice}</span>
+            <span className="text-gray-600">Total Price</span>
+            <span className="text-lg font-semibold">${totalPrice}</span>
           </div>
           
           <button
