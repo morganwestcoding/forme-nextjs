@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { eachDayOfInterval } from 'date-fns';
 
 import useLoginModal from "@/app/hooks/useLoginModal";
+import useRentModal from "@/app/hooks/useRentModal";
 import { SafeListing, SafeReservation, SafeUser } from "@/app/types";
 import { categories } from "@/components/Categories";
 import ListingHead from "@/components/listings/ListingHead";
@@ -42,6 +43,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
   currentUser
 }) => {
   const loginModal = useLoginModal();
+  const rentModal = useRentModal();
   const router = useRouter();
 
   const [selectedServices, setSelectedServices] = useState(new Set<string>());
@@ -51,6 +53,8 @@ const ListingClient: React.FC<ListingClientProps> = ({
   const [date, setDate] = useState<Date | null>(null);
   const [time, setTime] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
+
+  const isOwner = currentUser?.id === listing.userId;
 
   const disabledDates = useMemo(() => {
     let dates: Date[] = [];
@@ -163,39 +167,71 @@ const ListingClient: React.FC<ListingClientProps> = ({
     <Container>
       <div className="max-w-full">
         <div className="flex flex-col gap-6 mt-8">
-          {/* Full-width ListingHead */}
-          <div className="w-full">
-            <ListingHead 
-              listing={listing}
-              currentUser={currentUser}
-            />
-          {/* About Us and Booking section side by side */}
-          <div className="flex gap-6 mt-6">
-            {/* About Us section */}
-            <div className="w-[60%] bg-white border rounded-lg shadow-sm p-6">
-              <h2 className="text-xl font-bold text-black mb-2">About Us</h2>
-              <p className="text-sm text-black">
-                {listing.description}
-              </p>
-              {/* Services Section */}
-              <div className="mt-8">
-  <h2 className="text-xl font-semibold mb-4">Services</h2>
-  <div className="grid grid-cols-3 gap-4">
-    {listing.services.map(service => (
-      <div key={service.id} 
-           className="p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition">
-        <h3 className="font-medium text-sm mb-2">{service.serviceName}</h3>
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-500">10min</span>
-          <span className="font-medium">${service.price}</span>
-        </div>
-      </div>
-    ))}
-  </div>
-</div>
+          <div className="flex gap-6">
+            {/* Left column - ListingHead and About Us stacked */}
+            <div className="w-[60%] flex flex-col gap-6">
+              {/* ListingHead at original width */}
+              <ListingHead 
+                listing={listing}
+                currentUser={currentUser}
+              />
+              
+              {/* About Us section directly beneath ListingHead */}
+              <div className="w-full bg-white border rounded-lg shadow-sm p-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-bold text-black">About Us</h2>
+                  
+                  {/* Follow/Edit Button moved here */}
+                  <button 
+                    onClick={isOwner ? () => rentModal.onOpen(listing) : undefined}
+                    className="bg-[#60A5FA] text-white py-2 px-4 rounded-md transition-all duration-300 
+                      hover:shadow-md text-sm font-medium
+                      flex items-center justify-center gap-2"
+                  >
+                    <span>{isOwner ? 'Edit Listing' : 'Follow'}</span>
+                    {!isOwner && (
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        viewBox="0 0 24 24" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        className="w-4 h-4"
+                      >
+                        <path 
+                          strokeLinecap="round" 
+                          strokeLinejoin="round" 
+                          strokeWidth={2} 
+                          d="M12 4v16m8-8H4"
+                        />
+                      </svg>
+                    )}
+                  </button>
+                </div>
+                
+                <p className="text-sm text-black mb-6">
+                  {listing.description}
+                </p>
+                
+                {/* Services Section */}
+                <div className="mt-6">
+                  <h2 className="text-lg font-semibold mb-3">Services</h2>
+                  <div className="grid grid-cols-3 gap-3">
+                    {listing.services.map(service => (
+                      <div key={service.id} 
+                          className="p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition">
+                        <h3 className="font-medium text-sm mb-1">{service.serviceName}</h3>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-500">10min</span>
+                          <span className="font-medium">${service.price}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
             
-            {/* Booking section */}
+            {/* Right column - Booking section */}
             <div className="w-[40%] border rounded-xl shadow-sm">
               <ListingRightBar
                 description={listing.description}
@@ -221,9 +257,8 @@ const ListingClient: React.FC<ListingClientProps> = ({
           </div>
         </div>
       </div>
-    </div>
-  </Container>
-);
+    </Container>
+  );
 }
  
 export default ListingClient;

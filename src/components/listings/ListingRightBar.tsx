@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import Calendar from '../inputs/Calender';
-import ModalButton from "../modals/ModalButton";
 import { SafeListing, SafeReservation, SafeUser } from "@/app/types";
 import { format, isSameDay } from 'date-fns';
 import { SelectedEmployee, SelectedService } from "@/app/listings/[listingId]/ListingClient";
@@ -31,102 +30,48 @@ interface ListingRightBarProps {
 interface InputFieldProps {
   value: string | undefined;
   onClick: () => void;
-  readOnly: boolean;
   placeholder: string;
   disabled?: boolean;
   isSelected: boolean;
-  showHoverEffect?: boolean;
   icon?: React.ReactNode;
 }
 
 const InputField: React.FC<InputFieldProps> = ({ 
   value, 
   onClick, 
-  readOnly, 
   placeholder, 
   disabled = false, 
   isSelected,
-  showHoverEffect = false,
   icon
 }) => (
-  <div className="mb-4 relative group">
-    <div className="relative flex items-center">
-      <input
-        type="text"
-        value={value || ''}
-        onClick={onClick}
-        readOnly={readOnly}
-        placeholder=""
-        disabled={disabled}
-        className={`
-          w-full
-          py-4
-          px-4
-          text-sm
-          rounded-md
-          border
-          border-neutral-500
-          outline-none
-          transition-all
-          duration-300
-          ${isSelected 
-            ? 'bg-gradient-to-r from-[#5E6365] to-[#5E6365]/90 text-white border-transparent shadow-sm' 
-            : 'bg-white border-gray-100 hover:border-gray-200 shadow-sm'
-          }
-          ${disabled 
-            ? 'opacity-50 cursor-not-allowed' 
-            : 'cursor-pointer hover:shadow-sm'
-          }
-          ${showHoverEffect && !isSelected
-            ? 'hover:bg-gray-50/80' 
-            : ''
-          }
-          ${value ? 'pt-6 pb-2' : 'py-4'}
-        `}
-      />
-      
-      {/* Floating Label */}
-      <span className={`
-        absolute 
-        left-4
-        transition-all 
+  <div className="mb-4 relative">
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={`
+        w-full
+        py-4
+        px-4
+        text-sm
+        rounded-md
+        focus:outline-none
+        transition-all
         duration-300
-        pointer-events-none
-        ${value 
-          ? 'text-xs top-2' 
-          : 'text-sm top-1/2 -translate-y-1/2'
-        }
+        flex
+        justify-between
+        items-center
         ${isSelected 
-          ? 'text-white/80' 
-          : 'text-gray-400'
+          ? 'bg-gray-600 text-white' 
+          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
         }
-      `}>
-        {placeholder}
-      </span>
-
-      {/* Value Text */}
-      {value && (
-        <span className={`
-          absolute 
-          left-4 
-          bottom-2.5
-          text-sm
-          pointer-events-none
-          ${isSelected ? 'text-white' : 'text-gray-900'}
-        `}>
-          {value}
-        </span>
-      )}
-
-      {/* Dropdown Icon */}
-      <div className={`
-        absolute 
-        right-4 
-        transition-transform
-        duration-300
-        ${isSelected ? 'text-white' : 'text-gray-400'}
-        ${showHoverEffect ? 'group-hover:translate-y-0.5' : ''}
-      `}>
+        ${disabled 
+          ? 'opacity-70 cursor-not-allowed' 
+          : 'cursor-pointer'
+        }
+      `}
+    >
+      <span>{value || placeholder}</span>
+      <span className={isSelected ? 'text-white' : 'text-gray-400'}>
         {icon || (
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -134,7 +79,6 @@ const InputField: React.FC<InputFieldProps> = ({
             className="w-5 h-5"
             fill="none"
             stroke="currentColor"
-            color='#71717A'
           >
             <path
               strokeLinecap="round"
@@ -144,8 +88,8 @@ const InputField: React.FC<InputFieldProps> = ({
             />
           </svg>
         )}
-      </div>
-    </div>
+      </span>
+    </button>
   </div>
 );
 
@@ -256,24 +200,22 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
 
   return (
     <div className="flex flex-col justify-end bg-transparent gap-4 h-auto">
-      <div className="w-full rounded-md shadow-sm bg-white px-8 md:px-6 pt-6 pb-6 relative">
+      <div className="w-full rounded-lg shadow-sm bg-white border px-6 py-6 relative">
         <div className="mb-6">
-          <h2 className="text-xl font-bold mb-1">Booking</h2>
-          <p className="text-sm text-gray-500">Reserve your spot before its too late!</p>
+          <h2 className="text-2xl font-bold mb-1">Booking</h2>
+          <p className="text-gray-500">Reserve your spot before its too late!</p>
         </div>
 
         <InputField
-          value={selectedService ? selectedService.label : undefined}
+          value={selectedService ? selectedService.label.split(' - ')[0] : undefined}
           onClick={() => setShowServiceDropdown(!showServiceDropdown)}
-          readOnly={true}
           placeholder="Select a service"
           isSelected={!!selectedService}
-          showHoverEffect={true}
         />
 
         {showServiceDropdown && (
-          <div className="absolute z-50 w-[calc(100%-3rem)] bg-white rounded-md shadow-lg 
-                        border border-gray-100 overflow-hidden animate-in slide-in-from-top-2 duration-300">
+          <div className="absolute z-50 left-6 right-6 bg-white rounded-md shadow-lg 
+                        border border-gray-100 overflow-hidden mt-1">
             {serviceOptions.map((option) => (
               <div
                 key={option.value}
@@ -298,15 +240,13 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
         <InputField
           value={selectedEmployee ? selectedEmployee.label : undefined}
           onClick={() => setShowEmployeeDropdown(!showEmployeeDropdown)}
-          readOnly={true}
           placeholder="Select employee"
           isSelected={!!selectedEmployee}
-          showHoverEffect={true}
         />
 
         {showEmployeeDropdown && (
-          <div className="absolute z-50 w-[calc(100%-3rem)] bg-white rounded-md shadow-lg 
-                        border border-gray-100 overflow-hidden animate-in slide-in-from-top-2 duration-300">
+          <div className="absolute z-50 left-6 right-6 bg-white rounded-md shadow-lg 
+                        border border-gray-100 overflow-hidden mt-1">
             {employeeOptions.map((option) => (
               <div
                 key={option.value}
@@ -323,14 +263,12 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
         )}
 
         <InputField
-          value={date ? format(date, 'PP') : undefined}
+          value={date ? format(date, 'MMM d, yyyy') : undefined}
           onClick={() => setShowCalendar(!showCalendar)}
-          readOnly={true}
           placeholder="Pick a date"
           isSelected={!!date}
-          showHoverEffect={true}
           icon={
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" color='#71717A'>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor">
               <rect x="3" y="4" width="18" height="18" rx="2" ry="2" strokeWidth={1.5}/>
               <line x1="16" y1="2" x2="16" y2="6" strokeWidth={1.5}/>
               <line x1="8" y1="2" x2="8" y2="6" strokeWidth={1.5}/>
@@ -340,7 +278,7 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
         />
 
         {showCalendar && (
-          <div ref={calendarRef} className="absolute z-50 w-[calc(100%-3rem)]">
+          <div ref={calendarRef} className="absolute z-50 left-6 right-6 mt-1">
             <Calendar
               value={date || new Date()}
               onChange={(newDate) => {
@@ -356,13 +294,12 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
 
         <InputField
           value={time ? timeOptions.find(option => option.value === time)?.label : undefined}
-          onClick={() => setShowTimeDropdown(!showTimeDropdown)}
-          readOnly={true}
+          onClick={() => date && setShowTimeDropdown(!showTimeDropdown)}
           placeholder={date ? "Select time..." : "Pick a date first"}
           disabled={!date}
           isSelected={!!time}
           icon={
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" color='#71717A'>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor">
               <circle cx="12" cy="12" r="10" strokeWidth={1.5}/>
               <polyline points="12 6 12 12 16 14" strokeWidth={1.5}/>
             </svg>
@@ -370,8 +307,8 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
         />
 
         {showTimeDropdown && date && (
-          <div className="absolute z-50 w-[calc(100%-3rem)] bg-white rounded-md shadow-lg 
-                        border border-gray-100 overflow-hidden animate-in slide-in-from-top-2 duration-300">
+          <div className="absolute z-50 left-6 right-6 bg-white rounded-md shadow-lg 
+                        border border-gray-100 overflow-hidden mt-1">
             <div className="grid grid-cols-3 gap-1 p-2">
               {timeOptions.map((option) => {
                 const isBooked = bookedTimes.includes(option.value);
@@ -406,10 +343,10 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
           </div>
         )}
 
-        <div className="mt-6 space-y-4">
-          <div className="flex justify-between items-center py-4 px-4 bg-gray-50 rounded-md">
-            <span className="text-gray-600">Total Price</span>
-            <span className="text-xl font-semibold">${totalPrice}</span>
+        <div className="mt-8 space-y-6">
+          <div className="flex justify-between items-center">
+            <span className="text-gray-600 text-lg">Total Price</span>
+            <span className="text-2xl font-semibold">${totalPrice}</span>
           </div>
           
           <button
@@ -417,10 +354,10 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
             onClick={onCreateReservation}
             className={`
               w-full py-4 px-4 rounded-md transition-all duration-300 
-              flex items-center justify-center gap-2
+              flex items-center justify-center gap-2 text-white
               ${isLoading || !date || !time || !selectedService || !selectedEmployee
-                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                : 'bg-gradient-to-r from-[#F9AE8B] to-[#FFC5A8] text-white shadow-sm hover:shadow-lg hover:from-[#F9AE8B] hover:to-[#F9AE8B]'
+                ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                : 'bg-[#60A5FA] hover:bg-[#4A94F9] shadow-sm hover:shadow'
               }
             `}
           >
