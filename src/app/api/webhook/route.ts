@@ -4,6 +4,10 @@ import { headers } from 'next/headers';
 import Stripe from 'stripe';
 import prisma from '@/app/libs/prismadb';
 
+// App Router configuration exports
+export const dynamic = 'force-dynamic';
+export const bodyParser = false; // Disable automatic body parsing for raw webhook data
+
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-02-24.acacia',
 });
@@ -76,10 +80,3 @@ export async function POST(req: Request) {
     );
   }
 }
-
-// Required for Stripe to work with Next.js Edge Runtime
-export const config = {
-  api: {
-    bodyParser: false, // Required for webhook validation
-  },
-};
