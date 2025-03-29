@@ -76,7 +76,7 @@ const SuccessPage = () => {
             </svg>
           </div>
           <h1 className="text-2xl font-bold mb-2">Payment Verification Failed</h1>
-          <p className="text-gray-600 mb-6">We couldn't verify your payment. Please try again or contact support.</p>
+          <p className="text-gray-600 mb-6">We couldn&apos;t verify your payment. Please try again or contact support.</p>
           <div className="flex gap-4">
             <Link href="/" className="px-6 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors">
               Go Home
@@ -102,7 +102,7 @@ const SuccessPage = () => {
           
           <h1 className="text-2xl font-bold mb-2">Your Reservation is Confirmed!</h1>
           <p className="text-gray-600 mb-8">
-            Thank you for your booking. We've sent a confirmation to your email.
+            Thank you for your booking. We&apos;ve sent a confirmation to your email.
           </p>
 
           {reservation && (

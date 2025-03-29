@@ -122,14 +122,14 @@ const StripeCheckoutModal = () => {
                 </div>
                 <div className="ml-3">
                   <p className="text-sm text-blue-700">
-                    You'll be redirected to Stripe's secure payment page. Your reservation will be confirmed once payment is complete.
+                    You&apos;ll be redirected to Stripe&apos;s secure payment page. Your reservation will be confirmed once payment is complete.
                   </p>
                 </div>
               </div>
             </div>
             
             <div className="text-xs text-gray-500">
-              By clicking "Proceed to Payment", you agree to our Terms of Service and Cancellation Policy.
+              By clicking &quot;Proceed to Payment&quot;, you agree to our Terms of Service and Cancellation Policy.
             </div>
           </div>
         </div>
