@@ -25,6 +25,7 @@ import MobileNavBar from '@/components/header/MobileNavBar';
 import InboxModal from '@/components/modals/InboxModal';
 import PostModal from '@/components/modals/PostModal';
 import { ColorProvider } from './context/ColorContext';
+import StripeCheckoutModal from '@/components/modals/StripeCheckoutModal';
 
 
 export const metadata: Metadata = {
@@ -72,6 +73,7 @@ export default async function RootLayout({
               <ProfileModal/>
               <LoginModal/>
               <RegisterModal/>
+              <StripeCheckoutModal /> 
               <ProfileGalleryModal/> 
               <ListingGalleryModal/>
               <ForgotPasswordModal/> 

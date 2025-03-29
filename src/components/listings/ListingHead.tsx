@@ -42,7 +42,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
   return (
     <div className="w-full">
       <div className="relative">
-        <div className="flex flex-col bg-white rounded-lg border shadow-lg hover:shadow-xl transition-all duration-300">
+        <div className="flex flex-col bg-white rounded-lg border hover:shadow-md transition-all duration-300">
           <div className="p-5">
             <div className="flex flex-col md:flex-row gap-4">
               {/* Left Column - Info */}

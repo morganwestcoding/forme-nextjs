@@ -65,6 +65,8 @@ export type SafeReservation = Omit<
     storeHours: SafeStoreHours[];
   };
   user: SafeUser;
+  paymentIntentId?: string | null;
+  paymentStatus?: string | null;
 };
 
 export type SafeUser = Omit<

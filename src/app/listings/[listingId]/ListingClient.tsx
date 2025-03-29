@@ -178,10 +178,10 @@ const ListingClient: React.FC<ListingClientProps> = ({
               
               {/* About Us section directly beneath ListingHead */}
               <div className="w-full bg-white border rounded-lg shadow-sm p-6">
+
                 <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-bold text-black">About Us</h2>
-                  
-                  {/* Follow/Edit Button moved here */}
+                  <h2 className="text-xl font-bold text-black">About Us</h2>          
+                  {/* 
                   <button 
                     onClick={isOwner ? () => rentModal.onOpen(listing) : undefined}
                     className="bg-[#60A5FA] text-white py-2 px-4 rounded-md transition-all duration-300 
@@ -205,7 +205,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
                         />
                       </svg>
                     )}
-                  </button>
+                  </button>*/}
                 </div>
                 
                 <p className="text-sm text-black mb-6">

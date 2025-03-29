@@ -1,10 +1,13 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import Calendar from '../inputs/Calender';
 import { SafeListing, SafeReservation, SafeUser } from "@/app/types";
 import { format, isSameDay } from 'date-fns';
 import { SelectedEmployee, SelectedService } from "@/app/listings/[listingId]/ListingClient";
+import useStripeCheckoutModal from '@/app/hooks/useStripeCheckoutModal';
+import useLoginModal from "@/app/hooks/useLoginModal";
+import { toast } from "react-hot-toast";
 
 interface ListingRightBarProps {
   listing: SafeListing & { user: SafeUser };
@@ -97,7 +100,6 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
   listing,
   reservations = [],
   currentUser,
-  onCreateReservation,
   isLoading,
   disabledDates,
   description,
@@ -117,8 +119,11 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
   const [showServiceDropdown, setShowServiceDropdown] = useState(false);
   const [showEmployeeDropdown, setShowEmployeeDropdown] = useState(false);
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
 
   const calendarRef = useRef<HTMLDivElement>(null);
+  const stripeCheckoutModal = useStripeCheckoutModal();
+  const loginModal = useLoginModal();
 
   const activeReservations = useMemo(() => {
     return reservations.filter(reservation => 
@@ -198,11 +203,56 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
     ? getAvailableTimes(date, selectedEmployee.value) 
     : [];
 
+  const handleReservation = useCallback(() => {
+    if (!currentUser) {
+      return loginModal.onOpen();
+    }
+
+    if (!date || !time || !selectedService || !selectedEmployee) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    setCheckoutLoading(true);
+
+    // Prepare reservation data
+    const reservationData = {
+      totalPrice,
+      date,
+      time,
+      listingId: listing?.id,
+      serviceId: selectedService.value,
+      serviceName: listing.services.find(service => 
+        service.id === selectedService.value
+      )?.serviceName,
+      employeeId: selectedEmployee.value,
+      employeeName: selectedEmployee.label,
+      note: '',
+      businessName: listing.title
+    };
+
+    // Open the Stripe checkout modal
+    stripeCheckoutModal.onOpen(reservationData);
+    setCheckoutLoading(false);
+  }, [
+    totalPrice,
+    date,
+    time,
+    listing?.id,
+    selectedService,
+    selectedEmployee,
+    listing.services,
+    listing.title,
+    currentUser,
+    loginModal,
+    stripeCheckoutModal
+  ]);
+
   return (
     <div className="flex flex-col justify-end bg-transparent gap-4 h-auto">
       <div className="w-full rounded-lg shadow-sm bg-white border px-6 py-6 relative">
         <div className="mb-6">
-          <h2 className="text-lg font-bold mb-1">Booking</h2>
+          <h2 className="text-2xl font-bold mb-1">Booking</h2>
           <p className="text-gray-500">Reserve your spot before its too late!</p>
         </div>
 
@@ -345,17 +395,17 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
 
         <div className="mt-8 space-y-6">
           <div className="flex justify-between items-center">
-            <span className="text-gray-600">Total Price</span>
-            <span className="text-lg font-semibold">${totalPrice}</span>
+            <span className="text-gray-600 text-lg">Total Price</span>
+            <span className="text-2xl font-semibold">${totalPrice}</span>
           </div>
           
           <button
-            disabled={isLoading || !date || !time || !selectedService || !selectedEmployee}
-            onClick={onCreateReservation}
+            disabled={checkoutLoading || isLoading || !date || !time || !selectedService || !selectedEmployee}
+            onClick={handleReservation}
             className={`
               w-full py-4 px-4 rounded-md transition-all duration-300 
               flex items-center justify-center gap-2 text-white
-              ${isLoading || !date || !time || !selectedService || !selectedEmployee
+              ${checkoutLoading || isLoading || !date || !time || !selectedService || !selectedEmployee
                 ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
                 : 'bg-[#60A5FA] hover:bg-[#4A94F9] shadow-sm hover:shadow'
               }

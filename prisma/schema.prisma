@@ -93,7 +93,9 @@ model Reservation {
   status     String   @default("pending") // Add this line - can be "pending", "accepted", "declined"
   createdAt  DateTime @default(now())
   serviceId   String   @db.ObjectId 
-  serviceName String             
+  serviceName String
+  paymentIntentId String?
+  paymentStatus   String?  @default("pending") // "pending", "completed", "failed", "refunded"             
   
 
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
