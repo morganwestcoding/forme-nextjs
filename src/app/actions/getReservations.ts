@@ -43,7 +43,7 @@ export default async function getReservations(params: IParams) {
       id: reservation.id,
       userId: reservation.userId,
       listingId: reservation.listingId,
-      employeeId: reservation.employeeId, // Add this line
+      employeeId: reservation.employeeId,
       serviceId: reservation.serviceId,
       serviceName: reservation.serviceName,
       date: reservation.date,
@@ -52,6 +52,9 @@ export default async function getReservations(params: IParams) {
       totalPrice: reservation.totalPrice,
       status: reservation.status,
       createdAt: reservation.createdAt.toISOString(),
+      // Add the payment-related fields
+      paymentIntentId: reservation.paymentIntentId,
+      paymentStatus: reservation.paymentStatus,
       listing: {
         id: reservation.listing.id,
         title: reservation.listing.title,
