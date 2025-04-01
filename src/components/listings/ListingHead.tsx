@@ -6,6 +6,7 @@ import { SafeListing, SafeUser } from '@/app/types';
 import { categories } from "../Categories";
 import ListingGalleryImage from "./ListingGalleryImage";
 import HeartButton from '../HeartButton';
+import OpenStatus from './OpenStatus'; // Import the new component
 
 interface ListingHeadProps {
   listing: SafeListing & {
@@ -15,7 +16,7 @@ interface ListingHeadProps {
 }
 
 const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
-  const { title, location, description, category, id, address, website, phoneNumber, userId } = listing;
+  const { title, location, description, category, id, address, website, phoneNumber, userId, storeHours } = listing;
 
   const categoryColor = categories.find(cat => cat.label === category)?.color || 'bg-[#60A5FA]';
   const badgeColor = categoryColor.replace('bg-[', '').replace(']', '') || '#60A5FA';
@@ -62,9 +63,16 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
                 <h1 className="text-xl font-semibold text-gray-900 mb-2">
                   {title}
                 </h1>
-                <p className="text-gray-500 text-sm mb-14">
+                
+                {/* Location */}
+                <p className="text-gray-500 text-sm mb-4">
                   {address}, {city}, {stateAcronym} {listing.zipCode}
                 </p>
+                
+                {/* Open Status with more spacing */}
+                <div className="mb-14">
+                  <OpenStatus storeHours={storeHours || []} />
+                </div>
                 
                 {/* Reviews and Statistics Section - Card Style */}
                 <div className="grid grid-cols-3 gap-3">
@@ -91,35 +99,6 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
                     <span className="text-xs text-gray-500">Likes</span>
                   </div>
                 </div>
-                
-             {/*  
-                <div className="flex items-center gap-2">
-               
-                  <button className="flex items-center justify-center gap-2 py-2 px-4 bg-gray-100 hover:bg-gray-200 transition rounded-full text-sm font-medium">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                      <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5z"/>
-                    </svg>
-                    Share
-                  </button>
-                  
-               
-                  <button className="flex items-center justify-center gap-2 py-2 px-4 bg-gray-100 hover:bg-gray-200 transition rounded-full text-sm font-medium">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                      <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5V2zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1H4z"/>
-                    </svg>
-                    Save
-                  </button>
-                  
-            
-                  <button className="flex items-center justify-center gap-2 py-2 px-4 bg-blue-600 hover:bg-blue-700 transition rounded-full text-sm font-medium text-white ml-auto">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                      <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/>
-                      <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/>
-                    </svg>
-                    Schedule
-                  </button>
-                </div>
-                */}
               </div> 
               
               {/* Right Column - Gallery */}

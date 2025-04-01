@@ -88,7 +88,7 @@ const ListingGalleryImage: React.FC<ListingGalleryImageProps> = ({ listing, curr
           >
             {image ? (
               <>
-                <div className="aspect-[4/3] w-full h-full relative">
+                <div className="aspect-[4/3] w-full h-full relative shadow-sm">
                   <Image
                     src={image}
                     alt={`Gallery image ${index + 1}`}
