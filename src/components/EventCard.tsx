@@ -1,7 +1,6 @@
 'use client';
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import Image from "next/image";
 
 interface Event {
@@ -22,96 +21,61 @@ interface EventCardProps {
 const EventCard = ({ event }: EventCardProps) => {
   const router = useRouter();
   
+  // Extract date parts
+  const dateParts = event.date.split(' ');
+  const month = dateParts[0];
+  const day = dateParts[1];
   
   return (
     <div 
       onClick={() => router.push('/events')}
-      className="group relative bg-white rounded-md h-[125px] w-full mb-4 flex overflow-hidden shadow-sm 
-        transition-all duration-300 hover:shadow cursor-pointer"
+      className="group flex items-center gap-3 mb-4 p-2 rounded-xl bg-gray-50 hover:bg-white transition-all duration-300 cursor-pointer hover:shadow-sm"
     >
-      {/* Image Section */}
-      <div className="relative w-[35%] h-full">
-        <div className="absolute inset-0">
-          <Image
-            src={event.imageSrc}
-            alt={event.title}
-            fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/40 
-            opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-        </div>
+      {/* Date Box */}
+      <div className="min-w-16 h-16 flex flex-col items-center justify-center rounded-lg bg-white shadow-sm group-hover:bg-[#60A5FA] group-hover:text-white transition-colors duration-300">
+        <span className="text-xs font-medium uppercase text-neutral-500 group-hover:text-white/90">{month}</span>
+        <span className="text-xl font-semibold">{day}</span>
       </div>
-
-      {/* Content Section */}
-      <div className="flex-1 p-3 relative">
-        {/* Top Section */}
-        <div className="flex justify-between items-start">
-          <span className="text-neutral-500 text-xs font-light">{event.date} • {event.time}</span>
-          
-          {/* Social Icons - Smooth Fade and Slide */}
-          <div className="flex gap-2 
-            opacity-0 -translate-y-2 
-            transition-all duration-300 
-            group-hover:opacity-100 group-hover:translate-y-0">
-            {/* Share Icon */}
-            <svg 
-              fill="#888888" 
-              height="16" 
-              viewBox="0 0 24 24" 
-              width="16" 
-              xmlns="http://www.w3.org/2000/svg" 
-              className="hover:fill-gray-600 transition-colors cursor-pointer"
-            >
-              <path d="M0 0h24v24H0z" fill="none"/>
-              <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
-            </svg>
-            
-            {/* Bookmark Icon */}
-            <svg 
-              fill="#888888" 
-              height="16" 
-              viewBox="0 0 24 24" 
-              width="16" 
-              xmlns="http://www.w3.org/2000/svg" 
-              className="hover:fill-gray-600 transition-colors cursor-pointer"
-            >
-              <path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/>
-              <path d="M0 0h24v24H0z" fill="none"/>
-            </svg>
-          </div>
-        </div>
-
-        {/* Title and Description */}
-        <h3 className="text-sm font-medium mt-2 line-clamp-2 
-          transition-colors duration-300 group-hover:text-[#41C1F2]">
+      
+      {/* Event Image */}
+      <div className="relative w-16 h-16 overflow-hidden rounded-lg">
+        <Image
+          src={event.imageSrc}
+          alt={event.title}
+          fill
+          className="object-cover transition-transform duration-300 group-hover:scale-105"
+        />
+      </div>
+      
+      {/* Event Details */}
+      <div className="flex-1 min-w-0">
+        <h3 className="text-sm font-medium truncate group-hover:text-[#60A5FA] transition-colors duration-300">
           {event.title}
         </h3>
-        <span className="text-xs text-neutral-500 
-          transition-colors duration-300 group-hover:text-neutral-600">
+        
+        <p className="text-xs text-neutral-500 truncate mt-0.5">
           {event.description}
-        </span>
-
-        {/* Bottom Section - Default State */}
-        <div className="absolute bottom-3 left-3 right-3 
-          flex justify-between font-light text-xs text-neutral-500 
-          transition-all duration-300 
-          opacity-100 group-hover:opacity-0 group-hover:translate-y-2">
-          <span>{event.location}</span>
-          <span>{event.price}</span>
+        </p>
+        
+        <div className="flex items-center justify-between mt-1.5">
+          <div className="flex items-center gap-1 text-xs text-neutral-400">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2 C 8 2 4 5 4 10 C 4 15 12 22 12 22 C 12 22 20 15 20 10 C 20 5 16 2 12 2 Z" />
+              <circle cx="12" cy="10" r="3" />
+            </svg>
+            <span className="truncate">{event.location}</span>
+          </div>
+          
+          <span className="text-xs font-medium text-neutral-700">{event.price}</span>
         </div>
-
-        {/* Bottom Section - Hover State */}
-        <div className="absolute bottom-3 left-3 right-3 
-          flex justify-between text-xs 
-          transition-all duration-300 
-          opacity-0 translate-y-2 
-          group-hover:opacity-100 group-hover:translate-y-0">
-          <span className="text-neutral-500">#{event.category} #Event</span>
-          <span className="text-[#41C1F2] hover:text-[#41C1F2]/80 transition-colors">
-            VIEW EVENT
-          </span>
-        </div>
+      </div>
+      
+      {/* Action icon with smooth transition */}
+      <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#60A5FA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M5 12h14"></path>
+          <path d="m12 5 7 7-7 7"></path>
+        </svg>
       </div>
     </div>
   );
