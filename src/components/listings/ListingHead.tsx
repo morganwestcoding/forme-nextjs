@@ -66,11 +66,11 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
                 
                 {/* Location */}
                 <p className="text-gray-500 text-sm mb-4">
-                  {address}, {city}, {stateAcronym} {listing.zipCode}
+                  {address},<br/>{city}, {stateAcronym} {listing.zipCode}
                 </p>
                 
                 {/* Open Status with more spacing */}
-                <div className="mb-14">
+                <div className="mb-6">
                   <OpenStatus storeHours={storeHours || []} />
                 </div>
                 

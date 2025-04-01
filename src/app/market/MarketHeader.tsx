@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Search from '@/components/header/Search';
 import { categories } from '@/components/Categories';
 
@@ -30,10 +30,32 @@ const MarketHeader = ({
   onFilterChange 
 }: MarketHeaderProps) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const buttonRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const [pillStyle, setPillStyle] = useState({ left: 0, width: 0 });
 
   const handleFilterChange = (newFilters: any) => {
     onFilterChange({ ...filters, ...newFilters });
     setIsFilterOpen(false);
+  };
+
+  // Update pill position and dimensions based on selected view mode
+  useEffect(() => {
+    updatePillPosition();
+    window.addEventListener('resize', updatePillPosition);
+    return () => window.removeEventListener('resize', updatePillPosition);
+  }, [viewMode]);
+
+  const updatePillPosition = () => {
+    const index = viewMode === 'grid' ? 0 : 1;
+    if (buttonRefs.current[index]) {
+      const button = buttonRefs.current[index];
+      if (button) {
+        setPillStyle({
+          left: button.offsetLeft,
+          width: button.offsetWidth
+        });
+      }
+    }
   };
 
   return (
@@ -49,9 +71,8 @@ const MarketHeader = ({
             <button 
               onClick={() => setIsFilterOpen(!isFilterOpen)}
               className={`
-                flex items-center gap-2 py-3 px-4 rounded-md bg-[#4A5568]
-                transition-colors duration-200 ease-in-out
-                ${isFilterOpen ? 'text-white' : 'text-gray-400 hover:text-gray-200'}
+                flex items-center gap-2 py-3 px-4 rounded-md bg-gray-100 border border-gray-100
+                transition-colors duration-200 ease-in-out text-neutral-500 hover:text-gray-700
               `}
             >
               <svg 
@@ -160,19 +181,24 @@ const MarketHeader = ({
             )}
           </div>
 
-          {/* View Toggle Buttons */}
-          <div className="relative bg-[#4A5568] rounded-md px-2">
+          {/* View Toggle Buttons - Updated to match NewsfeedFilter style */}
+          <div className="relative bg-gray-100 border border-gray-100 rounded-md overflow-hidden">
             <div className="flex items-center relative">
+              {/* Animated pill indicator */}
+              <div 
+                className="absolute rounded-md transition-all duration-300 ease-in-out bg-[#60A5FA]"
+                style={{
+                  left: `${pillStyle.left}px`,
+                  width: `${pillStyle.width}px`,
+                  height: '40px',
+                  zIndex: 0
+                }}
+              ></div>
+
               <button
+                ref={el => buttonRefs.current[0] = el}
                 onClick={() => onViewModeChange('grid')}
-                className={`
-                  py-3 px-4 relative z-10 cursor-pointer select-none
-                  transition-colors duration-200 ease-in-out
-                  ${viewMode === 'grid' 
-                    ? 'text-white' 
-                    : 'text-gray-400 hover:text-gray-200'
-                  }
-                `}
+                className="py-3 px-4 relative z-10 transition-colors duration-200 ease-in-out"
               >
                 <svg 
                   xmlns="http://www.w3.org/2000/svg" 
@@ -180,7 +206,7 @@ const MarketHeader = ({
                   width="20" 
                   height="20" 
                   fill="none"
-                  className="transition-colors duration-200"
+                  className={`transition-colors duration-200 ${viewMode === 'grid' ? 'text-white' : 'text-neutral-500'}`}
                 >
                   <path d="M2 18C2 16.4596 2 15.6893 2.34673 15.1235C2.54074 14.8069 2.80693 14.5407 3.12353 14.3467C3.68934 14 4.45956 14 6 14C7.54044 14 8.31066 14 8.87647 14.3467C9.19307 14.5407 9.45926 14.8069 9.65327 15.1235C10 15.6893 10 16.4596 10 18C10 19.5404 10 20.3107 9.65327 20.8765C9.45926 21.1931 9.19307 21.4593 8.87647 21.6533C8.31066 22 7.54044 22 6 22C4.45956 22 3.68934 22 3.12353 21.6533C2.80693 21.4593 2.54074 21.1931 2.34673 20.8765C2 20.3107 2 19.5404 2 18Z" stroke="currentColor" strokeWidth="1.5" />
                   <path d="M14 18C14 16.4596 14 15.6893 14.3467 15.1235C14.5407 14.8069 14.8069 14.5407 15.1235 14.3467C15.6893 14 16.4596 14 18 14C19.5404 14 20.3107 14 20.8765 14.3467C21.1931 14.5407 21.4593 14.8069 21.6533 15.1235C22 15.6893 22 16.4596 22 18C22 19.5404 22 20.3107 21.6533 20.8765C21.4593 21.1931 21.1931 21.4593 20.8765 21.6533C20.3107 22 19.5404 22 18 22C16.4596 22 15.6893 22 15.1235 21.6533C14.8069 21.4593 14.5407 21.1931 14.3467 20.8765C14 20.3107 14 19.5404 14 18Z" stroke="currentColor" strokeWidth="1.5" />
@@ -190,15 +216,9 @@ const MarketHeader = ({
               </button>
               
               <button
+                ref={el => buttonRefs.current[1] = el}
                 onClick={() => onViewModeChange('list')}
-                className={`
-                  py-3 px-4 relative z-10 cursor-pointer select-none
-                  transition-colors duration-200 ease-in-out
-                  ${viewMode === 'list' 
-                    ? 'text-white' 
-                    : 'text-gray-400 hover:text-gray-200'
-                  }
-                `}
+                className="py-3 px-4 relative z-10 transition-colors duration-200 ease-in-out"
               >
                 <svg 
                   xmlns="http://www.w3.org/2000/svg" 
@@ -206,7 +226,7 @@ const MarketHeader = ({
                   width="20" 
                   height="20" 
                   fill="none"
-                  className="transition-colors duration-200"
+                  className={`transition-colors duration-200 ${viewMode === 'list' ? 'text-white' : 'text-neutral-500'}`}
                 >
                   <path d="M8 5L20 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                   <path d="M4 5H4.00898" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -216,15 +236,6 @@ const MarketHeader = ({
                   <path d="M8 19L20 19" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                 </svg>
               </button>
-
-              {/* Animated Indicator */}
-              <div
-                className="absolute bottom-0 h-1 bg-[#60A5FA] rounded-t-sm transition-all duration-300 ease-in-out"
-                style={{
-                  width: '50%',
-                  left: viewMode === 'list' ? '50%' : '0%',
-                }}
-              />
             </div>
           </div>
         </div>
