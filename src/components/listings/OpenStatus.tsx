@@ -37,7 +37,7 @@ const OpenStatus: React.FC<OpenStatusProps> = ({ storeHours }) => {
         return;
       }
 
-      // Format hours for display
+      // Format hours for display - avoid adding AM/PM if it's already in the string
       const formattedOpenTime = formatTime(todayHours.openTime);
       const formattedCloseTime = formatTime(todayHours.closeTime);
       setCurrentHours(`${formattedOpenTime} - ${formattedCloseTime}`);
@@ -63,7 +63,6 @@ const OpenStatus: React.FC<OpenStatusProps> = ({ storeHours }) => {
         
         if (nextDayHours && !nextDayHours.isClosed) {
           const formattedOpenTime = formatTime(nextDayHours.openTime);
-          const formattedCloseTime = formatTime(nextDayHours.closeTime);
           
           if (i === 0) {
             // Today, but we're after closing or before opening
@@ -80,8 +79,12 @@ const OpenStatus: React.FC<OpenStatusProps> = ({ storeHours }) => {
       }
     };
 
-    // Format time from 24-hour to 12-hour format
+    // Format time - check if AM/PM already exists
     const formatTime = (time: string): string => {
+      if (time.includes('AM') || time.includes('PM') || time.includes('am') || time.includes('pm')) {
+        return time; // Time already has AM/PM formatting
+      }
+      
       const [hours, minutes] = time.split(':');
       const hour = parseInt(hours, 10);
       const period = hour >= 12 ? 'PM' : 'AM';
@@ -91,7 +94,34 @@ const OpenStatus: React.FC<OpenStatusProps> = ({ storeHours }) => {
 
     // Check if current time is within open and close times
     const isTimeInRange = (currentTime: string, openTime: string, closeTime: string): boolean => {
-      return currentTime >= openTime && currentTime < closeTime;
+      // Extract hours and minutes as numbers for comparison
+      const extractTime = (timeStr: string) => {
+        // Handle cases where the time already includes AM/PM
+        if (timeStr.includes('AM') || timeStr.includes('PM') || timeStr.includes('am') || timeStr.includes('pm')) {
+          const [timePart] = timeStr.split(/\s+/); // Split by whitespace to get just the time part
+          const [hours, minutes] = timePart.split(':');
+          const hour = parseInt(hours, 10);
+          let hour24 = hour;
+          
+          // Convert to 24-hour format if needed
+          if (timeStr.includes('PM') || timeStr.includes('pm')) {
+            if (hour !== 12) hour24 = hour + 12;
+          } else if (hour === 12) {
+            hour24 = 0;
+          }
+          
+          return `${hour24.toString().padStart(2, '0')}:${minutes}`;
+        }
+        
+        // Regular 24-hour format
+        return timeStr;
+      };
+      
+      const current = extractTime(currentTime);
+      const open = extractTime(openTime);
+      const close = extractTime(closeTime);
+      
+      return current >= open && current < close;
     };
 
     checkOpenStatus();
@@ -111,20 +141,20 @@ const OpenStatus: React.FC<OpenStatusProps> = ({ storeHours }) => {
   }
 
   return (
-    <div className="flex items-center mt-1 text-sm">
-      {isOpen ? (
-        <>
-          <div className="w-2 h-2 rounded-full bg-green-500 mr-2"></div>
-          <span className="text-green-600 font-medium">Open now</span>
-          <span className="text-gray-500 ml-1">· {currentHours}</span>
-        </>
-      ) : (
-        <>
-          <div className="w-2 h-2 rounded-full bg-red-500 mr-2"></div>
-          <span className="text-gray-600 font-medium">Closed</span>
-          <span className="text-gray-500 ml-1">· {nextOpenHours}</span>
-        </>
-      )}
+    <div className="flex items-center mt-1">
+      <div className={`
+        flex items-center gap-2 px-2.5 py-1.5 rounded-lg 
+        ${isOpen ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}
+      `}>
+        <div className={`w-2 h-2 rounded-full ${isOpen ? 'bg-green-500' : 'bg-red-500'}`}></div>
+        <span className="text-sm font-medium">
+          {isOpen ? 'Open now' : 'Closed'}
+        </span>
+      </div>
+      
+      <span className="text-sm text-gray-500 ml-2">
+        {isOpen ? currentHours : nextOpenHours}
+      </span>
     </div>
   );
 };

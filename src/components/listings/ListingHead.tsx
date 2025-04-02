@@ -44,7 +44,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
     <div className="w-full">
       <div className="relative">
         <div className="flex flex-col bg-white rounded-lg border hover:shadow-md transition-all duration-300">
-          <div className="p-5">
+          <div className="p-6">
             <div className="flex flex-col md:flex-row gap-4">
               {/* Left Column - Info */}
               <div className="flex-1 min-w-0">
@@ -66,7 +66,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
                 
                 {/* Location */}
                 <p className="text-gray-500 text-sm mb-4">
-                  {address},<br/>{city}, {stateAcronym} {listing.zipCode}
+                  {address}<br/>{city}, {stateAcronym} {listing.zipCode}
                 </p>
                 
                 {/* Open Status with more spacing */}

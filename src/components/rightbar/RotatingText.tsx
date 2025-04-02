@@ -65,7 +65,7 @@ export default function RotatingText() {
 
   return (
     <div 
-      className="w-full overflow-hidden cursor-pointer bg-slate-900 pb-2 h-32 flex flex-col items-center justify-center"
+      className="w-full overflow-hidden cursor-pointer bg-gray-700 pb-2 h-32 flex flex-col items-center justify-center"
     >
       <div className="rotating-text font-sans text-3xl text-white -ml-14">
         <p>ForMe is </p>

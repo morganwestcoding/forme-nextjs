@@ -253,7 +253,7 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
       <div className="w-full rounded-lg shadow-sm bg-white border px-6 py-6 relative hover:shadow-md transition-all duration-300">
         <div className="mb-6">
           <h2 className="text-xl font-bold mb-1">Booking</h2>
-          <p className="text-gray-500">Reserve your spot before its too late!</p>
+          <p className="text-gray-500 text-sm">Reserve your spot before its too late!</p>
         </div>
 
         <InputField
