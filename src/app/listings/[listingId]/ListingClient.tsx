@@ -165,6 +165,23 @@ const ListingClient: React.FC<ListingClientProps> = ({
     setTime(newTime);
   }, []);
 
+  // New handler for service selection from AboutUsSection
+  const handleServiceSelect = useCallback((serviceId: string, serviceName: string, price: number) => {
+    const service: SelectedService = {
+      value: serviceId,
+      label: `${serviceName} - $${price}`,
+      price: price
+    };
+    
+    handleServiceChange(service);
+    
+    // Scroll to booking section
+    const bookingSection = document.getElementById('booking-section');
+    if (bookingSection) {
+      bookingSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [handleServiceChange]);
+
   return ( 
     <Container>
       <div className="max-w-full">
@@ -179,19 +196,19 @@ const ListingClient: React.FC<ListingClientProps> = ({
               />
               
               {/* About Us section directly beneath ListingHead */}
-              <AboutUsSection 
-  description={listing.description}
-  listing={listing}
-  currentUser={currentUser}
-  isOwner={isOwner}
-  onEditListing={() => rentModal.onOpen(listing)}
-  services={listing.services}
-/>
-
+              <AboutUsSection
+                description={listing.description}
+                listing={listing}
+                currentUser={currentUser}
+                isOwner={isOwner}
+                onEditListing={() => rentModal.onOpen(listing)}
+                services={listing.services}
+                onServiceSelect={handleServiceSelect}
+              />
             </div>
             
             {/* Right column - Booking section */}
-            <div className="w-[40%]">
+            <div className="w-[40%]" id="booking-section">
               <ListingRightBar
                 description={listing.description}
                 listing={listing}

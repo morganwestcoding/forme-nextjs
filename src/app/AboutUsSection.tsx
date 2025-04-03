@@ -1,9 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import HeartButton from "@/components/HeartButton";
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { toast } from "react-hot-toast";
 
 interface AboutUsSectionProps {
   description: string;
@@ -16,6 +14,7 @@ interface AboutUsSectionProps {
     serviceName: string;
     price: number;
   }[];
+  onServiceSelect?: (serviceId: string, serviceName: string, price: number) => void;
 }
 
 const AboutUsSection = ({
@@ -24,7 +23,8 @@ const AboutUsSection = ({
   currentUser,
   isOwner,
   onEditListing,
-  services
+  services,
+  onServiceSelect
 }: AboutUsSectionProps) => {
   const [currentServiceIndex, setCurrentServiceIndex] = useState(0);
   
@@ -36,6 +36,12 @@ const AboutUsSection = ({
     currentServiceIndex * 3, 
     Math.min((currentServiceIndex + 1) * 3, services.length)
   );
+
+  const handleServiceClick = (service: any) => {
+    if (onServiceSelect) {
+      onServiceSelect(service.id, service.serviceName, service.price);
+    }
+  };
 
   return (
     <div className="w-full bg-white border rounded-lg shadow-sm p-6 hover:shadow-md transition-all duration-300">
@@ -82,8 +88,11 @@ const AboutUsSection = ({
         <h2 className="text-lg font-semibold mb-3">Services</h2>
         <div className="grid grid-cols-3 gap-3">
           {currentServices.map(service => (
-            <div key={service.id} 
-                className="p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition">
+            <div 
+              key={service.id} 
+              className="p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition cursor-pointer"
+              onClick={() => handleServiceClick(service)}
+            >
               <h3 className="font-medium text-sm mb-1">{service.serviceName}</h3>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">10min</span>

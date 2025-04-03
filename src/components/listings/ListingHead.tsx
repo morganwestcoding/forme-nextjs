@@ -89,14 +89,25 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
                   
                   {/* Reviews Card */}
                   <div className="bg-gray-50 rounded-lg p-3 shadow-sm flex flex-col items-center">
-                    <div className="font-semibold mb-1">1M+</div>
-                    <span className="text-xs text-gray-500">Reviews</span>
+                  <div className="flex items-center mb-1">
+                      <span className=" font-bold mr-1">1M</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" color="#000000" fill="none">
+    <path d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+</svg>
+                    </div>
+                    <span className="text-xs text-gray-500">Likes</span>
                   </div>
                   
                   {/* Booking Stats Card */}
                   <div className="bg-gray-50 rounded-lg p-3 shadow-sm flex flex-col items-center">
-                    <div className="font-semibold mb-1">24k</div>
-                    <span className="text-xs text-gray-500">Likes</span>
+                  <div className="flex items-center mb-1">
+                      <span className=" font-bold mr-1">24k</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" color="#000000" fill="none">
+    <path d="M18.7083 7C20.1334 8.59227 21 10.6949 21 13C21 17.9706 16.9706 22 12 22C7.02944 22 3 17.9706 3 13C3 10.6949 3.86656 8.59227 5.29168 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+    <path d="M12.0253 2.00052L12 14M12.0253 2.00052C11.8627 1.99379 11.6991 2.05191 11.5533 2.17492C10.6469 2.94006 9 4.92886 9 4.92886M12.0253 2.00052C12.1711 2.00657 12.3162 2.06476 12.4468 2.17508C13.3531 2.94037 15 4.92886 15 4.92886" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+</svg>
+                    </div>
+                    <span className="text-xs text-gray-500">Shares</span>
                   </div>
                 </div>
               </div> 
