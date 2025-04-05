@@ -73,6 +73,7 @@ export async function GET(request: Request) {
         totalPrice: Number(stripeSession.amount_total! / 100), // Convert from cents
         listing: {
           title: stripeSession.metadata.businessName || "Your booking",
+          imageSrc: null // Add a default or null value
         }
       } : null;
 

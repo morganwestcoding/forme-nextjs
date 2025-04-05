@@ -96,8 +96,6 @@ model Reservation {
   serviceName String
   paymentIntentId String?
   paymentStatus   String?  @default("pending") // "pending", "completed", "failed", "refunded"             
-  
-
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
   service     Service @relation(fields: [serviceId], references: [id])  // Add this

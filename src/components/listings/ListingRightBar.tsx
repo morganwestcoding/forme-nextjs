@@ -395,8 +395,8 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
 
         <div className="mt-8 space-y-6">
           <div className="flex justify-between items-center">
-            <span className="text-gray-600 text-lg">Total Price</span>
-            <span className="text-2xl font-semibold">${totalPrice}</span>
+            <span className="text-gray-600 text-base">Total Price</span>
+            <span className="text-lg font-semibold">${totalPrice}</span>
           </div>
           
           <button

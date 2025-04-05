@@ -78,7 +78,8 @@ export async function POST(request: Request) {
         },
       ],
       mode: 'payment',
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/trips/success?session_id={CHECKOUT_SESSION_ID}`,
+      // Corrected success_url - ensure it matches your file structure
+      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/bookings/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/listings/${listingId}`,
       metadata: {
         userId: currentUser.id,
@@ -90,6 +91,7 @@ export async function POST(request: Request) {
         date: new Date(date).toISOString(),
         time,
         note: note || '',
+        businessName: businessName || listing.title,
       },
     });
 

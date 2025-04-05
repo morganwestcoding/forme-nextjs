@@ -1,3 +1,4 @@
+// app/bookings/success/page.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -8,7 +9,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 
-const SuccessPage = () => {
+export default function SuccessPage() {
   const searchParams = useSearchParams();
   const sessionId = searchParams?.get('session_id') || '';
   const [loading, setLoading] = useState(true);
@@ -48,7 +49,7 @@ const SuccessPage = () => {
   useEffect(() => {
     if (success) {
       const timer = setTimeout(() => {
-        router.push('/trips');
+        router.push('/bookings/trips');
       }, 5000);
 
       return () => clearTimeout(timer);
@@ -81,7 +82,7 @@ const SuccessPage = () => {
             <Link href="/" className="px-6 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors">
               Go Home
             </Link>
-            <Link href="/trips" className="px-6 py-3 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors">
+            <Link href="/bookings/trips" className="px-6 py-3 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors">
               My Reservations
             </Link>
           </div>
@@ -162,7 +163,7 @@ const SuccessPage = () => {
               Go Home
             </Link>
             <Link 
-              href="/trips" 
+              href="/bookings/trips" 
               className="px-6 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
             >
               View My Reservations
@@ -172,6 +173,4 @@ const SuccessPage = () => {
       </div>
     </Container>
   );
-};
-
-export default SuccessPage;
+}
