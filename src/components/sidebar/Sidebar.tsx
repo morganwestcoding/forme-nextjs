@@ -218,7 +218,8 @@ const Sidebar: React.FC<SidebarProps> = ({
                       <path d="M9.49811 15.5V17.7274C9.49811 20.101 9.49811 21.2878 10.2083 21.4771C10.9185 21.6663 11.6664 20.6789 13.1622 18.7039L13.9981 17.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
-                  <span className={`ml-3 text-sm ${selectedButton === 'explore' ? 'font-medium' : ''}`}>Vendors
+                  <span className={`ml-3 text-sm ${selectedButton === 'explore' ? 'font-medium' : ''}`}>
+                    Discover
                   </span>
                 </div>
               </li>
@@ -448,7 +449,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                     </svg>
                   </div>
                   <span className={`ml-3 text-sm ${selectedButton === 'vendors' ? 'font-medium' : ''}`}>
-                    Events
+                    Vendors
                   </span>
                 </div>
                 </li>

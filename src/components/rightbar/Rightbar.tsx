@@ -52,80 +52,105 @@ export default function Rightbar({ listings = [], currentUser }: RightbarProps) 
   const router = useRouter();
   const subscribeModal = useSubscribeModal();
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [visibleStores, setVisibleStores] = useState<SafeListing[]>([]);
+
+  useEffect(() => {
+    if (listings && listings.length > 0) {
+      setVisibleStores(listings.slice(0, Math.min(4, listings.length)));
+    }
+  }, [listings]);
 
   useEffect(() => {
     if (listings.length > 4) {
       const interval = setInterval(() => {
-        setCurrentIndex((prevIndex) => 
-          (prevIndex + 4 >= listings.length) ? 0 : prevIndex + 4
-        );
+        handleStoreTransition();
       }, 5000);
 
       return () => clearInterval(interval);
     }
-  }, [listings?.length]);
+  }, [listings?.length, currentIndex]);
 
-    // Add null check for listings
-    if (!listings || listings.length === 0) {
-      console.log('No listings available');
-      return null;
-    }
-  
+  const handleStoreTransition = () => {
+    setIsTransitioning(true);
+    
+    // After fade out completes, update the stores
+    setTimeout(() => {
+      const newIndex = (currentIndex + 4 >= listings.length) ? 0 : currentIndex + 4;
+      setCurrentIndex(newIndex);
+      setVisibleStores(listings.slice(newIndex, Math.min(newIndex + 4, listings.length)));
+      
+      // Trigger fade in
+      setTimeout(() => {
+        setIsTransitioning(false);
+      }, 50);
+    }, 500); // This should match the CSS transition duration
+  };
 
-    const currentStores = listings?.slice(currentIndex, Math.min(currentIndex + 4, listings.length)) || [];
-    const totalPages = Math.ceil(listings.length / 4); // Add this line before return
+  // Add null check for listings
+  if (!listings || listings.length === 0) {
+    console.log('No listings available');
+    return null;
+  }
+
+  const totalPages = Math.ceil(listings.length / 4);
 
   return (
     <div className="hidden md:flex flex-col gap-6 h-auto mt-8 w-full">
       <Search />
 
       {/* Trending Stores Section */}
-      <div className="w-full ">
-     
-          <div className="flex items-center justify-between mb-3.5">
-            <h2 className="text-lg font-semibold">Trending Stores</h2>
-            <button 
-              className="text-sm text-gray-500 hover:text-[#F08080] transition-colors"
-              onClick={() => router.push('/listings')}
-            >
-              View all
-            </button>
-          </div>
+      <div className="w-full">
+        <div className="flex items-center justify-between mb-3.5">
+          <h2 className="text-lg font-semibold">Trending Stores</h2>
+          <button 
+            className="text-sm text-gray-500 hover:text-[#60A5FA] transition-colors"
+            onClick={() => router.push('/listings')}
+          >
+            View all
+          </button>
+        </div>
 
-          <div className="grid grid-cols-4 gap-2 ">
-            {currentStores.map((listing, index) => (
-              <div 
-                key={index}
-                onClick={() => router.push(`/listings/${listing.id}`)}
-                className="aspect-w-1 aspect-h-1 w-full"
-              >
-                <div
-                  className="w-full h-full bg-gray-300 shadow-sm rounded-lg"
-                  style={{ 
-                    backgroundImage: `url(${listing.imageSrc})`, 
-                    backgroundSize: 'cover', 
-                    backgroundPosition: 'center'
-                  }}
-                />
-              </div>
+        <div className="grid grid-cols-4 gap-2">
+          {visibleStores.map((listing, index) => (
+            <div 
+              key={`${listing.id}-${index}`}
+              onClick={() => router.push(`/listings/${listing.id}`)}
+              className={`aspect-w-1 aspect-h-1 w-full transition-opacity duration-500 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}
+            >
+              <div
+                className="w-full h-full bg-gray-300 shadow-sm rounded-lg"
+                style={{ 
+                  backgroundImage: `url(${listing.imageSrc})`, 
+                  backgroundSize: 'cover', 
+                  backgroundPosition: 'center'
+                }}
+              />
+            </div>
+          ))}
+        </div>
+
+        {listings.length > 4 && (
+          <div className="flex justify-center gap-2 mt-2">
+            {Array.from({ length: totalPages }).map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => {
+                  setIsTransitioning(true);
+                  setTimeout(() => {
+                    setCurrentIndex(idx * 4);
+                    setVisibleStores(listings.slice(idx * 4, Math.min((idx * 4) + 4, listings.length)));
+                    setTimeout(() => setIsTransitioning(false), 50);
+                  }, 500);
+                }}
+                className={`w-2 h-2 rounded-full ${currentIndex === idx * 4 ? 'bg-[#60A5FA]' : 'bg-gray-300'} transition-colors`}
+              />
             ))}
           </div>
-
-          {listings.length > 4 && (
-            <div className="flex justify-center gap-2 shadow-sm">
-              {Array.from({ length: totalPages }).map((_, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setCurrentIndex(idx * 4)}
-                />
-              ))}
-            </div>
-          )}
-    
+        )}
       </div>
 
-         
-            <div 
+      <div 
         className="relative rounded-lg overflow-hidden -mt-2 cursor-pointer bg-slate-800"
         onClick={() => subscribeModal.onOpen()}
       >
@@ -133,30 +158,25 @@ export default function Rightbar({ listings = [], currentUser }: RightbarProps) 
           <RotatingText />
         </div>
       </div>
-  
 
       {/* Events Section */}
       <div className="w-full">
-      
-          <div className="flex items-center justify-between mb-4 -mt-2">
-            <h2 className="text-lg font-semibold">Upcoming Events</h2>
-            <button 
-              className="text-sm text-gray-500 hover:text-[#F08080] transition-colors"
-              onClick={() => router.push('/events')}
-            >
-              View all
-            </button>
-          </div>
-
-          <div className="flex flex-col">
-            {events.map((event, index) => (
-              <EventCard key={index} event={event} />
-            ))}
-          </div>
+        <div className="flex items-center justify-between mb-4 -mt-2">
+          <h2 className="text-lg font-semibold">Upcoming Events</h2>
+          <button 
+            className="text-sm text-gray-500 hover:text-[#F08080] transition-colors"
+            onClick={() => router.push('/events')}
+          >
+            View all
+          </button>
         </div>
-  
 
-
+        <div className="flex flex-col">
+          {events.map((event, index) => (
+            <EventCard key={index} event={event} />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
