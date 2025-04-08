@@ -260,7 +260,7 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
   return (
     <>
       {!isHidden && (
-        <div className='w-full h-auto rounded-lg border bg-[#ffffff]  duration-600 transition-all hover:bg-gray-50 hover:shadow-md z-1 p-6 md:mr-6 my-4 relative cursor-pointer' onClick={openPostModal}>
+        <div className='w-full h-auto rounded-lg border bg-[#ffffff] duration-600 transition-all hover:bg-gray-50 hover:shadow-md z-1 p-6 md:mr-6 my-4 relative cursor-pointer' onClick={openPostModal}>
           <div className="absolute top-4 right-3">
             <DropdownMenu>
               <DropdownMenuTrigger>
@@ -356,18 +356,11 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
                 </svg>
               </div>
 
-              {/* Like Button */}
+              {/* Like Button - Simplified */}
               <div 
                 onClick={(e) => { e.stopPropagation(); handleLike(); }}
-                style={{
-                  background: isLiked ? `linear-gradient(to top right, ${accentColor}33, ${accentColor}11)` : '',
-                  boxShadow: isLiked ? `0 0 12px ${accentColor}33` : ''
-                }}
-                className={`flex items-center justify-center p-3 rounded-full cursor-pointer transition-all duration-300 relative
-                  ${isLiked 
-                    ? '' 
-                    : 'bg-gray-50 border border-gray-100 hover:shadow-[0_0_12px_rgba(0,0,0,0.05)]'
-                  }`}
+                className="flex items-center justify-center p-3 rounded-full cursor-pointer transition-all duration-300 relative 
+                  bg-gray-50 border border-gray-100 hover:shadow-[0_0_12px_rgba(0,0,0,0.05)]"
               >
                 <svg 
                   xmlns="http://www.w3.org/2000/svg" 
@@ -391,15 +384,11 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
                 )}
               </div>
 
-              {/* Bookmark Button */}
+              {/* Bookmark Button - Simplified */}
               <div
                 onClick={(e) => { e.stopPropagation(); handleBookmark(); }}
-                style={{
-                  background: isBookmarked ? `linear-gradient(to top right, ${accentColor}33, ${accentColor}11)` : 'rgb(249 250 251)',
-                  boxShadow: isBookmarked ? `0 0 12px ${accentColor}33` : '',
-                  border: isBookmarked ? 'none' : '1px solid rgb(243 244 246)'
-                }}
-                className="flex items-center justify-center p-3 rounded-full cursor-pointer transition-all duration-300 relative"
+                className="flex items-center justify-center p-3 rounded-full cursor-pointer transition-all duration-300 relative
+                  bg-gray-50 border border-gray-100 hover:shadow-[0_0_12px_rgba(0,0,0,0.05)]"
               >
                 <svg 
                   xmlns="http://www.w3.org/2000/svg" 
