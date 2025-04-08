@@ -11,7 +11,7 @@ interface CategoryButtonProps {
   initialCategory?: string;
 }
 
-const ModernSpinner = ({ color, isTransitioning, prevColor }: { 
+const RingSpinner = ({ color, isTransitioning, prevColor }: { 
   color: string, 
   isTransitioning: boolean,
   prevColor: string 
@@ -43,7 +43,7 @@ const ModernSpinner = ({ color, isTransitioning, prevColor }: {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        {/* Simple white background circle */}
+        {/* Background circle */}
         <circle
           cx="12"
           cy="12"
@@ -52,25 +52,34 @@ const ModernSpinner = ({ color, isTransitioning, prevColor }: {
           filter="drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.1))"
         />
         
-        {/* Main circle border - updates with category color */}
+        {/* Circular track */}
+        <circle
+          cx="12"
+          cy="12"
+          r="7"
+          stroke="#F0F0F0"
+          strokeWidth="2.5"
+          fill="none"
+        />
+        
+        {/* Main colored circle */}
         <circle
           cx="12"
           cy="12"
           r="7"
           stroke={isTransitioning ? previousColor : currentColor}
-          strokeWidth="1.5"
-          fill="white"
-          strokeOpacity={isTransitioning ? 0.7 : 1}
+          strokeWidth="2.5"
+          fill="none"
         />
         
-        {/* Animated circle that draws when changing category */}
+        {/* Animated circle that draws clockwise when changing category */}
         {isTransitioning && (
           <circle
             cx="12"
             cy="12"
             r="7"
             stroke={currentColor}
-            strokeWidth="1.5"
+            strokeWidth="2.5"
             fill="none"
             strokeDasharray="44"
             className="origin-center"
@@ -80,16 +89,6 @@ const ModernSpinner = ({ color, isTransitioning, prevColor }: {
             }}
           />
         )}
-
-        {/* Pulsing inner dot */}
-        <circle
-          cx="12"
-          cy="12"
-          r="3.5"
-          fill={showNewColor ? currentColor : previousColor}
-          className="animate-pulse"
-          style={{ animationDuration: '2s' }}
-        />
       </svg>
       
       {/* Animation styles */}
@@ -195,7 +194,7 @@ const ModernCategory: React.FC<CategoryButtonProps> = ({
           </div>
           
           <div className="relative flex-shrink-0">
-            <ModernSpinner 
+            <RingSpinner 
               color={selectedCategoryColor}
               prevColor={prevCategoryColor}
               isTransitioning={isTransitioning}

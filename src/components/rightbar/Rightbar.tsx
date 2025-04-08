@@ -131,7 +131,7 @@ export default function Rightbar({ listings = [], currentUser }: RightbarProps) 
         </div>
 
         {listings.length > 4 && (
-          <div className="flex justify-center gap-2 mt-2">
+          <div className="flex justify-center gap-2 mt-4">
             {Array.from({ length: totalPages }).map((_, idx) => (
               <button
                 key={idx}
