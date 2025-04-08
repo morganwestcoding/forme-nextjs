@@ -39,6 +39,7 @@ model User {
   conversationIds String[]       @db.ObjectId
   conversations   Conversation[] @relation(fields: [conversationIds], references: [id])
   messages       Message[]       // Add this line
+  shops           Shop[]
 }
 
 model Account {
@@ -78,7 +79,8 @@ model Listing {
   zipCode       String?
   galleryImages  String[]
   employees Employee[]
-  storeHours     StoreHours[]  // Add this line
+  storeHours     StoreHours[]
+  shop            Shop?
 }
 
 model Reservation {
@@ -198,4 +200,83 @@ model Employee {
   listingId    String        @db.ObjectId
   listing      Listing       @relation(fields: [listingId], references: [id], onDelete: Cascade)
   reservations Reservation[] // Add this line
+}
+
+
+model Shop {
+  id             String     @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
+  description    String
+  logo           String
+  coverImage     String?
+  location       String?
+  userId         String     @db.ObjectId
+  storeUrl       String?    // Changed from websiteUrl to avoid confusion
+  socials        Json?      // Store social links as JSON {instagram: "url", facebook: "url"}
+  galleryImages  String[]
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  isVerified     Boolean    @default(false)
+  
+  // Relationships
+  user           User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  products       Product[]
+  followers      String[]   @db.ObjectId // User IDs who follow this shop
+  
+  // Optional connection to a listing
+  listingId      String?    @db.ObjectId @unique // Add @unique for one-to-one relation
+  listing        Listing?   @relation(fields: [listingId], references: [id], onDelete: SetNull)
+  
+  // Shop settings
+  shopEnabled    Boolean    @default(true)
+  featuredProducts String[]  @db.ObjectId // IDs of products to feature
+}
+
+model Product {
+  id             String     @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
+  description    String
+  price          Float
+  compareAtPrice Float?     // Original price for showing discounts
+  mainImage      String
+  galleryImages  String[]
+  shopId         String     @db.ObjectId
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  sku            String?
+  barcode        String?    // UPC, EAN, etc.
+  
+  // Product details
+  categoryId     String     @db.ObjectId
+  category       ProductCategory @relation(fields: [categoryId], references: [id])
+  tags           String[]
+  isPublished    Boolean    @default(true)
+  isFeatured     Boolean    @default(false)
+  
+  // Inventory
+  inventory      Int        @default(0)
+  lowStockThreshold Int     @default(5)
+  
+  // Shipping info
+  weight         Float?
+  
+  // Relationships
+  shop           Shop       @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  favoritedBy    String[]   @db.ObjectId // User IDs who favorited this product
+  reviews        Json?      // Store reviews as JSON [{userId, rating, comment, date}]
+  
+  // Product options (like size, color) stored as JSON
+  options        Json?      // [{name: "Size", values: ["S", "M", "L"]}]
+  variants       Json?      // [{sku, price, inventory, optionValues: {Size: "M", Color: "Blue"}}]
+}
+
+model ProductCategory {
+  id             String     @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
+  description    String?
+  image          String?
+  parentId       String?    @db.ObjectId
+  parent         ProductCategory? @relation("SubCategories", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  subCategories  ProductCategory[] @relation("SubCategories")
+  products       Product[]
 }

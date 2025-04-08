@@ -52,23 +52,23 @@ const RingSpinner = ({ color, isTransitioning, prevColor }: {
           filter="drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.1))"
         />
         
-        {/* Circular track */}
+        {/* Circular track - smaller inner circle, wider stroke */}
         <circle
           cx="12"
           cy="12"
-          r="7"
+          r="6.5"
           stroke="#F0F0F0"
-          strokeWidth="2.5"
+          strokeWidth="3.5"
           fill="none"
         />
         
-        {/* Main colored circle */}
+        {/* Main colored circle - smaller radius, wider stroke */}
         <circle
           cx="12"
           cy="12"
-          r="7"
+          r="6.5"
           stroke={isTransitioning ? previousColor : currentColor}
-          strokeWidth="2.5"
+          strokeWidth="3.5"
           fill="none"
         />
         
@@ -77,14 +77,14 @@ const RingSpinner = ({ color, isTransitioning, prevColor }: {
           <circle
             cx="12"
             cy="12"
-            r="7"
+            r="6.5"
             stroke={currentColor}
-            strokeWidth="2.5"
+            strokeWidth="3.5"
             fill="none"
-            strokeDasharray="44"
+            strokeDasharray="40.84" // 2 * PI * 6.5
             className="origin-center"
             style={{
-              strokeDashoffset: 44,
+              strokeDashoffset: 40.84,
               animation: "drawCircle 0.8s forwards ease-in-out"
             }}
           />

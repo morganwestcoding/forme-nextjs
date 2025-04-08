@@ -17,14 +17,13 @@ const ExploreHeader: React.FC<ExploreHeaderProps> = ({
     { id: 'all', label: 'All' },
     { id: 'trending', label: 'Trending' },
     { id: 'stores', label: 'Stores' },
-    { id: 'events', label: 'Events' },
     { id: 'products', label: 'Products' },
   ];
   
   return (
     <div className="w-full">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Explore</h1>
+        <h1 className="text-2xl font-bold">Shop</h1>
         <div className="flex items-center gap-2">
           <button
             onClick={() => router.push('/search')}

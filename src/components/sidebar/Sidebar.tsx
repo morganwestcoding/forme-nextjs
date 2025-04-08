@@ -231,10 +231,10 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <div 
                   className={`
                     flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
-                    ${selectedButton === 'explore' ? '' : 'text-neutral-500 hover:text-neutral-700 hover:bg-gray-50'}
+                    ${selectedButton === 'shops' ? '' : 'text-neutral-500 hover:text-neutral-700 hover:bg-gray-50'}
                   `} 
-                  onClick={() => handleNavigate('/explore', 'explore')}
-                  style={selectedButton === 'explore' ? getTextColorStyle(true) : {}}
+                  onClick={() => handleNavigate('/shops', 'shops')}
+                  style={selectedButton === 'shops' ? getTextColorStyle(true) : {}}
                 >
                   <div className="w-8 flex justify-center">
                     <svg 
@@ -364,38 +364,6 @@ const Sidebar: React.FC<SidebarProps> = ({
                   </span>
                 </div>
               </li>
-
-              <li className="relative w-full">
-                <div 
-                  className={`
-                    flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
-                    ${selectedButton === 'analytics' ? '' : 'text-neutral-500 hover:text-neutral-700 hover:bg-gray-50'}
-                  `} 
-                  onClick={() => handleNavigate('/analytics', 'analytics')}
-                  style={selectedButton === 'analytics' ? getTextColorStyle(true) : {}}
-                >
-                  <div className="w-8 flex justify-center">
-                    <svg 
-                      xmlns="http://www.w3.org/2000/svg" 
-                      viewBox="0 0 24 24" 
-                      width="20" 
-                      height="20" 
-                      fill="none"
-                      className="flex-shrink-0"
-                      style={selectedButton === 'analytics' ? getTextColorStyle(true) : {}}
-                    >
-                      <path d="M4 9V20" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                      <path d="M8 4V20" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                      <path d="M12 11V20" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                      <path d="M16 7V20" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                      <path d="M20 14V20" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </div>
-                  <span className={`ml-3 text-sm ${selectedButton === 'analytics' ? 'font-medium' : ''}`}>
-                    Analytics
-                  </span>
-                </div>
-              </li>
             </ul>
           </div>
   
@@ -429,7 +397,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                     </svg>
                   </div>
                   <span className={`ml-3 text-sm ${selectedButton === 'jobs' ? 'font-medium' : ''}`}>
-                    Jobs
+                    Events
                   </span>
                 </div>
               </li>

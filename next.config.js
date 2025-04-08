@@ -6,7 +6,8 @@ const nextConfig = {
             "lh3.googleusercontent.com",
             "avatars.githubusercontent.com",
             "res.cloudinary.com",
-            "images.unsplash.com"
+            "images.unsplash.com",
+            "via.placeholder.com"
         ],
     }
 }

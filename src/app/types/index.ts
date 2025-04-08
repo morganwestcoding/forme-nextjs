@@ -165,3 +165,115 @@ export type SafeStoreHours = {
   isClosed: boolean;
 };
 
+export type SafeShop = {
+  id: string;
+  name: string;
+  description: string;
+  logo: string;
+  coverImage?: string | null;
+  location?: string | null;
+  userId: string;
+  storeUrl?: string | null;
+  socials?: {
+    instagram?: string;
+    facebook?: string;
+    twitter?: string;
+    tiktok?: string;
+    youtube?: string;
+    [key: string]: string | undefined;
+  } | null;
+  galleryImages: string[];
+  createdAt: string;
+  updatedAt: string;
+  isVerified: boolean;
+  shopEnabled: boolean;
+  featuredProducts: string[];
+  followers: string[];
+  listingId?: string | null;
+  user: {
+    id: string;
+    name: string | null;
+    image: string | null;
+  };
+  // Calculated fields that might be included from queries
+  productCount?: number;
+  followerCount?: number;
+  featuredProductItems?: {
+    id: string;
+    name: string;
+    price: number;
+    image: string;
+  }[];
+};
+
+// Product review type for the JSON structure
+export interface ProductReview {
+  userId: string;
+  userName?: string;
+  userImage?: string;
+  rating: number;
+  comment?: string;
+  date: string;
+}
+
+// Product variant type for the JSON structure
+export interface ProductVariant {
+  id?: string;
+  sku?: string;
+  price: number;
+  compareAtPrice?: number;
+  inventory: number;
+  optionValues: {
+    [optionName: string]: string;
+  };
+}
+
+// Product option type for the JSON structure
+export interface ProductOption {
+  name: string;
+  values: string[];
+}
+
+export type SafeProduct = {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  compareAtPrice?: number | null;
+  mainImage: string;
+  galleryImages: string[];
+  shopId: string;
+  createdAt: string;
+  updatedAt: string;
+  sku?: string | null;
+  barcode?: string | null;
+  categoryId: string;
+  category: {
+    id: string;
+    name: string;
+  };
+  tags: string[];
+  isPublished: boolean;
+  isFeatured: boolean;
+  inventory: number;
+  lowStockThreshold: number;
+  weight?: number | null;
+  shop: {
+    id: string;
+    name: string;
+    logo: string;
+  };
+  favoritedBy: string[];
+  reviews?: ProductReview[] | null;
+  options?: ProductOption[] | null;
+  variants?: ProductVariant[] | null;
+};
+
+export type SafeProductCategory = {
+  id: string;
+  name: string;
+  description?: string | null;
+  image?: string | null;
+  parentId?: string | null;
+  productCount?: number;
+};
