@@ -11,7 +11,7 @@ interface CategoryButtonProps {
   initialCategory?: string;
 }
 
-const FuturisticSpinner = ({ color, isTransitioning, prevColor }: { 
+const ModernSpinner = ({ color, isTransitioning, prevColor }: { 
   color: string, 
   isTransitioning: boolean,
   prevColor: string 
@@ -43,116 +43,68 @@ const FuturisticSpinner = ({ color, isTransitioning, prevColor }: {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        {/* Base circle with subtle shadow */}
+        {/* Simple white background circle */}
         <circle
           cx="12"
           cy="12"
-          r="11"
+          r="10"
           fill="white"
           filter="drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.1))"
         />
         
-        {/* Rotating ring */}
-        <circle 
-          cx="12" 
-          cy="12" 
-          r="8.5" 
-          stroke={isTransitioning ? previousColor : currentColor}
-          strokeWidth="0.75" 
-          strokeDasharray="4 2" 
-          fill="none"
-          className="animate-spin"
-          style={{ 
-            animationDuration: '8s',
-            transformOrigin: 'center'
-          }}
-        />
-        
-        {/* Inner rotating ring (opposite direction) */}
-        <circle 
-          cx="12" 
-          cy="12" 
-          r="6.5" 
-          stroke={isTransitioning ? previousColor : currentColor}
-          strokeWidth="0.5" 
-          strokeDasharray="1 1" 
-          fill="none"
-          className="animate-spin"
-          style={{ 
-            animationDuration: '4s',
-            animationDirection: 'reverse',
-            transformOrigin: 'center'
-          }}
-        />
-
-        {/* Main circle border */}
+        {/* Main circle border - updates with category color */}
         <circle
           cx="12"
           cy="12"
-          r="5"
+          r="7"
           stroke={isTransitioning ? previousColor : currentColor}
           strokeWidth="1.5"
-          fill={isTransitioning ? 'white' : 'white'}
+          fill="white"
           strokeOpacity={isTransitioning ? 0.7 : 1}
         />
         
-        {/* Animated arc that draws when changing category */}
+        {/* Animated circle that draws when changing category */}
         {isTransitioning && (
-          <>
-            <circle
-              cx="12"
-              cy="12"
-              r="5"
-              stroke={currentColor}
-              strokeWidth="1.5"
-              fill="none"
-              strokeDasharray="31.4"
-              className="origin-center animate-drawArc"
-              style={{
-                strokeDashoffset: 31.4,
-                animation: "drawArc 0.8s forwards ease-in-out"
-              }}
-            />
-            <style jsx>{`
-              @keyframes drawArc {
-                to {
-                  stroke-dashoffset: 0;
-                }
-              }
-            `}</style>
-          </>
+          <circle
+            cx="12"
+            cy="12"
+            r="7"
+            stroke={currentColor}
+            strokeWidth="1.5"
+            fill="none"
+            strokeDasharray="44"
+            className="origin-center"
+            style={{
+              strokeDashoffset: 44,
+              animation: "drawCircle 0.8s forwards ease-in-out"
+            }}
+          />
         )}
 
         {/* Pulsing inner dot */}
         <circle
           cx="12"
           cy="12"
-          r="2.5"
+          r="3.5"
           fill={showNewColor ? currentColor : previousColor}
           className="animate-pulse"
           style={{ animationDuration: '2s' }}
         />
-        
-        {/* Tech lines */}
-        {[45, 135, 225, 315].map((angle, i) => (
-          <line 
-            key={i}
-            x1="12"
-            y1="12"
-            x2={12 + 10 * Math.cos(angle * Math.PI / 180)}
-            y2={12 + 10 * Math.sin(angle * Math.PI / 180)}
-            stroke={isTransitioning ? previousColor : currentColor}
-            strokeWidth="0.4"
-            strokeOpacity="0.6"
-            strokeDasharray="1 1"
-          />
-        ))}
       </svg>
+      
+      {/* Animation styles */}
+      <style jsx>{`
+        @keyframes drawCircle {
+          to {
+            stroke-dashoffset: 0;
+          }
+        }
+      `}</style>
     </div>
   );
 };
 
-const FuturisticCategory: React.FC<CategoryButtonProps> = ({
+const ModernCategory: React.FC<CategoryButtonProps> = ({
   onCategoryChange,
   initialCategory = "Default"
 }) => {
@@ -243,7 +195,7 @@ const FuturisticCategory: React.FC<CategoryButtonProps> = ({
           </div>
           
           <div className="relative flex-shrink-0">
-            <FuturisticSpinner 
+            <ModernSpinner 
               color={selectedCategoryColor}
               prevColor={prevCategoryColor}
               isTransitioning={isTransitioning}
@@ -305,4 +257,4 @@ const FuturisticCategory: React.FC<CategoryButtonProps> = ({
   );
 };
 
-export default FuturisticCategory;
+export default ModernCategory;
