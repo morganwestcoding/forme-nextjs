@@ -1,6 +1,6 @@
 'use client'
 import { useSearchParams } from 'next/navigation';
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import Avatar from '../ui/avatar';
 import { SafeUser, SafeComment, MediaType } from '@/app/types';
 import Image from 'next/image';
@@ -39,6 +39,51 @@ interface PostProps {
   categories: typeof categories;
 }
 
+// Helper component for the gradient SVG definitions
+const GradientDefinitions = ({ accentColor, uniqueId }: { accentColor: string, uniqueId: string }) => {
+  // Generate lighter versions of colors for gradients
+  const lightenColor = (hex: string, percent: number) => {
+    try {
+      // Convert hex to RGB
+      const r = parseInt(hex.slice(1, 3), 16);
+      const g = parseInt(hex.slice(3, 5), 16);
+      const b = parseInt(hex.slice(5, 7), 16);
+      
+      // Calculate lighter versions (moving toward white)
+      const lighterR = Math.min(255, Math.floor(r + (255 - r) * percent));
+      const lighterG = Math.min(255, Math.floor(g + (255 - g) * percent));
+      const lighterB = Math.min(255, Math.floor(b + (255 - b) * percent));
+      
+      // Convert back to hex
+      return `#${lighterR.toString(16).padStart(2, '0')}${lighterG.toString(16).padStart(2, '0')}${lighterB.toString(16).padStart(2, '0')}`;
+    } catch (e) {
+      // Fallback if any issues with color processing
+      return hex;
+    }
+  };
+
+  return (
+    <svg width="0" height="0" style={{ position: 'absolute' }}>
+      <defs>
+        {/* Color gradient for base color */}
+        <linearGradient id={`colorGradient-${uniqueId}`} x1="0" y1="0" x2="0" y2="24" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor={lightenColor(accentColor, 0.2)} />
+          <stop offset="50%" stopColor={accentColor} />
+          <stop offset="100%" stopColor={lightenColor(accentColor, 0.1)} />
+        </linearGradient>
+        
+        {/* Shine overlay - diagonal white gradient for sheen effect */}
+        <linearGradient id={`shineGradient-${uniqueId}`} x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="white" stopOpacity="0.5" />
+          <stop offset="25%" stopColor="white" stopOpacity="0.1" />
+          <stop offset="50%" stopColor="white" stopOpacity="0" />
+          <stop offset="100%" stopColor="white" stopOpacity="0.2" />
+        </linearGradient>
+      </defs>
+    </svg>
+  );
+};
+
 const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
   const [formattedDate, setFormattedDate] = useState<string | null>(null);
   const [likes, setLikes] = useState(post.likes);
@@ -46,6 +91,9 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
   const [isHidden, setIsHidden] = useState(false);
   const router = useRouter();
   const postModal = usePostModal();
+
+  // Generate unique IDs for SVG gradients to prevent conflicts
+  const uniqueId = useMemo(() => Math.random().toString(36).substring(2, 9), []);
 
   useEffect(() => {
     const formatCreatedAt = (createdAt: string) => {
@@ -257,10 +305,94 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
     return null;
   };
 
+  // Render the heart icon with gradient when liked
+  const renderHeartIcon = () => {
+    if (isLiked) {
+      return (
+        <svg 
+          xmlns="http://www.w3.org/2000/svg" 
+          viewBox="0 0 24 24" 
+          width={20} 
+          height={20}
+          fill={`url(#colorGradient-${uniqueId})`}
+          stroke="none"
+        >
+          <path d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z" />
+          
+          {/* Shine overlay */}
+          <path 
+            d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z" 
+            fill={`url(#shineGradient-${uniqueId})`}
+            style={{ mixBlendMode: 'soft-light', opacity: 0.7 }}
+          />
+        </svg>
+      );
+    } else {
+      return (
+        <svg 
+          xmlns="http://www.w3.org/2000/svg" 
+          viewBox="0 0 24 24" 
+          width={20} 
+          height={20}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          className="text-neutral-600"
+        >
+          <path d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+      );
+    }
+  };
+
+  // Render the bookmark icon with gradient when bookmarked
+  const renderBookmarkIcon = () => {
+    if (isBookmarked) {
+      return (
+        <svg 
+          xmlns="http://www.w3.org/2000/svg" 
+          viewBox="0 0 24 24" 
+          width={20} 
+          height={20}
+          fill={`url(#colorGradient-${uniqueId})`}
+          stroke="none"
+        >
+          <path d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z" />
+          
+          {/* Shine overlay */}
+          <path 
+            d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z" 
+            fill={`url(#shineGradient-${uniqueId})`}
+            style={{ mixBlendMode: 'soft-light', opacity: 0.7 }}
+          />
+        </svg>
+      );
+    } else {
+      return (
+        <svg 
+          xmlns="http://www.w3.org/2000/svg" 
+          viewBox="0 0 24 24" 
+          width={20} 
+          height={20}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          className="text-neutral-600"
+        >
+          <path d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M4 7H20" stroke="currentColor" strokeWidth="1.5" />
+        </svg>
+      );
+    }
+  };
+
   return (
     <>
       {!isHidden && (
         <div className='w-full h-auto rounded-lg border bg-[#ffffff] duration-600 transition-all hover:bg-gray-50 hover:shadow-md z-1 p-6 md:mr-6 my-4 relative cursor-pointer' onClick={openPostModal}>
+          {/* Add the SVG gradient definitions */}
+          <GradientDefinitions accentColor={accentColor} uniqueId={uniqueId} />
+          
           <div className="absolute top-4 right-3">
             <DropdownMenu>
               <DropdownMenuTrigger>
@@ -356,24 +488,13 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
                 </svg>
               </div>
 
-              {/* Like Button - Simplified */}
+              {/* Like Button - With Gradient Effect */}
               <div 
                 onClick={(e) => { e.stopPropagation(); handleLike(); }}
                 className="flex items-center justify-center p-3 rounded-full cursor-pointer transition-all duration-300 relative 
                   bg-gray-50 border border-gray-100 hover:shadow-[0_0_12px_rgba(0,0,0,0.05)]"
               >
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  viewBox="0 0 24 24" 
-                  width={20} 
-                  height={20}
-                  style={{ color: isLiked ? accentColor : 'rgb(82 82 91)' }}
-                  fill={isLiked ? accentColor : "none"}
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                >
-                <path d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                </svg>
+                {renderHeartIcon()}
                 {likes.length > 0 && (
                   <span 
                     className="absolute -top-1 -right-1 rounded-full min-w-[18px] h-[18px] flex items-center justify-center text-[11px] font-medium text-white shadow-sm"
@@ -384,25 +505,13 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
                 )}
               </div>
 
-              {/* Bookmark Button - Simplified */}
+              {/* Bookmark Button - With Gradient Effect */}
               <div
                 onClick={(e) => { e.stopPropagation(); handleBookmark(); }}
                 className="flex items-center justify-center p-3 rounded-full cursor-pointer transition-all duration-300 relative
                   bg-gray-50 border border-gray-100 hover:shadow-[0_0_12px_rgba(0,0,0,0.05)]"
               >
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  viewBox="0 0 24 24" 
-                  width={20} 
-                  height={20}
-                  style={{ color: isBookmarked ? accentColor : 'rgb(82 82 91)' }}
-                  fill={isBookmarked ? accentColor : "none"}
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                >
-                <path d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M4 7H20" stroke="currentColor" strokeWidth="1.5" />
-                </svg>
+                {renderBookmarkIcon()}
                 {bookmarks.length > 0 && (
                   <span 
                     className="absolute -top-1 -right-1 rounded-full min-w-[18px] h-[18px] flex items-center justify-center text-[11px] font-medium text-white shadow-sm"
@@ -421,3 +530,6 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
 };
 
 export default Post;
+                  
+
+                  

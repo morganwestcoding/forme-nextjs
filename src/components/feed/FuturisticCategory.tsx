@@ -28,6 +28,7 @@ const RingSpinner = ({ color, isTransitioning, prevColor }: {
     }
   }, [isTransitioning]);
 
+  // Extract hex color from bg-[#HEXCODE] format
   const getHexColor = (bgColor: string) => {
     const match = bgColor.match(/#[A-Fa-f0-9]{6}/);
     return match ? match[0] : '#60A5FA';
@@ -35,6 +36,35 @@ const RingSpinner = ({ color, isTransitioning, prevColor }: {
 
   const currentColor = getHexColor(color);
   const previousColor = getHexColor(prevColor);
+  
+  // Generate lighter versions of colors for gradients
+  const lightenColor = (hex: string, percent: number) => {
+    try {
+      // Convert hex to RGB
+      const r = parseInt(hex.slice(1, 3), 16);
+      const g = parseInt(hex.slice(3, 5), 16);
+      const b = parseInt(hex.slice(5, 7), 16);
+      
+      // Calculate lighter versions (moving toward white)
+      const lighterR = Math.min(255, Math.floor(r + (255 - r) * percent));
+      const lighterG = Math.min(255, Math.floor(g + (255 - g) * percent));
+      const lighterB = Math.min(255, Math.floor(b + (255 - b) * percent));
+      
+      // Convert back to hex
+      return `#${lighterR.toString(16).padStart(2, '0')}${lighterG.toString(16).padStart(2, '0')}${lighterB.toString(16).padStart(2, '0')}`;
+    } catch (e) {
+      // Fallback if any issues with color processing
+      return hex;
+    }
+  };
+
+  // Generate unique gradient IDs to prevent conflicts if multiple spinners on page
+  const uniqueId = React.useMemo(() => `gradient-${Math.random().toString(36).substring(2, 9)}`, []);
+  const currentGradientId = `current-${uniqueId}`;
+  const prevGradientId = `prev-${uniqueId}`;
+  const animatedGradientId = `animated-${uniqueId}`;
+  const shineGradientId = `shine-${uniqueId}`;
+  const animatedShineGradientId = `animated-shine-${uniqueId}`;
 
   return (
     <div className="relative w-7 h-7">
@@ -43,6 +73,46 @@ const RingSpinner = ({ color, isTransitioning, prevColor }: {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
+        {/* Define gradients */}
+        <defs>
+          {/* Current color gradient - vertical gradient for base color */}
+          <linearGradient id={currentGradientId} x1="12" y1="5" x2="12" y2="19" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor={lightenColor(currentColor, 0.2)} />
+            <stop offset="50%" stopColor={currentColor} />
+            <stop offset="100%" stopColor={lightenColor(currentColor, 0.1)} />
+          </linearGradient>
+          
+          {/* Previous color gradient */}
+          <linearGradient id={prevGradientId} x1="12" y1="5" x2="12" y2="19" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor={lightenColor(previousColor, 0.2)} />
+            <stop offset="50%" stopColor={previousColor} />
+            <stop offset="100%" stopColor={lightenColor(previousColor, 0.1)} />
+          </linearGradient>
+          
+          {/* Animated color gradient */}
+          <linearGradient id={animatedGradientId} x1="12" y1="5" x2="12" y2="19" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor={lightenColor(currentColor, 0.2)} />
+            <stop offset="50%" stopColor={currentColor} />
+            <stop offset="100%" stopColor={lightenColor(currentColor, 0.1)} />
+          </linearGradient>
+          
+          {/* Shine overlay - diagonal white gradient for sheen effect */}
+          <linearGradient id={shineGradientId} x1="5" y1="5" x2="19" y2="19" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="white" stopOpacity="0.5" />
+            <stop offset="25%" stopColor="white" stopOpacity="0.1" />
+            <stop offset="50%" stopColor="white" stopOpacity="0" />
+            <stop offset="100%" stopColor="white" stopOpacity="0.2" />
+          </linearGradient>
+          
+          {/* Animated shine overlay */}
+          <linearGradient id={animatedShineGradientId} x1="5" y1="5" x2="19" y2="19" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="white" stopOpacity="0.5" />
+            <stop offset="25%" stopColor="white" stopOpacity="0.1" />
+            <stop offset="50%" stopColor="white" stopOpacity="0" />
+            <stop offset="100%" stopColor="white" stopOpacity="0.2" />
+          </linearGradient>
+        </defs>
+        
         {/* Background circle */}
         <circle
           cx="12"
@@ -62,7 +132,7 @@ const RingSpinner = ({ color, isTransitioning, prevColor }: {
           fill="none"
         />
         
-        {/* Main colored circle - smaller radius, wider stroke */}
+        {/* Main colored circle - BASE LAYER */}
         <circle
           cx="12"
           cy="12"
@@ -72,22 +142,80 @@ const RingSpinner = ({ color, isTransitioning, prevColor }: {
           fill="none"
         />
         
+        {/* Color gradient overlay - adds depth to the color */}
+        <circle
+          cx="12"
+          cy="12"
+          r="6.5"
+          stroke={`url(#${isTransitioning ? prevGradientId : currentGradientId})`}
+          strokeWidth="3.5"
+          fill="none"
+        />
+        
+        {/* Shine gradient overlay - adds the sheen effect */}
+        <circle
+          cx="12"
+          cy="12"
+          r="6.5"
+          stroke={`url(#${shineGradientId})`}
+          strokeWidth="3.5"
+          fill="none"
+          style={{ mixBlendMode: 'soft-light', opacity: 0.7 }}
+        />
+        
         {/* Animated circle that draws clockwise when changing category */}
         {isTransitioning && (
-          <circle
-            cx="12"
-            cy="12"
-            r="6.5"
-            stroke={currentColor}
-            strokeWidth="3.5"
-            fill="none"
-            strokeDasharray="40.84" // 2 * PI * 6.5
-            className="origin-center"
-            style={{
-              strokeDashoffset: 40.84,
-              animation: "drawCircle 0.8s forwards ease-in-out"
-            }}
-          />
+          <>
+            {/* Base animated circle with solid color */}
+            <circle
+              cx="12"
+              cy="12"
+              r="6.5"
+              stroke={currentColor}
+              strokeWidth="3.5"
+              fill="none"
+              strokeDasharray="40.84" // 2 * PI * 6.5
+              className="origin-center"
+              style={{
+                strokeDashoffset: 40.84,
+                animation: "drawCircle 0.8s forwards ease-in-out"
+              }}
+            />
+            
+            {/* Gradient overlay for animated circle */}
+            <circle
+              cx="12"
+              cy="12"
+              r="6.5"
+              stroke={`url(#${animatedGradientId})`}
+              strokeWidth="3.5"
+              fill="none"
+              strokeDasharray="40.84"
+              className="origin-center"
+              style={{
+                strokeDashoffset: 40.84,
+                animation: "drawCircle 0.8s forwards ease-in-out"
+              }}
+            />
+            
+            {/* Shine overlay for animated circle */}
+            <circle
+              cx="12"
+              cy="12"
+              r="6.5"
+              stroke={`url(#${animatedShineGradientId})`}
+              strokeWidth="3.5"
+              fill="none"
+              strokeDasharray="40.84"
+              className="origin-center"
+              style={{
+                strokeDashoffset: 40.84,
+                animation: "drawCircle 0.8s forwards ease-in-out",
+                mixBlendMode: 'soft-light',
+                opacity: 0.7
+              }}
+            />
+          </>
         )}
       </svg>
       

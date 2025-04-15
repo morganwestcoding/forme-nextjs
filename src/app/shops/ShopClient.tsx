@@ -153,9 +153,9 @@ const placeholderShops: SafeShop[] = [
     id: "shop1",
     name: "Barber's Delight",
     description: "Premium barber supplies and tools",
-    logo: "https://images.unsplash.com/photo-1588091212390-b09b9555159e?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
+    logo: "https://images.unsplash.com/photo-1521490214993-bfb6f7dc096d?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NzJ8fGJhcmJlcnxlbnwwfHwwfHx8MA%3D%3D",
     coverImage: "https://images.unsplash.com/photo-1622288432450-277d0fef5ed6?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-    location: "San Francisco, California",
+    location: "Tempe, Arizona",
     userId: "user1",
     storeUrl: "https://example.com/barbersdelight",
     socials: {
@@ -185,7 +185,7 @@ const placeholderShops: SafeShop[] = [
         id: "product1",
         name: "Professional Barber Scissors",
         price: 89.99,
-        image: "https://images.unsplash.com/photo-1656330153764-00aa56c9aac8?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"
+        image: "https://images.unsplash.com/photo-1519500528352-2d1460418d41?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NDN8fGJhcmJlcnxlbnwwfHwwfHx8MA%3D%3D"
       },
       {
         id: "product2",
@@ -199,7 +199,7 @@ const placeholderShops: SafeShop[] = [
     id: "shop2",
     name: "Wellness Haven",
     description: "Natural wellness products and spa essentials",
-    logo: "https://images.unsplash.com/photo-1558021212-51b6ecfa0db9?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
+    logo: "https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fHdlbGxuZXNzfGVufDB8fDB8fHww",
     location: "Portland, Oregon",
     userId: "user5",
     storeUrl: "https://example.com/wellnesshaven",
@@ -285,7 +285,7 @@ const placeholderProducts: SafeProduct[] = [
     description: "Premium stainless steel barber scissors for precise cutting",
     price: 89.99,
     compareAtPrice: 109.99,
-    mainImage: "https://images.unsplash.com/photo-1656330153764-00aa56c9aac8?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
+    mainImage: "https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTV8fGJhcmJlcnxlbnwwfHwwfHx8MA%3D%3D",
     galleryImages: [
       "https://images.unsplash.com/photo-1656330153764-00aa56c9aac8?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3", 
       "https://images.unsplash.com/photo-1514846835573-c0692c6f6653?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"
@@ -307,7 +307,7 @@ const placeholderProducts: SafeProduct[] = [
     shop: {
       id: "shop1",
       name: "Barber's Delight",
-      logo: "https://images.unsplash.com/photo-1588091212390-b09b9555159e?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"
+      logo: "https://images.unsplash.com/photo-1532710093739-9470acff878f?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGJhcmJlcnxlbnwwfHwwfHx8MA%3D%3D"
     },
     favoritedBy: ["user2", "user5"]
   },
@@ -411,7 +411,7 @@ const placeholderProducts: SafeProduct[] = [
     description: "Professional carbon fiber styling combs for barbers",
     price: 24.99,
     compareAtPrice: 34.99,
-    mainImage: "https://images.unsplash.com/photo-1621607950042-54fbcdc0a153?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
+    mainImage: "https://images.unsplash.com/photo-1514336937476-a5b961020a5c?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fGJhcmJlcnxlbnwwfHwwfHx8MA%3D%3D",
     galleryImages: ["https://images.unsplash.com/photo-1621607950042-54fbcdc0a153?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"],
     shopId: "shop1",
     createdAt: new Date().toISOString(),
@@ -430,7 +430,7 @@ const placeholderProducts: SafeProduct[] = [
     shop: {
       id: "shop1",
       name: "Barber's Delight",
-      logo: "https://images.unsplash.com/photo-1588091212390-b09b9555159e?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"
+      logo: "https://images.unsplash.com/photo-1596728325488-58c87691e9af?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzZ8fGJhcmJlcnxlbnwwfHwwfHx8MA%3D%3D"
     },
     favoritedBy: []
   },
@@ -439,7 +439,7 @@ const placeholderProducts: SafeProduct[] = [
     name: "Luxury Face Cream",
     description: "Hydrating face cream with natural ingredients",
     price: 59.99,
-    mainImage: "https://images.unsplash.com/photo-1570194065650-d99fb4a8e9fe?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
+    mainImage: "https://images.unsplash.com/photo-1629380108660-bd39c778a721?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZmFjZSUyMGNyZWFtfGVufDB8fDB8fHww",
     galleryImages: ["https://images.unsplash.com/photo-1570194065650-d99fb4a8e9fe?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"],
     shopId: "shop2",
     createdAt: new Date().toISOString(),
@@ -515,7 +515,7 @@ const placeholderProducts: SafeProduct[] = [
     shop: {
       id: "shop1",
       name: "Barber's Delight",
-      logo: "https://images.unsplash.com/photo-1588091212390-b09b9555159e?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"
+      logo: "https://images.unsplash.com/photo-1593702275687-f8b402bf1fb5?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTl8fGJhcmJlcnxlbnwwfHwwfHx8MA%3D%3D"
     },
     favoritedBy: ["user2"]
   },
@@ -524,7 +524,7 @@ const placeholderProducts: SafeProduct[] = [
     name: "Relaxation Candle Set",
     description: "Set of 3 aromatherapy candles for relaxation",
     price: 32.99,
-    mainImage: "https://images.unsplash.com/photo-1602528495711-f02079ae4f05?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
+    mainImage: "https://images.unsplash.com/photo-1570823635306-250abb06d4b3?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fGNhbmRsZXxlbnwwfHwwfHx8MA%3D%3D",
     galleryImages: ["https://images.unsplash.com/photo-1602528495711-f02079ae4f05?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"],
     shopId: "shop2",
     createdAt: new Date().toISOString(),
@@ -554,7 +554,7 @@ const placeholderCategories: SafeProductCategory[] = [
     id: "category1", 
     name: "Barber Tools", 
     productCount: 18,
-    image: "https://images.unsplash.com/photo-1656330153764-00aa56c9aac8?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"
+    image: "https://images.unsplash.com/photo-1590540179852-2110a54f813a?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NTh8fGJhcmJlcnxlbnwwfHwwfHx8MA%3D%3D"
   },
   { 
     id: "category2", 
