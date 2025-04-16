@@ -159,7 +159,7 @@ const ShopHeader: React.FC<ShopHeaderProps> = ({
       <div className="flex flex-wrap gap-2">
         <button
           onClick={() => handleCategoryChange('all')}
-          className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             filters.category === 'all'
               ? 'bg-blue-500 text-white'
               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -171,7 +171,7 @@ const ShopHeader: React.FC<ShopHeaderProps> = ({
           <button
             key={category.id}
             onClick={() => handleCategoryChange(category.id)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               filters.category === category.id
                 ? 'bg-blue-500 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
