@@ -101,7 +101,7 @@ const NewsfeedFilter: React.FC<NewsfeedFilterProps> = ({ onFilterChange }) => {
       <div className="grid grid-cols-4 gap-1 relative">
         {/* Animated pill that slides */}
         <div 
-          className="absolute rounded-md shadow-sm transition-all duration-300 ease-in-out"
+          className="absolute rounded-lg shadow-sm transition-all duration-300 ease-in-out"
           style={{
             left: `${pillStyle.left}px`,
             width: `${pillStyle.width}px`,
