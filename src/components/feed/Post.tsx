@@ -389,7 +389,7 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
   return (
     <>
       {!isHidden && (
-        <div className='w-full h-auto rounded-lg border bg-[#ffffff] duration-600 transition-all hover:bg-gray-50 hover:shadow-md z-1 p-6 md:mr-6 my-4 relative cursor-pointer' onClick={openPostModal}>
+        <div className='w-full h-auto rounded-2xl border bg-[#ffffff] duration-600 transition-all hover:bg-gray-50 hover:shadow-md z-1 p-6 md:mr-6 my-4 relative cursor-pointer' onClick={openPostModal}>
           {/* Add the SVG gradient definitions */}
           <GradientDefinitions accentColor={accentColor} uniqueId={uniqueId} />
           

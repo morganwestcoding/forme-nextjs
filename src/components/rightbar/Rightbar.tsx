@@ -119,7 +119,7 @@ export default function Rightbar({ listings = [], currentUser }: RightbarProps) 
               className={`aspect-w-1 aspect-h-1 w-full transition-opacity duration-500 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}
             >
               <div
-                className="w-full h-full bg-gray-300 shadow-sm rounded-lg"
+                className="w-full h-full bg-gray-300 shadow-sm rounded-2xl"
                 style={{ 
                   backgroundImage: `url(${listing.imageSrc})`, 
                   backgroundSize: 'cover', 
@@ -151,7 +151,7 @@ export default function Rightbar({ listings = [], currentUser }: RightbarProps) 
       </div>
 
       <div 
-        className="relative rounded-lg overflow-hidden -mt-2 cursor-pointer bg-slate-800"
+        className="relative rounded-2xl overflow-hidden -mt-2 cursor-pointer bg-slate-800"
         onClick={() => subscribeModal.onOpen()}
       >
         <div className="relative h-32 flex items-center justify-center">

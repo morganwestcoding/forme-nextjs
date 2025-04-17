@@ -160,7 +160,7 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
 
  return (
    <div 
-     className={`w-full h-auto rounded-lg transition-colors duration-250 ${selectedCategory ? selectedCategory.color : 'bg-[#60A5FA]'} p-6`}
+     className={`w-full h-auto rounded-2xl transition-colors duration-250 ${selectedCategory ? selectedCategory.color : 'bg-[#60A5FA]'} p-6`}
      style={{ 
        background: selectedCategory ? undefined : `linear-gradient(45deg, ${accentColor}15, ${accentColor}30)`
      }}

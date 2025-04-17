@@ -97,7 +97,7 @@ const NewsfeedFilter: React.FC<NewsfeedFilterProps> = ({ onFilterChange }) => {
   };
 
   return (
-    <div className="bg-gray-100 border border-gray-100 rounded-lg p-1">
+    <div className="bg-gray-100 border border-gray-100 rounded-xl p-1">
       <div className="grid grid-cols-4 gap-1 relative">
         {/* Animated pill that slides */}
         <div 

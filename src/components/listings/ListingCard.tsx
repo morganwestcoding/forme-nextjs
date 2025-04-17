@@ -129,13 +129,13 @@ const ListingCard: React.FC<ListingCardProps> = ({
 
   return (
     <div className="col-span-1 flex justify-center w-full max-w-[350px] mx-auto">
-      <div className="bg-white border rounded-xl flex flex-col w-full transition-all duration-300 overflow-hidden hover:shadow-md">
+      <div className="bg-white border rounded-2xl flex flex-col w-full transition-all duration-300 overflow-hidden hover:shadow-md">
         {!reservation && (
           <>
             {/* Adding p-4 for entire content area (including image) */}
             <div className="p-4">
               {/* Image Section with rounded corners */}
-              <div className="relative h-[175px] w-full group cursor-pointer overflow-hidden shadow-sm rounded-xl">
+              <div className="relative h-[175px] w-full group cursor-pointer overflow-hidden shadow rounded-xl">
                 <Image
                   onClick={() => router.push(`/listings/${data.id}`)} 
                   fill
@@ -149,18 +149,8 @@ const ListingCard: React.FC<ListingCardProps> = ({
                 <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/50 
                               opacity-0 transition-all duration-300 group-hover:opacity-100" />
                 
-                {/* Category Tag - Only show if not default */}
-                {shouldDisplayCategory && (
-                  <div className="absolute top-4 left-4 z-10">
-                    <div className="px-3 py-2 backdrop-blur-sm bg-black/50 rounded-lg
-                                  transition-all duration-300 transform group-hover:translate-y-0 group-hover:opacity-100
-                                  shadow-lg">
-                      <span className="text-white text-xs capitalize">
-                        {data.category}
-                      </span>
-                    </div>
-                  </div>
-                )}
+                  {/* Category Tag - Only show if not default */}
+         
 
                 {/* Action Buttons */}
                 <div className="absolute top-4 right-4 flex items-center gap-2 z-10 

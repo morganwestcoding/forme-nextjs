@@ -29,7 +29,7 @@ const EventCard = ({ event }: EventCardProps) => {
   return (
     <div 
       onClick={() => router.push('/events')}
-      className="group flex items-center gap-3 mb-4 p-2 rounded-xl bg-gray-50 hover:bg-white transition-all duration-300 cursor-pointer hover:shadow-sm"
+      className="group flex items-center gap-3 mb-4 p-2 rounded-2xl bg-gray-50 hover:bg-white transition-all duration-300 cursor-pointer hover:shadow-sm"
     >
       {/* Date Box */}
       <div className="min-w-16 h-16 flex flex-col items-center justify-center rounded-lg bg-white shadow-sm group-hover:bg-[#60A5FA] group-hover:text-white transition-colors duration-300">

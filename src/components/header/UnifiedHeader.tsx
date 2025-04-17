@@ -16,7 +16,7 @@ const UnifiedHeader: React.FC<UnifiedHeaderProps> = ({
   return (
     <div className="w-full px-4 pt-6 pb-2">
       <div className="flex items-center justify-center">
-        <div className="flex items-center bg-gray-100 rounded-lg hover:bg-[#DFE2E2] transition-colors duration-250">
+        <div className="flex items-center bg-gray-100 rounded-xl hover:bg-[#DFE2E2] transition-colors duration-250">
           <div className="pl-5 pr-4 py-[0.125rem] flex items-center">
             <Logo variant="vertical" />
           </div>
