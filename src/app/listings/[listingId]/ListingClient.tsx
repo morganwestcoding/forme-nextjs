@@ -14,7 +14,7 @@ import ListingHead from "@/components/listings/ListingHead";
 import ListingRightBar from "@/components/listings/ListingRightBar";
 import Container from "@/components/Container";
 import HeartButton from "@/components/HeartButton";
-import AboutUsSection from "@/app/AboutUsSection";
+import AboutUsSection from "@/components/listings/AboutUsSection";
 
 export interface SelectedEmployee {
   value: string;

@@ -128,12 +128,12 @@ const ListingCard: React.FC<ListingCardProps> = ({
   };
 
   return (
-    <div className="col-span-1 flex justify-center w-full max-w-[350px] mx-auto">
+    <div className="col-span-1 flex justify-center w-full max-w-[395px] mx-auto">
       <div className="bg-white border rounded-2xl flex flex-col w-full transition-all duration-300 overflow-hidden hover:shadow-md">
         {!reservation && (
           <>
             {/* Adding p-4 for entire content area (including image) */}
-            <div className="p-4">
+            <div className="p-6">
               {/* Image Section with rounded corners */}
               <div className="relative h-[175px] w-full group cursor-pointer overflow-hidden shadow rounded-xl">
                 <Image

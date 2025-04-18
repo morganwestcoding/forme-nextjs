@@ -1,4 +1,3 @@
-// components/market/MarketContent.tsx
 'use client';
 
 import { useState } from 'react';
@@ -156,12 +155,14 @@ const MarketContent = ({ searchParams, listings, currentUser }: MarketContentPro
 
   return (
     <Container>
-      <MarketHeader 
-        viewMode={viewState.mode}
-        onViewModeChange={(mode: ViewState['mode']) => setViewState(prev => ({ ...prev, mode }))}
-        filters={viewState.filters}
-        onFilterChange={(filters: ViewState['filters']) => setViewState(prev => ({ ...prev, filters }))}
-      />
+      <div className="px-4">
+        <MarketHeader 
+          viewMode={viewState.mode}
+          onViewModeChange={(mode: ViewState['mode']) => setViewState(prev => ({ ...prev, mode }))}
+          filters={viewState.filters}
+          onFilterChange={(filters: ViewState['filters']) => setViewState(prev => ({ ...prev, filters }))}
+        />
+      </div>
       
       <div className="flex flex-col">
         {viewState.mode === 'grid' ? (

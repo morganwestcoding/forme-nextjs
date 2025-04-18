@@ -44,7 +44,7 @@ const AboutUsSection = ({
   };
 
   return (
-    <div className="w-full bg-white border rounded-lg shadow-sm p-6 hover:shadow-md transition-all duration-300">
+    <div className="w-full bg-white border rounded-2xl shadow-sm p-6 hover:shadow-md transition-all duration-300">
       <div className="flex flex-col">
         {/* Top section with header and menu */}
         <div className="flex justify-between items-center w-full mb-1">

@@ -82,7 +82,7 @@ const ListingGalleryImage: React.FC<ListingGalleryImageProps> = ({ listing, curr
         {displayImages.slice(0, 4).map((image, index) => (
           <div 
             key={index} 
-            className={`relative cursor-pointer overflow-hidden rounded-md ${!image ? 'bg-gray-100' : ''}`}
+            className={`relative cursor-pointer overflow-hidden rounded-xl ${!image ? 'bg-gray-100' : ''}`}
             onClick={() => image && handleImageClick()}
           >
             {image ? (
