@@ -105,7 +105,7 @@ const ModernMarketHeader = ({
           {/* Title and subtitle */}
           <div className="hidden sm:block">
             <h1 className="text-xl font-semibold text-neutral-800">Marketplace</h1>
-            <p className="text-sm text-neutral-500">Discover local services</p>
+            <p className="text-sm text-neutral-500">Discover listings</p>
           </div>
           
           {/* Search component */}
@@ -116,23 +116,23 @@ const ModernMarketHeader = ({
         
         <div className="flex items-center gap-3">
           {/* View mode selector */}
-          <div className="relative bg-gray-100 rounded-lg p-1 hidden sm:flex">
+          <div className="relative bg-white border rounded-xl hidden sm:flex h-12 overflow-hidden">            
             {/* Moving selection pill */}
             <div 
-              className="absolute top-1 bottom-1 rounded-md transition-all duration-200" 
+              className="absolute top-0 bottom-0 rounded-md transition-all duration-200" 
               style={{
                 left: `${pillStyle.left}px`, 
                 width: `${pillStyle.width}px`,
                 backgroundColor: hexColor || '#60A5FA',
-                opacity: 0.15
+                opacity: 0.1
               }}
             />
             
             {/* Grid view button */}
-            <div className="relative">
+            <div className="relative h-full">
               <button
                 ref={el => buttonRefs.current[0] = el}
-                className={`p-2 rounded-md relative z-10 ${viewMode === 'grid' ? 'text-neutral-800' : 'text-neutral-500 hover:text-neutral-700'}`}
+                className={`h-full px-3 relative z-10 flex items-center justify-center ${viewMode === 'grid' ? 'text-neutral-800' : 'text-neutral-500 hover:text-neutral-700'}`}
                 onClick={() => onViewModeChange('grid')}
                 onMouseEnter={() => setHoverState('grid')}
                 onMouseLeave={() => setHoverState(null)}
@@ -148,10 +148,10 @@ const ModernMarketHeader = ({
             </div>
             
             {/* List view button */}
-            <div className="relative">
+            <div className="relative h-full">
               <button
                 ref={el => buttonRefs.current[1] = el}
-                className={`p-2 rounded-md relative z-10 ${viewMode === 'list' ? 'text-neutral-800' : 'text-neutral-500 hover:text-neutral-700'}`}
+                className={`h-full px-3 relative z-10 flex items-center justify-center ${viewMode === 'list' ? 'text-neutral-800' : 'text-neutral-500 hover:text-neutral-700'}`}
                 onClick={() => onViewModeChange('list')}
                 onMouseEnter={() => setHoverState('list')}
                 onMouseLeave={() => setHoverState(null)}
@@ -172,11 +172,11 @@ const ModernMarketHeader = ({
           {/* Sort dropdown */}
           <div className="relative">
             <button 
-              className="flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-[#71717A] rounded-lg p-3.5 text-sm transition duration-200 h-12 border border-gray-100"
+              className="flex items-center justify-center gap-2 bg-white text-[#71717A] rounded-xl px-4 text-sm transition duration-200 h-12 border"
               onMouseEnter={() => setHoverState('sort')}
               onMouseLeave={() => setHoverState(null)}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="21" y1="10" x2="3" y2="10"></line>
                 <line x1="21" y1="6" x2="3" y2="6"></line>
                 <line x1="21" y1="14" x2="3" y2="14"></line>
@@ -187,15 +187,17 @@ const ModernMarketHeader = ({
             </button>
           </div>
           
-          {/* Filter component */}
-          <Filter onApplyFilter={(filterValues) => {
-            const { category, price } = filterValues;
-            handleFilterChange({ 
-              category,
-              minPrice: price === 'low' ? 0 : price === 'medium' ? 50 : price === 'high' ? 100 : undefined,
-              maxPrice: price === 'low' ? 50 : price === 'medium' ? 100 : price === 'high' ? undefined : undefined
-            });
-          }} />
+          {/* Filter component - wrapped to control height */}
+          <div className="h-12">
+            <Filter onApplyFilter={(filterValues) => {
+              const { category, price } = filterValues;
+              handleFilterChange({ 
+                category,
+                minPrice: price === 'low' ? 0 : price === 'medium' ? 50 : price === 'high' ? 100 : undefined,
+                maxPrice: price === 'low' ? 50 : price === 'medium' ? 100 : price === 'high' ? undefined : undefined
+              });
+            }} />
+          </div>
         </div>
       </div>
       
