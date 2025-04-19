@@ -105,7 +105,7 @@ const ModernMarketHeader = ({
           {/* Title and subtitle */}
           <div className="hidden sm:block">
             <h1 className="text-xl font-semibold text-neutral-800">Marketplace</h1>
-            <p className="text-sm text-neutral-500">Discover listings</p>
+            <p className="text-sm text-neutral-500">Discover</p>
           </div>
           
           {/* Search component */}
@@ -114,25 +114,15 @@ const ModernMarketHeader = ({
           </div>
         </div>
         
-        <div className="flex items-center gap-3">
-          {/* View mode selector */}
-          <div className="relative bg-white border rounded-xl hidden sm:flex h-12 overflow-hidden">            
-            {/* Moving selection pill */}
-            <div 
-              className="absolute top-0 bottom-0 rounded-md transition-all duration-200" 
-              style={{
-                left: `${pillStyle.left}px`, 
-                width: `${pillStyle.width}px`,
-                backgroundColor: hexColor || '#60A5FA',
-                opacity: 0.1
-              }}
-            />
-            
-            {/* Grid view button */}
-            <div className="relative h-full">
+        <div className="flex flex-col gap-3">
+          {/* Top row with grid/list toggle and sort */}
+          <div className="flex items-center gap-3">
+            {/* View mode selector with a cleaner design */}
+            <div className="bg-gray-100 rounded-xl flex h-12 overflow-hidden">            
+              {/* Grid view button */}
               <button
                 ref={el => buttonRefs.current[0] = el}
-                className={`h-full px-3 relative z-10 flex items-center justify-center ${viewMode === 'grid' ? 'text-neutral-800' : 'text-neutral-500 hover:text-neutral-700'}`}
+                className={`h-full w-12 flex items-center justify-center ${viewMode === 'grid' ? 'bg-white text-neutral-800 shadow-sm' : 'bg-gray-100 text-neutral-500 hover:text-neutral-700'}`}
                 onClick={() => onViewModeChange('grid')}
                 onMouseEnter={() => setHoverState('grid')}
                 onMouseLeave={() => setHoverState(null)}
@@ -145,13 +135,11 @@ const ModernMarketHeader = ({
                 </svg>
                 <CustomTooltip content="Grid view" isVisible={hoverState === 'grid'} />
               </button>
-            </div>
-            
-            {/* List view button */}
-            <div className="relative h-full">
+              
+              {/* List view button */}
               <button
                 ref={el => buttonRefs.current[1] = el}
-                className={`h-full px-3 relative z-10 flex items-center justify-center ${viewMode === 'list' ? 'text-neutral-800' : 'text-neutral-500 hover:text-neutral-700'}`}
+                className={`h-full w-12 flex items-center justify-center ${viewMode === 'list' ? 'bg-white text-neutral-800 shadow-sm' : 'bg-gray-100 text-neutral-500 hover:text-neutral-700'}`}
                 onClick={() => onViewModeChange('list')}
                 onMouseEnter={() => setHoverState('list')}
                 onMouseLeave={() => setHoverState(null)}
@@ -167,12 +155,10 @@ const ModernMarketHeader = ({
                 <CustomTooltip content="List view" isVisible={hoverState === 'list'} />
               </button>
             </div>
-          </div>
-          
-          {/* Sort dropdown */}
-          <div className="relative">
+            
+            {/* Sort button - wider with more padding */}
             <button 
-              className="flex items-center justify-center gap-2 bg-white text-[#71717A] rounded-xl px-4 text-sm transition duration-200 h-12 border"
+              className="flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-neutral-700 rounded-xl px-6 text-sm transition duration-200 h-12"
               onMouseEnter={() => setHoverState('sort')}
               onMouseLeave={() => setHoverState(null)}
             >
@@ -187,8 +173,8 @@ const ModernMarketHeader = ({
             </button>
           </div>
           
-          {/* Filter component - wrapped to control height */}
-          <div className="h-12">
+          {/* Bottom row with filter */}
+          <div className="h-12 w-full">
             <Filter onApplyFilter={(filterValues) => {
               const { category, price } = filterValues;
               handleFilterChange({ 
@@ -199,14 +185,6 @@ const ModernMarketHeader = ({
             }} />
           </div>
         </div>
-      </div>
-      
-      {/* Category chips */}
-      <div className="mt-5">
-        <ModernCategoryFilter 
-          selectedCategory={filters.category}
-          onCategoryChange={handleCategoryChange}
-        />
       </div>
     </div>
   );
