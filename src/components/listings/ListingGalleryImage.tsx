@@ -97,12 +97,8 @@ const ListingGalleryImage: React.FC<ListingGalleryImageProps> = ({ listing, curr
                     className="object-cover rounded-md transition-all duration-500 
                              group-hover:scale-110 group-hover:brightness-95"
                   />
-                  
-                  {/* Enhanced gradient overlay with improved transition */}
                   <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/50 
                                 opacity-0 group-hover:opacity-100 transition-all duration-300" />
-                  
-                  {/* Add a subtle zoom indicator icon on hover */}
                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
                                 bg-white/80 p-2 rounded-full opacity-0 group-hover:opacity-90 
                                 transform scale-75 group-hover:scale-100 transition-all duration-300">

@@ -200,23 +200,23 @@ const ListingCard: React.FC<ListingCardProps> = ({
               </div>
 
               {/* Content Section - No need for additional borders since everything is within the p-4 */}
-              <div className="pt-4">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex flex-col">
-                    <h3 className="font-medium text-gray-900 text-base">
-                      {data.title}
-                    </h3>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {city}, {stateAcronym}
-                    </p>
-                  </div>
-                </div>
+              <div>
+              <div className="flex items-start justify-center py-5 text-center">
+  <div className="flex flex-col">
+    <h3 className="font-medium text-gray-900 text-base">
+      {data.title}
+    </h3>
+    <p className="text-xs text-gray-500 mt-1">
+      {city}, {stateAcronym}
+    </p>
+  </div>
+</div>
 
                 <div className="space-y-3">
                   <div className="relative">
                     <div className="bg-gray-50 rounded-lg p-3">
                       <div className="flex items-center justify-between">
-                        <div className="flex-1">
+                        <div className="flex-1 pl-2">
                           <div className="text-xs text-gray-500 mb-1">
                             {data.services[currentServiceIndex].serviceName}
                           </div>
@@ -225,7 +225,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
                           </div>
                         </div>
                         
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 px-2.5">
                           {data.services.map((_, index) => (
                             <button
                               key={index}
@@ -250,7 +250,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
                       onClick={(e) => {
                         e.stopPropagation();
                       }}
-                      className="flex-1 bg-gray-100 text-gray-700 py-3 px-4 rounded-lg text-xs font-medium
+                      className="flex-1 bg-gray-100 text-gray-700 py-4 px-4 rounded-lg text-xs font-medium
                                 hover:bg-gray-200 hover:shadow-sm transition-all duration-200 
                                 flex items-center justify-start h-11"
                     >
@@ -291,7 +291,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
                     {/* Reserve Button - Right-aligned icon */}
                     <button 
                       onClick={() => router.push(`/listings/${data.id}`)}
-                      className="flex-1 bg-[#60A5FA] text-white py-3 px-4 rounded-lg text-xs font-medium
+                      className="flex-1 bg-[#60A5FA] text-white py-4 px-4 rounded-lg text-xs font-medium
                                 shadow-sm hover:shadow-md hover:bg-[#4287f5] transition-all duration-200
                                 flex items-center justify-between h-11"
                     >

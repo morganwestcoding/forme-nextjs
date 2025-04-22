@@ -229,8 +229,7 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
       note: '',
       businessName: listing.title
     };
-
-    // Open the Stripe checkout modal
+    
     stripeCheckoutModal.onOpen(reservationData);
     setCheckoutLoading(false);
   }, [

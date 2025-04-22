@@ -49,36 +49,30 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
               {/* Left Column - Info with improved spacing */}
               <div className="flex-1 min-w-0 flex flex-col justify-between">
                 {/* Top section with Category, Title, Address, and Open Status */}
-                <div>
-                  {/* Category Badge */}
-                  <div className="mb-4">
-                    <div 
-                      className="py-2.5 px-3 rounded-lg text-white text-xs font-medium shadow-sm inline-block"
-                      style={{ backgroundColor: badgeColor }}
-                    >
-                      {category}
-                    </div>
-                  </div>
-                  
+                <div className=' rounded-xl bg-white'>
                   {/* Title */}
-                  <h1 className="text-xl font-semibold text-gray-900 mb-3">
+                  <h1 className="text-xl font-semibold text-gray-900 mb-1">
                     {title}
                   </h1>
                   
-                  {/* Address - No icon */}
+                  {/* Address */}
                   <p className="text-gray-500 text-sm mb-4">
                     {address},<br/> {city}, {stateAcronym} {listing.zipCode}
                   </p>
+
+                  <div className="flex justify-start mb-2">
+                    <OpenStatus storeHours={storeHours || []} />
+                  </div>
                 
                 </div>
 
                 {/* Statistics in a single row with increased spacing */}
                 <div className="mt-auto">
-                  <div className="bg-gray-50 py-3 px-4 rounded-lg">
-                    {/* Adjusted for better spacing and container width */}
-                    <div className="grid grid-cols-3 gap-2.5 w-full">
+              
+                    {/* Adjusted for better spacing and wider squares */}
+                    <div className="grid grid-cols-3 gap-2 pt-2 w-full">
                       {/* Rating Pill */}
-                      <div className="bg-white border border-gray-100 px-3.5 py-2 rounded-lg flex flex-col items-center shadow-sm hover:shadow hover:border-gray-200 transition-all duration-300 group w-full">
+                      <div className="bg-white  border px-2 py-2.5 rounded-xl flex flex-col items-center shadow-sm hover:shadow hover:border-gray-200 transition-all duration-300 group w-full">
                         <div className="flex items-center mb-1">
                           <div className="bg-amber-50 p-1 rounded-md mr-1.5 group-hover:bg-amber-100 transition-colors duration-300">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="12" height="12" className="text-amber-500">
@@ -91,7 +85,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
                       </div>
                       
                       {/* Likes Pill */}
-                      <div className="bg-white border border-gray-100 px-3.5 py-2 rounded-lg flex flex-col items-center shadow-sm hover:shadow hover:border-gray-200 transition-all duration-300 group w-full">
+                      <div className="bg-white border px-2 py-2.5 rounded-xl flex flex-col items-center shadow-sm hover:shadow hover:border-gray-200 transition-all duration-300 group w-full">
                         <div className="flex items-center mb-1">
                           <div className="bg-rose-50 p-1 rounded-md mr-1.5 group-hover:bg-rose-100 transition-colors duration-300">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="12" height="12" className="text-rose-500">
@@ -104,7 +98,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
                       </div>
                       
                       {/* Shares Pill */}
-                      <div className="bg-white border border-gray-100 px-3.5 py-2 rounded-lg flex flex-col items-center shadow-sm hover:shadow hover:border-gray-200 transition-all duration-300 group w-full">
+                      <div className="bg-white border  px-2 py-2.5 rounded-xl flex flex-col items-center shadow-sm hover:shadow hover:border-gray-200 transition-all duration-300 group w-full">
                         <div className="flex items-center mb-1">
                           <div className="bg-sky-50 p-1 rounded-md mr-1.5 group-hover:bg-sky-100 transition-colors duration-300">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="12" height="12" className="text-sky-500">
@@ -117,7 +111,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
                         <span className="text-xs text-gray-500 group-hover:text-gray-600 transition-colors duration-300">Shares</span>
                       </div>
                     </div>
-                  </div>
+            
                 </div>
               </div> 
               
