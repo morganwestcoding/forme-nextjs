@@ -82,7 +82,8 @@ const ListingGalleryImage: React.FC<ListingGalleryImageProps> = ({ listing, curr
         {displayImages.slice(0, 4).map((image, index) => (
           <div 
             key={index} 
-            className={`relative cursor-pointer overflow-hidden rounded-xl ${!image ? 'bg-gray-100' : ''}`}
+            className={`relative cursor-pointer overflow-hidden rounded-xl ${!image ? 'bg-gray-100' : ''} 
+                       transition-all duration-300 hover:shadow-lg group`}
             onClick={() => image && handleImageClick()}
           >
             {image ? (
@@ -93,15 +94,33 @@ const ListingGalleryImage: React.FC<ListingGalleryImageProps> = ({ listing, curr
                     alt={`Gallery image ${index + 1}`}
                     fill
                     sizes="(max-width: 768px) 100vw, 150px"
-                    className="object-cover rounded-md transition-all duration-500 hover:scale-110 hover:brightness-90"
+                    className="object-cover rounded-md transition-all duration-500 
+                             group-hover:scale-110 group-hover:brightness-95"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/40 opacity-0 hover:opacity-100 transition-all duration-300" />
+                  
+                  {/* Enhanced gradient overlay with improved transition */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/50 
+                                opacity-0 group-hover:opacity-100 transition-all duration-300" />
+                  
+                  {/* Add a subtle zoom indicator icon on hover */}
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
+                                bg-white/80 p-2 rounded-full opacity-0 group-hover:opacity-90 
+                                transform scale-75 group-hover:scale-100 transition-all duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" 
+                         strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-800">
+                      <circle cx="11" cy="11" r="8"></circle>
+                      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                      <line x1="11" y1="8" x2="11" y2="14"></line>
+                      <line x1="8" y1="11" x2="14" y2="11"></line>
+                    </svg>
+                  </div>
                 </div>
 
                 {/* Show View All overlay on the last image if there are more than 4 */}
                 {index === 3 && allImages.length > 4 && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-md">
-                    <span className="text-white font-medium text-sm">
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-md 
+                                backdrop-blur-sm group-hover:backdrop-blur-md transition-all duration-300">
+                    <span className="text-white font-medium text-sm transform group-hover:scale-110 transition-transform duration-300">
                       +{allImages.length - 4} more
                     </span>
                   </div>
@@ -116,7 +135,7 @@ const ListingGalleryImage: React.FC<ListingGalleryImageProps> = ({ listing, curr
                       handleDeleteImage(index);
                     }}
                     className="absolute top-2 right-2 p-2 rounded-full bg-black/50 backdrop-blur-sm border border-white/20 
-                             hover:bg-black/60 transition-all duration-300 shadow-lg"
+                             hover:bg-black/60 hover:scale-110 transition-all duration-300 shadow-lg"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="12" height="12" color="#ffffff" fill="none">
                       <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -125,9 +144,13 @@ const ListingGalleryImage: React.FC<ListingGalleryImageProps> = ({ listing, curr
                 )}
               </>
             ) : (
-              // Empty placeholder
-              <div className="aspect-[4/3] w-full h-full flex items-center justify-center border border-dashed border-gray-300 rounded-md">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300">
+              // Empty placeholder with hover effect
+              <div className="aspect-[4/3] w-full h-full flex items-center justify-center 
+                            border border-dashed border-gray-300 rounded-md
+                            transition-all duration-300 hover:border-gray-400 hover:bg-gray-50">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" 
+                     stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" 
+                     className="text-gray-300 transition-all duration-300 group-hover:text-gray-400">
                   <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                   <circle cx="8.5" cy="8.5" r="1.5"></circle>
                   <polyline points="21 15 16 10 5 21"></polyline>
