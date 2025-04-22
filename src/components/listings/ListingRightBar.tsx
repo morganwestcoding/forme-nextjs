@@ -56,7 +56,7 @@ const InputField: React.FC<InputFieldProps> = ({
         py-4
         px-4
         text-sm
-        rounded-md
+        rounded-lg
         focus:outline-none
         transition-all
         duration-300
@@ -215,7 +215,6 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
 
     setCheckoutLoading(true);
 
-    // Prepare reservation data
     const reservationData = {
       totalPrice,
       date,

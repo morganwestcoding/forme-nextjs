@@ -49,32 +49,6 @@ const AboutUsSection = ({
         {/* Top section with header and menu */}
         <div className="flex justify-between items-center w-full mb-1">
           <h2 className="text-xl font-bold text-black">About Us</h2>
-          
-          {/* Menu dots - positioned at the far right edge with no extra padding */}
-          <DropdownMenu>
-            <DropdownMenuTrigger className="focus:outline-none p-0 flex items-center justify-center rotate-90 mb-1">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" color="#71717A" fill="none" className='rotate-90'>
-                <path d="M11.9959 12H12.0049" stroke="currentColor" strokeWidth="2.75" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M17.9998 12H18.0088" stroke="currentColor" strokeWidth="2.75" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M5.99981 12H6.00879" stroke="currentColor" strokeWidth="2.75" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {isOwner && (
-                <DropdownMenuItem onClick={onEditListing} className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
-                  Edit Listing
-                </DropdownMenuItem>
-              )}
-              <DropdownMenuItem className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
-                Share Listing
-              </DropdownMenuItem>
-              {!isOwner && (
-                <DropdownMenuItem className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
-                  Report Listing
-                </DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
         
         {/* Description paragraph */}
@@ -90,7 +64,7 @@ const AboutUsSection = ({
           {currentServices.map(service => (
             <div 
               key={service.id} 
-              className="p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition cursor-pointer"
+              className="p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition cursor-pointer"
               onClick={() => handleServiceClick(service)}
             >
               <h3 className="font-medium text-sm mb-1">{service.serviceName}</h3>
