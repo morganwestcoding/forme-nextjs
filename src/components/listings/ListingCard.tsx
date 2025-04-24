@@ -174,11 +174,11 @@ const ListingCard: React.FC<ListingCardProps> = ({
     {/* Normal category badge (shown when not hovered) */}
     <div 
       className="
-        absolute top-4 left-4 py-12 px-3 rounded-lg z-10
+        absolute top-4 left-4 py-3 px-3 rounded-lg z-10
         text-white text-xs font-medium text-center
         w-20 overflow-hidden
         transition-all duration-300
-        group-hover:opacity-0 shadow-lg backdrop-blur-sm
+        group-hover:opacity-0  shadow-lg backdrop-blur-sm
       "
       style={{
         backgroundColor: getCategoryColor(data.category),
