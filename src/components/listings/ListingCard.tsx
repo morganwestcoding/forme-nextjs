@@ -1,8 +1,8 @@
 'use client';
 
 import Image from "next/image";
-import { useRouter, usePathname } from "next/navigation";
-import { useState } from "react";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useState, useEffect } from "react";
 import { SafeListing, SafeReservation, SafeUser } from "@/app/types";
 import useRentModal from "@/app/hooks/useRentModal";
 import useListingDetailsModal from "@/app/hooks/useListingDetailsModal";
@@ -42,12 +42,19 @@ const ListingCard: React.FC<ListingCardProps> = ({
 }) => {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const rentModal = useRentModal();
   const listingDetailsModal = useListingDetailsModal();
   const [currentServiceIndex, setCurrentServiceIndex] = useState(0);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  
+  // Get the selected category from URL params
+  const selectedCategory = searchParams?.get('category');
+  
+  // Check if the current listing's category matches the selected category
+  const isSelectedCategory = selectedCategory && data.category === selectedCategory;
   
   // Create array of all images including main image
   const allImages = [data.imageSrc, ...(data.galleryImages || [])];
@@ -127,46 +134,48 @@ const ListingCard: React.FC<ListingCardProps> = ({
     }
   };
 
- // Function to get category color from categories array
- const getCategoryColor = (categoryName: string) => {
-  // Find the category in the categories array
-  const categoryObj = categories.find(
-    cat => cat.label === categoryName
-  );
-  
-  if (categoryObj) {
-    // Extract the hex color from the bg-[#XXXXXX] format
-    const colorMatch = categoryObj.color.match(/#[0-9A-Fa-f]{6}/);
-    if (colorMatch) {
-      return colorMatch[0];
+  // Function to get category color from categories array
+  const getCategoryColor = (categoryName: string) => {
+    // Find the category in the categories array
+    const categoryObj = categories.find(
+      cat => cat.label === categoryName
+    );
+    
+    if (categoryObj) {
+      // Extract the hex color from the bg-[#XXXXXX] format
+      const colorMatch = categoryObj.color.match(/#[0-9A-Fa-f]{6}/);
+      if (colorMatch) {
+        return colorMatch[0];
+      }
     }
-  }
-  
-  // Return a default color if not found
-  return '#D6C3B6';
-};
+    
+    // Return a default color if not found
+    return '#60A5FA';
+  };
 
-// Function to darken a hex color by a factor
-const darkenColor = (hex: string, factor: number = 0.2) => {
-  // Remove # if present
-  hex = hex.replace('#', '');
-  
-  // Convert to RGB
-  let r = parseInt(hex.substring(0, 2), 16);
-  let g = parseInt(hex.substring(2, 4), 16);
-  let b = parseInt(hex.substring(4, 6), 16);
-  
-  // Darken each component
-  r = Math.max(0, Math.floor(r * (1 - factor)));
-  g = Math.max(0, Math.floor(g * (1 - factor)));
-  b = Math.max(0, Math.floor(b * (1 - factor)));
-  
-  // Convert back to hex
-  return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
-};
+  // Function to darken a hex color by a factor
+  const darkenColor = (hex: string, factor: number = 0.2) => {
+    // Remove # if present
+    hex = hex.replace('#', '');
+    
+    // Convert to RGB
+    let r = parseInt(hex.substring(0, 2), 16);
+    let g = parseInt(hex.substring(2, 4), 16);
+    let b = parseInt(hex.substring(4, 6), 16);
+    
+    // Darken each component
+    r = Math.max(0, Math.floor(r * (1 - factor)));
+    g = Math.max(0, Math.floor(g * (1 - factor)));
+    b = Math.max(0, Math.floor(b * (1 - factor)));
+    
+    // Convert back to hex
+    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+  };
 
+  // Get the category color for this listing - but only if it matches the selected category
+  const categoryColor = isSelectedCategory ? getCategoryColor(data.category || 'Default') : '#60A5FA';
+  const darkerCategoryColor = darkenColor(categoryColor, 0.15);
   
-
   return (
     <div className="col-span-1 flex justify-center w-full max-w-[395px] mx-auto">
       <div className="bg-white border border-gray-300 rounded-2xl flex flex-col w-full transition-all duration-300 overflow-hidden hover:shadow-md">
@@ -189,43 +198,40 @@ const darkenColor = (hex: string, factor: number = 0.2) => {
                 <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/50 
                               opacity-0 transition-all duration-300 group-hover:opacity-100" />
                 
-              {/* Find and replace just this section in your ListingCard component */}
+              {/* Category Badge */}
               {shouldDisplayCategory && (
-  <>
-    {/* Normal category badge (shown when not hovered) */}
-    <div 
-      className="
-        absolute top-4 left-4 p-3 rounded-lg z-10
-        text-white text-xs font-medium text-center
-        w-20 overflow-hidden
-        transition-all duration-300
-        group-hover:opacity-0 shadow-lg backdrop-blur-sm
-        border
-      "
-      style={{
-        backgroundColor: getCategoryColor(data.category),
-        borderColor: `${darkenColor(getCategoryColor(data.category), 0.2)}`,
-      }}
-    >
-      {data.category}
-    </div>
-    
-    {/* White category badge (shown only on hover) */}
-    <div 
-      className="
-        absolute top-4 left-4 p-3 rounded-lg z-10
-        text-black text-xs font-medium text-center
-        shadow-lg backdrop-blur-sm w-20 overflow-hidden
-        bg-white/80
-        transition-all duration-300
-        opacity-0 group-hover:opacity-100
-       border-2 border-white/80
-      "
-    >
-      {data.category}
-    </div>
-  </>
-)}
+                <>
+                  {/* Normal category badge (shown when not hovered) */}
+                  <div 
+                    className="
+                      absolute top-4 left-4 p-3 rounded-lg z-10
+                      text-white text-xs font-medium text-center
+                      w-20 overflow-hidden
+                      transition-all duration-300
+                      group-hover:opacity-0 shadow-lg backdrop-blur-sm
+                    "
+                    style={{
+                      backgroundColor: getCategoryColor(data.category),
+                    }}
+                  >
+                    {data.category}
+                  </div>
+                  
+                  {/* White category badge (shown only on hover) */}
+                  <div 
+                    className="
+                      absolute top-4 left-4 p-3 rounded-lg z-10
+                      text-black text-xs font-medium text-center
+                      shadow-lg backdrop-blur-sm w-20 overflow-hidden
+                      bg-white/80
+                      transition-all duration-300
+                      opacity-0 group-hover:opacity-100
+                    "
+                  >
+                    {data.category}
+                  </div>
+                </>
+              )}
                 
                 {/* Action Buttons - Styled to match ListingGalleryImage */}
                 <div className="absolute top-4 right-4 flex items-center gap-2 z-10 
@@ -313,9 +319,14 @@ const darkenColor = (hex: string, factor: number = 0.2) => {
                               }}
                               className={`w-2 h-2 rounded-full transition-all duration-300 
                                 ${currentServiceIndex === index 
-                                  ? 'bg-[#60A5FA] w-7 h-2' 
+                                  ? 'w-7 h-2' 
                                   : 'bg-gray-300 hover:bg-gray-400'
                                 }`}
+                              style={{
+                                backgroundColor: currentServiceIndex === index 
+                                  ? categoryColor
+                                  : ''
+                              }}
                             />
                           ))}
                         </div>
@@ -366,12 +377,22 @@ const darkenColor = (hex: string, factor: number = 0.2) => {
                       <span className="ml-2">Quick Book</span>
                     </button>
                     
-                    {/* Reserve Button - Taller as requested */}
+                    {/* Reserve Button - With category color only if category is selected */}
                     <button 
                       onClick={() => router.push(`/listings/${data.id}`)}
-                      className="flex-1 bg-[#60A5FA] text-white py-4 px-4 rounded-lg text-xs font-medium
-                                shadow-sm hover:shadow-md hover:bg-[#4287f5] transition-all duration-200
+                      className="flex-1 text-white py-4 px-4 rounded-lg text-xs font-medium
+                                shadow-sm hover:shadow-md transition-all duration-200
                                 flex items-center justify-between"
+                      style={{
+                        backgroundColor: categoryColor,
+                        transition: 'all 0.2s ease-in-out',
+                      }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.backgroundColor = darkerCategoryColor;
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.backgroundColor = categoryColor;
+                      }}
                     >
                       <span className="flex-1 text-center">Reserve</span>
                       <div className="w-6 flex items-center justify-center">
@@ -471,10 +492,13 @@ const darkenColor = (hex: string, factor: number = 0.2) => {
                     onAccept?.();
                   }}
                   disabled={disabled}
-                  className="flex-1 bg-[#60A5FA] text-white font-medium py-3.5 rounded-xl 
-                          hover:bg-[#4287f5] hover:shadow-md transition-all 
+                  className="flex-1 text-white font-medium py-3.5 rounded-xl 
+                          hover:shadow-md transition-all 
                           disabled:opacity-50 disabled:cursor-not-allowed text-sm
                           flex items-center justify-center"
+                  style={{
+                    backgroundColor: isSelectedCategory ? categoryColor : '#60A5FA',
+                  }}
                 >
                   <svg 
                     xmlns="http://www.w3.org/2000/svg" 

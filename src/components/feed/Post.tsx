@@ -389,7 +389,7 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
   return (
     <>
       {!isHidden && (
-        <div className='w-full h-auto rounded-2xl border border-gray-300 bg-[#ffffff] duration-600 transition-all hover:bg-gray-50 hover:shadow-md z-1 p-6 md:mr-6 my-4 relative cursor-pointer' onClick={openPostModal}>
+        <div className='w-full h-auto rounded-2xl border border-gray-300 bg-[#ffffff] duration-600 transition-all hover:bg-gray-100 hover:shadow-md z-1 p-6 md:mr-6 my-4 relative cursor-pointer' onClick={openPostModal}>
           {/* Add the SVG gradient definitions */}
           <GradientDefinitions accentColor={accentColor} uniqueId={uniqueId} />
           
@@ -471,7 +471,7 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
             <div className="bottom-0 left-0 flex gap-4 p-2 -ml-2 -mb-4 mt-1.5">
               {/* Comment Button */}
               <div className="flex items-center justify-center p-3 rounded-full cursor-pointer transition-all duration-300
-                bg-gray-50 border border-gray-300
+                bg-gray-100 
                 hover:shadow-[0_0_12px_rgba(0,0,0,0.05)]">
                 <svg 
                   xmlns="http://www.w3.org/2000/svg" 
@@ -492,7 +492,7 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
               <div 
                 onClick={(e) => { e.stopPropagation(); handleLike(); }}
                 className="flex items-center justify-center p-3 rounded-full cursor-pointer transition-all duration-300 relative 
-                  bg-gray-50 border border-gray-300 hover:shadow-[0_0_12px_rgba(0,0,0,0.05)]"
+                  bg-gray-100  hover:shadow-[0_0_12px_rgba(0,0,0,0.05)]"
               >
                 {renderHeartIcon()}
                 {likes.length > 0 && (
@@ -509,7 +509,7 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
               <div
                 onClick={(e) => { e.stopPropagation(); handleBookmark(); }}
                 className="flex items-center justify-center p-3 rounded-full cursor-pointer transition-all duration-300 relative
-                  bg-gray-50 border border-gray-300 hover:shadow-[0_0_12px_rgba(0,0,0,0.05)]"
+                  bg-gray-100  hover:shadow-[0_0_12px_rgba(0,0,0,0.05)]"
               >
                 {renderBookmarkIcon()}
                 {bookmarks.length > 0 && (
