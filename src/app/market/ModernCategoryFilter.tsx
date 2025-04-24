@@ -23,7 +23,7 @@ const ModernCategoryFilter = ({
 
   // Simple category options without icons
   const categories = [
-    { id: 'all', label: 'All' },
+    { id: 'default', label: 'Default' },
     { id: 'barber', label: 'Barber' },
     { id: 'beauty', label: 'Beauty' },
     { id: 'fitness', label: 'Fitness' },
@@ -43,14 +43,14 @@ const ModernCategoryFilter = ({
   const visibleCategories = showAll ? categories : categories.slice(0, 5);
 
   return (
-    <div className="mb-2">
+    <div>
       <div className="flex items-center gap-2 flex-wrap">
         {visibleCategories.map((category) => (
           <button
             key={category.id}
             onClick={() => handleCategoryClick(category.id)}
             className={`
-              py-2.5 px-4 rounded-lg text-sm font-medium transition-all duration-200
+              py-3 px-4 rounded-lg text-xs font-medium transition-all duration-200
               ${activeCategory === category.id 
                 ? 'text-white' 
                 : 'text-neutral-600 hover:bg-neutral-100'}
@@ -67,7 +67,7 @@ const ModernCategoryFilter = ({
         {categories.length > 5 && (
           <button
             onClick={() => setShowAll(!showAll)}
-            className="py-2.5 px-4 rounded-lg text-sm font-medium text-neutral-600 hover:bg-neutral-100 border border-neutral-200 transition-all duration-200"
+            className="py-3 px-4 rounded-lg text-xs font-medium text-neutral-600 hover:bg-neutral-100 border border-neutral-200 transition-all duration-200"
           >
             {showAll ? "Less" : "More"}
           </button>

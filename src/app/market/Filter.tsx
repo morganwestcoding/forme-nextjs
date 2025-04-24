@@ -1,258 +1,187 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import qs from 'query-string';
-import { useColorContext } from '@/app/context/ColorContext';
+import { useState } from 'react';
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger 
+} from '@/components/ui/dropdown-menu';
 
-// Define the types directly in this file
-interface FilterOption {
-  label: string;
-  value: string;
-}
-
-export interface FilterValues {
-  category: string;
-  location: string;
-  price: string;
-  [key: string]: string; // Allow for additional filter types
-}
+// If you don't have a UI library with these components, 
+// you might need to implement a custom dropdown
 
 interface FilterProps {
-  onApplyFilter?: (filters: FilterValues) => void;
+  onApplyFilter: (filters: {
+    category?: string;
+    price?: 'low' | 'medium' | 'high';
+    sortBy?: 'price' | 'date' | 'name';
+    sortOrder?: 'asc' | 'desc';
+  }) => void;
 }
 
 const Filter: React.FC<FilterProps> = ({ onApplyFilter }) => {
-  const router = useRouter();
-  const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
-  const filterRef = useRef<HTMLDivElement>(null);
-  const { hexColor } = useColorContext();
-  
-  // Filter categories (customize these based on your needs)
-  const categoryOptions: FilterOption[] = [
-    { label: 'All', value: 'all' },
-    { label: 'Barber', value: 'barber' },
-    { label: 'Beauty', value: 'beauty' },
-    { label: 'Fitness', value: 'fitness' },
-    { label: 'Spa', value: 'spa' },
-    { label: 'Massage', value: 'massage' }
-  ];
-
-  // Location filter options
-  const locationOptions: FilterOption[] = [
-    { label: 'All Locations', value: 'all' },
-    { label: 'Nearby', value: 'nearby' },
-    { label: 'Trending', value: 'trending' }
-  ];
-
-  // Price filter options
-  const priceOptions: FilterOption[] = [
-    { label: '$', value: 'low' },
-    { label: '$$', value: 'medium' },
-    { label: '$$$', value: 'high' }
-  ];
-
-  // Get current filter values from URL
-  const [filters, setFilters] = useState<FilterValues>({
-    category: searchParams?.get('category') || 'all',
-    location: searchParams?.get('location') || 'all',
-    price: searchParams?.get('price') || ''
+  const [filters, setFilters] = useState<{
+    category: string;
+    price: 'low' | 'medium' | 'high' | '';
+    sortBy: 'price' | 'date' | 'name' | '';
+    sortOrder: 'asc' | 'desc';
+  }>({
+    category: '',
+    price: '',
+    sortBy: '',
+    sortOrder: 'desc',
   });
 
-  // Handle clicks outside the filter dropdown
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
-  const toggleFilter = () => {
-    setIsOpen(!isOpen);
+  const handleChange = (key: string, value: any) => {
+    setFilters(prev => ({ ...prev, [key]: value }));
   };
 
-  const handleFilterChange = (filterType: string, value: string) => {
-    setFilters(prev => ({
-      ...prev,
-      [filterType]: value
-    }));
-  };
-
-  const applyFilters = () => {
-    // Get current query parameters
-    let currentQuery = {};
-    if (searchParams) {
-      currentQuery = qs.parse(searchParams.toString());
-    }
-    
-    // Prepare updated query
-    const updatedQuery: any = {
-      ...currentQuery
+  const handleApply = () => {
+    // Convert empty string price to undefined to match the expected types
+    const filterData = {
+      ...filters,
+      price: filters.price === '' ? undefined : filters.price,
+      sortBy: filters.sortBy === '' ? undefined : filters.sortBy
     };
     
-    // Only add filters that are not set to default values
-    if (filters.category && filters.category !== 'all') {
-      updatedQuery.category = filters.category;
-    } else {
-      delete updatedQuery.category;
-    }
-    
-    if (filters.location && filters.location !== 'all') {
-      updatedQuery.location = filters.location;
-    } else {
-      delete updatedQuery.location;
-    }
-    
-    if (filters.price) {
-      updatedQuery.price = filters.price;
-    } else {
-      delete updatedQuery.price;
-    }
-    
-    // Build the URL
-    const url = qs.stringifyUrl({
-      url: '/market',
-      query: updatedQuery
-    }, { skipNull: true });
-    
-    // Update URL and close filter
-    router.push(url);
+    onApplyFilter(filterData);
     setIsOpen(false);
-    
-    // Call callback if provided
-    if (onApplyFilter) {
-      onApplyFilter(filters);
-    }
   };
-
-  const resetFilters = () => {
-    setFilters({
-      category: 'all',
-      location: 'all',
-      price: ''
-    });
-  };
-
-  // Calculate how many filters are active
-  const activeFilterCount = Object.values(filters).filter(val => val && val !== 'all').length;
 
   return (
-    <div className="relative w-full" ref={filterRef}>
-      {/* Filter Button - standardized height and width */}
-      <button
-        onClick={toggleFilter}
-        className="flex items-center justify-center gap-2 py-3 px-4 w-full rounded-lg text-sm font-medium transition-all duration-200 border border-gray-200 bg-gray-100 hover:bg-gray-50 text-neutral-700"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
-        </svg>
-        <span>Filter</span>
-        {activeFilterCount > 0 && (
-          <span className="flex items-center justify-center w-5 h-5 bg-white text-neutral-800 rounded-full text-xs font-semibold">
-            {activeFilterCount}
-          </span>
-        )}
-      </button>
-
-      {/* Filter Dropdown */}
-      {isOpen && (
-        <div className="absolute right-0 mt-2 w-72 bg-white rounded-lg shadow-xl z-20 overflow-hidden border border-gray-200">
-          <div className="p-4">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-semibold text-lg text-neutral-800">Filters</h3>
-              <button 
-                onClick={resetFilters}
-                className="text-sm text-neutral-500 hover:text-neutral-700"
-              >
-                Reset
-              </button>
+    <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+      <DropdownMenuTrigger asChild>
+        <button className="flex items-center justify-center h-12 py-3 px-4 w-24 rounded-lg text-xs font-medium transition-all duration-200 border border-gray-300 bg-gray-100 hover:bg-gray-50 text-neutral-700">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+          </svg>
+          <span>Filter</span>
+        </button>
+      </DropdownMenuTrigger>
+      
+      <DropdownMenuContent className="w-64 p-4">
+        <h3 className="text-lg font-medium mb-3">Filters</h3>
+        
+        {/* Price Range Filter */}
+        <div className="mb-4">
+          <h4 className="font-medium mb-2 text-sm">Price Range</h4>
+          <div className="space-y-2">
+            <div className="flex items-center">
+              <input
+                type="radio"
+                id="price-low"
+                name="price"
+                checked={filters.price === 'low'}
+                onChange={() => handleChange('price', 'low')}
+                className="mr-2"
+              />
+              <label htmlFor="price-low" className="text-sm">$0 - $50</label>
             </div>
-
-            {/* Category Filter */}
-            <div className="mb-4">
-              <h4 className="text-sm font-medium text-neutral-800 mb-2">Category</h4>
-              <div className="grid grid-cols-3 gap-2">
-                {categoryOptions.map(option => (
-                  <button
-                    key={option.value}
-                    onClick={() => handleFilterChange('category', option.value)}
-                    className={`
-                      px-3 py-2 text-sm rounded-md transition duration-200
-                      ${filters.category === option.value 
-                        ? `bg-[${hexColor || '#60A5FA'}] text-white` 
-                        : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'}
-                    `}
-                    style={filters.category === option.value ? { backgroundColor: hexColor || '#60A5FA' } : {}}
-                  >
-                    {option.label}
-                  </button>
-                ))}
-              </div>
+            <div className="flex items-center">
+              <input
+                type="radio"
+                id="price-medium"
+                name="price"
+                checked={filters.price === 'medium'}
+                onChange={() => handleChange('price', 'medium')}
+                className="mr-2"
+              />
+              <label htmlFor="price-medium" className="text-sm">$50 - $100</label>
             </div>
-
-            {/* Location Filter */}
-            <div className="mb-4">
-              <h4 className="text-sm font-medium text-neutral-800 mb-2">Location</h4>
-              <div className="flex flex-wrap gap-2">
-                {locationOptions.map(option => (
-                  <button
-                    key={option.value}
-                    onClick={() => handleFilterChange('location', option.value)}
-                    className={`
-                      px-3 py-2 text-sm rounded-md transition duration-200
-                      ${filters.location === option.value 
-                        ? `bg-[${hexColor || '#60A5FA'}] text-white` 
-                        : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'}
-                    `}
-                    style={filters.location === option.value ? { backgroundColor: hexColor || '#60A5FA' } : {}}
-                  >
-                    {option.label}
-                  </button>
-                ))}
-              </div>
+            <div className="flex items-center">
+              <input
+                type="radio"
+                id="price-high"
+                name="price"
+                checked={filters.price === 'high'}
+                onChange={() => handleChange('price', 'high')}
+                className="mr-2"
+              />
+              <label htmlFor="price-high" className="text-sm">$100+</label>
             </div>
-
-            {/* Price Filter */}
-            <div className="mb-4">
-              <h4 className="text-sm font-medium text-neutral-800 mb-2">Price</h4>
-              <div className="flex gap-2">
-                {priceOptions.map(option => (
-                  <button
-                    key={option.value}
-                    onClick={() => handleFilterChange('price', option.value)}
-                    className={`
-                      px-4 py-2 text-sm font-medium rounded-md transition duration-200 flex-1
-                      ${filters.price === option.value 
-                        ? `bg-[${hexColor || '#60A5FA'}] text-white` 
-                        : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'}
-                    `}
-                    style={filters.price === option.value ? { backgroundColor: hexColor || '#60A5FA' } : {}}
-                  >
-                    {option.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Apply Button */}
-            <button
-              onClick={applyFilters}
-              className="w-full py-3 rounded-md font-medium transition duration-200 text-white"
-              style={{ backgroundColor: hexColor || '#60A5FA' }}
-            >
-              Apply Filters
-            </button>
           </div>
         </div>
-      )}
-    </div>
+        
+        {/* Sort By Filter */}
+        <div className="mb-4">
+          <h4 className="font-medium mb-2 text-sm">Sort By</h4>
+          <div className="space-y-2">
+            <div className="flex items-center">
+              <input
+                type="radio"
+                id="sort-date"
+                name="sortBy"
+                checked={filters.sortBy === 'date'}
+                onChange={() => handleChange('sortBy', 'date')}
+                className="mr-2"
+              />
+              <label htmlFor="sort-date" className="text-sm">Date</label>
+            </div>
+            <div className="flex items-center">
+              <input
+                type="radio"
+                id="sort-price"
+                name="sortBy"
+                checked={filters.sortBy === 'price'}
+                onChange={() => handleChange('sortBy', 'price')}
+                className="mr-2"
+              />
+              <label htmlFor="sort-price" className="text-sm">Price</label>
+            </div>
+            <div className="flex items-center">
+              <input
+                type="radio"
+                id="sort-name"
+                name="sortBy"
+                checked={filters.sortBy === 'name'}
+                onChange={() => handleChange('sortBy', 'name')}
+                className="mr-2"
+              />
+              <label htmlFor="sort-name" className="text-sm">Name</label>
+            </div>
+          </div>
+        </div>
+        
+        {/* Sort Order */}
+        <div className="mb-4">
+          <h4 className="font-medium mb-2 text-sm">Sort Order</h4>
+          <div className="space-y-2">
+            <div className="flex items-center">
+              <input
+                type="radio"
+                id="order-asc"
+                name="sortOrder"
+                checked={filters.sortOrder === 'asc'}
+                onChange={() => handleChange('sortOrder', 'asc')}
+                className="mr-2"
+              />
+              <label htmlFor="order-asc" className="text-sm">Ascending</label>
+            </div>
+            <div className="flex items-center">
+              <input
+                type="radio"
+                id="order-desc"
+                name="sortOrder"
+                checked={filters.sortOrder === 'desc'}
+                onChange={() => handleChange('sortOrder', 'desc')}
+                className="mr-2"
+              />
+              <label htmlFor="order-desc" className="text-sm">Descending</label>
+            </div>
+          </div>
+        </div>
+        
+        {/* Apply button */}
+        <button
+          onClick={handleApply}
+          className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          Apply Filters
+        </button>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 

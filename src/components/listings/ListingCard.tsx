@@ -127,28 +127,49 @@ const ListingCard: React.FC<ListingCardProps> = ({
     }
   };
 
-  // Function to get category color from categories array
-  const getCategoryColor = (categoryName: string) => {
-    // Find the category in the categories array
-    const categoryObj = categories.find(
-      cat => cat.label === categoryName
-    );
-    
-    if (categoryObj) {
-      // Extract the hex color from the bg-[#XXXXXX] format
-      const colorMatch = categoryObj.color.match(/#[0-9A-Fa-f]{6}/);
-      if (colorMatch) {
-        return colorMatch[0];
-      }
+ // Function to get category color from categories array
+ const getCategoryColor = (categoryName: string) => {
+  // Find the category in the categories array
+  const categoryObj = categories.find(
+    cat => cat.label === categoryName
+  );
+  
+  if (categoryObj) {
+    // Extract the hex color from the bg-[#XXXXXX] format
+    const colorMatch = categoryObj.color.match(/#[0-9A-Fa-f]{6}/);
+    if (colorMatch) {
+      return colorMatch[0];
     }
-    
-    // Return a default color if not found
-    return '#D6C3B6';
-  };
+  }
+  
+  // Return a default color if not found
+  return '#D6C3B6';
+};
+
+// Function to darken a hex color by a factor
+const darkenColor = (hex: string, factor: number = 0.2) => {
+  // Remove # if present
+  hex = hex.replace('#', '');
+  
+  // Convert to RGB
+  let r = parseInt(hex.substring(0, 2), 16);
+  let g = parseInt(hex.substring(2, 4), 16);
+  let b = parseInt(hex.substring(4, 6), 16);
+  
+  // Darken each component
+  r = Math.max(0, Math.floor(r * (1 - factor)));
+  g = Math.max(0, Math.floor(g * (1 - factor)));
+  b = Math.max(0, Math.floor(b * (1 - factor)));
+  
+  // Convert back to hex
+  return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+};
+
+  
 
   return (
     <div className="col-span-1 flex justify-center w-full max-w-[395px] mx-auto">
-      <div className="bg-white border rounded-2xl flex flex-col w-full transition-all duration-300 overflow-hidden hover:shadow-md">
+      <div className="bg-white border border-gray-300 rounded-2xl flex flex-col w-full transition-all duration-300 overflow-hidden hover:shadow-md">
         {!reservation && (
           <>
             {/* Adding p-4 for entire content area (including image) */}
@@ -169,19 +190,21 @@ const ListingCard: React.FC<ListingCardProps> = ({
                               opacity-0 transition-all duration-300 group-hover:opacity-100" />
                 
               {/* Find and replace just this section in your ListingCard component */}
-{shouldDisplayCategory && (
+              {shouldDisplayCategory && (
   <>
     {/* Normal category badge (shown when not hovered) */}
     <div 
       className="
-        absolute top-4 left-4 py-3 px-3 rounded-lg z-10
+        absolute top-4 left-4 p-3 rounded-lg z-10
         text-white text-xs font-medium text-center
         w-20 overflow-hidden
         transition-all duration-300
-        group-hover:opacity-0  shadow-lg backdrop-blur-sm
+        group-hover:opacity-0 shadow-lg backdrop-blur-sm
+        border
       "
       style={{
         backgroundColor: getCategoryColor(data.category),
+        borderColor: `${darkenColor(getCategoryColor(data.category), 0.2)}`,
       }}
     >
       {data.category}
@@ -196,6 +219,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
         bg-white/80
         transition-all duration-300
         opacity-0 group-hover:opacity-100
+       border-2 border-white/80
       "
     >
       {data.category}

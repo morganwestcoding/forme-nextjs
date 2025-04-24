@@ -1,11 +1,9 @@
-// components/Search.tsx
 'use client';
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { SafeUser, SafeListing } from '@/app/types';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { categories } from '@/components/Categories'; // Make sure to import your categories
 
 type SearchResult = SafeUser | SafeListing;
 
@@ -19,23 +17,6 @@ const Search: React.FC<SearchProps> = ({ onResultClick }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
-
-  // Determine accent color based on selected category in URL
-  const getAccentColor = () => {
-    const categoryParam = params?.get('category');
-    
-    if (categoryParam) {
-      const categoryData = categories.find(cat => cat.label === categoryParam);
-      if (categoryData) {
-        return categoryData.color.replace('bg-[', '').replace(']', '');
-      }
-    }
-    
-    // Default color when no category is selected or "All" is selected
-    return '#60A5FA';
-  };
-
-  const accentColor = getAccentColor();
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
@@ -67,12 +48,12 @@ const Search: React.FC<SearchProps> = ({ onResultClick }) => {
   };
 
   return (
-    <div className="flex-grow relative">
-      <div className="ml-1 absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-500">
+    <div className="relative w-full">
+      <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-500">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="21" height="21" color="#71717A" fill="none">
           <path d="M14 14L16.5 16.5" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
           <path d="M16.4333 18.5252C15.8556 17.9475 15.8556 17.0109 16.4333 16.4333C17.0109 15.8556 17.9475 15.8556 18.5252 16.4333L21.5667 19.4748C22.1444 20.0525 22.1444 20.9891 21.5667 21.5667C20.9891 22.1444 20.0525 22.1444 19.4748 21.5667L16.4333 18.5252Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          <path d="M16 9C16 5.13401 12.866 2 9 2C5.13401 2 2 5.13401 2 9C2 12.866 5.13401 16 9 16C12.866 16 16 12.866 16 9Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" fill='#ffffff' />
+          <path d="M16 9C16 5.13401 12.866 2 9 2C5.13401 2 2 5.13401 2 9C2 12.866 5.13401 16 9 16C12.866 16 16 12.866 16 9Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" fill="#ffffff" />
         </svg>
       </div>
 
@@ -83,23 +64,20 @@ const Search: React.FC<SearchProps> = ({ onResultClick }) => {
         onChange={handleInputChange}
         onFocus={() => setIsSearchFocused(true)}
         onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
-        className="w-full text-[#71717A] placeholder:text-[#71717A] bg-white rounded-lg p-3.5 pl-12 pr-24 text-sm border"
+        className="w-full h-12 text-[#71717A] placeholder:text-[#71717A] bg-white rounded-lg p-3.5 pl-12 pr-4 text-sm border border-gray-300"
       />
 
-      {searchResults.length > 0 && (
-        <div className="absolute z-10 w-full mt-1 rounded-lg shadow-sm-lg bg-white bg-opacity-90 backdrop-blur-md overflow-hidden">
+      {searchResults.length > 0 && isSearchFocused && (
+        <div className="absolute z-10 w-full mt-1 rounded-lg shadow-lg bg-white overflow-hidden">
           <div className="max-h-96 overflow-y-auto">
             {searchResults.map((result, index) => (
               <div 
                 key={result.id} 
                 className={`
                   p-4 
-                  hover:bg-gray-500 
-                  hover:bg-opacity-25 
+                  hover:bg-gray-100 
                   cursor-pointer 
-                  ${index !== searchResults.length - 1 ? 'border-b border-gray-500 border-opacity-25' : ''}
-                  ${index === 0 ? 'rounded-t-lg' : ''}
-                  ${index === searchResults.length - 1 ? 'rounded-b-lg' : ''}
+                  ${index !== searchResults.length - 1 ? 'border-b border-gray-100' : ''}
                   transition
                   duration-200
                 `}
@@ -116,7 +94,7 @@ const Search: React.FC<SearchProps> = ({ onResultClick }) => {
                       <img src={result.image} alt={result.name || 'User'} className="w-8 h-8 rounded-full mr-2" />
                     )}
                     <div>
-                      <div className="font-semibold text-black">{result.name}</div>
+                      <div className="font-semibold text-gray-800">{result.name}</div>
                       <div className="text-sm text-gray-600">{result.email}</div>
                     </div>
                   </div>
@@ -126,7 +104,7 @@ const Search: React.FC<SearchProps> = ({ onResultClick }) => {
                       <img src={result.imageSrc} alt={result.title} className="w-8 h-8 object-cover rounded-md mr-2" />
                     )}
                     <div>
-                      <div className="font-semibold text-black">{result.title}</div>
+                      <div className="font-semibold text-gray-800">{result.title}</div>
                       <div className="text-sm text-gray-600">{result.category}</div>
                     </div>
                   </div>

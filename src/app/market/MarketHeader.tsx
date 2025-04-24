@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import Search from '@/components/header/Search';
 import Filter from './Filter';
-import { useColorContext } from '@/app/context/ColorContext';
 import ModernCategoryFilter from './ModernCategoryFilter';
 
 interface MarketHeaderProps {
@@ -38,25 +37,28 @@ const MarketHeader = ({
     });
   };
 
+  const handleSortChange = (sortOptions: { sortBy: 'price' | 'date' | 'name', sortOrder: 'asc' | 'desc' }) => {
+    onFilterChange({
+      ...filters,
+      ...sortOptions
+    });
+  };
+
   return (
-    <div className="py-6 px-6 rounded-2xl transition-colors duration-250 border">
-      {/* First row: heading / search / grid / sort */}
+    <div className="py-6 px-6 rounded-2xl transition-colors duration-250 border border-gray-300">
+      {/* First row: search / view toggle / filter / sort */}
       <div className="flex items-center justify-between mb-4">
-        {/* Left side with title and search */}
-        <div className="flex items-center flex-1">
-          
-          {/* Search component */}
-          <div className="w-full max-w-xl">
-            <Search />
-          </div>
+        {/* Left side with search */}
+        <div className="flex-1 pr-4">
+          <Search />
         </div>
         
-        {/* Right side with view toggle and sort */}
-        <div className="flex items-center gap-3 -mb-3">
+        {/* Right side with view toggle, filter and sort */}
+        <div className="flex items-center gap-3">
           {/* View mode selector */}
-          <div className="flex bg-gray-100 rounded-lg overflow-hidden">            
+          <div className="flex h-12 bg-gray-100 rounded-lg overflow-hidden">            
             <button
-              className={`py-3 px-5 rounded-lg rounded-r-none text-sm font-medium transition-all duration-200 border border-gray-200 ${viewMode === 'grid' ? 'bg-white text-neutral-800' : 'bg-gray-100 text-neutral-500 hover:bg-gray-50'}`}
+              className={`flex items-center justify-center h-full py-3 px-5 rounded-lg rounded-r-none text-xs font-medium transition-all duration-200 border border-gray-300 ${viewMode === 'grid' ? 'bg-white text-neutral-800' : 'bg-gray-100 text-neutral-500 hover:bg-gray-50'}`}
               onClick={() => onViewModeChange('grid')}
               onMouseEnter={() => setHoverState('grid')}
               onMouseLeave={() => setHoverState(null)}
@@ -70,7 +72,7 @@ const MarketHeader = ({
             </button>
             
             <button
-              className={`py-3.5 px-5 rounded-lg rounded-l-none text-sm font-medium transition-all duration-200 border border-l-0 border-gray-200 ${viewMode === 'list' ? 'bg-white text-neutral-800' : 'bg-gray-100 text-neutral-500 hover:bg-gray-50'}`}
+              className={`flex items-center justify-center h-full py-3 px-5 rounded-lg rounded-l-none text-xs font-medium transition-all duration-200 border border-gray-300 border-l-0  ${viewMode === 'list' ? 'bg-white text-neutral-800' : 'bg-gray-100 text-neutral-500 hover:bg-gray-50'}`}
               onClick={() => onViewModeChange('list')}
               onMouseEnter={() => setHoverState('list')}
               onMouseLeave={() => setHoverState(null)}
@@ -86,11 +88,33 @@ const MarketHeader = ({
             </button>
           </div>
           
+          {/* Filter button */}
+          <div className="h-12">
+            <Filter onApplyFilter={(filterValues) => {
+              const { category, price } = filterValues;
+              handleFilterChange({ 
+                category,
+                minPrice: price === 'low' ? 0 : price === 'medium' ? 50 : price === 'high' ? 100 : undefined,
+                maxPrice: price === 'low' ? 50 : price === 'medium' ? 100 : price === 'high' ? undefined : undefined
+              });
+            }} />
+          </div>
+          
           {/* Sort button */}
           <button 
-            className="py-3 px-4 w-28 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 border border-gray-200 bg-gray-100 hover:bg-gray-50 text-neutral-700"
+            className="flex items-center justify-center h-12 py-3 px-4 w-24 rounded-lg text-xs font-medium transition-all duration-200 border border-gray-300 bg-gray-100 hover:bg-gray-50 text-neutral-700"
+            onClick={() => {
+              // Toggle between ascending and descending for the current sort field
+              // or default to sorting by date in descending order
+              const currentSortBy = filters.sortBy || 'date';
+              const currentSortOrder = filters.sortOrder || 'desc';
+              handleSortChange({
+                sortBy: currentSortBy,
+                sortOrder: currentSortOrder === 'asc' ? 'desc' : 'asc'
+              });
+            }}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
               <line x1="21" y1="10" x2="3" y2="10"></line>
               <line x1="21" y1="6" x2="3" y2="6"></line>
               <line x1="21" y1="14" x2="3" y2="14"></line>
@@ -101,38 +125,14 @@ const MarketHeader = ({
         </div>
       </div>
       
-      {/* Second row: category filters / filter button */}
-      <div className="flex items-center justify-between">
+      {/* Second row: category filters */}
+      <div className="flex items-center">
         {/* Category filter */}
         <div className="flex-1">
           <ModernCategoryFilter 
             selectedCategory={filters.category} 
             onCategoryChange={handleCategoryChange} 
           />
-        </div>
-        
-        {/* Right side buttons */}
-        <div className="flex items-center gap-3">
-          {/* Compare button */}
-          <button className="flex items-center justify-center gap-2 py-3 px-4 w-28 rounded-lg text-sm font-medium transition-all duration-200 border border-gray-200 bg-gray-100 hover:bg-gray-50 text-neutral-700">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
-              <polyline points="17 6 23 6 23 12"></polyline>
-            </svg>
-            <span>Trending</span>
-          </button>
-          
-          {/* Filter button wrapper - style adjustments will be in Filter component */}
-          <div className='w-28'>
-            <Filter onApplyFilter={(filterValues) => {
-              const { category, price } = filterValues;
-              handleFilterChange({ 
-                category,
-                minPrice: price === 'low' ? 0 : price === 'medium' ? 50 : price === 'high' ? 100 : undefined,
-                maxPrice: price === 'low' ? 50 : price === 'medium' ? 100 : price === 'high' ? undefined : undefined
-              });
-            }} />
-          </div>
         </div>
       </div>
     </div>
