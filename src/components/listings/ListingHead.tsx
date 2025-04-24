@@ -68,11 +68,11 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
 
                 {/* Statistics in a single row with increased spacing */}
                 <div className="mt-auto">
-              
+
                     {/* Adjusted for better spacing and wider squares */}
                     <div className="grid grid-cols-3 gap-2 pt-2 w-full">
                       {/* Rating Pill */}
-                      <div className="bg-white  border px-2 py-2.5 rounded-xl flex flex-col items-center shadow-sm hover:shadow hover:border-gray-200 transition-all duration-300 group w-full">
+                      <div className="bg-white border px-2 py-2.5 rounded-xl flex flex-col items-center shadow-sm hover:shadow hover:border-gray-200 transition-all duration-300 group w-full">
                         <div className="flex items-center mb-1">
                           <div className="bg-amber-50 p-1 rounded-md mr-1.5 group-hover:bg-amber-100 transition-colors duration-300">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="12" height="12" className="text-amber-500">

@@ -6,9 +6,10 @@ import { SafeStoreHours } from '@/app/types';
 
 interface OpenStatusProps {
   storeHours: SafeStoreHours[];
+  className?: string;
 }
 
-const OpenStatus: React.FC<OpenStatusProps> = ({ storeHours }) => {
+const OpenStatus: React.FC<OpenStatusProps> = ({ storeHours, className = '' }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [currentHours, setCurrentHours] = useState<string>('');
   const [nextOpenHours, setNextOpenHours] = useState<string>('');
@@ -112,8 +113,7 @@ const OpenStatus: React.FC<OpenStatusProps> = ({ storeHours }) => {
           
           return `${hour24.toString().padStart(2, '0')}:${minutes}`;
         }
-        
-        // Regular 24-hour format
+ 
         return timeStr;
       };
       
@@ -133,28 +133,33 @@ const OpenStatus: React.FC<OpenStatusProps> = ({ storeHours }) => {
 
   if (!storeHours || storeHours.length === 0) {
     return (
-      <div className="flex items-center text-sm">
+      <div className={`inline-flex items-center ${className}`}>
         <div className="w-2 h-2 rounded-full bg-gray-400 mr-2"></div>
-        <span className="text-gray-500">Hours not available</span>
+        <span className="text-gray-500 text-sm">Hours not available</span>
       </div>
     );
   }
 
   return (
-    <div className="flex items-center mt-1">
+    <div className={`flex items-center gap-2 ${className}`}>
+      {/* Status Badge */}
       <div className={`
-        flex items-center gap-2 px-2.5 py-1.5 rounded-lg 
-        ${isOpen ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}
+        inline-flex items-center gap-2 px-3 py-1 rounded-xl text-sm font-medium
+        ${isOpen 
+          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
+          : 'bg-gray-50 text-gray-700 border border-gray-200'}
+        transition-all duration-200
       `}>
-        <div className={`w-2 h-2 rounded-full ${isOpen ? 'bg-green-500' : 'bg-red-500'}`}></div>
-        <span className="text-sm font-medium">
-          {isOpen ? 'Open now' : 'Closed'}
-        </span>
+        <span className={`w-2 h-2 rounded-xl ${isOpen ? 'bg-emerald-500' : 'bg-gray-400'}`}></span>
+        <span>{isOpen ? 'Open' : 'Closed'}</span>
       </div>
       
-      <span className="text-sm text-gray-500 ml-2">
-        {isOpen ? currentHours : nextOpenHours}
-      </span>
+      {/* Hours Display */}
+      <div className="flex items-center">
+        <span className={`text-sm ${isOpen ? 'text-gray-700' : 'text-gray-500'}`}>
+          {isOpen ? currentHours : nextOpenHours}
+        </span>
+      </div>
     </div>
   );
 };

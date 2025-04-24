@@ -316,7 +316,7 @@ const ModernCategory: React.FC<CategoryButtonProps> = ({
         onClick={() => setIsOpen(!isOpen)}
         className="cursor-pointer transition-transform duration-200 hover:scale-102 active:scale-98"
       >
-        <div className="flex items-center justify-between bg-white rounded-lg shadow-sm border border-gray-100 w-36 px-4 py-2">
+        <div className="flex items-center justify-between bg-white rounded-xl shadow-sm border border-gray-100 w-36 px-4 py-2">
           <div className="text-neutral-500 text-sm mr-2 truncate font-medium">
             {selectedCategory}
           </div>

@@ -44,11 +44,6 @@ const MarketHeader = ({
       <div className="flex items-center justify-between mb-4">
         {/* Left side with title and search */}
         <div className="flex items-center flex-1">
-          {/* Title and subtitle */}
-          <div className="hidden sm:block mr-4">
-            <h1 className="text-xl font-semibold text-neutral-800">Marketplace</h1>
-            <p className="text-sm text-neutral-500">Discover Listings</p>
-          </div>
           
           {/* Search component */}
           <div className="w-full max-w-xl">

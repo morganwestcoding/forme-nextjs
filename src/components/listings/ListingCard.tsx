@@ -127,6 +127,25 @@ const ListingCard: React.FC<ListingCardProps> = ({
     }
   };
 
+  // Function to get category color from categories array
+  const getCategoryColor = (categoryName: string) => {
+    // Find the category in the categories array
+    const categoryObj = categories.find(
+      cat => cat.label === categoryName
+    );
+    
+    if (categoryObj) {
+      // Extract the hex color from the bg-[#XXXXXX] format
+      const colorMatch = categoryObj.color.match(/#[0-9A-Fa-f]{6}/);
+      if (colorMatch) {
+        return colorMatch[0];
+      }
+    }
+    
+    // Return a default color if not found
+    return '#D6C3B6';
+  };
+
   return (
     <div className="col-span-1 flex justify-center w-full max-w-[395px] mx-auto">
       <div className="bg-white border rounded-2xl flex flex-col w-full transition-all duration-300 overflow-hidden hover:shadow-md">
@@ -136,7 +155,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
             <div className="p-6">
               {/* Image Section with rounded corners */}
               <div className="relative h-[175px] w-full group cursor-pointer overflow-hidden shadow rounded-xl">
-                <Image
+              <Image
                   onClick={() => router.push(`/listings/${data.id}`)} 
                   fill
                   className="object-cover w-full h-full transform transition-all duration-500 
@@ -145,33 +164,66 @@ const ListingCard: React.FC<ListingCardProps> = ({
                   alt="Listing"
                 />
                 
-                {/* Gradient Overlay */}
+                {/* Gradient Overlay - Enhanced to match ListingGalleryImage */}
                 <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/50 
                               opacity-0 transition-all duration-300 group-hover:opacity-100" />
                 
-                  {/* Category Tag - Only show if not default */}
-         
-
-                {/* Action Buttons */}
+              {/* Find and replace just this section in your ListingCard component */}
+{shouldDisplayCategory && (
+  <>
+    {/* Normal category badge (shown when not hovered) */}
+    <div 
+      className="
+        absolute top-4 left-4 py-12 px-3 rounded-lg z-10
+        text-white text-xs font-medium text-center
+        w-20 overflow-hidden
+        transition-all duration-300
+        group-hover:opacity-0 shadow-lg backdrop-blur-sm
+      "
+      style={{
+        backgroundColor: getCategoryColor(data.category),
+      }}
+    >
+      {data.category}
+    </div>
+    
+    {/* White category badge (shown only on hover) */}
+    <div 
+      className="
+        absolute top-4 left-4 p-3 rounded-lg z-10
+        text-black text-xs font-medium text-center
+        shadow-lg backdrop-blur-sm w-20 overflow-hidden
+        bg-white/80
+        transition-all duration-300
+        opacity-0 group-hover:opacity-100
+      "
+    >
+      {data.category}
+    </div>
+  </>
+)}
+                
+                {/* Action Buttons - Styled to match ListingGalleryImage */}
                 <div className="absolute top-4 right-4 flex items-center gap-2 z-10 
-                              opacity-0 translate-y-2 transition-all duration-300 
-                              group-hover:opacity-100 group-hover:translate-y-0">
+                              opacity-0 transform scale-90 translate-y-2 transition-all duration-300 
+                              group-hover:opacity-100 group-hover:translate-y-0 group-hover:scale-100">
                   <HeartButton 
                     listingId={data.id}
                     currentUser={currentUser}
                     favoriteIds={data.favoriteIds}
                   />
+                  
+                  {/* Share button with white styling like zoom button */}
                   <button 
                     onClick={(e) => {
                       e.stopPropagation();
                       setIsSaved(!isSaved);
                     }}
-                    className="p-2.5 rounded-full bg-black/50 border border-white/20 backdrop-blur-sm 
-                              hover:bg-black/60 transition-all duration-300 shadow-lg
-                              transform scale-90 group-hover:scale-100"
+                    className="p-3 rounded-full bg-white/80 backdrop-blur-sm
+                              hover:bg-white hover:scale-110 transition-all duration-300 shadow-lg"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="21" height="21" color="#ffffff" fill="none">
-                      <path d="M18.7083 7C20.1334 8.59227 21 10.6949 21 13C21 17.9706 16.9706 22 12 22C7.02944 22 3 17.9706 3 13C3 10.6949 3.86656 8.59227 5.29168 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" fill="rgba(0, 0, 0, 0.35)" />
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" color="#000000" fill="none">
+                      <path d="M18.7083 7C20.1334 8.59227 21 10.6949 21 13C21 17.9706 16.9706 22 12 22C7.02944 22 3 17.9706 3 13C3 10.6949 3.86656 8.59227 5.29168 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                       <path d="M12.0253 2.00052L12 14M12.0253 2.00052C11.8627 1.99379 11.6991 2.05191 11.5533 2.17492C10.6469 2.94006 9 4.92886 9 4.92886M12.0253 2.00052C12.1711 2.00657 12.3162 2.06476 12.4468 2.17508C13.3531 2.94037 15 4.92886 15 4.92886" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </button>
@@ -179,10 +231,10 @@ const ListingCard: React.FC<ListingCardProps> = ({
 
                 {/* Image Navigation Dots */}
                 {hasMultipleImages && (
-                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-10 
-                                  bg-black/30 backdrop-blur-sm rounded-full px-2.5 py-1.5 
-                                  opacity-0 transition-all duration-300 
-                                  group-hover:opacity-100 transform scale-95 group-hover:scale-100">
+                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-10 
+                                bg-black/30 backdrop-blur-sm rounded-full px-2.5 py-1.5 
+                                opacity-0 transition-all duration-300 
+                                group-hover:opacity-100 transform scale-95 group-hover:scale-100">
                     {allImages.map((_, index) => (
                       <button
                         key={index}
@@ -201,16 +253,18 @@ const ListingCard: React.FC<ListingCardProps> = ({
 
               {/* Content Section - No need for additional borders since everything is within the p-4 */}
               <div>
-              <div className="flex items-start justify-center py-5 text-center">
-  <div className="flex flex-col">
-    <h3 className="font-medium text-gray-900 text-base">
-      {data.title}
-    </h3>
-    <p className="text-xs text-gray-500 mt-1">
-      {city}, {stateAcronym}
-    </p>
-  </div>
-</div>
+                <div className="flex items-start justify-center py-5 text-center">
+                  <div className="flex flex-col">
+                    <h3 className="font-medium text-gray-900 text-base">
+                      {data.title}
+                    </h3>
+                   
+                      <p className="text-xs text-gray-500">
+                        {city}, {stateAcronym}
+                      </p>
+               
+                  </div>
+                </div>
 
                 <div className="space-y-3">
                   <div className="relative">
@@ -244,15 +298,15 @@ const ListingCard: React.FC<ListingCardProps> = ({
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 mt-3">
-                    {/* Quick Book Button - Styled like sidebar buttons */}
+                  <div className="flex items-center gap-2 mt-4">
+                    {/* Quick Book Button - Taller as requested */}
                     <button 
                       onClick={(e) => {
                         e.stopPropagation();
                       }}
                       className="flex-1 bg-gray-100 text-gray-700 py-4 px-4 rounded-lg text-xs font-medium
                                 hover:bg-gray-200 hover:shadow-sm transition-all duration-200 
-                                flex items-center justify-start h-11"
+                                flex items-center justify-start"
                     >
                       <div className="w-6 flex items-center justify-center">
                         <svg 
@@ -288,12 +342,12 @@ const ListingCard: React.FC<ListingCardProps> = ({
                       <span className="ml-2">Quick Book</span>
                     </button>
                     
-                    {/* Reserve Button - Right-aligned icon */}
+                    {/* Reserve Button - Taller as requested */}
                     <button 
                       onClick={() => router.push(`/listings/${data.id}`)}
                       className="flex-1 bg-[#60A5FA] text-white py-4 px-4 rounded-lg text-xs font-medium
                                 shadow-sm hover:shadow-md hover:bg-[#4287f5] transition-all duration-200
-                                flex items-center justify-between h-11"
+                                flex items-center justify-between"
                     >
                       <span className="flex-1 text-center">Reserve</span>
                       <div className="w-6 flex items-center justify-center">
