@@ -144,7 +144,7 @@ const OpenStatus: React.FC<OpenStatusProps> = ({ storeHours, className = '' }) =
     <div className={`flex items-center gap-2 ${className}`}>
       {/* Status Badge */}
       <div className={`
-        inline-flex items-center gap-2 px-3 py-1 rounded-xl text-sm font-medium
+        inline-flex items-center gap-2 px-3 py-3 rounded-lg text-xs font-medium
         ${isOpen 
           ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
           : 'bg-gray-50 text-gray-700 border border-gray-200'}
@@ -156,7 +156,7 @@ const OpenStatus: React.FC<OpenStatusProps> = ({ storeHours, className = '' }) =
       
       {/* Hours Display */}
       <div className="flex items-center">
-        <span className={`text-sm ${isOpen ? 'text-gray-700' : 'text-gray-500'}`}>
+        <span className={`text-xs ${isOpen ? 'text-gray-700' : 'text-gray-500'}`}>
           {isOpen ? currentHours : nextOpenHours}
         </span>
       </div>

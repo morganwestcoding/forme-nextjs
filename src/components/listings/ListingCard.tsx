@@ -150,7 +150,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
     }
     
     // Return a default color if not found
-    return '#60A5FA';
+    return '#6B7280';
   };
 
   // Function to darken a hex color by a factor
@@ -173,19 +173,18 @@ const ListingCard: React.FC<ListingCardProps> = ({
   };
 
   // Get the category color for this listing - but only if it matches the selected category
-  const categoryColor = isSelectedCategory ? getCategoryColor(data.category || 'Default') : '#60A5FA';
+  const categoryColor = isSelectedCategory ? getCategoryColor(data.category || 'Default') : '#6B7280';
   const darkerCategoryColor = darkenColor(categoryColor, 0.15);
   
   return (
     <div className="col-span-1 flex justify-center w-full max-w-[395px] mx-auto">
-      <div className="bg-white border border-gray-300 rounded-2xl flex flex-col w-full transition-all duration-300 overflow-hidden hover:shadow-md">
+      <div className="bg-gray-100 rounded-2xl flex flex-col w-full transition-all duration-300 overflow-hidden hover:shadow-md">
         {!reservation && (
           <>
-            {/* Adding p-4 for entire content area (including image) */}
             <div className="p-6">
               {/* Image Section with rounded corners */}
               <div className="relative h-[175px] w-full group cursor-pointer overflow-hidden shadow rounded-xl">
-              <Image
+                <Image
                   onClick={() => router.push(`/listings/${data.id}`)} 
                   fill
                   className="object-cover w-full h-full transform transition-all duration-500 
@@ -198,43 +197,40 @@ const ListingCard: React.FC<ListingCardProps> = ({
                 <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/50 
                               opacity-0 transition-all duration-300 group-hover:opacity-100" />
                 
-              {/* Category Badge */}
-              {shouldDisplayCategory && (
-                <>
-                  {/* Normal category badge (shown when not hovered) */}
-                  <div 
-                    className="
-                      absolute top-4 left-4 p-3 rounded-lg z-10
-                      text-white text-xs font-medium text-center
-                      w-20 overflow-hidden
-                      transition-all duration-300
-                      group-hover:opacity-0 shadow-lg backdrop-blur-sm
-                    "
-                    style={{
-                      backgroundColor: getCategoryColor(data.category),
-                    }}
-                  >
-                    {data.category}
-                  </div>
-                  
-                  {/* White category badge (shown only on hover) */}
-                  <div 
-                    className="
-                      absolute top-4 left-4 p-3 rounded-lg z-10
-                      text-black text-xs font-medium text-center
-                      shadow-lg backdrop-blur-sm w-20 overflow-hidden
-                      bg-white/80
-                      transition-all duration-300
-                      opacity-0 group-hover:opacity-100
-                    "
-                  >
-                    {data.category}
-                  </div>
-                </>
-              )}
-                
+                {/* Category Badge */}
+                {shouldDisplayCategory && (
+  <>
+    {/* Category colored label with fixed width */}
+    <div 
+      className="
+        absolute top-6 left-6 p-3 rounded-lg z-10
+        text-white text-xs font-medium text-center
+        w-20 shadow overflow-hidden
+        transition-all duration-300 group-hover:opacity-0
+      "
+      style={{
+        backgroundColor: getCategoryColor(data.category),
+      }}
+    >
+      {data.category}
+    </div>
+    
+    {/* White hover state with same fixed width */}
+    <div 
+      className="
+        absolute top-6 left-6 p-3 rounded-lg z-10
+        text-black text-xs font-medium text-center
+        w-20 shadow bg-white/95 backdrop-blur-sm overflow-hidden
+        transition-all duration-300
+        opacity-0 group-hover:opacity-100
+      "
+    >
+      {data.category}
+    </div>
+  </>
+)}
                 {/* Action Buttons - Styled to match ListingGalleryImage */}
-                <div className="absolute top-4 right-4 flex items-center gap-2 z-10 
+                <div className="absolute top-6 right-6 flex items-center gap-2 z-10 
                               opacity-0 transform scale-90 translate-y-2 transition-all duration-300 
                               group-hover:opacity-100 group-hover:translate-y-0 group-hover:scale-100">
                   <HeartButton 
@@ -281,24 +277,24 @@ const ListingCard: React.FC<ListingCardProps> = ({
                 )}
               </div>
 
-              {/* Content Section - No need for additional borders since everything is within the p-4 */}
-              <div>
-                <div className="flex items-start justify-center py-5 text-center">
+              {/* Content Section with white background stopping before buttons */}
+              <div className="bg-white rounded-xl shadow-sm mt-4 overflow-hidden">
+                {/* Title Section */}
+                <div className="flex items-start justify-center pt-6 pb-4 px-6 text-center">
                   <div className="flex flex-col">
                     <h3 className="font-medium text-gray-900 text-base">
                       {data.title}
                     </h3>
-                   
-                      <p className="text-xs text-gray-500">
-                        {city}, {stateAcronym}
-                      </p>
-               
+                    <p className="text-xs text-gray-500 mt-1">
+                      {city}, {stateAcronym}
+                    </p>
                   </div>
                 </div>
 
-                <div className="space-y-3">
+                {/* Services Section */}
+                <div className="p-6">
                   <div className="relative">
-                    <div className="bg-gray-50 rounded-lg p-3">
+                    <div className="bg-gray-50 shadow-sm rounded-lg p-3">
                       <div className="flex items-center justify-between">
                         <div className="flex-1 pl-2">
                           <div className="text-xs text-gray-500 mb-1">
@@ -333,96 +329,98 @@ const ListingCard: React.FC<ListingCardProps> = ({
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 mt-4">
-                    {/* Quick Book Button - Taller as requested */}
-                    <button 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                      }}
-                      className="flex-1 bg-gray-100 text-gray-700 py-4 px-4 rounded-lg text-xs font-medium
-                                hover:bg-gray-200 hover:shadow-sm transition-all duration-200 
-                                flex items-center justify-start"
-                    >
-                      <div className="w-6 flex items-center justify-center">
-                        <svg 
-                          xmlns="http://www.w3.org/2000/svg" 
-                          viewBox="0 0 24 24" 
-                          width="18" 
-                          height="18" 
-                          fill="none" 
-                          stroke="currentColor" 
-                          strokeWidth="1.5"
-                          strokeLinecap="round" 
-                          strokeLinejoin="round"
-                        >
-                          <path 
-                            d="M2.5 12.2432C2.5 7.88594 2.5 5.70728 3.75212 4.35364C5.00424 3 7.01949 3 11.05 3H12.95C16.9805 3 18.9958 3 20.2479 4.35364C21.5 5.70728 21.5 7.88594 21.5 12.2432V12.7568C21.5 17.1141 21.5 19.2927 20.2479 20.6464C18.9958 22 16.9805 22 12.95 22H11.05C7.01949 22 5.00424 22 3.75212 20.6464C2.5 19.2927 2.5 17.1141 2.5 12.7568V12.2432Z" 
-                            stroke="currentColor" 
-                            strokeWidth="1.5"
-                          />
-                          <path 
-                            d="M18 2V4M6 2V4M3 8H21" 
-                            stroke="currentColor" 
-                            strokeWidth="1.5" 
-                            strokeLinecap="round"
-                          />
-                          <path 
-                            d="M11.9955 13H12.0045M11.9955 17H12.0045M15.991 13H16M8 13H8.00897M8 17H8.00897" 
-                            stroke="currentColor" 
-                            strokeWidth="2" 
-                            strokeLinecap="round"
-                          />
-                        </svg>
-                      </div>
-                      <span className="ml-2">Quick Book</span>
-                    </button>
-                    
-                    {/* Reserve Button - With category color only if category is selected */}
-                    <button 
-                      onClick={() => router.push(`/listings/${data.id}`)}
-                      className="flex-1 text-white py-4 px-4 rounded-lg text-xs font-medium
-                                shadow-sm hover:shadow-md transition-all duration-200
-                                flex items-center justify-between"
-                      style={{
-                        backgroundColor: categoryColor,
-                        transition: 'all 0.2s ease-in-out',
-                      }}
-                      onMouseOver={(e) => {
-                        e.currentTarget.style.backgroundColor = darkerCategoryColor;
-                      }}
-                      onMouseOut={(e) => {
-                        e.currentTarget.style.backgroundColor = categoryColor;
-                      }}
-                    >
-                      <span className="flex-1 text-center">Reserve</span>
-                      <div className="w-6 flex items-center justify-center">
-                        <svg 
-                          xmlns="http://www.w3.org/2000/svg" 
-                          viewBox="0 0 24 24" 
-                          width="18" 
-                          height="18" 
-                          color="#ffffff" 
-                          fill="none"
-                        >
-                          <path 
-                            d="M20.0001 11.9998L4.00012 11.9998" 
-                            stroke="currentColor" 
-                            strokeWidth="1.5" 
-                            strokeLinecap="round" 
-                            strokeLinejoin="round" 
-                          />
-                          <path 
-                            d="M15.0003 17C15.0003 17 20.0002 13.3176 20.0002 12C20.0002 10.6824 15.0002 7 15.0002 7" 
-                            stroke="currentColor" 
-                            strokeWidth="1.5" 
-                            strokeLinecap="round" 
-                            strokeLinejoin="round" 
-                          />
-                        </svg>
-                      </div>
-                    </button>
-                  </div>
                 </div>
+              </div>
+              
+              {/* Button Section - Outside the white background */}
+              <div className="flex items-center gap-2 mt-4">
+                {/* Quick Book Button */}
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                  className="flex-1 bg-white text-black py-4 px-4 rounded-xl text-xs font-medium
+                            hover:bg-gray-200 hover:shadow-sm transition-all duration-200 
+                            flex items-center justify-start shadow-sm"
+                >
+                  <div className="w-6 flex items-center justify-center">
+                    <svg 
+                      xmlns="http://www.w3.org/2000/svg" 
+                      viewBox="0 0 24 24" 
+                      width="18" 
+                      height="18" 
+                      fill="none" 
+                      stroke="#ffffff" 
+                      strokeWidth="1.5"
+                      strokeLinecap="round" 
+                      strokeLinejoin="round"
+                    >
+                      <path 
+                        d="M2.5 12.2432C2.5 7.88594 2.5 5.70728 3.75212 4.35364C5.00424 3 7.01949 3 11.05 3H12.95C16.9805 3 18.9958 3 20.2479 4.35364C21.5 5.70728 21.5 7.88594 21.5 12.2432V12.7568C21.5 17.1141 21.5 19.2927 20.2479 20.6464C18.9958 22 16.9805 22 12.95 22H11.05C7.01949 22 5.00424 22 3.75212 20.6464C2.5 19.2927 2.5 17.1141 2.5 12.7568V12.2432Z" 
+                        stroke="currentColor" 
+                        strokeWidth="1.5"
+                      />
+                      <path 
+                        d="M18 2V4M6 2V4M3 8H21" 
+                        stroke="currentColor" 
+                        strokeWidth="1.5" 
+                        strokeLinecap="round"
+                      />
+                      <path 
+                        d="M11.9955 13H12.0045M11.9955 17H12.0045M15.991 13H16M8 13H8.00897M8 17H8.00897" 
+                        stroke="currentColor" 
+                        strokeWidth="2" 
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                  </div>
+                  <span className="ml-2">Quick Book</span>
+                </button>
+                
+                {/* Reserve Button - With category color only if category is selected */}
+                <button 
+                  onClick={() => router.push(`/listings/${data.id}`)}
+                  className="flex-1 text-white py-4 px-4 rounded-xl text-xs font-medium
+                            shadow-sm hover:shadow-md transition-all duration-200
+                            flex items-center justify-between"
+                  style={{
+                    backgroundColor: categoryColor,
+                    transition: 'all 0.2s ease-in-out',
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.backgroundColor = darkerCategoryColor;
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.backgroundColor = categoryColor;
+                  }}
+                >
+                  <span className="flex-1 text-center">Reserve</span>
+                  <div className="w-6 flex items-center justify-center">
+                    <svg 
+                      xmlns="http://www.w3.org/2000/svg" 
+                      viewBox="0 0 24 24" 
+                      width="18" 
+                      height="18" 
+                      color="#ffffff" 
+                      fill="none"
+                    >
+                      <path 
+                        d="M20.0001 11.9998L4.00012 11.9998" 
+                        stroke="currentColor" 
+                        strokeWidth="1.5" 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round" 
+                      />
+                      <path 
+                        d="M15.0003 17C15.0003 17 20.0002 13.3176 20.0002 12C20.0002 10.6824 15.0002 7 15.0002 7" 
+                        stroke="currentColor" 
+                        strokeWidth="1.5" 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round" 
+                      />
+                    </svg>
+                  </div>
+                </button>
               </div>
             </div>
           </>
@@ -497,7 +495,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
                           disabled:opacity-50 disabled:cursor-not-allowed text-sm
                           flex items-center justify-center"
                   style={{
-                    backgroundColor: isSelectedCategory ? categoryColor : '#60A5FA',
+                    backgroundColor: isSelectedCategory ? categoryColor : '#6B7280',
                   }}
                 >
                   <svg 

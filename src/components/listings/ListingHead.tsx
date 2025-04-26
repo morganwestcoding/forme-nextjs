@@ -43,26 +43,26 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
   return (
     <div className="w-full">
       <div className="relative">
-        <div className="flex flex-col bg-white rounded-2xl border hover:shadow-md transition-all duration-300">
+        <div className="flex flex-col bg-gray-100 rounded-2xl  hover:shadow-md transition-all duration-300">
           <div className="p-6">
-            <div className="flex flex-col md:flex-row gap-8">
+            <div className="flex flex-col md:flex-row gap-6">
               {/* Left Column - Info with improved spacing */}
               <div className="flex-1 min-w-0 flex flex-col justify-between">
                 {/* Top section with Category, Title, Address, and Open Status */}
-                <div className=' rounded-xl bg-white'>
+                <div className=' rounded-xl bg-white  p-4 text-center justify-center'>
                   {/* Title */}
                   <h1 className="text-xl font-semibold text-gray-900 mb-1">
                     {title}
                   </h1>
                   
                   {/* Address */}
-                  <p className="text-gray-500 text-sm mb-4">
+                  <p className="text-gray-500 text-xs mb-2">
                     {address},<br/> {city}, {stateAcronym} {listing.zipCode}
                   </p>
-
-                  <div className="flex justify-start mb-2">
-                    <OpenStatus storeHours={storeHours || []} />
-                  </div>
+                <div className='flex items-center justify-center'>
+                  <OpenStatus storeHours={storeHours} />
+                </div>
+      
                 
                 </div>
 
@@ -72,7 +72,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
                     {/* Adjusted for better spacing and wider squares */}
                     <div className="grid grid-cols-3 gap-2 pt-2 w-full">
                       {/* Rating Pill */}
-                      <div className="bg-white border px-2 py-2.5 rounded-xl flex flex-col items-center shadow-sm hover:shadow hover:border-gray-200 transition-all duration-300 group w-full">
+                      <div className="bg-white  px-2 py-2.5 rounded-xl flex flex-col items-center  hover:shadow hover:border-gray-200 transition-all duration-300 group w-full">
                         <div className="flex items-center mb-1">
                           <div className="bg-amber-50 p-1 rounded-md mr-1.5 group-hover:bg-amber-100 transition-colors duration-300">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="12" height="12" className="text-amber-500">
@@ -85,7 +85,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
                       </div>
                       
                       {/* Likes Pill */}
-                      <div className="bg-white border px-2 py-2.5 rounded-xl flex flex-col items-center shadow-sm hover:shadow hover:border-gray-200 transition-all duration-300 group w-full">
+                      <div className="bg-white  px-2 py-2.5 rounded-xl flex flex-col items-center  hover:shadow hover:border-gray-200 transition-all duration-300 group w-full">
                         <div className="flex items-center mb-1">
                           <div className="bg-rose-50 p-1 rounded-md mr-1.5 group-hover:bg-rose-100 transition-colors duration-300">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="12" height="12" className="text-rose-500">
@@ -98,7 +98,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
                       </div>
                       
                       {/* Shares Pill */}
-                      <div className="bg-white border  px-2 py-2.5 rounded-xl flex flex-col items-center shadow-sm hover:shadow hover:border-gray-200 transition-all duration-300 group w-full">
+                      <div className="bg-white px-2 py-2.5 rounded-xl flex flex-col items-center  hover:shadow hover:border-gray-200 transition-all duration-300 group w-full">
                         <div className="flex items-center mb-1">
                           <div className="bg-sky-50 p-1 rounded-md mr-1.5 group-hover:bg-sky-100 transition-colors duration-300">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="12" height="12" className="text-sky-500">

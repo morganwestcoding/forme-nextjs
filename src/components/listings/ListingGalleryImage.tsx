@@ -78,7 +78,7 @@ const ListingGalleryImage: React.FC<ListingGalleryImageProps> = ({ listing, curr
 
   return (
     <div className="w-full h-full">
-      <div className="grid grid-cols-2 grid-rows-2 gap-2.5 h-full max-w-xs ml-auto">
+      <div className="grid grid-cols-2 grid-rows-2 gap-2 h-full max-w-xs ml-auto">
         {displayImages.slice(0, 4).map((image, index) => (
           <div 
             key={index} 

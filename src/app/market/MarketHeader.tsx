@@ -45,7 +45,7 @@ const MarketHeader = ({
   };
 
   return (
-    <div className="py-6 px-6 rounded-2xl transition-colors duration-250 border border-gray-300">
+    <div className="py-6 px-6 rounded-2xl transition-colors duration-250 bg-gray-100">
       {/* First row: search / view toggle / filter / sort */}
       <div className="flex items-center justify-between mb-4">
         {/* Left side with search */}
@@ -58,7 +58,7 @@ const MarketHeader = ({
           {/* View mode selector */}
           <div className="flex h-12 bg-gray-100 rounded-lg overflow-hidden">            
             <button
-              className={`flex items-center justify-center h-full py-3 px-5 rounded-lg rounded-r-none text-xs font-medium transition-all duration-200 border border-gray-300 ${viewMode === 'grid' ? 'bg-white text-neutral-800' : 'bg-gray-100 text-neutral-500 hover:bg-gray-50'}`}
+              className={`flex items-center justify-center h-full py-3 px-5 rounded-lg rounded-r-none text-xs font-medium transition-all duration-200 border border-gray-100 ${viewMode === 'grid' ? 'bg-white text-neutral-800' : 'bg-gray-100 text-neutral-500 hover:bg-gray-50'}`}
               onClick={() => onViewModeChange('grid')}
               onMouseEnter={() => setHoverState('grid')}
               onMouseLeave={() => setHoverState(null)}
@@ -102,7 +102,7 @@ const MarketHeader = ({
           
           {/* Sort button */}
           <button 
-            className="flex items-center justify-center h-12 py-3 px-4 w-24 rounded-lg text-xs font-medium transition-all duration-200 border border-gray-300 bg-gray-100 hover:bg-gray-50 text-neutral-700"
+            className="flex items-center justify-center h-12 py-3 px-4 w-24 rounded-lg text-xs font-medium transition-all duration-200 border border-gray-100 bg-gray-100 hover:bg-gray-50 text-neutral-700"
             onClick={() => {
               // Toggle between ascending and descending for the current sort field
               // or default to sorting by date in descending order

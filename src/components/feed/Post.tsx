@@ -454,7 +454,7 @@ const Post: React.FC<PostProps> = ({ post, currentUser, categories }) => {
                   <span>{city}, {stateAcronym}</span>
                 )}
                 <span 
-                  className="ml-2 py-2 px-3 rounded-lg text-white flex items-center justify-center text-xs"
+                  className="ml-2 p-2.5  w-20 rounded-lg text-white flex items-center justify-center text-xs"
                   style={{ backgroundColor: badgeColor }}
                 >
                   {post.category}
