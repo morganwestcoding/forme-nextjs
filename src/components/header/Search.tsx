@@ -64,7 +64,7 @@ const Search: React.FC<SearchProps> = ({ onResultClick }) => {
         onChange={handleInputChange}
         onFocus={() => setIsSearchFocused(true)}
         onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
-        className="w-full h-12 text-[#71717A] placeholder:text-[#71717A] bg-white rounded-lg p-3.5 pl-12 pr-4 text-sm border border-gray-300"
+        className="w-full h-12 text-[#71717A] placeholder:text-[#71717A] bg-white shadow-sm rounded-xl p-3.5 pl-12 pr-4 text-sm "
       />
 
       {searchResults.length > 0 && isSearchFocused && (

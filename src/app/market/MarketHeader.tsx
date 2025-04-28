@@ -1,9 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Search from '@/components/header/Search';
 import Filter from './Filter';
 import ModernCategoryFilter from './ModernCategoryFilter';
+import { useSearchParams } from 'next/navigation';
+import { categories } from '@/components/Categories';
 
 interface MarketHeaderProps {
   viewMode: 'grid' | 'list';
@@ -25,6 +27,8 @@ const MarketHeader = ({
   onFilterChange 
 }: MarketHeaderProps) => {
   const [hoverState, setHoverState] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const selectedCategory = searchParams?.get('category') || filters.category;
 
   const handleFilterChange = (newFilters: any) => {
     onFilterChange({ ...filters, ...newFilters });
@@ -43,22 +47,52 @@ const MarketHeader = ({
       ...sortOptions
     });
   };
+  
+  // Function to get category color
+  const getCategoryColor = (categoryName: string) => {
+    // Find the category in the categories array
+    const categoryObj = categories.find(
+      cat => cat.label === categoryName
+    );
+    
+    if (categoryObj) {
+      // Extract the hex color from the bg-[#XXXXXX] format
+      const colorMatch = categoryObj.color.match(/#[0-9A-Fa-f]{6}/);
+      if (colorMatch) {
+        return colorMatch[0];
+      }
+    }
+    
+    // Return a default color if not found
+    return '#60A5FA';
+  };
+  
+  // Get the active button color based on selected category
+  const activeButtonColor = selectedCategory && selectedCategory !== 'Default' 
+    ? getCategoryColor(selectedCategory)
+    : '#60A5FA';
 
   return (
     <div className="py-6 px-6 rounded-2xl transition-colors duration-250 bg-gray-100">
       {/* First row: search / view toggle / filter / sort */}
       <div className="flex items-center justify-between mb-4">
         {/* Left side with search */}
-        <div className="flex-1 pr-4">
+        <div className="flex-1 pr-4 ">
           <Search />
         </div>
         
         {/* Right side with view toggle, filter and sort */}
         <div className="flex items-center gap-3">
           {/* View mode selector */}
-          <div className="flex h-12 bg-gray-100 rounded-lg overflow-hidden">            
+          <div className="flex rounded-xl bg-white overflow-hidden">            
             <button
-              className={`flex items-center justify-center h-full py-3 px-5 rounded-lg rounded-r-none text-xs font-medium transition-all duration-200 border border-gray-100 ${viewMode === 'grid' ? 'bg-white text-neutral-800' : 'bg-gray-100 text-neutral-500 hover:bg-gray-50'}`}
+              className={`flex items-center justify-center h-full py-4 px-5 rounded-xl rounded-r-none text-xs font-medium transition-all duration-200 
+                ${viewMode === 'grid' 
+                  ? 'text-white' 
+                  : 'bg-white text-neutral-500 hover:bg-gray-50'}`}
+              style={{
+                backgroundColor: viewMode === 'grid' ? activeButtonColor : '',
+              }}
               onClick={() => onViewModeChange('grid')}
               onMouseEnter={() => setHoverState('grid')}
               onMouseLeave={() => setHoverState(null)}
@@ -72,7 +106,13 @@ const MarketHeader = ({
             </button>
             
             <button
-              className={`flex items-center justify-center h-full py-3 px-5 rounded-lg rounded-l-none text-xs font-medium transition-all duration-200 border border-gray-300 border-l-0  ${viewMode === 'list' ? 'bg-white text-neutral-800' : 'bg-gray-100 text-neutral-500 hover:bg-gray-50'}`}
+              className={`flex items-center justify-center h-full py-4 px-5 rounded-xl-r ounded-l-none text-xs font-medium transition-all duration-200 
+                ${viewMode === 'list' 
+                  ? 'text-white' 
+                  : 'bg-gray-400 text-white hover:bg-gray-50'}`}
+              style={{
+                backgroundColor: viewMode === 'list' ? activeButtonColor : '',
+              }}
               onClick={() => onViewModeChange('list')}
               onMouseEnter={() => setHoverState('list')}
               onMouseLeave={() => setHoverState(null)}
@@ -102,7 +142,10 @@ const MarketHeader = ({
           
           {/* Sort button */}
           <button 
-            className="flex items-center justify-center h-12 py-3 px-4 w-24 rounded-lg text-xs font-medium transition-all duration-200 border border-gray-100 bg-gray-100 hover:bg-gray-50 text-neutral-700"
+            className="flex items-center justify-center py-4 px-4 w-24 rounded-xl text-xs font-medium transition-all duration-200 shadow-sm text-white"
+            style={{
+              backgroundColor: activeButtonColor
+            }}
             onClick={() => {
               // Toggle between ascending and descending for the current sort field
               // or default to sorting by date in descending order

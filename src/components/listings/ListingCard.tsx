@@ -49,6 +49,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   
   // Get the selected category from URL params
   const selectedCategory = searchParams?.get('category');
@@ -172,13 +173,43 @@ const ListingCard: React.FC<ListingCardProps> = ({
     return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
   };
 
+  // Function to lighten a hex color by a factor
+  const lightenColor = (hex: string, factor: number = 0.2) => {
+    // Remove # if present
+    hex = hex.replace('#', '');
+    
+    // Convert to RGB
+    let r = parseInt(hex.substring(0, 2), 16);
+    let g = parseInt(hex.substring(2, 4), 16);
+    let b = parseInt(hex.substring(4, 6), 16);
+    
+    // Lighten each component
+    r = Math.min(255, Math.floor(r + (255 - r) * factor));
+    g = Math.min(255, Math.floor(g + (255 - g) * factor));
+    b = Math.min(255, Math.floor(b + (255 - b) * factor));
+    
+    // Convert back to hex
+    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+  };
+
   // Get the category color for this listing - but only if it matches the selected category
-  const categoryColor = isSelectedCategory ? getCategoryColor(data.category || 'Default') : '#6B7280';
+  const categoryColor = getCategoryColor(data.category || 'Default');
   const darkerCategoryColor = darkenColor(categoryColor, 0.15);
+  const lighterCategoryColor = lightenColor(categoryColor, 0.3);
+  
+  // Only change the bottom part of the gradient on hover
+  const backgroundGradient = isHovered 
+    ? `linear-gradient(to bottom, #f3f4f6, ${categoryColor})`
+    : 'linear-gradient(to bottom, #f3f4f6, #d1d5db)'; // from-gray-100 to-gray-300
   
   return (
     <div className="col-span-1 flex justify-center w-full max-w-[395px] mx-auto">
-      <div className="bg-gray-100 rounded-2xl flex flex-col w-full transition-all duration-300 overflow-hidden hover:shadow-md">
+      <div 
+        className="rounded-2xl flex flex-col w-full transition-all duration-500 overflow-hidden hover:shadow-md"
+        style={{ background: backgroundGradient, transition: 'all 0.5s ease' }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
         {!reservation && (
           <>
             <div className="p-6">
@@ -199,36 +230,36 @@ const ListingCard: React.FC<ListingCardProps> = ({
                 
                 {/* Category Badge */}
                 {shouldDisplayCategory && (
-  <>
-    {/* Category colored label with fixed width */}
-    <div 
-      className="
-        absolute top-6 left-6 p-3 rounded-lg z-10
-        text-white text-xs font-medium text-center
-        w-20 shadow overflow-hidden
-        transition-all duration-300 group-hover:opacity-0
-      "
-      style={{
-        backgroundColor: getCategoryColor(data.category),
-      }}
-    >
-      {data.category}
-    </div>
-    
-    {/* White hover state with same fixed width */}
-    <div 
-      className="
-        absolute top-6 left-6 p-3 rounded-lg z-10
-        text-black text-xs font-medium text-center
-        w-20 shadow bg-white/95 backdrop-blur-sm overflow-hidden
-        transition-all duration-300
-        opacity-0 group-hover:opacity-100
-      "
-    >
-      {data.category}
-    </div>
-  </>
-)}
+                  <>
+                    {/* Category colored label with fixed width */}
+                    <div 
+                      className="
+                        absolute top-6 left-6 p-3 rounded-lg z-10
+                        text-white text-xs font-medium text-center
+                        w-20 shadow overflow-hidden
+                        transition-all duration-300 group-hover:opacity-0
+                      "
+                      style={{
+                        backgroundColor: getCategoryColor(data.category),
+                      }}
+                    >
+                      {data.category}
+                    </div>
+                    
+                    {/* White hover state with same fixed width */}
+                    <div 
+                      className="
+                        absolute top-6 left-6 p-3 rounded-lg z-10
+                        text-black text-xs font-medium text-center
+                        w-20 shadow bg-white/95 backdrop-blur-sm overflow-hidden
+                        transition-all duration-300
+                        opacity-0 group-hover:opacity-100
+                      "
+                    >
+                      {data.category}
+                    </div>
+                  </>
+                )}
                 {/* Action Buttons - Styled to match ListingGalleryImage */}
                 <div className="absolute top-6 right-6 flex items-center gap-2 z-10 
                               opacity-0 transform scale-90 translate-y-2 transition-all duration-300 
@@ -280,7 +311,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
               {/* Content Section with white background stopping before buttons */}
               <div className="bg-white rounded-xl shadow-sm mt-4 overflow-hidden">
                 {/* Title Section */}
-                <div className="flex items-start justify-center pt-6 pb-4 px-6 text-center">
+                <div className="flex items-start justify-center pt-6 px-6 text-center">
                   <div className="flex flex-col">
                     <h3 className="font-medium text-gray-900 text-base">
                       {data.title}
@@ -313,14 +344,14 @@ const ListingCard: React.FC<ListingCardProps> = ({
                                 e.stopPropagation();
                                 setCurrentServiceIndex(index);
                               }}
-                              className={`w-2 h-2 rounded-full transition-all duration-300 
+                              className={`w-2 h-2 rounded-full transition-all duration-500 
                                 ${currentServiceIndex === index 
                                   ? 'w-7 h-2' 
                                   : 'bg-gray-300 hover:bg-gray-400'
                                 }`}
                               style={{
                                 backgroundColor: currentServiceIndex === index 
-                                  ? categoryColor
+                                  ? (isHovered ? categoryColor : '#6B7280')
                                   : ''
                               }}
                             />
@@ -350,7 +381,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
                       width="18" 
                       height="18" 
                       fill="none" 
-                      stroke="#ffffff" 
+                      stroke="currentColor" 
                       strokeWidth="1.5"
                       strokeLinecap="round" 
                       strokeLinejoin="round"
@@ -381,17 +412,23 @@ const ListingCard: React.FC<ListingCardProps> = ({
                 <button 
                   onClick={() => router.push(`/listings/${data.id}`)}
                   className="flex-1 text-white py-4 px-4 rounded-xl text-xs font-medium
-                            shadow-sm hover:shadow-md transition-all duration-200
+                            shadow-sm hover:shadow-md transition-all duration-500
                             flex items-center justify-between"
                   style={{
-                    backgroundColor: categoryColor,
-                    transition: 'all 0.2s ease-in-out',
+                    backgroundColor: isHovered ? categoryColor : '#6B7280',
+                    transition: 'all 0.5s ease-in-out',
                   }}
                   onMouseOver={(e) => {
-                    e.currentTarget.style.backgroundColor = darkerCategoryColor;
+                    if (isHovered) {
+                      e.currentTarget.style.backgroundColor = darkerCategoryColor;
+                    }
                   }}
                   onMouseOut={(e) => {
-                    e.currentTarget.style.backgroundColor = categoryColor;
+                    if (isHovered) {
+                      e.currentTarget.style.backgroundColor = categoryColor;
+                    } else {
+                      e.currentTarget.style.backgroundColor = '#6B7280';
+                    }
                   }}
                 >
                   <span className="flex-1 text-center">Reserve</span>
@@ -495,7 +532,8 @@ const ListingCard: React.FC<ListingCardProps> = ({
                           disabled:opacity-50 disabled:cursor-not-allowed text-sm
                           flex items-center justify-center"
                   style={{
-                    backgroundColor: isSelectedCategory ? categoryColor : '#6B7280',
+                    backgroundColor: (isSelectedCategory || isHovered) ? categoryColor : '#6B7280',
+                    transition: 'all 0.5s ease-in-out',
                   }}
                 >
                   <svg 

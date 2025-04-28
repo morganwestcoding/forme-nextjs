@@ -125,11 +125,11 @@ const ModernCategoryFilter = ({
               key={category.id}
               onClick={() => handleCategoryClick(category.id)}
               className={`
-                py-3 px-4 rounded-lg text-xs font-medium transition-all duration-200
-                border
+                py-3.5 shadow-sm px-4 rounded-xl text-xs font-medium transition-all duration-200
+                bg-white
               `}
               style={{
-                backgroundColor: isActive ? categoryColor : 'transparent',
+                backgroundColor: isActive ? categoryColor : '#ffffff',
                 borderColor: isActive ? categoryColor : '#e5e7eb',
                 color: isActive ? 'white' : 'rgba(75, 85, 99)',
               }}
@@ -142,7 +142,7 @@ const ModernCategoryFilter = ({
         {displayCategories.length > 5 && (
           <button
             onClick={() => setShowAll(!showAll)}
-            className="py-3 px-4 rounded-lg text-xs font-medium text-neutral-600 hover:bg-neutral-100 border border-gray-200 transition-all duration-200"
+            className="py-3 px-4 rounded-xl bg-white text-xs font-medium text-neutral-600 hover:bg-neutral-100 border border-gray-200 transition-all duration-200"
           >
             {showAll ? "Less" : "More"}
           </button>
