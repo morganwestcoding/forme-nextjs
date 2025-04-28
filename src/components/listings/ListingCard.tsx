@@ -237,7 +237,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
                         absolute top-6 left-6 p-3 rounded-lg z-10
                         text-white text-xs font-medium text-center
                         w-20 shadow overflow-hidden
-                        transition-all duration-300 group-hover:opacity-0
+                        transition-all duration-300 group-hover:opacity-0 
                       "
                       style={{
                         backgroundColor: getCategoryColor(data.category),
@@ -412,22 +412,24 @@ const ListingCard: React.FC<ListingCardProps> = ({
                 <button 
                   onClick={() => router.push(`/listings/${data.id}`)}
                   className="flex-1 text-white py-4 px-4 rounded-xl text-xs font-medium
-                            shadow-sm hover:shadow-md transition-all duration-500
-                            flex items-center justify-between"
+                            shadow-md hover:shadow-lg transition-all duration-500
+                            flex items-center justify-between relative z-10
+                            border border-white backdrop-blur-sm"
                   style={{
-                    backgroundColor: isHovered ? categoryColor : '#6B7280',
+                    backgroundColor: isHovered ? darkenColor(categoryColor, 0.2) : '#4B5563', // Darker shade
                     transition: 'all 0.5s ease-in-out',
+                    boxShadow: isHovered ? '0 4px 12px rgba(0, 0, 0, 0.15)' : '0 2px 6px rgba(0, 0, 0, 0.1)',
                   }}
                   onMouseOver={(e) => {
                     if (isHovered) {
-                      e.currentTarget.style.backgroundColor = darkerCategoryColor;
+                      e.currentTarget.style.backgroundColor = darkenColor(categoryColor, 0.3); // Even darker on button hover
                     }
                   }}
                   onMouseOut={(e) => {
                     if (isHovered) {
-                      e.currentTarget.style.backgroundColor = categoryColor;
+                      e.currentTarget.style.backgroundColor = darkenColor(categoryColor, 0.2);
                     } else {
-                      e.currentTarget.style.backgroundColor = '#6B7280';
+                      e.currentTarget.style.backgroundColor = '#4B5563';
                     }
                   }}
                 >
