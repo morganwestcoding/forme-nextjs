@@ -156,6 +156,11 @@ const MarketContent = ({ searchParams, listings, currentUser }: MarketContentPro
   return (
     <Container>
       <div className="px-4 pt-6 pb-6">
+      <div className="mb-6">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Market</h1>
+            <p className="text-gray-600">Discover unique services from our vendors</p>
+          </div>
+          
         <MarketHeader 
           viewMode={viewState.mode}
           onViewModeChange={(mode: ViewState['mode']) => setViewState(prev => ({ ...prev, mode }))}

@@ -11,6 +11,7 @@ import axios from 'axios';
 import useInboxModal from '@/app/hooks/useInboxModal';
 import UnifiedHeader from "../header/UnifiedHeader";
 import { useColorContext } from "@/app/context/ColorContext";
+import Logo from "../header/Logo";
 
 interface SidebarProps {
   currentUser?: SafeUser | null;
@@ -154,12 +155,9 @@ const Sidebar: React.FC<SidebarProps> = ({
   
   return (
     <div className="h-screen overflow-y-auto">
-      <div className="flex flex-col items-center w-56 h-full pb-10 border-r bg-white z-50">
+      <div className="flex flex-col items-center w-56 h-full pb-10 pt-8 border-r bg-white z-50">
         {/* Top Bar Layout with Logo and UserButton */}
-        <UnifiedHeader 
-          currentUser={currentUser} 
-          onMobileClose={onMobileClose} 
-        />
+ <Logo variant="vertical" />
 
         {/* Mobile Close Button */}
         {isMobile && (
@@ -193,7 +191,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           </div>
         )}
 
-        <div className="flex flex-col w-full px-6 pt-6">
+        <div className="flex flex-col w-full px-6 pt-8">
           {/* Explore & Discover - Centered headers with aligned icons */}
           <div className="mb-6">
             <div className="text-xs text-neutral-400 uppercase mb-2 text-center font-medium">Explore & Discover</div>

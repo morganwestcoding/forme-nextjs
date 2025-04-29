@@ -155,7 +155,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
   };
 
   // Function to darken a hex color by a factor
-  const darkenColor = (hex: string, factor: number = 0.2) => {
+  const darkenColor = (hex: string, factor: number = 0.4) => {
     // Remove # if present
     hex = hex.replace('#', '');
     
@@ -195,12 +195,12 @@ const ListingCard: React.FC<ListingCardProps> = ({
   // Get the category color for this listing - but only if it matches the selected category
   const categoryColor = getCategoryColor(data.category || 'Default');
   const darkerCategoryColor = darkenColor(categoryColor, 0.15);
-  const lighterCategoryColor = lightenColor(categoryColor, 0.3);
+  const lighterCategoryColor = lightenColor(categoryColor, 0.4);
   
   // Only change the bottom part of the gradient on hover
   const backgroundGradient = isHovered 
-    ? `linear-gradient(to bottom, #f3f4f6, ${categoryColor})`
-    : 'linear-gradient(to bottom, #f3f4f6, #d1d5db)'; // from-gray-100 to-gray-300
+    ? `linear-gradient(to bottom, #f3f4f6, ${lightenColor(categoryColor, 0.5)})`
+    : 'linear-gradient(to bottom, #f3f4f6, #E5E7EB)'; // from-gray-100 to-gray-200
   
   return (
     <div className="col-span-1 flex justify-center w-full max-w-[395px] mx-auto">
@@ -212,7 +212,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
       >
         {!reservation && (
           <>
-            <div className="p-6">
+            <div className="p-4">
               {/* Image Section with rounded corners */}
               <div className="relative h-[175px] w-full group cursor-pointer overflow-hidden shadow rounded-xl">
                 <Image
@@ -236,12 +236,9 @@ const ListingCard: React.FC<ListingCardProps> = ({
                       className="
                         absolute top-6 left-6 p-3 rounded-lg z-10
                         text-white text-xs font-medium text-center
-                        w-20 shadow overflow-hidden
+                        w-20 shadow overflow-hidden bg-black/50 backdrop-blur-sm
                         transition-all duration-300 group-hover:opacity-0 
                       "
-                      style={{
-                        backgroundColor: getCategoryColor(data.category),
-                      }}
                     >
                       {data.category}
                     </div>
@@ -323,7 +320,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
                 </div>
 
                 {/* Services Section */}
-                <div className="p-6">
+                <div className="p-4">
                   <div className="relative">
                     <div className="bg-gray-50 shadow-sm rounded-lg p-3">
                       <div className="flex items-center justify-between">
@@ -337,25 +334,25 @@ const ListingCard: React.FC<ListingCardProps> = ({
                         </div>
                         
                         <div className="flex items-center gap-2 px-2.5">
-                          {data.services.map((_, index) => (
-                            <button
-                              key={index}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setCurrentServiceIndex(index);
-                              }}
-                              className={`w-2 h-2 rounded-full transition-all duration-500 
-                                ${currentServiceIndex === index 
-                                  ? 'w-7 h-2' 
-                                  : 'bg-gray-300 hover:bg-gray-400'
-                                }`}
-                              style={{
-                                backgroundColor: currentServiceIndex === index 
-                                  ? (isHovered ? categoryColor : '#6B7280')
-                                  : ''
-                              }}
-                            />
-                          ))}
+                        {data.services.map((_, index) => (
+  <button
+    key={index}
+    onClick={(e) => {
+      e.stopPropagation();
+      setCurrentServiceIndex(index);
+    }}
+    className={`w-2 h-2 rounded-full transition-all duration-500 
+      ${currentServiceIndex === index 
+        ? 'w-7 h-2' 
+        : 'bg-gray-300 hover:bg-gray-400'
+      }`}
+    style={{
+      backgroundColor: currentServiceIndex === index 
+        ? (isHovered ? darkenColor(categoryColor, 0.1) : '#9CA3AF')
+        : ''
+    }}
+  />
+))}
                         </div>
                       </div>
                     </div>
@@ -370,9 +367,9 @@ const ListingCard: React.FC<ListingCardProps> = ({
                   onClick={(e) => {
                     e.stopPropagation();
                   }}
-                  className="flex-1 bg-white text-black py-4 px-4 rounded-xl text-xs font-medium
+                  className="flex-1 bg-white text-black py-4 px-4 rounded-lg text-xs font-medium
                             hover:bg-gray-200 hover:shadow-sm transition-all duration-200 
-                            flex items-center justify-start shadow-sm"
+                            flex items-center justify-start shadow"
                 >
                   <div className="w-6 flex items-center justify-center">
                     <svg 
@@ -408,58 +405,50 @@ const ListingCard: React.FC<ListingCardProps> = ({
                   <span className="ml-2">Quick Book</span>
                 </button>
                 
-                {/* Reserve Button - With category color only if category is selected */}
-                <button 
-                  onClick={() => router.push(`/listings/${data.id}`)}
-                  className="flex-1 text-white py-4 px-4 rounded-xl text-xs font-medium
-                            shadow-md hover:shadow-lg transition-all duration-500
-                            flex items-center justify-between relative z-10
-                            border border-white backdrop-blur-sm"
-                  style={{
-                    backgroundColor: isHovered ? darkenColor(categoryColor, 0.2) : '#4B5563', // Darker shade
-                    transition: 'all 0.5s ease-in-out',
-                    boxShadow: isHovered ? '0 4px 12px rgba(0, 0, 0, 0.15)' : '0 2px 6px rgba(0, 0, 0, 0.1)',
-                  }}
-                  onMouseOver={(e) => {
-                    if (isHovered) {
-                      e.currentTarget.style.backgroundColor = darkenColor(categoryColor, 0.3); // Even darker on button hover
-                    }
-                  }}
-                  onMouseOut={(e) => {
-                    if (isHovered) {
-                      e.currentTarget.style.backgroundColor = darkenColor(categoryColor, 0.2);
-                    } else {
-                      e.currentTarget.style.backgroundColor = '#4B5563';
-                    }
-                  }}
-                >
-                  <span className="flex-1 text-center">Reserve</span>
-                  <div className="w-6 flex items-center justify-center">
-                    <svg 
-                      xmlns="http://www.w3.org/2000/svg" 
-                      viewBox="0 0 24 24" 
-                      width="18" 
-                      height="18" 
-                      color="#ffffff" 
-                      fill="none"
-                    >
-                      <path 
-                        d="M20.0001 11.9998L4.00012 11.9998" 
-                        stroke="currentColor" 
-                        strokeWidth="1.5" 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round" 
-                      />
-                      <path 
-                        d="M15.0003 17C15.0003 17 20.0002 13.3176 20.0002 12C20.0002 10.6824 15.0002 7 15.0002 7" 
-                        stroke="currentColor" 
-                        strokeWidth="1.5" 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round" 
-                      />
-                    </svg>
-                  </div>
-                </button>
+{/* Reserve Button */}
+{/* Reserve Button */}
+<button 
+  onClick={() => router.push(`/listings/${data.id}`)}
+  className={`
+    flex-1 text-white py-4 px-4 rounded-lg text-xs font-medium
+    shadow-md hover:shadow-xl
+    flex items-center justify-between relative z-10 backdrop-blur-sm
+    overflow-hidden
+  `}
+  style={{
+    background: isHovered 
+      ? `linear-gradient(to bottom, ${lightenColor(categoryColor, 0.08)}, ${darkenColor(categoryColor, 0.1)})`
+      : 'linear-gradient(to bottom, #6B7280, #4B5563)',
+    transition: 'all 1.2s cubic-bezier(0.19, 1, 0.22, 1)'
+  }}
+>
+  <span className="flex-1 text-center relative z-10">Reserve</span>
+  <div className="w-6 flex items-center justify-center relative z-10">
+    <svg 
+      xmlns="http://www.w3.org/2000/svg" 
+      viewBox="0 0 24 24" 
+      width="18" 
+      height="18" 
+      color="#ffffff" 
+      fill="none"
+    >
+      <path 
+        d="M20.0001 11.9998L4.00012 11.9998" 
+        stroke="currentColor" 
+        strokeWidth="1.5" 
+        strokeLinecap="round" 
+        strokeLinejoin="round" 
+      />
+      <path 
+        d="M15.0003 17C15.0003 17 20.0002 13.3176 20.0002 12C20.0002 10.6824 15.0002 7 15.0002 7" 
+        stroke="currentColor" 
+        strokeWidth="1.5" 
+        strokeLinecap="round" 
+        strokeLinejoin="round" 
+      />
+    </svg>
+  </div>
+</button>
               </div>
             </div>
           </>

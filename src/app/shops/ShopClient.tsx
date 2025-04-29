@@ -8,6 +8,7 @@ import { SafeUser, SafeShop, SafeProduct, SafeProductCategory } from '@/app/type
 import ShopCard from '@/components/shop/ShopCard';
 import ProductCard from '@/components/shop/ProductCard';
 import ShopHeader from '@/components/shop/ShopHeader';
+import MarketHeader from '../market/MarketHeader';
 
 interface ShopClientProps {
   initialShops: SafeShop[];
@@ -48,13 +49,7 @@ const ShopClient: React.FC<ShopClientProps> = ({
             <p className="text-gray-600">Discover unique products from our vendors</p>
           </div>
           
-          <ShopHeader 
-            viewMode={viewMode}
-            onViewModeChange={setViewMode}
-            filters={filters}
-            onFilterChange={setFilters}
-            categories={productCategories}
-          />
+
           
           <div className="mt-6 space-y-8">
             {/* Featured Products Section */}

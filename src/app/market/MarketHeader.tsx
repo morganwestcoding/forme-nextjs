@@ -1,9 +1,4 @@
-'use client';
-
-import { useState, useEffect } from 'react';
-import Search from '@/components/header/Search';
-import Filter from './Filter';
-import ModernCategoryFilter from './ModernCategoryFilter';
+import { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { categories } from '@/components/Categories';
 
@@ -17,7 +12,7 @@ interface MarketHeaderProps {
     sortBy?: 'price' | 'date' | 'name';
     sortOrder?: 'asc' | 'desc';
   };
-  onFilterChange: (filters: MarketHeaderProps['filters']) => void;
+  onFilterChange: (filters: any) => void;
 }
 
 const MarketHeader = ({ 
@@ -26,13 +21,10 @@ const MarketHeader = ({
   filters,
   onFilterChange 
 }: MarketHeaderProps) => {
-  const [hoverState, setHoverState] = useState<string | null>(null);
+  const [activeFilter, setActiveFilter] = useState(false);
+  const [activeSort, setActiveSort] = useState(false);
   const searchParams = useSearchParams();
   const selectedCategory = searchParams?.get('category') || filters.category;
-
-  const handleFilterChange = (newFilters: any) => {
-    onFilterChange({ ...filters, ...newFilters });
-  };
 
   const handleCategoryChange = (category: string) => {
     onFilterChange({
@@ -41,186 +33,141 @@ const MarketHeader = ({
     });
   };
 
-  const handleSortChange = (sortOptions: { sortBy: 'price' | 'date' | 'name', sortOrder: 'asc' | 'desc' }) => {
+  const handleSortChange = () => {
+    const currentSortBy = filters.sortBy || 'date';
+    const currentSortOrder = filters.sortOrder || 'desc';
     onFilterChange({
       ...filters,
-      ...sortOptions
+      sortBy: currentSortBy,
+      sortOrder: currentSortOrder === 'asc' ? 'desc' : 'asc'
     });
   };
-  
-  // Function to get category color
-  const getCategoryColor = (categoryName: string) => {
-    // Find the category in the categories array
-    const categoryObj = categories.find(
-      cat => cat.label === categoryName
-    );
-    
-    if (categoryObj) {
-      // Extract the hex color from the bg-[#XXXXXX] format
-      const colorMatch = categoryObj.color.match(/#[0-9A-Fa-f]{6}/);
-      if (colorMatch) {
-        return colorMatch[0];
-      }
-    }
-    
-    // Return a default color if not found
-    return '#60A5FA';
-  };
-  
-  // Function to darken a hex color by a factor
-  const darkenColor = (hex: string, factor: number = 0.15) => {
-    // Remove # if present
-    hex = hex.replace('#', '');
-    
-    // Convert to RGB
-    let r = parseInt(hex.substring(0, 2), 16);
-    let g = parseInt(hex.substring(2, 4), 16);
-    let b = parseInt(hex.substring(4, 6), 16);
-    
-    // Darken each component
-    r = Math.max(0, Math.floor(r * (1 - factor)));
-    g = Math.max(0, Math.floor(g * (1 - factor)));
-    b = Math.max(0, Math.floor(b * (1 - factor)));
-    
-    // Convert back to hex
-    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
-  };
-  
-  // Get the active button color based on selected category
-  const activeButtonColor = selectedCategory && selectedCategory !== 'Default' 
-    ? getCategoryColor(selectedCategory)
-    : '#60A5FA';
-    
-  const buttonHoverColor = darkenColor(activeButtonColor, 0.15);
 
   return (
-    <div className="py-6 px-6 rounded-2xl transition-colors duration-250 bg-gradient-to-b from-gray-100 to-gray-200">
-      {/* First row: search / view toggle / filter / sort */}
-      <div className="flex items-center justify-between mb-4">
-        {/* Left side with search */}
-        <div className="flex-1 pr-4">
-          <Search />
+    <div className="w-full">
+      {/* Search and Controls Row */}
+      <div className="flex flex-col md:flex-row gap-4">
+        {/* Search Bar - Modern glass morphism style */}
+        <div className="relative flex-grow">
+          <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" className="text-gray-400">
+              <path d="M15 15L21 21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
+              <circle cx="10" cy="10" r="7" stroke="currentColor" strokeWidth="2"></circle>
+            </svg>
+          </div>
+          <input 
+            type="text" 
+            placeholder="Search products, shops, categories..." 
+            className="w-full h-12 pl-12 pr-4 bg-gray-50 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all"
+  
+          />
         </div>
-        
-        {/* Right side with view toggle, filter and sort */}
+
+        {/* Controls - Flat modern style */}
         <div className="flex items-center gap-3">
-          {/* View mode selector - redesigned with rounded edges */}
-          <div className="flex rounded-xl bg-white overflow-hidden shadow-sm h-12">            
+          {/* View Toggle - Modern segmented control */}
+          <div className="bg-gray-100 rounded-lg p-1 flex items-center">
             <button
-              className={`flex items-center justify-center py-3 px-4 rounded-xl text-xs font-medium transition-all duration-300
-                ${viewMode === 'grid' 
-                  ? 'text-white' 
-                  : 'bg-white text-gray-500 hover:bg-gray-50'}`}
-              style={{
-                backgroundColor: viewMode === 'grid' ? activeButtonColor : '',
-                borderTopRightRadius: 0,
-                borderBottomRightRadius: 0,
-                boxShadow: viewMode === 'grid' ? '0 2px 6px rgba(0, 0, 0, 0.1)' : 'none',
-              }}
               onClick={() => onViewModeChange('grid')}
-              onMouseEnter={() => setHoverState('grid')}
-              onMouseLeave={() => setHoverState(null)}
+              className={`flex items-center justify-center h-10 w-10 md:w-auto md:px-4 rounded-md transition-all ${
+                viewMode === 'grid' 
+                  ? 'bg-gray-400 text-white shadow-sm' 
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+              aria-label="Grid view"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" color="currentColor" fill="none" className="mr-2">
-                <path d="M3.88884 9.66294C4.39329 10 5.09552 10 6.49998 10C7.90445 10 8.60668 10 9.11113 9.66294C9.32951 9.51702 9.51701 9.32952 9.66292 9.11114C9.99998 8.60669 9.99998 7.90446 9.99998 6.5C9.99998 5.09554 9.99998 4.39331 9.66292 3.88886C9.51701 3.67048 9.32951 3.48298 9.11113 3.33706C8.60668 3 7.90445 3 6.49998 3C5.09552 3 4.39329 3 3.88884 3.33706C3.67046 3.48298 3.48296 3.67048 3.33705 3.88886C2.99998 4.39331 2.99998 5.09554 2.99998 6.5C2.99998 7.90446 2.99998 8.60669 3.33705 9.11114C3.48296 9.32952 3.67046 9.51702 3.88884 9.66294Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path>
-                <path d="M14.8888 9.66294C15.3933 10 16.0955 10 17.5 10C18.9044 10 19.6067 10 20.1111 9.66294C20.3295 9.51702 20.517 9.32952 20.6629 9.11114C21 8.60669 21 7.90446 21 6.5C21 5.09554 21 4.39331 20.6629 3.88886C20.517 3.67048 20.3295 3.48298 20.1111 3.33706C19.6067 3 18.9044 3 17.5 3C16.0955 3 15.3933 3 14.8888 3.33706C14.6705 3.48298 14.483 3.67048 14.337 3.88886C14 4.39331 14 5.09554 14 6.5C14 7.90446 14 8.60669 14.337 9.11114C14.483 9.32952 14.6705 9.51702 14.8888 9.66294Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path>
-                <path d="M3.88884 20.6629C4.39329 21 5.09552 21 6.49998 21C7.90445 21 8.60668 21 9.11113 20.6629C9.32951 20.517 9.51701 20.3295 9.66292 20.1111C9.99998 19.6067 9.99998 18.9045 9.99998 17.5C9.99998 16.0955 9.99998 15.3933 9.66292 14.8889C9.51701 14.6705 9.32951 14.483 9.11113 14.3371C8.60668 14 7.90445 14 6.49998 14C5.09552 14 4.39329 14 3.88884 14.3371C3.67046 14.483 3.48296 14.6705 3.33705 14.8889C2.99998 15.3933 2.99998 16.0955 2.99998 17.5C2.99998 18.9045 2.99998 19.6067 3.33705 20.1111C3.48296 20.3295 3.67046 20.517 3.88884 20.6629Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path>
-                <path d="M14.8888 20.6629C15.3933 21 16.0955 21 17.5 21C18.9044 21 19.6067 21 20.1111 20.6629C20.3295 20.517 20.517 20.3295 20.6629 20.1111C21 19.6067 21 18.9045 21 17.5C21 16.0955 21 15.3933 20.6629 14.8889C20.517 14.6705 20.3295 14.483 20.1111 14.3371C19.6067 14 18.9044 14 17.5 14C16.0955 14 15.3933 14 14.8888 14.3371C14.6705 14.483 14.483 14.6705 14.337 14.8889C14 15.3933 14 16.0955 14 17.5C14 18.9045 14 19.6067 14.337 20.1111C14.483 20.3295 14.6705 20.517 14.8888 20.6629Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+                <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+                <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+                <rect x="14" y="14" width="7" height="7" rx="1"></rect>
               </svg>
-              <span>Grid</span>
+              <span className="ml-2 hidden md:inline text-xs font-medium">Grid</span>
             </button>
             
             <button
-              className={`flex items-center justify-center py-3 px-4 rounded-xl text-xs font-medium transition-all duration-300 
-                ${viewMode === 'list' 
-                  ? 'text-white text-xs' 
-                  : 'bg-white text-gray-500 hover:bg-gray-50'}`}
-              style={{
-                backgroundColor: viewMode === 'list' ? activeButtonColor : '',
-                borderTopLeftRadius: 0,
-                borderBottomLeftRadius: 0,
-                boxShadow: viewMode === 'list' ? '0 2px 6px rgba(0, 0, 0, 0.1)' : 'none',
-              }}
               onClick={() => onViewModeChange('list')}
-              onMouseEnter={() => setHoverState('list')}
-              onMouseLeave={() => setHoverState(null)}
+              className={`flex items-center justify-center h-10 w-10 md:w-auto md:px-4 rounded-md transition-all ${
+                viewMode === 'list' 
+                  ? 'bg-white text-blue-600 shadow-sm' 
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+              aria-label="List view"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" color="currentColor" fill="none" className="mr-2">
-                <path d="M4 4.5L20 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M4 14.5L20 14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M4 9.5L20 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M4 19.5L20 19.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
               </svg>
-              <span>List</span>
+              <span className="ml-2 hidden md:inline text-xs font-medium">List</span>
             </button>
           </div>
           
-          {/* Filter button */}
-          <div className="h-12">
-            <Filter 
-              activeButtonColor={activeButtonColor}
-              hoverColor={buttonHoverColor}
-              onApplyFilter={(filterValues) => {
-                const { category, price } = filterValues;
-                handleFilterChange({ 
-                  category,
-                  minPrice: price === 'low' ? 0 : price === 'medium' ? 50 : price === 'high' ? 100 : undefined,
-                  maxPrice: price === 'low' ? 50 : price === 'medium' ? 100 : price === 'high' ? undefined : undefined
-                });
-              }} 
-            />
-          </div>
-          
-          {/* Sort button - redesigned with shadow and hover effect */}
+          {/* Filter Button - Flat modern style */}
           <button 
-            className="flex items-center justify-center h-12 py-3 px-4 rounded-xl font-medium transition-all duration-300 shadow-sm text-xs text-white"
-            style={{
-              backgroundColor: activeButtonColor,
-              boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)'
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.backgroundColor = buttonHoverColor;
-              e.currentTarget.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.15)';
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.backgroundColor = activeButtonColor;
-              e.currentTarget.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.1)';
-            }}
-            onClick={() => {
-              // Toggle between ascending and descending for the current sort field
-              // or default to sorting by date in descending order
-              const currentSortBy = filters.sortBy || 'date';
-              const currentSortOrder = filters.sortOrder || 'desc';
-              handleSortChange({
-                sortBy: currentSortBy,
-                sortOrder: currentSortOrder === 'asc' ? 'desc' : 'asc'
-              });
-            }}
+            onClick={() => setActiveFilter(!activeFilter)}
+            className={`flex items-center justify-center h-12 px-5 rounded-lg transition-all ${
+              activeFilter 
+                ? 'bg-blue-600 text-white' 
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            }`}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" color="currentColor" fill="none" className="mr-2">
-              <path d="M4 4.5L20 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-              <path d="M4 14.5L20 14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-              <path d="M4 9.5L20 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-              <path d="M4 19.5L20 19.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" className="mr-2">
+
+    <path d="M3 7H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+    <path d="M3 17H9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+    <path d="M18 17L21 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+    <path d="M15 7L21 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+    <path d="M6 7C6 6.06812 6 5.60218 6.15224 5.23463C6.35523 4.74458 6.74458 4.35523 7.23463 4.15224C7.60218 4 8.06812 4 9 4C9.93188 4 10.3978 4 10.7654 4.15224C11.2554 4.35523 11.6448 4.74458 11.8478 5.23463C12 5.60218 12 6.06812 12 7C12 7.93188 12 8.39782 11.8478 8.76537C11.6448 9.25542 11.2554 9.64477 10.7654 9.84776C10.3978 10 9.93188 10 9 10C8.06812 10 7.60218 10 7.23463 9.84776C6.74458 9.64477 6.35523 9.25542 6.15224 8.76537C6 8.39782 6 7.93188 6 7Z" stroke="currentColor" stroke-width="1.5"></path>
+    <path d="M12 17C12 16.0681 12 15.6022 12.1522 15.2346C12.3552 14.7446 12.7446 14.3552 13.2346 14.1522C13.6022 14 14.0681 14 15 14C15.9319 14 16.3978 14 16.7654 14.1522C17.2554 14.3552 17.6448 14.7446 17.8478 15.2346C18 15.6022 18 16.0681 18 17C18 17.9319 18 18.3978 17.8478 18.7654C17.6448 19.2554 17.2554 19.6448 16.7654 19.8478C16.3978 20 15.9319 20 15 20C14.0681 20 13.6022 20 13.2346 19.8478C12.7446 19.6448 12.3552 19.2554 12.1522 18.7654C12 18.3978 12 17.9319 12 17Z" stroke="currentColor" stroke-width="1.5"></path>
             </svg>
-            <span>Sort</span>
-            <span className="ml-1 text-xs opacity-70">
-              {filters.sortOrder === 'asc' ? '↑' : '↓'}
+            <span className="text-xs font-medium">Filter</span>
+          </button>
+          
+          {/* Sort Button - Flat modern style */}
+          <button 
+            onClick={() => {
+              setActiveSort(!activeSort);
+              handleSortChange();
+            }}
+            className={`flex items-center justify-center h-12 px-5 rounded-lg transition-all ${
+              activeSort
+                ? 'bg-blue-600 text-white' 
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            }`}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" className="mr-2">
+              <path d="M16 9l-4-4-4 4"></path>
+              <path d="M12 5v14"></path>
+            </svg>
+            <span className="text-xs font-medium">
+              Sort
+              <span className="ml-1 text-xs">
+                {filters.sortOrder === 'asc' ? '↑' : '↓'}
+              </span>
             </span>
           </button>
         </div>
       </div>
       
-      {/* Second row: category filters */}
-      <div className="flex items-center">
-        {/* Category filter */}
-        <div className="flex-1">
-          <ModernCategoryFilter 
-            selectedCategory={filters.category} 
-            onCategoryChange={handleCategoryChange} 
-          />
+      {/* Categories - Modern chip style 
+      <div className="flex flex-wrap gap-2 pb-1">
+        <div className="flex overflow-x-auto py-1 scrollbar-hide gap-2 hide-scrollbar w-full">
+          {['Default', ...categories.map(cat => cat.label)].map((category) => (
+            <button
+              key={category}
+              onClick={() => handleCategoryChange(category)}
+              className={`px-4 py-2.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap ${
+                selectedCategory === category
+                  ? 'bg-blue-600 text-white' 
+                  : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+              }`}
+            >
+              {category}
+            </button>
+          ))}
         </div>
-      </div>
+      </div>*/}
     </div>
   );
 };
