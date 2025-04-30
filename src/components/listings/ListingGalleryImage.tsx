@@ -77,8 +77,8 @@ const ListingGalleryImage: React.FC<ListingGalleryImageProps> = ({ listing, curr
   };
 
   return (
-    <div className="w-full h-full">
-      <div className="grid grid-cols-2 grid-rows-2 gap-2 h-full max-w-xs ml-auto">
+    <div className="w-full overflow-hidden">
+      <div className="grid grid-cols-4 gap-2">
         {displayImages.slice(0, 4).map((image, index) => (
           <div 
             key={index} 
@@ -88,12 +88,12 @@ const ListingGalleryImage: React.FC<ListingGalleryImageProps> = ({ listing, curr
           >
             {image ? (
               <>
-                <div className="aspect-[4/3] w-full h-full relative shadow-sm">
+                <div className="aspect-[4/3] w-full relative shadow-sm">
                   <Image
                     src={image}
                     alt={`Gallery image ${index + 1}`}
                     fill
-                    sizes="(max-width: 768px) 100vw, 150px"
+                    sizes="(max-width: 768px) 160px, 208px"
                     className="object-cover rounded-md transition-all duration-500 
                              group-hover:scale-110 group-hover:brightness-95"
                   />
@@ -141,7 +141,7 @@ const ListingGalleryImage: React.FC<ListingGalleryImageProps> = ({ listing, curr
               </>
             ) : (
               // Empty placeholder with hover effect
-              <div className="aspect-[4/3] w-full h-full flex items-center justify-center 
+              <div className="aspect-[4/3] w-full flex items-center justify-center 
                             border border-dashed border-gray-300 rounded-md
                             transition-all duration-300 hover:border-gray-400 hover:bg-gray-50">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" 

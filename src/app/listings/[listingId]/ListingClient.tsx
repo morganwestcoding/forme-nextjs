@@ -188,7 +188,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
         <div className="flex flex-col gap-6 mt-8">
           <div className="flex gap-6">
             {/* Left column - ListingHead and About Us stacked */}
-            <div className="w-[60%] flex flex-col gap-4">
+            <div className="w-[60%] flex rounded-2xl flex-col gap-4">
               {/* ListingHead at original width */}
               <ListingHead 
                 listing={listing}

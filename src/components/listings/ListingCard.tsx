@@ -308,7 +308,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
               {/* Content Section with white background stopping before buttons */}
               <div className="bg-white rounded-xl shadow-sm mt-4 overflow-hidden">
                 {/* Title Section */}
-                <div className="flex items-start justify-center pt-6 px-6 text-center">
+                <div className="flex items-start justify-start pt-6 px-6">
                   <div className="flex flex-col">
                     <h3 className="font-medium text-gray-900 text-base">
                       {data.title}
