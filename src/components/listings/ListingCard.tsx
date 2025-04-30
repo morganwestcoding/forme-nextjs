@@ -406,7 +406,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
                 </button>
                 
 {/* Reserve Button */}
-{/* Reserve Button */}
 <button 
   onClick={() => router.push(`/listings/${data.id}`)}
   className={`
@@ -417,8 +416,8 @@ const ListingCard: React.FC<ListingCardProps> = ({
   `}
   style={{
     background: isHovered 
-      ? `linear-gradient(to bottom, ${lightenColor(categoryColor, 0.08)}, ${darkenColor(categoryColor, 0.1)})`
-      : 'linear-gradient(to bottom, #6B7280, #4B5563)',
+      ? `linear-gradient(to bottom, ${lightenColor(categoryColor, 0.08)}, ${darkenColor(categoryColor, 0.09)})`
+      : 'linear-gradient(to bottom, #BAC3CE, #9CA3AF)',
     transition: 'all 1.2s cubic-bezier(0.19, 1, 0.22, 1)'
   }}
 >

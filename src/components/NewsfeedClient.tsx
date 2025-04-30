@@ -113,7 +113,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
             flex-none 
             w-full 
             md:w-[57%]  
-            mt-8
+            mt-6
             space-y-4
             px-4       
             md:pr-8 
