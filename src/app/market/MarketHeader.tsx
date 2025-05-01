@@ -58,7 +58,7 @@ const MarketHeader = ({
           <input 
             type="text" 
             placeholder="Search products, shops, categories..." 
-            className="w-full h-12 pl-12 pr-4 bg-gray-50 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all"
+            className="w-full h-12 pl-12 pr-4 bg-white shadow-sm border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all"
   
           />
         </div>
@@ -69,7 +69,7 @@ const MarketHeader = ({
           <div className="bg-gray-100 rounded-lg p-1 flex items-center">
             <button
               onClick={() => onViewModeChange('grid')}
-              className={`flex items-center justify-center h-10 w-10 md:w-auto md:px-4 rounded-md transition-all ${
+              className={`flex items-center  shadow-sm justify-center h-10 w-10 md:w-auto md:px-4 rounded-md transition-all ${
                 viewMode === 'grid' 
                   ? 'bg-gray-400 text-white shadow-sm' 
                   : 'text-gray-500 hover:text-gray-700'
@@ -106,7 +106,7 @@ const MarketHeader = ({
           {/* Filter Button - Flat modern style */}
           <button 
             onClick={() => setActiveFilter(!activeFilter)}
-            className={`flex items-center justify-center h-12 px-5 rounded-lg transition-all ${
+            className={`flex items-center justify-center h-12 px-5 shadow-sm rounded-lg transition-all ${
               activeFilter 
                 ? 'bg-blue-600 text-white' 
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -130,7 +130,7 @@ const MarketHeader = ({
               setActiveSort(!activeSort);
               handleSortChange();
             }}
-            className={`flex items-center justify-center h-12 px-5 rounded-lg transition-all ${
+            className={`flex items-center justify-center h-12 px-5 shadow-sm rounded-lg transition-all ${
               activeSort
                 ? 'bg-blue-600 text-white' 
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'

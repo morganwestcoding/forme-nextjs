@@ -199,8 +199,8 @@ const ListingCard: React.FC<ListingCardProps> = ({
   
   // Only change the bottom part of the gradient on hover
   const backgroundGradient = isHovered 
-    ? `linear-gradient(to bottom, #f3f4f6, ${lightenColor(categoryColor, 0.5)})`
-    : 'linear-gradient(to bottom, #f3f4f6, #E5E7EB)'; // from-gray-100 to-gray-200
+    ? `linear-gradient(to bottom, #F8FAFC, ${lightenColor(categoryColor, 0.5)})`
+    : 'linear-gradient(to bottom, #F8FAFC, #F1F5F9)'; // from-gray-100 to-gray-200
   
   return (
     <div className="col-span-1 flex justify-center w-full max-w-[395px] mx-auto">
@@ -236,7 +236,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
                       className="
                         absolute top-6 left-6 p-3 rounded-lg z-10
                         text-white text-xs font-medium text-center
-                        w-20 shadow overflow-hidden bg-black/50 backdrop-blur-sm
+                        w-20 shadow overflow-hidden bg-gradient-to-b backdrop-blur-sm
                         transition-all duration-300 group-hover:opacity-0 
                       "
                     >
@@ -416,8 +416,8 @@ const ListingCard: React.FC<ListingCardProps> = ({
   `}
   style={{
     background: isHovered 
-      ? `linear-gradient(to bottom, ${lightenColor(categoryColor, 0.08)}, ${darkenColor(categoryColor, 0.09)})`
-      : 'linear-gradient(to bottom, #BAC3CE, #9CA3AF)',
+      ? `linear-gradient(to bottom, ${lightenColor(categoryColor, 0.07)}, ${darkenColor(categoryColor, 0.09)})`
+      : 'linear-gradient(to bottom, #AAB6C7, #94A3B8)',
     transition: 'all 1.2s cubic-bezier(0.19, 1, 0.22, 1)'
   }}
 >
