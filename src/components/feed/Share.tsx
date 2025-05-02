@@ -160,10 +160,8 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
 
  return (
    <div 
-     className={`w-full h-auto rounded-2xl transition-colors duration-250 ${selectedCategory ? selectedCategory.color : 'bg-[#60A5FA]'} p-6`}
-     style={{ 
-       background: selectedCategory ? undefined : `linear-gradient(45deg, ${accentColor}15, ${accentColor}30)`
-     }}
+     className={`w-full h-auto rounded-2xl transition-colors duration-250 bg-gray-100 p-6`}
+
    >
      <div className="flex items-start">
        <Link href={`/profile/${currentUser?.id}`} passHref>

@@ -58,7 +58,7 @@ const MarketHeader = ({
           <input 
             type="text" 
             placeholder="Search products, shops, categories..." 
-            className="w-full h-12 pl-12 pr-4 bg-white shadow-sm border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all"
+            className="w-full h-12 pl-12 pr-4 bg-white border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all"
   
           />
         </div>
@@ -71,7 +71,7 @@ const MarketHeader = ({
               onClick={() => onViewModeChange('grid')}
               className={`flex items-center  shadow-sm justify-center h-10 w-10 md:w-auto md:px-4 rounded-md transition-all ${
                 viewMode === 'grid' 
-                  ? 'bg-gray-400 text-white shadow-sm' 
+                  ? 'bg-slate-400 text-white shadow-sm' 
                   : 'text-gray-500 hover:text-gray-700'
               }`}
               aria-label="Grid view"

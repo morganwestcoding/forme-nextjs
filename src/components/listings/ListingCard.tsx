@@ -197,24 +197,19 @@ const ListingCard: React.FC<ListingCardProps> = ({
   const darkerCategoryColor = darkenColor(categoryColor, 0.15);
   const lighterCategoryColor = lightenColor(categoryColor, 0.4);
   
-  // Only change the bottom part of the gradient on hover
-  const backgroundGradient = isHovered 
-    ? `linear-gradient(to bottom, #F8FAFC, ${lightenColor(categoryColor, 0.5)})`
-    : 'linear-gradient(to bottom, #F8FAFC, #F1F5F9)'; // from-gray-100 to-gray-200
+
   
   return (
     <div className="col-span-1 flex justify-center w-full max-w-[395px] mx-auto">
       <div 
-        className="rounded-2xl flex flex-col w-full transition-all duration-500 overflow-hidden hover:shadow-md"
-        style={{ background: backgroundGradient, transition: 'all 0.5s ease' }}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+        className="rounded-2xl bg-gray-50 flex flex-col w-full transition-all duration-500 overflow-hidden hover:shadow-md"
+ 
       >
         {!reservation && (
           <>
             <div className="p-4">
               {/* Image Section with rounded corners */}
-              <div className="relative h-[175px] w-full group cursor-pointer overflow-hidden shadow rounded-xl">
+              <div className="relative h-[175px] w-full group cursor-pointer overflow-hidden rounded-2xl">
                 <Image
                   onClick={() => router.push(`/listings/${data.id}`)} 
                   fill
@@ -233,20 +228,20 @@ const ListingCard: React.FC<ListingCardProps> = ({
                   <>
                     {/* Category colored label with fixed width */}
                     <div 
-                      className="
-                        absolute top-6 left-6 p-3 rounded-lg z-10
-                        text-white text-xs font-medium text-center
-                        w-20 shadow overflow-hidden bg-gradient-to-b backdrop-blur-sm
-                        transition-all duration-300 group-hover:opacity-0 
-                      "
-                    >
-                      {data.category}
-                    </div>
+      className="
+        absolute top-4 left-4 p-3 rounded-lg z-10
+        text-white text-xs font-medium text-center
+        w-20 shadow overflow-hidden backdrop-blur-sm bg-gradient-to-b from-[#333333]/70 to-black/70
+        transition-all duration-300 group-hover:opacity-0 
+      "
+    >
+      {data.category}
+    </div>
                     
                     {/* White hover state with same fixed width */}
                     <div 
                       className="
-                        absolute top-6 left-6 p-3 rounded-lg z-10
+                        absolute top-4 left-4 p-3 rounded-lg z-10
                         text-black text-xs font-medium text-center
                         w-20 shadow bg-white/95 backdrop-blur-sm overflow-hidden
                         transition-all duration-300
@@ -258,7 +253,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
                   </>
                 )}
                 {/* Action Buttons - Styled to match ListingGalleryImage */}
-                <div className="absolute top-6 right-6 flex items-center gap-2 z-10 
+                <div className="absolute top-4 right-4 flex items-center gap-2 z-10 
                               opacity-0 transform scale-90 translate-y-2 transition-all duration-300 
                               group-hover:opacity-100 group-hover:translate-y-0 group-hover:scale-100">
                   <HeartButton 
@@ -305,71 +300,71 @@ const ListingCard: React.FC<ListingCardProps> = ({
                 )}
               </div>
 
-              {/* Content Section with white background stopping before buttons */}
-              <div className="bg-white rounded-xl shadow-sm mt-4 overflow-hidden">
-                {/* Title Section */}
-                <div className="flex items-start justify-start pt-6 px-6">
-                  <div className="flex flex-col">
-                    <h3 className="font-medium text-gray-900 text-base">
-                      {data.title}
-                    </h3>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {city}, {stateAcronym}
-                    </p>
-                  </div>
-                </div>
+{/* Content Section */}
+<div className="rounded-b-2xl">
+  {/* Title Section */}
+  <div className="flex items-start justify-start pt-6 px-4 pb-2">
+    <div className="flex flex-col">
+      <h3 className="font-medium text-gray-900 text-base">
+        {data.title}
+      </h3>
+      <p className="text-xs text-gray-500 mt-1">
+        {city}, {stateAcronym}
+      </p>
+    </div>
+  </div>
 
-                {/* Services Section */}
-                <div className="p-4">
-                  <div className="relative">
-                    <div className="bg-gray-50 shadow-sm rounded-lg p-3">
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1 pl-2">
-                          <div className="text-xs text-gray-500 mb-1">
-                            {data.services[currentServiceIndex].serviceName}
-                          </div>
-                          <div className="font-semibold text-sm">
-                            ${data.services[currentServiceIndex].price}
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center gap-2 px-2.5">
-                        {data.services.map((_, index) => (
-  <button
-    key={index}
-    onClick={(e) => {
-      e.stopPropagation();
-      setCurrentServiceIndex(index);
-    }}
-    className={`w-2 h-2 rounded-full transition-all duration-500 
-      ${currentServiceIndex === index 
-        ? 'w-7 h-2' 
-        : 'bg-gray-300 hover:bg-gray-400'
-      }`}
-    style={{
-      backgroundColor: currentServiceIndex === index 
-        ? (isHovered ? darkenColor(categoryColor, 0.1) : '#9CA3AF')
-        : ''
-    }}
-  />
-))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+  {/* Services Section with shadow */}
+  <div className="mt-2 pb-2">
+    <div className="relative">
+      <div className="bg-white shadow-sm rounded-lg p-3 relative z-10">
+        <div className="flex items-center justify-between">
+          <div className="flex-1 pl-2">
+            <div className="text-xs text-gray-500 mb-1">
+              {data.services[currentServiceIndex].serviceName}
+            </div>
+            <div className="font-semibold text-sm">
+              ${data.services[currentServiceIndex].price}
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-2 px-2.5">
+          {data.services.map((_, index) => (
+            <button
+              key={index}
+              onClick={(e) => {
+                e.stopPropagation();
+                setCurrentServiceIndex(index);
+              }}
+              className={`w-2 h-2 rounded-full transition-all duration-500 
+                ${currentServiceIndex === index 
+                  ? 'w-7 h-2' 
+                  : 'bg-gray-300 hover:bg-gray-400'
+                }`}
+              style={{
+                backgroundColor: currentServiceIndex === index 
+                  ? (isHovered ? darkenColor(categoryColor, 0.1) : '#9CA3AF')
+                  : ''
+              }}
+            />
+          ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
               
               {/* Button Section - Outside the white background */}
-              <div className="flex items-center gap-2 mt-4">
+              <div className="flex items-center gap-2 mt-2">
                 {/* Quick Book Button */}
                 <button 
                   onClick={(e) => {
                     e.stopPropagation();
                   }}
-                  className="flex-1 bg-white text-black py-4 px-4 rounded-lg text-xs font-medium
+                  className="flex-1 bg-white shadow-sm text-black py-4 px-4 rounded-xl text-xs font-medium
                             hover:bg-gray-200 hover:shadow-sm transition-all duration-200 
-                            flex items-center justify-start shadow"
+                            flex items-center justify-start"
                 >
                   <div className="w-6 flex items-center justify-center">
                     <svg 
@@ -409,8 +404,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
 <button 
   onClick={() => router.push(`/listings/${data.id}`)}
   className={`
-    flex-1 text-white py-4 px-4 rounded-lg text-xs font-medium
-    shadow-md hover:shadow-xl
+    flex-1 text-white py-4 px-4 rounded-xl text-xs font-medium hover:shadow-xl
     flex items-center justify-between relative z-10 backdrop-blur-sm
     overflow-hidden
   `}
