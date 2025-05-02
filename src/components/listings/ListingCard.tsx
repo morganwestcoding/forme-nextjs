@@ -362,7 +362,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
                   onClick={(e) => {
                     e.stopPropagation();
                   }}
-                  className="flex-1 bg-white shadow-sm text-black py-4 px-4 rounded-xl text-xs font-medium
+                  className="flex-1 bg-white shadow-sm text-black py-4 px-4 rounded-lg text-xs font-medium
                             hover:bg-gray-200 hover:shadow-sm transition-all duration-200 
                             flex items-center justify-start"
                 >
@@ -404,7 +404,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
 <button 
   onClick={() => router.push(`/listings/${data.id}`)}
   className={`
-    flex-1 text-white py-4 px-4 rounded-xl text-xs font-medium hover:shadow-xl
+    flex-1 text-white py-4 px-4 rounded-lg text-xs font-medium hover:shadow-xl
     flex items-center justify-between relative z-10 backdrop-blur-sm
     overflow-hidden
   `}
