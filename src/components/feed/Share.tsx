@@ -160,7 +160,7 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
 
  return (
    <div 
-     className={`w-full h-auto rounded-2xl transition-colors duration-250 bg-gray-100 p-6`}
+     className={`w-full h-auto rounded-2xl transition-colors duration-250 bg-gray-100 p-4`}
 
    >
      <div className="flex items-start">
@@ -181,7 +181,7 @@ const Share: React.FC<ShareProps> = ({ currentUser, categoryLabel }) => {
      </div>
      
      {/* Advanced Button Bar */}
-     <div className="mt-4 flex items-center justify-between -mb-2">
+     <div className="mt-4 flex items-center justify-between">
        {/* Left side - Category Button */}
        <div className="flex items-center">
          <FuturisticCategory 

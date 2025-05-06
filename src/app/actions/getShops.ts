@@ -1,94 +1,77 @@
-// app/actions/getShops.ts
 import prisma from "@/app/libs/prismadb";
-import { SafeShop } from "@/app/types";
 
 export interface IShopsParams {
   userId?: string;
-  verified?: boolean;
-  query?: string;
-  sort?: 'newest' | 'popular';
-  limit?: number;
-  hasProducts?: boolean;
   location?: string;
+  verified?: boolean;
+  hasProducts?: boolean;
+  search?: string;
+  limit?: number;
+  sort?: 'newest' | 'popular' | 'products';
 }
 
-export default async function getShops(params: IShopsParams): Promise<SafeShop[]> {
+export default async function getShops(params: IShopsParams) {
   try {
     const {
       userId,
-      verified,
-      query,
-      sort,
-      limit = 20,
-      hasProducts,
-      location
+      location,
+      verified = false,
+      hasProducts = false,
+      search,
+      limit,
+      sort = 'newest'
     } = params;
 
-    let whereClause: any = {
+    // Base query
+    let query: any = {
       shopEnabled: true
     };
 
-    // Filter by user
+    // User filter
     if (userId) {
-      whereClause.userId = userId;
+      query.userId = userId;
     }
 
-    // Filter by verification status
-    if (verified !== undefined) {
-      whereClause.isVerified = verified;
-    }
-
-    // Filter by search query
-    if (query) {
-      whereClause.OR = [
-        { name: { contains: query, mode: 'insensitive' } },
-        { description: { contains: query, mode: 'insensitive' } }
-      ];
-    }
-
-    // Filter by location
+    // Location filter
     if (location) {
-      whereClause.location = {
+      query.location = {
         contains: location,
         mode: 'insensitive'
       };
     }
 
-    // Include shops with products only
+    // Verification filter
+    if (verified) {
+      query.isVerified = true;
+    }
+
+    // Search filter
+    if (search) {
+      query.OR = [
+        { name: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } }
+      ];
+    }
+
+    // Has products filter
     if (hasProducts) {
-      whereClause.products = {
-        some: {}
+      query.products = {
+        some: {
+          isPublished: true
+        }
       };
     }
 
-    // Determine order
-    let orderBy: any = {};
-    
-    switch (sort) {
-      case 'popular':
-        orderBy = {
-          followers: {
-            _count: 'desc'
-          }
-        };
-        break;
-      case 'newest':
-      default:
-        orderBy = {
-          createdAt: 'desc'
-        };
-        break;
-    }
-
-    // Fetch shops
+    // Fetch shops with relations
     const shops = await prisma.shop.findMany({
-      where: whereClause,
+      where: query,
       include: {
         user: {
           select: {
             id: true,
             name: true,
-            image: true
+            image: true,
+            imageSrc: true
           }
         },
         products: {
@@ -96,74 +79,77 @@ export default async function getShops(params: IShopsParams): Promise<SafeShop[]
             isPublished: true,
             isFeatured: true
           },
-          take: 3,
-          orderBy: {
-            createdAt: 'desc'
-          },
           select: {
             id: true,
             name: true,
             price: true,
             mainImage: true
-          }
-        },
-        _count: {
-          select: {
-            products: true
-          }
+          },
+          take: 4
         }
       },
-      orderBy,
-      take: limit
+      orderBy: {
+        createdAt: 'desc'
+      },
+      ...(limit ? { take: limit } : {})
     });
 
-    // Calculate follower count and transform data
-    const safeShops = shops.map(shop => {
-      // Process socials JSON data if needed
-      let processedSocials: any = null;
-      if (shop.socials) {
-        if (typeof shop.socials === 'string') {
-          try {
-            processedSocials = JSON.parse(shop.socials);
-          } catch (e) {
-            processedSocials = null;
+    // Fetch product counts separately to avoid issues with _count
+    const productCounts = await Promise.all(
+      shops.map(shop => 
+        prisma.product.count({
+          where: {
+            shopId: shop.id,
+            isPublished: true
           }
-        } else {
-          processedSocials = shop.socials;
-        }
-      }
+        })
+      )
+    );
+
+    // Transform the shops with appropriate counts
+    const safeShops = shops.map((shop, index) => {
+      // Format featured products
+      const featuredProductItems = shop.products.map(product => ({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.mainImage
+      }));
+
+      // Get follower count using the length of the followers array
+      const followerCount = shop.followers?.length || 0;
+      // Get product count from the separate query
+      const productCount = productCounts[index];
 
       return {
-        id: shop.id,
-        name: shop.name,
-        description: shop.description,
-        logo: shop.logo,
-        coverImage: shop.coverImage,
-        location: shop.location,
-        userId: shop.userId,
-        storeUrl: shop.storeUrl,
-        socials: processedSocials,
-        galleryImages: shop.galleryImages,
+        ...shop,
         createdAt: shop.createdAt.toISOString(),
         updatedAt: shop.updatedAt.toISOString(),
-        isVerified: shop.isVerified,
-        shopEnabled: shop.shopEnabled,
-        featuredProducts: shop.featuredProducts,
-        followers: shop.followers,
-        listingId: shop.listingId,
-        user: shop.user,
-        productCount: shop._count.products,
-        followerCount: shop.followers.length,
-        featuredProductItems: shop.products.map((p: any) => ({
-          id: p.id,
-          name: p.name,
-          price: p.price,
-          image: p.mainImage
-        }))
-      } as SafeShop;
+        // Format socials from JSON
+        socials: shop.socials as Record<string, string> || {},
+        productCount,
+        followerCount,
+        featuredProductItems,
+        // User data formatting
+        user: {
+          id: shop.user.id,
+          name: shop.user.name,
+          image: shop.user.image || shop.user.imageSrc || null
+        }
+      };
     });
 
-    return safeShops;
+    // Manual sorting if needed
+    let sortedShops = [...safeShops];
+    
+    if (sort === 'popular') {
+      sortedShops.sort((a, b) => b.followerCount - a.followerCount);
+    } else if (sort === 'products') {
+      sortedShops.sort((a, b) => b.productCount - a.productCount);
+    }
+    
+    return sortedShops;
+
   } catch (error: any) {
     console.error("Error in getShops:", error);
     throw new Error(`Failed to fetch shops: ${error.message}`);

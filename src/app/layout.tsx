@@ -26,6 +26,7 @@ import InboxModal from '@/components/modals/InboxModal';
 import PostModal from '@/components/modals/PostModal';
 import { ColorProvider } from './context/ColorContext';
 import StripeCheckoutModal from '@/components/modals/StripeCheckoutModal';
+import ShopModal from '@/components/modals/ShopModal';
 
 
 export const metadata: Metadata = {
@@ -67,6 +68,7 @@ export default async function RootLayout({
                 <MobileNavBar  currentUser={currentUser} /> {/* Add the mobile nav bar */}
               
               </div>
+              <ShopModal/>
               <ToasterProvider/>
               <RentModal/>
               <InboxModal/>

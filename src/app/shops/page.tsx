@@ -1,10 +1,11 @@
-// app/shop/page.tsx
 import ShopClient from '@/app/shops/ShopClient';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import getShops from '@/app/actions/getShops';
 import getProducts from '@/app/actions/getProducts';
 import getProductCategories from '@/app/actions/getProductCategories';
 import { SafeShop, SafeProduct, SafeProductCategory } from '@/app/types';
+import Container from '@/components/Container';
+
 
 interface ShopPageProps {
   searchParams: { [key: string]: string | string[] | undefined }
@@ -39,26 +40,29 @@ async function ShopPage({ searchParams }: ShopPageProps) {
       getProductCategories()
     ]);
 
-    // Use type assertion to tell TypeScript that you know the data matches your types
-    // This is a simpler solution but requires you to be certain the data structure is compatible
     return (
-      <ShopClient 
-        initialShops={shops as unknown as SafeShop[]}
-        featuredProducts={featuredProducts as unknown as SafeProduct[]}
-        categories={categories}
-        currentUser={currentUser}
-      />
+<Container>
+        <ShopClient 
+          initialShops={shops as unknown as SafeShop[]}
+          featuredProducts={featuredProducts as unknown as SafeProduct[]}
+          categories={categories}
+          currentUser={currentUser}
+        />
+</Container>
     );
   } catch (error) {
     console.error("Error fetching shop data:", error);
-    // Return empty arrays if there's an error
+    // Return with empty arrays if there's an error
     return (
-      <ShopClient 
-        initialShops={[]}
-        featuredProducts={[]}
-        categories={[]}
-        currentUser={currentUser}
-      />
+<Container>
+        <ShopClient 
+          initialShops={[]}
+          featuredProducts={[]}
+          categories={[]}
+          currentUser={currentUser}
+        />
+        </Container>
+
     );
   }
 }

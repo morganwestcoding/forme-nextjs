@@ -1,52 +1,82 @@
 import prisma from "@/app/libs/prismadb";
-import { SafeUser } from "@/app/types";
 
 interface IParams {
- userId?: string;
+  shopId?: string;
 }
 
-export default async function getProfileById(params: IParams): Promise<SafeUser | null> {
- const { userId } = params;
+export default async function getShopById(params: IParams) {
+  try {
+    const { shopId } = params;
 
- if (!userId) {
-   console.error("No user ID provided for getProfileById");
-   return null;
- }
+    if (!shopId) {
+      return null;
+    }
 
- try {
-   const user = await prisma.user.findUnique({
-     where: { id: userId },
-   });
+    const shop = await prisma.shop.findUnique({
+      where: {
+        id: shopId,
+      },
+      include: {
+        user: true,
+        products: {
+          where: {
+            isFeatured: true,
+            isPublished: true
+          },
+          take: 4,
+          orderBy: {
+            createdAt: 'desc'
+          },
+          include: {
+            category: true
+          }
+        },
+        listing: true
+      }
+    });
 
-   if (!user) {
-     console.error("User not found with ID:", userId);
-     return null;
-   }
+    if (!shop) {
+      return null;
+    }
 
-   return {
-     id: user.id,
-     name: user.name ?? null,
-     email: user.email ?? null,
-     image: user.image ?? null,
-     bio: user.bio || "No Bio Provided Yet..",
-     imageSrc: user.imageSrc || '/assets/hero-background.jpeg',
-     location: user.location ?? null,
-     createdAt: user.createdAt.toISOString(),
-     updatedAt: user.updatedAt.toISOString(),
-     emailVerified: user.emailVerified ? user.emailVerified.toISOString() : null,
-     galleryImages: user.galleryImages || [],
-     following: user.following || [],
-     followers: user.followers || [],
-     conversationIds: user.conversationIds || [],
-     resetToken: user.resetToken ?? null,
-     resetTokenExpiry: user.resetTokenExpiry ?? null,
-     isSubscribed: user.isSubscribed ?? false,
-     subscriptionStartDate: user.subscriptionStartDate ?? null,
-     subscriptionEndDate: user.subscriptionEndDate ?? null,
-     subscriptionTier: user.subscriptionTier ?? null  // Add this line
-   };
- } catch (error) {
-   console.error("Error fetching user profile by ID:", error);
-   return null;
- }
+    // Count the followers
+    const followerCount = shop.followers.length;
+    
+    // Count total products
+    const productCount = await prisma.product.count({
+      where: {
+        shopId: shop.id,
+        isPublished: true
+      }
+    });
+
+    // Format featured products for display
+    const featuredProductItems = shop.products.map(product => ({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.mainImage
+    }));
+
+    return {
+      ...shop,
+      createdAt: shop.createdAt.toISOString(),
+      updatedAt: shop.updatedAt.toISOString(),
+      productCount,
+      followerCount,
+      featuredProductItems,
+      // Format socials from JSON if needed
+      socials: shop.socials as Record<string, string> || {},
+      // User data formatting
+      user: {
+        id: shop.user.id,
+        name: shop.user.name,
+        image: shop.user.image || shop.user.imageSrc || null
+      }
+    };
+    
+  } catch (error: any) {
+    console.error("Error in getShopById:", error);
+    throw new Error(`Failed to fetch shop: ${error.message}`);
+  }
 }

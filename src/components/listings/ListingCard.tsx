@@ -207,9 +207,9 @@ const ListingCard: React.FC<ListingCardProps> = ({
       >
         {!reservation && (
           <>
-            <div className="p-4">
+            <div className="p-3">
               {/* Image Section with rounded corners */}
-              <div className="relative h-[175px] w-full group cursor-pointer overflow-hidden rounded-2xl">
+              <div className="relative h-[175px] w-full group cursor-pointer overflow-hidden shadow-sm rounded-2xl">
                 <Image
                   onClick={() => router.push(`/listings/${data.id}`)} 
                   fill
