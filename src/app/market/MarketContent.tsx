@@ -7,7 +7,7 @@ import EmptyState from '@/components/EmptyState';
 import ListingCard from '@/components/listings/ListingCard';
 import { categories } from '@/components/Categories';
 import Container from '@/components/Container';
-import MarketHeader from './MarketHeader';
+import MarketExplorer from './MarketExplorer';
 import { SafeListing, SafeUser } from '@/app/types';
 
 interface MarketContentProps {
@@ -161,12 +161,11 @@ const MarketContent = ({ searchParams, listings, currentUser }: MarketContentPro
             <p className="text-gray-600">Discover unique services from our vendors</p>
           </div>
           
-        <MarketHeader 
-          viewMode={viewState.mode}
-          onViewModeChange={(mode: ViewState['mode']) => setViewState(prev => ({ ...prev, mode }))}
-          filters={viewState.filters}
-          onFilterChange={(filters: ViewState['filters']) => setViewState(prev => ({ ...prev, filters }))}
-        />
+          <MarketExplorer
+            searchParams={searchParams}
+            viewState={viewState}
+            setViewState={setViewState}
+/>
       </div>
       
       <div className="flex flex-col">
