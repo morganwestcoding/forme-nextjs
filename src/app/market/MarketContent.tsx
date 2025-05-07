@@ -179,7 +179,7 @@ const MarketContent = ({ searchParams, listings, currentUser }: MarketContentPro
             xl:grid-cols-3
             2xl:grid-cols-3
             gap-4
-            px-4
+            px-3
           ">
             {listings.map((listing: SafeListing) => (
               <ListingCard

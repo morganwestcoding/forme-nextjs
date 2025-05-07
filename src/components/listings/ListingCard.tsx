@@ -1,9 +1,10 @@
 'use client';
 
+import React from 'react';
 import Image from "next/image";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
-import { SafeListing, SafeReservation, SafeUser } from "@/app/types";
+import { useRouter } from "next/navigation";
+import { useState, useMemo } from "react";
+import { SafeListing, SafeReservation, SafeUser, SafeService } from "@/app/types";
 import useRentModal from "@/app/hooks/useRentModal";
 import useListingDetailsModal from "@/app/hooks/useListingDetailsModal";
 import { format } from 'date-fns';
@@ -11,7 +12,24 @@ import Avatar from "../ui/avatar";
 import { categories } from "../Categories";
 import axios from "axios";
 import { toast } from "react-hot-toast";
+import { ChevronRight, User, Calendar, Clock, ExternalLink, Heart, Share2, Star, ChevronDown, Scissors, Droplet, Waves, Palette, Anchor, Rocket, SearchCheckIcon } from 'lucide-react';
 import HeartButton from "@/components/HeartButton";
+import { IconType } from "react-icons";
+
+// Define a type for the service with additional UI properties
+interface EnhancedService extends SafeService {
+  icon: any;
+  estimatedDuration: string;
+}
+
+// Define a type for category
+interface ServiceCategory {
+  id: string;
+  name: string;
+  color: string;
+  icon: any;
+  services: EnhancedService[];
+}
 
 interface ListingCardProps {
   data: SafeListing;
@@ -32,7 +50,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
   categories,
   reservation,
   onAction,
-  disabled,
+  disabled = false,
   actionId = '',
   actionLabel,
   onAccept,
@@ -41,32 +59,81 @@ const ListingCard: React.FC<ListingCardProps> = ({
   currentUser,
 }) => {
   const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
   const rentModal = useRentModal();
   const listingDetailsModal = useListingDetailsModal();
-  const [currentServiceIndex, setCurrentServiceIndex] = useState(0);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isLiked, setIsLiked] = useState(false);
-  const [isSaved, setIsSaved] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
+  const [step, setStep] = useState<number>(1);
+  const [selectedService, setSelectedService] = useState<EnhancedService | null>(null);
+  const [selectedEmployee, setSelectedEmployee] = useState<any>(null);
+  const [isFavorite, setIsFavorite] = useState<boolean>(false);
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   
-  // Get the selected category from URL params
-  const selectedCategory = searchParams?.get('category');
-  
-  // Check if the current listing's category matches the selected category
-  const isSelectedCategory = selectedCategory && data.category === selectedCategory;
-  
-  // Create array of all images including main image
-  const allImages = [data.imageSrc, ...(data.galleryImages || [])];
-  const hasMultipleImages = allImages.length > 1;
+  // Group services by category
+  const serviceCategories = useMemo<ServiceCategory[]>(() => {
+    const categoryMap = new Map<string, ServiceCategory>();
+    
+    // Define category icons - this would need to be customized for your actual categories
+    const categoryIcons: Record<string, any> = {
+      'Massage': Waves,
+      'Wellness': Anchor,
+      'Fitness': Rocket,
+      'Nails': Palette,
+      'Spa': Droplet,
+      'Barber': Scissors,
+      'Default': User // Fallback icon
+    };
+    
+    // Define category colors - customize as needed
+    const categoryColors: Record<string, string> = {
+      'Massage': 'bg-[#D4B185]',
+      'Wellness': 'bg-[#C4D4A9]',
+      'Fitness': 'bg-[#86A4BB]',
+      'Nails': 'bg-[#E5B9AD]',
+      'Spa': 'bg-[#D8C3CE]',
+      'Barber': 'bg-[#D6C3B6]',
+      'Default': 'bg-gray-200'
+    };
+    
+    // Group services by category
+    data.services.forEach(service => {
+      const category = service.category || 'Default';
+      if (!categoryMap.has(category)) {
+        categoryMap.set(category, {
+          id: category.toLowerCase().replace(/\s+/g, '-'),
+          name: category,
+          color: categoryColors[category] || categoryColors['Default'],
+          icon: categoryIcons[category] || categoryIcons['Default'],
+          services: []
+        });
+      }
+      
+      // Get estimated duration based on price (just an example)
+      // You might want to customize this or add duration to your service model
+      const estimatedDuration = 
+        service.price < 50 ? '30 min' :
+        service.price < 80 ? '45 min' :
+        service.price < 120 ? '60 min' : '90 min';
+      
+      const serviceWithIcon: EnhancedService = {
+        ...service,
+        icon: categoryIcons[category] || categoryIcons['Default'],
+        estimatedDuration: estimatedDuration // Use estimatedDuration instead of duration
+      };
+      
+      const categoryData = categoryMap.get(category);
+      if (categoryData) {
+        categoryData.services.push(serviceWithIcon);
+      }
+    });
+    
+    return Array.from(categoryMap.values());
+  }, [data.services]);
 
-  const handleEdit = (e: React.MouseEvent) => {
+  const handleEdit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     rentModal.onOpen(data);
   };
 
-  const handleDelete = async (e: React.MouseEvent) => {
+  const handleDelete = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     if (disabled || !actionId) return;
 
@@ -79,40 +146,26 @@ const ListingCard: React.FC<ListingCardProps> = ({
     }
   };
 
-  const handleAction = (e: React.MouseEvent) => {
+  const handleAction = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     if (disabled || !actionId || !onAction) return;
     onAction(actionId);
   };
 
-  const handleImageChange = (index: number, e: React.MouseEvent) => {
+  const handleShare = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    setCurrentImageIndex(index);
+    console.log('Share listing');
   };
 
-  const getStateAcronym = (state: string) => {
-    const stateMap: {[key: string]: string} = {
-      'Alabama': 'AL', 'Alaska': 'AK', 'Arizona': 'AZ', 'Arkansas': 'AR', 'California': 'CA',
-      'Colorado': 'CO', 'Connecticut': 'CT', 'Delaware': 'DE', 'Florida': 'FL', 'Georgia': 'GA',
-      'Hawaii': 'HI', 'Idaho': 'ID', 'Illinois': 'IL', 'Indiana': 'IN', 'Iowa': 'IA',
-      'Kansas': 'KS', 'Kentucky': 'KY', 'Louisiana': 'LA', 'Maine': 'ME', 'Maryland': 'MD',
-      'Massachusetts': 'MA', 'Michigan': 'MI', 'Minnesota': 'MN', 'Mississippi': 'MS', 'Missouri': 'MO',
-      'Montana': 'MT', 'Nebraska': 'NE', 'Nevada': 'NV', 'New Hampshire': 'NH', 'New Jersey': 'NJ',
-      'New Mexico': 'NM', 'New York': 'NY', 'North Carolina': 'NC', 'North Dakota': 'ND', 'Ohio': 'OH',
-      'Oklahoma': 'OK', 'Oregon': 'OR', 'Pennsylvania': 'PA', 'Rhode Island': 'RI', 'South Carolina': 'SC',
-      'South Dakota': 'SD', 'Tennessee': 'TN', 'Texas': 'TX', 'Utah': 'UT', 'Vermont': 'VT',
-      'Virginia': 'VA', 'Washington': 'WA', 'West Virginia': 'WV', 'Wisconsin': 'WI', 'Wyoming': 'WY'
-    };
-    return stateMap[state] || state;
+  const handleViewListing = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    router.push(`/listings/${data.id}`);
   };
 
-  const [city, state] = data.location?.split(',').map(s => s.trim()) || [];
-  const stateAcronym = state ? getStateAcronym(state) : '';
+  const toggleCategory = (categoryId: string) => {
+    setExpandedCategory(prev => prev === categoryId ? null : categoryId);
+  };
 
-  // Don't display category tag if it's the default category
-  const shouldDisplayCategory = data.category && data.category !== 'Default' && data.category !== 'All';
-
-  // Add this to your ListingCard component
   const getStatusBadgeStyles = (status: string) => {
     switch(status) {
       case 'accepted':
@@ -135,437 +188,407 @@ const ListingCard: React.FC<ListingCardProps> = ({
     }
   };
 
-  // Function to get category color from categories array
-  const getCategoryColor = (categoryName: string) => {
-    // Find the category in the categories array
-    const categoryObj = categories.find(
-      cat => cat.label === categoryName
-    );
-    
-    if (categoryObj) {
-      // Extract the hex color from the bg-[#XXXXXX] format
-      const colorMatch = categoryObj.color.match(/#[0-9A-Fa-f]{6}/);
-      if (colorMatch) {
-        return colorMatch[0];
-      }
-    }
-    
-    // Return a default color if not found
-    return '#6B7280';
-  };
+  // Extract city and state from location
+  const [city, state] = data.location?.split(',').map(s => s.trim()) || [];
 
-  // Function to darken a hex color by a factor
-  const darkenColor = (hex: string, factor: number = 0.4) => {
-    // Remove # if present
-    hex = hex.replace('#', '');
-    
-    // Convert to RGB
-    let r = parseInt(hex.substring(0, 2), 16);
-    let g = parseInt(hex.substring(2, 4), 16);
-    let b = parseInt(hex.substring(4, 6), 16);
-    
-    // Darken each component
-    r = Math.max(0, Math.floor(r * (1 - factor)));
-    g = Math.max(0, Math.floor(g * (1 - factor)));
-    b = Math.max(0, Math.floor(b * (1 - factor)));
-    
-    // Convert back to hex
-    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
-  };
-
-  // Function to lighten a hex color by a factor
-  const lightenColor = (hex: string, factor: number = 0.2) => {
-    // Remove # if present
-    hex = hex.replace('#', '');
-    
-    // Convert to RGB
-    let r = parseInt(hex.substring(0, 2), 16);
-    let g = parseInt(hex.substring(2, 4), 16);
-    let b = parseInt(hex.substring(4, 6), 16);
-    
-    // Lighten each component
-    r = Math.min(255, Math.floor(r + (255 - r) * factor));
-    g = Math.min(255, Math.floor(g + (255 - g) * factor));
-    b = Math.min(255, Math.floor(b + (255 - b) * factor));
-    
-    // Convert back to hex
-    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
-  };
-
-  // Get the category color for this listing - but only if it matches the selected category
-  const categoryColor = getCategoryColor(data.category || 'Default');
-  const darkerCategoryColor = darkenColor(categoryColor, 0.15);
-  const lighterCategoryColor = lightenColor(categoryColor, 0.4);
-  
-
-  
   return (
-    <div className="col-span-1 flex justify-center w-full max-w-[395px] mx-auto">
-      <div 
-        className="rounded-2xl bg-gray-50 flex flex-col w-full transition-all duration-500 overflow-hidden hover:shadow-md"
- 
-      >
-        {!reservation && (
-          <>
-            <div className="p-3">
-              {/* Image Section with rounded corners */}
-              <div className="relative h-[175px] w-full group cursor-pointer overflow-hidden shadow-sm rounded-2xl">
-                <Image
-                  onClick={() => router.push(`/listings/${data.id}`)} 
-                  fill
-                  className="object-cover w-full h-full transform transition-all duration-500 
-                            group-hover:scale-110"
-                  src={allImages[currentImageIndex]}
-                  alt="Listing"
-                />
-                
-                {/* Gradient Overlay - Enhanced to match ListingGalleryImage */}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/50 
-                              opacity-0 transition-all duration-300 group-hover:opacity-100" />
-                
-                {/* Category Badge */}
-                {shouldDisplayCategory && (
-                  <>
-                    {/* Category colored label with fixed width */}
-                    <div 
-      className="
-        absolute top-4 left-4 p-3 rounded-lg z-10
-        text-white text-xs font-medium text-center
-        w-20 shadow overflow-hidden backdrop-blur-sm bg-gradient-to-b from-[#333333]/70 to-black/70
-        transition-all duration-300 group-hover:opacity-0 
-      "
-    >
-      {data.category}
-    </div>
-                    
-                    {/* White hover state with same fixed width */}
-                    <div 
-                      className="
-                        absolute top-4 left-4 p-3 rounded-lg z-10
-                        text-black text-xs font-medium text-center
-                        w-20 shadow bg-white/95 backdrop-blur-sm overflow-hidden
-                        transition-all duration-300
-                        opacity-0 group-hover:opacity-100
-                      "
-                    >
-                      {data.category}
-                    </div>
-                  </>
-                )}
-                {/* Action Buttons - Styled to match ListingGalleryImage */}
-                <div className="absolute top-4 right-4 flex items-center gap-2 z-10 
-                              opacity-0 transform scale-90 translate-y-2 transition-all duration-300 
-                              group-hover:opacity-100 group-hover:translate-y-0 group-hover:scale-100">
-                  <HeartButton 
-                    listingId={data.id}
-                    currentUser={currentUser}
-                    favoriteIds={data.favoriteIds}
-                  />
-                  
-                  {/* Share button with white styling like zoom button */}
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setIsSaved(!isSaved);
-                    }}
-                    className="p-3 rounded-full bg-white/80 backdrop-blur-sm
-                              hover:bg-white hover:scale-110 transition-all duration-300 shadow-lg"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" color="#000000" fill="none">
-                      <path d="M18.7083 7C20.1334 8.59227 21 10.6949 21 13C21 17.9706 16.9706 22 12 22C7.02944 22 3 17.9706 3 13C3 10.6949 3.86656 8.59227 5.29168 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                      <path d="M12.0253 2.00052L12 14M12.0253 2.00052C11.8627 1.99379 11.6991 2.05191 11.5533 2.17492C10.6469 2.94006 9 4.92886 9 4.92886M12.0253 2.00052C12.1711 2.00657 12.3162 2.06476 12.4468 2.17508C13.3531 2.94037 15 4.92886 15 4.92886" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </button>
-                </div>
-
-                {/* Image Navigation Dots */}
-                {hasMultipleImages && (
-                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-10 
-                                bg-black/30 backdrop-blur-sm rounded-full px-2.5 py-1.5 
-                                opacity-0 transition-all duration-300 
-                                group-hover:opacity-100 transform scale-95 group-hover:scale-100">
-                    {allImages.map((_, index) => (
-                      <button
-                        key={index}
-                        onClick={(e) => handleImageChange(index, e)}
-                        className={`w-1.5 h-1.5 rounded-full transition-all duration-200
-                          ${currentImageIndex === index 
-                            ? 'bg-white scale-110' 
-                            : 'bg-white/40 hover:bg-white/60'
-                          }
-                        `}
-                      />
-                    ))}
-                  </div>
-                )}
-              </div>
-
-{/* Content Section */}
-<div className="rounded-b-2xl">
-  {/* Title Section */}
-  <div className="flex items-start justify-start pt-6 px-4 pb-2">
-    <div className="flex flex-col">
-      <h3 className="font-medium text-gray-900 text-base">
-        {data.title}
-      </h3>
-      <p className="text-xs text-gray-500 mt-1">
-        {city}, {stateAcronym}
-      </p>
-    </div>
-  </div>
-
-  {/* Services Section with shadow */}
-  <div className="mt-2 pb-2">
-    <div className="relative">
-      <div className="bg-white shadow-sm rounded-lg p-3 relative z-10">
-        <div className="flex items-center justify-between">
-          <div className="flex-1 pl-2">
-            <div className="text-xs text-gray-500 mb-1">
-              {data.services[currentServiceIndex].serviceName}
-            </div>
-            <div className="font-semibold text-sm">
-              ${data.services[currentServiceIndex].price}
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-2 px-2.5">
-          {data.services.map((_, index) => (
-            <button
-              key={index}
-              onClick={(e) => {
-                e.stopPropagation();
-                setCurrentServiceIndex(index);
-              }}
-              className={`w-2 h-2 rounded-full transition-all duration-500 
-                ${currentServiceIndex === index 
-                  ? 'w-7 h-2' 
-                  : 'bg-gray-300 hover:bg-gray-400'
-                }`}
-              style={{
-                backgroundColor: currentServiceIndex === index 
-                  ? (isHovered ? darkenColor(categoryColor, 0.1) : '#9CA3AF')
-                  : ''
-              }}
-            />
-          ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-              
-              {/* Button Section - Outside the white background */}
-              <div className="flex items-center gap-2 mt-2">
-                {/* Quick Book Button */}
-                <button 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                  }}
-                  className="flex-1 bg-white shadow-sm text-black py-4 px-4 rounded-lg text-xs font-medium
-                            hover:bg-gray-200 hover:shadow-sm transition-all duration-200 
-                            flex items-center justify-start"
-                >
-                  <div className="w-6 flex items-center justify-center">
-                    <svg 
-                      xmlns="http://www.w3.org/2000/svg" 
-                      viewBox="0 0 24 24" 
-                      width="18" 
-                      height="18" 
-                      fill="none" 
-                      stroke="currentColor" 
-                      strokeWidth="1.5"
-                      strokeLinecap="round" 
-                      strokeLinejoin="round"
-                    >
-                      <path 
-                        d="M2.5 12.2432C2.5 7.88594 2.5 5.70728 3.75212 4.35364C5.00424 3 7.01949 3 11.05 3H12.95C16.9805 3 18.9958 3 20.2479 4.35364C21.5 5.70728 21.5 7.88594 21.5 12.2432V12.7568C21.5 17.1141 21.5 19.2927 20.2479 20.6464C18.9958 22 16.9805 22 12.95 22H11.05C7.01949 22 5.00424 22 3.75212 20.6464C2.5 19.2927 2.5 17.1141 2.5 12.7568V12.2432Z" 
-                        stroke="currentColor" 
-                        strokeWidth="1.5"
-                      />
-                      <path 
-                        d="M18 2V4M6 2V4M3 8H21" 
-                        stroke="currentColor" 
-                        strokeWidth="1.5" 
-                        strokeLinecap="round"
-                      />
-                      <path 
-                        d="M11.9955 13H12.0045M11.9955 17H12.0045M15.991 13H16M8 13H8.00897M8 17H8.00897" 
-                        stroke="currentColor" 
-                        strokeWidth="2" 
-                        strokeLinecap="round"
-                      />
-                    </svg>
-                  </div>
-                  <span className="ml-2">Quick Book</span>
-                </button>
-                
-{/* Reserve Button */}
-<button 
-  onClick={() => router.push(`/listings/${data.id}`)}
-  className={`
-    flex-1 text-white py-4 px-4 rounded-lg text-xs font-medium hover:shadow-xl
-    flex items-center justify-between relative z-10 backdrop-blur-sm
-    overflow-hidden
-  `}
-  style={{
-    background: isHovered 
-      ? `linear-gradient(to bottom, ${lightenColor(categoryColor, 0.07)}, ${darkenColor(categoryColor, 0.09)})`
-      : 'linear-gradient(to bottom, #AAB6C7, #94A3B8)',
-    transition: 'all 1.2s cubic-bezier(0.19, 1, 0.22, 1)'
-  }}
->
-  <span className="flex-1 text-center relative z-10">Reserve</span>
-  <div className="w-6 flex items-center justify-center relative z-10">
-    <svg 
-      xmlns="http://www.w3.org/2000/svg" 
-      viewBox="0 0 24 24" 
-      width="18" 
-      height="18" 
-      color="#ffffff" 
-      fill="none"
-    >
-      <path 
-        d="M20.0001 11.9998L4.00012 11.9998" 
+    <div className="bg-white rounded-3xl shadow-lg overflow-hidden max-w-xl mx-2">
+      {/* Image Header Section */}
+      <div className="relative h-[200px] overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-black/70 z-10"></div>
+        
+        <Image 
+          src={data.imageSrc}
+          alt={data.title}
+          fill
+          className="w-full h-full object-cover absolute"
+        />
+        
+{/* Action Buttons */}
+<div className="absolute top-4 right-4 flex space-x-2 z-20">
+  <button 
+    onClick={(e) => {
+      e.stopPropagation();
+      setIsFavorite(!isFavorite);
+    }}
+    className="bg-white/80 hover:bg-white/90 rounded-full p-2.5
+    flex items-center justify-center transition-colors group"
+    aria-label="Add to Favorites"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" 
+      className="w-6 h-6 text-neutral-800 group-hover:text-green-600"
+    > 
+      <path d="M10.4107 19.9677C7.58942 17.858 2 13.0348 2 8.69444C2 5.82563 4.10526 3.5 7 3.5C8.5 3.5 10 4 12 6C14 4 15.5 3.5 17 3.5C19.8947 3.5 22 5.82563 22 8.69444C22 13.0348 16.4106 17.858 13.5893 19.9677C12.6399 20.6776 11.3601 20.6776 10.4107 19.9677Z" 
         stroke="currentColor" 
         strokeWidth="1.5" 
         strokeLinecap="round" 
-        strokeLinejoin="round" 
-      />
-      <path 
-        d="M15.0003 17C15.0003 17 20.0002 13.3176 20.0002 12C20.0002 10.6824 15.0002 7 15.0002 7" 
-        stroke="currentColor" 
-        strokeWidth="1.5" 
-        strokeLinecap="round" 
-        strokeLinejoin="round" 
+        strokeLinejoin="round"
       />
     </svg>
-  </div>
-</button>
-              </div>
-            </div>
-          </>
-        )}
+  </button>
 
-        {/* Reservation View */}
-        {reservation && (
-          <div className="p-4 flex flex-col gap-4 border rounded-xl">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Avatar src={reservation.user.image ?? undefined} />
-                <div>
-                  <h3 className="font-medium text-gray-900">
-                    {reservation.user.name}
-                  </h3>
-                  <p className="text-sm text-gray-500">
-                    {format(new Date(reservation.date), 'PP')}
-                  </p>
+  <button 
+    onClick={(e) => handleShare(e)}
+    className="bg-white/80 hover:bg-white/90 rounded-full p-2.5
+    flex items-center justify-center transition-colors group"
+    aria-label="Share Listing"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none"
+      className="w-6 h-6 text-neutral-800 group-hover:text-green-600"
+    > 
+    <path d="M21 6.5C21 8.15685 19.6569 9.5 18 9.5C16.3431 9.5 15 8.15685 15 6.5C15 4.84315 16.3431 3.5 18 3.5C19.6569 3.5 21 4.84315 21 6.5Z" stroke="currentColor" stroke-width="1.5"></path>
+    <path d="M9 12C9 13.6569 7.65685 15 6 15C4.34315 15 3 13.6569 3 12C3 10.3431 4.34315 9 6 9C7.65685 9 9 10.3431 9 12Z" stroke="currentColor" stroke-width="1.5"></path>
+    <path d="M21 17.5C21 19.1569 19.6569 20.5 18 20.5C16.3431 20.5 15 19.1569 15 17.5C15 15.8431 16.3431 14.5 18 14.5C19.6569 14.5 21 15.8431 21 17.5Z" stroke="currentColor" stroke-width="1.5"></path>
+    <path d="M8.72852 10.7495L15.2285 7.75M8.72852 13.25L15.2285 16.2495" stroke="currentColor"  stroke-width="1.5"></path>
+</svg>
+
+  </button>
+
+  <button 
+    onClick={(e) => handleViewListing(e)}
+    className="bg-white/80 hover:bg-white/90 rounded-full p-2.5 
+    flex items-center justify-center transition-colors group"
+    aria-label="View Listing Details"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none"
+      className="w-6 h-6 text-neutral-800 group-hover:text-green-600"
+    > 
+      <path d="M2 12C2 7.75736 2 5.63604 3.46447 4.31802C4.92893 3 7.28596 3 12 3C16.714 3 19.0711 3 20.5355 4.31802C22 5.63604 22 7.75736 22 12C22 16.2426 22 18.364 20.5355 19.682C19.0711 21 16.714 21 12 21C7.28596 21 4.92893 21 3.46447 19.682C2 18.364 2 16.2426 2 12Z" 
+        stroke="currentColor" 
+        strokeWidth="1.5" 
+        strokeLinecap="round" 
+        strokeLinejoin="round" 
+      /> 
+      <path d="M8.4 8H7.6C6.84575 8 6.46863 8 6.23431 8.23431C6 8.46863 6 8.84575 6 9.6V10.4C6 11.1542 6 11.5314 6.23431 11.7657C6.46863 12 6.84575 12 7.6 12H8.4C9.15425 12 9.53137 12 9.76569 11.7657C10 11.5314 10 11.1542 10 10.4V9.6C10 8.84576 10 8.46863 9.76569 8.23431C9.53137 8 9.15425 8 8.4 8Z" 
+        stroke="currentColor" 
+        strokeWidth="1.5" 
+        strokeLinejoin="round" 
+      /> 
+      <path d="M6 16H10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /> 
+      <path d="M14 8H18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /> 
+      <path d="M14 12H18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /> 
+      <path d="M14 16H18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /> 
+    </svg>
+  </button>
+</div>
+
+        {/* Location and Rating */}
+        <div className="absolute bottom-4 left-4 text-white  z-20">
+          <div className="flex items-center space-x-2 mb-1">
+            <h1 className="text-xl font-bold drop-shadow-lg">{data.title}</h1>
+            <div className="flex items-center bg-white/30 rounded-lg px-2 py-1">
+              <Star className="w-4 h-4 text-yellow-400 mr-1" />
+              <span className="text-sm font-semibold pr-1">4.7</span>
+            </div>
+          </div>
+          <p className="text-xs drop-shadow-md flex items-center">
+            {city}, {state} • 2.3 miles away
+          </p>
+        </div>
+      </div>
+
+      {/* Non-Reservation View */}
+      {!reservation && (
+        <div className="p-6 pt-4">
+          {/* Quick Info Strip */}
+          <div className="flex justify-between items-center mb-4 text-xs text-neutral-600">
+            <div className="flex items-center">
+              <Clock className="w-4 h-4 mr-2 text-green-600" />
+              Open Now • Closes 8 PM
+            </div>
+            <div className="flex items-center">
+              <User className="w-4 h-4 mr-2 text-green-600" />
+              {data.employees?.length || 0} Employees
+            </div>
+          </div>
+
+          {/* Progress Indicator */}
+          <div className="flex items-center mb-6">
+            {[1, 2, 3].map((currentStep) => (
+              <div 
+                key={currentStep} 
+                className={`h-1.5 flex-1 mx-1 rounded-full ${
+                  step >= currentStep 
+                    ? 'bg-green-500' 
+                    : 'bg-neutral-200'
+                }`}
+              />
+            ))}
+          </div>
+
+          {step === 1 && (
+            <div className="space-y-4">
+              <h2 className="text-lg font-semibold text-neutral-800">Select Service</h2>
+              
+              {/* Accordion-Style Service Categories */}
+              <div className="max-h-[50vh] overflow-y-auto">
+                <div className="grid grid-cols-2 gap-4">
+                  {serviceCategories.map((category) => (
+                    <div key={category.id} className="border-b pb-2">
+                      {/* Category Header */}
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleCategory(category.id);
+                        }}
+                        className="w-full flex justify-between items-center py-2 hover:bg-neutral-50 rounded-lg transition-colors"
+                      >
+                        <div className="flex items-center space-x-3">
+                          <category.icon className="w-5 h-5 text-green-600" />
+                          <span className="text-xs font-medium text-neutral-800">{category.name}</span>
+                        </div>
+                        <ChevronDown 
+                          className={`w-5 h-5 text-neutral-600 transition-transform ${
+                            expandedCategory === category.id ? 'rotate-180' : ''
+                          }`} 
+                        />
+                      </button>
+
+                      {/* Expanded Services */}
+                      {expandedCategory === category.id && (
+                        <div className="grid grid-cols-2 gap-4 mt-3">
+                          {category.services.map((service) => {
+                            return (
+                              <button
+                                key={service.id}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedService(service);
+                                  setStep(2);
+                                }}
+                                className={`
+                                  flex flex-col items-center p-4 rounded-2xl transition-all
+                                  ${selectedService?.id === service.id 
+                                    ? 'bg-green-100 border-2 border-green-500' 
+                                    : 'bg-neutral-100 hover:bg-green-50'}
+                                `}
+                              >
+                                <SearchCheckIcon className="w-8 h-8 text-green-600" />
+                                <span className="mt-2 text-neutral-800">{service.serviceName}</span>
+                                <div className="flex justify-between w-full text-sm text-neutral-600 mt-1">
+                                  <span>${service.price}</span>
+                                  <span>{service.estimatedDuration}</span>
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  ))}
                 </div>
               </div>
-              
-              {/* Status Badge */}
-              <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusBadgeStyles(reservation.status)}`}>
-                {getStatusText(reservation.status)}
-              </span>
+            </div>
+          )}
+
+          {step === 2 && (
+            <div className="space-y-4">
+              <h2 className="text-2xl font-semibold text-neutral-800">Choose Therapist</h2>
+              <div className="space-y-3">
+                {data.employees?.map((employee) => (
+                  <button
+                    key={employee.id}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedEmployee(employee);
+                      setStep(3);
+                    }}
+                    className={`
+                      w-full flex items-center justify-between p-4 rounded-2xl transition-all
+                      ${selectedEmployee?.id === employee.id 
+                        ? 'bg-green-100 border-2 border-green-500' 
+                        : 'bg-neutral-100 hover:bg-green-50'}
+                    `}
+                  >
+                    <div className="flex items-center">
+                      <User className="w-10 h-10 mr-4 text-green-600" />
+                      <div className="text-left">
+                        <div className="flex items-center">
+                          <span className="font-semibold text-neutral-800 mr-2">{employee.fullName}</span>
+                          <div className="flex items-center text-xs text-neutral-600">
+                            <Star className="w-4 h-4 text-yellow-500 mr-1" />
+                            4.7
+                          </div>
+                        </div>
+                        <div className="text-sm text-neutral-600">{selectedService?.category || "Specialist"}</div>
+                        <div className="text-xs text-neutral-500">
+                          {selectedService?.category || "Category"} • {selectedService?.serviceName || "Service"}
+                        </div>
+                      </div>
+                    </div>
+                    <ChevronRight className="text-green-600" />
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {step === 3 && (
+            <div className="space-y-4">
+              <h2 className="text-2xl font-semibold text-neutral-800">Pick a Time</h2>
+              <div className="flex space-x-3">
+                <div className="flex-1 flex items-center bg-neutral-100 rounded-xl p-3">
+                  <Calendar className="mr-2 text-green-600" />
+                  <input 
+                    type="date" 
+                    className="bg-transparent w-full focus:outline-none" 
+                  />
+                </div>
+                <div className="flex-1 flex items-center bg-neutral-100 rounded-xl p-3">
+                  <Clock className="mr-2 text-green-600" />
+                  <input 
+                    type="time" 
+                    className="bg-transparent w-full focus:outline-none" 
+                  />
+                </div>
+              </div>
+
+              {/* Additional Service Details */}
+              {selectedService && selectedEmployee && (
+                <div className="bg-neutral-100 rounded-2xl p-4 mt-4">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <h3 className="font-semibold text-neutral-800">{selectedService.serviceName}</h3>
+                      <p className="text-sm text-neutral-600">{selectedService.estimatedDuration || "60 min"}</p>
+                    </div>
+                    <span className="font-medium text-neutral-800">${selectedService.price}</span>
+                  </div>
+                  <div className="mt-2 flex items-center">
+                    <User className="w-6 h-6 mr-2 text-green-600" />
+                    <span className="text-sm text-neutral-600">{selectedEmployee.fullName}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {selectedService && selectedEmployee && step === 3 && (
+            <button 
+              onClick={() => router.push(`/listings/${data.id}`)}
+              className="w-full mt-6 bg-green-500 text-white py-4 rounded-2xl 
+              hover:bg-green-600 transition-colors flex items-center justify-center"
+            >
+              Reserve Now
+              <ChevronRight className="ml-2" />
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Reservation View */}
+      {reservation && (
+        <div className="p-4 flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Avatar src={reservation.user.image ?? undefined} />
+              <div>
+                <h3 className="font-medium text-gray-900">
+                  {reservation.user.name}
+                </h3>
+                <p className="text-sm text-gray-500">
+                  {format(new Date(reservation.date), 'PP')}
+                </p>
+              </div>
             </div>
             
-            <div className="grid grid-cols-2 gap-2">
-              <div className="bg-gray-50 p-3 rounded-lg">
-                <span className="text-xs text-gray-500 block mb-1">Service</span>
-                <span className="font-medium text-sm">{reservation.serviceName}</span>
-              </div>
-              <div className="bg-gray-50 p-3 rounded-lg">
-                <span className="text-xs text-gray-500 block mb-1">Time</span>
-                <span className="font-medium text-sm">{reservation.time}</span>
-              </div>
-              <div className="bg-gray-50 p-3 rounded-lg">
-                <span className="text-xs text-gray-500 block mb-1">Employee</span>
-                <span className="font-medium text-sm">
-                  {reservation.listing.employees.find(emp => emp.id === reservation.employeeId)?.fullName || "Not assigned"}
-                </span>
-              </div>
-              <div className="bg-gray-50 p-3 rounded-xl">
-                <span className="text-xs text-gray-500 block mb-1">Date</span>
-                <span className="font-medium text-sm">{format(new Date(reservation.date), 'MMM d, yyyy')}</span>
-              </div>
-            </div>
-
-            {reservation.note && (
-              <div className="bg-gray-50 p-3 rounded-xl">
-                <span className="text-xs text-gray-500 block mb-1">Note</span>
-                <p className="text-sm">{reservation.note}</p>
-              </div>
-            )}
-
-            <div className="flex justify-between items-center pt-2 border-t border-gray-100">
-              <span className="text-gray-500 text-sm">Total</span>
-              <span className="font-semibold text-base">${reservation.totalPrice}</span>
-            </div>
-
-            {/* Only show Accept/Decline Buttons if status is pending */}
-            {showAcceptDecline && reservation.status === 'pending' && (
-              <div className="flex gap-2 mt-2">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onAccept?.();
-                  }}
-                  disabled={disabled}
-                  className="flex-1 text-white font-medium py-3.5 rounded-xl 
-                          hover:shadow-md transition-all 
-                          disabled:opacity-50 disabled:cursor-not-allowed text-sm
-                          flex items-center justify-center"
-                  style={{
-                    backgroundColor: (isSelectedCategory || isHovered) ? categoryColor : '#6B7280',
-                    transition: 'all 0.5s ease-in-out',
-                  }}
-                >
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    className="w-4 h-4 mr-1.5"
-                    strokeWidth="2"
-                    strokeLinecap="round" 
-                    strokeLinejoin="round"
-                  >
-                    <path d="M20 6L9 17l-5-5" />
-                  </svg>
-                  <span>Accept</span>
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDecline?.();
-                  }}
-                  disabled={disabled}
-                  className="flex-1 bg-gray-200 text-gray-700 font-medium py-3.5 rounded-xl 
-                          hover:bg-gray-300 hover:shadow-sm transition-all 
-                          disabled:opacity-50 disabled:cursor-not-allowed text-sm
-                          flex items-center justify-center"
-                >
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    className="w-4 h-4 mr-1.5"
-                    strokeWidth="2"
-                    strokeLinecap="round" 
-                    strokeLinejoin="round"
-                  >
-                    <path d="M18 6L6 18M6 6l12 12" />
-                  </svg>
-                  <span>Decline</span>
-                </button>
-              </div>
-            )}
+            {/* Status Badge */}
+            <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusBadgeStyles(reservation.status)}`}>
+              {getStatusText(reservation.status)}
+            </span>
           </div>
-        )}
-      </div>
+          
+          <div className="grid grid-cols-2 gap-2">
+            <div className="bg-gray-50 p-3 rounded-lg">
+              <span className="text-xs text-gray-500 block mb-1">Service</span>
+              <span className="font-medium text-sm">{reservation.serviceName}</span>
+            </div>
+            <div className="bg-gray-50 p-3 rounded-lg">
+              <span className="text-xs text-gray-500 block mb-1">Time</span>
+              <span className="font-medium text-sm">{reservation.time}</span>
+            </div>
+            <div className="bg-gray-50 p-3 rounded-lg">
+              <span className="text-xs text-gray-500 block mb-1">Employee</span>
+              <span className="font-medium text-sm">
+                {data.employees?.find(emp => emp.id === reservation.employeeId)?.fullName || "Not assigned"}
+              </span>
+            </div>
+            <div className="bg-gray-50 p-3 rounded-xl">
+              <span className="text-xs text-gray-500 block mb-1">Date</span>
+              <span className="font-medium text-sm">{format(new Date(reservation.date), 'MMM d, yyyy')}</span>
+            </div>
+          </div>
+
+          {reservation.note && (
+            <div className="bg-gray-50 p-3 rounded-xl">
+              <span className="text-xs text-gray-500 block mb-1">Note</span>
+              <p className="text-sm">{reservation.note}</p>
+            </div>
+          )}
+
+          <div className="flex justify-between items-center pt-2 border-t border-gray-100">
+            <span className="text-gray-500 text-sm">Total</span>
+            <span className="font-semibold text-base">${reservation.totalPrice}</span>
+          </div>
+
+          {/* Only show Accept/Decline Buttons if status is pending */}
+          {showAcceptDecline && reservation.status === 'pending' && (
+            <div className="flex gap-2 mt-2">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (onAccept) onAccept();
+                }}
+                disabled={disabled}
+                className="flex-1 bg-green-500 text-white font-medium py-3.5 rounded-xl 
+                        hover:bg-green-600 hover:shadow-md transition-all 
+                        disabled:opacity-50 disabled:cursor-not-allowed text-sm
+                        flex items-center justify-center"
+              >
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  className="w-4 h-4 mr-1.5"
+                  strokeWidth="2"
+                  strokeLinecap="round" 
+                  strokeLinejoin="round"
+                >
+                  <path d="M20 6L9 17l-5-5" />
+                </svg>
+                <span>Accept</span>
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (onDecline) onDecline();
+                }}
+                disabled={disabled}
+                className="flex-1 bg-gray-200 text-gray-700 font-medium py-3.5 rounded-xl 
+                        hover:bg-gray-300 hover:shadow-sm transition-all 
+                        disabled:opacity-50 disabled:cursor-not-allowed text-sm
+                        flex items-center justify-center"
+              >
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  className="w-4 h-4 mr-1.5"
+                  strokeWidth="2"
+                  strokeLinecap="round" 
+                  strokeLinejoin="round"
+                >
+                  <path d="M18 6L6 18M6 6l12 12" />
+                </svg>
+                <span>Decline</span>
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
-}
+};
 
 export default ListingCard;
