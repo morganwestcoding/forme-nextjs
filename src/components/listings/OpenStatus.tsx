@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { format } from 'date-fns';
 import { SafeStoreHours } from '@/app/types';
+import { Clock } from 'lucide-react';
 
 interface OpenStatusProps {
   storeHours: SafeStoreHours[];
@@ -142,18 +143,7 @@ const OpenStatus: React.FC<OpenStatusProps> = ({ storeHours, className = '' }) =
 
   return (
     <div className={`flex items-center gap-2 ${className}`}>
-      {/* Status Badge */}
-      <div className={`
-        inline-flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium
-        ${isOpen 
-          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
-          : 'bg-gray-50 text-gray-700 border border-gray-200'}
-        transition-all duration-200
-      `}>
-        <span className={`w-2 h-2 rounded-xl ${isOpen ? 'bg-emerald-500' : 'bg-gray-400'}`}></span>
-        <span>{isOpen ? 'Open' : 'Closed'}</span>
-      </div>
-      
+    <Clock className="w-4 h-4 text-green-600" />
       {/* Hours Display */}
       <div className="flex items-center">
         <span className={`text-sm ${isOpen ? 'text-gray-700' : 'text-gray-500'}`}>

@@ -1,214 +1,137 @@
 'use client';
 
-import axios from "axios";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { eachDayOfInterval } from 'date-fns';
+import { differenceInDays, eachDayOfInterval } from 'date-fns';
+import axios from "axios";
+import toast from "react-hot-toast";
+import { Range } from "react-date-range";
 
-import useLoginModal from "@/app/hooks/useLoginModal";
-import useRentModal from "@/app/hooks/useRentModal";
-import { SafeListing, SafeReservation, SafeUser } from "@/app/types";
-import { categories } from "@/components/Categories";
-import ListingHead from "@/components/listings/ListingHead";
-import ListingRightBar from "@/components/listings/ListingRightBar";
+import { SafeListing, SafeReservation, SafeUser, SafeService } from "@/app/types";
+import { categories } from "@/components/Categories"; // Import categories
+
 import Container from "@/components/Container";
-import HeartButton from "@/components/HeartButton";
-import AboutUsSection from "@/components/listings/AboutUsSection";
+import ListingHead from "@/components/listings/ListingHead";
+import ListingInfo from "@/components/listings/ListingInfo";
+import ServicesSection from "@/components/listings/ServiceSection";
+import ReservationModal from "@/components/modals/ReservationModal";
+
+export interface SelectedService {
+  value: string;
+  label: string;
+  price: number;
+}
 
 export interface SelectedEmployee {
   value: string;
   label: string;
 }
 
-export interface SelectedService {
-  value: string;
-  label: string;
-  price?: number;
-}
-
 interface ListingClientProps {
-  reservations?: SafeReservation[];
-  location: string;
   listing: SafeListing & {
     user: SafeUser;
+    services: SafeService[];
   };
   currentUser?: SafeUser | null;
+  reservations?: SafeReservation[];
 }
-
-export const dynamic = 'force-dynamic';
 
 const ListingClient: React.FC<ListingClientProps> = ({
   listing,
-  location,
+  currentUser,
   reservations = [],
-  currentUser
 }) => {
-  const loginModal = useLoginModal();
-  const rentModal = useRentModal();
   const router = useRouter();
+  
+  // Add state for service selection
+  const [isReservationModalOpen, setIsReservationModalOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState<{
+    id: string;
+    name: string;
+    price: number;
+  } | null>(null);
+  
+  // Find category object that matches listing.category
+  const categoryInfo = useMemo(() => {
+    const foundCategory = categories.find(item => item.label === listing.category);
+    return foundCategory ? {
+      label: foundCategory.label,
+      description: foundCategory.description || 'No description available'
+    } : {
+      label: listing.category || 'Uncategorized',
+      description: 'No description available'
+    };
+  }, [listing.category]);
 
-  const [selectedServices, setSelectedServices] = useState(new Set<string>());
-  const [selectedEmployee, setSelectedEmployee] = useState<SelectedEmployee | null>(null);
-  const [selectedService, setSelectedService] = useState<SelectedService | null>(null);
-  const [totalPrice, setTotalPrice] = useState(0);
-  const [date, setDate] = useState<Date | null>(null);
-  const [time, setTime] = useState<string>('');
-  const [isLoading, setIsLoading] = useState(false);
+  // Handle null or undefined location
+  const locationString = useMemo(() => {
+    return listing.location || 'Location not specified';
+  }, [listing.location]);
 
-  const isOwner = currentUser?.id === listing.userId;
+  const isOwner = useMemo(() => {
+    if (!currentUser || !listing?.user) {
+      return false;
+    }
 
+    return currentUser.id === listing.user.id;
+  }, [currentUser, listing.user]);
+
+  // Get disabled dates from reservations
   const disabledDates = useMemo(() => {
     let dates: Date[] = [];
+
     reservations.forEach((reservation: any) => {
-      const range = eachDayOfInterval({
-        start: new Date(reservation.startDate),
-        end: new Date(reservation.endDate)
-      });
-      dates = [...dates, ...range];
+      if (reservation.date) {
+        const date = new Date(reservation.date);
+        dates.push(date);
+      }
     });
+
     return dates;
   }, [reservations]);
 
-  const category = useMemo(() => {
-    return categories.find((items) => 
-     items.label === listing.category);
-  }, [listing.category]);
-
-  const toggleServiceSelection = useCallback((serviceId: string) => {
-    setSelectedServices(prevSelected => {
-      const newSelected = new Set(prevSelected);
-      if (newSelected.has(serviceId)) {
-        newSelected.delete(serviceId);
-      } else {
-        newSelected.clear(); // Clear any existing selection
-        newSelected.add(serviceId);
-      }
-      return newSelected;
-    });
-  }, []);
-
-  useEffect(() => {
-    const newTotalPrice = listing.services
-      .filter(service => selectedServices.has(service.id))
-      .reduce((sum, service) => sum + service.price, 0);
-    setTotalPrice(newTotalPrice);
-  }, [selectedServices, listing.services]);
-
-  const onCreateReservation = useCallback(() => {
-    if (!currentUser) {
-      return loginModal.onOpen();
-    }
-
-    if (!date || !time || !selectedService || !selectedEmployee) {
-      toast.error('Please fill in all required fields');
-      return;
-    }
-
-    setIsLoading(true);
-
-    axios.post('/api/reservations', {
-      totalPrice,
-      date,
-      time,
-      listingId: listing?.id,
-      serviceId: selectedService.value,
-      serviceName: listing.services.find(service => 
-        service.id === selectedService.value
-      )?.serviceName,
-      employeeId: selectedEmployee.value,
-      note: ''
-    })
-    .then(() => {
-      toast.success('Reservation created successfully!');
-      setDate(null);
-      setTime('');
-      setSelectedService(null);
-      setSelectedEmployee(null);
-      setSelectedServices(new Set());
-      router.push('/trips');
-    })
-    .catch((error) => {
-      toast.error(error.response?.data || 'Something went wrong creating your reservation.');
-    })
-    .finally(() => {
-      setIsLoading(false);
-    });
-  }, [
-    totalPrice,
-    date,
-    time,
-    listing?.id,
-    selectedService,
-    selectedEmployee,
-    listing.services,
-    router,
-    currentUser,
-    loginModal
-  ]);
-
-  const handleServiceChange = useCallback((service: SelectedService) => {
-    setSelectedService(service);
-    setSelectedServices(new Set([service.value]));
-  }, []);
-
-  const handleEmployeeChange = useCallback((employee: SelectedEmployee) => {
-    setSelectedEmployee(employee);
-  }, []);
-
-  const handleDateChange = useCallback((newDate: Date) => {
-    setDate(newDate);
-    setTime('');
-  }, []);
-
-  const handleTimeChange = useCallback((newTime: string) => {
-    setTime(newTime);
-  }, []);
-
-  // New handler for service selection from AboutUsSection
-  const handleServiceSelect = useCallback((serviceId: string, serviceName: string, price: number) => {
-    const service: SelectedService = {
-      value: serviceId,
-      label: `${serviceName} - $${price}`,
+  // Handle service selection
+  const onServiceSelect = useCallback((serviceId: string, serviceName: string, price: number) => {
+    setSelectedService({
+      id: serviceId,
+      name: serviceName,
       price: price
-    };
-    
-    handleServiceChange(service);
-    
-    // Scroll to booking section
-    const bookingSection = document.getElementById('booking-section');
-    if (bookingSection) {
-      bookingSection.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [handleServiceChange]);
+    });
+    setIsReservationModalOpen(true);
+  }, []);
 
-  return ( 
+  return (
     <Container>
-      <div className="max-w-full max-h-full">
-        <div className="flex flex-col gap-6 bg-white shadow-md -mt-8 mx-28">
-          <div className="flex gap-6">
-            {/* Left column - ListingHead and About Us stacked */}
-            <div className="w-full flex flex-col gap-4 p-6">
-              {/* ListingHead at original width */}
-              <ListingHead 
-                listing={listing}
-                currentUser={currentUser}
-              />
-              
-              {/* About Us section directly beneath ListingHead */}
-              <AboutUsSection
-                description={listing.description}
-                listing={listing}
-                currentUser={currentUser}
-                isOwner={isOwner}
-                onEditListing={() => rentModal.onOpen(listing)}
-                services={listing.services}
-                onServiceSelect={handleServiceSelect}
-              />
-            </div>
+      <div className="max-w-screen-lg h-screen -mt-8 mx-40">
+        <div className="flex flex-col gap-6">
+          <ListingHead
+            listing={listing}
+            currentUser={currentUser}
+          />
+          <div className="grid grid-cols-1 md:grid-cols-7 md:gap-10">
+          <div className="md:col-span-full"> {/* Full width container */}
+    <ServicesSection
+      listing={listing}
+      currentUser={currentUser}
+      isOwner={isOwner}
+      services={listing.services}
+      onServiceSelect={onServiceSelect}
+    />
+  </div>
           </div>
         </div>
       </div>
+      
+      {isReservationModalOpen && selectedService && (
+        <ReservationModal
+          isOpen={isReservationModalOpen}
+          onClose={() => setIsReservationModalOpen(false)}
+          service={selectedService}
+          listing={listing}
+          currentUser={currentUser}
+          disabledDates={disabledDates}
+        />
+      )}
     </Container>
   );
 }

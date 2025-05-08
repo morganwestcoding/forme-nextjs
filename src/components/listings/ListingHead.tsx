@@ -2,12 +2,11 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { SafeListing, SafeUser, SafeStoreHours } from '@/app/types';
+import { SafeListing, SafeUser } from '@/app/types';
 import { categories } from "../Categories";
-import HeartButton from '../HeartButton';
+import ListingGalleryImage from "./ListingGalleryImage";
+import { MapPin, Star, Heart, Share2, ArrowLeft, Check, Clock, Phone, Globe } from 'lucide-react';
 import OpenStatus from './OpenStatus';
-import { MapPin, Star, Heart, Share2, ImagePlus, Check } from 'lucide-react';
-import ListingGalleryImage from './ListingGalleryImage';
 
 interface ListingHeadProps {
   listing: SafeListing & {
@@ -20,20 +19,6 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
   const { title, location, description, category, id, address, website, phoneNumber, userId, storeHours, galleryImages, imageSrc } = listing;
   const [isFavorite, setIsFavorite] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState('services');
-
-  const tabs = [
-    { id: 'services', label: 'Services' },
-    { id: 'team', label: 'Team' },
-    { id: 'reviews', label: 'Reviews' }
-  ];
-
-  // Ensure we have at least one image
-  const allImages = [imageSrc, ...(galleryImages || [])].filter(Boolean);
-  
-  // Only take the first 5 images for the gallery grid
-  const displayImages = allImages.slice(0, 5);
-  const remainingImagesCount = Math.max(0, allImages.length - 5);
 
   const getStateAcronym = (state: string) => {
     const stateMap: {[key: string]: string} = {
@@ -59,99 +44,144 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
   };
   
   const handleShare = () => {
-    // Implement share functionality
     console.log('Share listing');
   };
 
+  const handleBack = () => {
+    window.history.back();
+  };
+
+  const formatPhoneNumber = (phone?: string) => {
+    if (!phone) return '(555) 555-1234';
+    
+    // Basic formatting for US phone numbers
+    if (phone.length === 10) {
+      return `(${phone.slice(0, 3)}) ${phone.slice(3, 6)}-${phone.slice(6)}`;
+    }
+    
+    return phone;
+  };
+
   return (
-    <div className=" w-full">
-      
-        {/* Image Grid */}
-        <div className="w-full mt-2">
-                <ListingGalleryImage listing={listing} currentUser={currentUser} />
-              </div>
-
-        {/* Listing Details Header */}
-        <div className="mt-6 mb-6">
-    
-          <div className="flex justify-between items-start">
-            {/* Listing Title and Location */}
-            <div>
-              <h1 className="text-3xl font-bold text-neutral-800 mb-2">
-                {title}
-              </h1>
-              <div className="flex items-center space-x-2 text-neutral-600 mb-3">
-                <MapPin className="w-5 h-5 text-green-600" />
-                <span>{address}, {city}, {stateAcronym} {listing.zipCode}</span>
-              </div>
-              
-              {/* Rating */}
-              <div className="flex items-center space-x-2">
-                <div className="flex items-center space-x-1">
-                  <Star className="w-5 h-5 text-yellow-400" />
-                  <span className="font-semibold text-neutral-800">4.7</span>
-                </div>
-                <span className="text-neutral-600">(124 reviews)</span>
-              </div>
-              
-              
-            </div>
-          
-
-            {/* Action Buttons */}
-            <div className="flex space-x-3">
-              {/* Like/Favorite Button */}
-              <button 
-                onClick={toggleFavorite}
-                className={`
-                  w-12 h-12 rounded-full flex items-center justify-center 
-                  border transition-colors ${
-                    isFavorite 
-                      ? 'bg-green-100 border-green-500 text-green-600' 
-                      : 'bg-white border-neutral-300 text-neutral-600 hover:bg-neutral-100'
-                  }
-                `}
-              >
-                {isFavorite ? <Check className="w-6 h-6" /> : <Heart className="w-6 h-6" />}
-              </button>
-
-              {/* Share Button */}
-              <button 
-                onClick={handleShare}
-                className="w-12 h-12 rounded-full border border-neutral-300 
-                bg-white text-neutral-600 hover:bg-neutral-100 
-                flex items-center justify-center"
-              >
-                <Share2 className="w-6 h-6" />
-              </button>
-            </div>
+    <div className="w-full overflow-hidden">
+      {/* Hero Image Header - Full Width, No Padding */}
+      <div className="relative h-64 w-full overflow-hidden -mx-4 sm:-mx-6 md:-mx-8 lg:-mx-0">
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-black/70 z-10"></div>
+        
+        <Image 
+          src={imageSrc || '/placeholder.jpg'} 
+          alt={title}
+          fill
+          className="object-cover"
+          sizes="100vw"
+          priority
+        />
+        
+        {/* Header Actions */}
+        <div className="absolute top-6 left-6 right-6 z-20 flex justify-between">
+          <button 
+            onClick={handleBack}
+            className="bg-white/80 hover:bg-white/90 rounded-full p-2 transition-colors"
+          >
+            <ArrowLeft className="w-6 h-6 text-neutral-800" />
+          </button>
+          <div className="flex space-x-3">
+            <button 
+              onClick={toggleFavorite}
+              className="bg-white/80 hover:bg-white/90 rounded-full p-2 transition-colors"
+            >
+              {isFavorite ? 
+                <Heart className="w-6 h-6 text-red-500 fill-red-500" /> : 
+                <Heart className="w-6 h-6 text-neutral-800" />
+              }
+            </button>
+            <button 
+              onClick={handleShare}
+              className="bg-white/80 hover:bg-white/90 rounded-full p-2 transition-colors"
+            >
+              <Share2 className="w-6 h-6 text-neutral-800" />
+            </button>
           </div>
-    
         </div>
 
-        {/* Tabs and Content */}
-        <div className=" bg-white">
-          {/* Tabs */}
-          <div className="flex space-x-6 mb-6">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`
-                  pb-4 
-                  ${activeTab === tab.id 
-                    ? 'text-green-600 border-b-2 text-sm border-green-600' 
-                    : 'text-neutral-500 text-sm hover:text-neutral-800'}
-                  transition-colors
-                `}
-              >
-                {tab.label}
-              </button>
-            ))}
+        {/* Location and Rating */}
+        <div className="absolute bottom-6 left-6 text-white z-20">
+          <h1 className="text-3xl font-bold drop-shadow-lg mb-2">{title}</h1>
+          <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-1">
+              <Star className="w-5 h-5 text-yellow-400" />
+              <span className="font-semibold text-sm">4.7</span>
+            </div>
+            <div className="flex items-center text-sm space-x-2">
+              <MapPin className="w-5 h-5" />
+              <span>{city}, {stateAcronym}</span>
+            </div>
           </div>
-          <div className='border-neutral-200 border-b -mx-6 -mt-6'></div>
         </div>
-     
+
+        {/* Gallery Images in Bottom Right */}
+        <div className="absolute bottom-6 right-6 z-20 flex space-x-2">
+          <div className="h-20 w-20 relative rounded-lg overflow-hidden border-2 border-white">
+            <Image 
+              src={galleryImages?.[0] || imageSrc || '/placeholder.jpg'} 
+              alt="Gallery preview 1"
+              fill
+              className="object-cover" 
+            />
+          </div>
+          {galleryImages?.[1] && (
+            <div className="h-20 w-20 relative rounded-lg overflow-hidden border-2 border-white">
+              <Image 
+                src={galleryImages[1]} 
+                alt="Gallery preview 2"
+                fill
+                className="object-cover" 
+              />
+            </div>
+          )}
+          {galleryImages && galleryImages.length > 2 && (
+            <div className="h-20 w-20 relative rounded-lg overflow-hidden border-2 border-white">
+              <Image 
+                src={galleryImages[2]} 
+                alt="Gallery preview 3"
+                fill
+                className="object-cover" 
+              />
+              <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                <span className="text-white font-medium">+{galleryImages.length - 2}</span>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Status Bar with Open Hours, Phone Number and Website */}
+      <div className="flex justify-between items-center pt-6 px-6">
+        <div className="flex items-center space-x-2 text-neutral-600">
+   
+          {storeHours && storeHours.length > 0 ? (
+            <OpenStatus storeHours={storeHours} />
+          ) : (
+            <span>Open Now • Closes 8 PM</span>
+          )}
+        </div>
+        <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-2">
+            <Phone className="w-5 h-5 text-green-600" />
+            <span className="text-neutral-600 text-sm">phone #</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Globe className="w-5 h-5 text-green-600" />
+            <span className="text-neutral-600 text-sm">
+              {website ? 
+                website.replace(/^https?:\/\/(www\.)?/, '') : 
+                'www.wellnessstudio.com'}
+            </span>
+          </div>
+        </div>
+      </div>
+
 
       {/* Full Image Modal */}
       {selectedImage && (
