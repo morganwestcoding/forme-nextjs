@@ -192,7 +192,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
   const [city, state] = data.location?.split(',').map(s => s.trim()) || [];
 
   return (
-    <div className="bg-white rounded-3xl shadow-lg overflow-hidden max-w-xl mx-2">
+    <div className="bg-white rounded-3xl shadow-md overflow-hidden max-w-xl mx-2">
       {/* Image Header Section */}
       <div className="relative h-[200px] overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-black/70 z-10"></div>
@@ -211,12 +211,12 @@ const ListingCard: React.FC<ListingCardProps> = ({
       e.stopPropagation();
       setIsFavorite(!isFavorite);
     }}
-    className="bg-white/80 hover:bg-white/90 rounded-full p-2.5
+    className="bg-white/80 hover:bg-white/90 rounded-full p-3
     flex items-center justify-center transition-colors group"
     aria-label="Add to Favorites"
   >
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" 
-      className="w-6 h-6 text-neutral-800 group-hover:text-green-600"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" 
+      className=" text-neutral-800 group-hover:text-green-600"
     > 
       <path d="M10.4107 19.9677C7.58942 17.858 2 13.0348 2 8.69444C2 5.82563 4.10526 3.5 7 3.5C8.5 3.5 10 4 12 6C14 4 15.5 3.5 17 3.5C19.8947 3.5 22 5.82563 22 8.69444C22 13.0348 16.4106 17.858 13.5893 19.9677C12.6399 20.6776 11.3601 20.6776 10.4107 19.9677Z" 
         stroke="currentColor" 
@@ -229,12 +229,12 @@ const ListingCard: React.FC<ListingCardProps> = ({
 
   <button 
     onClick={(e) => handleShare(e)}
-    className="bg-white/80 hover:bg-white/90 rounded-full p-2.5
+    className="bg-white/80 hover:bg-white/90 rounded-full p-3
     flex items-center justify-center transition-colors group"
     aria-label="Share Listing"
   >
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none"
-      className="w-6 h-6 text-neutral-800 group-hover:text-green-600"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none"
+      className=" text-neutral-800 group-hover:text-green-600"
     > 
     <path d="M21 6.5C21 8.15685 19.6569 9.5 18 9.5C16.3431 9.5 15 8.15685 15 6.5C15 4.84315 16.3431 3.5 18 3.5C19.6569 3.5 21 4.84315 21 6.5Z" stroke="currentColor" stroke-width="1.5"></path>
     <path d="M9 12C9 13.6569 7.65685 15 6 15C4.34315 15 3 13.6569 3 12C3 10.3431 4.34315 9 6 9C7.65685 9 9 10.3431 9 12Z" stroke="currentColor" stroke-width="1.5"></path>
@@ -246,12 +246,12 @@ const ListingCard: React.FC<ListingCardProps> = ({
 
   <button 
     onClick={(e) => handleViewListing(e)}
-    className="bg-white/80 hover:bg-white/90 rounded-full p-2.5 
+    className="bg-white/80 hover:bg-white/90 rounded-full p-3
     flex items-center justify-center transition-colors group"
     aria-label="View Listing Details"
   >
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none"
-      className="w-6 h-6 text-neutral-800 group-hover:text-green-600"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none"
+      className=" text-neutral-800 group-hover:text-green-600"
     > 
       <path d="M2 12C2 7.75736 2 5.63604 3.46447 4.31802C4.92893 3 7.28596 3 12 3C16.714 3 19.0711 3 20.5355 4.31802C22 5.63604 22 7.75736 22 12C22 16.2426 22 18.364 20.5355 19.682C19.0711 21 16.714 21 12 21C7.28596 21 4.92893 21 3.46447 19.682C2 18.364 2 16.2426 2 12Z" 
         stroke="currentColor" 

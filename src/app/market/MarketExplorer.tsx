@@ -64,34 +64,34 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
           <input 
             type="text" 
             placeholder="Search services, locations, categories..." 
-            className="w-full h-12 pl-12 pr-4 border border-gray-200 rounded-full"
+            className="w-full h-12 pl-12 pr-4 border border-gray-200 rounded-xl"
           />
         </div>
 
         {/* View Toggle */}
-        <div className="bg-green-100 rounded-full flex items-center p-1">
+        <div className="bg-green-100 rounded-xl flex items-center p-1">
           <button 
             onClick={() => handleViewModeChange('grid')}
-            className={`p-2 rounded-full ${viewState.mode === 'grid' ? 'bg-white text-green-600' : 'text-gray-500'}`}
+            className={`p-2 rounded-lg ${viewState.mode === 'grid' ? 'bg-white text-green-600' : 'text-gray-500'}`}
           >
             <Grid className="w-5 h-5" />
           </button>
           <button 
             onClick={() => handleViewModeChange('list')}
-            className={`p-2 rounded-full ${viewState.mode === 'list' ? 'bg-white text-green-600' : 'text-gray-500'}`}
+            className={`p-2 rounded-lg ${viewState.mode === 'list' ? 'bg-white text-green-600' : 'text-gray-500'}`}
           >
             <List className="w-5 h-5" />
           </button>
         </div>
 
         {/* Filters Button */}
-        <button className="flex items-center gap-2 px-5 py-2 border border-gray-200 rounded-full">
+        <button className="flex items-center text-sm gap-2 px-5 py-2 border border-gray-200 rounded-xl">
           <Filter className="w-5 h-5" />
           <span>Filters</span>
         </button>
 
         {/* Create Button */}
-        <button className="flex items-center gap-2 px-5 py-2 border border-gray-200 rounded-full">
+        <button className="flex items-center text-sm gap-2 px-5 py-2 border border-gray-200 rounded-xl">
           <Plus className="w-5 h-5" />
           <span>Create</span>
         </button>
@@ -101,21 +101,21 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
       <div className="flex mb-6 border-b border-gray-200">
         <button 
           onClick={() => handleFilterChange('featured')}
-          className={`pb-4 flex items-center gap-2 mr-6 ${viewState.filters.category === 'featured' ? 'text-green-600 border-b-2 border-green-600' : 'text-gray-500'}`}
+          className={`pb-4 flex text-sm items-center gap-2 mr-6 ${viewState.filters.category === 'featured' ? 'text-green-600 border-b-2 border-green-600' : 'text-gray-500'}`}
         >
           <Sparkles className="w-5 h-5" />
           <span>Featured</span>
         </button>
         <button 
           onClick={() => handleFilterChange('trending')}
-          className={`pb-4 flex items-center gap-2 mr-6 ${viewState.filters.category === 'trending' ? 'text-green-600 border-b-2 border-green-600' : 'text-gray-500'}`}
+          className={`pb-4 flex items-center  text-sm gap-2 mr-6 ${viewState.filters.category === 'trending' ? 'text-green-600 border-b-2 border-green-600' : 'text-gray-500'}`}
         >
           <TrendingUp className="w-5 h-5" />
           <span>Trending</span>
         </button>
         <button 
           onClick={() => handleFilterChange('categories')}
-          className={`pb-4 flex items-center gap-2 ${viewState.filters.category === 'categories' ? 'text-green-600 border-b-2 border-green-600' : 'text-gray-500'}`}
+          className={`pb-4 flex items-center  text-sm gap-2 ${viewState.filters.category === 'categories' ? 'text-green-600 border-b-2 border-green-600' : 'text-gray-500'}`}
         >
           <Layers className="w-5 h-5" />
           <span>Categories</span>
