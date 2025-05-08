@@ -59,7 +59,7 @@ const MarketContent = ({ searchParams, listings, currentUser }: MarketContentPro
 
   const renderListView = () => (
     <div className="w-full">
-      <table className="w-full bg-white rounded-lg shadow-gray-300 p-6">
+      <table className="w-full">
         <thead>
           <tr className="border-b border-gray-100">
             <th className="py-6 px-6 text-left text-sm font-medium text-gray-600 w-[30%]">Listing</th>
@@ -155,7 +155,7 @@ const MarketContent = ({ searchParams, listings, currentUser }: MarketContentPro
 
   return (
     <Container>
-      <div className="px-4 pt-6 pb-6">
+      <div className="pb-6">
       <div className="mb-6">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Market</h1>
             <p className="text-gray-600">Discover unique services from our vendors</p>
@@ -178,7 +178,8 @@ const MarketContent = ({ searchParams, listings, currentUser }: MarketContentPro
             xl:grid-cols-3
             2xl:grid-cols-3
             gap-4
-            px-3
+    
+            
           ">
             {listings.map((listing: SafeListing) => (
               <ListingCard

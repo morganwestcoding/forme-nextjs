@@ -185,10 +185,10 @@ const ListingClient: React.FC<ListingClientProps> = ({
   return ( 
     <Container>
       <div className="max-w-full">
-        <div className="flex flex-col gap-6 mt-8">
+        <div className="flex flex-col gap-6">
           <div className="flex gap-6">
             {/* Left column - ListingHead and About Us stacked */}
-            <div className="w-[60%] flex rounded-2xl flex-col gap-4">
+            <div className="w-full flex bg-white flex-col gap-4 p-6 mx-12">
               {/* ListingHead at original width */}
               <ListingHead 
                 listing={listing}
@@ -208,28 +208,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
             </div>
             
             {/* Right column - Booking section */}
-            <div className="w-[40%]" id="booking-section">
-              <ListingRightBar
-                description={listing.description}
-                listing={listing}
-                selectedServices={selectedServices}
-                toggleServiceSelection={toggleServiceSelection}
-                totalPrice={totalPrice}
-                onCreateReservation={onCreateReservation}
-                isLoading={isLoading}
-                disabledDates={disabledDates}
-                currentUser={currentUser}
-                reservations={reservations}
-                selectedService={selectedService}
-                selectedEmployee={selectedEmployee}
-                date={date}
-                time={time}
-                onServiceChange={handleServiceChange}
-                onEmployeeChange={handleEmployeeChange}
-                onDateChange={handleDateChange}
-                onTimeChange={handleTimeChange}
-              />
-            </div>
+
           </div>
         </div>
       </div>

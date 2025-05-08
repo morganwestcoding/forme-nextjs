@@ -43,8 +43,12 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
   return (
     <div className="w-full">
       <div className="relative">
-        <div className="flex flex-col bg-white rounded-2xl transition-all duration-300">
-          <div className="px-4 py-2">
+        <div className="flex flex-col transition-all duration-300">
+        
+
+          <div className="w-full">
+                <ListingGalleryImage listing={listing} currentUser={currentUser} />
+              </div>
             {/* Business Info Section */}
             <div className="flex flex-col w-full">
               {/* Title */}
@@ -62,9 +66,6 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
                 <OpenStatus storeHours={storeHours} />
               </div>
 
-              <div className="w-full mt-2">
-                <ListingGalleryImage listing={listing} currentUser={currentUser} />
-              </div>
             
               {/* Statistics in a single row 
               <div className="grid grid-cols-3 gap-2 py-2 w-full mb-4">
@@ -116,7 +117,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
           </div>
         </div>
       </div>
-    </div>
+    
   );
 };
 

@@ -44,7 +44,7 @@ const AboutUsSection = ({
   };
 
   return (
-    <div className="w-full bg-white rounded-2xl px-4 transition-all duration-300">
+    <div className="w-full px-4 transition-all duration-300">
       <div className="flex flex-col">
         <div className="flex justify-between items-center w-full mb-1">
           <h2 className="text-xl font-bold text-black">About Us</h2>
