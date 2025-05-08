@@ -44,16 +44,8 @@ const AboutUsSection = ({
   };
 
   return (
-    <div className="w-full px-4 transition-all duration-300">
-      <div className="flex flex-col">
-        <div className="flex justify-between items-center w-full mb-1">
-          <h2 className="text-xl font-bold text-black">About Us</h2>
-        </div>
-        <p className="text-sm text-black">
-          {description}
-        </p>
-      </div>
-      <div className="mt-6">
+    <div className="w-full transition-all duration-300">
+  
         <h2 className="text-lg font-semibold mb-3">Services</h2>
         <div className="grid grid-cols-3 gap-3">
           {currentServices.map(service => (
@@ -91,7 +83,7 @@ const AboutUsSection = ({
             ))}
           </div>
         )}
-      </div>
+    
     </div>
   );
 }

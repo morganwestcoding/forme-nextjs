@@ -14,6 +14,7 @@ const Container: React.FC<ContainerProps> = ({
         md:max-w-[2520px]
         mx-auto
         md:mx-24
+        md:mt-8
         ">
             {children}
         </div>

@@ -184,11 +184,11 @@ const ListingClient: React.FC<ListingClientProps> = ({
 
   return ( 
     <Container>
-      <div className="max-w-full">
-        <div className="flex flex-col gap-6">
+      <div className="max-w-full max-h-full">
+        <div className="flex flex-col gap-6 bg-white shadow-md -mt-8 mx-28">
           <div className="flex gap-6">
             {/* Left column - ListingHead and About Us stacked */}
-            <div className="w-full flex bg-white flex-col gap-4 p-6 mx-12">
+            <div className="w-full flex flex-col gap-4 p-6">
               {/* ListingHead at original width */}
               <ListingHead 
                 listing={listing}
@@ -206,9 +206,6 @@ const ListingClient: React.FC<ListingClientProps> = ({
                 onServiceSelect={handleServiceSelect}
               />
             </div>
-            
-            {/* Right column - Booking section */}
-
           </div>
         </div>
       </div>
