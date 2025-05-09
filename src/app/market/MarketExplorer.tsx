@@ -1,5 +1,7 @@
 import React from 'react';
 import { Search, Grid, List, Filter, Plus, Sparkles, TrendingUp, Layers } from 'lucide-react';
+import useRentModal from '@/app/hooks/useRentModal'; // Ensure this hook exists
+import RentModal from '@/components/modals/RentModal';
 
 interface ViewState {
   mode: 'grid' | 'list';
@@ -29,6 +31,8 @@ interface MarketExplorerProps {
   viewState: ViewState;
   setViewState: React.Dispatch<React.SetStateAction<ViewState>>;
 }
+const rentModal = useRentModal(); // Use the rent modal hook
+
 
 const MarketExplorer: React.FC<MarketExplorerProps> = ({
   searchParams,
@@ -51,6 +55,11 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
       }
     }));
   };
+
+  const handleCreateListing = () => {
+    rentModal.onOpen(); // Open the rent modal when create button is clicked
+  };
+  
 
   return (
     <div className="min-h-0">
@@ -91,10 +100,16 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
         </button>
 
         {/* Create Button */}
-        <button className="flex items-center text-sm gap-2 px-5 py-2 border border-gray-200 rounded-xl">
-          <Plus className="w-5 h-5" />
-          <span>Create</span>
-        </button>
+        <button 
+                onClick={handleCreateListing}
+                className="bg-white border border-neutral-200 
+                text-neutral-700 px-4 py-3 rounded-xl 
+                hover:bg-neutral-100 transition-colors 
+                flex items-center space-x-2 shadow-sm"
+              >
+                <Plus className="w-5 h-5 text-neutral-500" />
+                <span className="font-medium">Create</span>
+              </button>
       </div>
 
       {/* Tabs */}

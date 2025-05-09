@@ -273,7 +273,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
 </div>
 
         {/* Location and Rating */}
-        <div className="absolute bottom-4 left-4 text-white  z-20">
+        <div className="absolute bottom-6 left-6 text-white  z-20">
           <div className="flex items-center space-x-2 mb-1">
             <h1 className="text-xl font-bold drop-shadow-lg">{data.title}</h1>
             <div className="flex items-center bg-white/30 rounded-lg px-2 py-1">
@@ -289,17 +289,14 @@ const ListingCard: React.FC<ListingCardProps> = ({
 
       {/* Non-Reservation View */}
       {!reservation && (
-        <div className="p-6 pt-4">
+        <div className="p-6">
           {/* Quick Info Strip */}
           <div className="flex justify-between items-center mb-4 text-xs text-neutral-600">
             <div className="flex items-center">
               <Clock className="w-4 h-4 mr-2 text-green-600" />
               Open Now • Closes 8 PM
             </div>
-            <div className="flex items-center">
-              <User className="w-4 h-4 mr-2 text-green-600" />
-              {data.employees?.length || 0} Employees
-            </div>
+
           </div>
 
           {/* Progress Indicator */}

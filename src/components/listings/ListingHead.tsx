@@ -65,9 +65,9 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
   return (
     <div className="w-full overflow-hidden">
       {/* Hero Image Header - Full Width, No Padding */}
-      <div className="relative h-64 w-full overflow-hidden -mx-4 sm:-mx-6 md:-mx-8 lg:-mx-0">
+      <div className="relative h-60 w-full overflow-hidden sm:-mx-6 lg:-mx-0">
         {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-black/70 z-10"></div>
+        <div className="absolute backdrop-blur-sm inset-0 bg-gradient-to-b from-transparent to-black/80 z-10"></div>
         
         <Image 
           src={imageSrc || '/placeholder.jpg'} 
@@ -82,25 +82,25 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
         <div className="absolute top-6 left-6 right-6 z-20 flex justify-between">
           <button 
             onClick={handleBack}
-            className="bg-white/80 hover:bg-white/90 rounded-full p-2 transition-colors"
+            className="bg-white/80 hover:bg-white/90 rounded-full p-3 transition-colors"
           >
-            <ArrowLeft className="w-6 h-6 text-neutral-800" />
+            <ArrowLeft className="w-4 h-4 text-neutral-800" />
           </button>
           <div className="flex space-x-3">
             <button 
               onClick={toggleFavorite}
-              className="bg-white/80 hover:bg-white/90 rounded-full p-2 transition-colors"
+              className="bg-white/80 hover:bg-white/90 rounded-full p-3 transition-colors"
             >
               {isFavorite ? 
-                <Heart className="w-6 h-6 text-red-500 fill-red-500" /> : 
-                <Heart className="w-6 h-6 text-neutral-800" />
+                <Heart className="w-4 h-4 text-red-500 fill-red-500" /> : 
+                <Heart className="w-4 h-4 text-neutral-800" />
               }
             </button>
             <button 
               onClick={handleShare}
-              className="bg-white/80 hover:bg-white/90 rounded-full p-2 transition-colors"
+              className="bg-white/80 hover:bg-white/90 rounded-full p-3 transition-colors"
             >
-              <Share2 className="w-6 h-6 text-neutral-800" />
+              <Share2 className="w-4 h-4 text-neutral-800" />
             </button>
           </div>
         </div>
@@ -109,15 +109,18 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
         <div className="absolute bottom-6 left-6 text-white z-20">
           <h1 className="text-3xl font-bold drop-shadow-lg mb-2">{title}</h1>
           <div className="flex items-center space-x-3">
-            <div className="flex items-center space-x-1">
-              <Star className="w-5 h-5 text-yellow-400" />
-              <span className="font-semibold text-sm">4.7</span>
-            </div>
-            <div className="flex items-center text-sm space-x-2">
+
+            <div className="flex items-center text-xs space-x-2">
               <MapPin className="w-5 h-5" />
               <span>{city}, {stateAcronym}</span>
+              <div className="flex items-center space-x-1">
+              <Star className="w-5 h-5 text-yellow-400" />
+              <span className="font-semibold text-xs">4.7</span>
+            </div>
             </div>
           </div>
+
+
         </div>
 
         {/* Gallery Images in Bottom Right */}
@@ -155,33 +158,6 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
           )}
         </div>
       </div>
-
-      {/* Status Bar with Open Hours, Phone Number and Website */}
-      <div className="flex justify-between items-center pt-6 px-6">
-        <div className="flex items-center space-x-2 text-neutral-600">
-   
-          {storeHours && storeHours.length > 0 ? (
-            <OpenStatus storeHours={storeHours} />
-          ) : (
-            <span>Open Now • Closes 8 PM</span>
-          )}
-        </div>
-        <div className="flex items-center space-x-6">
-          <div className="flex items-center space-x-2">
-            <Phone className="w-5 h-5 text-green-600" />
-            <span className="text-neutral-600 text-sm">phone #</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Globe className="w-5 h-5 text-green-600" />
-            <span className="text-neutral-600 text-sm">
-              {website ? 
-                website.replace(/^https?:\/\/(www\.)?/, '') : 
-                'www.wellnessstudio.com'}
-            </span>
-          </div>
-        </div>
-      </div>
-
 
       {/* Full Image Modal */}
       {selectedImage && (
