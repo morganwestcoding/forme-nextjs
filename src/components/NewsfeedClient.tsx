@@ -115,7 +115,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
             md:w-[57%]  
             mt-6
             space-y-4
-            px-4       
+           
             md:pr-8 
           `}>
             {/* Filter Bar */}

@@ -96,9 +96,8 @@ export default function Rightbar({ listings = [], currentUser }: RightbarProps) 
   const totalPages = Math.ceil(listings.length / 4);
 
   return (
-    <div className="hidden md:flex flex-col gap-6 h-auto mt-8 w-full">
-      <Search />
-
+    <div className="hidden md:flex flex-col gap-6 h-auto w-full">
+  
       {/* Trending Stores Section */}
       <div className="w-full">
         <div className="flex items-center justify-between mb-3.5">

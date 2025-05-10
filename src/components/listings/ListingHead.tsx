@@ -103,12 +103,12 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
           <h1 className="text-3xl font-bold mb-2">{title}</h1>
           <div className="flex items-center space-x-3">
 
-            <div className="flex items-center text-xs space-x-2">
-              <MapPin className="w-5 h-5" />
+            <div className="flex items-center space-x-2">
+     
               <span>{city}, {stateAcronym}</span>
               <div className="flex items-center space-x-1">
               <Star className="w-5 h-5 text-yellow-400" />
-              <span className="font-semibold text-xs">4.7</span>
+              <span className="font-semibold text-sm">4.7</span>
             </div>
             </div>
           </div>
