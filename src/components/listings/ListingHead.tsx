@@ -66,19 +66,12 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
     <div className="w-full overflow-hidden">
       {/* Hero Image Header - Full Width, No Padding */}
       <div className="relative h-60 w-full overflow-hidden sm:-mx-6 lg:-mx-0">
-        {/* Gradient overlay */}
-        <div className="absolute backdrop-blur-sm inset-0 bg-gradient-to-b from-transparent to-black/80 z-10"></div>
+       
+
         
-        <Image 
-          src={imageSrc || '/placeholder.jpg'} 
-          alt={title}
-          fill
-          className="object-cover"
-          sizes="100vw"
-          priority
-        />
+  
         
-        {/* Header Actions */}
+        {/* Header Actions 
         <div className="absolute top-6 left-6 right-6 z-20 flex justify-between">
           <button 
             onClick={handleBack}
@@ -103,11 +96,11 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, currentUser }) => {
               <Share2 className="w-4 h-4 text-neutral-800" />
             </button>
           </div>
-        </div>
+        </div> */}
 
         {/* Location and Rating */}
-        <div className="absolute bottom-6 left-6 text-white z-20">
-          <h1 className="text-3xl font-bold drop-shadow-lg mb-2">{title}</h1>
+        <div className="absolute pt-8 text-black z-20">
+          <h1 className="text-3xl font-bold mb-2">{title}</h1>
           <div className="flex items-center space-x-3">
 
             <div className="flex items-center text-xs space-x-2">

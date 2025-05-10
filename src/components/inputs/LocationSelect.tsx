@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Select from 'react-select';
 import Input from '@/components/inputs/Input';
 import { FieldValues, UseFormRegister, FieldErrors } from "react-hook-form";
-import AddressAutocomplete from '@/components/AddressAutocomplete';
+import AddressAutocomplete from '@/components/inputs/AddressAutocomplete';
 
 interface LocationSelection {
   label: string;
@@ -260,8 +260,8 @@ const LocationSelect: React.FC<LocationSelectProps> = ({
               ...baseSelectClasses,
               control: (state: any) => `
                 !w-full !pl-3 !pb-1 !pt-3
-                !bg-slate-50 !border !border-neutral-500
-                !rounded-sm !outline-none !transition
+                !bg-white !border !border-neutral-500
+                !rounded-lg !outline-none !transition
                 !ring-0 !outline-0 !box-shadow-none
                 ${state.isFocused ? '!border-black' : '!border-neutral-500'}
                 ${errors['state'] ? '!border-rose-500' : ''}
@@ -298,8 +298,8 @@ const LocationSelect: React.FC<LocationSelectProps> = ({
               ...baseSelectClasses,
               control: (state: any) => `
                 !w-full !pl-3 !pb-1 !pt-3
-                !bg-slate-50 !border !border-neutral-500
-                !rounded-sm !outline-none !transition
+                !bg-white !border !border-neutral-500
+                !rounded-lg !outline-none !transition
                 !ring-0 !outline-0 !box-shadow-none
                 ${state.isFocused ? '!border-black' : '!border-neutral-500'}
                 ${errors['city'] ? '!border-rose-500' : ''}

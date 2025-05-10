@@ -128,7 +128,7 @@ const Input: React.FC<InputProps> = ({
               border-neutral-500
               bg-slate-50
               border
-              rounded-sm
+              rounded-lg
               outline-none
               transition
               resize-none
@@ -172,10 +172,10 @@ const Input: React.FC<InputProps> = ({
               w-full
               p-3
               pt-6 
-              border-neutral-500
-              bg-slate-50
-              border
-              rounded-sm
+              bg-neutral-50
+border-neutral-300
+border
+              rounded-lg
               outline-none
               transition
               disabled:opacity-70
@@ -196,7 +196,7 @@ const Input: React.FC<InputProps> = ({
       e.stopPropagation();
       setShowPassword(!showPassword);
     }}
-    className="absolute right-6 top-[20px] text-neutral-600 hover:text-neutral-800 transition-colors"
+    className="absolute right-6 top-[20px] text-neutral-400  hover:text-neutral-800 transition-colors"
   >
     {showPassword ? <FiEyeOff size={19} /> : <FiEye size={19} />}
   </button>
@@ -227,7 +227,7 @@ const Input: React.FC<InputProps> = ({
         </span>
       )}
       {type === "password" && showPasswordValidation && (
-        <div className="mt-4 -mb-6 p-3 py-6 bg-slate-50 rounded-lg border border-neutral-200">
+        <div className="mt-4 -mb-6 p-3 py-6 bg-slate-50 rounded-lg ">
           <div className="grid grid-cols-2 gap-3">
             <div className={`
               flex items-center gap-2 transition-colors duration-200

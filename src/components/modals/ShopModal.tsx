@@ -12,21 +12,27 @@ import { useMemo, useState, useCallback, useEffect } from "react";
 
 import useShopModal from '@/app/hooks/useShopModal';
 import Modal from "@/components/modals/Modal";
+// import ProductModal from "@/components/modals/ProductModal";
 import Heading from '@/components/Heading';
 import Input from '@/components/inputs/Input';
-import ImageUploadGrid from '@/components/inputs/ImageUploadGrid';
+import ImageUpload from '@/components/inputs/ImageUpload';
 import { SafeShop } from '@/app/types';
 import SocialLinksInput from '@/components/inputs/SocialLinksInput';
 import LocationSelect from '@/components/inputs/LocationSelect';
+import ShopLocationInput from '@/components/inputs/ShopLocationInput';
 import Toggle from '@/components/inputs/Toggle';
 import TextArea from '@/components/inputs/TextArea';
+import CategoryInput from '@/components/inputs/CategoryInput';
+import { categories } from '@/components/Categories';
+import { Plus } from 'lucide-react';
 
 enum STEPS {
-  BASIC_INFO = 0,
-  LOCATION = 1,
-  IMAGES = 2,
-  SOCIAL = 3,
-  SETTINGS = 4,
+  CATEGORY = 0,
+  BASIC_INFO = 1,
+  LOCATION = 2,
+  PRODUCTS = 3,  // Changed from 4
+  SOCIAL = 4,    // Changed from 5
+  SETTINGS = 5,  // Changed from 6
 }
 
 // Define a fixed type for social links
@@ -45,10 +51,12 @@ const ShopModal = () => {
   const isEditMode = !!shop;
 
   const [isLoading, setIsLoading] = useState(false);
-  const [step, setStep] = useState(STEPS.BASIC_INFO);
+  const [step, setStep] = useState(STEPS.CATEGORY);
   
   // Initialize socials as Record<string, string>
   const [socials, setSocials] = useState<Record<string, string>>(initialSocials);
+  const [products, setProducts] = useState<any[]>([]);
+  const [showProductModal, setShowProductModal] = useState(false);
 
   const { 
     register, 
@@ -61,9 +69,13 @@ const ShopModal = () => {
     reset,
   } = useForm<FieldValues>({
     defaultValues: {
+      category: '',  // Since SafeShop doesn't have category, initialize as empty
       name: shop?.name || '',
       description: shop?.description || '',
       location: shop?.location || null,
+      address: shop?.address || '',
+      zipCode: shop?.zipCode || '',
+      isOnlineOnly: shop?.isOnlineOnly || false,
       logo: shop?.logo || '',
       coverImage: shop?.coverImage || '',
       storeUrl: shop?.storeUrl || '',
@@ -90,15 +102,30 @@ const ShopModal = () => {
         });
         setSocials(cleanSocials);
       }
+      
+      // If we're editing a shop that doesn't have a category yet, 
+      // make sure we don't break the form by providing a default empty string
+      if (!shop.category) {
+        setValue('category', '');
+      }
+      
+      // Load existing products if available (temporarily removed until we update types)
+      // if (shop.products) {
+      //   setProducts(shop.products);
+      // }
     }
   }, [shop, setValue]);
 
   const handleClose = useCallback(() => {
     // Reset form to initial values
     reset({
+      category: '',
       name: '',
       description: '',
       location: null,
+      address: '',
+      zipCode: '',
+      isOnlineOnly: false,
       logo: '',
       coverImage: '',
       storeUrl: '',
@@ -108,19 +135,22 @@ const ShopModal = () => {
     });
     
     // Reset all state to initial values
-    setStep(STEPS.BASIC_INFO);
+    setStep(STEPS.CATEGORY);
     setSocials(initialSocials);
+    setProducts([]);
 
     // Close the modal
     shopModal.onClose();
   }, [reset, shopModal]);
 
+  const category = watch('category');
   const name = watch('name');
   const description = watch('description');
-  const logo = watch('logo');
-  const coverImage = watch('coverImage');
-  const location = watch('location');
+  const address = watch('address');
+  const zipCode = watch('zipCode');
+  const isOnlineOnly = watch('isOnlineOnly');
   const shopEnabled = watch('shopEnabled');
+  const location = watch('location');
   const galleryImages = watch('galleryImages') || [];
 
   const setCustomValue = (id: string, value: any) => {
@@ -137,12 +167,16 @@ const ShopModal = () => {
 
   const onNext = () => {
     // Validation for each step
+    if (step === STEPS.CATEGORY && !category) {
+      return toast.error('Please select a category.');
+    }
     if (step === STEPS.BASIC_INFO && (!name || !description)) {
       return toast.error('Please fill in all required fields.');
     }
-    if (step === STEPS.IMAGES && !logo) {
-      return toast.error('Shop logo is required.');
+    if (step === STEPS.LOCATION && !isOnlineOnly && (!address || !zipCode)) {
+      return toast.error('Please fill in all location fields or select online-only option.');
     }
+
     
     setStep((value) => value + 1);
   }
@@ -152,12 +186,32 @@ const ShopModal = () => {
     setSocials(newSocials);
   }, []);
 
+  const handleAddProduct = (product: { name: string; image: string; price?: number }) => {
+    setProducts(prev => [...prev, product]);
+    setShowProductModal(false);
+  };
+
   const handleLocationSubmit = (locationData: {
     state: string;
     city: string;
+    address: string;
+    zipCode: string;
+    isOnlineOnly: boolean;
+    coordinates?: {
+      lat: number;
+      lng: number;
+    };
   } | null) => {
     if (locationData) {
-      setValue('location', `${locationData.city}, ${locationData.state}`, { shouldValidate: true });
+      setValue('location', locationData.isOnlineOnly ? 'Online Shop' : `${locationData.city}, ${locationData.state}`, { shouldValidate: true });
+      setValue('address', locationData.address, { shouldValidate: true });
+      setValue('zipCode', locationData.zipCode, { shouldValidate: true });
+      setValue('isOnlineOnly', locationData.isOnlineOnly, { shouldValidate: true });
+      
+      // If there are coordinates, we might want to save them too
+      if (locationData.coordinates) {
+        setValue('coordinates', locationData.coordinates, { shouldValidate: true });
+      }
     }
   };
 
@@ -174,9 +228,11 @@ const ShopModal = () => {
       cleanedSocials[key] = value || '';
     });
 
+    // Make sure we're including the category in our payload
     const payload = { 
       ...data, 
-      socials: cleanedSocials
+      socials: cleanedSocials,
+      category: category // Explicitly include category from the watch variable
     };
 
     try {
@@ -190,7 +246,7 @@ const ShopModal = () => {
       
       router.refresh();
       reset();
-      setStep(STEPS.BASIC_INFO);
+      setStep(STEPS.CATEGORY);
       shopModal.onClose();
       // Redirect to shop dashboard
       router.push('/shop/dashboard');
@@ -209,78 +265,136 @@ const ShopModal = () => {
   }, [step, isEditMode]);
 
   const secondaryActionLabel = useMemo(() => {
-    if (step === STEPS.BASIC_INFO) {
+    if (step === STEPS.CATEGORY) {
       return undefined
     }
     return 'Back'
   }, [step]);
 
   let bodyContent = (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-8">
       <Heading
-        title={isEditMode ? "Edit your shop" : "Create your shop"}
-        subtitle="Tell us about your business"
+        title={isEditMode ? "Edit your shop" : "Define your shop"}
+        subtitle="Pick a category"
       />
-      <Input
-        id="name"
-        label="Shop Name"
-        disabled={isLoading}
-        register={register}
-        errors={errors}
-        required
-      />
-      <TextArea
-        id="description"
-        label="Description"
-        disabled={isLoading}
-        register={register}
-        errors={errors}
-        required
-      />
-      <Input
-        id="storeUrl"
-        label="Store URL (optional)"
-        disabled={isLoading}
-        register={register}
-        errors={errors}
-        placeholder="https://example.com"
-      />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[50vh] -mt-4 overflow-y-auto">
+        {categories.map((item) => (
+          <div key={item.label} className="col-span-1">
+            <CategoryInput
+              onClick={(category) => setCustomValue('category', category)}
+              selected={category === item.label}
+              label={item.label}
+              color={item.color}
+            />
+          </div>
+        ))}
+      </div>
     </div>
   );
+
+  if (step === STEPS.BASIC_INFO) {
+    bodyContent = (
+      <div className="flex flex-col gap-6">
+        <Heading
+          title={isEditMode ? "Edit your shop" : "Create your shop"}
+          subtitle="Tell us about your business"
+        />
+        <Input
+          id="name"
+          label="Shop Name"
+          disabled={isLoading}
+          register={register}
+          errors={errors}
+          required
+        />
+        <TextArea
+          id="description"
+          label="Description"
+          disabled={isLoading}
+          register={register}
+          errors={errors}
+          required
+        />
+        <Input
+          id="storeUrl"
+          label="Store URL (optional)"
+          disabled={isLoading}
+          register={register}
+          errors={errors}
+          placeholder="https://example.com"
+        />
+      </div>
+    );
+  }
 
   if (step === STEPS.LOCATION) {
     bodyContent = (
       <div className="flex flex-col gap-6">
         <Heading
           title="Where is your shop located?"
-          subtitle="Help customers find you!"
+          subtitle="Help customers find you, or select online-only"
         />
-        <LocationSelect
-          id="location"
+        <ShopLocationInput
+          id="shop-location"
           onLocationSubmit={handleLocationSubmit}
           register={register}
           errors={errors}
+          isOnlineOnly={isOnlineOnly}
+          onIsOnlineOnlyChange={(value) => setCustomValue('isOnlineOnly', value)}
         />   
       </div>
     );
   }
 
-  if (step === STEPS.IMAGES) {
+  if (step === STEPS.PRODUCTS) {
     bodyContent = (
       <div className="flex flex-col gap-6">
         <Heading
-          title={isEditMode ? "Update your shop images" : "Add photos of your shop"}
-          subtitle="Visual branding is important!"
+          title="Your Products"
+          subtitle="Showcase the items you offer"
         />
-        <div className="space-y-4">
-          <ImageUploadGrid
-            id="shop-images"
-            onChange={(value) => setCustomValue('logo', value)}
-            onGalleryChange={(values) => setCustomValue('galleryImages', values)}
-            value={logo}
-            galleryImages={galleryImages}
-          />
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          {products.map((product, index) => (
+            <div key={index} className="relative aspect-square rounded-lg overflow-hidden border border-neutral-200">
+              <img 
+                src={product.image} 
+                alt={product.name}
+                className="object-cover w-full h-full"
+              />
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-4">
+                <p className="text-white text-sm font-medium">{product.name}</p>
+              </div>
+            </div>
+          ))}
+          
+          {/* Add Product Button */}
+          <div 
+            onClick={() => setShowProductModal(true)}
+            className="
+              aspect-square 
+              rounded-lg 
+              border-2 
+              border-dashed 
+              border-neutral-300 
+              flex 
+              flex-col 
+              items-center 
+              justify-center 
+              cursor-pointer 
+              hover:border-neutral-400 
+              hover:bg-neutral-50 
+              transition
+            "
+          >
+            <Plus className="w-8 h-8 text-neutral-400 mb-2" />
+            <span className="text-sm font-medium text-neutral-600">Add Product</span>
+          </div>
         </div>
+        {products.length === 0 && (
+          <div className="text-center text-sm text-neutral-500 mt-4">
+            Start by adding your first product
+          </div>
+        )}
       </div>
     );
   }
@@ -338,7 +452,7 @@ const ShopModal = () => {
       actionId="submit-button"
       onSubmit={handleSubmit(onSubmit)}
       secondaryActionLabel={secondaryActionLabel}
-      secondaryAction={step === STEPS.BASIC_INFO ? undefined : onBack}
+      secondaryAction={step === STEPS.CATEGORY ? undefined : onBack}
       onClose={handleClose}
       body={bodyContent}
       className="w-full md:w-4/6 lg:w-3/6 xl:w-2/5"

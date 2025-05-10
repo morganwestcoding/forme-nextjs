@@ -226,23 +226,34 @@ const RentModal = () => {
   }, [step]);
 
   let bodyContent = (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-3">
       <Heading
         title={isEditMode ? "Edit your establishment" : "Define your establishment"}
         subtitle="Pick a category"
       />
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[50vh] -mt-4 overflow-y-auto">
-        {categories.map((item) => (
-          <div key={item.label} className="col-span-1">
+        <div className="grid grid-cols-4 gap-3">
+          {categories.slice(0, 4).map((item) => (
             <CategoryInput
+              key={item.label}
               onClick={(category) => setCustomValue('category', category)}
               selected={category === item.label}
               label={item.label}
               color={item.color}
             />
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+        
+        <div className="grid grid-cols-4 gap-3">
+          {categories.slice(4).map((item) => (
+            <CategoryInput
+              key={item.label}
+              onClick={(category) => setCustomValue('category', category)}
+              selected={category === item.label}
+              label={item.label}
+              color={item.color}
+            />
+          ))}
+        </div>
     </div>
   );
 

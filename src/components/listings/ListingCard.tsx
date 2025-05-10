@@ -12,7 +12,7 @@ import Avatar from "../ui/avatar";
 import { categories } from "../Categories";
 import axios from "axios";
 import { toast } from "react-hot-toast";
-import { ChevronRight, User, Calendar, Clock, ExternalLink, Heart, Share2, Star, ChevronDown, Scissors, Droplet, Waves, Palette, Anchor, Rocket, SearchCheckIcon } from 'lucide-react';
+import { ChevronRight, User, Calendar, Clock, ExternalLink, Heart, Share2, Star, ChevronDown, Scissors, Droplet,SprayCan, Waves, Palette, Flower, Dumbbell, SearchCheckIcon } from 'lucide-react';
 import HeartButton from "@/components/HeartButton";
 import { IconType } from "react-icons";
 
@@ -74,12 +74,13 @@ const ListingCard: React.FC<ListingCardProps> = ({
     // Define category icons - this would need to be customized for your actual categories
     const categoryIcons: Record<string, any> = {
       'Massage': Waves,
-      'Wellness': Anchor,
-      'Fitness': Rocket,
+      'Wellness': Flower,
+      'Fitness': Dumbbell,
       'Nails': Palette,
       'Spa': Droplet,
       'Barber': Scissors,
-      'Default': User // Fallback icon
+      'Default': User, // Fallback icon
+      'Salon': SprayCan,
     };
     
     // Define category colors - customize as needed
@@ -216,7 +217,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
     aria-label="Add to Favorites"
   >
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" 
-      className=" text-neutral-800 group-hover:text-green-600"
+      className=" text-neutral-800 group-hover:text-[#60A5FA]"
     > 
       <path d="M10.4107 19.9677C7.58942 17.858 2 13.0348 2 8.69444C2 5.82563 4.10526 3.5 7 3.5C8.5 3.5 10 4 12 6C14 4 15.5 3.5 17 3.5C19.8947 3.5 22 5.82563 22 8.69444C22 13.0348 16.4106 17.858 13.5893 19.9677C12.6399 20.6776 11.3601 20.6776 10.4107 19.9677Z" 
         stroke="currentColor" 
@@ -234,7 +235,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
     aria-label="Share Listing"
   >
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none"
-      className=" text-neutral-800 group-hover:text-green-600"
+      className=" text-neutral-800 group-hover:text-[#60A5FA]"
     > 
     <path d="M21 6.5C21 8.15685 19.6569 9.5 18 9.5C16.3431 9.5 15 8.15685 15 6.5C15 4.84315 16.3431 3.5 18 3.5C19.6569 3.5 21 4.84315 21 6.5Z" stroke="currentColor" stroke-width="1.5"></path>
     <path d="M9 12C9 13.6569 7.65685 15 6 15C4.34315 15 3 13.6569 3 12C3 10.3431 4.34315 9 6 9C7.65685 9 9 10.3431 9 12Z" stroke="currentColor" stroke-width="1.5"></path>
@@ -251,7 +252,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
     aria-label="View Listing Details"
   >
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none"
-      className=" text-neutral-800 group-hover:text-green-600"
+      className=" text-neutral-800 group-hover:text-[#60A5FA]"
     > 
       <path d="M2 12C2 7.75736 2 5.63604 3.46447 4.31802C4.92893 3 7.28596 3 12 3C16.714 3 19.0711 3 20.5355 4.31802C22 5.63604 22 7.75736 22 12C22 16.2426 22 18.364 20.5355 19.682C19.0711 21 16.714 21 12 21C7.28596 21 4.92893 21 3.46447 19.682C2 18.364 2 16.2426 2 12Z" 
         stroke="currentColor" 
@@ -273,7 +274,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
 </div>
 
         {/* Location and Rating */}
-        <div className="absolute bottom-6 left-6 text-white  z-20">
+        <div className="absolute bottom-5 left-5 text-white  z-20">
           <div className="flex items-center space-x-2 mb-1">
             <h1 className="text-xl font-bold drop-shadow-lg">{data.title}</h1>
             <div className="flex items-center bg-white/30 rounded-lg px-2 py-1">
@@ -289,11 +290,11 @@ const ListingCard: React.FC<ListingCardProps> = ({
 
       {/* Non-Reservation View */}
       {!reservation && (
-        <div className="p-6">
+        <div className="p-5">
           {/* Quick Info Strip */}
           <div className="flex justify-between items-center mb-4 text-xs text-neutral-600">
             <div className="flex items-center">
-              <Clock className="w-4 h-4 mr-2 text-green-600" />
+              <Clock className="w-4 h-4 mr-2 text-[#60A5FA]" />
               Open Now • Closes 8 PM
             </div>
 
@@ -306,7 +307,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
                 key={currentStep} 
                 className={`h-1.5 flex-1 mx-1 rounded-full ${
                   step >= currentStep 
-                    ? 'bg-green-500' 
+                    ? 'bg-[#60A5FA]' 
                     : 'bg-neutral-200'
                 }`}
               />
@@ -331,7 +332,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
                         className="w-full flex justify-between items-center py-2 hover:bg-neutral-50 rounded-lg transition-colors"
                       >
                         <div className="flex items-center space-x-3">
-                          <category.icon className="w-5 h-5 text-green-600" />
+                          <category.icon className="w-5 h-5 text-[#60A5FA]" />
                           <span className="text-xs font-medium text-neutral-800">{category.name}</span>
                         </div>
                         <ChevronDown 
@@ -360,7 +361,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
                                     : 'bg-neutral-100 hover:bg-green-50'}
                                 `}
                               >
-                                <SearchCheckIcon className="w-8 h-8 text-green-600" />
+                                <SearchCheckIcon className="w-8 h-8 text-[#60A5FA]" />
                                 <span className="mt-2 text-neutral-800">{service.serviceName}</span>
                                 <div className="flex justify-between w-full text-sm text-neutral-600 mt-1">
                                   <span>${service.price}</span>
@@ -398,7 +399,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
                     `}
                   >
                     <div className="flex items-center">
-                      <User className="w-10 h-10 mr-4 text-green-600" />
+                      <User className="w-10 h-10 mr-4 text-[#60A5FA]" />
                       <div className="text-left">
                         <div className="flex items-center">
                           <span className="font-semibold text-neutral-800 mr-2">{employee.fullName}</span>
@@ -413,7 +414,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
                         </div>
                       </div>
                     </div>
-                    <ChevronRight className="text-green-600" />
+                    <ChevronRight className="text-[#60A5FA]" />
                   </button>
                 ))}
               </div>
@@ -425,14 +426,14 @@ const ListingCard: React.FC<ListingCardProps> = ({
               <h2 className="text-2xl font-semibold text-neutral-800">Pick a Time</h2>
               <div className="flex space-x-3">
                 <div className="flex-1 flex items-center bg-neutral-100 rounded-xl p-3">
-                  <Calendar className="mr-2 text-green-600" />
+                  <Calendar className="mr-2 text-[#60A5FA]" />
                   <input 
                     type="date" 
                     className="bg-transparent w-full focus:outline-none" 
                   />
                 </div>
                 <div className="flex-1 flex items-center bg-neutral-100 rounded-xl p-3">
-                  <Clock className="mr-2 text-green-600" />
+                  <Clock className="mr-2 text-[#60A5FA]" />
                   <input 
                     type="time" 
                     className="bg-transparent w-full focus:outline-none" 
@@ -451,7 +452,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
                     <span className="font-medium text-neutral-800">${selectedService.price}</span>
                   </div>
                   <div className="mt-2 flex items-center">
-                    <User className="w-6 h-6 mr-2 text-green-600" />
+                    <User className="w-6 h-6 mr-2 text-[#60A5FA]" />
                     <span className="text-sm text-neutral-600">{selectedEmployee.fullName}</span>
                   </div>
                 </div>
@@ -463,7 +464,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
             <button 
               onClick={() => router.push(`/listings/${data.id}`)}
               className="w-full mt-6 bg-green-500 text-white py-4 rounded-2xl 
-              hover:bg-green-600 transition-colors flex items-center justify-center"
+              hover:bg-[#60A5FA] transition-colors flex items-center justify-center"
             >
               Reserve Now
               <ChevronRight className="ml-2" />
@@ -537,7 +538,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
                 }}
                 disabled={disabled}
                 className="flex-1 bg-green-500 text-white font-medium py-3.5 rounded-xl 
-                        hover:bg-green-600 hover:shadow-md transition-all 
+                        hover:bg-[#60A5FA] hover:shadow-md transition-all 
                         disabled:opacity-50 disabled:cursor-not-allowed text-sm
                         flex items-center justify-center"
               >

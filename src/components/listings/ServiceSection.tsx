@@ -127,7 +127,7 @@ const ServicesSection: React.FC<ServicesSectionProps> = ({
   return (
     <div className="w-full">
       {/* Business Info Strip */}
-      <div className="border-b border-neutral-200 bg-white">
+      <div className="border-b border-neutral-200">
         <div className="px-6">
           <div className="flex flex-wrap py-3 gap-4 text-xs text-neutral-700">
             <div className="flex items-center">

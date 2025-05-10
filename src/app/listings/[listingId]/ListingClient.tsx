@@ -102,7 +102,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
 
   return (
     <Container>
-      <div className="max-w-screen-lg h-screen shadow-md -mt-8 mx-36">
+      <div className="max-w-screen-lg  -mt-8 ">
         <div className="flex flex-col">
           <ListingHead
             listing={listing}

@@ -7,7 +7,7 @@ import useCities from '@/app/hooks/useCities';
 import Input from '../inputs/Input';
 import { FieldValues, UseFormRegister, FieldErrors } from "react-hook-form";
 import MapComponent from '../MapComponent';
-import AddressAutocomplete from '../AddressAutocomplete';
+import AddressAutocomplete from './AddressAutocomplete';
 
 interface LocationSelection {
   label: string;
@@ -126,8 +126,8 @@ const ListLocationInput: React.FC<ListLocationInputProps> = ({
               ...baseSelectClasses,
               control: (state: any) => `
                 !w-full !pl-3 !pb-1 !pt-3
-                !bg-slate-50 !border !border-neutral-500
-                !rounded-sm !outline-none !transition
+                !bg-white !border !border-neutral-300
+                !rounded-lg !outline-none !transition
                 !ring-0 !outline-0 !box-shadow-none
                 ${state.isFocused ? '!border-black' : '!border-neutral-500'}
                 ${errors['state'] ? '!border-rose-500' : ''}
@@ -161,8 +161,8 @@ const ListLocationInput: React.FC<ListLocationInputProps> = ({
               ...baseSelectClasses,
               control: (state: any) => `
                 !w-full !pl-3 !pb-1 !pt-3
-                !bg-slate-50 !border !border-neutral-500
-                !rounded-sm !outline-none !transition
+                 !bg-white !border !border-neutral-300
+                !rounded-lg !outline-none !transition
                 !ring-0 !outline-0 !box-shadow-none
                 ${state.isFocused ? '!border-black' : '!border-neutral-500'}
                 ${errors['city'] ? '!border-rose-500' : ''}

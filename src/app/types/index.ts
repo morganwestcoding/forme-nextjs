@@ -172,6 +172,10 @@ export type SafeShop = {
   logo: string;
   coverImage?: string | null;
   location?: string | null;
+  address?: string | null;
+  zipCode?: string | null;
+  isOnlineOnly?: boolean;
+  coordinates?: { lat: number; lng: number } | null;
   userId: string;
   storeUrl?: string | null;
   socials?: {
@@ -190,11 +194,13 @@ export type SafeShop = {
   featuredProducts: string[];
   followers: string[];
   listingId?: string | null;
+  category?: string; // Added category field
   user: {
     id: string;
     name: string | null;
     image: string | null;
   };
+  products?: Array<{ name: string; image: string; price?: number }>;
   // Calculated fields that might be included from queries
   productCount?: number;
   followerCount?: number;

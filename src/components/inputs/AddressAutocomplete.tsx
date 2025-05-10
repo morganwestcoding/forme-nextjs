@@ -128,10 +128,10 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
           pl-4
           pt-6
           font-light 
-          bg-slate-50 
-          border-neutral-500
-          border
-          rounded-sm
+          bg-neutral-50
+border-neutral-300
+border
+          rounded-lg
           outline-none
           transition
           disabled:opacity-70
