@@ -123,7 +123,7 @@ const ShopLocationInput: React.FC<ShopLocationInputProps> = ({
     singleValue: () => '!text-black',
     input: () => '!text-neutral-500 !font-normal!',
     placeholder: () => '!text-neutral-500 !text-sm !font-normal', 
-    menu: () => '!bg-white !rounded-sm !shadow-md !mt-1 !z-[9999]',
+    menu: () => '!bg-neutral-50 !rounded-sm !shadow-md !mt-1 !z-[9999]',
     menuList: () => '!p-0',
     valueContainer: () => '!p-0.5',
     container: () => '!relative !w-full'
@@ -132,7 +132,7 @@ const ShopLocationInput: React.FC<ShopLocationInputProps> = ({
   return (
     <div id={id} className="flex flex-col gap-4 text-sm -mt-4">
       {/* Online Shop Toggle */}
-      <div className="flex items-center p-4 bg-neutral-50 rounded-lg border border-neutral-200">
+      <div className="flex items-center py-5 px-4 bg-neutral-50 rounded-lg border border-neutral-200">
         <div className="flex items-center">
           <input
             type="checkbox"
@@ -176,10 +176,10 @@ const ShopLocationInput: React.FC<ShopLocationInputProps> = ({
                   ...baseSelectClasses,
                   control: (state: any) => `
                     !w-full !pl-3 !pb-1 !pt-3
-                    !bg-white !border !border-neutral-300
+                    !bg-neutral-50 !border !border-neutral-200
                     !rounded-lg !outline-none !transition
                     !ring-0 !outline-0 !box-shadow-none
-                    ${state.isFocused ? '!border-black' : '!border-neutral-500'}
+                    ${state.isFocused ? '!border-black' : '!border-neutral-200'}
                     ${errors['state'] ? '!border-rose-500' : ''}
                     ${isOnline ? '!opacity-50 !cursor-not-allowed' : ''}
                   `
@@ -213,10 +213,10 @@ const ShopLocationInput: React.FC<ShopLocationInputProps> = ({
                   ...baseSelectClasses,
                   control: (state: any) => `
                     !w-full !pl-3 !pb-1 !pt-3
-                    !bg-white !border !border-neutral-300
+                    !bg-neutral-50 !border !border-neutral-200
                     !rounded-lg !outline-none !transition
                     !ring-0 !outline-0 !box-shadow-none
-                    ${state.isFocused ? '!border-black' : '!border-neutral-500'}
+                    ${state.isFocused ? '!border-black' : '!border-neutral-200'}
                     ${errors['city'] ? '!border-rose-500' : ''}
                     ${isOnline ? '!opacity-50 !cursor-not-allowed' : ''}
                   `

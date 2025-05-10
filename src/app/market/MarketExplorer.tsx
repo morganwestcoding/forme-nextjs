@@ -95,10 +95,10 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
         </div>
 
         {/* Filters Button */}
-        <button className="border border-neutral-200 
+        <button className="border bg-white border-neutral-200 
                 text-neutral-700 py-3 px-4 rounded-xl 
                 hover:bg-neutral-100 transition-colors 
-                flex items-center space-x-2 shadow-sm text-sm">
+                flex items-center space-x-2  text-sm">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" color="currentColor" fill="none">
     <path d="M3 7H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
     <path d="M3 17H9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -113,10 +113,10 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
         {/* Create Button */}
         <button 
                 onClick={handleCreateListing}
-                className="border border-neutral-200 
+                className="border bg-white border-neutral-200 
                 text-neutral-700 py-3 px-4 rounded-xl 
                 hover:bg-neutral-100 transition-colors 
-                flex items-center space-x-2 shadow-sm"
+                flex items-center space-x-2 "
               >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" color="currentColor" fill="none">
     <path d="M9 15C9 12.1716 9 10.7574 9.87868 9.87868C10.7574 9 12.1716 9 15 9L16 9C18.8284 9 20.2426 9 21.1213 9.87868C22 10.7574 22 12.1716 22 15V16C22 18.8284 22 20.2426 21.1213 21.1213C20.2426 22 18.8284 22 16 22H15C12.1716 22 10.7574 22 9.87868 21.1213C9 20.2426 9 18.8284 9 16L9 15Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>

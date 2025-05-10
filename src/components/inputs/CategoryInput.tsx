@@ -34,6 +34,7 @@ const CategoryInput: React.FC<CategoryInputProps> = ({
       onClick={() => onClick(label)}
       className={`
         rounded-xl
+        shadow
         flex
         flex-col
         items-center

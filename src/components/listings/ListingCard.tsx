@@ -193,7 +193,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
   const [city, state] = data.location?.split(',').map(s => s.trim()) || [];
 
   return (
-    <div className="bg-white rounded-3xl shadow-md overflow-hidden max-w-xl">
+    <div className="bg-white rounded-3xl shadow overflow-hidden max-w-xl">
       {/* Image Header Section */}
       <div className="relative h-[200px] overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-black/70 z-10"></div>

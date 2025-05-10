@@ -84,8 +84,8 @@ const ListLocationInput: React.FC<ListLocationInputProps> = ({
   const baseSelectClasses = {
     option: (state: any) => `
       !py-4 !px-4 !cursor-pointer
-      ${state.isFocused ? '!bg-neutral-100' : '!bg-white'}
-      ${state.isSelected ? '!bg-neutral-200 !text-black' : ''}
+      ${state.isFocused ? '!bg-neutral-300' : '!bg-neutral-5'}
+      ${state.isSelected ? '!bg-neutral-400 !text-black' : ''}
       !text-black hover:!text-neutral-500
       !font-normal!  
     `,
@@ -96,7 +96,7 @@ const ListLocationInput: React.FC<ListLocationInputProps> = ({
     singleValue: () => '!text-black',
     input: () => '!text-neutral-500 !font-normal!',
     placeholder: () => '!text-neutral-500 !text-sm !font-normal', 
-    menu: () => '!bg-white !rounded-sm !shadow-md !mt-1 !z-[9999]',
+    menu: () => '!bg-neutral-5 !rounded-sm !shadow-md !mt-1 !z-[9999]',
     menuList: () => '!p-0',
     valueContainer: () => '!p-0.5',
     container: () => '!relative !w-full'
@@ -126,10 +126,8 @@ const ListLocationInput: React.FC<ListLocationInputProps> = ({
               ...baseSelectClasses,
               control: (state: any) => `
                 !w-full !pl-3 !pb-1 !pt-3
-                !bg-white !border !border-neutral-300
-                !rounded-lg !outline-none !transition
-                !ring-0 !outline-0 !box-shadow-none
-                ${state.isFocused ? '!border-black' : '!border-neutral-500'}
+                !bg-neutral-50 !border !border-neutral-200
+                !rounded-lg 
                 ${errors['state'] ? '!border-rose-500' : ''}
               `
             }}
@@ -161,10 +159,10 @@ const ListLocationInput: React.FC<ListLocationInputProps> = ({
               ...baseSelectClasses,
               control: (state: any) => `
                 !w-full !pl-3 !pb-1 !pt-3
-                 !bg-white !border !border-neutral-300
+                !bg-neutral-50 !border !border-neutral-200
                 !rounded-lg !outline-none !transition
                 !ring-0 !outline-0 !box-shadow-none
-                ${state.isFocused ? '!border-black' : '!border-neutral-500'}
+                ${state.isFocused ? '!border-neutral-500' : '!border-neutral-200'}
                 ${errors['city'] ? '!border-rose-500' : ''}
               `
             }}

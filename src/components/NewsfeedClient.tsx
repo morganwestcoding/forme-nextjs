@@ -108,12 +108,17 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
   return (
     <ClientProviders>
       <Container>
+      <div className="mb-6">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Newsfeed</h1>
+            <p className="text-gray-600">Share whats new with you and your business</p>
+          </div>
+          
         <div className="flex w-full">
+ 
           <div className={`
             flex-none 
             w-full 
             md:w-[57%]  
-            mt-6
             space-y-4
            
             md:pr-8 

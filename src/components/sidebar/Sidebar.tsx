@@ -154,7 +154,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   };
   
   return (
-    <div className="h-screen overflow-y-auto shadow-md bg-white">
+    <div className="h-screen overflow-y-auto shadow-sm bg-white">
       <div className="flex flex-col items-center w-56 h-full pb-10 pt-8 z-50">
         {/* Top Bar Layout with Logo and UserButton */}
  <Logo variant="vertical" />

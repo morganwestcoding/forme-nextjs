@@ -125,8 +125,8 @@ const Input: React.FC<InputProps> = ({
               w-full
               p-3
               pt-6 
-              border-neutral-500
-              bg-slate-50
+              border-neutral-200
+              bg-neutral-50
               border
               rounded-lg
               outline-none
@@ -136,7 +136,7 @@ const Input: React.FC<InputProps> = ({
               disabled:opacity-70
               disabled:cursor-not-allowed
               ${formatPrice ? 'pl-9' : 'pl-4'}
-              ${errors[id] ? 'border-rose-500' : 'border-neutral-300'}
+              ${errors[id] ? 'border-rose-500' : 'border-neutral-200'}
               ${errors[id] ? 'focus:border-rose-500' : 'focus:border-black'}
             `}
             onChange={handleChange}
@@ -173,8 +173,9 @@ const Input: React.FC<InputProps> = ({
               p-3
               pt-6 
               bg-neutral-50
-border-neutral-300
-border
+              border-neutral-200
+              border
+         
               rounded-lg
               outline-none
               transition
@@ -182,7 +183,7 @@ border
               disabled:cursor-not-allowed
               ${formatPrice ? 'pl-9' : 'pl-4'}
               ${type === "password" ? 'pr-12' : 'pr-4'}
-              ${errors[id] ? 'border-rose-500' : 'border-neutral-300'}
+              ${errors[id] ? 'border-rose-500' : 'border-neutral-200'}
               ${errors[id] ? 'focus:border-rose-500' : 'focus:border-black'}
             `}
             onChange={handleChange}
@@ -196,7 +197,7 @@ border
       e.stopPropagation();
       setShowPassword(!showPassword);
     }}
-    className="absolute right-6 top-[20px] text-neutral-400  hover:text-neutral-800 transition-colors"
+    className="absolute right-6 top-[20px] text-neutral-500  hover:text-neutral-800 transition-colors"
   >
     {showPassword ? <FiEyeOff size={19} /> : <FiEye size={19} />}
   </button>
@@ -240,7 +241,7 @@ border
                 h-2 w-2 rounded-full transition-colors duration-200
                 ${passwordValidation.hasMinLength && passwordValidation.hasMaxLength 
                   ? 'bg-green-500' 
-                  : 'bg-neutral-300'
+                  : 'bg-neutral-200'
                 }
               `}/>
               <span className="text-xs">6-18 characters</span>
@@ -257,7 +258,7 @@ border
                 h-2 w-2 rounded-full transition-colors duration-200
                 ${passwordValidation.hasUpperCase 
                   ? 'bg-green-500' 
-                  : 'bg-neutral-300'
+                  : 'bg-neutral-200'
                 }
               `}/>
               <span className="text-xs">Uppercase letter</span>
@@ -274,7 +275,7 @@ border
                 h-2 w-2 rounded-full transition-colors duration-200
                 ${passwordValidation.hasLowerCase 
                   ? 'bg-green-500' 
-                  : 'bg-neutral-300'
+                  : 'bg-neutral-200'
                 }
               `}/>
               <span className="text-xs">Lowercase letter</span>
@@ -291,7 +292,7 @@ border
                 h-2 w-2 rounded-full transition-colors duration-200
                 ${passwordValidation.hasNumber 
                   ? 'bg-green-500' 
-                  : 'bg-neutral-300'
+                  : 'bg-neutral-200'
                 }
               `}/>
               <span className="text-xs">Number</span>
@@ -308,7 +309,7 @@ border
                 h-2 w-2 rounded-full transition-colors duration-200
                 ${passwordValidation.hasSpecialChar 
                   ? 'bg-green-500' 
-                  : 'bg-neutral-300'
+                  : 'bg-neutral-200'
                 }
               `}/>
               <span className="text-xs">Special character (!@#$%^&*())</span>

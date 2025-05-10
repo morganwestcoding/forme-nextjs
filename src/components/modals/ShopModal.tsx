@@ -12,7 +12,7 @@ import { useMemo, useState, useCallback, useEffect } from "react";
 
 import useShopModal from '@/app/hooks/useShopModal';
 import Modal from "@/components/modals/Modal";
-// import ProductModal from "@/components/modals/ProductModal";
+import ProductModal from "@/components/modals/ProductModal";
 import Heading from '@/components/Heading';
 import Input from '@/components/inputs/Input';
 import ImageUpload from '@/components/inputs/ImageUpload';
@@ -24,15 +24,16 @@ import Toggle from '@/components/inputs/Toggle';
 import TextArea from '@/components/inputs/TextArea';
 import CategoryInput from '@/components/inputs/CategoryInput';
 import { categories } from '@/components/Categories';
-import { Plus } from 'lucide-react';
+import { Plus, X } from 'lucide-react';
 
 enum STEPS {
   CATEGORY = 0,
   BASIC_INFO = 1,
-  LOCATION = 2,
-  PRODUCTS = 3,  // Changed from 4
-  SOCIAL = 4,    // Changed from 5
-  SETTINGS = 5,  // Changed from 6
+  IMAGES = 2,      // Added IMAGES step
+  LOCATION = 3,    // Incremented from 2
+  PRODUCTS = 4,    // Incremented from 3
+  SOCIAL = 5,      // Incremented from 4
+  SETTINGS = 6,    // Incremented from 5
 }
 
 // Define a fixed type for social links
@@ -43,6 +44,15 @@ const initialSocials: Record<string, string> = {
   tiktok: '',
   youtube: ''
 };
+
+interface ProductData {
+  name: string;
+  price: number;
+  description: string;
+  category: string;
+  sizes: string[];
+  images: string[]; // Changed from File[] to string[]
+}
 
 const ShopModal = () => {
   const router = useRouter();
@@ -55,7 +65,7 @@ const ShopModal = () => {
   
   // Initialize socials as Record<string, string>
   const [socials, setSocials] = useState<Record<string, string>>(initialSocials);
-  const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<ProductData[]>([]);
   const [showProductModal, setShowProductModal] = useState(false);
 
   const { 
@@ -151,6 +161,7 @@ const ShopModal = () => {
   const isOnlineOnly = watch('isOnlineOnly');
   const shopEnabled = watch('shopEnabled');
   const location = watch('location');
+  const logo = watch('logo');
   const galleryImages = watch('galleryImages') || [];
 
   const setCustomValue = (id: string, value: any) => {
@@ -173,6 +184,9 @@ const ShopModal = () => {
     if (step === STEPS.BASIC_INFO && (!name || !description)) {
       return toast.error('Please fill in all required fields.');
     }
+    if (step === STEPS.IMAGES && !logo) {
+      return toast.error('Please upload a shop logo.');
+    }
     if (step === STEPS.LOCATION && !isOnlineOnly && (!address || !zipCode)) {
       return toast.error('Please fill in all location fields or select online-only option.');
     }
@@ -186,9 +200,13 @@ const ShopModal = () => {
     setSocials(newSocials);
   }, []);
 
-  const handleAddProduct = (product: { name: string; image: string; price?: number }) => {
+  const handleAddProduct = (product: ProductData) => {
     setProducts(prev => [...prev, product]);
     setShowProductModal(false);
+  };
+
+  const handleRemoveProduct = (index: number) => {
+    setProducts(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleLocationSubmit = (locationData: {
@@ -232,7 +250,8 @@ const ShopModal = () => {
     const payload = { 
       ...data, 
       socials: cleanedSocials,
-      category: category // Explicitly include category from the watch variable
+      category: category, // Explicitly include category from the watch variable
+      products: products // Products now have string[] for images
     };
 
     try {
@@ -272,29 +291,40 @@ const ShopModal = () => {
   }, [step]);
 
   let bodyContent = (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-3">
       <Heading
-        title={isEditMode ? "Edit your shop" : "Define your shop"}
+        title={isEditMode ? "Edit your establishment" : "Define your establishment"}
         subtitle="Pick a category"
       />
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[50vh] -mt-4 overflow-y-auto">
-        {categories.map((item) => (
-          <div key={item.label} className="col-span-1">
+        <div className="grid grid-cols-4 gap-3">
+          {categories.slice(0, 4).map((item) => (
             <CategoryInput
+              key={item.label}
               onClick={(category) => setCustomValue('category', category)}
               selected={category === item.label}
               label={item.label}
               color={item.color}
             />
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+        
+        <div className="grid grid-cols-4 gap-3">
+          {categories.slice(4).map((item) => (
+            <CategoryInput
+              key={item.label}
+              onClick={(category) => setCustomValue('category', category)}
+              selected={category === item.label}
+              label={item.label}
+              color={item.color}
+            />
+          ))}
+        </div>
     </div>
   );
 
   if (step === STEPS.BASIC_INFO) {
     bodyContent = (
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-3">
         <Heading
           title={isEditMode ? "Edit your shop" : "Create your shop"}
           subtitle="Tell us about your business"
@@ -307,7 +337,7 @@ const ShopModal = () => {
           errors={errors}
           required
         />
-        <TextArea
+        <Input
           id="description"
           label="Description"
           disabled={isLoading}
@@ -321,8 +351,28 @@ const ShopModal = () => {
           disabled={isLoading}
           register={register}
           errors={errors}
-          placeholder="https://example.com"
+       
         />
+      </div>
+    );
+  }
+
+  if (step === STEPS.IMAGES) {
+    bodyContent = (
+      <div className="flex flex-col gap-6">
+        <Heading
+          title="Add Your Shop Logo"
+          subtitle="Upload a clear, professional logo that represents your brand"
+        />
+        <div className="flex flex-col items-center">
+          <div className="w-full">
+            <ImageUpload
+              value={logo}
+              onChange={(value) => setCustomValue('logo', value)}
+              className="p-20 h-64"
+            />
+          </div>
+        </div>
       </div>
     );
   }
@@ -355,15 +405,37 @@ const ShopModal = () => {
         />
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {products.map((product, index) => (
-            <div key={index} className="relative aspect-square rounded-lg overflow-hidden border border-neutral-200">
+            <div key={index} className="relative h-40 rounded-lg overflow-hidden border border-neutral-200 group">
               <img 
-                src={product.image} 
+                src={product.images[0] || '/api/placeholder/300/300'} 
                 alt={product.name}
                 className="object-cover w-full h-full"
               />
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-4">
                 <p className="text-white text-sm font-medium">{product.name}</p>
+                <p className="text-white/80 text-xs">${product.price}</p>
               </div>
+              <button
+                onClick={() => handleRemoveProduct(index)}
+                className="
+                  absolute 
+                  top-2 
+                  right-2 
+                  bg-red-500 
+                  text-white 
+                  rounded-full 
+                  w-8 
+                  h-8 
+                  flex 
+                  items-center 
+                  justify-center
+                  opacity-0
+                  group-hover:opacity-100
+                  transition-opacity
+                "
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
           ))}
           
@@ -371,9 +443,10 @@ const ShopModal = () => {
           <div 
             onClick={() => setShowProductModal(true)}
             className="
-              aspect-square 
+              h-40
               rounded-lg 
               border-2 
+           
               border-dashed 
               border-neutral-300 
               flex 
@@ -442,21 +515,29 @@ const ShopModal = () => {
   }
 
   return (
-    <Modal
-      id="shop-modal"
-      modalContentId="modal-content-with-actions"
-      disabled={isLoading}
-      isOpen={shopModal.isOpen}
-      title={isEditMode ? "Edit Shop" : "Create Shop"}
-      actionLabel={actionLabel}
-      actionId="submit-button"
-      onSubmit={handleSubmit(onSubmit)}
-      secondaryActionLabel={secondaryActionLabel}
-      secondaryAction={step === STEPS.CATEGORY ? undefined : onBack}
-      onClose={handleClose}
-      body={bodyContent}
-      className="w-full md:w-4/6 lg:w-3/6 xl:w-2/5"
-    />
+    <>
+      <Modal
+        id="shop-modal"
+        modalContentId="modal-content-with-actions"
+        disabled={isLoading}
+        isOpen={shopModal.isOpen}
+        title={isEditMode ? "Edit Shop" : "Create Shop"}
+        actionLabel={actionLabel}
+        actionId="submit-button"
+        onSubmit={handleSubmit(onSubmit)}
+        secondaryActionLabel={secondaryActionLabel}
+        secondaryAction={step === STEPS.CATEGORY ? undefined : onBack}
+        onClose={handleClose}
+        body={bodyContent}
+        className="w-full md:w-4/6 lg:w-3/6 xl:w-2/5"
+      />
+      
+      <ProductModal
+        isOpen={showProductModal}
+        onClose={() => setShowProductModal(false)}
+        onSubmit={handleAddProduct}
+      />
+    </>
   );
 }
 

@@ -51,10 +51,10 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
             <div className={`
               relative
               cursor-pointer
-              hover:opacity-70
-              border
-              border-dashed
-              border-neutral-500
+              hover:bg-neutral-200
+             bg-neutral-100
+              shadow-md
+ 
               rounded-lg
               flex
               flex-col
@@ -78,8 +78,8 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                     <path d="M15.5 8C15.7761 8 16 7.77614 16 7.5C16 7.22386 15.7761 7 15.5 7M15.5 8C15.2239 8 15 7.77614 15 7.5C15 7.22386 15.2239 7 15.5 7M15.5 8V7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
                     <path d="M3.69797 19.7472C2.5 18.3446 2.5 16.2297 2.5 12C2.5 7.77027 2.5 5.6554 3.69797 4.25276C3.86808 4.05358 4.05358 3.86808 4.25276 3.69797C5.6554 2.5 7.77027 2.5 12 2.5C16.2297 2.5 18.3446 2.5 19.7472 3.69797C19.9464 3.86808 20.1319 4.05358 20.302 4.25276C21.5 5.6554 21.5 7.77027 21.5 12C21.5 16.2297 21.5 18.3446 20.302 19.7472C20.1319 19.9464 19.9464 20.1319 19.7472 20.302C18.3446 21.5 16.2297 21.5 12 21.5C7.77027 21.5 5.6554 21.5 4.25276 20.302C4.05358 20.1319 3.86808 19.9464 3.69797 19.7472Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
                   </svg>
-                  <div className="mb-2 font-medium text-neutral-700">Drag and drop or click to upload</div>
-                  <div className="text-sm text-neutral-500">PNG, JPG, or SVG (max 5MB)</div>
+                  <div className="mb-2 text-sm font-medium text-neutral-700">Drag and drop or click to upload</div>
+                  <div className="text-xs text-neutral-500">PNG, JPG, or SVG (max 5MB)</div>
                 </>
               )}
               

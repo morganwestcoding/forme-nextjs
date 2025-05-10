@@ -210,7 +210,7 @@ const LocationSelect: React.FC<LocationSelectProps> = ({
   const baseSelectClasses = {
     option: (state: any) => `
       !py-4 !px-4 !cursor-pointer
-      ${state.isFocused ? '!bg-neutral-100' : '!bg-white'}
+      ${state.isFocused ? '!bg-neutral-100' : '!bg-neutral-50'}
       ${state.isSelected ? '!bg-neutral-200 !text-black' : ''}
       !text-black hover:!text-neutral-500
       !font-normal!  
@@ -260,7 +260,7 @@ const LocationSelect: React.FC<LocationSelectProps> = ({
               ...baseSelectClasses,
               control: (state: any) => `
                 !w-full !pl-3 !pb-1 !pt-3
-                !bg-white !border !border-neutral-500
+                !bg-neutral-50 !border !border-neutral-200
                 !rounded-lg !outline-none !transition
                 !ring-0 !outline-0 !box-shadow-none
                 ${state.isFocused ? '!border-black' : '!border-neutral-500'}
@@ -298,7 +298,7 @@ const LocationSelect: React.FC<LocationSelectProps> = ({
               ...baseSelectClasses,
               control: (state: any) => `
                 !w-full !pl-3 !pb-1 !pt-3
-                !bg-white !border !border-neutral-500
+                !bg-neutral-50 !border !border-neutral-200
                 !rounded-lg !outline-none !transition
                 !ring-0 !outline-0 !box-shadow-none
                 ${state.isFocused ? '!border-black' : '!border-neutral-500'}
