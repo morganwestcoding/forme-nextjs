@@ -132,7 +132,7 @@ const ShopLocationInput: React.FC<ShopLocationInputProps> = ({
   return (
     <div id={id} className="flex flex-col gap-4 text-sm -mt-4">
       {/* Online Shop Toggle */}
-      <div className="flex items-center py-5 px-4 bg-neutral-50 rounded-lg border border-neutral-200">
+      <div className="flex items-center py-5 px-4 bg-neutral-50 rounded-lg border border-neutral-300">
         <div className="flex items-center">
           <input
             type="checkbox"
@@ -145,7 +145,7 @@ const ShopLocationInput: React.FC<ShopLocationInputProps> = ({
             This is an online-only shop
           </label>
         </div>
-        <div className="ml-3 text-sm text-neutral-500">
+        <div className="ml-3 text-sm text-neutral-600">
           No physical address required
         </div>
       </div>
@@ -176,10 +176,10 @@ const ShopLocationInput: React.FC<ShopLocationInputProps> = ({
                   ...baseSelectClasses,
                   control: (state: any) => `
                     !w-full !pl-3 !pb-1 !pt-3
-                    !bg-neutral-50 !border !border-neutral-200
+                    !bg-neutral-50 !border !border-neutral-300
                     !rounded-lg !outline-none !transition
                     !ring-0 !outline-0 !box-shadow-none
-                    ${state.isFocused ? '!border-black' : '!border-neutral-200'}
+                    ${state.isFocused ? '!border-black' : '!border-neutral-300'}
                     ${errors['state'] ? '!border-rose-500' : ''}
                     ${isOnline ? '!opacity-50 !cursor-not-allowed' : ''}
                   `
@@ -194,7 +194,7 @@ const ShopLocationInput: React.FC<ShopLocationInputProps> = ({
                 transform 
                 top-5 
                 origin-[0] 
-                text-neutral-500
+                text-neutral-600
                 ${selectedState ? 'scale-100 -translate-y-3' : 'translate-y-0'}
               `}>
                 State
@@ -213,10 +213,10 @@ const ShopLocationInput: React.FC<ShopLocationInputProps> = ({
                   ...baseSelectClasses,
                   control: (state: any) => `
                     !w-full !pl-3 !pb-1 !pt-3
-                    !bg-neutral-50 !border !border-neutral-200
+                    !bg-neutral-50 !border !border-neutral-300
                     !rounded-lg !outline-none !transition
                     !ring-0 !outline-0 !box-shadow-none
-                    ${state.isFocused ? '!border-black' : '!border-neutral-200'}
+                    ${state.isFocused ? '!border-black' : '!border-neutral-300'}
                     ${errors['city'] ? '!border-rose-500' : ''}
                     ${isOnline ? '!opacity-50 !cursor-not-allowed' : ''}
                   `
@@ -231,7 +231,7 @@ const ShopLocationInput: React.FC<ShopLocationInputProps> = ({
                 top-5 
                 left-4
                 origin-[0] 
-                text-neutral-500
+                text-neutral-600
                 ${selectedCity ? 'scale-100 -translate-y-3' : 'translate-y-0'}
               `}>
                 City

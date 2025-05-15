@@ -12,6 +12,7 @@ const Logo = ({ variant = 'horizontal' }: LogoProps) => {
   const router = useRouter();
 
   return (
+    <div className="mt-2 mb-6">
     <Link href="/" prefetch={false} className='overflow-hidden'>
       {variant === 'horizontal' ? (
         <Image
@@ -24,13 +25,14 @@ const Logo = ({ variant = 'horizontal' }: LogoProps) => {
       ) : (
         <Image
           alt="ForMe Logo"
-          className="block w-7 h-11" 
+          className=" block w-7 h-11" 
           height={36}
           width={24}
           src="/logos/black.png"
         />
       )}
     </Link>
+    </div>
   )
 }
 

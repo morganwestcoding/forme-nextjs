@@ -143,10 +143,10 @@ const UserButton: React.FC<UserButtonProps> = ({
 
   // Determine button class based on compact mode and noBg prop
   const buttonClass = noBg 
-    ? "flex items-center justify-center p-2 cursor-pointer outline-none touch-manipulation"
+    ? "flex items-center justify-center cursor-pointer outline-none touch-manipulation"
     : (compact 
-        ? "flex items-center justify-center p-2 bg-gray-100 shadow-sm cursor-pointer rounded-md hover:bg-[#DFE2E2] transition-colors duration-250 outline-none touch-manipulation"
-        : "w-44 flex items-center justify-center p-2 bg-gray-100 shadow-sm mb-2 cursor-pointer rounded-md hover:bg-[#DFE2E2] transition-colors duration-250 outline-none touch-manipulation");
+        ? "flex items-center justify-center bg-gray-100 shadow-sm cursor-pointer rounded-md hover:bg-[#DFE2E2] transition-colors duration-250 outline-none touch-manipulation"
+        : "w-44 flex items-center justify-center mb-2 cursor-pointer rounded-md hover:bg-[#DFE2E2] transition-colors duration-250 outline-none touch-manipulation");
 
   return (      
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>   

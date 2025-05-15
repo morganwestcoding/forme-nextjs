@@ -29,14 +29,14 @@ import { Plus, X } from 'lucide-react';
 enum STEPS {
   CATEGORY = 0,
   BASIC_INFO = 1,
-  IMAGES = 2,      // Added IMAGES step
-  LOCATION = 3,    // Incremented from 2
-  PRODUCTS = 4,    // Incremented from 3
-  SOCIAL = 5,      // Incremented from 4
-  SETTINGS = 6,    // Incremented from 5
+  IMAGES = 2,
+  LOCATION = 3,
+  PRODUCTS = 4,
+  SOCIAL = 5,
+  SETTINGS = 6,
 }
 
-// Define a fixed type for social links
+// Define initial values as constants
 const initialSocials: Record<string, string> = {
   instagram: '',
   facebook: '',
@@ -45,14 +45,29 @@ const initialSocials: Record<string, string> = {
   youtube: ''
 };
 
+// Define initial empty product
+const initialProducts: ProductData[] = [];
+
 interface ProductData {
   name: string;
-  price: number;
-  description: string;
-  category: string;
-  sizes: string[];
-  images: string[]; // Changed from File[] to string[]
+  price?: number; // Make price optional with ?
+  description?: string; // Make optional
+  category?: string; // Make optional
+  sizes?: string[]; // Make optional
+  images?: string[]; // Make optional
+  image?: string; // Add this field from SafeShop
 }
+
+interface ProductInput {
+  name: string;
+  price?: number;
+  description?: string;
+  category?: string;
+  sizes?: string[];
+  images?: string[];
+  image?: string;
+}
+
 
 const ShopModal = () => {
   const router = useRouter();
@@ -63,9 +78,9 @@ const ShopModal = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState(STEPS.CATEGORY);
   
-  // Initialize socials as Record<string, string>
-  const [socials, setSocials] = useState<Record<string, string>>(initialSocials);
-  const [products, setProducts] = useState<ProductData[]>([]);
+  // Initialize with initial constants
+  const [socials, setSocials] = useState<Record<string, string>>(shop?.socials as Record<string, string> || initialSocials);
+  const [products, setProducts] = useState<ProductData[]>(initialProducts);
   const [showProductModal, setShowProductModal] = useState(false);
 
   const { 
@@ -79,7 +94,7 @@ const ShopModal = () => {
     reset,
   } = useForm<FieldValues>({
     defaultValues: {
-      category: '',  // Since SafeShop doesn't have category, initialize as empty
+      category: shop?.category || '',
       name: shop?.name || '',
       description: shop?.description || '',
       location: shop?.location || null,
@@ -98,7 +113,7 @@ const ShopModal = () => {
   useEffect(() => {
     if (shop) {
       Object.entries(shop).forEach(([key, value]) => {
-        if (key !== 'socials') {
+        if (key !== 'socials' && key !== 'products') {
           setValue(key, value);
         }
       });
@@ -113,16 +128,22 @@ const ShopModal = () => {
         setSocials(cleanSocials);
       }
       
-      // If we're editing a shop that doesn't have a category yet, 
-      // make sure we don't break the form by providing a default empty string
-      if (!shop.category) {
-        setValue('category', '');
+      // Load existing products if available
+      if (shop.products && Array.isArray(shop.products)) {
+        // Convert the shop's products to match ProductData interface
+        const shopProducts: ProductData[] = shop.products.map(product => ({
+          name: product.name,
+          price: product.price,
+          image: product.image,
+          // Add defaults for required fields
+          description: '',
+          category: '',
+          sizes: [],
+          images: product.image ? [product.image] : []
+        }));
+        
+        setProducts(shopProducts);
       }
-      
-      // Load existing products if available (temporarily removed until we update types)
-      // if (shop.products) {
-      //   setProducts(shop.products);
-      // }
     }
   }, [shop, setValue]);
 
@@ -147,7 +168,7 @@ const ShopModal = () => {
     // Reset all state to initial values
     setStep(STEPS.CATEGORY);
     setSocials(initialSocials);
-    setProducts([]);
+    setProducts(initialProducts);
 
     // Close the modal
     shopModal.onClose();
@@ -177,20 +198,39 @@ const ShopModal = () => {
   }
 
   const onNext = () => {
-    // Validation for each step
+    // Comprehensive validation for each step
     if (step === STEPS.CATEGORY && !category) {
       return toast.error('Please select a category.');
     }
-    if (step === STEPS.BASIC_INFO && (!name || !description)) {
-      return toast.error('Please fill in all required fields.');
+    
+    if (step === STEPS.BASIC_INFO) {
+      if (!name) {
+        return toast.error('Shop name is required.');
+      }
+      if (!description) {
+        return toast.error('Shop description is required.');
+      }
     }
+    
     if (step === STEPS.IMAGES && !logo) {
       return toast.error('Please upload a shop logo.');
     }
-    if (step === STEPS.LOCATION && !isOnlineOnly && (!address || !zipCode)) {
-      return toast.error('Please fill in all location fields or select online-only option.');
+    
+    if (step === STEPS.LOCATION) {
+      if (!isOnlineOnly) {
+        if (!location) {
+          return toast.error('Please select a location.');
+        }
+        if (!address) {
+          return toast.error('Address is required for physical shops.');
+        }
+        if (!zipCode) {
+          return toast.error('Zip code is required for physical shops.');
+        }
+      }
     }
-
+    
+    // No specific validation for products, social links, or settings as they're optional
     
     setStep((value) => value + 1);
   }
@@ -246,12 +286,12 @@ const ShopModal = () => {
       cleanedSocials[key] = value || '';
     });
 
-    // Make sure we're including the category in our payload
+    // Prepare payload with all necessary data
     const payload = { 
       ...data, 
       socials: cleanedSocials,
-      category: category, // Explicitly include category from the watch variable
-      products: products // Products now have string[] for images
+      category: category,
+      products: products
     };
 
     try {
@@ -275,6 +315,8 @@ const ShopModal = () => {
       setIsLoading(false);
     }
   };
+
+  // Rest of the component remains the same...
 
   const actionLabel = useMemo(() => {
     if (step === STEPS.SETTINGS) {
@@ -404,40 +446,41 @@ const ShopModal = () => {
           subtitle="Showcase the items you offer"
         />
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {products.map((product, index) => (
-            <div key={index} className="relative h-40 rounded-lg overflow-hidden border border-neutral-200 group">
-              <img 
-                src={product.images[0] || '/api/placeholder/300/300'} 
-                alt={product.name}
-                className="object-cover w-full h-full"
-              />
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-4">
-                <p className="text-white text-sm font-medium">{product.name}</p>
-                <p className="text-white/80 text-xs">${product.price}</p>
-              </div>
-              <button
-                onClick={() => handleRemoveProduct(index)}
-                className="
-                  absolute 
-                  top-2 
-                  right-2 
-                  bg-red-500 
-                  text-white 
-                  rounded-full 
-                  w-8 
-                  h-8 
-                  flex 
-                  items-center 
-                  justify-center
-                  opacity-0
-                  group-hover:opacity-100
-                  transition-opacity
-                "
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-          ))}
+        {products.map((product, index) => (
+  <div key={index} className="relative h-40 rounded-lg overflow-hidden border border-neutral-200 group">
+    <img 
+      src={(product.images && product.images.length > 0 ? product.images[0] : 
+            product.image) || '/api/placeholder/300/300'} 
+      alt={product.name}
+      className="object-cover w-full h-full"
+    />
+    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-4">
+      <p className="text-white text-sm font-medium">{product.name}</p>
+      <p className="text-white/80 text-xs">${product.price || 0}</p>
+    </div>
+    <button
+      onClick={() => handleRemoveProduct(index)}
+      className="
+        absolute 
+        top-2 
+        right-2 
+        bg-red-500 
+        text-white 
+        rounded-full 
+        w-8 
+        h-8 
+        flex 
+        items-center 
+        justify-center
+        opacity-0
+        group-hover:opacity-100
+        transition-opacity
+      "
+    >
+      <X className="w-4 h-4" />
+    </button>
+  </div>
+))}
           
           {/* Add Product Button */}
           <div 
@@ -445,17 +488,14 @@ const ShopModal = () => {
             className="
               h-40
               rounded-lg 
-              border-2 
-           
-              border-dashed 
-              border-neutral-300 
+              shadow
               flex 
               flex-col 
               items-center 
               justify-center 
               cursor-pointer 
-              hover:border-neutral-400 
-              hover:bg-neutral-50 
+              bg-neutral-100
+              hover:bg-neutral-200
               transition
             "
           >

@@ -77,10 +77,11 @@ model Listing {
   website       String?
   address       String?
   zipCode       String?
+  
   galleryImages  String[]
   employees Employee[]
   storeHours     StoreHours[]
-  shop            Shop?
+  shops         Shop[]
 }
 
 model Reservation {
@@ -211,7 +212,7 @@ model Shop {
   coverImage     String?
   location       String?
   userId         String     @db.ObjectId
-  storeUrl       String?    // Changed from websiteUrl to avoid confusion
+  storeUrl       String?    
   socials        Json?      // Store social links as JSON {instagram: "url", facebook: "url"}
   galleryImages  String[]
   createdAt      DateTime   @default(now())
@@ -223,9 +224,9 @@ model Shop {
   products       Product[]
   followers      String[]   @db.ObjectId // User IDs who follow this shop
   
-  // Optional connection to a listing
-  listingId      String?    @db.ObjectId @unique // Add @unique for one-to-one relation
+  // Optional connection to a listing - with no unique constraint
   listing        Listing?   @relation(fields: [listingId], references: [id], onDelete: SetNull)
+  listingId      String?    @db.ObjectId
   
   // Shop settings
   shopEnabled    Boolean    @default(true)

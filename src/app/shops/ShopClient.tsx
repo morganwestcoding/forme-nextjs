@@ -30,7 +30,7 @@ const ShopClient: React.FC<ShopClientProps> = ({
     searchQuery: ''
   });
   
-  // If we don't have products or shops, use placeholder data
+  // Determine which shops to display - use initialShops if available, otherwise use placeholders
   const shops = initialShops.length > 0 ? initialShops : placeholderShops;
   const products = featuredProducts.length > 0 ? featuredProducts : placeholderProducts;
   const productCategories = categories.length > 0 ? categories : placeholderCategories;
@@ -49,6 +49,10 @@ const ShopClient: React.FC<ShopClientProps> = ({
 
   return (
     <div className="flex-1">
+               <div className="mb-6 mt-6">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Shop</h1>
+            <p className="text-gray-600">Discover unique services from our vendors</p>
+          </div>
       {/* Shop Header */}
       <div className="mb-6">
         <ShopHeader 

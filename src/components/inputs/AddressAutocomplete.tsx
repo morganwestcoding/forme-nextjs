@@ -130,7 +130,7 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
           font-light 
           bg-neutral-50
           border
-          border-neutral-200
+          border-neutral-300
           rounded-lg
           outline-none
           transition
@@ -150,7 +150,7 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
           top-5 
           left-4
           origin-[0] 
-          text-neutral-500
+          text-neutral-600
           peer-placeholder-shown:scale-100 
           peer-placeholder-shown:translate-y-0 
           peer-focus:scale-75

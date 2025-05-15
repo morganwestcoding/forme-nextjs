@@ -125,7 +125,7 @@ const Input: React.FC<InputProps> = ({
               w-full
               p-3
               pt-6 
-              border-neutral-200
+              border-neutral-300
               bg-neutral-50
               border
               rounded-lg
@@ -136,7 +136,7 @@ const Input: React.FC<InputProps> = ({
               disabled:opacity-70
               disabled:cursor-not-allowed
               ${formatPrice ? 'pl-9' : 'pl-4'}
-              ${errors[id] ? 'border-rose-500' : 'border-neutral-200'}
+              ${errors[id] ? 'border-rose-500' : 'border-neutral-300'}
               ${errors[id] ? 'focus:border-rose-500' : 'focus:border-black'}
             `}
             onChange={handleChange}
@@ -173,7 +173,7 @@ const Input: React.FC<InputProps> = ({
               p-3
               pt-6 
               bg-neutral-50
-              border-neutral-200
+              border-neutral-300
               border
          
               rounded-lg
@@ -183,7 +183,7 @@ const Input: React.FC<InputProps> = ({
               disabled:cursor-not-allowed
               ${formatPrice ? 'pl-9' : 'pl-4'}
               ${type === "password" ? 'pr-12' : 'pr-4'}
-              ${errors[id] ? 'border-rose-500' : 'border-neutral-200'}
+              ${errors[id] ? 'border-rose-500' : 'border-neutral-300'}
               ${errors[id] ? 'focus:border-rose-500' : 'focus:border-black'}
             `}
             onChange={handleChange}
@@ -241,7 +241,7 @@ const Input: React.FC<InputProps> = ({
                 h-2 w-2 rounded-full transition-colors duration-200
                 ${passwordValidation.hasMinLength && passwordValidation.hasMaxLength 
                   ? 'bg-green-500' 
-                  : 'bg-neutral-200'
+                  : 'bg-neutral-300'
                 }
               `}/>
               <span className="text-xs">6-18 characters</span>
@@ -258,7 +258,7 @@ const Input: React.FC<InputProps> = ({
                 h-2 w-2 rounded-full transition-colors duration-200
                 ${passwordValidation.hasUpperCase 
                   ? 'bg-green-500' 
-                  : 'bg-neutral-200'
+                  : 'bg-neutral-300'
                 }
               `}/>
               <span className="text-xs">Uppercase letter</span>
@@ -275,7 +275,7 @@ const Input: React.FC<InputProps> = ({
                 h-2 w-2 rounded-full transition-colors duration-200
                 ${passwordValidation.hasLowerCase 
                   ? 'bg-green-500' 
-                  : 'bg-neutral-200'
+                  : 'bg-neutral-300'
                 }
               `}/>
               <span className="text-xs">Lowercase letter</span>
@@ -292,7 +292,7 @@ const Input: React.FC<InputProps> = ({
                 h-2 w-2 rounded-full transition-colors duration-200
                 ${passwordValidation.hasNumber 
                   ? 'bg-green-500' 
-                  : 'bg-neutral-200'
+                  : 'bg-neutral-300'
                 }
               `}/>
               <span className="text-xs">Number</span>
@@ -309,7 +309,7 @@ const Input: React.FC<InputProps> = ({
                 h-2 w-2 rounded-full transition-colors duration-200
                 ${passwordValidation.hasSpecialChar 
                   ? 'bg-green-500' 
-                  : 'bg-neutral-200'
+                  : 'bg-neutral-300'
                 }
               `}/>
               <span className="text-xs">Special character (!@#$%^&*())</span>

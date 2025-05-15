@@ -63,9 +63,8 @@ const ProductImageUpload = ({
                 relative
                 cursor-pointer
                 hover:opacity-70
-                border-2
-                border-dashed
-                border-neutral-300
+        bg-neutral-100
+                shadow
                 rounded-xl
                 flex
                 flex-col
@@ -78,15 +77,14 @@ const ProductImageUpload = ({
             >
               {!value && (
                 <div className="flex flex-col items-center">
-                  <div className="w-8 h-8 text-neutral-400 mb-2" >
+                  <div className="w-8 h-8 text-neutral-600 mb-1" >
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none">
     <path d="M3 16L7.46967 11.5303C7.80923 11.1908 8.26978 11 8.75 11C9.23022 11 9.69077 11.1908 10.0303 11.5303L14 15.5M15.5 17L14 15.5M21 16L18.5303 13.5303C18.1908 13.1908 17.7302 13 17.25 13C16.7698 13 16.3092 13.1908 15.9697 13.5303L14 15.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
     <path d="M15.5 8C15.7761 8 16 7.77614 16 7.5C16 7.22386 15.7761 7 15.5 7M15.5 8C15.2239 8 15 7.77614 15 7.5C15 7.22386 15.2239 7 15.5 7M15.5 8V7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
     <path d="M3.69797 19.7472C2.5 18.3446 2.5 16.2297 2.5 12C2.5 7.77027 2.5 5.6554 3.69797 4.25276C3.86808 4.05358 4.05358 3.86808 4.25276 3.69797C5.6554 2.5 7.77027 2.5 12 2.5C16.2297 2.5 18.3446 2.5 19.7472 3.69797C19.9464 3.86808 20.1319 4.05358 20.302 4.25276C21.5 5.6554 21.5 7.77027 21.5 12C21.5 16.2297 21.5 18.3446 20.302 19.7472C20.1319 19.9464 19.9464 20.1319 19.7472 20.302C18.3446 21.5 16.2297 21.5 12 21.5C7.77027 21.5 5.6554 21.5 4.25276 20.302C4.05358 20.1319 3.86808 19.9464 3.69797 19.7472Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
 </svg>
 </div>
-                  <div className="text-xs text-neutral-500">Add Product</div>
-            
+                  <div className="text-xs text-center -ml-1.5 text-neutral-600">Add Product Image</div>
                 </div>
               )}
               
@@ -275,11 +273,12 @@ const ProductModal: React.FC<ProductModalProps> = ({
             {...register('category', { required: true })}
             className={`
               w-full 
-              rounded-md 
-              px-6 
+              rounded-lg
+              px-4
+              text-neutral-600
               py-4
-              font-light 
-              bg-white 
+              text-sm
+              bg-neutral-50
               border
               transition 
               disabled:opacity-70 
@@ -311,8 +310,8 @@ const ProductModal: React.FC<ProductModalProps> = ({
     <div className="flex flex-col gap-6">
       {/* Image Upload Section */}
       <div>
-        <label className="block text-sm font-medium text-neutral-700 mb-2">
-          Product Images*
+        <label className="block text-sm font-medium text-neutral-600 mb-2">
+          Product Images
         </label>
         <div className="grid grid-cols-3 gap-4">
           {productImages.map((image, index) => (
@@ -367,11 +366,12 @@ const ProductModal: React.FC<ProductModalProps> = ({
         </div>
 
         {/* Sizes Input */}
-        <div className="space-y-2">
+   {/* Sizes Input */}
+   <div className="space-y-2">
           <label className="block text-sm font-medium text-neutral-700">
             Sizes
           </label>
-          <div className="flex gap-2">
+          <div className="relative">
             <input
               type="text"
               value={currentSize}
@@ -384,9 +384,10 @@ const ProductModal: React.FC<ProductModalProps> = ({
               }}
               placeholder="Add Size (e.g., S, M, L)"
               className={`
-                flex-1
+                w-full
                 rounded-md 
-                px-6 
+                pl-6 
+                pr-12
                 py-4
                 font-light 
                 bg-white 
@@ -401,16 +402,21 @@ const ProductModal: React.FC<ProductModalProps> = ({
               onClick={handleAddSize}
               type="button"
               className="
-                px-6
-                py-4
-                rounded-md 
-                bg-blue-500 
-                text-white 
+                absolute
+                right-4
+                top-1/2
+                -translate-y-1/2
+                p-2
+                rounded-md
+                shadow
+                bg-neutral-100
+                text-neutral-600
                 hover:bg-blue-600 
                 transition-colors
                 flex 
                 items-center 
                 justify-center
+                font-light
               "
             >
               <Plus className="w-5 h-5" />

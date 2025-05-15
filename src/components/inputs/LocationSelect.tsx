@@ -212,7 +212,7 @@ const LocationSelect: React.FC<LocationSelectProps> = ({
       !py-4 !px-4 !cursor-pointer
       ${state.isFocused ? '!bg-neutral-100' : '!bg-neutral-50'}
       ${state.isSelected ? '!bg-neutral-200 !text-black' : ''}
-      !text-black hover:!text-neutral-500
+      !text-black hover:!text-neutral-600
       !font-normal!  
     `,
     dropdownIndicator: () => `
@@ -220,8 +220,8 @@ const LocationSelect: React.FC<LocationSelectProps> = ({
     `,
     indicatorSeparator: () => `!hidden`,
     singleValue: () => '!text-black',
-    input: () => '!text-neutral-500 !font-normal!',
-    placeholder: () => '!text-neutral-500 !text-sm !font-normal', 
+    input: () => '!text-neutral-600 !font-normal!',
+    placeholder: () => '!text-neutral-600 !text-sm !font-normal', 
     menu: () => '!bg-white !rounded-sm !shadow-md !mt-1 !z-[9999]',
     menuList: () => '!p-0',
     valueContainer: () => '!p-0.5',
@@ -260,7 +260,7 @@ const LocationSelect: React.FC<LocationSelectProps> = ({
               ...baseSelectClasses,
               control: (state: any) => `
                 !w-full !pl-3 !pb-1 !pt-3
-                !bg-neutral-50 !border !border-neutral-200
+                !bg-neutral-50 !border !border-neutral-300
                 !rounded-lg !outline-none !transition
                 !ring-0 !outline-0 !box-shadow-none
                 ${state.isFocused ? '!border-black' : '!border-neutral-500'}
@@ -278,7 +278,7 @@ const LocationSelect: React.FC<LocationSelectProps> = ({
             transform 
             top-5 
             origin-[0] 
-            text-neutral-500
+            text-neutral-600
             ${selectedState ? 'scale-100 -translate-y-3' : 'translate-y-0'}
             ${disabled ? 'opacity-70' : ''}
           `}>

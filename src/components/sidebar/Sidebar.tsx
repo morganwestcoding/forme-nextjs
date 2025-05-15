@@ -154,7 +154,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   };
   
   return (
-    <div className="h-screen overflow-y-auto shadow-sm bg-white">
+    <div className="h-screen overflow-y-auto bg-white">
       <div className="flex flex-col items-center w-56 h-full pb-10 pt-8 z-50">
         {/* Top Bar Layout with Logo and UserButton */}
  <Logo variant="vertical" />
@@ -191,7 +191,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           </div>
         )}
 
-        <div className="flex flex-col w-full px-6 pt-8">
+        <div className="flex flex-col w-full px-6 pt-2">
           {/* Explore & Discover - Centered headers with aligned icons */}
           <div className="mb-6">
             <div className="text-xs text-neutral-400 uppercase mb-2 text-center font-medium">Explore & Discover</div>
@@ -200,7 +200,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <div 
                   className={`
                     flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
-                    ${selectedButton === 'home' ? '' : 'text-neutral-500 hover:text-neutral-700 hover:bg-gray-50'}
+                    ${selectedButton === 'home' ? '' : 'text-gray-500 hover:text-neutral-700 hover:bg-gray-50'}
                   `}
                   onClick={() => handleNavigate('/', 'home')}
                   style={selectedButton === 'home' ? getTextColorStyle(true) : {}}
@@ -215,8 +215,8 @@ const Sidebar: React.FC<SidebarProps> = ({
                       className="flex-shrink-0"
                       style={selectedButton === 'home' ? getTextColorStyle(true) : {}}
                     >
-                      <path d="M15.0002 17C14.2007 17.6224 13.1504 18 12.0002 18C10.8499 18 9.79971 17.6224 9.00018 17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                      <path d="M2.35157 13.2135C1.99855 10.9162 1.82204 9.76763 2.25635 8.74938C2.69065 7.73112 3.65421 7.03443 5.58132 5.64106L7.02117 4.6C9.41847 2.86667 10.6171 2 12.0002 2C13.3832 2 14.5819 2.86667 16.9792 4.6L18.419 5.64106C20.3462 7.03443 21.3097 7.73112 21.744 8.74938C22.1783 9.76763 22.0018 10.9162 21.6488 13.2135L21.3478 15.1724C20.8473 18.4289 20.5971 20.0572 19.4292 21.0286C18.2613 22 16.5538 22 13.139 22H10.8614C7.44652 22 5.73909 22 4.57118 21.0286C3.40327 20.0572 3.15305 18.4289 2.65261 15.1724L2.35157 13.2135Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+                      <path d="M15.0002 17C14.2007 17.6224 13.1504 18 12.0002 18C10.8499 18 9.79971 17.6224 9.00018 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                      <path d="M2.35157 13.2135C1.99855 10.9162 1.82204 9.76763 2.25635 8.74938C2.69065 7.73112 3.65421 7.03443 5.58132 5.64106L7.02117 4.6C9.41847 2.86667 10.6171 2 12.0002 2C13.3832 2 14.5819 2.86667 16.9792 4.6L18.419 5.64106C20.3462 7.03443 21.3097 7.73112 21.744 8.74938C22.1783 9.76763 22.0018 10.9162 21.6488 13.2135L21.3478 15.1724C20.8473 18.4289 20.5971 20.0572 19.4292 21.0286C18.2613 22 16.5538 22 13.139 22H10.8614C7.44652 22 5.73909 22 4.57118 21.0286C3.40327 20.0572 3.15305 18.4289 2.65261 15.1724L2.35157 13.2135Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
                     </svg>
                   </div>
                   <span className={`ml-3 text-sm ${selectedButton === 'home' ? 'font-medium' : ''}`}>
@@ -229,7 +229,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <div 
                   className={`
                     flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
-                    ${selectedButton === 'shops' ? '' : 'text-neutral-500 hover:text-neutral-700 hover:bg-gray-50'}
+                    ${selectedButton === 'shops' ? '' : 'text-gray-500 hover:text-neutral-700 hover:bg-gray-50'}
                   `} 
                   onClick={() => handleNavigate('/shops', 'shops')}
                   style={selectedButton === 'shops' ? getTextColorStyle(true) : {}}
@@ -244,9 +244,9 @@ const Sidebar: React.FC<SidebarProps> = ({
                       className="flex-shrink-0"
                       style={selectedButton === 'explore' ? getTextColorStyle(true) : {}}
                     >
-                      <path d="M9.49811 15L16.9981 7.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                      <path d="M8.00634 7.67888L15.327 4.21881C18.3688 2.78111 19.8897 2.06226 20.8598 2.78341C21.8299 3.50455 21.5527 5.14799 20.9984 8.43486L20.0435 14.0968C19.6811 16.246 19.4998 17.3205 18.6989 17.7891C17.8979 18.2577 16.8574 17.8978 14.7765 17.178L8.41077 14.9762C4.51917 13.6301 2.57337 12.9571 2.50019 11.6365C2.427 10.3159 4.28678 9.43692 8.00634 7.67888Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                      <path d="M9.49811 15.5V17.7274C9.49811 20.101 9.49811 21.2878 10.2083 21.4771C10.9185 21.6663 11.6664 20.6789 13.1622 18.7039L13.9981 17.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M9.49811 15L16.9981 7.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M8.00634 7.67888L15.327 4.21881C18.3688 2.78111 19.8897 2.06226 20.8598 2.78341C21.8299 3.50455 21.5527 5.14799 20.9984 8.43486L20.0435 14.0968C19.6811 16.246 19.4998 17.3205 18.6989 17.7891C17.8979 18.2577 16.8574 17.8978 14.7765 17.178L8.41077 14.9762C4.51917 13.6301 2.57337 12.9571 2.50019 11.6365C2.427 10.3159 4.28678 9.43692 8.00634 7.67888Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M9.49811 15.5V17.7274C9.49811 20.101 9.49811 21.2878 10.2083 21.4771C10.9185 21.6663 11.6664 20.6789 13.1622 18.7039L13.9981 17.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
                   <span className={`ml-3 text-sm ${selectedButton === 'explore' ? 'font-medium' : ''}`}>
@@ -259,7 +259,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <div 
                   className={`
                     flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
-                    ${selectedButton === 'market' ? '' : 'text-neutral-500 hover:text-neutral-700 hover:bg-gray-50'}
+                    ${selectedButton === 'market' ? '' : 'text-gray-500 hover:text-neutral-700 hover:bg-gray-50'}
                   `} 
                   onClick={() => handleNavigate('/market', 'market')}
                   style={selectedButton === 'market' ? getTextColorStyle(true) : {}}
@@ -274,9 +274,9 @@ const Sidebar: React.FC<SidebarProps> = ({
                       className="flex-shrink-0"
                       style={selectedButton === 'market' ? getTextColorStyle(true) : {}}
                     >
-                      <path d="M3 10.9871V15.4925C3 18.3243 3 19.7403 3.87868 20.62C4.75736 21.4998 6.17157 21.4998 9 21.4998H15C17.8284 21.4998 19.2426 21.4998 20.1213 20.62C21 19.7403 21 18.3243 21 15.4925V10.9871" stroke="currentColor" strokeWidth="1.5" />
-                      <path d="M15 16.9768C14.3159 17.584 13.2268 17.9768 12 17.9768C10.7732 17.9768 9.68409 17.584 9 16.9768" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                      <path d="M17.7957 2.50294L6.14983 2.53202C4.41166 2.44248 3.966 3.78259 3.966 4.43768C3.966 5.02359 3.89055 5.87774 2.82524 7.4831C1.75993 9.08846 1.83998 9.56536 2.44071 10.6767C2.93928 11.5991 4.20741 11.9594 4.86862 12.02C6.96883 12.0678 7.99065 10.2517 7.99065 8.97523C9.03251 12.1825 11.9955 12.1825 13.3158 11.8157C14.6385 11.4483 15.7717 10.1331 16.0391 8.97523C16.195 10.4142 16.6682 11.2538 18.0663 11.8308C19.5145 12.4284 20.7599 11.515 21.3848 10.9294C22.0096 10.3439 22.4107 9.04401 21.2967 7.6153C20.5285 6.63001 20.2084 5.7018 20.1032 4.73977C20.0423 4.18234 19.9888 3.58336 19.5971 3.20219C19.0247 2.64515 18.2035 2.47613 17.7957 2.50294Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M3 10.9871V15.4925C3 18.3243 3 19.7403 3.87868 20.62C4.75736 21.4998 6.17157 21.4998 9 21.4998H15C17.8284 21.4998 19.2426 21.4998 20.1213 20.62C21 19.7403 21 18.3243 21 15.4925V10.9871" stroke="currentColor" strokeWidth="2" />
+                      <path d="M15 16.9768C14.3159 17.584 13.2268 17.9768 12 17.9768C10.7732 17.9768 9.68409 17.584 9 16.9768" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                      <path d="M17.7957 2.50294L6.14983 2.53202C4.41166 2.44248 3.966 3.78259 3.966 4.43768C3.966 5.02359 3.89055 5.87774 2.82524 7.4831C1.75993 9.08846 1.83998 9.56536 2.44071 10.6767C2.93928 11.5991 4.20741 11.9594 4.86862 12.02C6.96883 12.0678 7.99065 10.2517 7.99065 8.97523C9.03251 12.1825 11.9955 12.1825 13.3158 11.8157C14.6385 11.4483 15.7717 10.1331 16.0391 8.97523C16.195 10.4142 16.6682 11.2538 18.0663 11.8308C19.5145 12.4284 20.7599 11.515 21.3848 10.9294C22.0096 10.3439 22.4107 9.04401 21.2967 7.6153C20.5285 6.63001 20.2084 5.7018 20.1032 4.73977C20.0423 4.18234 19.9888 3.58336 19.5971 3.20219C19.0247 2.64515 18.2035 2.47613 17.7957 2.50294Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
                   <span className={`ml-3 text-sm ${selectedButton === 'market' ? 'font-medium' : ''}`}>
@@ -295,7 +295,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <div 
                   className={`
                     flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
-                    ${selectedButton === 'favorites' ? '' : 'text-neutral-500 hover:text-neutral-700 hover:bg-gray-50'}
+                    ${selectedButton === 'favorites' ? '' : 'text-gray-500 hover:text-neutral-700 hover:bg-gray-50'}
                   `} 
                   onClick={() => handleNavigate('/favorites', 'favorites')}
                   style={selectedButton === 'favorites' ? getTextColorStyle(true) : {}}
@@ -323,7 +323,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <div 
                   className={`
                     flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
-                    ${selectedButton === 'Appointments' ? '' : 'text-neutral-500 hover:text-neutral-700 hover:bg-gray-50'}
+                    ${selectedButton === 'Appointments' ? '' : 'text-gray-500 hover:text-neutral-700 hover:bg-gray-50'}
                   `} 
                   onClick={() => handleNavigate('/bookings/reservations', 'Appointments')}
                   style={selectedButton === 'Appointments' ? getTextColorStyle(true) : {}}
@@ -373,7 +373,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <div 
                   className={`
                     flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
-                    ${selectedButton === 'jobs' ? '' : 'text-neutral-500 hover:text-neutral-700 hover:bg-gray-50'}
+                    ${selectedButton === 'jobs' ? '' : 'text-gray-500 hover:text-neutral-700 hover:bg-gray-50'}
                   `} 
                   onClick={() => handleNavigate('/jobs', 'jobs')}
                   style={selectedButton === 'jobs' ? getTextColorStyle(true) : {}}
@@ -404,7 +404,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <div 
                   className={`
                     flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
-                    ${selectedButton === 'vendors' ? '' : 'text-neutral-500 hover:text-neutral-700 hover:bg-gray-50'}
+                    ${selectedButton === 'vendors' ? '' : 'text-gray-500 hover:text-neutral-700 hover:bg-gray-50'}
                   `} 
                   onClick={() => handleNavigate('/vendors', 'vendors')}
                   style={selectedButton === 'vendors' ? getTextColorStyle(true) : {}}
@@ -475,7 +475,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <div 
                   className={`
                     flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
-                    ${selectedButton === 'inbox' ? '' : 'text-neutral-500 hover:text-neutral-700 hover:bg-gray-50'}
+                    ${selectedButton === 'inbox' ? '' : 'text-gray-500 hover:text-neutral-700 hover:bg-gray-50'}
                   `} 
                   onClick={() => handleModalOpen(() => inboxModal.onOpen(currentUser), 'inbox')}
                   style={selectedButton === 'inbox' ? getTextColorStyle(true) : {}}
@@ -504,7 +504,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <div 
                   className={`
                     flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
-                    ${selectedButton === 'notifications' ? '' : 'text-neutral-500 hover:text-neutral-700 hover:bg-gray-50'}
+                    ${selectedButton === 'notifications' ? '' : 'text-gray-500 hover:text-neutral-700 hover:bg-gray-50'}
                   `} 
                   onClick={() => handleNavigate('/notifications', 'notifications')}
                   style={selectedButton === 'notifications' ? getTextColorStyle(true) : {}}
