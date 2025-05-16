@@ -11,18 +11,19 @@ export async function POST(request: Request) {
 
   const body = await request.json();
   console.log("Full request body:", body);
+  console.log("Shop socials data:", body.socials);
 
   const {
-    category,
     name,
     description,
+    category,
+    logo,
+    coverImage,
     location,
     address,
     zipCode,
     isOnlineOnly,
     coordinates,
-    logo,
-    coverImage,
     storeUrl,
     galleryImages,
     socials,
@@ -31,45 +32,30 @@ export async function POST(request: Request) {
   } = body;
 
   console.log("Received fields:", { 
-    category, name, description, location, address, zipCode, 
-    isOnlineOnly, logo, coverImage, storeUrl, galleryImages, 
-    socials, shopEnabled, listingId
+    name, description, category, logo, coverImage, location, 
+    address, zipCode, isOnlineOnly, storeUrl, galleryImages, socials
   });
 
-  // Required fields validation
-  const requiredFields = { name, description, logo, category };
-  const missingFields = Object.entries(requiredFields)
-    .filter(([_, value]) => !value)
-    .map(([key]) => key);
-
+  const requiredFields = [ name, description, logo ];
+  
+  const missingFields = requiredFields.filter((field) => !field);
   if (missingFields.length > 0) {
     console.log("Missing fields:", missingFields);
     return new Response(`Missing required fields: ${missingFields.join(", ")}`, { status: 400 });
   }
 
-  // Location validation - must have either isOnlineOnly or physical location
-  if (!isOnlineOnly && (!address || !zipCode)) {
-    return new Response("Physical shops must have address and zip code", { status: 400 });
-  }
-
-  // Parse socials if it comes as a string
   let parsedSocials;
-  if (socials) {
-    try {
-      parsedSocials = typeof socials === 'string' ? JSON.parse(socials) : socials;
-    } catch (error) {
-      return new Response("Invalid socials format", { status: 400 });
-    }
+  try {
+    parsedSocials = typeof socials === 'string' ? JSON.parse(socials) : socials;
+  } catch (error) {
+    return new Response("Invalid socials format", { status: 400 });
   }
 
-  // Parse coordinates if it comes as a string
   let parsedCoordinates;
-  if (coordinates) {
-    try {
-      parsedCoordinates = typeof coordinates === 'string' ? JSON.parse(coordinates) : coordinates;
-    } catch (error) {
-      return new Response("Invalid coordinates format", { status: 400 });
-    }
+  try {
+    parsedCoordinates = typeof coordinates === 'string' ? JSON.parse(coordinates) : coordinates;
+  } catch (error) {
+    return new Response("Invalid coordinates format", { status: 400 });
   }
 
   try {
@@ -80,7 +66,7 @@ export async function POST(request: Request) {
         category,
         logo,
         coverImage: coverImage || null,
-        location: isOnlineOnly ? "Online Shop" : location,
+        location,
         address: address || null,
         zipCode: zipCode || null,
         isOnlineOnly: isOnlineOnly || false,
@@ -112,5 +98,3 @@ export async function POST(request: Request) {
     return new Response("Internal Server Error", { status: 500 });
   }
 }
-
-// Keep the rest of your original GET, PUT, DELETE methods unchanged

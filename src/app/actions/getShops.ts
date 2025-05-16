@@ -1,3 +1,4 @@
+// app/actions/getShops.ts
 import prisma from "@/app/libs/prismadb";
 import { SafeShop } from "@/app/types";
 
@@ -67,19 +68,11 @@ export default async function getShops(params: IShopsParams): Promise<SafeShop[]
       };
     }
 
-    // Category filter
+    // Category filter - can now filter by shop category directly
     if (category) {
-      query.products = {
-        ...query.products,
-        some: {
-          ...query.products?.some,
-          category: {
-            name: {
-              equals: category,
-              mode: 'insensitive'
-            }
-          }
-        }
+      query.category = {
+        equals: category,
+        mode: 'insensitive'
       };
     }
 
@@ -139,7 +132,7 @@ export default async function getShops(params: IShopsParams): Promise<SafeShop[]
     });
 
     // Process the shops data to match the SafeShop type
-    const safeShops: SafeShop[] = shops.map(shop => {
+    const safeShops = shops.map(shop => {
       // Format featured products for display
       const featuredProductItems = shop.products.map(product => ({
         id: product.id,
@@ -148,15 +141,21 @@ export default async function getShops(params: IShopsParams): Promise<SafeShop[]
         image: product.mainImage
       }));
 
+      // Convert null to undefined where needed to match SafeShop type
       return {
         id: shop.id,
         name: shop.name,
         description: shop.description,
+        category: shop.category || undefined, // Convert null to undefined
         logo: shop.logo,
-        coverImage: shop.coverImage,
-        location: shop.location,
+        coverImage: shop.coverImage || undefined,
+        location: shop.location || undefined,
+        address: shop.address || undefined,
+        zipCode: shop.zipCode || undefined,
+        isOnlineOnly: shop.isOnlineOnly || false,
+        coordinates: shop.coordinates as { lat: number; lng: number } | null,
         userId: shop.userId,
-        storeUrl: shop.storeUrl,
+        storeUrl: shop.storeUrl || undefined,
         socials: shop.socials as {
           instagram?: string;
           facebook?: string;
@@ -164,7 +163,7 @@ export default async function getShops(params: IShopsParams): Promise<SafeShop[]
           tiktok?: string;
           youtube?: string;
           [key: string]: string | undefined;
-        } || null,
+        } | null,
         galleryImages: shop.galleryImages,
         createdAt: shop.createdAt.toISOString(),
         updatedAt: shop.updatedAt.toISOString(),
@@ -172,7 +171,7 @@ export default async function getShops(params: IShopsParams): Promise<SafeShop[]
         shopEnabled: shop.shopEnabled,
         featuredProducts: shop.featuredProducts,
         followers: shop.followers,
-        listingId: shop.listingId,
+        listingId: shop.listingId || undefined,
         user: {
           id: shop.user.id,
           name: shop.user.name,
@@ -180,8 +179,9 @@ export default async function getShops(params: IShopsParams): Promise<SafeShop[]
         },
         // Add calculated fields
         productCount: shop._count.products,
+        followerCount: shop.followers.length,
         featuredProductItems
-      };
+      } as SafeShop; // Use type assertion to ensure it matches SafeShop
     });
 
     // Apply post-query sorting for criteria that can't be sorted in Prisma directly

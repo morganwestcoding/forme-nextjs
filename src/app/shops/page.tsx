@@ -21,9 +21,9 @@ async function ShopPage({ searchParams }: ShopPageProps) {
   
   // Convert search params to the proper types
   const shopParams = {
-    hasProducts: true,
+ 
     limit: 6,
-    sort: 'popular' as const
+    sort: 'newest' as const  // Changed from 'popular' to 'newest'
   };
   
   const productParams = {
@@ -41,28 +41,27 @@ async function ShopPage({ searchParams }: ShopPageProps) {
     ]);
 
     return (
-<Container>
+      <Container>
         <ShopClient 
-          initialShops={shops as unknown as SafeShop[]}
-          featuredProducts={featuredProducts as unknown as SafeProduct[]}
+          initialShops={shops}  // Removed the type casting
+          featuredProducts={featuredProducts}  // Removed the type casting
           categories={categories}
           currentUser={currentUser}
         />
-</Container>
+      </Container>
     );
   } catch (error) {
     console.error("Error fetching shop data:", error);
     // Return with empty arrays if there's an error
     return (
-<Container>
+      <Container>
         <ShopClient 
           initialShops={[]}
           featuredProducts={[]}
           categories={[]}
           currentUser={currentUser}
         />
-        </Container>
-
+      </Container>
     );
   }
 }

@@ -66,6 +66,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
   const [selectedEmployee, setSelectedEmployee] = useState<any>(null);
   const [isFavorite, setIsFavorite] = useState<boolean>(false);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+  const [showReservationModal, setShowReservationModal] = useState(false);
   
   // Group services by category
   const serviceCategories = useMemo<ServiceCategory[]>(() => {
@@ -128,6 +129,20 @@ const ListingCard: React.FC<ListingCardProps> = ({
     
     return Array.from(categoryMap.values());
   }, [data.services]);
+
+  // Get main category icon
+  const mainCategory = data.category || 'Default';
+  const categoryIcons: Record<string, any> = {
+    'Massage': Waves,
+    'Wellness': Flower,
+    'Fitness': Dumbbell,
+    'Nails': Palette,
+    'Spa': Droplet,
+    'Barber': Scissors,
+    'Default': User,
+    'Salon': SprayCan,
+  };
+  const MainCategoryIcon = categoryIcons[mainCategory] || categoryIcons['Default'];
 
   const handleEdit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
@@ -237,10 +252,10 @@ const ListingCard: React.FC<ListingCardProps> = ({
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none"
       className=" text-neutral-800 group-hover:text-[#60A5FA]"
     > 
-    <path d="M21 6.5C21 8.15685 19.6569 9.5 18 9.5C16.3431 9.5 15 8.15685 15 6.5C15 4.84315 16.3431 3.5 18 3.5C19.6569 3.5 21 4.84315 21 6.5Z" stroke="currentColor" stroke-width="1.5"></path>
-    <path d="M9 12C9 13.6569 7.65685 15 6 15C4.34315 15 3 13.6569 3 12C3 10.3431 4.34315 9 6 9C7.65685 9 9 10.3431 9 12Z" stroke="currentColor" stroke-width="1.5"></path>
-    <path d="M21 17.5C21 19.1569 19.6569 20.5 18 20.5C16.3431 20.5 15 19.1569 15 17.5C15 15.8431 16.3431 14.5 18 14.5C19.6569 14.5 21 15.8431 21 17.5Z" stroke="currentColor" stroke-width="1.5"></path>
-    <path d="M8.72852 10.7495L15.2285 7.75M8.72852 13.25L15.2285 16.2495" stroke="currentColor"  stroke-width="1.5"></path>
+    <path d="M21 6.5C21 8.15685 19.6569 9.5 18 9.5C16.3431 9.5 15 8.15685 15 6.5C15 4.84315 16.3431 3.5 18 3.5C19.6569 3.5 21 4.84315 21 6.5Z" stroke="currentColor" strokeWidth="1.5"></path>
+    <path d="M9 12C9 13.6569 7.65685 15 6 15C4.34315 15 3 13.6569 3 12C3 10.3431 4.34315 9 6 9C7.65685 9 9 10.3431 9 12Z" stroke="currentColor" strokeWidth="1.5"></path>
+    <path d="M21 17.5C21 19.1569 19.6569 20.5 18 20.5C16.3431 20.5 15 19.1569 15 17.5C15 15.8431 16.3431 14.5 18 14.5C19.6569 14.5 21 15.8431 21 17.5Z" stroke="currentColor" strokeWidth="1.5"></path>
+    <path d="M8.72852 10.7495L15.2285 7.75M8.72852 13.25L15.2285 16.2495" stroke="currentColor"  strokeWidth="1.5"></path>
 </svg>
 
   </button>
@@ -291,14 +306,18 @@ const ListingCard: React.FC<ListingCardProps> = ({
       {/* Non-Reservation View */}
       {!reservation && (
         <div className="p-5">
-          {/* Quick Info Strip */}
-          <div className="flex justify-between items-center mb-4 text-xs text-neutral-600">
+          {/* REPLACED: Quick Info Strip with the new Explore Services button */}
+          <button 
+            onClick={() => setShowReservationModal(true)}
+            className="w-full bg-neutral-100 text-neutral-600 p-3 rounded-lg mb-4 
+                      flex items-center shadow justify-between hover:bg-neutral-200 transition-colors"
+          >
             <div className="flex items-center">
-              <Clock className="w-4 h-4 mr-2 text-[#60A5FA]" />
-              Open Now • Closes 8 PM
+              <MainCategoryIcon className="w-5 h-5 mr-2 text-[#60A5FA]" />
+              <span className="text-sm">Explore Services</span>
             </div>
-
-          </div>
+            <ChevronRight className="w-5 h-5" />
+          </button>
 
           {/* Progress Indicator */}
           <div className="flex items-center mb-6">
@@ -584,6 +603,16 @@ const ListingCard: React.FC<ListingCardProps> = ({
             </div>
           )}
         </div>
+      )}
+
+      {/* ReservationModal */}
+      {showReservationModal && (
+        <ReservationModal
+          isOpen={showReservationModal}
+          onClose={() => setShowReservationModal(false)}
+          listing={data}
+          currentUser={currentUser}
+        />
       )}
     </div>
   );

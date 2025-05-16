@@ -208,29 +208,31 @@ model Shop {
   id             String     @id @default(auto()) @map("_id") @db.ObjectId
   name           String
   description    String
+  category       String?    // Add this for the category
   logo           String
   coverImage     String?
   location       String?
+  address        String?    // Add this for address
+  zipCode        String?    // Add this for zipCode
+  isOnlineOnly   Boolean    @default(false)  // Add this for isOnlineOnly
+  coordinates    Json?      // Add this for coordinates
   userId         String     @db.ObjectId
   storeUrl       String?    
-  socials        Json?      // Store social links as JSON {instagram: "url", facebook: "url"}
+  socials        Json?
   galleryImages  String[]
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
   isVerified     Boolean    @default(false)
   
-  // Relationships
   user           User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   products       Product[]
-  followers      String[]   @db.ObjectId // User IDs who follow this shop
+  followers      String[]   @db.ObjectId
   
-  // Optional connection to a listing - with no unique constraint
   listing        Listing?   @relation(fields: [listingId], references: [id], onDelete: SetNull)
   listingId      String?    @db.ObjectId
   
-  // Shop settings
   shopEnabled    Boolean    @default(true)
-  featuredProducts String[]  @db.ObjectId // IDs of products to feature
+  featuredProducts String[]  @db.ObjectId
 }
 
 model Product {

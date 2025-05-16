@@ -308,7 +308,7 @@ const ShopModal = () => {
       setStep(STEPS.CATEGORY);
       shopModal.onClose();
       // Redirect to shop dashboard
-      router.push('/shop/dashboard');
+      router.push('/shops');
     } catch (error) {
       toast.error('Something went wrong.');
     } finally {

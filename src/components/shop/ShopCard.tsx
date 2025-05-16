@@ -1,5 +1,3 @@
-'use client';
-
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -16,6 +14,14 @@ interface ShopCardProps {
   actionLabel?: string;
 }
 
+// Define the type for a featured product item
+interface FeaturedProductItem {
+  id: string;
+  name: string;
+  price: number;
+  image: string;
+}
+
 const ShopCard: React.FC<ShopCardProps> = ({
   data,
   currentUser,
@@ -27,11 +33,18 @@ const ShopCard: React.FC<ShopCardProps> = ({
   const router = useRouter();
   const [currentProductIndex, setCurrentProductIndex] = useState(0);
   const [isFollowing, setIsFollowing] = useState(
-    currentUser ? data.followers.includes(currentUser.id) : false
+    currentUser ? data.followers?.includes(currentUser.id) : false
   );
 
-  // Get featured products if available
-  const featuredProducts = data.featuredProductItems || [];
+  // Get featured products if available with proper typing
+  const featuredProducts: FeaturedProductItem[] = data.featuredProductItems || 
+    (data.products?.map(p => ({ 
+      id: p.name, // Use name as unique identifier since product has no id
+      name: p.name, 
+      price: p.price || 0, 
+      image: p.image
+    })) || []);
+  
   const hasProducts = featuredProducts.length > 0;
 
   const handleFollow = async (e: React.MouseEvent) => {
@@ -108,7 +121,7 @@ const ShopCard: React.FC<ShopCardProps> = ({
             </div>
             <div className="flex items-center gap-2 text-xs text-gray-500 mt-0.5">
               {data.location && (
-                <span>{city}, {stateAcronym}</span>
+                <span>{city || data.location}</span>
               )}
               {data.followerCount !== undefined && (
                 <>
