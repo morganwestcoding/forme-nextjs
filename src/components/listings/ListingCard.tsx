@@ -208,7 +208,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
   const [city, state] = data.location?.split(',').map(s => s.trim()) || [];
 
   return (
-    <div className="bg-white rounded-3xl shadow overflow-hidden max-w-xl relative">
+    <div className="bg-white rounded-2xl shadow-md overflow-hidden max-w-xl relative">
       {/* Full-height image background with gradient overlay */}
       <div className="absolute inset-0 z-0">
         <Image 
@@ -218,7 +218,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
           className="w-full h-full object-cover"
         />
         {/* Gradient overlay for entire card */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/60 to-black/90"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent/5 via-black/60 to-black/90"></div>
  
       </div>
 
@@ -297,7 +297,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
           <div className="absolute bottom-5 left-5 text-white z-20">
             <div className="flex items-center space-x-2 mb-1">
               <h1 className="text-xl font-bold drop-shadow-lg">{data.title}</h1>
-              <div className="flex items-center bg-white/30 rounded-lg px-2 py-1">
+              <div className="flex items-center bg-white/30 backdrop-blur-sm rounded-lg px-2 py-1">
                 <Star className="w-4 h-4 text-yellow-400 mr-1" />
                 <span className="text-sm font-semibold pr-1">4.7</span>
               </div>
@@ -313,7 +313,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
           <div className="p-3 -mt-3">
   <button 
     onClick={() => setShowReservationModal(true)}
-    className="w-full bg-white/10 backdrop-blur-md text-white p-4 rounded-xl
+    className="w-full bg-[#60A5FA]/15 backdrop-blur-md text-white p-4 rounded-xl
             flex items-center justify-between hover:bg-white/10 transition-all
             shadow-lg border border-white/10"
   >
@@ -323,7 +323,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
       </div>
       <div className="flex flex-col items-start">
         <span className="text-xs text-white/70">Available Now</span>
-        <span className="font-medium">Explore Services</span>
+        <span className="font-medium text-sm">Explore Services</span>
       </div>
     </div>
     <ChevronRight className="w-5 h-5 text-white/50" />
