@@ -27,7 +27,6 @@ async function ShopPage({ searchParams }: ShopPageProps) {
   };
   
   const productParams = {
-    featured: true,
     limit: 8,
     sort: 'newest' as const
   };

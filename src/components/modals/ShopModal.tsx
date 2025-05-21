@@ -240,11 +240,6 @@ const ShopModal = () => {
     setSocials(newSocials);
   }, []);
 
-  const handleAddProduct = (product: ProductData) => {
-    setProducts(prev => [...prev, product]);
-    setShowProductModal(false);
-  };
-
   const handleRemoveProduct = (index: number) => {
     setProducts(prev => prev.filter((_, i) => i !== index));
   };
@@ -273,48 +268,83 @@ const ShopModal = () => {
     }
   };
 
-  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-    if (step !== STEPS.SETTINGS) {
-      return onNext();
-    }
-    
-    setIsLoading(true);
-    
-    // Ensure socials is a valid Record<string, string>
-    const cleanedSocials: Record<string, string> = {};
-    Object.entries(socials).forEach(([key, value]) => {
-      cleanedSocials[key] = value || '';
-    });
+// In your ShopModal.tsx file, replace the onSubmit function with this enhanced debugging version:
 
-    // Prepare payload with all necessary data
-    const payload = { 
-      ...data, 
-      socials: cleanedSocials,
-      category: category,
-      products: products
-    };
+const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+  if (step !== STEPS.SETTINGS) {
+    return onNext();
+  }
+  
+  setIsLoading(true);
+  
+  // Ensure socials is a valid Record<string, string>
+  const cleanedSocials: Record<string, string> = {};
+  Object.entries(socials).forEach(([key, value]) => {
+    cleanedSocials[key] = value || '';
+  });
 
-    try {
-      if (isEditMode && shop) {
-        await axios.put(`/api/shops/${shop.id}`, payload);
-        toast.success('Shop updated successfully!');
-      } else {
-        await axios.post('/api/shops', payload);
-        toast.success('Shop created successfully!');
+  // Prepare payload with all necessary data
+  const payload = { 
+    ...data, 
+    socials: cleanedSocials,
+    category: category,
+    products: products
+  };
+
+  console.log("Submitting shop with products payload:", {
+    ...payload,
+    productsCount: products.length,
+    productSample: products.length > 0 ? products[0] : null
+  });
+
+  try {
+    if (isEditMode && shop) {
+      console.log(`Updating existing shop with ID: ${shop.id}`);
+      const response = await axios.put(`/api/shops/${shop.id}`, payload);
+      console.log("Update shop response:", response.data);
+      toast.success('Shop updated successfully!');
+    } else {
+      console.log("Creating new shop");
+      const response = await axios.post('/api/shops', payload);
+      console.log("Create shop response:", response.data);
+      
+      // Check if products were created
+      if (response.data && products.length > 0) {
+        if (response.data.products) {
+          console.log(`Created ${response.data.products.length} products successfully`);
+        } else {
+          console.log("No products returned in response. Products might not have been created.");
+        }
       }
       
-      router.refresh();
-      reset();
-      setStep(STEPS.CATEGORY);
-      shopModal.onClose();
-      // Redirect to shop dashboard
-      router.push('/shops');
-    } catch (error) {
-      toast.error('Something went wrong.');
-    } finally {
-      setIsLoading(false);
+      toast.success('Shop created successfully!');
     }
-  };
+    
+    router.refresh();
+    reset();
+    setStep(STEPS.CATEGORY);
+    shopModal.onClose();
+    // Redirect to shop dashboard
+    router.push('/shops');
+  } catch (error) {
+    console.error("Error submitting shop:", error);
+    
+    if (axios.isAxiosError(error) && error.response) {
+      console.error("API response error:", error.response.data);
+      toast.error(`Error: ${error.response.data || 'Something went wrong'}`);
+    } else {
+      toast.error('Something went wrong.');
+    }
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+const handleAddProduct = (product: ProductData) => {
+  console.log("Adding product to shop:", product);
+  setProducts(prev => [...prev, product]);
+  setShowProductModal(false);
+};
 
   // Rest of the component remains the same...
 

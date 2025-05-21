@@ -15,6 +15,7 @@ import { toast } from "react-hot-toast";
 import { ChevronRight, User, Calendar, Clock, ExternalLink, Heart, Share2, Star, ChevronDown, Scissors, Droplet, SprayCan, Waves, Palette, Flower, Dumbbell, SearchCheckIcon } from 'lucide-react';
 import HeartButton from "@/components/HeartButton";
 import { IconType } from "react-icons";
+import ReservationModal from "../modals/ReservationModal"; 
 
 // Define a type for the service with additional UI properties
 interface EnhancedService extends SafeService {
@@ -208,7 +209,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
   const [city, state] = data.location?.split(',').map(s => s.trim()) || [];
 
   return (
-    <div className="bg-white rounded-2xl shadow-md overflow-hidden max-w-xl relative">
+    <div className="bg-white rounded-3xl shadow-md overflow-hidden max-w-xl relative">
       {/* Full-height image background with gradient overlay */}
       <div className="absolute inset-0 z-0">
         <Image 

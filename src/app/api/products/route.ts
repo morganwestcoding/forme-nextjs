@@ -2,343 +2,412 @@ import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 
+// Function to get or create a default category
+async function getOrCreateDefaultCategory(categoryName: string) {
+  console.log(`[DEBUG] Finding or creating category: ${categoryName}`);
+  
+  try {
+    // Try to find an existing category with this name
+    let category = await prisma.productCategory.findFirst({
+      where: { name: categoryName }
+    });
+    
+    if (category) {
+      console.log(`[DEBUG] Found existing category: ${categoryName} with ID: ${category.id}`);
+      return category.id;
+    }
+    
+    // If no category exists, create a default one
+    console.log(`[DEBUG] No category found, creating new one: ${categoryName}`);
+    category = await prisma.productCategory.create({
+      data: {
+        name: categoryName,
+        description: `Default category for ${categoryName} products`
+      }
+    });
+    console.log(`[DEBUG] Created new category: ${categoryName} with ID: ${category.id}`);
+    return category.id;
+  } catch (error) {
+    console.error(`[ERROR] Error in getOrCreateDefaultCategory for ${categoryName}:`, error);
+    throw error; // Re-throw to be caught by the caller
+  }
+}
+
 export async function POST(request: Request) {
+  console.log("[DEBUG] Starting POST request to /api/products");
+  
   const currentUser = await getCurrentUser();
   if (!currentUser) {
+    console.log("[DEBUG] Unauthorized - No current user");
     return new Response("Unauthorized", { status: 401 });
   }
-
-  const body = await request.json();
-  console.log("Full request body:", body);
-  console.log("Options data:", body.options);
-  console.log("Variants data:", body.variants);
-
-  const {
-    name,
-    description,
-    price,
-    compareAtPrice,
-    mainImage,
-    galleryImages,
-    shopId,
-    sku,
-    barcode,
-    categoryId,
-    tags,
-    isPublished,
-    isFeatured,
-    inventory,
-    lowStockThreshold,
-    weight,
-    options,
-    variants,
-  } = body;
-
-  console.log("Received fields:", { 
-    name, description, price, mainImage, shopId, categoryId,
-    compareAtPrice, galleryImages, sku, barcode, tags,
-    isPublished, isFeatured, inventory, lowStockThreshold,
-    weight, options, variants
-  });
-
-  // Required fields validation
-  const requiredFields = { name, description, price, mainImage, shopId, categoryId };
-  const missingFields = Object.entries(requiredFields)
-    .filter(([_, value]) => !value)
-    .map(([key]) => key);
-
-  if (missingFields.length > 0) {
-    console.log("Missing fields:", missingFields);
-    return new Response(`Missing required fields: ${missingFields.join(", ")}`, { status: 400 });
-  }
-
-  // Validate price formats
-  if (isNaN(parseFloat(price)) || parseFloat(price) < 0) {
-    return new Response("Invalid price format", { status: 400 });
-  }
-
-  if (compareAtPrice && (isNaN(parseFloat(compareAtPrice)) || parseFloat(compareAtPrice) < 0)) {
-    return new Response("Invalid compare at price format", { status: 400 });
-  }
-
-  // Check if the user owns the shop
-  const shop = await prisma.shop.findUnique({
-    where: { id: shopId },
-  });
-
-  if (!shop) {
-    return new Response("Shop not found", { status: 404 });
-  }
-
-  if (shop.userId !== currentUser.id) {
-    return new Response("Not authorized to add products to this shop", { status: 403 });
-  }
-
-  // Check if category exists
-  const category = await prisma.productCategory.findUnique({
-    where: { id: categoryId },
-  });
-
-  if (!category) {
-    return new Response("Category not found", { status: 404 });
-  }
-
-  // Parse JSON fields if they come as strings
-  let parsedOptions;
-  if (options) {
-    try {
-      parsedOptions = typeof options === 'string' ? JSON.parse(options) : options;
-    } catch (error) {
-      return new Response("Invalid options format", { status: 400 });
-    }
-  }
-
-  let parsedVariants;
-  if (variants) {
-    try {
-      parsedVariants = typeof variants === 'string' ? JSON.parse(variants) : variants;
-    } catch (error) {
-      return new Response("Invalid variants format", { status: 400 });
-    }
-  }
-
+  
+  console.log(`[DEBUG] User authenticated: ${currentUser.id}`);
+  
+  let body;
   try {
-    const product = await prisma.product.create({
-      data: {
-        name,
-        description,
-        price: parseFloat(price),
-        compareAtPrice: compareAtPrice ? parseFloat(compareAtPrice) : null,
-        mainImage,
-        galleryImages: galleryImages || [],
-        shopId,
-        sku: sku || null,
-        barcode: barcode || null,
-        categoryId,
-        tags: tags || [],
-        isPublished: isPublished !== undefined ? isPublished : true,
-        isFeatured: isFeatured || false,
-        inventory: inventory || 0,
-        lowStockThreshold: lowStockThreshold || 5,
-        weight: weight ? parseFloat(weight) : null,
-        options: parsedOptions || null,
-        variants: parsedVariants || null,
-        favoritedBy: [],
-        reviews: null,
-      },
-      include: {
-        category: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-        shop: {
-          select: {
-            id: true,
-            name: true,
-            logo: true,
-          },
-        },
-      },
+    body = await request.json();
+    console.log("[DEBUG] Request body parsed successfully");
+  } catch (error) {
+    console.error("[ERROR] Failed to parse request body:", error);
+    return new Response("Invalid request body", { status: 400 });
+  }
+
+  // Check if we're handling a shop with embedded products
+  const isShopWithProducts = body.name && !body.shopId && body.products && Array.isArray(body.products);
+  console.log(`[DEBUG] Is this a shop with embedded products? ${isShopWithProducts}`);
+  
+  if (isShopWithProducts) {
+    console.log("[DEBUG] Processing shop with embedded products");
+    console.log(`[DEBUG] Products in payload: ${body.products.length}`);
+    
+    try {
+      // First, create the shop if it doesn't exist
+      let shop;
+      
+      if (body.id) {
+        console.log(`[DEBUG] Looking up existing shop with ID: ${body.id}`);
+        // If shop ID is provided, find the shop
+        shop = await prisma.shop.findUnique({
+          where: { id: body.id }
+        });
+        
+        if (!shop) {
+          console.log(`[DEBUG] Shop not found with ID: ${body.id}`);
+          return new Response("Shop not found", { status: 404 });
+        }
+        
+        // Verify ownership
+        if (shop.userId !== currentUser.id) {
+          console.log(`[DEBUG] Not authorized - Shop belongs to ${shop.userId}, not ${currentUser.id}`);
+          return new Response("Not authorized to modify this shop", { status: 403 });
+        }
+        
+        console.log(`[DEBUG] Found existing shop: ${shop.id}`);
+      } else {
+        // Create new shop with the products included
+        console.log("[DEBUG] Creating new shop");
+        
+        try {
+          shop = await prisma.shop.create({
+            data: {
+              name: body.name,
+              description: body.description,
+              logo: body.logo,
+              coverImage: body.coverImage || null,
+              location: body.location || null,
+              userId: currentUser.id,
+              storeUrl: body.storeUrl || null,
+              category: body.category || null,
+              socials: body.socials || null,
+              galleryImages: body.galleryImages || [],
+              isVerified: false,
+              shopEnabled: body.shopEnabled !== undefined ? body.shopEnabled : true,
+              featuredProducts: [],
+              followers: [],
+              listingId: body.listingId || null,
+            }
+          });
+          console.log(`[DEBUG] Successfully created shop with ID: ${shop.id}`);
+        } catch (shopError) {
+          console.error("[ERROR] Failed to create shop:", shopError);
+          return new Response(`Failed to create shop: ${shopError instanceof Error ? shopError.message : 'Unknown error'}`, { status: 500 });
+        }
+      }
+      
+      // Process each product from the embedded products array
+      console.log(`[DEBUG] Beginning product creation for ${body.products.length} products`);
+      const productsCreated = [];
+      
+      for (let i = 0; i < body.products.length; i++) {
+        const productData = body.products[i];
+        console.log(`[DEBUG] Processing product ${i+1}/${body.products.length}: ${productData.name}`);
+        
+        const {
+          name,
+          description,
+          price,
+          category,
+          image,
+          images,
+          sizes
+        } = productData;
+        
+        // Log all product details
+        console.log(`[DEBUG] Product details:`, {
+          name,
+          description,
+          price,
+          category,
+          imageAvailable: !!image,
+          imagesCount: images?.length,
+          sizesCount: sizes?.length
+        });
+        
+        if (!name || !description || !price) {
+          console.log(`[DEBUG] Skipping product due to missing required fields: ${JSON.stringify(productData)}`);
+          continue; // Skip products with missing required fields
+        }
+        
+        // Format product options from sizes if present
+        const options = sizes && sizes.length > 0 
+          ? [{ name: 'Size', values: sizes }] 
+          : null;
+
+        // Format product variants from sizes if present
+        const variants = sizes && sizes.length > 0 
+          ? sizes.map((size: string) => ({
+              price: parseFloat(price),
+              inventory: 10, // Default inventory per variant
+              optionValues: { Size: size }
+            })) 
+          : null;
+          
+        const mainImage = image || (images && images.length > 0 ? images[0] : null);
+        
+        // Skip if no image provided
+        if (!mainImage) {
+          console.log(`[DEBUG] Skipping product ${name} due to missing image`);
+          continue;
+        }
+        
+        try {
+          // Get or create a default category
+          console.log(`[DEBUG] Getting or creating category for: ${category || "Uncategorized"}`);
+          const categoryToUse = category || "Uncategorized";
+          let categoryId;
+          
+          try {
+            categoryId = await getOrCreateDefaultCategory(categoryToUse);
+            console.log(`[DEBUG] Using category: ${categoryToUse} with ID: ${categoryId}`);
+          } catch (categoryError) {
+            console.error(`[ERROR] Failed to get/create category ${categoryToUse}:`, categoryError);
+            continue; // Skip this product but continue with others
+          }
+          
+          // Create the product with required shopId and categoryId
+          console.log(`[DEBUG] Creating product: ${name} with shopId: ${shop.id}, categoryId: ${categoryId}`);
+          
+          try {
+            const product = await prisma.product.create({
+              data: {
+                name,
+                description,
+                price: parseFloat(price),
+                mainImage,
+                galleryImages: images && images.length > 1 ? images.slice(1) : [],
+                shopId: shop.id,
+                categoryId, // Use actual category ID
+                sku: null,
+                barcode: null,
+                tags: [categoryToUse], // Use the category as a tag
+                isPublished: true,
+                isFeatured: true, // Mark as featured by default for visibility
+                inventory: 10, // Default inventory
+                lowStockThreshold: 5,
+                weight: null,
+                options,
+                variants,
+                favoritedBy: [],
+                reviews: null,
+              }
+            });
+            
+            console.log(`[DEBUG] Successfully created product with ID: ${product.id}`);
+            productsCreated.push(product);
+            
+            // Update the shop's featuredProducts array to include this product
+            console.log(`[DEBUG] Updating shop's featuredProducts array with product ${product.id}`);
+            
+            try {
+              await prisma.shop.update({
+                where: { id: shop.id },
+                data: {
+                  featuredProducts: {
+                    push: product.id
+                  }
+                }
+              });
+              console.log(`[DEBUG] Successfully updated shop's featuredProducts`);
+            } catch (updateError) {
+              console.error(`[ERROR] Failed to update shop's featuredProducts:`, updateError);
+              // Continue anyway since the product was created
+            }
+          } catch (productError) {
+            console.error(`[ERROR] Failed to create product ${name}:`, productError);
+            // Continue with other products instead of failing completely
+          }
+        } catch (processingError) {
+          console.error(`[ERROR] Error processing product ${name}:`, processingError);
+          // Continue with other products
+        }
+      }
+      
+      console.log(`[DEBUG] Product creation complete. Created ${productsCreated.length} out of ${body.products.length} products`);
+      
+      return NextResponse.json({ 
+        message: "Products created successfully", 
+        count: productsCreated.length,
+        shopId: shop.id,
+        products: productsCreated
+      });
+    } catch (error) {
+      console.error("[ERROR] Error processing shop products:", error);
+      return new Response(`Error processing shop products: ${error instanceof Error ? error.message : 'Unknown error'}`, { status: 500 });
+    }
+  }
+
+  // Handle direct product submission
+  console.log("[DEBUG] Processing direct product submission");
+  
+  try {
+    const {
+      name,
+      description,
+      price,
+      category,
+      image,
+      images,
+      sizes,
+      shopId,
+    } = body;
+
+    console.log("[DEBUG] Direct product submission details:", { 
+      name, 
+      description, 
+      price, 
+      category, 
+      imageAvailable: !!image,
+      imagesCount: images?.length,
+      sizesCount: sizes?.length,
+      shopId
     });
 
-    return NextResponse.json(product);
-  } catch (error) {
-    console.error("Error creating product:", error);
-    return new Response("Internal Server Error", { status: 500 });
-  }
-}
+    // Required fields validation
+    const requiredFields = { name, description, price, image: image || (images && images.length > 0 ? images[0] : null), shopId };
+    const missingFields = Object.entries(requiredFields)
+      .filter(([_, value]) => !value)
+      .map(([key]) => key);
 
-export async function GET(request: Request) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const shopId = searchParams.get("shopId");
-    const productId = searchParams.get("productId");
-    const categoryId = searchParams.get("categoryId");
-    const featured = searchParams.get("featured");
-    const published = searchParams.get("published");
-
-    let query: any = {};
-
-    if (shopId) {
-      query.shopId = shopId;
+    if (missingFields.length > 0) {
+      console.log(`[DEBUG] Missing required fields: ${missingFields.join(", ")}`);
+      return new Response(`Missing required fields: ${missingFields.join(", ")}`, { status: 400 });
     }
 
-    if (productId) {
-      query.id = productId;
+    // Validate price format
+    const productPrice = parseFloat(price);
+    if (isNaN(productPrice) || productPrice < 0) {
+      console.log(`[DEBUG] Invalid price format: ${price}`);
+      return new Response("Invalid price format", { status: 400 });
     }
 
-    if (categoryId) {
-      query.categoryId = categoryId;
-    }
-
-    if (featured === "true") {
-      query.isFeatured = true;
-    }
-
-    if (published !== null) {
-      query.isPublished = published === "true";
-    } else {
-      // By default, only fetch published products
-      query.isPublished = true;
-    }
-
-    const products = await prisma.product.findMany({
-      where: query,
-      include: {
-        category: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-        shop: {
-          select: {
-            id: true,
-            name: true,
-            logo: true,
-          },
-        },
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
+    // Check if the user owns the shop
+    console.log(`[DEBUG] Checking if user owns shop: ${shopId}`);
+    const shop = await prisma.shop.findUnique({
+      where: { id: shopId },
     });
 
-    return NextResponse.json(products);
-  } catch (error) {
-    console.error("Error fetching products:", error);
-    return new Response("Internal Server Error", { status: 500 });
-  }
-}
+    if (!shop) {
+      console.log(`[DEBUG] Shop not found: ${shopId}`);
+      return new Response("Shop not found", { status: 404 });
+    }
 
-export async function PUT(request: Request) {
-  const currentUser = await getCurrentUser();
-  if (!currentUser) {
-    return new Response("Unauthorized", { status: 401 });
-  }
-
-  const { searchParams } = new URL(request.url);
-  const productId = searchParams.get("id");
-
-  if (!productId) {
-    return new Response("Product ID is required", { status: 400 });
-  }
-
-  // Check if the product exists and get the shop info
-  const existingProduct = await prisma.product.findUnique({
-    where: { id: productId },
-    include: {
-      shop: true,
-    },
-  });
-
-  if (!existingProduct) {
-    return new Response("Product not found", { status: 404 });
-  }
-
-  // Check if the user owns the shop
-  if (existingProduct.shop.userId !== currentUser.id) {
-    return new Response("Not authorized to update this product", { status: 403 });
-  }
-
-  const body = await request.json();
-  console.log("Update request body:", body);
-
-  // Parse JSON fields if they come as strings
-  let parsedOptions = body.options;
-  if (body.options && typeof body.options === 'string') {
+    if (shop.userId !== currentUser.id) {
+      console.log(`[DEBUG] User ${currentUser.id} does not own shop ${shopId} (owned by ${shop.userId})`);
+      return new Response("Not authorized to add products to this shop", { status: 403 });
+    }
+    
+    // Get or create a default category
+    console.log(`[DEBUG] Getting or creating category for: ${category || "Uncategorized"}`);
+    const categoryToUse = category || "Uncategorized";
+    let categoryId;
+    
     try {
-      parsedOptions = JSON.parse(body.options);
-    } catch (error) {
-      return new Response("Invalid options format", { status: 400 });
+      categoryId = await getOrCreateDefaultCategory(categoryToUse);
+      console.log(`[DEBUG] Using category ID: ${categoryId}`);
+    } catch (categoryError) {
+      console.error(`[ERROR] Failed to get/create category:`, categoryError);
+      return new Response(`Failed to get/create category: ${categoryError instanceof Error ? categoryError.message : 'Unknown error'}`, { status: 500 });
     }
-  }
 
-  let parsedVariants = body.variants;
-  if (body.variants && typeof body.variants === 'string') {
+    // Format product options from sizes if present
+    const options = sizes && sizes.length > 0 
+      ? [{ name: 'Size', values: sizes }] 
+      : null;
+
+    // Format product variants from sizes if present
+    const variants = sizes && sizes.length > 0 
+      ? sizes.map((size: string) => ({
+          price: productPrice,
+          inventory: 10, // Default inventory per variant
+          optionValues: { Size: size }
+        })) 
+      : null;
+
+    // Create the product
+    console.log(`[DEBUG] Creating product with shopId: ${shopId}, categoryId: ${categoryId}`);
+    
     try {
-      parsedVariants = JSON.parse(body.variants);
-    } catch (error) {
-      return new Response("Invalid variants format", { status: 400 });
+      const product = await prisma.product.create({
+        data: {
+          name,
+          description,
+          price: productPrice,
+          mainImage: image || (images && images.length > 0 ? images[0] : null),
+          galleryImages: images && images.length > 1 ? images.slice(1) : [],
+          shopId,
+          categoryId,
+          sku: null,
+          barcode: null,
+          tags: [categoryToUse],
+          isPublished: true,
+          isFeatured: true,
+          inventory: 10,
+          lowStockThreshold: 5,
+          weight: null,
+          options,
+          variants,
+          favoritedBy: [],
+          reviews: null,
+        },
+        include: {
+          shop: {
+            select: {
+              id: true,
+              name: true,
+              logo: true,
+            },
+          },
+        },
+      });
+      
+      console.log(`[DEBUG] Successfully created product with ID: ${product.id}`);
+
+      // Update the shop's featuredProducts array
+      console.log(`[DEBUG] Updating shop's featuredProducts array with product ${product.id}`);
+      
+      try {
+        await prisma.shop.update({
+          where: { id: shopId },
+          data: {
+            featuredProducts: {
+              push: product.id
+            }
+          }
+        });
+        console.log(`[DEBUG] Successfully updated shop's featuredProducts`);
+      } catch (updateError) {
+        console.error(`[ERROR] Failed to update shop's featuredProducts:`, updateError);
+        // Continue anyway since the product was created
+      }
+
+      return NextResponse.json(product);
+    } catch (productError) {
+      console.error(`[ERROR] Failed to create product:`, productError);
+      return new Response(`Failed to create product: ${productError instanceof Error ? productError.message : 'Unknown error'}`, { status: 500 });
     }
-  }
-
-  try {
-    const updatedProduct = await prisma.product.update({
-      where: { id: productId },
-      data: {
-        ...body,
-        price: body.price ? parseFloat(body.price) : undefined,
-        compareAtPrice: body.compareAtPrice ? parseFloat(body.compareAtPrice) : undefined,
-        weight: body.weight ? parseFloat(body.weight) : undefined,
-        options: parsedOptions,
-        variants: parsedVariants,
-      },
-      include: {
-        category: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-        shop: {
-          select: {
-            id: true,
-            name: true,
-            logo: true,
-          },
-        },
-      },
-    });
-
-    return NextResponse.json(updatedProduct);
   } catch (error) {
-    console.error("Error updating product:", error);
-    return new Response("Internal Server Error", { status: 500 });
-  }
-}
-
-export async function DELETE(request: Request) {
-  const currentUser = await getCurrentUser();
-  if (!currentUser) {
-    return new Response("Unauthorized", { status: 401 });
-  }
-
-  const { searchParams } = new URL(request.url);
-  const productId = searchParams.get("id");
-
-  if (!productId) {
-    return new Response("Product ID is required", { status: 400 });
-  }
-
-  // Check if the product exists and get the shop info
-  const existingProduct = await prisma.product.findUnique({
-    where: { id: productId },
-    include: {
-      shop: true,
-    },
-  });
-
-  if (!existingProduct) {
-    return new Response("Product not found", { status: 404 });
-  }
-
-  // Check if the user owns the shop
-  if (existingProduct.shop.userId !== currentUser.id) {
-    return new Response("Not authorized to delete this product", { status: 403 });
-  }
-
-  try {
-    // Delete the product
-    await prisma.product.delete({
-      where: { id: productId },
-    });
-
-    return NextResponse.json({ message: "Product deleted successfully" });
-  } catch (error) {
-    console.error("Error deleting product:", error);
-    return new Response("Internal Server Error", { status: 500 });
+    console.error("[ERROR] Error in direct product creation:", error);
+    return new Response(`Internal Server Error: ${error instanceof Error ? error.message : 'Unknown error'}`, { status: 500 });
   }
 }

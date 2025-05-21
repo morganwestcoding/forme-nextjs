@@ -40,10 +40,7 @@ interface ReservationModalProps {
     name: string;
     price: number;
   } | null;
-  listing: SafeListing & { 
-    user: SafeUser;
-    services: SafeService[];
-  };
+  listing: SafeListing; // Change this to accept SafeListing
   currentUser?: SafeUser | null;
   disabledDates?: Date[];
 }

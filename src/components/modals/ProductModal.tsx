@@ -1,12 +1,15 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Plus, X, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, X, ChevronDown } from 'lucide-react';
 import Modal from './Modal';
-import { useForm, FieldValues } from 'react-hook-form';
+import { useForm, FieldValues, SubmitHandler } from 'react-hook-form';
 import { CldUploadWidget } from "next-cloudinary";
 import Image from "next/image";
 import Input from '@/components/inputs/Input';
+import axios from 'axios';
+import { toast } from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 
 declare global {
   var cloudinary: any
@@ -14,22 +17,22 @@ declare global {
 
 const uploadPreset = "cs0am6m7";
 
+// Product data interface
+export interface ProductData {
+  name: string;
+  price?: number;
+  description?: string;
+  category?: string;
+  sizes?: string[];
+  images?: string[];
+  image?: string;
+}
+
 interface ProductModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (product: {
-    name: string;
-    price: number;
-    compareAtPrice?: number;
-    description: string;
-    category: string;
-    inventory: number;
-    lowStockThreshold: number;
-    sizes: string[];
-    images: string[];
-    sku?: string;
-    barcode?: string;
-  }) => void;
+  onSubmit: (product: ProductData) => void;
+  shopId?: string | null;
 }
 
 // Custom Image Upload Component
@@ -63,7 +66,7 @@ const ProductImageUpload = ({
                 relative
                 cursor-pointer
                 hover:opacity-70
-        bg-neutral-100
+                bg-neutral-100
                 shadow
                 rounded-xl
                 flex
@@ -78,12 +81,12 @@ const ProductImageUpload = ({
               {!value && (
                 <div className="flex flex-col items-center">
                   <div className="w-8 h-8 text-neutral-600 mb-1" >
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none">
-    <path d="M3 16L7.46967 11.5303C7.80923 11.1908 8.26978 11 8.75 11C9.23022 11 9.69077 11.1908 10.0303 11.5303L14 15.5M15.5 17L14 15.5M21 16L18.5303 13.5303C18.1908 13.1908 17.7302 13 17.25 13C16.7698 13 16.3092 13.1908 15.9697 13.5303L14 15.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-    <path d="M15.5 8C15.7761 8 16 7.77614 16 7.5C16 7.22386 15.7761 7 15.5 7M15.5 8C15.2239 8 15 7.77614 15 7.5C15 7.22386 15.2239 7 15.5 7M15.5 8V7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-    <path d="M3.69797 19.7472C2.5 18.3446 2.5 16.2297 2.5 12C2.5 7.77027 2.5 5.6554 3.69797 4.25276C3.86808 4.05358 4.05358 3.86808 4.25276 3.69797C5.6554 2.5 7.77027 2.5 12 2.5C16.2297 2.5 18.3446 2.5 19.7472 3.69797C19.9464 3.86808 20.1319 4.05358 20.302 4.25276C21.5 5.6554 21.5 7.77027 21.5 12C21.5 16.2297 21.5 18.3446 20.302 19.7472C20.1319 19.9464 19.9464 20.1319 19.7472 20.302C18.3446 21.5 16.2297 21.5 12 21.5C7.77027 21.5 5.6554 21.5 4.25276 20.302C4.05358 20.1319 3.86808 19.9464 3.69797 19.7472Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-</svg>
-</div>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none">
+                      <path d="M3 16L7.46967 11.5303C7.80923 11.1908 8.26978 11 8.75 11C9.23022 11 9.69077 11.1908 10.0303 11.5303L14 15.5M15.5 17L14 15.5M21 16L18.5303 13.5303C18.1908 13.1908 17.7302 13 17.25 13C16.7698 13 16.3092 13.1908 15.9697 13.5303L14 15.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+                      <path d="M15.5 8C15.7761 8 16 7.77614 16 7.5C16 7.22386 15.7761 7 15.5 7M15.5 8C15.2239 8 15 7.77614 15 7.5C15 7.22386 15.2239 7 15.5 7M15.5 8V7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+                      <path d="M3.69797 19.7472C2.5 18.3446 2.5 16.2297 2.5 12C2.5 7.77027 2.5 5.6554 3.69797 4.25276C3.86808 4.05358 4.05358 3.86808 4.25276 3.69797C5.6554 2.5 7.77027 2.5 12 2.5C16.2297 2.5 18.3446 2.5 19.7472 3.69797C19.9464 3.86808 20.1319 4.05358 20.302 4.25276C21.5 5.6554 21.5 7.77027 21.5 12C21.5 16.2297 21.5 18.3446 20.302 19.7472C20.1319 19.9464 19.9464 20.1319 19.7472 20.302C18.3446 21.5 16.2297 21.5 12 21.5C7.77027 21.5 5.6554 21.5 4.25276 20.302C4.05358 20.1319 3.86808 19.9464 3.69797 19.7472Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+                    </svg>
+                  </div>
                   <div className="text-xs text-center -ml-1.5 text-neutral-600">Add Product Image</div>
                 </div>
               )}
@@ -120,19 +123,19 @@ const ProductImageUpload = ({
 const ProductModal: React.FC<ProductModalProps> = ({
   isOpen,
   onClose,
-  onSubmit
+  onSubmit,
+  shopId
 }) => {
+  const router = useRouter();
   const [productImages, setProductImages] = useState<string[]>(['', '', '']);
   const [sizes, setSizes] = useState<string[]>([]);
   const [currentSize, setCurrentSize] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
-
+  
   const { 
     register, 
     handleSubmit,
-    setValue,
-    watch,
     formState: { errors },
     reset,
     trigger
@@ -143,7 +146,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
       compareAtPrice: '',
       description: '',
       category: '',
-      inventory: '',
+      inventory: '0',
       lowStockThreshold: '5',
       sku: '',
       barcode: '',
@@ -179,35 +182,38 @@ const ProductModal: React.FC<ProductModalProps> = ({
     setCurrentStep(1);
   };
 
-  const onFormSubmit = (data: FieldValues) => {
+  const onFormSubmit: SubmitHandler<FieldValues> = (data) => {
+    if (currentStep !== 2) {
+      return handleNextStep();
+    }
+    
     // Check if at least one image is uploaded
     const uploadedImages = productImages.filter(img => img !== '');
     if (uploadedImages.length === 0) {
-      alert('Please upload at least one product image');
+      toast.error('Please upload at least one product image');
       return;
     }
 
-    onSubmit({
+    // Create the product data
+    const productData: ProductData = {
       name: data.name,
-      price: parseFloat(data.price),
-      compareAtPrice: data.compareAtPrice ? parseFloat(data.compareAtPrice) : undefined,
       description: data.description,
+      price: parseFloat(data.price),
       category: data.category,
-      inventory: parseInt(data.inventory || '0'),
-      lowStockThreshold: parseInt(data.lowStockThreshold || '5'),
-      sizes,
+      sizes: sizes,
       images: uploadedImages,
-      sku: data.sku || undefined,
-      barcode: data.barcode || undefined,
-    });
+      image: uploadedImages[0] // Set first image as the main image
+    };
 
+    // Call the onSubmit prop with the formatted product data
+    onSubmit(productData);
+    
     // Reset form
     reset();
     setProductImages(['', '', '']);
     setSizes([]);
     setCurrentSize('');
     setCurrentStep(1);
-    onClose();
   };
 
   const handleClose = () => {
@@ -260,8 +266,6 @@ const ProductModal: React.FC<ProductModalProps> = ({
         register={register}
         errors={errors}
         required
-      
-
       />
 
       <div className="space-y-2">
@@ -301,6 +305,9 @@ const ProductModal: React.FC<ProductModalProps> = ({
             <ChevronDown className="w-5 h-5 text-neutral-400" />
           </div>
         </div>
+        {errors.category && (
+          <p className="text-rose-500 text-sm mt-1">Category is required</p>
+        )}
       </div>
     </div>
   );
@@ -366,8 +373,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
         </div>
 
         {/* Sizes Input */}
-   {/* Sizes Input */}
-   <div className="space-y-2">
+        <div className="space-y-2">
           <label className="block text-sm font-medium text-neutral-700">
             Sizes
           </label>
@@ -485,7 +491,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
       modalContentId="product-modal-content"
       isOpen={isOpen}
       onClose={handleClose}
-      onSubmit={currentStep === 2 ? handleSubmit(onFormSubmit) : handleNextStep}
+      onSubmit={handleSubmit(onFormSubmit)}
       actionLabel={actionLabel}
       actionId={currentStep === 2 ? "add-product-button" : "next-button"}
       secondaryActionLabel={secondaryActionLabel}
