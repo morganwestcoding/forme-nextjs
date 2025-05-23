@@ -25,17 +25,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
   actionLabel,
 }) => {
   const router = useRouter();
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isFavorite, setIsFavorite] = useState(
     currentUser ? data.favoritedBy.includes(currentUser.id) : false
   );
-  
-  // Create array of all images 
-  const allImages = [data.mainImage, ...(data.galleryImages || [])];
-  const hasMultipleImages = allImages.length > 1;
-
-  // Check if product has variants
-  const hasVariants = data.variants && data.variants.length > 0;
   
   // Safely check for compareAtPrice and calculate discount
   const isOnSale = data.compareAtPrice !== null && 
@@ -76,179 +68,150 @@ const ProductCard: React.FC<ProductCardProps> = ({
     onAction(actionId);
   };
 
-  const handleImageChange = (index: number, e: React.MouseEvent) => {
-    e.stopPropagation();
-    setCurrentImageIndex(index);
+  const handleAddToCart = () => {
+    if (!inStock) {
+      toast.error('This product is out of stock');
+      return;
+    }
+    toast.success(`Added ${data.name} to cart`);
+  };
+
+  const handleViewProduct = () => {
+    router.push(`/shop/products/${data.id}`);
+  };
+
+  // Get stock status text
+  const getStockStatus = () => {
+    if (!inStock) return 'Out of Stock';
+    if (lowStock) return `${data.inventory} left`;
+    return 'In Stock';
+  };
+
+  const getStockColor = () => {
+    if (!inStock) return 'text-red-400';
+    if (lowStock) return 'text-yellow-400';
+    return 'text-green-400';
   };
 
   return (
-    <div className="col-span-1 flex justify-center w-full max-w-[280px] mx-auto">
-      <div className="bg-white rounded-xl flex flex-col w-full transition-all duration-300 overflow-hidden border hover:shadow-md">
-        {/* Image Section */}
-        <div className="relative h-[200px] w-full group cursor-pointer overflow-hidden rounded-t-xl">
-          <Image
-            onClick={() => router.push(`/shop/products/${data.id}`)} 
-            fill
-            className="object-cover w-full h-full transform transition-all duration-500 
-                      group-hover:scale-110"
-            src={allImages[currentImageIndex]}
-            alt={data.name}
-          />
-          
-          {/* Sale Badge */}
-          {isOnSale && (
-            <div className="absolute top-3 left-3 z-10 bg-red-500 text-white text-xs font-medium px-2 py-1 rounded">
-              {discount}% OFF
+    <div className="bg-white rounded-3xl shadow-lg hover:shadow-2xl overflow-hidden max-w-xl relative">
+      {/* Full-height image background with gradient overlay */}
+      <div className="absolute inset-0 z-0">
+        <Image 
+          src={data.mainImage}
+          alt={data.name}
+          fill
+          className="w-full h-full object-cover"
+        />
+        {/* Gradient overlay for entire card */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#60A5FA]/10 via-black/60 to-black"></div>
+      </div>
+
+      {/* Card content with relative positioning */}
+      <div className="relative z-10">
+        {/* Image Header Section */}
+        <div className="relative h-[300px] overflow-hidden">
+          {/* Category Label - Top Left */}
+          <div className="absolute top-4 left-4 z-20">
+            <div className="bg-black/40 border border-white backdrop-blur-sm rounded-lg px-3 py-1.5 text-white">
+              <span className="text-xs">{data.category.name}</span>
             </div>
-          )}
-          
-          {/* Stock Badge */}
-          {!inStock && (
-            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-              <span className="bg-black/70 text-white text-sm font-medium px-3 py-1.5 rounded">
-                Out of Stock
-              </span>
-            </div>
-          )}
-          
-          {/* Low Stock Indicator */}
-          {lowStock && (
-            <div className="absolute bottom-3 left-3 z-10 bg-amber-500 text-white text-xs font-medium px-2 py-1 rounded">
-              Only {data.inventory} left
-            </div>
-          )}
-          
-          {/* Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/30 
-                        opacity-0 transition-all duration-300 group-hover:opacity-100" />
-          
-          {/* Action Buttons */}
-          <div className="absolute top-3 right-3 flex items-center gap-2 z-10 
-                        opacity-0 translate-y-2 transition-all duration-300 
-                        group-hover:opacity-100 group-hover:translate-y-0">
-            <button 
-              onClick={handleFavorite}
-              className="p-2 rounded-full bg-white/90 border border-gray-200 backdrop-blur-sm 
-                        hover:bg-white transition-all duration-300 shadow-lg
-                        transform scale-90 group-hover:scale-100"
-            >
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                viewBox="0 0 24 24" 
-                width="18" 
-                height="18" 
-                fill={isFavorite ? "#f43f5e" : "none"} 
-                stroke={isFavorite ? "#f43f5e" : "currentColor"} 
-                strokeWidth="1.5" 
-                className="text-gray-700"
-              >
-                <path d="M12.62 20.8101C12.28 20.9301 11.72 20.9301 11.38 20.8101C8.48 19.8201 2 15.6901 2 8.6901C2 5.6001 4.49 3.1001 7.56 3.1001C9.38 3.1001 10.99 3.9801 12 5.3401C13.01 3.9801 14.63 3.1001 16.44 3.1001C19.51 3.1001 22 5.6001 22 8.6901C22 15.6901 15.52 19.8201 12.62 20.8101Z" />
-              </svg>
-            </button>
           </div>
 
-          {/* Image Navigation Dots */}
-          {hasMultipleImages && (
-            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-10 
-                            bg-black/30 backdrop-blur-sm rounded-full px-2.5 py-1.5 
-                            opacity-0 transition-all duration-300 
-                            group-hover:opacity-100 transform scale-95 group-hover:scale-100">
-              {allImages.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={(e) => handleImageChange(index, e)}
-                  className={`w-1.5 h-1.5 rounded-full transition-all duration-200
-                    ${currentImageIndex === index 
-                      ? 'bg-white scale-110' 
-                      : 'bg-white/40 hover:bg-white/60'
-                    }
-                  `}
-                />
-              ))}
+          {/* Sale Badge - Top Right */}
+          {isOnSale && (
+            <div className="absolute top-4 right-4 z-20">
+              <div className="bg-red-500 text-white text-xs font-medium px-2 py-1 rounded-lg">
+                {discount}% OFF
+              </div>
             </div>
           )}
+
+          {/* Product Info Section */}
+          <div className="absolute bottom-5 left-5 right-5 text-white z-20">
+            {/* Product Name and Shop - No Background */}
+            <div className="mb-3">
+              <div className="flex items-center space-x-2 mb-1">
+                <h1 className="text-xl font-medium drop-shadow-lg">{data.name}</h1>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="relative h-4 w-4 rounded-full overflow-hidden">
+                  <Image
+                    fill
+                    className="object-cover"
+                    src={data.shop.logo}
+                    alt={data.shop.name}
+                  />
+                </div>
+                <p className="text-sm drop-shadow-lg">
+                  by {data.shop.name}
+                </p>
+              </div>
+            </div>
+            
+            {/* Stats Row - With Background */}
+            <div className="bg-black/40 backdrop-blur-sm rounded-lg px-4 py-3 text-white">
+              <div className="flex items-center justify-between">
+                <div className="flex flex-col items-center space-y-1">
+                  <div className="flex items-center space-x-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" color="currentColor" fill="none">
+                      <path d="M12 2C13.1046 2 14 2.89543 14 4C14 5.10457 13.1046 6 12 6C10.8954 6 10 5.10457 10 4C10 2.89543 10.8954 2 12 2Z" stroke="currentColor" strokeWidth="1.5"/>
+                      <path d="M12 22C13.1046 22 14 21.1046 14 20C14 18.8954 13.1046 18 12 18C10.8954 18 10 18.8954 10 20C10 21.1046 10.8954 22 12 22Z" stroke="currentColor" strokeWidth="1.5"/>
+                      <path d="M5 12C5 13.1046 4.10457 14 3 14C1.89543 14 1 13.1046 1 12C1 10.8954 1.89543 10 3 10C4.10457 10 5 10.8954 5 12Z" stroke="currentColor" strokeWidth="1.5"/>
+                      <path d="M23 12C23 13.1046 22.1046 14 21 14C19.8954 14 19 13.1046 19 12C19 10.8954 19.8954 10 21 10C22.1046 10 23 10.8954 23 12Z" stroke="currentColor" strokeWidth="1.5"/>
+                    </svg>
+                    <span className="text-sm font-medium">${data.price.toFixed(2)}</span>
+                  </div>
+                  <span className="text-xs opacity-70">Price</span>
+                </div>
+                
+                <div className="w-px h-8 bg-white/30"></div>
+                
+                <div className="flex flex-col items-center space-y-1">
+                  <div className="flex items-center space-x-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" color="currentColor" fill="none">
+                      <path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                    <span className="text-sm font-medium">4.9</span>
+                  </div>
+                  <span className="text-xs opacity-70">Rating</span>
+                </div>
+                
+                <div className="w-px h-8 bg-white/30"></div>
+                
+                <div className="flex flex-col items-center space-y-1">
+                  <div className="flex items-center space-x-1.5">
+                    <div className={`w-3 h-3 rounded-full ${!inStock ? 'bg-red-400' : lowStock ? 'bg-yellow-400' : 'bg-green-400'}`}></div>
+                    <span className={`text-sm font-medium ${getStockColor()}`}>
+                      {!inStock ? '0' : data.inventory}
+                    </span>
+                  </div>
+                  <span className="text-xs opacity-70">Stock</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Content Section */}
-        <div className="p-4 flex flex-col flex-grow">
-          {/* Shop Info */}
-          <div className="flex items-center gap-2 mb-2">
-            <div className="relative h-5 w-5 rounded-full overflow-hidden">
-              <Image
-                fill
-                className="object-cover"
-                src={data.shop.logo}
-                alt={data.shop.name}
-              />
-            </div>
-            <span className="text-xs text-gray-500">{data.shop.name}</span>
-          </div>
-          
-          {/* Product Info */}
-          <h3 
-            className="font-medium text-gray-900 text-base mb-1 line-clamp-2 hover:text-blue-600 transition-colors cursor-pointer"
-            onClick={() => router.push(`/shop/products/${data.id}`)}
-          >
-            {data.name}
-          </h3>
-          
-          {/* Pricing */}
-          <div className="flex items-center gap-2 mt-auto">
-            <span className="font-semibold text-gray-900">
-              ${data.price.toFixed(2)}
-            </span>
-            
-            {isOnSale && data.compareAtPrice && (
-              <span className="text-sm text-gray-500 line-through">
-                ${data.compareAtPrice.toFixed(2)}
-              </span>
-            )}
-          </div>
-          
-          {/* Variants Indicator if applicable */}
-          {hasVariants && (
-            <div className="flex items-center gap-1 mt-2 flex-wrap">
-              <span className="text-xs text-gray-500">Available in:</span>
-              {data.variants?.slice(0, 3).map((variant, index) => (
-                <span key={index} className="text-xs bg-gray-100 px-1.5 py-0.5 rounded">
-                  {Object.values(variant.optionValues)[0]}
-                </span>
-              ))}
-              {data.variants && data.variants.length > 3 && (
-                <span className="text-xs text-gray-500">+{data.variants.length - 3} more</span>
-              )}
-            </div>
-          )}
-          
-          {/* Add to Cart Button */}
+        {/* Add to Cart Button */}
+        <div className="px-5 pb-4 pt-2 -mt-3">
           <button 
-            onClick={(e) => {
-              e.stopPropagation();
-              if (!inStock) {
-                toast.error('This product is out of stock');
-                return;
-              }
-              toast.success(`Added ${data.name} to cart`);
-            }}
+            onClick={handleAddToCart}
             disabled={!inStock}
-            className="mt-3 w-full bg-[#60A5FA] text-white py-2.5 px-4 rounded-lg text-sm font-medium
-                     shadow-sm hover:shadow-md hover:bg-[#4287f5] transition-all duration-200
-                     flex items-center justify-center disabled:bg-gray-200 disabled:text-gray-500 disabled:cursor-not-allowed"
+            className="w-full bg-[#60A5FA]/50 backdrop-blur-md text-white p-3 rounded-xl
+                    flex items-center justify-center hover:bg-white/10 transition-all
+                    shadow-lg border border-white/10 disabled:bg-gray-400/50 disabled:cursor-not-allowed"
           >
             {inStock ? (
-              <>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="mr-1.5">
-                  <path d="M8 11V8a4 4 0 014-4v0a4 4 0 014 4v3" />
-                  <path d="M19.225 12.65L20.075 20.65C20.1833 21.3955 19.6377 22.07 18.8917 22.1783C18.8306 22.1833 18.7694 22.1883 18.7083 22.1783L5.29168 22.1783C4.54334 22.1783 3.93334 21.5683 3.93334 20.82C3.93334 20.7589 3.93834 20.6977 3.94334 20.6367L4.77834 12.65C4.88584 11.8933 5.52751 11.3333 6.29168 11.3333L17.7083 11.3333C18.4725 11.3333 19.1142 11.8933 19.2217 12.65Z" />
-                </svg>
-                Add to Cart
-              </>
-            ) : 'Out of Stock'}
+              <span className="font-medium text-sm">Add to Cart</span>
+            ) : (
+              <span className="font-medium text-sm">Out of Stock</span>
+            )}
           </button>
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default ProductCard;
