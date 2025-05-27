@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { Search, Grid, List, Sparkles, TrendingUp, Layers } from 'lucide-react';
+import { Search, LayoutGrid,  Sparkles, TrendingUp, Layers } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { categories } from '@/components/Categories';
 import useRentModal from '@/app/hooks/useRentModal';
 import { ChevronRight, User, Calendar, Clock, ExternalLink, Heart, Share2, Star, ChevronDown, Scissors, Droplet, SprayCan, Waves, Palette, Flower, Dumbbell, SearchCheckIcon } from 'lucide-react';
 
 interface ViewState {
-  mode: 'grid' | 'list';
+  mode: 'horizontal' | 'vertical';
   filters: {
     category: string;
     minPrice?: number;
@@ -18,7 +18,7 @@ interface ViewState {
   };
 }
 
-interface MarketExplorerProps {
+interface NewsfeedHeaderProps {
   searchParams: {
     userId?: string;
     locationValue?: string;
@@ -34,7 +34,7 @@ interface MarketExplorerProps {
   setViewState: React.Dispatch<React.SetStateAction<ViewState>>;
 }
 
-const MarketExplorer: React.FC<MarketExplorerProps> = ({
+const NewsfeedHeader: React.FC<NewsfeedHeaderProps> = ({
   searchParams,
   viewState,
   setViewState
@@ -57,14 +57,12 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
     'Salon': SprayCan,
   };
   
-  const handleViewModeChange = (mode: 'grid' | 'list') => {
+  const handleViewModeChange = (mode: 'horizontal' | 'vertical') => {
     setViewState(prev => ({
       ...prev,
       mode
     }));
   };
-
-  
 
   const handleFilterChange = (category: string) => {
     if (category === 'categories') {
@@ -94,12 +92,13 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
     const search = current.toString();
     const query = search ? `?${search}` : '';
     
-    router.push(`/market${query}`);
+    router.push(`/newsfeed${query}`);
     setShowCategories(false);
   };
 
-  const handleCreateListing = () => {
-    rentModal.onOpen();
+  const handleCreatePost = () => {
+    // Open post creation modal or navigate to create post page
+    console.log('Create post clicked');
   };
 
   const getCategoryStyle = (categoryLabel: string) => {
@@ -124,24 +123,26 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
           </div>
           <input 
             type="text" 
-            placeholder="Search services, locations, categories..." 
+            placeholder="Search posts, users, topics..." 
             className="w-full h-12 pl-12 pr-4 border text-sm border-gray-200 rounded-xl"
           />
         </div>
 
-        {/* View Toggle */}
+        {/* View Toggle - Updated for horizontal/vertical */}
         <div className="bg-[#EBF4FE] rounded-xl flex items-center p-1 shadow-sm px-2">
           <button 
-            onClick={() => handleViewModeChange('grid')}
-            className={`p-2 rounded-lg ${viewState.mode === 'grid' ? 'bg-white shadow-sm text-[#60A5FA]' : 'text-gray-400'}`}
+            onClick={() => handleViewModeChange('horizontal')}
+            className={`p-2 rounded-lg ${viewState.mode === 'horizontal' ? 'bg-white shadow-sm text-[#60A5FA]' : 'text-gray-400'}`}
+            title="Grid View"
           >
-            <Grid className="w-5 h-5" />
+            <LayoutGrid className="w-5 h-5" />
           </button>
           <button 
-            onClick={() => handleViewModeChange('list')}
-            className={`p-2 rounded-lg ${viewState.mode === 'list' ? 'bg-white text-[#60A5FA]' : 'text-gray-400'}`}
+            onClick={() => handleViewModeChange('vertical')}
+            className={`p-2 rounded-lg ${viewState.mode === 'vertical' ? 'bg-white text-[#60A5FA]' : 'text-gray-400'}`}
+            title="Vertical Feed"
           >
-            <List className="w-5 h-5" />
+            <Layers className="w-5 h-5" />
           </button>
         </div>
 
@@ -159,7 +160,7 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
 
         {/* Create Button */}
         <button 
-          onClick={handleCreateListing}
+          onClick={handleCreatePost}
           className="flex items-center justify-center py-3 space-x-2 px-4 shadow rounded-lg transition-all bg-white text-gray-500 hover:bg-neutral-200"
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none">
@@ -171,100 +172,98 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
       </div>
 
       {/* Tabs */}
-{/* Tabs */}
-<div className="flex mb-6 border-b border-gray-200">
-  <button 
-    onClick={() => handleFilterChange('featured')}
-    className={`pb-4 flex text-sm items-center gap-2 mr-6 ${
-      viewState.filters.category === 'featured' 
-        ? `border-b-2` 
-        : 'text-gray-500'
-    }`}
-    style={viewState.filters.category === 'featured' ? {
-      color: currentCategory ? getCategoryStyle(currentCategory).color : '#60A5FA',
-      borderBottomColor: currentCategory ? getCategoryStyle(currentCategory).color : '#60A5FA'
-    } : {}}
-  >
-    <Sparkles className="w-5 h-5" />
-    <span>Featured</span>
-  </button>
-  <button 
-    onClick={() => handleFilterChange('trending')}
-    className={`pb-4 flex items-center text-sm gap-2 mr-6 ${
-      viewState.filters.category === 'trending' 
-        ? `border-b-2` 
-        : 'text-gray-500'
-    }`}
-    style={viewState.filters.category === 'trending' ? {
-      color: currentCategory ? getCategoryStyle(currentCategory).color : '#60A5FA',
-      borderBottomColor: currentCategory ? getCategoryStyle(currentCategory).color : '#60A5FA'
-    } : {}}
-  >
-    <TrendingUp className="w-5 h-5" />
-    <span>Trending</span>
-  </button>
-  <button 
-    onClick={() => handleFilterChange('categories')}
-    className={`pb-4 flex items-center text-sm gap-2 ${
-      viewState.filters.category === 'categories' || showCategories 
-        ? `border-b-2` 
-        : 'text-gray-500'
-    }`}
-    style={(viewState.filters.category === 'categories' || showCategories) ? {
-      color: currentCategory ? getCategoryStyle(currentCategory).color : '#60A5FA',
-      borderBottomColor: currentCategory ? getCategoryStyle(currentCategory).color : '#60A5FA'
-    } : {}}
-  >
-    <Layers className="w-5 h-5" />
-    <span>Categories</span>
-  </button>
-</div>
+      <div className="flex mb-6 border-b border-gray-200">
+        <button 
+          onClick={() => handleFilterChange('featured')}
+          className={`pb-4 flex text-sm items-center gap-2 mr-6 ${
+            viewState.filters.category === 'featured' 
+              ? `border-b-2` 
+              : 'text-gray-500'
+          }`}
+          style={viewState.filters.category === 'featured' ? {
+            color: currentCategory ? getCategoryStyle(currentCategory).color : '#60A5FA',
+            borderBottomColor: currentCategory ? getCategoryStyle(currentCategory).color : '#60A5FA'
+          } : {}}
+        >
+          <Sparkles className="w-5 h-5" />
+          <span>Featured</span>
+        </button>
+        <button 
+          onClick={() => handleFilterChange('trending')}
+          className={`pb-4 flex items-center text-sm gap-2 mr-6 ${
+            viewState.filters.category === 'trending' 
+              ? `border-b-2` 
+              : 'text-gray-500'
+          }`}
+          style={viewState.filters.category === 'trending' ? {
+            color: currentCategory ? getCategoryStyle(currentCategory).color : '#60A5FA',
+            borderBottomColor: currentCategory ? getCategoryStyle(currentCategory).color : '#60A5FA'
+          } : {}}
+        >
+          <TrendingUp className="w-5 h-5" />
+          <span>Trending</span>
+        </button>
+        <button 
+          onClick={() => handleFilterChange('categories')}
+          className={`pb-4 flex items-center text-sm gap-2 ${
+            viewState.filters.category === 'categories' || showCategories 
+              ? `border-b-2` 
+              : 'text-gray-500'
+          }`}
+          style={(viewState.filters.category === 'categories' || showCategories) ? {
+            color: currentCategory ? getCategoryStyle(currentCategory).color : '#60A5FA',
+            borderBottomColor: currentCategory ? getCategoryStyle(currentCategory).color : '#60A5FA'
+          } : {}}
+        >
+          <Layers className="w-5 h-5" />
+          <span>Categories</span>
+        </button>
+      </div>
 
       {/* Category Pills - Show when Categories tab is active */}
-     {/* Category Pills - Show when Categories tab is active */}
-{(showCategories || viewState.filters.category === 'categories') && (
-  <div className="pb-6 ">
-    <div className="flex flex-wrap gap-3">
-      {/* All Categories Option */}
-      <button
-        onClick={() => handleCategorySelect('All')}
-        className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-          !currentCategory 
-            ? 'bg-[#60A5FA] text-white shadow-md' 
-            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-        }`}
-      >
-        All Categories
-      </button>
-      
-      {/* Individual Category Pills */}
-      {categories.map((category) => {
-        const isSelected = currentCategory === category.label;
-        const categoryStyle = getCategoryStyle(category.label);
-        const IconComponent = categoryIcons[category.label] || categoryIcons['Default'];
-        return (
-          <button
-            key={category.label}
-            onClick={() => handleCategorySelect(category.label)}
-            className={`w-24 py-2 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2 ${
-              isSelected
-                ? `text-white shadow-md`
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
-            style={isSelected ? { 
-              backgroundColor: categoryStyle.color,
-              color: 'white'
-            } : {}}
-          >
-            {category.label}
-          </button>
-        );
-      })}
-    </div>
-  </div>
-)}
+      {(showCategories || viewState.filters.category === 'categories') && (
+        <div className="pb-6 ">
+          <div className="flex flex-wrap gap-3">
+            {/* All Categories Option */}
+            <button
+              onClick={() => handleCategorySelect('All')}
+              className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                !currentCategory 
+                  ? 'bg-[#60A5FA] text-white shadow-md' 
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              All Categories
+            </button>
+            
+            {/* Individual Category Pills */}
+            {categories.map((category) => {
+              const isSelected = currentCategory === category.label;
+              const categoryStyle = getCategoryStyle(category.label);
+              const IconComponent = categoryIcons[category.label] || categoryIcons['Default'];
+              return (
+                <button
+                  key={category.label}
+                  onClick={() => handleCategorySelect(category.label)}
+                  className={`w-24 py-2 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2 ${
+                    isSelected
+                      ? `text-white shadow-md`
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                  style={isSelected ? { 
+                    backgroundColor: categoryStyle.color,
+                    color: 'white'
+                  } : {}}
+                >
+                  {category.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-export default MarketExplorer;
+export default NewsfeedHeader;

@@ -229,8 +229,8 @@ const ListingCard: React.FC<ListingCardProps> = ({
         {/* Image Header Section */}
         <div className="relative h-[300px] overflow-hidden">
         <div className="absolute top-4 left-4 z-20">
-            <div className="bg-black/40 border border-white backdrop-blur-sm rounded-lg px-3 py-1.5 text-white">
-              <span className="text-xs">{data.category}</span>
+            <div className="bg-black/40 border border-white backdrop-blur-sm rounded-lg text-center justify-center w-20  py-1.5 text-white">
+              <span className="text-xs text-center">{data.category}</span>
             </div>
           </div>
           {/* Action Buttons 
