@@ -44,6 +44,7 @@ interface ListingCardProps {
   showAcceptDecline?: boolean;
   currentUser?: SafeUser | null;
   categories: typeof categories;
+  variant?: 'default' | 'newsfeed'; // Add variant prop
 }
 
 const ListingCard: React.FC<ListingCardProps> = ({
@@ -58,6 +59,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
   onDecline,
   showAcceptDecline,
   currentUser,
+  variant = 'default', // Default to 'default' variant
 }) => {
   const router = useRouter();
   const rentModal = useRentModal();
@@ -233,73 +235,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
               <span className="text-xs text-center">{data.category}</span>
             </div>
           </div>
-          {/* Action Buttons 
-          <div className="absolute top-4 right-4 flex space-x-2 z-20">
-            <button 
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsFavorite(!isFavorite);
-              }}
-              className="bg-white/80 hover:bg-white/90 rounded-full p-3
-              flex items-center justify-center transition-colors group"
-              aria-label="Add to Favorites"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" 
-                className="text-neutral-800 group-hover:text-[#60A5FA]"
-              > 
-                <path d="M10.4107 19.9677C7.58942 17.858 2 13.0348 2 8.69444C2 5.82563 4.10526 3.5 7 3.5C8.5 3.5 10 4 12 6C14 4 15.5 3.5 17 3.5C19.8947 3.5 22 5.82563 22 8.69444C22 13.0348 16.4106 17.858 13.5893 19.9677C12.6399 20.6776 11.3601 20.6776 10.4107 19.9677Z" 
-                  stroke="currentColor" 
-                  strokeWidth="1.5" 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
-
-            <button 
-              onClick={(e) => handleShare(e)}
-              className="bg-white/80 hover:bg-white/90 rounded-full p-3
-              flex items-center justify-center transition-colors group"
-              aria-label="Share Listing"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none"
-                className="text-neutral-800 group-hover:text-[#60A5FA]"
-              > 
-                <path d="M21 6.5C21 8.15685 19.6569 9.5 18 9.5C16.3431 9.5 15 8.15685 15 6.5C15 4.84315 16.3431 3.5 18 3.5C19.6569 3.5 21 4.84315 21 6.5Z" stroke="currentColor" strokeWidth="1.5"></path>
-                <path d="M9 12C9 13.6569 7.65685 15 6 15C4.34315 15 3 13.6569 3 12C3 10.3431 4.34315 9 6 9C7.65685 9 9 10.3431 9 12Z" stroke="currentColor" strokeWidth="1.5"></path>
-                <path d="M21 17.5C21 19.1569 19.6569 20.5 18 20.5C16.3431 20.5 15 19.1569 15 17.5C15 15.8431 16.3431 14.5 18 14.5C19.6569 14.5 21 15.8431 21 17.5Z" stroke="currentColor" strokeWidth="1.5"></path>
-                <path d="M8.72852 10.7495L15.2285 7.75M8.72852 13.25L15.2285 16.2495" stroke="currentColor" strokeWidth="1.5"></path>
-              </svg>
-            </button>
-
-            <button 
-              onClick={(e) => handleViewListing(e)}
-              className="bg-white/80 hover:bg-white/90 rounded-full p-3
-              flex items-center justify-center transition-colors group"
-              aria-label="View Listing Details"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none"
-                className="text-neutral-800 group-hover:text-[#60A5FA]"
-              > 
-                <path d="M2 12C2 7.75736 2 5.63604 3.46447 4.31802C4.92893 3 7.28596 3 12 3C16.714 3 19.0711 3 20.5355 4.31802C22 5.63604 22 7.75736 22 12C22 16.2426 22 18.364 20.5355 19.682C19.0711 21 16.714 21 12 21C7.28596 21 4.92893 21 3.46447 19.682C2 18.364 2 16.2426 2 12Z" 
-                  stroke="currentColor" 
-                  strokeWidth="1.5" 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                /> 
-                <path d="M8.4 8H7.6C6.84575 8 6.46863 8 6.23431 8.23431C6 8.46863 6 8.84575 6 9.6V10.4C6 11.1542 6 11.5314 6.23431 11.7657C6.46863 12 6.84575 12 7.6 12H8.4C9.15425 12 9.53137 12 9.76569 11.7657C10 11.5314 10 11.1542 10 10.4V9.6C10 8.84576 10 8.46863 9.76569 8.23431C9.53137 8 9.15425 8 8.4 8Z" 
-                  stroke="currentColor" 
-                  strokeWidth="1.5" 
-                  strokeLinejoin="round" 
-                /> 
-                <path d="M6 16H10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /> 
-                <path d="M14 8H18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /> 
-                <path d="M14 12H18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /> 
-                <path d="M14 16H18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /> 
-              </svg>
-            </button>
-          </div>
-          */}
 
            {/* Location and Rating */}
            <div className="absolute bottom-5 left-5 right-5 text-white z-20">
@@ -318,7 +253,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
             <div className="flex items-center justify-between bg-black/20 border-white border backdrop-blur-sm rounded-lg px-4 py-3 text-white">
               <div className="flex flex-col items-center space-y-1">
                 <div className="flex items-center space-x-1">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" color="currentColor" fill="none">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" color="currentColor" fill="none">
     <path d="M10.4107 19.9677C7.58942 17.858 2 13.0348 2 8.69444C2 5.82563 4.10526 3.5 7 3.5C8.5 3.5 10 4 12 6C14 4 15.5 3.5 17 3.5C19.8947 3.5 22 5.82563 22 8.69444C22 13.0348 16.4106 17.858 13.5893 19.9677C12.6399 20.6776 11.3601 20.6776 10.4107 19.9677Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
 </svg>
                   <span className="text-sm font-medium">3.8k</span>
@@ -330,7 +265,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
               
               <div className="flex flex-col items-center space-y-1">
                 <div className="flex items-center space-x-1">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" color="currentColor" fill="none">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" color="currentColor" fill="none">
     <path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
 </svg>
                   <span className="text-sm font-medium">4.7</span>
@@ -343,7 +278,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
               <div className="flex flex-col items-center space-y-1">
     <div className="flex items-center space-x-1">
       {/* Sun icon for open */}
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="12" r="5" />
         <path d="M12 1v2" />
         <path d="M12 21v2" />
@@ -363,24 +298,22 @@ const ListingCard: React.FC<ListingCardProps> = ({
           </div>
         </div>
 
-
-        {/* Non-Reservation View */}
-        {!reservation && (
+        {/* Conditional Explore Services Button - Only show for default variant */}
+        {!reservation && variant === 'default' && (
           <div className="px-5 pb-4 pt-2 -mt-3">
-  <button 
-    onClick={() => setShowReservationModal(true)}
-    className="w-full bg-[#60A5FA]/50 backdrop-blur-md text-white p-3 rounded-xl
-        flex items-center justify-center hover:bg-white/10 transition-all
-        shadow-lg border border-white/10"
-  >
-    <div className="flex items-center text-center gap-3">
-
-      <div className="flex flex-col items-center text-center">
-        <span className="font-medium text-sm">Explore Services</span>
-      </div>
-    </div>
-  </button>
-</div>
+            <button 
+              onClick={() => setShowReservationModal(true)}
+              className="w-full bg-[#60A5FA]/50 backdrop-blur-md text-white p-3 rounded-xl
+                  flex items-center justify-center hover:bg-white/10 transition-all
+                  shadow-lg border border-white/10"
+            >
+              <div className="flex items-center text-center gap-3">
+                <div className="flex flex-col items-center text-center">
+                  <span className="font-medium text-sm">Explore Services</span>
+                </div>
+              </div>
+            </button>
+          </div>
         )}
 
         {/* Reservation View */}
@@ -497,8 +430,8 @@ const ListingCard: React.FC<ListingCardProps> = ({
         )}
       </div>
 
-      {/* ReservationModal */}
-      {showReservationModal && (
+      {/* ReservationModal - Only show for default variant */}
+      {showReservationModal && variant === 'default' && (
         <ReservationModal
           isOpen={showReservationModal}
           onClose={() => setShowReservationModal(false)}

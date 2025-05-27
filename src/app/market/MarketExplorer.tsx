@@ -125,12 +125,12 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
           <input 
             type="text" 
             placeholder="Search services, locations, categories..." 
-            className="w-full h-12 pl-12 pr-4 border text-sm border-gray-200 rounded-xl"
+            className="w-full h-12 pl-12 pr-4 border text-sm  border-gray-200 rounded-xl"
           />
         </div>
 
         {/* View Toggle */}
-        <div className="bg-[#EBF4FE] rounded-xl flex items-center p-1 shadow-sm px-2">
+        <div className="bg-[#EBF4FE] rounded-xl flex items-center shadow-sm p-1 px-2">
           <button 
             onClick={() => handleViewModeChange('grid')}
             className={`p-2 rounded-lg ${viewState.mode === 'grid' ? 'bg-white shadow-sm text-[#60A5FA]' : 'text-gray-400'}`}
@@ -146,7 +146,7 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
         </div>
 
         {/* Filters Button */}
-        <button className="shadow bg-white text-gray-500 py-3 px-4 rounded-xl hover:bg-neutral-100 transition-colors flex items-center space-x-2 text-sm">
+        <button className="shadow-sm bg-white text-gray-500 py-3 px-4 rounded-xl hover:bg-neutral-100 transition-colors flex items-center space-x-2 text-sm">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none">
             <path d="M14.5405 2V4.48622C14.5405 6.23417 14.5405 7.10814 14.7545 7.94715C14.9685 8.78616 15.3879 9.55654 16.2267 11.0973L17.3633 13.1852C19.5008 17.1115 20.5696 19.0747 19.6928 20.53L19.6792 20.5522C18.7896 22 16.5264 22 12 22C7.47357 22 5.21036 22 4.3208 20.5522L4.30725 20.53C3.43045 19.0747 4.49918 17.1115 6.63666 13.1852L7.7733 11.0973C8.61209 9.55654 9.03149 8.78616 9.24548 7.94715C9.45947 7.10814 9.45947 6.23417 9.45947 4.48622V2" stroke="currentColor" strokeWidth="1.5"></path>
             <path d="M9 16.002L9.00868 15.9996" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
@@ -160,7 +160,7 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
         {/* Create Button */}
         <button 
           onClick={handleCreateListing}
-          className="flex items-center justify-center py-3 space-x-2 px-4 shadow rounded-lg transition-all bg-white text-gray-500 hover:bg-neutral-200"
+          className="flex items-center justify-center py-3 space-x-2 px-4 shadow-sm rounded-lg transition-all bg-white text-gray-500 hover:bg-neutral-200"
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none">
             <path d="M16.4249 4.60509L17.4149 3.6151C18.2351 2.79497 19.5648 2.79497 20.3849 3.6151C21.205 4.43524 21.205 5.76493 20.3849 6.58507L19.3949 7.57506M16.4249 4.60509L9.76558 11.2644C9.25807 11.772 8.89804 12.4078 8.72397 13.1041L8 16L10.8959 15.276C11.5922 15.102 12.228 14.7419 12.7356 14.2344L19.3949 7.57506M16.4249 4.60509L19.3949 7.57506" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"></path>

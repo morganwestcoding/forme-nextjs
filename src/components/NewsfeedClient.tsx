@@ -158,6 +158,12 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
           setViewState={setViewState}
         />
 
+        {/* Share Component - only show in horizontal mode and for specific tabs */}
+        {viewState.mode === 'horizontal' && (filterParam === 'for-you' || filterParam === 'following') && (
+          <div className="mb-6">
+            <Share currentUser={currentUser} categoryLabel={selectedCategory || undefined} />
+          </div>
+        )}
 
         {/* Posts Feed */}
         {loading ? (
@@ -173,32 +179,35 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
           <>
             {/* Horizontal Grid View */}
             {viewState.mode === 'horizontal' && (
-              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-4 group/grid">
                 {storePosts.map((post, index) => {
                   const items = [];
                   
                   // Add the post card
                   items.push(
-                    <PostCard 
-                      key={post.id}
-                      post={post}
-                      currentUser={currentUser}
-                      categories={categories}
-                    />
+                    <div key={post.id} className="group/card hover:z-10 relative group-hover/grid:opacity-50 hover:!opacity-100 transition-opacity duration-300">
+                      <PostCard 
+                        post={post}
+                        currentUser={currentUser}
+                        categories={categories}
+                      />
+                    </div>
                   );
                   
                   // Every 9th item (end of 3rd row), add a listing card
-                  if ((index + 1) % 3 === 0 && listings.length > 0) {
-                    const listingIndex = Math.floor((index + 1) / 3) - 1;
+                  if ((index + 1) % 9 === 0 && listings.length > 0) {
+                    const listingIndex = Math.floor((index + 1) / 9) - 1;
                     const listing = listings[listingIndex % listings.length];
                     
                     items.push(
-                      <ListingCard
-                        key={`listing-${listing.id}-${listingIndex}`}
-                        currentUser={currentUser}
-                        data={listing}
-                        categories={categories}
-                      />
+                      <div key={`listing-${listing.id}-${listingIndex}`} className="group/card hover:z-10 relative group-hover/grid:opacity-50 hover:!opacity-100 transition-opacity duration-300">
+                        <ListingCard
+                          currentUser={currentUser}
+                          data={listing}
+                          categories={categories}
+                          variant="newsfeed"
+                        />
+                      </div>
                     );
                   }
                   
