@@ -9,7 +9,6 @@ import { SafeUser } from "@/app/types";
 import { SafePost } from "@/app/types";
 import axios from 'axios';
 import useInboxModal from '@/app/hooks/useInboxModal';
-import UnifiedHeader from "../header/UnifiedHeader";
 import { useColorContext } from "@/app/context/ColorContext";
 import Logo from "../header/Logo";
 import UserButton from "../UserButton";
