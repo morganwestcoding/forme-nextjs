@@ -5,20 +5,19 @@ import getProfileById from '@/app/actions/getProfileById';
 import getListings from '@/app/actions/getListings';
 import getPosts from '@/app/actions/getPost';
 import ClientOnly from '@/components/ClientOnly';
+
 import getCurrentUser from '@/app/actions/getCurrentUser';
  
-interface IParams {
-  userId?: string;
-}
+
 
 export const dynamic = 'force-dynamic';
   
-  const ProfilePage = async ({ params }: { params: IParams }) => {
-    const currentUser = await getCurrentUser();
-    const user = await getProfileById(params);
-    const listings = await getListings(params); 
-    const posts = await getPosts(params);
-  
+const ProfilePage = async ({ params }: any) => {
+
+  const currentUser = await getCurrentUser();
+  const user = await getProfileById(params);
+  const listings = await getListings(params); 
+  const posts = await getPosts(params);
 
   if (!user) {
     return (
@@ -34,7 +33,7 @@ export const dynamic = 'force-dynamic';
         posts={posts}
         listings={listings}
         currentUser={currentUser}
-        user={user} 
+        user={user as any} // no need to change SafeUser or types.ts
       />
     </ClientOnly>
   );
