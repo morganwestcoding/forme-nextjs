@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, LayoutGrid,  Sparkles, TrendingUp, Layers } from 'lucide-react';
+import { Search, Grid, List, Sparkles, TrendingUp, Layers } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { categories } from '@/components/Categories';
 import useRentModal from '@/app/hooks/useRentModal';
@@ -135,14 +135,14 @@ const NewsfeedHeader: React.FC<NewsfeedHeaderProps> = ({
             className={`p-2 rounded-lg ${viewState.mode === 'horizontal' ? 'bg-white shadow-sm text-[#60A5FA]' : 'text-gray-400'}`}
             title="Grid View"
           >
-            <LayoutGrid className="w-5 h-5" />
+         <Grid className="w-5 h-5" />
           </button>
           <button 
             onClick={() => handleViewModeChange('vertical')}
             className={`p-2 rounded-lg ${viewState.mode === 'vertical' ? 'bg-white text-[#60A5FA]' : 'text-gray-400'}`}
             title="Vertical Feed"
           >
-            <Layers className="w-5 h-5" />
+                       <List className="w-5 h-5" />
           </button>
         </div>
 
