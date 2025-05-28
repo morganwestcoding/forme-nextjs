@@ -107,7 +107,7 @@ const SocialLinksInput: React.FC<SocialLinksInputProps> = ({
 
       <div className="mt-4 p-4 bg-blue-50 rounded-lg">
         <p className="text-sm text-blue-800">
-          Tip: Enter full URLs including "https://" for better user experience
+          Tip: Enter full URLs including https:// for better user experience
         </p>
       </div>
     </div>
