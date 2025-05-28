@@ -104,21 +104,11 @@ const ListingClient: React.FC<ListingClientProps> = ({
     <Container>
       <div className="max-w-screen-lg">
         <div className="flex flex-col">
-          <ListingHead
-            listing={listing}
-            currentUser={currentUser}
-          />
-          <div className="grid grid-cols-1 md:grid-cols-7 md:gap-10">
-          <div className="md:col-span-full"> {/* Full width container */}
-    <ServicesSection
-      listing={listing}
-      currentUser={currentUser}
-      isOwner={isOwner}
-      services={listing.services}
-      onServiceSelect={onServiceSelect}
-    />
-  </div>
-          </div>
+        <ListingHead
+  listing={listing}
+  currentUser={currentUser}
+  services={listing.services}
+/>
         </div>
       </div>
       

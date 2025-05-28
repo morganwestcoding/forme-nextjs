@@ -172,7 +172,7 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
 
       {/* Tabs */}
 {/* Tabs */}
-<div className="flex mb-6 border-b border-gray-200">
+<div className="flex border-b border-gray-200">
   <button 
     onClick={() => handleFilterChange('featured')}
     className={`pb-4 flex text-sm items-center gap-2 mr-6 ${

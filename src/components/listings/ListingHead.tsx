@@ -1,90 +1,111 @@
+// ListingHead.tsx
 'use client';
 
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { SafeListing, SafeUser } from '@/app/types';
-import { categories } from "../Categories";
 import {
-  MapPin, Star, Sparkles, TrendingUp, Layers, Search
+  MapPin, Star, Sparkles, TrendingUp, Layers, Search,
+  Clipboard, Users, Clock, Grid, List, ChevronDown, ShoppingCart
 } from 'lucide-react';
+
+interface ServiceItem {
+  id: string;
+  serviceName: string;
+  price: number;
+  category?: string;
+  description?: string;
+  popular?: boolean;
+}
 
 interface ListingHeadProps {
   listing: SafeListing & { user: SafeUser };
   currentUser?: SafeUser | null;
+  services: ServiceItem[];
 }
 
-const ListingHead: React.FC<ListingHeadProps> = ({ listing }) => {
+const ListingHead: React.FC<ListingHeadProps> = ({ listing, services }) => {
   const { title, location, galleryImages, imageSrc } = listing;
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [searchValue, setSearchValue] = useState("");
-
-  const getStateAcronym = (state: string) => {
-    const stateMap: { [key: string]: string } = {
-      'Alabama': 'AL', 'Alaska': 'AK', 'Arizona': 'AZ', 'Arkansas': 'AR', 'California': 'CA',
-      'Colorado': 'CO', 'Connecticut': 'CT', 'Delaware': 'DE', 'Florida': 'FL', 'Georgia': 'GA',
-      'Hawaii': 'HI', 'Idaho': 'ID', 'Illinois': 'IL', 'Indiana': 'IN', 'Iowa': 'IA',
-      'Kansas': 'KS', 'Kentucky': 'KY', 'Louisiana': 'LA', 'Maine': 'ME', 'Maryland': 'MD',
-      'Massachusetts': 'MA', 'Michigan': 'MI', 'Minnesota': 'MN', 'Mississippi': 'MS', 'Missouri': 'MO',
-      'Montana': 'MT', 'Nebraska': 'NE', 'Nevada': 'NV', 'New Hampshire': 'NH', 'New Jersey': 'NJ',
-      'New Mexico': 'NM', 'New York': 'NY', 'North Carolina': 'NC', 'North Dakota': 'ND', 'Ohio': 'OH',
-      'Oklahoma': 'OK', 'Oregon': 'OR', 'Pennsylvania': 'PA', 'Rhode Island': 'RI', 'South Carolina': 'SC',
-      'South Dakota': 'SD', 'Tennessee': 'TN', 'Texas': 'TX', 'Utah': 'UT', 'Vermont': 'VT',
-      'Virginia': 'VA', 'Washington': 'WA', 'West Virginia': 'WV', 'Wisconsin': 'WI', 'Wyoming': 'WY'
-    };
-    return stateMap[state] || state;
-  };
+  const [searchValue, setSearchValue] = useState('');
+  const [activeTab, setActiveTab] = useState<'overview' | 'team' | 'reviews'>('overview');
+  const [selectedServices, setSelectedServices] = useState<ServiceItem[]>([]);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
   const [city, state] = location?.split(',').map(s => s.trim()) || [];
-  const stateAcronym = state ? getStateAcronym(state) : '';
+  const stateAcronym = state || '';
+
+  const servicesByCategory = (services || []).reduce((acc, service) => {
+    const category = service.category || 'Other';
+    if (!acc[category]) acc[category] = [];
+    acc[category].push(service);
+    return acc;
+  }, {} as Record<string, ServiceItem[]>);
+
+  const toggleServiceSelection = (service: ServiceItem) => {
+    setSelectedServices(prev =>
+      prev.find(s => s.id === service.id)
+        ? prev.filter(s => s.id !== service.id)
+        : [...prev, service]
+    );
+  };
+
+  const renderServiceGrid = () => (
+    <div className="space-y-4">
+      {Object.entries(servicesByCategory).map(([category, items]) => (
+        <div key={category} className="bg-white rounded-xl shadow-sm border border-gray-200">
+          <button
+            onClick={() => setExpandedCategory(prev => prev === category ? null : category)}
+            className="w-full flex justify-between items-center p-4"
+          >
+            <div className="font-medium text-gray-800">{category}</div>
+            <ChevronDown
+              className={`w-5 h-5 transition-transform ${expandedCategory === category ? 'rotate-180' : ''}`}
+            />
+          </button>
+          {expandedCategory === category && (
+            <div className="px-4 pb-4">
+              <div className={`grid ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'} gap-3`}>
+                {items.map(service => (
+                  <div
+                    key={service.id}
+                    onClick={() => toggleServiceSelection(service)}
+                    className={`bg-neutral-50 p-4 rounded-xl border cursor-pointer hover:border-green-400 transition
+                      ${selectedServices.find(s => s.id === service.id) ? 'ring-2 ring-green-600 bg-green-50' : ''}`}
+                  >
+                    <div className="font-semibold text-gray-800">{service.serviceName}</div>
+                    <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                      {service.description || 'Professional service'}
+                    </p>
+                    <div className="flex justify-between items-center mt-4">
+                      <span className="text-gray-500 text-sm">60 min</span>
+                      <span className="text-green-700 font-medium">${service.price}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
 
   return (
-    <div className="w-full overflow-hidden">
-      {/* Gallery Thumbnails */}
-      <div className="relative h-60 w-full overflow-hidden sm:-mx-6 lg:-mx-0">
-        <div className="absolute bottom-6 right-6 z-20 flex space-x-2">
-          {[0, 1, 2].map((index) => {
-            const image = galleryImages?.[index];
-            if (!image && index !== 0) return null;
-
-            return (
-              <div
-                key={index}
-                className="h-20 w-20 relative rounded-lg overflow-hidden border-2 border-white cursor-pointer"
-                onClick={() => image && setSelectedImage(image)}
-              >
-                <Image
-                  src={image || imageSrc || '/placeholder.jpg'}
-                  alt={`Gallery preview ${index + 1}`}
-                  fill
-                  className="object-cover"
-                />
-                {index === 2 && galleryImages && galleryImages.length > 3 && (
-                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                    <span className="text-white font-medium">+{galleryImages.length - 2}</span>
-                  </div>
-                )}
-              </div>
-            );
-          })}
+    <div className="w-full">
+      {/* Header + Location */}
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold mb-2">{title}</h1>
+        <div className="flex items-center gap-2 text-gray-600 text">
+   
+          <span>{city}, {stateAcronym}</span>
         </div>
       </div>
 
-      {/* Title, Location, Rating */}
-      <div className="mt-4 mb-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
-          <div>
-            <h1 className="text-3xl font-bold mb-2">{title}</h1>
-            <div className="flex items-center gap-2 text-gray-600 text-sm">
-              <MapPin className="w-4 h-4" />
-              <span>{city}, {stateAcronym}</span>
-              <Star className="w-4 h-4 text-yellow-400 ml-4" />
-              <span className="font-semibold text-sm">4.7</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Search Input */}
-        <div className="relative w-full mb-6">
+      {/* Search + Action Buttons */}
+      <div className="flex items-center gap-2 mb-6">
+        <div className="relative flex-grow">
           <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
             <Search className="w-5 h-5 text-gray-400" />
           </div>
@@ -96,44 +117,64 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing }) => {
             className="w-full h-12 pl-12 pr-4 border text-sm border-gray-200 rounded-xl"
           />
         </div>
-
-        {/* Tabs */}
-        <div className="flex border-b border-gray-200 mb-6">
-          <button
-            className="pb-4 mr-6 flex items-center text-sm gap-2 border-b-2 border-[#60A5FA] text-[#60A5FA] font-medium"
-          >
-            <Sparkles className="w-5 h-5" />
-            <span>Overview</span>
-          </button>
-          <button
-            className="pb-4 mr-6 flex items-center text-sm gap-2 text-gray-500 hover:text-[#60A5FA]"
-          >
-            <TrendingUp className="w-5 h-5" />
-            <span>Reviews</span>
-          </button>
-          <button
-            className="pb-4 flex items-center text-sm gap-2 text-gray-500 hover:text-[#60A5FA]"
-          >
-            <Layers className="w-5 h-5" />
-            <span>Services</span>
-          </button>
-        </div>
+        <button className="px-4 py-3 rounded-xl bg-white shadow-sm text-sm text-gray-500 hover:bg-neutral-100 flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none">
+            <path d="M15 8C15 5.23858 12.7614 3 10 3C7.23858 3 5 5.23858 5 8C5 10.7614 7.23858 13 10 13C12.7614 13 15 10.7614 15 8Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M17.5 21L17.5 14M14 17.5H21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M3 20C3 16.134 6.13401 13 10 13C11.4872 13 12.8662 13.4638 14 14.2547" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          Follow
+        </button>
+        <button className="px-4 py-3 rounded-xl bg-white shadow-sm text-sm text-gray-500 hover:bg-neutral-100 flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none">
+            <path d="M2 6L8.91302 9.91697C11.4616 11.361 12.5384 11.361 15.087 9.91697L22 6" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+            <path d="M2.01577 13.4756C2.08114 16.5412 2.11383 18.0739 3.24496 19.2094C4.37608 20.3448 5.95033 20.3843 9.09883 20.4634C11.0393 20.5122 12.9607 20.5122 14.9012 20.4634C18.0497 20.3843 19.6239 20.3448 20.7551 19.2094C21.8862 18.0739 21.9189 16.5412 21.9842 13.4756C22.0053 12.4899 22.0053 11.5101 21.9842 10.5244C21.9189 7.45886 21.8862 5.92609 20.7551 4.79066C19.6239 3.65523 18.0497 3.61568 14.9012 3.53657C12.9607 3.48781 11.0393 3.48781 9.09882 3.53656C5.95033 3.61566 4.37608 3.65521 3.24495 4.79065C2.11382 5.92608 2.08114 7.45885 2.01576 10.5244C1.99474 11.5101 1.99475 12.4899 2.01577 13.4756Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+          </svg>
+          Message
+        </button>
       </div>
 
-      {/* Full Image Modal */}
-      {selectedImage && (
-        <div
-          className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-8"
-          onClick={() => setSelectedImage(null)}
-        >
-          <Image
-            src={selectedImage}
-            alt="Full size gallery image"
-            className="max-w-full max-h-full object-contain"
-            width={1200}
-            height={800}
-          />
-        </div>
+      {/* Tabs */}
+      <div className="flex border-b border-gray-200 mb-6">
+        <button onClick={() => setActiveTab('overview')} className={`pb-4 mr-6 flex items-center text-sm gap-2 ${activeTab === 'overview' ? 'border-b-2 border-[#60A5FA] text-[#60A5FA]' : 'text-gray-500 hover:text-[#60A5FA]'}`}>
+          <Clipboard className="w-5 h-5" /> Overview
+        </button>
+        <button onClick={() => setActiveTab('team')} className={`pb-4 mr-6 flex items-center text-sm gap-2 ${activeTab === 'team' ? 'border-b-2 border-[#60A5FA] text-[#60A5FA]' : 'text-gray-500 hover:text-[#60A5FA]'}`}>
+          <Users className="w-5 h-5" /> Team
+        </button>
+        <button onClick={() => setActiveTab('reviews')} className={`pb-4 flex items-center text-sm gap-2 ${activeTab === 'reviews' ? 'border-b-2 border-[#60A5FA] text-[#60A5FA]' : 'text-gray-500 hover:text-[#60A5FA]'}`}>
+          <Star className="w-5 h-5" /> Reviews
+        </button>
+      </div>
+
+      {/* Tab Content */}
+      {activeTab === 'overview' && (
+        <>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold text-neutral-800">Select Service</h2>
+            <div className="flex bg-white border border-neutral-200 rounded-lg shadow-sm">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`p-2 rounded-l-lg ${viewMode === 'grid' ? 'bg-blue-100 text-blue-600' : 'hover:bg-neutral-100 text-gray-500'}`}
+              >
+                <Grid className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`p-2 rounded-r-lg ${viewMode === 'list' ? 'bg-blue-100 text-blue-600' : 'hover:bg-neutral-100 text-gray-500'}`}
+              >
+                <List className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+          {renderServiceGrid()}
+        </>
+      )}
+      {activeTab === 'team' && (
+        <div className="text-center text-gray-500 py-10">Team information will be displayed here.</div>
+      )}
+      {activeTab === 'reviews' && (
+        <div className="text-center text-gray-500 py-10">Reviews will be displayed here.</div>
       )}
     </div>
   );

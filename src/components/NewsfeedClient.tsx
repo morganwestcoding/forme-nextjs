@@ -158,17 +158,14 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
           setViewState={setViewState}
         />
         {/* Posts Feed */}
-        {loading ? (
-          <div className="flex justify-center p-8">
-            <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
-          </div>
-        ) : storePosts.length === 0 ? (
-          <EmptyState 
-            title={getEmptyStateMessage().title}
-            subtitle={getEmptyStateMessage().subtitle}
-          />
+        {storePosts.length === 0 ? (
+  <EmptyState 
+    title={getEmptyStateMessage().title}
+    subtitle={getEmptyStateMessage().subtitle}
+  />
         ) : (
           <>
+  
             {/* Horizontal Grid View */}
             {viewState.mode === 'horizontal' && (
               <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-4 group/grid">
@@ -207,6 +204,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                 }).flat()}
               </div>
             )}
+            
 
             {/* Vertical Scroll View - Theatre Mode */}
             {viewState.mode === 'vertical' && (
@@ -222,6 +220,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
               </div>
             )}
           </>
+          
         )}
       </Container>
     </ClientProviders>
