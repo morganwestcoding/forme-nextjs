@@ -1,4 +1,4 @@
-'use client';
+{/*'use client';
 
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import Calendar from '../inputs/Calender';
@@ -431,4 +431,4 @@ const ListingRightBar: React.FC<ListingRightBarProps> = ({
   );
 }
 
-export default ListingRightBar;
+export default ListingRightBar;*/}
