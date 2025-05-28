@@ -3,6 +3,7 @@ import { Search, Grid, List, Sparkles, TrendingUp, Layers } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { categories } from '@/components/Categories';
 import useRentModal from '@/app/hooks/useRentModal';
+import useCreatePostModal from '@/app/hooks/useCreatePostModal';
 import { ChevronRight, User, Calendar, Clock, ExternalLink, Heart, Share2, Star, ChevronDown, Scissors, Droplet, SprayCan, Waves, Palette, Flower, Dumbbell, SearchCheckIcon } from 'lucide-react';
 
 interface ViewState {
@@ -43,6 +44,7 @@ const NewsfeedHeader: React.FC<NewsfeedHeaderProps> = ({
   const params = useSearchParams();
   const rentModal = useRentModal();
   const [showCategories, setShowCategories] = useState(false);
+  const createPostModal = useCreatePostModal();
   
   const currentCategory = searchParams.category || '';
 
@@ -62,6 +64,10 @@ const NewsfeedHeader: React.FC<NewsfeedHeaderProps> = ({
       ...prev,
       mode
     }));
+  };
+
+  const handleCreatePost = () => {
+    createPostModal.onOpen();
   };
 
   const handleFilterChange = (category: string) => {
@@ -94,11 +100,6 @@ const NewsfeedHeader: React.FC<NewsfeedHeaderProps> = ({
     
     router.push(`/newsfeed${query}`);
     setShowCategories(false);
-  };
-
-  const handleCreatePost = () => {
-    // Open post creation modal or navigate to create post page
-    console.log('Create post clicked');
   };
 
   const getCategoryStyle = (categoryLabel: string) => {

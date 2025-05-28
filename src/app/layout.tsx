@@ -27,6 +27,7 @@ import PostModal from '@/components/modals/PostModal';
 import { ColorProvider } from './context/ColorContext';
 import StripeCheckoutModal from '@/components/modals/StripeCheckoutModal';
 import ShopModal from '@/components/modals/ShopModal';
+import CreatePostModal from '@/components/modals/CreatePostModal';
 
 
 export const metadata: Metadata = {
@@ -71,6 +72,7 @@ export default async function RootLayout({
               <ShopModal/>
               <ToasterProvider/>
               <RentModal/>
+              <CreatePostModal />
               <InboxModal/>
               <ProfileModal/>
               <LoginModal/>
