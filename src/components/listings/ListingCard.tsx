@@ -212,7 +212,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
   
 
   return (
-    <div className="bg-white rounded-3xl shadow-lg hover:shadow-2xl overflow-hidden max-w-xl relative">
+    <div className={`bg-white rounded-3xl shadow-lg hover:shadow-2xl overflow-hidden relative ${variant === 'newsfeed' ? 'h-[400px]' : ''}`}>
       {/* Full-height image background with gradient overlay */}
       <div className="absolute inset-0 z-0">
         <Image 
@@ -240,7 +240,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
            <div className="absolute bottom-5 left-5 right-5 text-white z-20">
            <div className="flex items-center space-x-2 mb-1">
               <h1 className="text-xl font-medium drop-shadow-lg">{data.title}</h1>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="#519872">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="#60A5FA">
                 <path d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z" stroke="currentColor" strokeWidth="1.5" />
                 <path d="M9 12.8929L10.8 14.5L15 9.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
@@ -248,52 +248,58 @@ const ListingCard: React.FC<ListingCardProps> = ({
             <p className="text-xs drop-shadow-md font-thin flex items-center mb-3">
               {city}, {state} • 2.3 miles away
             </p>
+
             
-            {/* Stats Section - Dribbble Style */}
-            <div className="flex items-center justify-between bg-black/20 border-white border backdrop-blur-sm rounded-lg px-4 py-3 text-white">
-              <div className="flex flex-col items-center space-y-1">
-                <div className="flex items-center space-x-1">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" color="currentColor" fill="none">
-    <path d="M10.4107 19.9677C7.58942 17.858 2 13.0348 2 8.69444C2 5.82563 4.10526 3.5 7 3.5C8.5 3.5 10 4 12 6C14 4 15.5 3.5 17 3.5C19.8947 3.5 22 5.82563 22 8.69444C22 13.0348 16.4106 17.858 13.5893 19.9677C12.6399 20.6776 11.3601 20.6776 10.4107 19.9677Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-</svg>
-                  <span className="text-sm font-medium">3.8k</span>
-                </div>
-                <span className="text-xs opacity-70">Likes</span>
-              </div>
-              
-              <div className="w-px h-8 bg-white/30"></div>
-              
-              <div className="flex flex-col items-center space-y-1">
-                <div className="flex items-center space-x-1">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" color="currentColor" fill="none">
-    <path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-</svg>
-                  <span className="text-sm font-medium">4.7</span>
-                </div>
-                <span className="text-xs opacity-70">Rating</span>
-              </div>
-              
-              <div className="w-px h-8 bg-white/30"></div>
-              
-              <div className="flex flex-col items-center space-y-1">
-    <div className="flex items-center space-x-1">
-      {/* Sun icon for open */}
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="5" />
-        <path d="M12 1v2" />
-        <path d="M12 21v2" />
-        <path d="M4.22 4.22l1.42 1.42" />
-        <path d="M18.36 18.36l1.42 1.42" />
-        <path d="M1 12h2" />
-        <path d="M21 12h2" />
-        <path d="M4.22 19.78l1.42-1.42" />
-        <path d="M18.36 5.64l1.42-1.42" />
-      </svg>
-      <span className="text-sm font-medium">Open</span>
+            
+            {variant === 'default' && (
+  <div className="flex items-center justify-between bg-black/20 border-white border backdrop-blur-sm rounded-lg px-4 py-3 text-white">
+    <div className="flex flex-col items-center space-y-1">
+      <div className="flex items-center space-x-1">
+        {/* Likes Icon */}
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" color="currentColor" fill="none">
+          <path d="M10.4107 19.9677C7.58942 17.858 2 13.0348 2 8.69444C2 5.82563 4.10526 3.5 7 3.5C8.5 3.5 10 4 12 6C14 4 15.5 3.5 17 3.5C19.8947 3.5 22 5.82563 22 8.69444C22 13.0348 16.4106 17.858 13.5893 19.9677C12.6399 20.6776 11.3601 20.6776 10.4107 19.9677Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+        <span className="text-sm font-medium">3.8k</span>
+      </div>
+      <span className="text-xs opacity-70">Likes</span>
     </div>
-    <span className="text-xs opacity-70">Now</span>
+
+    <div className="w-px h-8 bg-white/30"></div>
+
+    <div className="flex flex-col items-center space-y-1">
+      <div className="flex items-center space-x-1">
+        {/* Star Icon */}
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" color="currentColor" fill="none">
+          <path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+        <span className="text-sm font-medium">4.7</span>
+      </div>
+      <span className="text-xs opacity-70">Rating</span>
+    </div>
+
+    <div className="w-px h-8 bg-white/30"></div>
+
+    <div className="flex flex-col items-center space-y-1">
+      <div className="flex items-center space-x-1">
+        {/* Sun Icon */}
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="5" />
+          <path d="M12 1v2" />
+          <path d="M12 21v2" />
+          <path d="M4.22 4.22l1.42 1.42" />
+          <path d="M18.36 18.36l1.42 1.42" />
+          <path d="M1 12h2" />
+          <path d="M21 12h2" />
+          <path d="M4.22 19.78l1.42-1.42" />
+          <path d="M18.36 5.64l1.42-1.42" />
+        </svg>
+        <span className="text-sm font-medium">Open</span>
+      </div>
+      <span className="text-xs opacity-70">Now</span>
+    </div>
   </div>
-</div>
+)}
+
          
           </div>
         </div>

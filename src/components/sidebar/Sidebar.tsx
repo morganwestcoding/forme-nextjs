@@ -12,6 +12,7 @@ import useInboxModal from '@/app/hooks/useInboxModal';
 import UnifiedHeader from "../header/UnifiedHeader";
 import { useColorContext } from "@/app/context/ColorContext";
 import Logo from "../header/Logo";
+import UserButton from "../UserButton";
 
 interface SidebarProps {
   currentUser?: SafeUser | null;
@@ -130,6 +131,8 @@ const Sidebar: React.FC<SidebarProps> = ({
         {/* Top Bar Layout with Logo and UserButton */}
  <Logo variant="vertical" />
 
+ <UserButton/>
+
         {/* Mobile Close Button */}
         {isMobile && (
           <div 
@@ -191,37 +194,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                     </svg>
                   </div>
                   <span className={`ml-3 text-sm ${selectedButton === 'home' ? 'font-medium' : ''}`}>
-                    Home
-                  </span>
-                </div>
-              </li>
-
-              <li className="relative w-full">
-                <div 
-                  className={`
-                    flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
-                    ${selectedButton === 'shops' ? '' : 'text-gray-500 hover:text-neutral-700 hover:bg-gray-50'}
-                  `} 
-                  onClick={() => handleNavigate('/shops', 'shops')}
-                  style={selectedButton === 'shops' ? getTextColorStyle(true) : {}}
-                >
-                  <div className="w-8 flex justify-center">
-                    <svg 
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="20" 
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none" 
-                      className="flex-shrink-0"
-                      style={selectedButton === 'explore' ? getTextColorStyle(true) : {}}
-                    >
-                      <path d="M9.49811 15L16.9981 7.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                      <path d="M8.00634 7.67888L15.327 4.21881C18.3688 2.78111 19.8897 2.06226 20.8598 2.78341C21.8299 3.50455 21.5527 5.14799 20.9984 8.43486L20.0435 14.0968C19.6811 16.246 19.4998 17.3205 18.6989 17.7891C17.8979 18.2577 16.8574 17.8978 14.7765 17.178L8.41077 14.9762C4.51917 13.6301 2.57337 12.9571 2.50019 11.6365C2.427 10.3159 4.28678 9.43692 8.00634 7.67888Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                      <path d="M9.49811 15.5V17.7274C9.49811 20.101 9.49811 21.2878 10.2083 21.4771C10.9185 21.6663 11.6664 20.6789 13.1622 18.7039L13.9981 17.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </div>
-                  <span className={`ml-3 text-sm ${selectedButton === 'explore' ? 'font-medium' : ''}`}>
-                    Discover
+                   Discover
                   </span>
                 </div>
               </li>
@@ -255,6 +228,70 @@ const Sidebar: React.FC<SidebarProps> = ({
                   </span>
                 </div>
               </li>
+              <li className="relative w-full">
+                <div 
+                  className={`
+                    flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
+                    ${selectedButton === 'shops' ? '' : 'text-gray-500 hover:text-neutral-700 hover:bg-gray-50'}
+                  `} 
+                  onClick={() => handleNavigate('/shops', 'shops')}
+                  style={selectedButton === 'shops' ? getTextColorStyle(true) : {}}
+                >
+                  <div className="w-8 flex justify-center">
+                    <svg 
+                      xmlns="http://www.w3.org/2000/svg" 
+                      viewBox="0 0 24 24" 
+                      width="20" 
+                      height="20" 
+                      fill="none"
+                      className="flex-shrink-0"
+                      style={selectedButton === 'shops' ? getTextColorStyle(true) : {}}
+                    >
+                      <path 
+                        d="M8 16L16.7201 15.2733C19.4486 15.046 20.0611 14.45 20.3635 11.7289L21 6" 
+                        stroke="currentColor" 
+                        strokeWidth="1.5" 
+                        strokeLinecap="round" 
+                      />
+                      <path 
+                        d="M6 6H22" 
+                        stroke="currentColor" 
+                        strokeWidth="1.5" 
+                        strokeLinecap="round" 
+                      />
+                      <circle 
+                        cx="6" 
+                        cy="20" 
+                        r="1.5" 
+                        stroke="currentColor" 
+                        strokeWidth="1.5" 
+                      />
+                      <circle 
+                        cx="17" 
+                        cy="20" 
+                        r="1.5" 
+                        stroke="currentColor" 
+                        strokeWidth="1.5" 
+                      />
+                      <path 
+                        d="M8 20L15 20" 
+                        stroke="currentColor" 
+                        strokeWidth="1.5" 
+                        strokeLinecap="round" 
+                      />
+                      <path 
+                        d="M2 2H2.966C3.91068 2 4.73414 2.62459 4.96326 3.51493L7.93852 15.0765C8.08887 15.6608 7.9602 16.2797 7.58824 16.7616L6.63213 18" 
+                        stroke="currentColor" 
+                        strokeWidth="1.5" 
+                        strokeLinecap="round" 
+                      />
+                    </svg>
+                  </div>
+                  <span className={`ml-3 text-sm ${selectedButton === 'shops' ? 'font-medium' : ''}`}>
+                    Vendors
+                  </span>
+                </div>
+                </li>
             </ul>
           </div>
           
@@ -335,109 +372,6 @@ const Sidebar: React.FC<SidebarProps> = ({
               </li>
             </ul>
           </div>
-  
-          {/* Opportunities - Centered headers with aligned icons */}
-          <div className="mb-6">
-            <div className="text-xs text-neutral-400 uppercase mb-2 text-center font-medium">Opportunities</div>
-            <ul className="list-none m-0 p-0 flex flex-col items-center space-y-1">
-              <li className="relative w-full">
-                <div 
-                  className={`
-                    flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
-                    ${selectedButton === 'jobs' ? '' : 'text-gray-500 hover:text-neutral-700 hover:bg-gray-50'}
-                  `} 
-                  onClick={() => handleNavigate('/jobs', 'jobs')}
-                  style={selectedButton === 'jobs' ? getTextColorStyle(true) : {}}
-                >
-                  <div className="w-8 flex justify-center">
-                    <svg 
-                      xmlns="http://www.w3.org/2000/svg" 
-                      viewBox="0 0 24 24" 
-                      width="20" 
-                      height="20" 
-                      fill="none"
-                      className="flex-shrink-0"
-                      style={selectedButton === 'jobs' ? getTextColorStyle(true) : {}}
-                    >
-                      <path d="M10 13.3333C10 13.0233 10 12.8683 10.0341 12.7412C10.1265 12.3961 10.3961 12.1265 10.7412 12.0341C10.8683 12 11.0233 12 11.3333 12H12.6667C12.9767 12 13.1317 12 13.2588 12.0341C13.6039 12.1265 13.8735 12.3961 13.9659 12.7412C14 12.8683 14 13.0233 14 13.3333V14C14 15.1046 13.1046 16 12 16C10.8954 16 10 15.1046 10 14V13.3333Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                      <path d="M13.9 13.5H15.0826C16.3668 13.5 17.0089 13.5 17.5556 13.3842C19.138 13.049 20.429 12.0207 20.9939 10.6455C21.1891 10.1704 21.2687 9.59552 21.428 8.4457C21.4878 8.01405 21.5177 7.79823 21.489 7.62169C21.4052 7.10754 20.9932 6.68638 20.4381 6.54764C20.2475 6.5 20.0065 6.5 19.5244 6.5H4.47562C3.99351 6.5 3.75245 6.5 3.56187 6.54764C3.00682 6.68638 2.59477 7.10754 2.51104 7.62169C2.48229 7.79823 2.51219 8.01405 2.57198 8.4457C2.73128 9.59552 2.81092 10.1704 3.00609 10.6455C3.571 12.0207 4.86198 13.049 6.44436 13.3842C6.99105 13.5 7.63318 13.5 8.91743 13.5H10.1" stroke="currentColor" strokeWidth="1.5" />
-                      <path d="M3.5 11.5V13.5C3.5 17.2712 3.5 19.1569 4.60649 20.3284C5.71297 21.5 7.49383 21.5 11.0556 21.5H12.9444C16.5062 21.5 18.287 21.5 19.3935 20.3284C20.5 19.1569 20.5 17.2712 20.5 13.5V11.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                      <path d="M15.5 6.5L15.4227 6.14679C15.0377 4.38673 14.8452 3.50671 14.3869 3.00335C13.9286 2.5 13.3199 2.5 12.1023 2.5H11.8977C10.6801 2.5 10.0714 2.5 9.61309 3.00335C9.15478 3.50671 8.96228 4.38673 8.57727 6.14679L8.5 6.5" stroke="currentColor" strokeWidth="1.5" />
-                    </svg>
-                  </div>
-                  <span className={`ml-3 text-sm ${selectedButton === 'jobs' ? 'font-medium' : ''}`}>
-                    Events
-                  </span>
-                </div>
-              </li>
-
-              <li className="relative w-full">
-                <div 
-                  className={`
-                    flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
-                    ${selectedButton === 'vendors' ? '' : 'text-gray-500 hover:text-neutral-700 hover:bg-gray-50'}
-                  `} 
-                  onClick={() => handleNavigate('/vendors', 'vendors')}
-                  style={selectedButton === 'vendors' ? getTextColorStyle(true) : {}}
-                >
-                  <div className="w-8 flex justify-center">
-                    <svg 
-                      xmlns="http://www.w3.org/2000/svg" 
-                      viewBox="0 0 24 24" 
-                      width="20" 
-                      height="20" 
-                      fill="none"
-                      className="flex-shrink-0"
-                      style={selectedButton === 'vendors' ? getTextColorStyle(true) : {}}
-                    >
-                      <path 
-                        d="M8 16L16.7201 15.2733C19.4486 15.046 20.0611 14.45 20.3635 11.7289L21 6" 
-                        stroke="currentColor" 
-                        strokeWidth="1.5" 
-                        strokeLinecap="round" 
-                      />
-                      <path 
-                        d="M6 6H22" 
-                        stroke="currentColor" 
-                        strokeWidth="1.5" 
-                        strokeLinecap="round" 
-                      />
-                      <circle 
-                        cx="6" 
-                        cy="20" 
-                        r="1.5" 
-                        stroke="currentColor" 
-                        strokeWidth="1.5" 
-                      />
-                      <circle 
-                        cx="17" 
-                        cy="20" 
-                        r="1.5" 
-                        stroke="currentColor" 
-                        strokeWidth="1.5" 
-                      />
-                      <path 
-                        d="M8 20L15 20" 
-                        stroke="currentColor" 
-                        strokeWidth="1.5" 
-                        strokeLinecap="round" 
-                      />
-                      <path 
-                        d="M2 2H2.966C3.91068 2 4.73414 2.62459 4.96326 3.51493L7.93852 15.0765C8.08887 15.6608 7.9602 16.2797 7.58824 16.7616L6.63213 18" 
-                        stroke="currentColor" 
-                        strokeWidth="1.5" 
-                        strokeLinecap="round" 
-                      />
-                    </svg>
-                  </div>
-                  <span className={`ml-3 text-sm ${selectedButton === 'vendors' ? 'font-medium' : ''}`}>
-                    Vendors
-                  </span>
-                </div>
-                </li>
-            </ul>
-          </div>
-
           {/* Connections - Centered headers with aligned icons */}
           <div className="mb-6">
             <div className="text-xs text-neutral-400 uppercase mb-2 text-center font-medium">Connections</div>

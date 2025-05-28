@@ -184,6 +184,7 @@ const MarketContent = ({ searchParams, listings, currentUser }: MarketContentPro
     
             
           ">
+            
             {listings.map((listing: SafeListing) => (
               <ListingCard
                 currentUser={currentUser}

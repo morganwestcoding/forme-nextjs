@@ -147,7 +147,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
     <ClientProviders>
       <Container>
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Newsfeed</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Discover</h1>
           <p className="text-gray-600">Share whats new with you and your business</p>
         </div>
 
@@ -157,14 +157,6 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
           viewState={viewState}
           setViewState={setViewState}
         />
-
-        {/* Share Component - only show in horizontal mode and for specific tabs */}
-        {viewState.mode === 'horizontal' && (filterParam === 'for-you' || filterParam === 'following') && (
-          <div className="mb-6">
-            <Share currentUser={currentUser} categoryLabel={selectedCategory || undefined} />
-          </div>
-        )}
-
         {/* Posts Feed */}
         {loading ? (
           <div className="flex justify-center p-8">
@@ -195,8 +187,8 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                   );
                   
                   // Every 9th item (end of 3rd row), add a listing card
-                  if ((index + 1) % 9 === 0 && listings.length > 0) {
-                    const listingIndex = Math.floor((index + 1) / 9) - 1;
+                  if ((index + 1) % 3 === 0 && listings.length > 0) {
+                    const listingIndex = Math.floor((index + 1) / 3) - 1;
                     const listing = listings[listingIndex % listings.length];
                     
                     items.push(

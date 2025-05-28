@@ -3,7 +3,7 @@ import getShopById from '@/app/actions/getProfileById';
 import getShopProducts from '@/app/actions/getShopProducts';
 import ClientProviders from '@/components/ClientProviders';
 import EmptyState from '@/components/EmptyState';
-import ShopDetailClient from './ShopDetailClient';
+
 
 interface IParams {
   shopId?: string;
@@ -26,11 +26,8 @@ const ShopDetailPage = async ({ params }: { params: IParams }) => {
 
   return (
     <ClientProviders>
-      <ShopDetailClient
-        shop={shop}
-        products={products}
-        currentUser={currentUser}
-      />
+      <></>
+
     </ClientProviders>
   );
 }
