@@ -165,10 +165,9 @@ const ListingCard: React.FC<ListingCardProps> = ({
     }
   };
 
-  const handleAction = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    if (disabled || !actionId || !onAction) return;
-    onAction(actionId);
+  // Card click → navigate to listing page
+  const handleCardClick = () => {
+    router.push(`/listings/${data.id}`);
   };
 
   const handleShare = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -212,7 +211,10 @@ const ListingCard: React.FC<ListingCardProps> = ({
   
 
   return (
-    <div className={`bg-white rounded-3xl shadow-lg hover:shadow-2xl overflow-hidden relative ${variant === 'newsfeed' ? 'h-[400px]' : ''}`}>
+    <div
+      onClick={handleCardClick}
+      className={`cursor-pointer bg-white rounded-3xl shadow-lg hover:shadow-2xl overflow-hidden relative ${variant === 'newsfeed' ? 'h-[400px]' : ''}`}
+    >
       {/* Full-height image background with gradient overlay */}
       <div className="absolute inset-0 z-0">
         <Image 
@@ -250,7 +252,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
             </p>
 
             
-            
+            {/*ScoreCard Section */}
             {variant === 'default' && (
   <div className="flex items-center justify-between bg-black/20 border-white border backdrop-blur-sm rounded-lg px-4 py-3 text-white">
     <div className="flex flex-col items-center space-y-1">
@@ -279,24 +281,15 @@ const ListingCard: React.FC<ListingCardProps> = ({
 
     <div className="w-px h-8 bg-white/30"></div>
 
-    <div className="flex flex-col items-center space-y-1">
-      <div className="flex items-center space-x-1">
-        {/* Sun Icon */}
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="12" cy="12" r="5" />
-          <path d="M12 1v2" />
-          <path d="M12 21v2" />
-          <path d="M4.22 4.22l1.42 1.42" />
-          <path d="M18.36 18.36l1.42 1.42" />
-          <path d="M1 12h2" />
-          <path d="M21 12h2" />
-          <path d="M4.22 19.78l1.42-1.42" />
-          <path d="M18.36 5.64l1.42-1.42" />
-        </svg>
-        <span className="text-sm font-medium">Open</span>
-      </div>
-      <span className="text-xs opacity-70">Now</span>
-    </div>
+    <div className="flex flex-col items-center space-y-0.5 text-center">
+  <div className="flex items-center space-x-1">
+    <Clock size={14} className="text-white/80" />
+    <span className="text-xs text-white font-medium">Open</span>
+  </div>
+  <span className="text-[10px] text-white/50 font-light leading-none">
+    Closes 6:00PM
+  </span>
+</div>
   </div>
 )}
 
