@@ -131,7 +131,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         {/* Top Bar Layout with Logo and UserButton */}
  <Logo variant="vertical" />
 
- <UserButton/>
+ <UserButton currentUser={currentUser} />
 
         {/* Mobile Close Button */}
         {isMobile && (

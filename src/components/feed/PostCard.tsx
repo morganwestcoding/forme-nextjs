@@ -93,7 +93,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUser, categories }) =>
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
             </>
           ) : (
-            <div className="absolute inset-0 flex items-center justify-center p-6">
+            <div className="absolute inset-0 -mt-6 flex items-center justify-center p-6">
               <p className="text-gray-800 text-sm font-medium text-center leading-relaxed">
                 {post.content.length > 350 ? post.content.substring(0, 350) + '...' : post.content}
               </p>
