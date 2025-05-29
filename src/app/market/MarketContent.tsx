@@ -1,15 +1,16 @@
 'use client';
 
+import React from 'react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ClientProviders from '@/components/ClientProviders';
 import EmptyState from '@/components/EmptyState';
 import ListingCard from '@/components/listings/ListingCard';
+import ServiceCard from '@/components/listings/ServiceCard';
 import { categories } from '@/components/Categories';
 import Container from '@/components/Container';
 import MarketExplorer from './MarketExplorer';
 import { SafeListing, SafeUser } from '@/app/types';
-import Logo from '@/components/header/Logo';
 
 interface MarketContentProps {
   searchParams: {
@@ -40,8 +41,13 @@ interface ViewState {
   };
 }
 
-const MarketContent = ({ searchParams, listings, currentUser }: MarketContentProps) => {
+const MarketContent = ({
+  searchParams,
+  listings,
+  currentUser
+}: MarketContentProps) => {
   const router = useRouter();
+
   const [viewState, setViewState] = useState<ViewState>({
     mode: 'grid',
     filters: {
@@ -49,150 +55,129 @@ const MarketContent = ({ searchParams, listings, currentUser }: MarketContentPro
     }
   });
 
-  const [expandedServices, setExpandedServices] = useState<{ [key: string]: boolean }>({});
-
-  const toggleServices = (listingId: string) => {
-    setExpandedServices(prev => ({
-      ...prev,
-      [listingId]: !prev[listingId]
-    }));
+  const renderListView = () => {
+    return <div className="text-sm text-gray-500">List view goes here.</div>;
   };
-
-  const renderListView = () => (
-    <div className="w-full">
-      <table className="w-full">
-        <thead>
-          <tr className="border-b border-gray-100">
-            <th className="py-6 px-6 text-left text-sm font-medium text-gray-600 w-[30%]">Listing</th>
-            <th className="py-6 px-4 text-left text-sm font-medium text-gray-600 w-[15%]">Category</th>
-            <th className="py-6 px-4 text-left text-sm font-medium text-gray-600 w-[20%]">Location</th>
-            <th className="py-6 px-4 text-left text-sm font-medium text-gray-600 w-[20%]">Services</th>
-            <th className="py-6 px-4 text-left text-sm font-medium text-gray-600 w-[15%]">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {listings.map((listing: SafeListing) => {
-            const mainService = listing.services[0];
-            const hasMoreServices = listing.services.length > 1;
-            const isExpanded = expandedServices[listing.id] || false;
-
-            return (
-              <tr key={listing.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                <td className="py-4 px-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-md overflow-hidden">
-                      <img 
-                        src={listing.imageSrc} 
-                        alt={listing.title}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div>
-                      <h3 className="font-medium text-sm">{listing.title}</h3>
-                    </div>
-                  </div>
-                </td>
-                <td className="py-4 px-4">
-                  <span className="text-sm text-gray-600">{listing.category}</span>
-                </td>
-                <td className="py-4 px-4">
-                  <span className="text-sm text-gray-600">{listing.location}</span>
-                </td>
-                <td className="py-4 px-4">
-                  <div className="flex flex-col gap-1">
-                    <div className="flex items-center gap-2">
-                      <div className="text-sm">
-                        <span className="text-gray-600">{mainService.serviceName}</span>
-                        <span className="text-gray-400 mx-2">·</span>
-                        <span className="font-medium">${mainService.price}</span>
-                      </div>
-                      {hasMoreServices && (
-                        <button 
-                          onClick={() => toggleServices(listing.id)}
-                          className="p-1 hover:bg-gray-100 rounded-full transition-colors"
-                        >
-                          <svg 
-                            xmlns="http://www.w3.org/2000/svg" 
-                            width="16" 
-                            height="16" 
-                            viewBox="0 0 24 24" 
-                            fill="none" 
-                            stroke="currentColor" 
-                            className={`transform transition-transform ${isExpanded ? 'rotate-180' : ''}`}
-                          >
-                            <path d="M6 9l6 6 6-6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                          </svg>
-                        </button>
-                      )}
-                    </div>
-                    {isExpanded && (
-                      <div className="pl-2 space-y-1 mt-1 border-l-2 border-gray-100">
-                        {listing.services.slice(1).map((service) => (
-                          <div key={service.id} className="text-sm">
-                            <span className="text-gray-600">{service.serviceName}</span>
-                            <span className="text-gray-400 mx-2">·</span>
-                            <span className="font-medium">${service.price}</span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </td>
-                <td className="py-4 px-4">
-                  <button 
-                    onClick={() => router.push(`/listings/${listing.id}`)}
-                    className="bg-[#F9AE8B] text-white px-4 py-1.5 rounded-md text-sm hover:opacity-90 transition-opacity"
-                  >
-                    View Details
-                  </button>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
-  );
 
   return (
     <Container>
       <div className="pb-6">
-      <div className="mb-6 flex items-center gap-4">
+        <div className="mb-6 flex items-center gap-4">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Market</h1>
             <p className="text-gray-600">Discover unique services from our vendors</p>
           </div>
         </div>
-          
-          <MarketExplorer
-            searchParams={searchParams}
-            viewState={viewState}
-            setViewState={setViewState}
-/>
+
+        <MarketExplorer
+          searchParams={searchParams}
+          viewState={viewState}
+          setViewState={setViewState}
+        />
       </div>
-      
+
       <div className="flex flex-col">
         {viewState.mode === 'grid' ? (
           <div className="
-            flex-1
             grid 
             grid-cols-1
-            lg:grid-cols-2
-            xl:grid-cols-3
-            2xl:grid-cols-3
+            md:grid-cols-2
+            lg:grid-cols-3
             gap-4
-    
-            
           ">
-            
-            {listings.map((listing: SafeListing) => (
-              <ListingCard
-                currentUser={currentUser}
-                key={listing.id}
-                data={listing}
-                categories={categories}
-              />
-            ))}
+            {Array.from({ length: Math.ceil(listings.length / 2) }).map((_, index) => {
+              const firstListing = listings[index * 2];
+              const secondListing = listings[index * 2 + 1];
+
+              const servicePair = [
+                ...(firstListing?.services.slice(0, 1) || []),
+                ...(secondListing?.services.slice(0, 1) || [])
+              ];
+
+              const insertIndex = Math.floor(Math.random() * 3); // 0, 1, or 2
+              const rowComponents = [];
+
+              if (insertIndex === 0) {
+                rowComponents.push(
+                  <div key={`service-${index}`} className="flex flex-col gap-4">
+                    {servicePair.map((service, i) => {
+                      const listing = i === 0 ? firstListing : secondListing;
+                      return listing ? (
+                        <ServiceCard
+                          key={service.id}
+                          service={service}
+                          listingLocation={listing.location ?? ''}
+                          listingTitle={listing.title ?? ''}
+                          listingImage={listing.galleryImages?.[0] || listing.imageSrc}
+                        />
+                      ) : null;
+                    })}
+                  </div>
+                );
+              }
+
+              if (firstListing) {
+                rowComponents.push(
+                  <ListingCard
+                    key={firstListing.id}
+                    currentUser={currentUser}
+                    data={firstListing}
+                    categories={categories}
+                  />
+                );
+              }
+
+              if (insertIndex === 1) {
+                rowComponents.push(
+                  <div key={`service-${index}`} className="flex flex-col gap-4">
+                    {servicePair.map((service, i) => {
+                      const listing = i === 0 ? firstListing : secondListing;
+                      return listing ? (
+                        <ServiceCard
+                          key={service.id}
+                          service={service}
+                          listingLocation={listing.location ?? ''}
+                          listingTitle={listing.title ?? ''}
+                          listingImage={listing.galleryImages?.[0] || listing.imageSrc}
+                        />
+                      ) : null;
+                    })}
+                  </div>
+                );
+              }
+
+              if (secondListing) {
+                rowComponents.push(
+                  <ListingCard
+                    key={secondListing.id}
+                    currentUser={currentUser}
+                    data={secondListing}
+                    categories={categories}
+                  />
+                );
+              }
+
+              if (insertIndex === 2) {
+                rowComponents.push(
+                  <div key={`service-${index}`} className="flex flex-col gap-4">
+                    {servicePair.map((service, i) => {
+                      const listing = i === 0 ? firstListing : secondListing;
+                      return listing ? (
+                        <ServiceCard
+                          key={service.id}
+                          service={service}
+                          listingLocation={listing.location ?? ''}
+                          listingTitle={listing.title ?? ''}
+                          listingImage={listing.galleryImages?.[0] || listing.imageSrc}
+                        />
+                      ) : null;
+                    })}
+                  </div>
+                );
+              }
+
+              return <React.Fragment key={index}>{rowComponents}</React.Fragment>;
+            })}
           </div>
         ) : (
           renderListView()

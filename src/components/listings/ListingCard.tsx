@@ -281,12 +281,12 @@ const ListingCard: React.FC<ListingCardProps> = ({
 
     <div className="w-px h-8 bg-white/30"></div>
 
-    <div className="flex flex-col items-center space-y-0.5 text-center">
+    <div className="flex flex-col items-center space-y-1 text-center">
   <div className="flex items-center space-x-1">
     <Clock size={14} className="text-white/80" />
     <span className="text-xs text-white font-medium">Open</span>
   </div>
-  <span className="text-[10px] text-white/50 font-light leading-none">
+  <span className="text-xs text-white/50 font-light leading-none">
     Closes 6:00PM
   </span>
 </div>
