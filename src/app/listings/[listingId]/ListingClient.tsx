@@ -107,7 +107,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
         <ListingHead
   listing={listing}
   currentUser={currentUser}
-  services={listing.services}
+  Services={listing.services}
 />
         </div>
       </div>

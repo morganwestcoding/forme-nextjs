@@ -4,6 +4,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { SafeListing, SafeUser } from '@/app/types';
+import ServiceCard from '@/components/listings/ServiceCard';
 import {
   MapPin, Star, Sparkles, TrendingUp, Layers, Search,
   Clipboard, Users, Clock, Grid, List, ChevronDown, ShoppingCart
@@ -21,14 +22,14 @@ interface ServiceItem {
 interface ListingHeadProps {
   listing: SafeListing & { user: SafeUser };
   currentUser?: SafeUser | null;
-  services: ServiceItem[];
+  Services: ServiceItem[];
 }
 
-const ListingHead: React.FC<ListingHeadProps> = ({ listing, services }) => {
+const ListingHead: React.FC<ListingHeadProps> = ({ listing, Services }) => {
   const { title, location, galleryImages, imageSrc } = listing;
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [searchValue, setSearchValue] = useState('');
-  const [activeTab, setActiveTab] = useState<'overview' | 'team' | 'reviews'>('overview');
+  const [activeTab, setActiveTab] = useState<'Services' | 'team' | 'reviews'>('Services');
   const [selectedServices, setSelectedServices] = useState<ServiceItem[]>([]);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
@@ -36,14 +37,14 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, services }) => {
   const [city, state] = location?.split(',').map(s => s.trim()) || [];
   const stateAcronym = state || '';
 
-  const servicesByCategory = (services || []).reduce((acc, service) => {
+  const ServicesByCategory = (Services || []).reduce((acc, service) => {
     const category = service.category || 'Other';
     if (!acc[category]) acc[category] = [];
     acc[category].push(service);
     return acc;
   }, {} as Record<string, ServiceItem[]>);
 
-  const toggleServiceSelection = (service: ServiceItem) => {
+  const toggleServiceselection = (service: ServiceItem) => {
     setSelectedServices(prev =>
       prev.find(s => s.id === service.id)
         ? prev.filter(s => s.id !== service.id)
@@ -53,7 +54,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, services }) => {
 
   const renderServiceGrid = () => (
     <div className="space-y-4">
-      {Object.entries(servicesByCategory).map(([category, items]) => (
+      {Object.entries(ServicesByCategory).map(([category, items]) => (
         <div key={category} className="bg-white rounded-xl shadow-sm border border-gray-200">
           <button
             onClick={() => setExpandedCategory(prev => prev === category ? null : category)}
@@ -70,7 +71,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, services }) => {
                 {items.map(service => (
                   <div
                     key={service.id}
-                    onClick={() => toggleServiceSelection(service)}
+                    onClick={() => toggleServiceselection(service)}
                     className={`bg-neutral-50 p-4 rounded-xl border cursor-pointer hover:border-green-400 transition
                       ${selectedServices.find(s => s.id === service.id) ? 'ring-2 ring-green-600 bg-green-50' : ''}`}
                   >
@@ -136,8 +137,8 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, services }) => {
 
       {/* Tabs */}
       <div className="flex border-b border-gray-200 mb-6">
-        <button onClick={() => setActiveTab('overview')} className={`pb-4 mr-6 flex items-center text-sm gap-2 ${activeTab === 'overview' ? 'border-b-2 border-[#60A5FA] text-[#60A5FA]' : 'text-gray-500 hover:text-[#60A5FA]'}`}>
-          <Clipboard className="w-5 h-5" /> Overview
+        <button onClick={() => setActiveTab('Services')} className={`pb-4 mr-6 flex items-center text-sm gap-2 ${activeTab === 'Services' ? 'border-b-2 border-[#60A5FA] text-[#60A5FA]' : 'text-gray-500 hover:text-[#60A5FA]'}`}>
+          <Clipboard className="w-5 h-5" /> Services
         </button>
         <button onClick={() => setActiveTab('team')} className={`pb-4 mr-6 flex items-center text-sm gap-2 ${activeTab === 'team' ? 'border-b-2 border-[#60A5FA] text-[#60A5FA]' : 'text-gray-500 hover:text-[#60A5FA]'}`}>
           <Users className="w-5 h-5" /> Team
@@ -146,30 +147,28 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, services }) => {
           <Star className="w-5 h-5" /> Reviews
         </button>
       </div>
+      {activeTab === 'Services' && (
+  <div className="space-y-6">
+    <h2 className="text-xl font-bold text-neutral-800">Services</h2>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {Services.map(service => (
+        <ServiceCard
+          key={service.id}
+          service={{
+            id: service.id,
+            serviceName: service.serviceName,
+            price: service.price,
+            category: service.category || '',
+          }}
+          listingLocation={listing.location ?? ''}
+          listingTitle={listing.title}
+          listingImage={listing.galleryImages?.[0] || listing.imageSrc}
+        />
+      ))}
+    </div>
+  </div>
+)}
 
-      {/* Tab Content */}
-      {activeTab === 'overview' && (
-        <>
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold text-neutral-800">Select Service</h2>
-            <div className="flex bg-white border border-neutral-200 rounded-lg shadow-sm">
-              <button
-                onClick={() => setViewMode('grid')}
-                className={`p-2 rounded-l-lg ${viewMode === 'grid' ? 'bg-blue-100 text-blue-600' : 'hover:bg-neutral-100 text-gray-500'}`}
-              >
-                <Grid className="w-5 h-5" />
-              </button>
-              <button
-                onClick={() => setViewMode('list')}
-                className={`p-2 rounded-r-lg ${viewMode === 'list' ? 'bg-blue-100 text-blue-600' : 'hover:bg-neutral-100 text-gray-500'}`}
-              >
-                <List className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
-          {renderServiceGrid()}
-        </>
-      )}
       {activeTab === 'team' && (
         <div className="text-center text-gray-500 py-10">Team information will be displayed here.</div>
       )}
