@@ -224,7 +224,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
           className="w-full h-full object-cover"
         />
         {/* Gradient overlay for entire card */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#60A5FA]/10 via-black/60 to-black"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-[#60A5FA]/10 via-black/50 to-black"></div>
  
       </div>
 

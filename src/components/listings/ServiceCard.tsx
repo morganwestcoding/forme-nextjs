@@ -34,12 +34,19 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
       {/* Background Image with gradient */}
       <div className="absolute inset-0 z-0">
         <Image
-          src={listingImage || '/placeholder-service.png'} // Always render image
+          src={listingImage || '/placeholder-service.png'}
           alt={service.serviceName}
           fill
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-[#60A5FA]/10 via-black/60 to-black" />
+      </div>
+
+      {/* Category label */}
+      <div className="absolute top-4 left-4 z-10">
+        <div className="bg-black/40 border border-white backdrop-blur-sm rounded-lg text-center justify-center w-20 px-3 py-1.5 text-white">
+          <span className="text-xs font-medium">{service.category}</span>
+        </div>
       </div>
 
       {/* Foreground content */}
