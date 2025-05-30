@@ -35,18 +35,17 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
         <div className="flex gap-2">
           <button
 
-            className="rounded-full p-3 bg-neutral-100 text-gray-500 border border-white shadow-sm hover:bg-neutral-200"
+className="w-11 h-11 flex items-center justify-center rounded-full bg-neutral-100 text-gray-500 border border-neutral-100 shadow-sm hover:bg-neutral-200"
+
             onClick={onFollow}
           >
-           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" color="currentColor" fill="none">
-    <path d="M15 8C15 5.23858 12.7614 3 10 3C7.23858 3 5 5.23858 5 8C5 10.7614 7.23858 13 10 13C12.7614 13 15 10.7614 15 8Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-    <path d="M17.5 21L17.5 14M14 17.5H21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-    <path d="M3 20C3 16.134 6.13401 13 10 13C11.4872 13 12.8662 13.4638 14 14.2547" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" color="currentColor" fill="none">
+    <path d="M10.4107 19.9677C7.58942 17.858 2 13.0348 2 8.69444C2 5.82563 4.10526 3.5 7 3.5C8.5 3.5 10 4 12 6C14 4 15.5 3.5 17 3.5C19.8947 3.5 22 5.82563 22 8.69444C22 13.0348 16.4106 17.858 13.5893 19.9677C12.6399 20.6776 11.3601 20.6776 10.4107 19.9677Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
 </svg>
           </button>
           <button
             
-            className="rounded-full p-3 bg-[#60A5FA] backdrop-blur-md text-white shadow-sm border-white/10 hover:bg-white/10"
+        className="w-11 h-11 flex items-center justify-center rounded-full bg-[#60A5FA] backdrop-blur-md text-white shadow-sm border-white/10 hover:bg-white/10"
             onClick={onBook}
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none">
