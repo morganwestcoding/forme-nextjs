@@ -55,6 +55,7 @@
     "react-icons": "^4.12.0",
     "react-joyride": "^2.9.3",
     "react-leaflet": "^4.2.1",
+    "react-masonry-css": "^1.0.16",
     "react-select": "^5.8.0",
     "states-us": "^1.0.4",
     "stripe": "^17.7.0",

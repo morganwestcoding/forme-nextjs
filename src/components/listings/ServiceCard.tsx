@@ -29,7 +29,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   return (
     <div
       onClick={handleClick}
-      className="cursor-pointer w-full h-[193px] rounded-3xl shadow-md hover:shadow-lg overflow-hidden relative transition-all"
+      className="cursor-pointer w-full h-[193px] rounded-xl shadow-md hover:shadow-lg overflow-hidden relative transition-all"
     >
       {/* Background Image with gradient */}
       <div className="absolute inset-0 z-0">

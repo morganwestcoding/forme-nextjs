@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { SafeListing, SafeUser } from '@/app/types';
 import ServiceCard from '@/components/listings/ServiceCard';
+import WorkerCard from './WorkerCard';
 import {
   MapPin, Star, Sparkles, TrendingUp, Layers, Search,
   Clipboard, Users, Clock, Grid, List, ChevronDown, ShoppingCart
@@ -170,7 +171,17 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, Services }) => {
 )}
 
       {activeTab === 'team' && (
-        <div className="text-center text-gray-500 py-10">Team information will be displayed here.</div>
+       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+       {listing.employees.map((employee) => (
+         <WorkerCard
+           key={employee.id}
+           employee={employee}
+           listingTitle={listing.title}
+           onBook={() => {}} // You can pass a booking handler if needed
+           onFollow={() => {}}
+         />
+       ))}
+     </div>
       )}
       {activeTab === 'reviews' && (
         <div className="text-center text-gray-500 py-10">Reviews will be displayed here.</div>

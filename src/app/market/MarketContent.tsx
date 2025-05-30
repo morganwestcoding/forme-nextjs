@@ -1,12 +1,14 @@
 'use client';
 
-import React from 'react';
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Masonry from 'react-masonry-css';
+
 import ClientProviders from '@/components/ClientProviders';
 import EmptyState from '@/components/EmptyState';
 import ListingCard from '@/components/listings/ListingCard';
 import ServiceCard from '@/components/listings/ServiceCard';
+import WorkerCard from '@/components/listings/WorkerCard';
 import { categories } from '@/components/Categories';
 import Container from '@/components/Container';
 import MarketExplorer from './MarketExplorer';
@@ -41,6 +43,8 @@ interface ViewState {
   };
 }
 
+type CardType = 'listing' | 'service' | 'worker';
+
 const MarketContent = ({
   searchParams,
   listings,
@@ -55,8 +59,103 @@ const MarketContent = ({
     }
   });
 
-  const renderListView = () => {
-    return <div className="text-sm text-gray-500">List view goes here.</div>;
+  const [shuffledCards, setShuffledCards] = useState<JSX.Element[]>([]);
+  const [hasMounted, setHasMounted] = useState(false);
+
+  const renderListView = () => (
+    <div className="text-sm text-gray-500">List view goes here.</div>
+  );
+
+  const generateShuffledCards = () => {
+    const rawCards: { type: CardType; element: JSX.Element }[] = [];
+
+    listings.forEach((listing) => {
+      rawCards.push({
+        type: 'listing',
+        element: (
+          <ListingCard
+            key={`listing-${listing.id}`}
+            currentUser={currentUser}
+            data={listing}
+            categories={categories}
+          />
+        )
+      });
+
+      listing.services.forEach((service) => {
+        rawCards.push({
+          type: 'service',
+          element: (
+            <ServiceCard
+              key={`service-${service.id}`}
+              service={service}
+              listingLocation={listing.location ?? ''}
+              listingTitle={listing.title}
+              listingImage={listing.galleryImages?.[0] || listing.imageSrc}
+            />
+          )
+        });
+      });
+
+      listing.employees?.forEach((employee) => {
+        rawCards.push({
+          type: 'worker',
+          element: (
+            <WorkerCard
+              key={`employee-${employee.id}`}
+              employee={employee}
+              listingTitle={listing.title}
+              onBook={() => {}}
+              onFollow={() => {}}
+            />
+          )
+        });
+      });
+    });
+
+    const shuffled = [...rawCards].sort(() => 0.5 - Math.random());
+
+    const columns = 3;
+    const layout: (typeof rawCards[0] | null)[] = Array(shuffled.length).fill(null);
+    let i = 0;
+
+    for (const card of shuffled) {
+      while (i < layout.length) {
+        const aboveIndex = i - columns;
+        const above = layout[aboveIndex]?.type;
+
+        if (above !== card.type) {
+          layout[i] = card;
+          i++;
+          break;
+        }
+
+        i++;
+      }
+    }
+
+    // FIX: use reduce to avoid TS null warning
+    return layout.reduce<JSX.Element[]>((acc, card, i) => {
+      if (!card) return acc;
+      acc.push(
+        <div key={`card-${i}`} className="animate-fade-in">
+          {card.element}
+        </div>
+      );
+      return acc;
+    }, []);
+  };
+
+  useEffect(() => {
+    setShuffledCards(generateShuffledCards());
+    setHasMounted(true);
+  }, [listings]);
+
+  const masonryBreakpoints = {
+    default: 3,
+    1024: 3,
+    768: 2,
+    0: 1
   };
 
   return (
@@ -78,107 +177,15 @@ const MarketContent = ({
 
       <div className="flex flex-col">
         {viewState.mode === 'grid' ? (
-          <div className="
-            grid 
-            grid-cols-1
-            md:grid-cols-2
-            lg:grid-cols-3
-            gap-4
-          ">
-            {Array.from({ length: Math.ceil(listings.length / 2) }).map((_, index) => {
-              const firstListing = listings[index * 2];
-              const secondListing = listings[index * 2 + 1];
-
-              const servicePair = [
-                ...(firstListing?.services.slice(0, 1) || []),
-                ...(secondListing?.services.slice(0, 1) || [])
-              ];
-
-              const insertIndex = Math.floor(Math.random() * 3); // 0, 1, or 2
-              const rowComponents = [];
-
-              if (insertIndex === 0) {
-                rowComponents.push(
-                  <div key={`service-${index}`} className="flex flex-col gap-4">
-                    {servicePair.map((service, i) => {
-                      const listing = i === 0 ? firstListing : secondListing;
-                      return listing ? (
-                        <ServiceCard
-                          key={service.id}
-                          service={service}
-                          listingLocation={listing.location ?? ''}
-                          listingTitle={listing.title ?? ''}
-                          listingImage={listing.galleryImages?.[0] || listing.imageSrc}
-                        />
-                      ) : null;
-                    })}
-                  </div>
-                );
-              }
-
-              if (firstListing) {
-                rowComponents.push(
-                  <ListingCard
-                    key={firstListing.id}
-                    currentUser={currentUser}
-                    data={firstListing}
-                    categories={categories}
-                  />
-                );
-              }
-
-              if (insertIndex === 1) {
-                rowComponents.push(
-                  <div key={`service-${index}`} className="flex flex-col gap-4">
-                    {servicePair.map((service, i) => {
-                      const listing = i === 0 ? firstListing : secondListing;
-                      return listing ? (
-                        <ServiceCard
-                          key={service.id}
-                          service={service}
-                          listingLocation={listing.location ?? ''}
-                          listingTitle={listing.title ?? ''}
-                          listingImage={listing.galleryImages?.[0] || listing.imageSrc}
-                        />
-                      ) : null;
-                    })}
-                  </div>
-                );
-              }
-
-              if (secondListing) {
-                rowComponents.push(
-                  <ListingCard
-                    key={secondListing.id}
-                    currentUser={currentUser}
-                    data={secondListing}
-                    categories={categories}
-                  />
-                );
-              }
-
-              if (insertIndex === 2) {
-                rowComponents.push(
-                  <div key={`service-${index}`} className="flex flex-col gap-4">
-                    {servicePair.map((service, i) => {
-                      const listing = i === 0 ? firstListing : secondListing;
-                      return listing ? (
-                        <ServiceCard
-                          key={service.id}
-                          service={service}
-                          listingLocation={listing.location ?? ''}
-                          listingTitle={listing.title ?? ''}
-                          listingImage={listing.galleryImages?.[0] || listing.imageSrc}
-                        />
-                      ) : null;
-                    })}
-                  </div>
-                );
-              }
-
-              return <React.Fragment key={index}>{rowComponents}</React.Fragment>;
-            })}
-          </div>
+          hasMounted && (
+            <Masonry
+              breakpointCols={masonryBreakpoints}
+              className="flex gap-4"
+              columnClassName="space-y-4"
+            >
+              {shuffledCards}
+            </Masonry>
+          )
         ) : (
           renderListView()
         )}

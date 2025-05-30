@@ -155,7 +155,10 @@ export type SafeConversation = {
 export type SafeEmployee = {
   id: string;
   fullName: string;
+  jobTitle?: string | null;
+  profileImage?: string | null;
 };
+
 
 
 export type SafeStoreHours = {

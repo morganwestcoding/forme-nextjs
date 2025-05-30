@@ -36,7 +36,9 @@ export default async function getListingById(params: IParams) {
       })),
       employees: listing.employees.map(employee => ({
         id: employee.id,
-        fullName: employee.fullName
+        fullName: employee.fullName,
+        jobTitle: employee.jobTitle || null,
+        profileImage: employee.profileImage || null
       })),
       storeHours: listing.storeHours.map(hour => ({
         dayOfWeek: hour.dayOfWeek,

@@ -198,9 +198,11 @@ model StoreHours {
 model Employee {
   id           String        @id @default(auto()) @map("_id") @db.ObjectId
   fullName     String
+  jobTitle     String?       // Add this
+  profileImage String?       // Add this
   listingId    String        @db.ObjectId
   listing      Listing       @relation(fields: [listingId], references: [id], onDelete: Cascade)
-  reservations Reservation[] // Add this line
+  reservations Reservation[] 
 }
 
 
