@@ -6,6 +6,19 @@
 @tailwind components;
 @tailwind utilities;
 
+.card__overlay {
+  position: absolute;
+  inset: 0;
+  padding: clamp(0.938rem, 5vw, 1.563rem);
+  display: flex;
+  justify-content: flex-end;
+  flex-direction: column;
+  color: #fff;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.6) 50%, rgba(0, 0, 0, 0.1) 90%, rgba(0, 0, 0, 0) 100%);
+}
+
+
+
 @layer base {
   :root {
     --background: 0 1% 66%;

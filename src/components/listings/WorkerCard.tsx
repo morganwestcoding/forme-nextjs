@@ -20,7 +20,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
   onBook,
 }) => {
   return (
-    <div className="bg-white rounded-xl shadow-md hover:shadow-lg p-4 w-full h-[345px] relative flex flex-col justify-between">
+    <div className="bg-white rounded-xl shadow-md hover:shadow-lg p-4 w-full h-[402px] relative flex flex-col justify-between">
       {/* Top Row: Profile + Buttons */}
       <div className="flex justify-between items-start">
         <div className="w-20 h-20 rounded-xl overflow-hidden border border-gray-200">

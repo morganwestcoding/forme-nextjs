@@ -175,7 +175,7 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
 <div className="flex border-b border-gray-200">
   <button 
     onClick={() => handleFilterChange('featured')}
-    className={`pb-4 flex text-sm items-center gap-2 mr-6 ${
+    className={`pb-4 ml-4 flex text-sm items-center gap-2 mr-6 ${
       viewState.filters.category === 'featured' 
         ? `border-b-2` 
         : 'text-gray-500'
@@ -190,7 +190,7 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
   </button>
   <button 
     onClick={() => handleFilterChange('trending')}
-    className={`pb-4 flex items-center text-sm gap-2 mr-6 ${
+    className={`pb-4 flex ml-4  items-center text-sm gap-2 mr-6 ${
       viewState.filters.category === 'trending' 
         ? `border-b-2` 
         : 'text-gray-500'
@@ -205,7 +205,7 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
   </button>
   <button 
     onClick={() => handleFilterChange('categories')}
-    className={`pb-4 flex items-center text-sm gap-2 ${
+    className={`pb-4 ml-4 flex items-center text-sm gap-2 ${
       viewState.filters.category === 'categories' || showCategories 
         ? `border-b-2` 
         : 'text-gray-500'
