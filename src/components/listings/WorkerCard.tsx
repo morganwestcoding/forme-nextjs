@@ -20,10 +20,10 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
   onBook,
 }) => {
   return (
-    <div className="bg-white rounded-xl shadow-md hover:shadow-lg p-4 w-full h-[402px] relative flex flex-col justify-between">
+    <div className="bg-white rounded-xl shadow-md hover:shadow-lg p-4 w-full h-[350px] relative flex flex-col justify-between">
       {/* Top Row: Profile + Buttons */}
       <div className="flex justify-between items-start">
-        <div className="w-20 h-20 rounded-xl overflow-hidden border border-gray-200">
+        <div className="w-20 h-20 rounded-full overflow-hidden border border-gray-200">
           <Image
             src={employee.profileImage || '/people/headshot-3.png'}
             alt={employee.fullName}
@@ -59,7 +59,7 @@ className="w-10 h-10 flex items-center justify-center rounded-full bg-neutral-10
       </div>
 
       {/* Info Section */}
-      <div className="mt-4">
+      <div>
         <h2 className="text-xl font-bold text-gray-900 truncate flex items-center gap-1">
           {employee.fullName}
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="#60A5FA" color='#ffffff'>
@@ -79,7 +79,7 @@ className="w-10 h-10 flex items-center justify-center rounded-full bg-neutral-10
       </div>
 
       {/* Followers/Following Section */}
-      <div className="mt-4 bg-neutral-100 border rounded-lg px-4 py-2 text-neutral-600 flex items-center justify-between text-sm">
+      <div className=" bg-neutral-100 border rounded-lg px-4 py-2 text-neutral-600 flex items-center justify-between text-sm">
         <div className="flex flex-col items-center justify-center w-full">
           <div className="flex items-center gap-1">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" className="text-gray-500">

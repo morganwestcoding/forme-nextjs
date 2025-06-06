@@ -5,7 +5,9 @@ import Image from 'next/image';
 import { SafeListing, SafeUser } from '@/app/types';
 import ServiceCard from '@/components/listings/ServiceCard';
 import WorkerCard from './WorkerCard';
-import { Search, Grid, List, Clipboard, Users, Star, Share2, Heart, UserPlus } from 'lucide-react';
+import {
+  Search, Grid, List, Clipboard, Users, Star, Share2, Heart, UserPlus,
+} from 'lucide-react';
 
 interface ServiceItem {
   id: string;
@@ -40,13 +42,14 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, Services }) => {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent z-10" />
 
-        {/* Circular Action Buttons */}
-        <div className="absolute top-4 right-4 z-20 flex gap-2">
-          {[Heart, Share2].map((Icon, index) => (
-            <button key={index} className="p-3 rounded-full border-white border bg-black/10 backdrop-blur-md shadow-md flex items-center justify-center hover:bg-white transition">
-              <Icon className="w-5 h-5 text-white" />
-            </button>
-          ))}
+        {/* Correct Circular Action Buttons */}
+        <div className="absolute bottom-4 right-4 z-20 flex gap-2">
+          <button className="p-3 rounded-full text-white border-white border bg-black/10 backdrop-blur-md shadow-md flex items-center justify-center hover:bg-white transition">
+            <Heart className="w-5 h-5" />
+          </button>
+          <button className="p-3 rounded-full text-white border-white border bg-black/10 backdrop-blur-md shadow-md flex items-center justify-center hover:bg-white transition">
+            <Share2 className="w-5 h-5" />
+          </button>
         </div>
       </div>
 
@@ -71,14 +74,11 @@ const ListingHead: React.FC<ListingHeadProps> = ({ listing, Services }) => {
           </div>
           <p className="text-sm text-gray-500">{city}{state ? `, ${state}` : ''}</p>
           {description && <p className="line-clamp-2 text-gray-600 text-xs max-w-3xl mx-auto">{description}</p>}
-          <p className="text-xs text-gray-500 bg-gray-100 px-3 py-1 rounded-full inline-block">
-  128 followers
-</p>
-
+          <p className="text-xs text-gray-500 bg-gray-100 px-3 py-1 rounded-full inline-block">128 followers</p>
         </div>
       </div>
 
-      {/* CTA Bar: Search, Toggle, Follow, Reserve */}
+      {/* CTA Bar */}
       <div className="mt-6 flex flex-wrap gap-2 items-center w-full">
         <div className="relative flex-grow h-12">
           <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">

@@ -113,14 +113,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
       </div>
       
       {isReservationModalOpen && selectedService && (
-        <ReservationModal
-          isOpen={isReservationModalOpen}
-          onClose={() => setIsReservationModalOpen(false)}
-          service={selectedService}
-          listing={listing}
-          currentUser={currentUser}
-          disabledDates={disabledDates}
-        />
+        <ReservationModal />
       )}
     </Container>
   );
