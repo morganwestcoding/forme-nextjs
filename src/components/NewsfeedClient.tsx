@@ -194,7 +194,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                           currentUser={currentUser}
                           data={listing}
                           categories={categories}
-                          variant="newsfeed"
+                         
                         />
                       </div>
                     );
