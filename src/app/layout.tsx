@@ -29,6 +29,7 @@ import StripeCheckoutModal from '@/components/modals/StripeCheckoutModal';
 import ShopModal from '@/components/modals/ShopModal';
 import CreatePostModal from '@/components/modals/CreatePostModal';
 import ReservationModal from '@/components/modals/ReservationModal';
+import ForceAuthModal from '@/components/modals/ForceAuthModal';
 
 
 export const metadata: Metadata = {
@@ -62,18 +63,20 @@ export default async function RootLayout({
         <ColorProvider>
           <html lang="en">
             <body className={inter.className}>
-              <div className="min-h-screen flex"> 
-              <div className="hidden md:block fixed top-0 left-0 bottom-0 bg-white"> {/* Add bottom-0 */}
-                  <Sidebar currentUser={currentUser}/>
-                </div>
-                <div className="flex-1 md:pl-52"> {/* Changed ml to pl */}
-                  <main className="md:pt-0 pb-16 md:pb-0"> {/* Add padding bottom for mobile nav */}
-                    {children}
-                  </main>
-                </div>
-                <MobileNavBar  currentUser={currentUser} /> {/* Add the mobile nav bar */}
-              
-              </div>
+            {currentUser ? (
+  <div className="min-h-screen flex">
+    <div className="hidden md:block fixed top-0 left-0 bottom-0 bg-white">
+      <Sidebar currentUser={currentUser} />
+    </div>
+    <div className="flex-1 md:pl-52">
+      <main className="md:pt-0 pb-16 md:pb-0">
+        {children}
+      </main>
+    </div>
+    <MobileNavBar currentUser={currentUser} />
+  </div>
+) : null}
+
               <ShopModal/>
               <ToasterProvider/>
               <ReservationModal/>
@@ -94,6 +97,7 @@ export default async function RootLayout({
 
               {!currentUser && (
   <>
+      <ForceAuthModal showRegisterInstead={false} />
     <LoginModal />
     <RegisterModal />
   </>
