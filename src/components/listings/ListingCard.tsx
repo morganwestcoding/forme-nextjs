@@ -14,6 +14,13 @@ interface ListingCardProps {
   reservation?: SafeReservation;
   currentUser?: SafeUser | null;
   categories?: { label: string; color: string }[];
+  actionId?: string;
+  actionLabel?: string;
+  onAction?: (id: string) => void;
+  onAccept?: () => void;
+  onDecline?: () => void;
+  disabled?: boolean;
+  showAcceptDecline?: boolean;
 }
 
 const ListingCard: React.FC<ListingCardProps> = ({
@@ -21,6 +28,11 @@ const ListingCard: React.FC<ListingCardProps> = ({
   reservation,
   currentUser,
   categories,
+  actionId,
+  onAccept,
+  onDecline,
+  disabled,
+  showAcceptDecline,
 }) => {
   const router = useRouter();
   const reservationModal = useReservationModal();
@@ -180,6 +192,39 @@ const ListingCard: React.FC<ListingCardProps> = ({
               <span className="text-gray-300 text-sm">Total</span>
               <span className="font-semibold text-base">${reservation.totalPrice}</span>
             </div>
+            {showAcceptDecline && (
+  <div className="p-4 flex justify-between gap-4">
+    <button
+      disabled={disabled}
+      onClick={(e) => {
+        e.stopPropagation();
+        onAccept?.();
+      }}
+      className={`flex-1 py-2 rounded-xl text-sm font-medium transition ${
+        disabled
+          ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+          : 'bg-green-500 hover:bg-green-600 text-white'
+      }`}
+    >
+      Accept
+    </button>
+    <button
+      disabled={disabled}
+      onClick={(e) => {
+        e.stopPropagation();
+        onDecline?.();
+      }}
+      className={`flex-1 py-2 rounded-xl text-sm font-medium transition ${
+        disabled
+          ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+          : 'bg-red-500 hover:bg-red-600 text-white'
+      }`}
+    >
+      Decline
+    </button>
+  </div>
+)}
+
           </div>
         )}
       </div>
