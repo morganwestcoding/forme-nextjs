@@ -3,8 +3,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { X } from "lucide-react";
 import ModalButton from "./ModalButton";
+import ModalBackdrop from './ModalBackdrop';
 
 interface ModalProps {
+  backdropVideo?: string; 
   id?: string;  
   modalContentId?: string;  
   isOpen?: boolean;
@@ -36,6 +38,7 @@ const Modal: React.FC<ModalProps> = ({
   secondaryActionLabel,
   className, 
   actionId,
+  backdropVideo
 }) => {
   const [showModal, setShowModal] = useState(isOpen);
 
@@ -103,6 +106,8 @@ const Modal: React.FC<ModalProps> = ({
         zIndex: 9999,
       }}
     >
+
+{backdropVideo && <ModalBackdrop videoSrc={backdropVideo} />}
       <div 
         className="
           justify-center 

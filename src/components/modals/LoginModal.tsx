@@ -141,6 +141,7 @@ const LoginModal = () => {
 
   return (
     <Modal
+     backdropVideo="/videos/modal-bg.mp4"
       disabled={isLoading}
       isOpen={loginModal.isOpen}
       title="Login"

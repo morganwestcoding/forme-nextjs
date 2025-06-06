@@ -49,6 +49,10 @@ export default async function RootLayout({
   children: React.ReactNode
 }) {
   const currentUser = await getCurrentUser();
+
+  const isFirstTimeUser =
+  currentUser &&
+  new Date().getTime() - new Date(currentUser.createdAt).getTime() < 5 * 60 * 1000;
   
   
   return (
@@ -77,8 +81,6 @@ export default async function RootLayout({
               <CreatePostModal />
               <InboxModal/>
               <ProfileModal/>
-              <LoginModal/>
-              <RegisterModal/>
               <StripeCheckoutModal /> 
               <ProfileGalleryModal/> 
               <ListingGalleryModal/>
@@ -89,6 +91,13 @@ export default async function RootLayout({
               <DemoModal/>
               <PostModal/>
               <FilterModal/>
+
+              {!currentUser && (
+  <>
+    <LoginModal />
+    <RegisterModal />
+  </>
+)}
               
             </body>
           </html>

@@ -302,6 +302,7 @@ const RegisterModal= () => {
 
   return (
     <Modal
+     backdropVideo="/videos/modal-bg.mp4"
     disabled={isLoading}
     isOpen={registerModal.isOpen}
     title="Register"
