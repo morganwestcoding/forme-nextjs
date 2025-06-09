@@ -106,7 +106,8 @@ export type SafePost = Omit<
   mediaType?: MediaType | null;
   likes: string[]; 
   bookmarks: string[]; 
-  hiddenBy: string[]; // Add this line
+  hiddenBy: string[];
+  comments: SafeComment[]; // ✅ ADD THIS
 };
 
 export type SafeComment = {
