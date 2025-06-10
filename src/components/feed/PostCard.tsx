@@ -4,12 +4,10 @@ import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
-import {
-  Play,
-  MoreHorizontal
-} from 'lucide-react';
+import { Play, MoreHorizontal } from 'lucide-react';
 import { SafePost, SafeUser } from '@/app/types';
 import { categories } from '@/components/Categories';
+import usePostModal from '@/app/hooks/usePostModal';
 
 interface PostCardProps {
   post: SafePost;
@@ -18,6 +16,7 @@ interface PostCardProps {
 }
 
 const PostCard: React.FC<PostCardProps> = ({ post, currentUser, categories }) => {
+  const postModal = usePostModal();
   const router = useRouter();
   const [imageLoaded, setImageLoaded] = useState(false);
   const [showStats, setShowStats] = useState(false);
@@ -29,11 +28,16 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUser, categories }) =>
   const category = categories.find(cat => cat.label === post.category);
   const formattedDate = format(new Date(post.createdAt), 'MMM dd');
 
-  const handleClick = () => router.push(`/post/${post.id}`);
+
+  const handleClick = () => {
+    postModal.onOpen(post);
+  };
+
   const handleUserClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     router.push(`/profile/${post.user.id}`);
   };
+
   const handleInteraction = (e: React.MouseEvent, action: string) => {
     e.stopPropagation();
     console.log(`${action} clicked`);
@@ -68,17 +72,6 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUser, categories }) =>
         ref={cardRef}
         className="bg-white rounded-3xl shadow overflow-hidden max-w-xl cursor-pointer hover:shadow-lg transition-all duration-300 group relative"
         onClick={handleClick}
-        onMouseEnter={() => {
-          hoverTimeout.current = setTimeout(() => {
-            setShowStats(true);
-            setStatsVisible(true);
-          }, 500);
-        }}
-        onMouseLeave={() => {
-          if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
-          setShowStats(false);
-          setTimeout(() => setStatsVisible(false), 100);
-        }}
       >
         <div className="relative h-[400px] overflow-hidden">
           {post.imageSrc ? (

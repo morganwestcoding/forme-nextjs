@@ -100,32 +100,38 @@ const ListingCard: React.FC<ListingCardProps> = ({
               {city}, {state} • 2.3 miles away
             </p>
             <div className="flex items-center justify-between bg-black/20 border-white border backdrop-blur-sm rounded-lg px-4 py-3 text-white">
-              <div className="flex flex-col items-center space-y-1">
-                <div className="flex items-center space-x-1">
-                  <Heart size={16} />
-                  <span className="text-sm font-medium">3.8k</span>
-                </div>
-                <span className="text-xs opacity-70">Likes</span>
-              </div>
-              <div className="w-px h-8 bg-white/30"></div>
-              <div className="flex flex-col items-center space-y-1">
-                <div className="flex items-center space-x-1">
-                  <Star size={16} />
-                  <span className="text-sm font-medium">4.7</span>
-                </div>
-                <span className="text-xs opacity-70">Rating</span>
-              </div>
-              <div className="w-px h-8 bg-white/30"></div>
-              <div className="flex flex-col items-center space-y-1 text-center">
-                <div className="flex items-center space-x-1">
-                  <Clock size={14} className="text-white/80" />
-                  <span className="text-xs text-white font-medium">Open</span>
-                </div>
-                <span className="text-xs text-white/50 font-light leading-none">
-                  Closes 6:00PM
-                </span>
-              </div>
-            </div>
+  {/* Likes */}
+  <div className="flex flex-col items-center justify-between min-h-[40px] space-y-1 text-center">
+    <div className="flex items-center space-x-1 h-[20px]">
+      <Heart size={16} />
+      <span className="text-sm font-medium">3.8k</span>
+    </div>
+    <span className="text-xs opacity-70">Likes</span>
+  </div>
+
+  <div className="w-px h-8 bg-white/30"></div>
+
+  {/* Rating */}
+  <div className="flex flex-col items-center justify-between min-h-[40px] space-y-1 text-center">
+    <div className="flex items-center space-x-1 h-[20px]">
+      <Star size={16} />
+      <span className="text-sm font-medium">4.7</span>
+    </div>
+    <span className="text-xs opacity-70">Rating</span>
+  </div>
+
+  <div className="w-px h-8 bg-white/30"></div>
+
+  {/* Hours */}
+  <div className="flex flex-col items-center justify-between min-h-[40px] space-y-1 text-center">
+    <div className="flex items-center space-x-1 h-[20px]">
+      <Clock size={15} className="text-white/80" />
+      <span className="text-sm font-medium">Open</span>
+    </div>
+    <span className="text-xs  opacity-70">Closes 6:00PM</span>
+  </div>
+</div>
+
           </div>
         </div>
 
