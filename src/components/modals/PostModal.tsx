@@ -5,6 +5,7 @@ import React from 'react';
 import usePostModal from '@/app/hooks/usePostModal';
 import Image from 'next/image';
 import { format } from 'date-fns';
+import { MessageCircle, Heart, Bookmark, Share2 } from 'lucide-react';
 
 const PostModal = () => {
   const postModal = usePostModal();
@@ -16,50 +17,99 @@ const PostModal = () => {
   const hasComments = Array.isArray(post.comments);
 
   return (
-    <div
-      className="
-        fixed inset-0 z-50 flex items-center justify-center bg-neutral-800/90
-      "
-    >
-      <div
-        className="
-          relative w-full max-w-6xl h-[80vh] flex bg-transparent rounded-xl overflow-hidden
-        "
-      >
-        {/* Left: Video/Image + Stats */}
-        <div className="flex-1 bg-black relative flex items-center justify-center">
+    <>
+      {/* Dark Backdrop */}
+      <div className="fixed inset-0 z-40 bg-neutral-800/90" onClick={postModal.onClose} />
+
+      {/* Fullscreen Layout */}
+      <div className="fixed inset-0 z-50 flex items-center justify-center">
+        {/* Post Content Centered */}
+        <div
+          className="
+            relative bg-black rounded-3xl overflow-hidden shadow-xl
+            w-[420px] h-[640px] flex flex-col justify-between
+          "
+        >
           {post.mediaUrl ? (
             post.mediaType === 'video' ? (
               <video
                 src={post.mediaUrl}
                 controls
-                className="max-h-full max-w-full"
+                className="w-full h-full object-cover"
               />
             ) : (
               <Image
                 src={post.mediaUrl}
                 alt="Post media"
-                width={800}
-                height={800}
-                className="object-contain"
+                width={384}
+                height={384}
+                className="object-cover"
               />
             )
           ) : (
-            <p className="text-white p-4">{post.content}</p>
+            <p className="text-white p-4 text-sm leading-relaxed whitespace-pre-wrap">
+              {post.content}
+            </p>
           )}
-          <div className="absolute bottom-4 left-4 text-white">
-            <p className="font-semibold">{post.user.name}</p>
-            <p className="text-sm">{formattedDate}</p>
-            <p className="mt-2 max-w-md break-words text-white/80">{post.content}</p>
+
+          <div className="text-white px-4 py-3">
+            <p className="text-sm font-semibold">{post.user.name}</p>
+            <p className="text-xs text-gray-300">{formattedDate}</p>
+            <p className="text-sm text-white mt-2 whitespace-pre-line break-words">
+              {post.content}
+            </p>
+          </div>
+
+          {/* Close Button */}
+          <button
+            onClick={postModal.onClose}
+            className="absolute top-2 right-2 z-10 p-2 bg-black/60 text-white rounded-full hover:bg-black"
+          >
+            ×
+          </button>
+        </div>
+
+        {/* Stats Bar */}
+        <div className="ml-6 flex flex-col items-center gap-6 text-white">
+          <Image
+            src={post.user.image || '/images/placeholder.jpg'}
+            alt={post.user.name || 'User'}
+            width={48}
+            height={48}
+            className="rounded-full border-2 border-white"
+          />
+
+          <div className="flex flex-col items-center gap-2">
+            <Heart className="w-6 h-6" />
+            <span className="text-xs">{post.likes?.length || 0}</span>
+          </div>
+
+          <div className="flex flex-col items-center gap-2">
+            <MessageCircle className="w-6 h-6" />
+            <span className="text-xs">{post.comments?.length || 0}</span>
+          </div>
+
+          <div className="flex flex-col items-center gap-2">
+            <Bookmark className="w-6 h-6" />
+            <span className="text-xs">{post.bookmarks?.length || 0}</span>
+          </div>
+
+          <div className="flex flex-col items-center gap-2">
+            <Share2 className="w-6 h-6" />
+            <span className="text-xs">1</span>
           </div>
         </div>
 
-        {/* Right: Comments */}
-        <div className="w-[360px] bg-white overflow-y-auto border-l border-gray-200">
+        {/* Comments Panel */}
+        <div
+          className="
+            fixed top-0 right-0 h-full w-[360px] z-50 bg-white shadow-xl border-l border-gray-200
+          "
+        >
           <div className="p-4 border-b font-semibold text-gray-800">
             Comments ({hasComments ? post.comments.length : 0})
           </div>
-          <div className="divide-y">
+          <div className="h-full overflow-y-auto divide-y">
             {hasComments && post.comments.map((comment) => (
               <div key={comment.id} className="flex gap-3 p-4 items-start">
                 <Image
@@ -80,16 +130,8 @@ const PostModal = () => {
             ))}
           </div>
         </div>
-
-        {/* Close Button */}
-        <button
-          onClick={postModal.onClose}
-          className="absolute top-4 right-4 z-10 p-2 bg-black/70 text-white rounded-full hover:bg-black"
-        >
-          ×
-        </button>
       </div>
-    </div>
+    </>
   );
 };
 
