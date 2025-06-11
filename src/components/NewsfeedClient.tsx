@@ -6,7 +6,7 @@ import axios from 'axios';
 import qs from 'query-string';
 import Share from '@/components/feed/Share';
 import ClientProviders from '@/components/ClientProviders';
-import Post from '@/components/feed/Post';
+
 import { categories } from '@/components/Categories';
 import { SafePost, SafeUser, SafeListing } from '@/app/types';
 import { usePostStore } from '@/app/hooks/usePostStore';
@@ -206,19 +206,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
             )}
             
 
-            {/* Vertical Scroll View - Theatre Mode */}
-            {viewState.mode === 'vertical' && (
-              <div className="max-w-2xl mx-auto space-y-4">
-                {storePosts.map((post) => (
-                  <Post 
-                    key={post.id}
-                    post={post}
-                    currentUser={currentUser}
-                    categories={categories}
-                  />
-                ))}
-              </div>
-            )}
+
           </>
           
         )}

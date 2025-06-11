@@ -105,6 +105,9 @@ export type SafePost = Omit<
   imageSrc: string | null;
   mediaType?: MediaType | null;
   likes: string[]; 
+  postType?: 'ad' | 'text' | 'reel';
+  listing?: SafeListing;
+  shop?: SafeShop;
   bookmarks: string[]; 
   hiddenBy: string[];
   comments: SafeComment[]; // ✅ ADD THIS

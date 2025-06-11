@@ -122,6 +122,7 @@ model Post {
   imageSrc  String?
   location  String?
   tag       String?
+  postType String? // Add this line
   photo     String?
   category  String
   userId    String   @db.ObjectId

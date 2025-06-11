@@ -18,7 +18,8 @@ export async function POST(request: Request) {
         mediaType, 
         location, 
         tag, 
-        category 
+        category,
+        postType
     } = body;
 
     console.log("Received fields in POST request:", { 
@@ -28,7 +29,8 @@ export async function POST(request: Request) {
         mediaType, 
         location, 
         tag, 
-        category 
+        category,
+        postType
     });
 
     // Check if content exists

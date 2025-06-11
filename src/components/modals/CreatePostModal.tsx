@@ -87,7 +87,8 @@ const CreatePostModal = () => {
         userId: currentUser?.id,
         mediaUrl: null,
         mediaType: null,
-        location: null
+        location: null,
+        postType,
       });
       toast.success('Post created!');
       handleClose();
