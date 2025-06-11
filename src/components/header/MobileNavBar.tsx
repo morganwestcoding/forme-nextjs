@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { categories } from '../Categories';
 import { useCategory } from "@/CategoryContext";
-import useDemoModal from "@/app/hooks/useDemoModal";
 import UserButton from "../UserButton";
 import AddListing from "../header/AddListing";
 import Notification from "../header/Notification";

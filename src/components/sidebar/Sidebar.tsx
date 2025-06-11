@@ -4,7 +4,6 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { categories } from '../Categories';
 import { useState, useEffect } from "react";
 import { useCategory } from "@/CategoryContext";
-import useDemoModal from "@/app/hooks/useDemoModal";
 import { SafeUser } from "@/app/types";
 import { SafePost } from "@/app/types";
 import axios from 'axios';
@@ -34,7 +33,6 @@ const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const router = useRouter();
   const pathname = usePathname();
-  const demoModal = useDemoModal();
   const [selectedButton, setSelectedButton] = useState('');
   const { selectedCategory, setSelectedCategory } = useCategory();
   const [filterActive, setFilterActive] = useState(false);

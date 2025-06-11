@@ -3,17 +3,13 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
-import qs from 'query-string';
-import Share from '@/components/feed/Share';
 import ClientProviders from '@/components/ClientProviders';
-
 import { categories } from '@/components/Categories';
 import { SafePost, SafeUser, SafeListing } from '@/app/types';
 import { usePostStore } from '@/app/hooks/usePostStore';
 import { useCategory } from '@/CategoryContext';
 import { useFilter } from '@/FilterContext';
 import Container from './Container';
-import NewsfeedFilter from './feed/NewsfeedFilter';
 import EmptyState from '@/components/EmptyState';
 import NewsfeedHeader from './feed/NewsfeedHeader';
 import PostCard from './feed/PostCard';

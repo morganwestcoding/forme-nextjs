@@ -20,7 +20,6 @@ import FilterModal from '@/components/modals/FilterModal';
 import ForgotPasswordModal from '@/components/modals/ForgotPasswordModal';
 import ResetPasswordModal from '@/components/modals/ResetPasswordModal';
 import SubscribeModal from '@/components/modals/SubscribeModal';
-import DemoModal from '@/components/modals/DemoModal';
 import MobileNavBar from '@/components/header/MobileNavBar';
 import InboxModal from '@/components/modals/InboxModal';
 import PostModal from '@/components/modals/PostModal';
@@ -91,7 +90,6 @@ export default async function RootLayout({
               <ResetPasswordModal/>
               <MessageModal />
               <SubscribeModal/>
-              <DemoModal/>
               <PostModal/>
               <FilterModal/>
 
