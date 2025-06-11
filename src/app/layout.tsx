@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import RegisterModal from '@/components/RegisterModal';
+import RegisterModal from '@/components/modals/RegisterModal';
 import ToasterProvider from './providers/ToasterProvider';
 import LoginModal from '@/components/modals/LoginModal';
 import getCurrentUser from './actions/getCurrentUser';

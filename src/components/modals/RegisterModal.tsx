@@ -1,12 +1,12 @@
 'use client';
-import ModalButton from "./modals/ModalButton";
+import ModalButton from "./ModalButton";
 import axios from "axios";
 import { AiFillGithub } from "react-icons/ai";
 import { signIn } from "next-auth/react";
 import { FcGoogle } from "react-icons/fc";
 import { useCallback, useState } from "react";
 import { toast } from "react-hot-toast";
-import SubscriptionInput from "./inputs/SubscriptionInput";
+import SubscriptionInput from "../inputs/SubscriptionInput";
 import { 
   FieldValues, 
   SubmitHandler,
@@ -14,12 +14,12 @@ import {
 } from "react-hook-form";
 import useLoginModal from "@/app/hooks/useLoginModal";
 import useRegisterModal from "@/app/hooks/useRegisterModal";
-import ImageUpload from "./inputs/ImageUpload";
-import Modal from "./modals/Modal";
-import Input from "./inputs/Input";
-import Heading from "./Heading";
-import ProfileLocationInput from "./inputs/ProfileLocationInput";
-import Logo from "./header/Logo";
+import ImageUpload from "../inputs/ImageUpload";
+import Modal from "./Modal";
+import Input from "../inputs/Input";
+import Heading from "../Heading";
+import ProfileLocationInput from "../inputs/ProfileLocationInput";
+import Logo from "../header/Logo";
 
 enum STEPS {
   ACCOUNT = 0,
