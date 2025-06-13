@@ -84,13 +84,24 @@ export default async function getPosts(params: IPostsParams) {
       };
     }
 
-    const allPosts = await prisma.post.findMany({
-      where: query,
-      include: { user: true },
-      orderBy: { 
-        createdAt: order === 'asc' ? 'asc' : 'desc' 
+const allPosts = await prisma.post.findMany({
+  where: query,
+  include: {
+    user: true,
+    comments: {
+      include: {
+        user: true
       },
-    });
+      orderBy: {
+        createdAt: 'desc'
+      }
+    }
+  },
+  orderBy: {
+    createdAt: order === 'asc' ? 'asc' : 'desc'
+  },
+});
+
 
     let filteredPosts = allPosts;
 

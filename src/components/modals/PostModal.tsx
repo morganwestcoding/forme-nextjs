@@ -19,6 +19,8 @@ const PostModal = () => {
   const [likes, setLikes] = useState<string[]>(post?.likes || []);
   const [liked, setLiked] = useState(false);
   const [showComments, setShowComments] = useState(false);
+  const [comment, setComment] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const userId = useMemo(() => currentUser?.id, [currentUser]);
 
@@ -58,6 +60,30 @@ const handleLike = async () => {
 };
 
 
+
+const handleCommentSubmit = async () => {
+  if (!comment.trim() || !currentUser || !post) return;
+
+  setIsSubmitting(true);
+
+  try {
+    await axios.post(`/api/postActions/${post.id}/comment`, {
+      content: comment.trim()
+    });
+
+    setComment('');
+
+    // ✅ Re-fetch to get updated comment list
+    const res = await axios.get(`/api/posts/${post.id}`);
+    postModal.setPost?.(res.data);
+  } catch (error) {
+    console.error('Failed to submit comment:', error);
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
+
   if (!post) return null;
 
   const formattedDate = format(new Date(post.createdAt), 'PPP');
@@ -70,7 +96,6 @@ const handleLike = async () => {
   return (
     <>
       <div className="fixed inset-0 z-40 bg-neutral-800/90" onClick={postModal.onClose} />
-
       <div className="fixed inset-0 z-50 flex items-center justify-center">
         <div
           className={`relative ${isText ? 'bg-white' : 'bg-black'} rounded-3xl overflow-hidden shadow-xl
@@ -130,7 +155,6 @@ const handleLike = async () => {
               <Avatar src={post.user.image ?? undefined} />
             </div>
 
-            {/* Like */}
             <div className="flex flex-col items-center gap-2">
               <button onClick={handleLike} className="transition hover:scale-110">
                 <svg
@@ -151,7 +175,6 @@ const handleLike = async () => {
               <span className="text-xs">{likes.length}</span>
             </div>
 
-            {/* Comment Icon */}
             <div className="flex flex-col items-center gap-2">
               <button onClick={() => setShowComments(!showComments)} className="transition hover:scale-110">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -164,47 +187,53 @@ const handleLike = async () => {
           </div>
         )}
 
-        {/* Slide-Out Comments */}
-{!isAd && (
-  <div
-    className={`
-      fixed top-0 right-0 h-full w-[400px] z-50 bg-white shadow-xl border-l border-gray-200
-      transform transition-transform duration-300 ease-in-out
-      ${showComments ? 'translate-x-0' : 'translate-x-full'}
-    `}
-  >
-    <div className="p-4 border-b font-semibold text-gray-800 flex justify-between items-center">
-      Comments ({post.comments?.length || 0})
-      <button
-        onClick={() => setShowComments(false)}
-        className="text-sm text-gray-500 hover:text-gray-700"
-      >
-        Close
-      </button>
-    </div>
-    <div className="h-full overflow-y-auto divide-y">
-      {post.comments?.map((comment) => (
-        <div key={comment.id} className="flex gap-3 p-4 items-start">
-          <Image
-            src={comment.user.image || '/images/placeholder.jpg'}
-            alt={comment.user.name || 'User'}
-            width={36}
-            height={36}
-            className="rounded-full object-cover"
-          />
-          <div>
-            <p className="text-sm font-semibold">{comment.user.name}</p>
-            <p className="text-sm text-gray-600">{comment.content}</p>
-            <p className="text-xs text-gray-400 mt-1">
-              {format(new Date(comment.createdAt), 'MMM d, yyyy')}
-            </p>
+        {/* Comments Slideout */}
+        {!isAd && (
+          <div className={`
+            fixed top-0 right-0 h-full w-[400px] z-50 bg-white shadow-xl border-l border-gray-200
+            transform transition-transform duration-300 ease-in-out
+            ${showComments ? 'translate-x-0' : 'translate-x-full'}
+          `}>
+            <div className="p-4 border-b font-semibold text-gray-800 flex justify-between items-center">
+              Comments ({post.comments?.length || 0})
+              <button onClick={() => setShowComments(false)} className="text-sm text-gray-500 hover:text-gray-700">Close</button>
+            </div>
+            <div className="h-[calc(100%-112px)] overflow-y-auto divide-y">
+              {post.comments?.map((comment) => (
+                <div key={comment.id} className="flex gap-3 p-4 items-start">
+                  <Image
+                    src={comment.user.image || '/images/placeholder.jpg'}
+                    alt={comment.user.name || 'User'}
+                    width={36}
+                    height={36}
+                    className="rounded-full object-cover"
+                  />
+                  <div>
+                    <p className="text-sm font-semibold">{comment.user.name}</p>
+                    <p className="text-sm text-gray-600">{comment.content}</p>
+                    <p className="text-xs text-gray-400 mt-1">{format(new Date(comment.createdAt), 'MMM d, yyyy')}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="p-4 border-t flex gap-2">
+              <input
+                type="text"
+                placeholder="Write a comment..."
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                className="flex-1 border border-gray-300 rounded-full px-4 py-2 text-sm outline-none"
+              />
+              <button
+                onClick={handleCommentSubmit}
+                disabled={isSubmitting}
+                className="bg-blue-500 text-white px-4 py-2 rounded-full text-sm hover:bg-blue-600 disabled:opacity-50"
+              >
+                Post
+              </button>
+            </div>
           </div>
-        </div>
-      ))}
-    </div>
-  </div>
-)}
-
+        )}
       </div>
     </>
   );
