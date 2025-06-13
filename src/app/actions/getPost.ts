@@ -54,7 +54,7 @@ export default async function getPosts(params: IPostsParams) {
             contains: state,
             mode: 'insensitive'
           }
-        });
+        }); 
       }
       
       if (city) {

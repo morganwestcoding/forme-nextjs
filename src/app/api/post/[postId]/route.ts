@@ -4,11 +4,69 @@ import { NextResponse } from "next/server";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/app/libs/prismadb";
 
+export async function GET(
+  request: Request,
+  { params }: { params: { postId: string } }
+) {
+  const { postId } = params;
+
+  if (!postId || typeof postId !== 'string') {
+    return new NextResponse("Invalid ID", { status: 400 });
+  }
+
+  const post = await prisma.post.findUnique({
+    where: { id: postId },
+    include: {
+      user: true,
+      comments: {
+        include: { user: true }
+      }
+    }
+  });
+
+  if (!post) return new NextResponse("Not found", { status: 404 });
+
+  return NextResponse.json({
+    id: post.id,
+    content: post.content,
+    imageSrc: post.imageSrc,
+    mediaUrl: post.mediaUrl,
+    mediaType: post.mediaType,
+    location: post.location,
+    tag: post.tag,
+    photo: post.photo,
+    category: post.category,
+    createdAt: post.createdAt.toISOString(),
+    likes: post.likes || [],
+    bookmarks: post.bookmarks || [],
+    hiddenBy: post.hiddenBy || [],
+    user: {
+      id: post.user.id,
+      name: post.user.name,
+      image: post.user.image,
+      emailVerified: post.user.emailVerified?.toISOString() || null,
+      createdAt: post.user.createdAt.toISOString(),
+      updatedAt: post.user.updatedAt.toISOString(),
+    },
+    comments: post.comments.map((comment) => ({
+      id: comment.id,
+      content: comment.content,
+      createdAt: comment.createdAt.toISOString(),
+      userId: comment.userId,
+      postId: comment.postId,
+      user: {
+        id: comment.user.id,
+        name: comment.user.name,
+        image: comment.user.image,
+      },
+    })),
+  });
+}
+
 export async function DELETE(
   request: Request,
   { params }: { params: { postId: string } }
 ) {
-console.log('Delete request received with params:', params); 
   try {
     const currentUser = await getCurrentUser();
 
@@ -17,7 +75,6 @@ console.log('Delete request received with params:', params);
     }
 
     const postId = params.postId;
-    console.log("Attempting to delete post with ID:", postId);
 
     const post = await prisma.post.findUnique({
       where: {
@@ -26,7 +83,6 @@ console.log('Delete request received with params:', params);
     });
 
     if (!post) {
-      console.log("Post not found:", postId);
       return new NextResponse("Post not found", { status: 404 });
     }
 
@@ -40,7 +96,6 @@ console.log('Delete request received with params:', params);
       }
     });
 
-    console.log("Post deleted successfully:", deletedPost);
     return NextResponse.json(deletedPost);
   } catch (error) {
     console.error("Error in DELETE /api/posts/[postId]:", error);

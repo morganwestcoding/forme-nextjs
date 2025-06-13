@@ -1,31 +1,56 @@
-// === 3. PostModal.tsx ===
 'use client';
 
-import React from 'react';
-import usePostModal from '@/app/hooks/usePostModal';
+import React, { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import { format } from 'date-fns';
-import { MessageCircle, Heart, Bookmark, Share2 } from 'lucide-react';
+import axios from 'axios';
+
+import usePostModal from '@/app/hooks/usePostModal';
+import Avatar from '@/components/ui/avatar';
 import ListingCard from '@/components/listings/ListingCard';
 import ShopCard from '@/components/shop/ShopCard';
-import Avatar from '@/components/ui/avatar';
 import { SafeListing, SafeShop } from '@/app/types';
 
 const PostModal = () => {
   const postModal = usePostModal();
   const post = postModal.post;
+  const currentUser = postModal.currentUser;
+
+  const userId = useMemo(() => currentUser?.id, [currentUser]);
+  const [likes, setLikes] = useState<string[]>(post?.likes || []);
+  const [liked, setLiked] = useState(false);
+  const [showComments, setShowComments] = useState(false);
+
+  useEffect(() => {
+    if (post && userId) {
+      setLikes(post.likes || []);
+      setLiked(post.likes.includes(userId));
+    }
+  }, [post?.id, userId]);
+
+  const handleLike = async () => {
+    if (!post || !userId) return;
+
+    try {
+      const response = await axios.post(`/api/postActions/${post.id}/like`);
+      const updatedLikes = response.data.likes as string[];
+      setLikes(updatedLikes);
+      setLiked(updatedLikes.includes(userId));
+      postModal.setPost?.({ ...post, likes: updatedLikes });
+    } catch (error) {
+      console.error('Failed to toggle like:', error);
+    }
+  };
 
   if (!post) return null;
 
   const formattedDate = format(new Date(post.createdAt), 'PPP');
-  const hasComments = Array.isArray(post.comments);
-
-  const postType = (post as any).postType || 'text';
+  const postType = post.postType || 'text';
   const isAd = postType === 'ad';
   const isText = postType === 'text';
 
-  const listingAd = (post as any).listing as SafeListing | undefined;
-  const shopAd = (post as any).shop as SafeShop | undefined;
+  const listingAd = post.listing as SafeListing | undefined;
+  const shopAd = post.shop as SafeShop | undefined;
 
   return (
     <>
@@ -47,11 +72,7 @@ const PostModal = () => {
             ) : null
           ) : post.mediaUrl ? (
             post.mediaType === 'video' ? (
-              <video
-                src={post.mediaUrl}
-                controls
-                className="w-full h-full object-cover"
-              />
+              <video src={post.mediaUrl} controls className="w-full h-full object-cover" />
             ) : (
               <Image
                 src={post.mediaUrl}
@@ -92,43 +113,67 @@ const PostModal = () => {
 
         {!isAd && (
           <div className="ml-6 flex flex-col items-center gap-6 text-white">
-            <div className='border border-white rounded-full '>
-            <Avatar src={post.user.image ?? undefined} />
-            </div>
-            <div className="flex flex-col items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none">
-                <path d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              <span className="text-xs">{post.likes?.length || 0}</span>
+            <div className="border border-white rounded-full">
+              <Avatar src={post.user.image ?? undefined} />
             </div>
 
-            <div className="flex flex-col items-center text-white gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none">
-    <path d="M8 13.5H16M8 8.5H12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-    <path d="M6.09881 19C4.7987 18.8721 3.82475 18.4816 3.17157 17.8284C2 16.6569 2 14.7712 2 11V10.5C2 6.72876 2 4.84315 3.17157 3.67157C4.34315 2.5 6.22876 2.5 10 2.5H14C17.7712 2.5 19.6569 2.5 20.8284 3.67157C22 4.84315 22 6.72876 22 10.5V11C22 14.7712 22 16.6569 20.8284 17.8284C19.6569 19 17.7712 19 14 19C13.4395 19.0125 12.9931 19.0551 12.5546 19.155C11.3562 19.4309 10.2465 20.0441 9.14987 20.5789C7.58729 21.3408 6.806 21.7218 6.31569 21.3651C5.37769 20.6665 6.29454 18.5019 6.5 17.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
-</svg>
+            {/* Heart */}
+            <div className="flex flex-col items-center gap-2">
+              <button onClick={handleLike} className="transition hover:scale-110">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill={liked ? '#f87171' : 'none'}
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="transition-all duration-200"
+                >
+                  <path d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z" />
+                </svg>
+              </button>
+              <span className="text-xs">{likes.length}</span>
+            </div>
+
+            {/* Comment */}
+            <div className="flex flex-col items-center gap-2">
+              <button onClick={() => setShowComments(!showComments)} className="transition hover:scale-110">
+                <MessageIcon />
+              </button>
               <span className="text-xs">{post.comments?.length || 0}</span>
             </div>
 
-            <div className="flex flex-col items-center gap-2">
-              <Bookmark className="w-6 h-6" />
+            {/* Bookmark */}
+            <div className="flex flex-col items-center text-white gap-2">
+              <BookmarkIcon />
               <span className="text-xs">{post.bookmarks?.length || 0}</span>
             </div>
 
-            <div className="flex flex-col items-center gap-2">
-              <Share2 className="w-6 h-6" />
+            {/* Share */}
+            <div className="flex flex-col items-center text-white gap-2">
+              <ShareIcon />
               <span className="text-xs">1</span>
             </div>
           </div>
         )}
 
+        {/* Slide-out Comments */}
         {!isAd && (
-          <div className="fixed top-0 right-0 h-full w-[360px] z-50 bg-white shadow-xl border-l border-gray-200">
+          <div
+            className={`
+              fixed top-0 right-0 h-full w-[400px] z-50 bg-white shadow-xl border-l border-gray-200
+              transition-transform duration-300 ease-in-out
+              ${showComments ? 'translate-x-0' : 'translate-x-full'}
+            `}
+          >
             <div className="p-4 border-b font-semibold text-gray-800">
-              Comments ({hasComments ? post.comments.length : 0})
+              Comments ({post.comments?.length || 0})
             </div>
             <div className="h-full overflow-y-auto divide-y">
-              {hasComments && post.comments.map((comment) => (
+              {post.comments?.map((comment) => (
                 <div key={comment.id} className="flex gap-3 p-4 items-start">
                   <Image
                     src={comment.user.image || '/images/placeholder.jpg'}
@@ -153,5 +198,24 @@ const PostModal = () => {
     </>
   );
 };
+
+const MessageIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none">
+    <path d="M8 13.5H16M8 8.5H12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M6.5 17.5C6.29454 18.5019 5.37769 20.6665 6.31569 21.3651C6.806 21.7218 7.58729 21.3408 9.14987 20.5789C10.2465 20.0441 11.3562 19.4309 12.5546 19.155C12.9931 19.0551 13.4395 19.0125 14 19C17.7712 19 19.6569 19 20.8284 17.8284C22 16.6569 22 14.7712 22 11V10.5C22 6.72876 22 4.84315 20.8284 3.67157C19.6569 2.5 17.7712 2.5 14 2.5H10C6.22876 2.5 4.34315 2.5 3.17157 3.67157C2 4.84315 2 6.72876 2 10.5V11C2 14.7712 2 16.6569 3.17157 17.8284C3.82475 18.4816 4.7987 18.8721 6.09881 19" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+  </svg>
+);
+
+const BookmarkIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+    <path d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const ShareIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+    <path d="M14 3H18C19.4142 3 20.1213 3 20.5607 3.43934C21 3.87868 21 4.58579 21 6V10M20 4L11 13M10.0017 3C7.05534 3.03208 5.41096 3.21929 4.31838 4.31188C2.99988 5.63037 2.99988 7.75248 2.99988 11.9966C2.99988 16.2409 2.99988 18.363 4.31838 19.6815C5.63688 21 7.75899 21 12.0032 21C16.2474 21 18.3695 21 19.688 19.6815C20.7808 18.5887 20.9678 16.9438 20.9999 13.9963" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
 
 export default PostModal;

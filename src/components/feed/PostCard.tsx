@@ -17,6 +17,7 @@ interface PostCardProps {
 
 const PostCard: React.FC<PostCardProps> = ({ post, currentUser, categories }) => {
   const postModal = usePostModal();
+  
   const router = useRouter();
   const [imageLoaded, setImageLoaded] = useState(false);
   const [showStats, setShowStats] = useState(false);
@@ -30,7 +31,8 @@ const PostCard: React.FC<PostCardProps> = ({ post, currentUser, categories }) =>
 
 
   const handleClick = () => {
-    postModal.onOpen(post);
+    if (!currentUser) return; // Prevent calling with null/undefined
+    postModal.onOpen(post, currentUser);
   };
 
   const handleUserClick = (e: React.MouseEvent) => {
