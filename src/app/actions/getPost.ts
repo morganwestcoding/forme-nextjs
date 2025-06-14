@@ -130,6 +130,7 @@ const allPosts = await prisma.post.findMany({
         imageSrc: post.imageSrc,
         mediaUrl: post.mediaUrl || null,
         mediaType: (post.mediaType as MediaType) || null,
+        postType: (post as any).postType || 'text', // Added postType field
         location: post.location,
         tag: post.tag,
         photo: post.photo,
@@ -138,6 +139,18 @@ const allPosts = await prisma.post.findMany({
         likes: post.likes || [],
         bookmarks: post.bookmarks || [],
         hiddenBy: post.hiddenBy || [],
+        comments: post.comments.map((comment) => ({
+          id: comment.id,
+          content: comment.content,
+          createdAt: comment.createdAt.toISOString(),
+          userId: comment.userId,
+          postId: comment.postId,
+          user: {
+            id: comment.user.id,
+            name: comment.user.name,
+            image: comment.user.image,
+          },
+        })), // Added comments mapping
         user: {
           ...user,
           createdAt: user.createdAt.toISOString(),

@@ -121,7 +121,7 @@ export interface SafeComment {
   postId: string;
   user: {
     id: string;
-    name: string;
+    name: string | null; // Changed from string to string | null
     image: string | null;
   };
 }
