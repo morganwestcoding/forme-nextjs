@@ -1,4 +1,4 @@
-// app/api/posts/[postId]/route.ts
+// app/api/post/[postId]/route.ts
 
 import { NextResponse } from "next/server";
 import getCurrentUser from "@/app/actions/getCurrentUser";

@@ -39,8 +39,8 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, cat
     if (!currentUser) return;
 
     try {
-      // Always fetch fresh data when opening modal
-      const res = await axios.get(`/api/posts/${post.id}`);
+      // Always fetch fresh data when opening modal using your correct endpoint
+      const res = await axios.get(`/api/post/${post.id}`);
       const freshPost = res.data;
       postModal.onOpen(freshPost, currentUser);
     } catch (err) {
