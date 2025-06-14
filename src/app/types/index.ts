@@ -113,7 +113,7 @@ export type SafePost = Omit<
   comments: SafeComment[]; // ✅ ADD THIS
 };
 
-export type SafeComment = {
+export interface SafeComment {
   id: string;
   content: string;
   createdAt: string;
@@ -121,11 +121,11 @@ export type SafeComment = {
   postId: string;
   user: {
     id: string;
-    name: string | null;
+    name: string;
     image: string | null;
-    // Add other necessary user fields here
   };
-};
+}
+
 
 export type SafeMessage = {
   id: string;

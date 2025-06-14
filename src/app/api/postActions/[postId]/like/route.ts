@@ -1,4 +1,4 @@
-// app/api/postActions/[postId]/like.ts
+// app/api/postActions/[postId]/like/route.ts
 
 import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";

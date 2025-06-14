@@ -5,26 +5,20 @@ interface PostModalStore {
   isOpen: boolean;
   post: SafePost | null;
   currentUser: SafeUser | null;
-  onOpen: (post: SafePost, user: SafeUser) => void;
+  onOpen: (post: SafePost, user: SafeUser, onUpdate?: (updatedPost: SafePost) => void) => void;
   onClose: () => void;
   setPost: (post: SafePost) => void;
+  syncCallback?: (updatedPost: SafePost) => void;
 }
 
 const usePostModal = create<PostModalStore>((set) => ({
   isOpen: false,
   post: null,
   currentUser: null,
+  syncCallback: undefined,
+  onOpen: (post, user, onUpdate) => set({ isOpen: true, post, currentUser: user, syncCallback: onUpdate }),
+  onClose: () => set({ isOpen: false, post: null, currentUser: null, syncCallback: undefined }),
   setPost: (post) => set({ post }),
-  onOpen: async (post, user) => {
-    try {
-      const res = await fetch(`/api/posts/${post.id}`);
-      const freshPost = await res.json();
-      set({ isOpen: true, post: freshPost, currentUser: user });
-    } catch {
-      set({ isOpen: true, post, currentUser: user });
-    }
-  },
-  onClose: () => set({ isOpen: false, post: null, currentUser: null }),
 }));
 
 export default usePostModal;
