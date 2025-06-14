@@ -44,7 +44,19 @@ const PostModal = () => {
       console.log('Post comments from props:', post.comments);
       setComments(post.comments || []);
     }
-  }, [post?.id, userId, post?.likes, post?.bookmarks, post?.comments]);
+
+    // Prevent body scrolling when modal is open
+    if (post) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [post?.id, userId, post?.likes, post?.bookmarks, post?.comments, post]);
 
   const handleLike = async () => {
     if (!post || !userId) return;
@@ -294,11 +306,11 @@ const PostModal = () => {
             {/* Exit Button */}
             <div className="flex flex-col items-center gap-2">
               <button onClick={postModal.onClose} className="transition hover:scale-110">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="transition-all duration-200">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="transition-all duration-200">
                   <path d="M18 6L6.00081 17.9992M17.9992 18L6 6.00085" />
                 </svg>
               </button>
-              <span className="text-xs">Exit</span>
+              <span className="text-xs">Close</span>
             </div>
 
             <div className="border border-white rounded-full">
@@ -389,17 +401,17 @@ const PostModal = () => {
             <div className="flex-1 overflow-y-auto px-6 py-6 pb-24">
               {comments.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-64 text-center">
-                  <div className="w-16 h-16 mb-6 rounded-2xl bg-gray-100 flex items-center justify-center">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-gray-400">
-                      <path d="M8 13.5H16M8 8.5H12" strokeLinecap="round" strokeLinejoin="round" />
-                      <path d="M6.09881 19C4.7987 18.8721 3.82475 18.4816 3.17157 17.8284C2 16.6569 2 14.7712 2 11V10.5C2 6.72876 2 4.84315 3.17157 3.67157C4.34315 2.5 6.22876 2.5 10 2.5H14C17.7712 2.5 19.6569 2.5 20.8284 3.67157C22 4.84315 22 6.72876 22 10.5V11C22 14.7712 22 16.6569 20.8284 17.8284C19.6569 21.5 17.7712 21.5 12 21.5C7.52166 21.5 5.28249 21.5 3.89124 20.1088C2.5 18.7175 2.5 16.4783 2.5 12C2.5 7.52166 2.5 5.28249 3.89124 3.89124C5.28249 2.5 7.52166 2.5 12 2.5C16.4783 2.5 18.7175 2.5 20.1088 3.89124C21.5 5.28249 21.5 7.52166 21.5 12C21.5 16.4783 21.5 18.7175 20.1088 20.1088C18.7175 21.5 16.4783 21.5 12 21.5C7.52166 21.5 5.28249 21.5 3.89124 20.1088C2.5 18.7175 2.5 16.4783 2.5 12Z" strokeLinecap="round" />
-                    </svg>
+                  <div className=" mb-6 rounded-2xl bg-gray-100 flex items-center justify-center">
+         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none">
+    <path d="M8 13.5H16M8 8.5H12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+    <path d="M6.09881 19C4.7987 18.8721 3.82475 18.4816 3.17157 17.8284C2 16.6569 2 14.7712 2 11V10.5C2 6.72876 2 4.84315 3.17157 3.67157C4.34315 2.5 6.22876 2.5 10 2.5H14C17.7712 2.5 19.6569 2.5 20.8284 3.67157C22 4.84315 22 6.72876 22 10.5V11C22 14.7712 22 16.6569 20.8284 17.8284C19.6569 19 17.7712 19 14 19C13.4395 19.0125 12.9931 19.0551 12.5546 19.155C11.3562 19.4309 10.2465 20.0441 9.14987 20.5789C7.58729 21.3408 6.806 21.7218 6.31569 21.3651C5.37769 20.6665 6.29454 18.5019 6.5 17.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+</svg>
                   </div>
                   <p className="text-gray-900 font-medium text-lg mb-2">The conversation starts here</p>
                   <p className="text-gray-500 text-sm leading-relaxed">Share your perspective and connect<br />with the community</p>
                 </div>
               ) : (
-                <div className="space-y-8">
+                <div className="space-y-6">
                   {comments.map((comment, index) => (
                     <div key={comment.id} className="group relative">
                       <div className="flex gap-4">
@@ -410,14 +422,23 @@ const PostModal = () => {
                           )}
                         </div>
                         <div className="flex-1 min-w-0 pt-1">
-                          <div className="flex items-center gap-3 mb-3">
-                            <span className="font-medium text-gray-900 text-sm">{comment.user.name || 'Anonymous'}</span>
                             <div className="flex items-center gap-2 text-gray-500 text-xs">
-                              <span>{format(new Date(comment.createdAt), 'MMM d')}</span>
+                              <span className="font-medium text-gray-900 text-sm">{comment.user.name || 'Anonymous'}</span>
                               <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
-                              <span>{format(new Date(comment.createdAt), 'h:mm a')}</span>
+                              <span>
+                                {(() => {
+                                  const commentDate = new Date(comment.createdAt);
+                                  const now = new Date();
+                                  const diffInHours = (now.getTime() - commentDate.getTime()) / (1000 * 60 * 60);
+                                  
+                                  if (diffInHours < 24) {
+                                    return format(commentDate, 'h:mm a');
+                                  } else {
+                                    return format(commentDate, 'MMM d');
+                                  }
+                                })()}
+                              </span>
                             </div>
-                          </div>
                           <p className="text-gray-700 text-sm leading-relaxed">{comment.content}</p>
                           
                           {/* Hover Actions */}
@@ -462,14 +483,14 @@ const PostModal = () => {
                       rows={4}
                       disabled={isSubmitting}
                       style={{
-                        minHeight: '120px',
-                        maxHeight: '200px'
+                        minHeight: '100px',
+                        maxHeight: '100px'
                       }}
                     />
                     <button 
                       onClick={handleCommentSubmit} 
                       disabled={isSubmitting || !comment.trim()} 
-                      className="absolute right-1.5 bottom-3 w-10 h-10 bg-blue-500 text-white rounded-xl flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed hover:scale-105 transition-all duration-200"
+                      className="absolute right-1.5 bottom-3 w-10 h-10 bg-[#60A5FA] text-white rounded-xl flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed hover:scale-105 transition-all duration-200"
                     >
                       {isSubmitting ? (
                         <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
