@@ -22,10 +22,13 @@ const PostModal = () => {
 
   const [likes, setLikes] = useState<string[]>([]);
   const [liked, setLiked] = useState(false);
+  const [bookmarks, setBookmarks] = useState<string[]>([]);
+  const [bookmarked, setBookmarked] = useState(false);
   const [comments, setComments] = useState<SafeComment[]>([]);
   const [showComments, setShowComments] = useState(false);
   const [comment, setComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showShareSuccess, setShowShareSuccess] = useState(false);
 
   const userId = useMemo(() => currentUser?.id, [currentUser]);
 
@@ -33,13 +36,15 @@ const PostModal = () => {
     if (post && userId) {
       setLikes(post.likes || []);
       setLiked(post.likes.includes(userId));
+      setBookmarks(post.bookmarks || []);
+      setBookmarked(post.bookmarks.includes(userId));
       
       // Enhanced comment loading with debugging
       console.log('Loading comments for post:', post.id);
       console.log('Post comments from props:', post.comments);
       setComments(post.comments || []);
     }
-  }, [post?.id, userId, post?.likes, post?.comments]);
+  }, [post?.id, userId, post?.likes, post?.bookmarks, post?.comments]);
 
   const handleLike = async () => {
     if (!post || !userId) return;
@@ -57,6 +62,7 @@ const PostModal = () => {
       // Update the post in the global store immediately
       updatePost(post.id, {
         likes: updatedLikes,
+        bookmarks: bookmarks,
         comments: comments
       });
 
@@ -80,11 +86,93 @@ const PostModal = () => {
       // Revert store update
       updatePost(post.id, {
         likes: originalLikes,
+        bookmarks: bookmarks,
         comments: comments
       });
       
       // Revert modal update
       postModal.setPost?.({ ...post, likes: originalLikes });
+    }
+  };
+
+  const handleBookmark = async () => {
+    if (!post || !userId) return;
+
+    const hasBookmarked = bookmarks.includes(userId);
+    const updatedBookmarks = hasBookmarked
+      ? bookmarks.filter(id => id !== userId)
+      : [...bookmarks, userId];
+
+    try {
+      // Optimistic UI update
+      setBookmarks(updatedBookmarks);
+      setBookmarked(!hasBookmarked);
+
+      // Update the post in the global store immediately
+      updatePost(post.id, {
+        likes: likes,
+        bookmarks: updatedBookmarks,
+        comments: comments
+      });
+
+      // Update the modal's post data immediately
+      const updatedPost = { ...post, bookmarks: updatedBookmarks };
+      postModal.setPost?.(updatedPost);
+
+      // Make the API call
+      await axios.post(`/api/postActions/${post.id}/bookmark`);
+      
+      console.log('Bookmark API call successful');
+      
+    } catch (error) {
+      console.error('Failed to toggle bookmark:', error);
+      
+      // Revert optimistic update on error
+      const originalBookmarks = post.bookmarks || [];
+      setBookmarks(originalBookmarks);
+      setBookmarked(originalBookmarks.includes(userId));
+      
+      // Revert store update
+      updatePost(post.id, {
+        likes: likes,
+        bookmarks: originalBookmarks,
+        comments: comments
+      });
+      
+      // Revert modal update
+      postModal.setPost?.({ ...post, bookmarks: originalBookmarks });
+    }
+  };
+
+  const handleShare = async () => {
+    if (!post) return;
+
+    try {
+      const postUrl = `${window.location.origin}/post/${post.id}`;
+      
+      // Try to use the Web Share API first (mobile devices)
+      if (navigator.share) {
+        await navigator.share({
+          title: `Post by ${post.user.name}`,
+          text: post.content.length > 100 ? post.content.substring(0, 100) + '...' : post.content,
+          url: postUrl,
+        });
+      } else {
+        // Fallback to clipboard
+        await navigator.clipboard.writeText(postUrl);
+        setShowShareSuccess(true);
+        setTimeout(() => setShowShareSuccess(false), 2000);
+      }
+    } catch (error) {
+      console.error('Failed to share:', error);
+      // Final fallback - try clipboard anyway
+      try {
+        await navigator.clipboard.writeText(`${window.location.origin}/post/${post.id}`);
+        setShowShareSuccess(true);
+        setTimeout(() => setShowShareSuccess(false), 2000);
+      } catch (clipboardError) {
+        console.error('Clipboard failed too:', clipboardError);
+      }
     }
   };
 
@@ -130,6 +218,7 @@ const PostModal = () => {
       // Update local state with real data
       setComments(updatedPost.comments || []);
       setLikes(updatedPost.likes || []);
+      setBookmarks(updatedPost.bookmarks || []);
       
       // Update the modal's post data
       postModal.setPost?.(updatedPost);
@@ -137,6 +226,7 @@ const PostModal = () => {
       // Update the post in the global store
       updatePost(post.id, {
         likes: updatedPost.likes,
+        bookmarks: updatedPost.bookmarks,
         comments: updatedPost.comments
       });
       
@@ -195,14 +285,22 @@ const PostModal = () => {
             </div>
           )}
 
-          <button onClick={postModal.onClose} className="absolute top-2 right-2 z-10 p-2 bg-black/60 text-white rounded-full hover:bg-black">
-            ×
-          </button>
+
         </div>
 
         {/* Sidebar */}
         {!isAd && (
           <div className="ml-6 flex flex-col items-center gap-6 text-white">
+            {/* Exit Button */}
+            <div className="flex flex-col items-center gap-2">
+              <button onClick={postModal.onClose} className="transition hover:scale-110">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="transition-all duration-200">
+                  <path d="M18 6L6.00081 17.9992M17.9992 18L6 6.00085" />
+                </svg>
+              </button>
+              <span className="text-xs">Exit</span>
+            </div>
+
             <div className="border border-white rounded-full">
               <Avatar src={post.user.image ?? undefined} />
             </div>
@@ -232,6 +330,34 @@ const PostModal = () => {
                 </svg>
               </button>
               <span className="text-xs">{comments.length}</span>
+            </div>
+
+            {/* Bookmark Button */}
+            <div className="flex flex-col items-center gap-2">
+              <button onClick={handleBookmark} className="transition hover:scale-110">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill={bookmarked ? '#fbbf24' : 'none'} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="transition-all duration-200">
+                  <path d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z" />
+                </svg>
+              </button>
+              <span className="text-xs">{bookmarks.length}</span>
+            </div>
+
+            {/* Share Button - ONLY NEW ADDITION */}
+            <div className="flex flex-col items-center gap-2 relative">
+              <button onClick={handleShare} className="transition hover:scale-110">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="transition-all duration-200">
+                  <path d="M10.0017 3C7.05534 3.03208 5.41096 3.21929 4.31838 4.31188C2.99988 5.63037 2.99988 7.75248 2.99988 11.9966C2.99988 16.2409 2.99988 18.363 4.31838 19.6815C5.63688 21 7.75899 21 12.0032 21C16.2474 21 18.3695 21 19.688 19.6815C20.7808 18.5887 20.9678 16.9438 20.9999 13.9963" />
+                  <path d="M14 3H18C19.4142 3 20.1213 3 20.5607 3.43934C21 3.87868 21 4.58579 21 6V10M20 4L11 13" />
+                </svg>
+              </button>
+              <span className="text-xs">Share</span>
+              
+              {/* Success Message */}
+              {showShareSuccess && (
+                <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-green-500 text-white text-xs px-3 py-1 rounded-full whitespace-nowrap">
+                  Link copied!
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -266,7 +392,7 @@ const PostModal = () => {
                   <div className="w-16 h-16 mb-6 rounded-2xl bg-gray-100 flex items-center justify-center">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-gray-400">
                       <path d="M8 13.5H16M8 8.5H12" strokeLinecap="round" strokeLinejoin="round" />
-                      <path d="M6.09881 19C4.7987 18.8721 3.82475 18.4816 3.17157 17.8284C2 16.6569 2 14.7712 2 11V10.5C2 6.72876 2 4.84315 3.17157 3.67157C4.34315 2.5 6.22876 2.5 10 2.5H14C17.7712 2.5 19.6569 2.5 20.8284 3.67157C22 4.84315 22 6.72876 22 10.5V11C22 14.7712 22 16.6569 3.17157 17.8284C3.82475 18.4816 4.7987 18.8721 6.09881 19" strokeLinecap="round" />
+                      <path d="M6.09881 19C4.7987 18.8721 3.82475 18.4816 3.17157 17.8284C2 16.6569 2 14.7712 2 11V10.5C2 6.72876 2 4.84315 3.17157 3.67157C4.34315 2.5 6.22876 2.5 10 2.5H14C17.7712 2.5 19.6569 2.5 20.8284 3.67157C22 4.84315 22 6.72876 22 10.5V11C22 14.7712 22 16.6569 20.8284 17.8284C19.6569 21.5 17.7712 21.5 12 21.5C7.52166 21.5 5.28249 21.5 3.89124 20.1088C2.5 18.7175 2.5 16.4783 2.5 12C2.5 7.52166 2.5 5.28249 3.89124 3.89124C5.28249 2.5 7.52166 2.5 12 2.5C16.4783 2.5 18.7175 2.5 20.1088 3.89124C21.5 5.28249 21.5 7.52166 21.5 12C21.5 16.4783 21.5 18.7175 20.1088 20.1088C18.7175 21.5 16.4783 21.5 12 21.5C7.52166 21.5 5.28249 21.5 3.89124 20.1088C2.5 18.7175 2.5 16.4783 2.5 12Z" strokeLinecap="round" />
                     </svg>
                   </div>
                   <p className="text-gray-900 font-medium text-lg mb-2">The conversation starts here</p>

@@ -89,6 +89,14 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, cat
         ref={cardRef}
         className="bg-white rounded-3xl shadow overflow-hidden max-w-xl cursor-pointer hover:shadow-lg transition-all duration-300 group relative"
         onClick={handleClick}
+        onMouseEnter={() => {
+          setShowStats(true);
+          setTimeout(() => setStatsVisible(true), 100);
+        }}
+        onMouseLeave={() => {
+          setShowStats(false);
+          setTimeout(() => setStatsVisible(false), 300);
+        }}
       >
         <div className="relative h-[400px] overflow-hidden">
           {post.imageSrc ? (
@@ -178,14 +186,6 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, cat
           }}
         >
           <div className="flex flex-col items-center gap-4 text-gray-500 text-sm font-semibold">
-            {/* Views */}
-            <div className="flex flex-col items-center gap-1 text-gray-500">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none">
-                <path d="M21.544 11.045C21.848 11.4713 22 11.6845 22 12C22 12.3155 21.848 12.5287 21.544 12.955C20.1779 14.8706 16.6892 19 12 19C7.31078 19 3.8221 14.8706 2.45604 12.955C2.15201 12.5287 2 12.3155 2 12C2 11.6845 2.15201 11.4713 2.45604 11.045C3.8221 9.12944 7.31078 5 12 5C16.6892 5 20.1779 9.12944 21.544 11.045Z" stroke="currentColor" strokeWidth="1.5" />
-                <path d="M15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15C13.6569 15 15 13.6569 15 12Z" stroke="currentColor" strokeWidth="1.5" />
-              </svg>
-              <span>1.2k</span>
-            </div>
             
             {/* Comments - Updated to show current count */}
             <div className="flex flex-col items-center gap-1 text-gray-500">
@@ -204,6 +204,14 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, cat
               <span>{post.likes?.length || 0}</span>
             </div>
 
+            {/* Bookmarks - NEW: Added bookmark display */}
+            <div className="flex flex-col items-center gap-1">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none">
+                <path d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <span>{post.bookmarks?.length || 0}</span>
+            </div>
+
             {/* Shares */}
             <div className="flex flex-col items-center gap-1">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none">
@@ -211,14 +219,6 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, cat
                 <path d="M14 3H18C19.4142 3 20.1213 3 20.5607 3.43934C21 3.87868 21 4.58579 21 6V10M20 4L11 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
               <span>24</span>
-            </div>
-
-            {/* Saves - Updated to show current count */}
-            <div className="flex flex-col items-center gap-1">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none">
-                <path d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              <span>{post.bookmarks?.length || 0}</span>
             </div>
           </div>
 
