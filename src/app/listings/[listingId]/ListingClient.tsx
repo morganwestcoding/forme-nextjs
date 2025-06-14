@@ -12,7 +12,6 @@ import { categories } from "@/components/Categories"; // Import categories
 
 import Container from "@/components/Container";
 import ListingHead from "@/components/listings/ListingHead";
-import ListingInfo from "@/components/listings/ListingInfo";
 import ServicesSection from "@/components/listings/ServiceSection";
 import ReservationModal from "@/components/modals/ReservationModal";
 
