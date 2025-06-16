@@ -8,10 +8,13 @@ import useCreatePostModal from '@/app/hooks/useCreatePostModal';
 import axios from 'axios';
 import PostCategoryModal from '@/components/modals/PostCategoryModal';
 import { useRouter } from 'next/navigation';
+import MediaUpload from '@/components/inputs/MediaUpload';
+import { MediaData } from '@/app/types';
 
 enum STEPS {
   TYPE = 0,
-  CONTENT = 1,
+  MEDIA = 1,
+  CONTENT = 2,
 }
 
 const postTypes = [
@@ -61,30 +64,36 @@ const CreatePostModal = () => {
   const [step, setStep] = useState(STEPS.TYPE);
   const [postType, setPostType] = useState('');
   const [content, setContent] = useState('');
+  const [mediaData, setMediaData] = useState<MediaData | null>(null);
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleClose = useCallback(() => {
     setPostType('');
     setContent('');
+    setMediaData(null);
     setStep(STEPS.TYPE);
     modal.onClose();
   }, [modal]);
 
   const handlePost = async (selectedCategory: string | null) => {
-    if (!content.trim()) {
+    if (!content.trim() && postType !== 'Reel') {
       return toast.error('Please write something');
+    }
+    
+    if (postType === 'Reel' && !mediaData) {
+      return toast.error('Please upload media for your reel');
     }
     
     setIsLoading(true);
     
     const postData = {
-      content,
+      content: content || '', // Allow empty content for reels
       category: selectedCategory,
-      mediaUrl: null,
-      mediaType: null,
+      mediaUrl: mediaData?.url || null,
+      mediaType: mediaData?.type || null,
       location: null,
-      imageSrc: null,
+      imageSrc: mediaData?.type === 'image' ? mediaData.url : null, // For backward compatibility
       tag: postType,
       postType
     };
@@ -111,14 +120,38 @@ const CreatePostModal = () => {
       if (!postType) {
         return toast.error('Choose a post type');
       }
+      
+      // If it's a reel, go to media upload step
+      if (postType === 'Reel') {
+        return setStep(STEPS.MEDIA);
+      }
+      
+      // For other post types, go directly to content
       return setStep(STEPS.CONTENT);
     }
     
-    if (!content.trim()) {
+    if (step === STEPS.MEDIA) {
+      if (!mediaData) {
+        return toast.error('Please upload media for your reel');
+      }
+      return setStep(STEPS.CONTENT);
+    }
+    
+    // Final step - validate and submit
+    if (postType !== 'Reel' && !content.trim()) {
       return toast.error('Please write something');
     }
     
     setCategoryModalOpen(true);
+  };
+
+  const handleSecondaryAction = () => {
+    if (step === STEPS.CONTENT) {
+      // Go back to media step for reels, or type step for other posts
+      setStep(postType === 'Reel' ? STEPS.MEDIA : STEPS.TYPE);
+    } else if (step === STEPS.MEDIA) {
+      setStep(STEPS.TYPE);
+    }
   };
 
   const actionLabel = useMemo(() => {
@@ -159,35 +192,60 @@ const CreatePostModal = () => {
       );
     }
     
+    if (step === STEPS.MEDIA) {
+      return (
+        <div className="flex flex-col gap-4">
+          <Heading 
+            title="Upload your media" 
+            subtitle="Add a photo, video, or GIF for your reel" 
+          />
+          <div className="w-full max-w-md mx-auto">
+            <MediaUpload
+              onMediaUpload={setMediaData}
+              currentMedia={mediaData}
+            />
+          </div>
+          {mediaData && (
+            <div className="text-center text-sm text-neutral-600">
+              {mediaData.type === 'video' ? 'Video' : 
+               mediaData.type === 'gif' ? 'GIF' : 'Image'} uploaded successfully
+            </div>
+          )}
+        </div>
+      );
+    }
+    
     return (
       <div className="flex flex-col gap-4">
-        <Heading title="Write your post" subtitle="Share your thoughts" />
+        <Heading 
+          title={postType === 'Reel' ? 'Add a caption' : 'Write your post'} 
+          subtitle={postType === 'Reel' ? 'Tell people about your reel (optional)' : 'Share your thoughts'} 
+        />
         <div className="relative w-full">
           <textarea
             className="w-full rounded-2xl p-4 shadow-sm text-sm resize-none min-h-[100px] bg-white border border-neutral-200"
-            placeholder="What's on your mind?"
+            placeholder={postType === 'Reel' ? 'Write a caption...' : "What's on your mind?"}
             value={content}
             onChange={(e) => setContent(e.target.value)}
             disabled={isLoading}
           />
           <button
             onClick={onSubmit}
-            className="absolute bottom-3 right-3 bg-black p-2 rounded-full hover:opacity-80 transition disabled:opacity-50"
+            className="absolute bottom-4 right-4 bg-[#60A5FA] text-white p-3 rounded-xl hover:opacity-80 transition disabled:opacity-50"
             disabled={isLoading}
           >
             {isLoading ? (
               <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none">
-                <path d="M21.0477 3.05293C18.8697 0.707363 2.48648 6.4532 2.50001 8.551C2.51535 10.9299 8.89809 11.6617 10.6672 12.1581C11.7311 12.4565 12.016 12.7625 12.2613 13.8781C13.3723 18.9305 13.9301 21.4435 15.2014 21.4996C17.2278 21.5892 23.1733 5.342 21.0477 3.05293Z" stroke="#ffffff" strokeWidth="1.5"></path>
-                <path d="M11.5 12.5L15 9" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
               </svg>
             )}
           </button>
         </div>
       </div>
     );
-  }, [step, postType, content, isLoading]);
+  }, [step, postType, content, mediaData, isLoading]);
 
   return (
     <>
@@ -197,7 +255,7 @@ const CreatePostModal = () => {
         title="Create a Post"
         actionLabel={actionLabel}
         onSubmit={onSubmit}
-        secondaryAction={step === STEPS.TYPE ? undefined : () => setStep(STEPS.TYPE)}
+        secondaryAction={step === STEPS.TYPE ? undefined : handleSecondaryAction}
         secondaryActionLabel={secondaryActionLabel}
         body={bodyContent}
         disabled={isLoading}

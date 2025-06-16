@@ -29,8 +29,12 @@ const PostModal = () => {
   const [comment, setComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showShareSuccess, setShowShareSuccess] = useState(false);
+  const [showFullCaption, setShowFullCaption] = useState(false);
 
   const userId = useMemo(() => currentUser?.id, [currentUser]);
+
+  // Determine if this is a reel
+  const isReel = post?.tag === 'reel' || post?.postType === 'reel';
 
   useEffect(() => {
     if (post && userId) {
@@ -253,6 +257,12 @@ const PostModal = () => {
     }
   };
 
+  // Function to truncate caption for reels
+  const getTruncatedCaption = (text: string, maxLength: number = 50) => {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength).trim() + '...';
+  };
+
   if (!post) return null;
 
   const formattedDate = format(new Date(post.createdAt), 'PPP');
@@ -267,37 +277,107 @@ const PostModal = () => {
       <div className="fixed inset-0 z-40 bg-neutral-800/90" onClick={postModal.onClose} />
       <div className="fixed inset-0 z-50 flex items-center justify-center">
         {/* Modal Content */}
-        <div className={`relative ${isText ? 'bg-white' : 'bg-black'} rounded-3xl overflow-hidden shadow-xl ${isAd ? 'w-[520px] h-[840px]' : 'w-[425px] h-[700px]'} flex flex-col justify-between`}>
+        <div className={`relative ${isReel ? 'bg-black' : isText ? 'bg-white' : 'bg-black'} rounded-3xl overflow-hidden shadow-xl ${isAd ? 'w-[520px] h-[840px]' : isReel ? 'w-[425px] h-[700px]' : 'w-[425px] h-[700px]'} flex flex-col ${isReel ? '' : 'justify-between'}`}>
           {isAd ? (
             listingAd ? (
               <ListingCard data={listingAd} currentUser={post.user} />
             ) : shopAd ? (
               <ShopCard data={shopAd} currentUser={post.user} />
             ) : null
-          ) : post.mediaUrl ? (
-            post.mediaType === 'video' ? (
-              <video src={post.mediaUrl} controls className="w-full h-full object-cover" />
-            ) : (
-              <Image src={post.mediaUrl} alt="Post media" width={384} height={384} className="object-cover" />
-            )
-          ) : null}
+          ) : isReel ? (
+            // Reel layout - full screen media
+            <>
+              {post.mediaUrl ? (
+                post.mediaType === 'video' ? (
+                  <video 
+                    src={post.mediaUrl} 
+                    controls 
+                    className="w-full h-full object-cover" 
+                    autoPlay
+                    muted
+                    loop
+                  />
+                ) : (
+                  <Image 
+                    src={post.mediaUrl} 
+                    alt="Reel media" 
+                    fill
+                    className="object-cover" 
+                  />
+                )
+              ) : null}
+              
+              {/* User info overlay for reels */}
+              <div className="absolute bottom-4 left-4 right-4">
+                <div className="flex items-start gap-3">
+                  <div className="relative w-10 h-10 flex-shrink-0">
+                    <Image
+                      src={post.user.image || '/images/placeholder.jpg'}
+                      alt={post.user.name || 'User'}
+                      fill
+                      className="rounded-full object-cover"
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1 mb-1">
+                      <p className="font-semibold text-white text-sm">{post.user.name || 'Anonymous'}</p>
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="#60A5FA">
+                        <path d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z" stroke="#ffffff" strokeWidth="1.5" />
+                        <path d="M9 12.8929L10.8 14.5L15 9.5" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </div>
+                    <p className="text-white/80 text-xs mb-2">{formattedDate}</p>
+                    
+                    {/* Caption with truncation */}
+                    {post.content && (
+                      <div className="flex items-start gap-2">
+                        <p className="text-white text-sm leading-relaxed flex-1">
+                          {showFullCaption ? post.content : getTruncatedCaption(post.content)}
+                        </p>
+                        {post.content.length > 50 && (
+                          <button
+                            onClick={() => setShowFullCaption(!showFullCaption)}
+                            className="text-white/60 text-xs font-medium hover:text-white transition-colors flex-shrink-0"
+                          >
+                            {showFullCaption ? 'less' : 'more'}
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+              
+              {/* Gradient overlay for text readability */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+            </>
+          ) : (
+            // Regular post layout
+            <>
+              {post.mediaUrl ? (
+                post.mediaType === 'video' ? (
+                  <video src={post.mediaUrl} controls className="w-full h-full object-cover" />
+                ) : (
+                  <Image src={post.mediaUrl} alt="Post media" width={384} height={384} className="object-cover" />
+                )
+              ) : null}
 
-          {!isAd && (
-            <div className={`flex flex-col flex-1 ${isText ? 'text-black bg-white' : 'text-white px-4 py-3'}`}>
-              {isText && (
-                <div className="flex-1 flex items-center justify-center text-center px-6">
-                  <p className="text-base whitespace-pre-line">{post.content}</p>
+              {!isAd && (
+                <div className={`flex flex-col flex-1 ${isText ? 'text-black bg-white' : 'text-white px-4 py-3'}`}>
+                  {isText && (
+                    <div className="flex-1 flex items-center justify-center text-center px-6">
+                      <p className="text-base whitespace-pre-line">{post.content}</p>
+                    </div>
+                  )}
+                  <div className="px-6 pb-6">
+                    <p className="text-sm font-semibold">{post.user.name}</p>
+                    <p className="text-xs text-gray-400">{formattedDate}</p>
+                    {!isText && <p className="mt-2 whitespace-pre-line break-words text-white">{post.content}</p>}
+                  </div>
                 </div>
               )}
-              <div className="px-6 pb-6">
-                <p className="text-sm font-semibold">{post.user.name}</p>
-                <p className="text-xs text-gray-400">{formattedDate}</p>
-                {!isText && <p className="mt-2 whitespace-pre-line break-words text-white">{post.content}</p>}
-              </div>
-            </div>
+            </>
           )}
-
-
         </div>
 
         {/* Sidebar */}
@@ -354,7 +434,7 @@ const PostModal = () => {
               <span className="text-xs">{bookmarks.length}</span>
             </div>
 
-            {/* Share Button - ONLY NEW ADDITION */}
+            {/* Share Button */}
             <div className="flex flex-col items-center gap-2 relative">
               <button onClick={handleShare} className="transition hover:scale-110">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="transition-all duration-200">
