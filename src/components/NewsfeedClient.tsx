@@ -170,7 +170,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                   
                   // Add the post card
                   items.push(
-                    <div key={post.id} className="group/card hover:z-10 relative group-hover/grid:opacity-50 hover:!opacity-100 transition-opacity duration-300">
+                    <div key={post.id} className="group/card hover:z-10 relative group-hover/grid:opacity-100 hover:!opacity-100 transition-opacity duration-300">
                       <PostCard 
                         post={post}
                         currentUser={currentUser}
@@ -185,7 +185,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                     const listing = listings[listingIndex % listings.length];
                     
                     items.push(
-                      <div key={`listing-${listing.id}-${listingIndex}`} className="group/card hover:z-10 relative group-hover/grid:opacity-50 hover:!opacity-100 transition-opacity duration-300">
+                      <div key={`listing-${listing.id}-${listingIndex}`} className="group/card hover:z-10 relative group-hover/grid:opacity-100 hover:!opacity-100 transition-opacity duration-300">
                         <ListingCard
                           currentUser={currentUser}
                           data={listing}
