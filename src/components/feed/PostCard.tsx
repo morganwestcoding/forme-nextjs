@@ -227,7 +227,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, cat
         </div>
       </div>
 
-      {/* Stats sidebar */}
+      {/* Stats sidebar 
       {statsPosition.left !== 0 && statsPosition.top !== 0 && (
         <div
           className={`fixed z-50 pointer-events-auto w-[80px] bg-white backdrop-blur-md rounded-2xl border border-gray-200 shadow-xl p-4 flex flex-col justify-between transition-opacity duration-500 ${statsVisible ? 'opacity-100' : 'opacity-0'}`}
@@ -247,7 +247,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, cat
         >
           <div className="flex flex-col items-center gap-4 text-gray-500 text-sm font-semibold">
             
-            {/* Comments - Updated to show current count */}
+            {/* Comments - Updated to show current count 
             <div className="flex flex-col items-center gap-1 text-gray-500">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none">
                 <path d="M8 13.5H16M8 8.5H12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
@@ -256,7 +256,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, cat
               <span>{post.comments?.length || 0}</span>
             </div>
 
-            {/* Likes - Updated to show current count */}
+            {/* Likes - Updated to show current count 
             <div className="flex flex-col items-center gap-1">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none">
                 <path d="M10.4107 19.9677C7.58942 17.858 2 13.0348 2 8.69444C2 5.82563 4.10526 3.5 7 3.5C8.5 3.5 10 4 12 6C14 4 15.5 3.5 17 3.5C19.8947 3.5 22 5.82563 22 8.69444C22 13.0348 16.4106 17.858 13.5893 19.9677C12.6399 20.6776 11.3601 20.6776 10.4107 19.9677Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -264,7 +264,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, cat
               <span>{post.likes?.length || 0}</span>
             </div>
 
-            {/* Bookmarks - NEW: Added bookmark display */}
+            {/* Bookmarks - NEW: Added bookmark display 
             <div className="flex flex-col items-center gap-1">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none">
                 <path d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -272,7 +272,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, cat
               <span>{post.bookmarks?.length || 0}</span>
             </div>
 
-            {/* Shares */}
+            {/* Shares *
             <div className="flex flex-col items-center gap-1">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none">
                 <path d="M10.0017 3C7.05534 3.03208 5.41096 3.21929 4.31838 4.31188C2.99988 5.63037 2.99988 7.75248 2.99988 11.9966C2.99988 16.2409 2.99988 18.363 4.31838 19.6815C5.63688 21 7.75899 21 12.0032 21C16.2474 21 18.3695 21 19.688 19.6815C20.7808 18.5887 20.9678 16.9438 20.9999 13.9963" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -282,7 +282,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, cat
             </div>
           </div>
 
-          {/* Bottom SVG */}
+          {/* Bottom SVG *
           <div className="mt-auto flex justify-center pt-4">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none">
               <path d="M2.5 12C2.5 7.52166 2.5 5.28249 3.89124 3.89124C5.28249 2.5 7.52166 2.5 12 2.5C16.4783 2.5 18.7175 2.5 20.1088 3.89124C21.5 5.28249 21.5 7.52166 21.5 12C21.5 16.4783 21.5 18.7175 20.1088 20.1088C18.7175 21.5 16.4783 21.5 12 21.5C7.52166 21.5 5.28249 21.5 3.89124 20.1088C2.5 18.7175 2.5 16.4783 2.5 12Z" stroke="currentColor" strokeWidth="1.5" />
@@ -292,7 +292,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, cat
             </svg>
           </div>
         </div>
-      )}
+      )}*/}
     </>
   );
 };
