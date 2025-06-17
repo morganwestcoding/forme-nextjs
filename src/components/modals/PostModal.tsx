@@ -370,103 +370,65 @@ const PostModal = () => {
                 </div>
               )}
 
-              {/* User info overlay - positioned at bottom with backdrop */}
-              <div className="absolute inset-0 flex items-end p-6 pointer-events-none z-20">
-                <div className="bg-black/60 p-4 rounded-2xl max-w-lg w-full pointer-events-auto">
-                  <div className="flex items-start gap-3 mb-4">
+              {/* Bottom overlay with structured layout */}
+              <div className="absolute bottom-0 left-0 right-0 p-6 z-20">
+                <div className="bg-black/70 backdrop-blur-md p-6 rounded-2xl max-w-lg shadow-2xl">
+                  {/* Row 1: Avatar + Username + Verification Badge */}
+                  <div className="flex items-center gap-3 mb-4">
                     <div className="relative w-12 h-12 flex-shrink-0">
                       <Image
                         src={post.user.image || '/images/placeholder.jpg'}
                         alt={post.user.name || 'User'}
                         fill
-                        className="rounded-full object-cover border-2 border-white/20"
+                        className="rounded-full object-cover border-2 border-white/30"
                       />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <p className="font-semibold text-white text-base drop-shadow-lg">{post.user.name || 'Anonymous'}</p>
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="#60A5FA">
-                          <path d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z" stroke="#ffffff" strokeWidth="1.5" />
-                          <path d="M9 12.8929L10.8 14.5L15 9.5" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                      </div>
-                      <p className="text-white/90 text-sm mb-2 drop-shadow-lg">{formattedDate}</p>
-                      {post.content && (
-                        <div className="flex items-start gap-2 mb-4">
-                          <p className={`text-white text-sm leading-relaxed flex-1 drop-shadow-lg ${showFullCaption ? '' : 'line-clamp-1'}`}>
-                            {showFullCaption ? post.content : getTruncatedCaption(post.content)}
-                          </p>
-                          {post.content.length > 100 && (
-                            <button
-                              onClick={() => setShowFullCaption(!showFullCaption)}
-                              className="text-white/70 text-xs font-medium hover:text-white transition-colors flex-shrink-0 drop-shadow-lg"
-                            >
-                              {showFullCaption ? 'less' : 'more'}
-                            </button>
-                          )}
-                        </div>
-                      )}
+                    <div className="flex items-center gap-2 flex-1">
+                      <h3 className="font-semibold text-white text-base drop-shadow-lg">
+                        {post.user.name || 'Anonymous'}
+                      </h3>
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="#60A5FA" className="flex-shrink-0">
+                        <path d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z" stroke="#ffffff" strokeWidth="1.5" />
+                        <path d="M9 12.8929L10.8 14.5L15 9.5" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
                     </div>
                   </div>
+
+                  {/* Row 2: Date */}
+                  <div className="mb-4">
+                    <p className="text-white/80 text-sm drop-shadow-lg font-medium">{formattedDate}</p>
+                  </div>
+
+                  {/* Row 3: Caption with more/less functionality */}
+                  {post.content && (
+                    <div className="mb-4">
+                      <div className="flex items-start gap-2">
+                        <p className={`text-white text-sm leading-relaxed flex-1 drop-shadow-lg ${showFullCaption ? '' : 'line-clamp-1'}`}>
+                          {showFullCaption ? post.content : getTruncatedCaption(post.content)}
+                        </p>
+                        {post.content.length > 100 && (
+                          <button
+                            onClick={() => setShowFullCaption(!showFullCaption)}
+                            className="text-white/70 text-xs font-semibold hover:text-white transition-colors flex-shrink-0 drop-shadow-lg px-2 py-1 rounded-full hover:bg-white/10"
+                          >
+                            {showFullCaption ? 'less' : 'more'}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )}
                   
-                  {/* Video Controls positioned under caption within same backdrop */}
+                  {/* Row 4: Progress Bar (videos only) */}
                   {post.mediaType === 'video' && (
-                    <div>
-                      {/* Progress Bar */}
+                    <div className="mb-4">
                       <div 
-                        className="w-full h-1 bg-white/30 rounded-full cursor-pointer mb-3"
+                        className="w-full h-1.5 bg-white/20 rounded-full cursor-pointer hover:bg-white/30 transition-colors"
                         onClick={handleProgressClick}
                       >
                         <div 
-                          className="h-full bg-white rounded-full transition-all duration-150"
+                          className="h-full bg-white rounded-full transition-all duration-150 shadow-sm"
                           style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }}
                         />
-                      </div>
-                      
-                      {/* Controls Row */}
-                      <div className="flex items-center justify-between text-white text-sm">
-                        <div className="flex items-center gap-3">
-                          {/* Play/Pause Button */}
-                          <button 
-                            onClick={handlePlayPause}
-                            className="w-8 h-8 flex items-center justify-center hover:bg-white/20 rounded-full transition-colors"
-                          >
-                            {isPlaying ? (
-                              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                <rect x="6" y="4" width="4" height="16" />
-                                <rect x="14" y="4" width="4" height="16" />
-                              </svg>
-                            ) : (
-                              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                <polygon points="5,3 19,12 5,21" />
-                              </svg>
-                            )}
-                          </button>
-                          
-                          {/* Time Display */}
-                          <span className="font-mono text-xs">
-                            {formatTime(currentTime)} / {formatTime(duration)}
-                          </span>
-                        </div>
-                        
-                        {/* Volume/Mute Button */}
-                        <button 
-                          onClick={handleMuteToggle}
-                          className="w-8 h-8 flex items-center justify-center hover:bg-white/20 rounded-full transition-colors"
-                        >
-                          {isMuted ? (
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" />
-                              <line x1="23" y1="9" x2="17" y2="15" />
-                              <line x1="17" y1="9" x2="23" y2="15" />
-                            </svg>
-                          ) : (
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" />
-                              <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
-                            </svg>
-                          )}
-                        </button>
                       </div>
                     </div>
                   )}
@@ -491,6 +453,27 @@ const PostModal = () => {
                         controls={false}
                       />
                       
+                      {/* User Info Overlay */}
+                      <div className="absolute bottom-32 left-0 right-0 px-4 z-30">
+                        <div className="bg-black/60 p-6 text-white rounded-lg">
+                          <div className="flex items-center gap-3 mb-3">
+                            <div className="relative w-10 h-10">
+                              <Image
+                                src={post.user.image || '/images/placeholder.jpg'}
+                                alt={post.user.name || 'User'}
+                                fill
+                                className="rounded-full object-cover"
+                              />
+                            </div>
+                            <div>
+                              <p className="font-semibold text-sm">{post.user.name || 'Anonymous'}</p>
+                              <p className="text-xs text-gray-400">{formattedDate}</p>
+                            </div>
+                          </div>
+                          <p className="text-sm leading-relaxed">{post.content}</p>
+                        </div>
+                      </div>
+
                       {/* Custom Video Controls for Regular Posts */}
                       <div className="absolute bottom-16 left-0 right-0 px-4 z-30">
                         <div className="bg-black/50 rounded-lg p-3 backdrop-blur-sm">
@@ -561,25 +544,7 @@ const PostModal = () => {
                     <p className="text-gray-900 text-lg text-center leading-relaxed">{post.content}</p>
                   </div>
                 )}
-                
-                {/* User info overlay for regular posts */}
-                <div className="absolute bottom-0 left-0 right-0 bg-black/60 p-6 text-white">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="relative w-10 h-10">
-                      <Image
-                        src={post.user.image || '/images/placeholder.jpg'}
-                        alt={post.user.name || 'User'}
-                        fill
-                        className="rounded-full object-cover"
-                      />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-sm">{post.user.name || 'Anonymous'}</p>
-                      <p className="text-xs text-gray-400">{formattedDate}</p>
-                    </div>
-                  </div>
-                  <p className="text-sm leading-relaxed">{post.content}</p>
-                </div>
+
               </div>
             </div>
           )}
