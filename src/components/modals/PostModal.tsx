@@ -42,6 +42,13 @@ const PostModal = () => {
   const [showShareSuccess, setShowShareSuccess] = useState(false);
   const [showFullCaption, setShowFullCaption] = useState(false);
 
+  // Video control states
+  const [videoRef, setVideoRef] = useState<HTMLVideoElement | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [isMuted, setIsMuted] = useState(true);
+
   const userId = useMemo(() => currentUser?.id, [currentUser]);
 
   // Determine post type
@@ -69,6 +76,53 @@ const PostModal = () => {
       document.body.style.overflow = '';
     };
   }, [post?.id, userId, post?.likes, post?.bookmarks, post?.comments, post]);
+
+  // Video event handlers
+  const handleVideoTimeUpdate = () => {
+    if (videoRef) {
+      setCurrentTime(videoRef.currentTime);
+    }
+  };
+
+  const handleVideoLoadedMetadata = () => {
+    if (videoRef) {
+      setDuration(videoRef.duration);
+    }
+  };
+
+  const handlePlayPause = () => {
+    if (videoRef) {
+      if (isPlaying) {
+        videoRef.pause();
+      } else {
+        videoRef.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
+  const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (videoRef && duration) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const newTime = (clickX / rect.width) * duration;
+      videoRef.currentTime = newTime;
+      setCurrentTime(newTime);
+    }
+  };
+
+  const handleMuteToggle = () => {
+    if (videoRef) {
+      videoRef.muted = !videoRef.muted;
+      setIsMuted(videoRef.muted);
+    }
+  };
+
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
 
   const handleClose = () => {
     postModal.onClose();
@@ -281,20 +335,27 @@ const PostModal = () => {
       {/* Main content area */}
       <div className="fixed inset-0 z-50 flex">
         {/* Post content area - FULL SCREEN for reels */}
-        <div className="flex-1  relative">
+        <div className="flex-1 relative">
           {isReel ? (
             <>
               {/* Reel: Full screen media with overlay content */}
               {post.mediaUrl ? (
                 post.mediaType === 'video' ? (
-                  <video
-                    src={post.mediaUrl}
-                    controls
-                    autoPlay
-                    muted
-                    loop
-                    className="w-full h-full object-cover  fixed inset-0"
-                  />
+                  <>
+                    <video
+                      ref={setVideoRef}
+                      src={post.mediaUrl}
+                      autoPlay
+                      muted={isMuted}
+                      loop
+                      className="w-full h-full object-cover fixed inset-0"
+                      onTimeUpdate={handleVideoTimeUpdate}
+                      onLoadedMetadata={handleVideoLoadedMetadata}
+                      onPlay={() => setIsPlaying(true)}
+                      onPause={() => setIsPlaying(false)}
+                      controls={false}
+                    />
+                  </>
                 ) : (
                   <Image
                     src={post.mediaUrl}
@@ -311,50 +372,184 @@ const PostModal = () => {
 
               {/* User info overlay - positioned at bottom with backdrop */}
               <div className="absolute inset-0 flex items-end p-6 pointer-events-none z-20">
-                <div className="flex items-start gap-3 bg-black/60 p-4 rounded-2xl max-w-lg w-full pointer-events-auto">
-                  <div className="relative w-12 h-12 flex-shrink-0">
-                    <Image
-                      src={post.user.image || '/images/placeholder.jpg'}
-                      alt={post.user.name || 'User'}
-                      fill
-                      className="rounded-full object-cover border-2 border-white/20"
-                    />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <p className="font-semibold text-white text-base drop-shadow-lg">{post.user.name || 'Anonymous'}</p>
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="#60A5FA">
-                        <path d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z" stroke="#ffffff" strokeWidth="1.5" />
-                        <path d="M9 12.8929L10.8 14.5L15 9.5" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
+                <div className="bg-black/60 p-4 rounded-2xl max-w-lg w-full pointer-events-auto">
+                  <div className="flex items-start gap-3 mb-4">
+                    <div className="relative w-12 h-12 flex-shrink-0">
+                      <Image
+                        src={post.user.image || '/images/placeholder.jpg'}
+                        alt={post.user.name || 'User'}
+                        fill
+                        className="rounded-full object-cover border-2 border-white/20"
+                      />
                     </div>
-                    <p className="text-white/90 text-sm mb-1 drop-shadow-lg">{formattedDate}</p>
-                    {post.content && post.mediaUrl && (
-                      <div className="flex items-start gap-2">
-                        <p className={`text-white text-sm leading-relaxed flex-1 drop-shadow-lg ${showFullCaption ? '' : 'line-clamp-1'}`}>
-                          {showFullCaption ? post.content : getTruncatedCaption(post.content)}
-                        </p>
-                        {post.content.length > 100 && (
-                          <button
-                            onClick={() => setShowFullCaption(!showFullCaption)}
-                            className="text-white/70 text-xs font-medium hover:text-white transition-colors flex-shrink-0 drop-shadow-lg"
-                          >
-                            {showFullCaption ? 'less' : 'more'}
-                          </button>
-                        )}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <p className="font-semibold text-white text-base drop-shadow-lg">{post.user.name || 'Anonymous'}</p>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="#60A5FA">
+                          <path d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z" stroke="#ffffff" strokeWidth="1.5" />
+                          <path d="M9 12.8929L10.8 14.5L15 9.5" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
                       </div>
-                    )}
+                      <p className="text-white/90 text-sm mb-2 drop-shadow-lg">{formattedDate}</p>
+                      {post.content && (
+                        <div className="flex items-start gap-2 mb-4">
+                          <p className={`text-white text-sm leading-relaxed flex-1 drop-shadow-lg ${showFullCaption ? '' : 'line-clamp-1'}`}>
+                            {showFullCaption ? post.content : getTruncatedCaption(post.content)}
+                          </p>
+                          {post.content.length > 100 && (
+                            <button
+                              onClick={() => setShowFullCaption(!showFullCaption)}
+                              className="text-white/70 text-xs font-medium hover:text-white transition-colors flex-shrink-0 drop-shadow-lg"
+                            >
+                              {showFullCaption ? 'less' : 'more'}
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
+                  
+                  {/* Video Controls positioned under caption within same backdrop */}
+                  {post.mediaType === 'video' && (
+                    <div>
+                      {/* Progress Bar */}
+                      <div 
+                        className="w-full h-1 bg-white/30 rounded-full cursor-pointer mb-3"
+                        onClick={handleProgressClick}
+                      >
+                        <div 
+                          className="h-full bg-white rounded-full transition-all duration-150"
+                          style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }}
+                        />
+                      </div>
+                      
+                      {/* Controls Row */}
+                      <div className="flex items-center justify-between text-white text-sm">
+                        <div className="flex items-center gap-3">
+                          {/* Play/Pause Button */}
+                          <button 
+                            onClick={handlePlayPause}
+                            className="w-8 h-8 flex items-center justify-center hover:bg-white/20 rounded-full transition-colors"
+                          >
+                            {isPlaying ? (
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <rect x="6" y="4" width="4" height="16" />
+                                <rect x="14" y="4" width="4" height="16" />
+                              </svg>
+                            ) : (
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <polygon points="5,3 19,12 5,21" />
+                              </svg>
+                            )}
+                          </button>
+                          
+                          {/* Time Display */}
+                          <span className="font-mono text-xs">
+                            {formatTime(currentTime)} / {formatTime(duration)}
+                          </span>
+                        </div>
+                        
+                        {/* Volume/Mute Button */}
+                        <button 
+                          onClick={handleMuteToggle}
+                          className="w-8 h-8 flex items-center justify-center hover:bg-white/20 rounded-full transition-colors"
+                        >
+                          {isMuted ? (
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" />
+                              <line x1="23" y1="9" x2="17" y2="15" />
+                              <line x1="17" y1="9" x2="23" y2="15" />
+                            </svg>
+                          ) : (
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" />
+                              <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                            </svg>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </>
           ) : (
             /* Regular post or text post: centered container */
-      <div className="flex items-center justify-center h-full">
-  <div className="relative overflow-hidden w-full max-w-md mx-auto h-[600px] flex flex-col rounded-2xl">
+            <div className="flex items-center justify-center h-full">
+              <div className="relative overflow-hidden w-full max-w-md mx-auto h-[600px] flex flex-col rounded-2xl">
                 {post.mediaUrl ? (
                   post.mediaType === 'video' ? (
-                    <video src={post.mediaUrl} controls className="w-full flex-1 object-cover" />
+                    <>
+                      <video 
+                        ref={setVideoRef}
+                        src={post.mediaUrl} 
+                        className="w-full flex-1 object-cover"
+                        onTimeUpdate={handleVideoTimeUpdate}
+                        onLoadedMetadata={handleVideoLoadedMetadata}
+                        onPlay={() => setIsPlaying(true)}
+                        onPause={() => setIsPlaying(false)}
+                        controls={false}
+                      />
+                      
+                      {/* Custom Video Controls for Regular Posts */}
+                      <div className="absolute bottom-16 left-0 right-0 px-4 z-30">
+                        <div className="bg-black/50 rounded-lg p-3 backdrop-blur-sm">
+                          {/* Progress Bar */}
+                          <div 
+                            className="w-full h-1 bg-white/30 rounded-full cursor-pointer mb-2"
+                            onClick={handleProgressClick}
+                          >
+                            <div 
+                              className="h-full bg-white rounded-full transition-all duration-150"
+                              style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }}
+                            />
+                          </div>
+                          
+                          {/* Controls Row */}
+                          <div className="flex items-center justify-between text-white text-xs">
+                            <div className="flex items-center gap-2">
+                              <button 
+                                onClick={handlePlayPause}
+                                className="w-6 h-6 flex items-center justify-center hover:bg-white/20 rounded-full transition-colors"
+                              >
+                                {isPlaying ? (
+                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                                    <rect x="6" y="4" width="4" height="16" />
+                                    <rect x="14" y="4" width="4" height="16" />
+                                  </svg>
+                                ) : (
+                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                                    <polygon points="5,3 19,12 5,21" />
+                                  </svg>
+                                )}
+                              </button>
+                              
+                              <span className="font-mono">
+                                {formatTime(currentTime)} / {formatTime(duration)}
+                              </span>
+                            </div>
+                            
+                            <button 
+                              onClick={handleMuteToggle}
+                              className="w-6 h-6 flex items-center justify-center hover:bg-white/20 rounded-full transition-colors"
+                            >
+                              {isMuted ? (
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" />
+                                  <line x1="23" y1="9" x2="17" y2="15" />
+                                  <line x1="17" y1="9" x2="23" y2="15" />
+                                </svg>
+                              ) : (
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" />
+                                  <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                                </svg>
+                              )}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </>
                   ) : (
                     <div className="relative flex-1">
                       <Image src={post.mediaUrl} alt="Post media" fill className="object-cover" />
