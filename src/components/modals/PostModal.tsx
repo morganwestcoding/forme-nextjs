@@ -453,77 +453,77 @@ const PostModal = () => {
                         controls={false}
                       />
                       
-                      {/* User Info Overlay */}
-                      <div className="absolute bottom-32 left-0 right-0 px-4 z-30">
-                        <div className="bg-black/60 p-6 text-white rounded-lg">
-                          <div className="flex items-center gap-3 mb-3">
+                      {/* Combined User Info and Video Controls */}
+                      <div className="absolute bottom-4 left-0 right-0 px-4 z-30">
+                        <div className="bg-black/70 backdrop-blur-md rounded-2xl p-6 text-white shadow-2xl">
+                          {/* User Info Section */}
+                          <div className="flex items-center gap-3 mb-4">
                             <div className="relative w-10 h-10">
                               <Image
                                 src={post.user.image || '/images/placeholder.jpg'}
                                 alt={post.user.name || 'User'}
                                 fill
-                                className="rounded-full object-cover"
+                                className="rounded-full object-cover border-2 border-white/20"
                               />
                             </div>
-                            <div>
+                            <div className="flex-1">
                               <p className="font-semibold text-sm">{post.user.name || 'Anonymous'}</p>
-                              <p className="text-xs text-gray-400">{formattedDate}</p>
+                              <p className="text-xs text-white/70">{formattedDate}</p>
                             </div>
                           </div>
-                          <p className="text-sm leading-relaxed">{post.content}</p>
-                        </div>
-                      </div>
-
-                      {/* Custom Video Controls for Regular Posts */}
-                      <div className="absolute bottom-16 left-0 right-0 px-4 z-30">
-                        <div className="bg-black/50 rounded-lg p-3 backdrop-blur-sm">
-                          {/* Progress Bar */}
+                          
+                          {/* Caption */}
+                          <p className="text-sm leading-relaxed mb-4 text-white/90">{post.content}</p>
+                          
+                          {/* Modern Progress Bar */}
                           <div 
-                            className="w-full h-1 bg-white/30 rounded-full cursor-pointer mb-2"
+                            className="w-full h-1.5 bg-white/20 rounded-full cursor-pointer mb-3 hover:h-2 transition-all duration-200 shadow-inner"
                             onClick={handleProgressClick}
                           >
                             <div 
-                              className="h-full bg-white rounded-full transition-all duration-150"
+                              className="h-full bg-gradient-to-r from-blue-400 to-purple-500 rounded-full transition-all duration-300 shadow-lg relative overflow-hidden"
                               style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }}
-                            />
+                            >
+                              <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
+                            </div>
                           </div>
                           
                           {/* Controls Row */}
                           <div className="flex items-center justify-between text-white text-xs">
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-3">
                               <button 
                                 onClick={handlePlayPause}
-                                className="w-6 h-6 flex items-center justify-center hover:bg-white/20 rounded-full transition-colors"
+                                className="w-8 h-8 flex items-center justify-center hover:bg-white/20 rounded-full transition-all duration-200 hover:scale-105"
                               >
                                 {isPlaying ? (
-                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                                    <rect x="6" y="4" width="4" height="16" />
-                                    <rect x="14" y="4" width="4" height="16" />
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                    <rect x="6" y="4" width="4" height="16" rx="1" />
+                                    <rect x="14" y="4" width="4" height="16" rx="1" />
                                   </svg>
                                 ) : (
-                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                                     <polygon points="5,3 19,12 5,21" />
                                   </svg>
                                 )}
                               </button>
                               
-                              <span className="font-mono">
+                              <span className="font-mono text-white/80 font-medium">
                                 {formatTime(currentTime)} / {formatTime(duration)}
                               </span>
                             </div>
                             
                             <button 
                               onClick={handleMuteToggle}
-                              className="w-6 h-6 flex items-center justify-center hover:bg-white/20 rounded-full transition-colors"
+                              className="w-8 h-8 flex items-center justify-center hover:bg-white/20 rounded-full transition-all duration-200 hover:scale-105"
                             >
                               {isMuted ? (
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                   <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" />
                                   <line x1="23" y1="9" x2="17" y2="15" />
                                   <line x1="17" y1="9" x2="23" y2="15" />
                                 </svg>
                               ) : (
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                   <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" />
                                   <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
                                 </svg>
@@ -536,6 +536,30 @@ const PostModal = () => {
                   ) : (
                     <div className="relative flex-1">
                       <Image src={post.mediaUrl} alt="Post media" fill className="object-cover" />
+                      
+                      {/* User Info Overlay for Images */}
+                      <div className="absolute bottom-4 left-0 right-0 px-4 z-30">
+                        <div className="bg-black/70 backdrop-blur-md rounded-2xl p-6 text-white shadow-2xl">
+                          {/* User Info Section */}
+                          <div className="flex items-center gap-3 mb-4">
+                            <div className="relative w-10 h-10">
+                              <Image
+                                src={post.user.image || '/images/placeholder.jpg'}
+                                alt={post.user.name || 'User'}
+                                fill
+                                className="rounded-full object-cover border-2 border-white/20"
+                              />
+                            </div>
+                            <div className="flex-1">
+                              <p className="font-semibold text-sm">{post.user.name || 'Anonymous'}</p>
+                              <p className="text-xs text-white/70">{formattedDate}</p>
+                            </div>
+                          </div>
+                          
+                          {/* Caption */}
+                          <p className="text-sm leading-relaxed text-white/90">{post.content}</p>
+                        </div>
+                      </div>
                     </div>
                   )
                 ) : (
