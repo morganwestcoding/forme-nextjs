@@ -472,8 +472,22 @@ const PostModal = () => {
                             </div>
                           </div>
                           
-                          {/* Caption */}
-                          <p className="text-sm leading-relaxed mb-4 text-white/90">{post.content}</p>
+                          {/* Caption with more/less functionality */}
+                          <div className="mb-4">
+                            <div className="flex items-start gap-2">
+                              <p className={`text-sm leading-relaxed text-white/90 flex-1 ${showFullCaption ? '' : 'line-clamp-1'}`}>
+                                {post.content}
+                              </p>
+                              {post.content && post.content.length > 80 && (
+                                <button
+                                  onClick={() => setShowFullCaption(!showFullCaption)}
+                                  className="text-white/70 text-xs font-semibold hover:text-white transition-colors flex-shrink-0 drop-shadow-lg px-2 py-1 rounded-full hover:bg-white/10"
+                                >
+                                  {showFullCaption ? 'less' : 'more'}
+                                </button>
+                              )}
+                            </div>
+                          </div>
                           
                           {/* Modern Progress Bar */}
                           <div 
@@ -556,16 +570,64 @@ const PostModal = () => {
                             </div>
                           </div>
                           
-                          {/* Caption */}
-                          <p className="text-sm leading-relaxed text-white/90">{post.content}</p>
+                          {/* Caption with more/less functionality */}
+                          <div className="flex items-start gap-2">
+                            <p className={`text-sm leading-relaxed text-white/90 flex-1 ${showFullCaption ? '' : 'line-clamp-1'}`}>
+                              {post.content}
+                            </p>
+                            {post.content && post.content.length > 80 && (
+                              <button
+                                onClick={() => setShowFullCaption(!showFullCaption)}
+                                className="text-white/70 text-xs font-semibold hover:text-white transition-colors flex-shrink-0 drop-shadow-lg px-2 py-1 rounded-full hover:bg-white/10"
+                              >
+                                {showFullCaption ? 'less' : 'more'}
+                              </button>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
                   )
                 ) : (
                   /* Text only post */
-                  <div className="flex-1 bg-white flex items-center justify-center p-8">
+                  <div className="flex-1 bg-white flex items-center justify-center p-8 relative">
                     <p className="text-gray-900 text-lg text-center leading-relaxed">{post.content}</p>
+                    
+                    {/* User Info Overlay for Text Posts */}
+                    <div className="absolute bottom-4 left-0 right-0 px-4 z-30">
+                      <div className="bg-black/70 backdrop-blur-md rounded-2xl p-6 text-white shadow-2xl">
+                        {/* User Info Section */}
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="relative w-10 h-10">
+                            <Image
+                              src={post.user.image || '/images/placeholder.jpg'}
+                              alt={post.user.name || 'User'}
+                              fill
+                              className="rounded-full object-cover border-2 border-white/20"
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <p className="font-semibold text-sm">{post.user.name || 'Anonymous'}</p>
+                            <p className="text-xs text-white/70">{formattedDate}</p>
+                          </div>
+                        </div>
+                        
+                        {/* Caption with more/less functionality */}
+                        <div className="flex items-start gap-2">
+                          <p className={`text-sm leading-relaxed text-white/90 flex-1 ${showFullCaption ? '' : 'line-clamp-1'}`}>
+                            {post.content}
+                          </p>
+                          {post.content && post.content.length > 80 && (
+                            <button
+                              onClick={() => setShowFullCaption(!showFullCaption)}
+                              className="text-white/70 text-xs font-semibold hover:text-white transition-colors flex-shrink-0 drop-shadow-lg px-2 py-1 rounded-full hover:bg-white/10"
+                            >
+                              {showFullCaption ? 'less' : 'more'}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 )}
 
