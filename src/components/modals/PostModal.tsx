@@ -33,10 +33,11 @@ const PostModal = () => {
   // Add store access for updating posts
   const { updatePost } = usePostStore();
 
-  // Current post index state
+  // Current post index state with GLOBAL LOCK
   const [currentPostIndex, setCurrentPostIndex] = useState(initialIndex);
   const [isScrolling, setIsScrolling] = useState(false);
   const [scrollOffset, setScrollOffset] = useState(0); // For smooth transitions
+  const [globalLock, setGlobalLock] = useState(false); // GLOBAL lock to prevent ANY navigation
 
   // Get current post from the posts array
   const currentPost = posts[currentPostIndex] || post;
@@ -65,69 +66,116 @@ const PostModal = () => {
 
   const userId = useMemo(() => currentUser?.id, [currentUser]);
 
-  // Navigation functions with smooth transitions
+  // Navigation functions with GLOBAL LOCK - absolutely no skipping possible
   const goToNextPost = () => {
-    if (currentPostIndex < posts.length - 1 && !isScrolling) {
-      setIsScrolling(true);
-      setScrollOffset(-100); // Slide to next post
-      setTimeout(() => {
-        setCurrentPostIndex((prev: number) => prev + 1);
-        setScrollOffset(0);
-        setIsScrolling(false);
-      }, 500); // Much longer delay to see the in-between state
+    // ABSOLUTE BARRIER: Multiple conditions must be met
+    if (currentPostIndex >= posts.length - 1 || isScrolling || globalLock) {
+      return; // Exit immediately if any condition fails
     }
+
+    // Set ALL locks immediately
+    setIsScrolling(true);
+    setGlobalLock(true);
+    setScrollOffset(-100);
+
+    setTimeout(() => {
+      setCurrentPostIndex((prev: number) => {
+        const newIndex = Math.min(prev + 1, posts.length - 1);
+        console.log(`Moving to post ${newIndex + 1} of ${posts.length}`); // Debug log
+        return newIndex;
+      });
+      setScrollOffset(0);
+      
+      // Keep locks for much longer
+      setTimeout(() => {
+        setIsScrolling(false);
+        setTimeout(() => {
+          setGlobalLock(false); // Release global lock last
+        }, 300);
+      }, 700);
+    }, 500);
   };
 
   const goToPrevPost = () => {
-    if (currentPostIndex > 0 && !isScrolling) {
-      setIsScrolling(true);
-      setScrollOffset(100); // Slide to previous post
-      setTimeout(() => {
-        setCurrentPostIndex((prev: number) => prev - 1);
-        setScrollOffset(0);
-        setIsScrolling(false);
-      }, 500); // Much longer delay to see the in-between state
+    // ABSOLUTE BARRIER: Multiple conditions must be met
+    if (currentPostIndex <= 0 || isScrolling || globalLock) {
+      return; // Exit immediately if any condition fails
     }
+
+    // Set ALL locks immediately
+    setIsScrolling(true);
+    setGlobalLock(true);
+    setScrollOffset(100);
+
+    setTimeout(() => {
+      setCurrentPostIndex((prev: number) => {
+        const newIndex = Math.max(prev - 1, 0);
+        console.log(`Moving to post ${newIndex + 1} of ${posts.length}`); // Debug log
+        return newIndex;
+      });
+      setScrollOffset(0);
+      
+      // Keep locks for much longer
+      setTimeout(() => {
+        setIsScrolling(false);
+        setTimeout(() => {
+          setGlobalLock(false); // Release global lock last
+        }, 300);
+      }, 700);
+    }, 500);
   };
 
-  // Keyboard navigation
+  // Keyboard navigation with ABSOLUTE control
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // ABSOLUTE BARRIER: Check ALL possible blocking conditions
+      if (isScrolling || globalLock) {
+        return;
+      }
+
       if (e.key === 'ArrowUp') {
         e.preventDefault();
+        e.stopPropagation();
         goToPrevPost();
       } else if (e.key === 'ArrowDown') {
         e.preventDefault();
+        e.stopPropagation();
         goToNextPost();
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentPostIndex, isScrolling]);
+    window.addEventListener('keydown', handleKeyDown, { capture: true });
+    return () => window.removeEventListener('keydown', handleKeyDown, { capture: true });
+  }, [currentPostIndex, isScrolling, globalLock]);
 
-  // Add wheel event listener
+  // Add wheel event listener with higher sensitivity threshold
   useEffect(() => {
     if (!currentPost) return;
 
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
-      if (isScrolling || posts.length <= 1) return;
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      
+      // ABSOLUTE BARRIER: Check ALL possible blocking conditions
+      if (isScrolling || globalLock || posts.length <= 1) {
+        return;
+      }
 
-      if (e.deltaY > 0) {
+      // Higher threshold - requires more intentional scrolling
+      if (e.deltaY > 55) { // Increased from 40 to 55
         goToNextPost();
-      } else {
+      } else if (e.deltaY < -55) {
         goToPrevPost();
       }
     };
 
-    // Attach to window instead of modal element for better reliability
-    window.addEventListener('wheel', handleWheel, { passive: false });
+    window.addEventListener('wheel', handleWheel, { passive: false, capture: true });
     
     return () => {
-      window.removeEventListener('wheel', handleWheel);
+      window.removeEventListener('wheel', handleWheel, { capture: true });
     };
-  }, [currentPostIndex, isScrolling, posts.length]);
+  }, [currentPostIndex, isScrolling, globalLock, posts.length]);
 
   // Touch handlers
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -141,8 +189,13 @@ const PostModal = () => {
   const handleTouchEnd = () => {
     if (!touchStart || !touchEnd) return;
     
+    // ABSOLUTE BARRIER: Check ALL possible blocking conditions
+    if (isScrolling || globalLock) {
+      return;
+    }
+    
     const distance = touchStart - touchEnd;
-    const minSwipeDistance = 50;
+    const minSwipeDistance = 75; // Higher threshold to match wheel sensitivity
 
     if (Math.abs(distance) < minSwipeDistance) return;
 
@@ -795,19 +848,22 @@ const PostModal = () => {
       >
         {/* Post content area - TikTok style smooth scroll container */}
         <div className="flex-1 relative overflow-hidden">
-          {/* Smooth scrolling container */}
+          {/* TikTok-style smooth scrolling container - taller posts */}
           <div 
-            className="w-full transition-transform duration-1000 ease-out"
+            className="w-full transition-transform duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)]"
             style={{ 
-              height: `${posts.length * 100}vh`,
-              transform: `translateY(${(-currentPostIndex * 100) + scrollOffset}vh)`
+              height: `${posts.length * 110}vh`, // Increased from 100vh to 110vh
+              transform: `translateY(${(-currentPostIndex * 110) + (scrollOffset * 1.1)}vh)` // Adjusted for taller posts
             }}
           >
             {posts.map((postData, index) => (
               <div 
                 key={postData.id}
-                className="w-full h-screen absolute top-0 left-0"
-                style={{ transform: `translateY(${index * 100}vh)` }}
+                className="w-full absolute top-0 left-0" // Taller posts
+                style={{ 
+                  height: '110vh', // Increased from h-screen (100vh) to 110vh
+                  transform: `translateY(${index * 110}vh)` // Adjusted spacing for taller posts
+                }}
               >
                 {renderSinglePost(postData, index)}
               </div>
@@ -815,8 +871,10 @@ const PostModal = () => {
           </div>
         </div>
 
-        {/* Action buttons sidebar - positioned right side */}
-        <div className="fixed top-1/2 right-6 transform -translate-y-1/2 flex flex-col items-center gap-6 text-white z-30">
+        {/* Action buttons sidebar - positioned based on post type */}
+        <div className={`fixed top-1/2 transform -translate-y-1/2 flex flex-col items-center gap-6 text-white z-30 ${
+          currentPost?.tag === 'reel' || currentPost?.postType === 'reel' ? 'right-6' : 'left-1/2 ml-[calc(192px+60px)]'
+        }`}>
           {/* Close button */}
           <div className="flex flex-col items-center gap-2">
             <button onClick={handleClose} className="hover:scale-110 transition-transform">
