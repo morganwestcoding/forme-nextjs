@@ -20,16 +20,26 @@ import usePostModal from '@/app/hooks/usePostModal';
 import Avatar from '@/components/ui/avatar';
 import ListingCard from '@/components/listings/ListingCard';
 import ShopCard from '@/components/shop/ShopCard';
-import { SafeListing, SafeShop, SafeComment } from '@/app/types';
+import { SafeListing, SafeShop, SafeComment, SafePost } from '@/app/types';
 import { usePostStore } from '@/app/hooks/usePostStore';
 
 const PostModal = () => {
   const postModal = usePostModal();
   const post = postModal.post;
   const currentUser = postModal.currentUser;
+  const posts = postModal.posts || []; // Array of all posts
+  const initialIndex = postModal.initialIndex || 0; // Starting index
   
   // Add store access for updating posts
-  const { posts, updatePost } = usePostStore();
+  const { updatePost } = usePostStore();
+
+  // Current post index state
+  const [currentPostIndex, setCurrentPostIndex] = useState(initialIndex);
+  const [isScrolling, setIsScrolling] = useState(false);
+  const [scrollOffset, setScrollOffset] = useState(0); // For smooth transitions
+
+  // Get current post from the posts array
+  const currentPost = posts[currentPostIndex] || post;
 
   const [likes, setLikes] = useState<string[]>([]);
   const [liked, setLiked] = useState(false);
@@ -49,24 +59,129 @@ const PostModal = () => {
   const [duration, setDuration] = useState(0);
   const [isMuted, setIsMuted] = useState(true);
 
+  // Touch handling states
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+
   const userId = useMemo(() => currentUser?.id, [currentUser]);
 
+  // Navigation functions with smooth transitions
+  const goToNextPost = () => {
+    if (currentPostIndex < posts.length - 1 && !isScrolling) {
+      setIsScrolling(true);
+      setScrollOffset(-100); // Slide to next post
+      setTimeout(() => {
+        setCurrentPostIndex((prev: number) => prev + 1);
+        setScrollOffset(0);
+        setIsScrolling(false);
+      }, 500); // Much longer delay to see the in-between state
+    }
+  };
+
+  const goToPrevPost = () => {
+    if (currentPostIndex > 0 && !isScrolling) {
+      setIsScrolling(true);
+      setScrollOffset(100); // Slide to previous post
+      setTimeout(() => {
+        setCurrentPostIndex((prev: number) => prev - 1);
+        setScrollOffset(0);
+        setIsScrolling(false);
+      }, 500); // Much longer delay to see the in-between state
+    }
+  };
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        goToPrevPost();
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        goToNextPost();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentPostIndex, isScrolling]);
+
+  // Add wheel event listener
+  useEffect(() => {
+    if (!currentPost) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      if (isScrolling || posts.length <= 1) return;
+
+      if (e.deltaY > 0) {
+        goToNextPost();
+      } else {
+        goToPrevPost();
+      }
+    };
+
+    // Attach to window instead of modal element for better reliability
+    window.addEventListener('wheel', handleWheel, { passive: false });
+    
+    return () => {
+      window.removeEventListener('wheel', handleWheel);
+    };
+  }, [currentPostIndex, isScrolling, posts.length]);
+
+  // Touch handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.targetTouches[0].clientY);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientY);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const minSwipeDistance = 50;
+
+    if (Math.abs(distance) < minSwipeDistance) return;
+
+    if (distance > 0) {
+      goToNextPost(); // Swipe up
+    } else {
+      goToPrevPost(); // Swipe down
+    }
+  };
+
+  // Update post modal when current post changes
+  useEffect(() => {
+    if (posts[currentPostIndex]) {
+      postModal.setPost?.(posts[currentPostIndex]);
+    }
+  }, [currentPostIndex, posts]); // Removed postModal from dependencies to prevent infinite loop
+
   // Determine post type
-  const isReel = post?.tag === 'reel' || post?.postType === 'reel';
-  const isAd = post?.postType === 'ad';
-  const isText = post?.postType === 'text';
+  const isReel = currentPost?.tag === 'reel' || currentPost?.postType === 'reel';
+  const isAd = currentPost?.postType === 'ad';
+  const isText = currentPost?.postType === 'text';
 
   useEffect(() => {
-    if (post && userId) {
-      setLikes(post.likes || []);
-      setLiked(post.likes.includes(userId));
-      setBookmarks(post.bookmarks || []);
-      setBookmarked(post.bookmarks.includes(userId));
-      setComments(post.comments || []);
+    if (currentPost && userId) {
+      setLikes(currentPost.likes || []);
+      setLiked(currentPost.likes.includes(userId));
+      setBookmarks(currentPost.bookmarks || []);
+      setBookmarked(currentPost.bookmarks.includes(userId));
+      setComments(currentPost.comments || []);
     }
 
+    // Reset video states when post changes
+    setShowComments(false);
+    setShowFullCaption(false);
+    setCurrentTime(0);
+    setIsPlaying(false);
+
     // Prevent body scrolling when modal is open
-    if (post) {
+    if (currentPost) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
@@ -75,7 +190,7 @@ const PostModal = () => {
     return () => {
       document.body.style.overflow = '';
     };
-  }, [post?.id, userId, post?.likes, post?.bookmarks, post?.comments, post]);
+  }, [currentPost?.id, userId, currentPost?.likes, currentPost?.bookmarks, currentPost?.comments, currentPost]);
 
   // Video event handlers
   const handleVideoTimeUpdate = () => {
@@ -124,12 +239,51 @@ const PostModal = () => {
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
+  // Add wheel event listener
+  useEffect(() => {
+    if (!currentPost) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      if (isScrolling || posts.length <= 1) return;
+
+      if (e.deltaY > 0) {
+        goToNextPost();
+      } else {
+        goToPrevPost();
+      }
+    };
+
+    // Attach to window instead of modal element for better reliability
+    window.addEventListener('wheel', handleWheel, { passive: false });
+    
+    return () => {
+      window.removeEventListener('wheel', handleWheel);
+    };
+  }, [currentPostIndex, isScrolling, posts.length]);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        goToPrevPost();
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        goToNextPost();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentPostIndex, isScrolling]);
+
   const handleClose = () => {
     postModal.onClose();
   };
 
   const handleLike = async () => {
-    if (!post || !userId) return;
+    if (!currentPost || !userId) return;
 
     const hasLiked = likes.includes(userId);
     const updatedLikes = hasLiked
@@ -140,36 +294,36 @@ const PostModal = () => {
       setLikes(updatedLikes);
       setLiked(!hasLiked);
 
-      updatePost(post.id, {
+      updatePost(currentPost.id, {
         likes: updatedLikes,
         bookmarks: bookmarks,
         comments: comments
       });
 
-      const updatedPost = { ...post, likes: updatedLikes };
+      const updatedPost = { ...currentPost, likes: updatedLikes };
       postModal.setPost?.(updatedPost);
 
-      await axios.post(`/api/postActions/${post.id}/like`);
+      await axios.post(`/api/postActions/${currentPost.id}/like`);
       
     } catch (error) {
       console.error('Failed to toggle like:', error);
       
-      const originalLikes = post.likes || [];
+      const originalLikes = currentPost.likes || [];
       setLikes(originalLikes);
       setLiked(originalLikes.includes(userId));
       
-      updatePost(post.id, {
+      updatePost(currentPost.id, {
         likes: originalLikes,
         bookmarks: bookmarks,
         comments: comments
       });
       
-      postModal.setPost?.({ ...post, likes: originalLikes });
+      postModal.setPost?.({ ...currentPost, likes: originalLikes });
     }
   };
 
   const handleBookmark = async () => {
-    if (!post || !userId) return;
+    if (!currentPost || !userId) return;
 
     const hasBookmarked = bookmarks.includes(userId);
     const updatedBookmarks = hasBookmarked
@@ -180,44 +334,44 @@ const PostModal = () => {
       setBookmarks(updatedBookmarks);
       setBookmarked(!hasBookmarked);
 
-      updatePost(post.id, {
+      updatePost(currentPost.id, {
         likes: likes,
         bookmarks: updatedBookmarks,
         comments: comments
       });
 
-      const updatedPost = { ...post, bookmarks: updatedBookmarks };
+      const updatedPost = { ...currentPost, bookmarks: updatedBookmarks };
       postModal.setPost?.(updatedPost);
 
-      await axios.post(`/api/postActions/${post.id}/bookmark`);
+      await axios.post(`/api/postActions/${currentPost.id}/bookmark`);
       
     } catch (error) {
       console.error('Failed to toggle bookmark:', error);
       
-      const originalBookmarks = post.bookmarks || [];
+      const originalBookmarks = currentPost.bookmarks || [];
       setBookmarks(originalBookmarks);
       setBookmarked(originalBookmarks.includes(userId));
       
-      updatePost(post.id, {
+      updatePost(currentPost.id, {
         likes: likes,
         bookmarks: originalBookmarks,
         comments: comments
       });
       
-      postModal.setPost?.({ ...post, bookmarks: originalBookmarks });
+      postModal.setPost?.({ ...currentPost, bookmarks: originalBookmarks });
     }
   };
 
   const handleShare = async () => {
-    if (!post) return;
+    if (!currentPost) return;
 
     try {
-      const postUrl = `${window.location.origin}/post/${post.id}`;
+      const postUrl = `${window.location.origin}/post/${currentPost.id}`;
       
       if (navigator.share) {
         await navigator.share({
-          title: `Post by ${post.user.name}`,
-          text: post.content.length > 100 ? post.content.substring(0, 100) + '...' : post.content,
+          title: `Post by ${currentPost.user.name}`,
+          text: currentPost.content.length > 100 ? currentPost.content.substring(0, 100) + '...' : currentPost.content,
           url: postUrl,
         });
       } else {
@@ -228,7 +382,7 @@ const PostModal = () => {
     } catch (error) {
       console.error('Failed to share:', error);
       try {
-        await navigator.clipboard.writeText(`${window.location.origin}/post/${post.id}`);
+        await navigator.clipboard.writeText(`${window.location.origin}/post/${currentPost.id}`);
         setShowShareSuccess(true);
         setTimeout(() => setShowShareSuccess(false), 2000);
       } catch (clipboardError) {
@@ -238,7 +392,7 @@ const PostModal = () => {
   };
 
   const handleCommentSubmit = async () => {
-    if (!comment.trim() || !currentUser || !post) return;
+    if (!comment.trim() || !currentUser || !currentPost) return;
     
     setIsSubmitting(true);
 
@@ -248,7 +402,7 @@ const PostModal = () => {
         content: comment.trim(),
         createdAt: new Date().toISOString(),
         userId: currentUser.id,
-        postId: post.id,
+        postId: currentPost.id,
         user: {
           id: currentUser.id,
           name: currentUser.name || 'You',
@@ -260,11 +414,11 @@ const PostModal = () => {
       setComments(updatedComments);
       setComment('');
 
-      await axios.post(`/api/postActions/${post.id}/comment`, {
+      await axios.post(`/api/postActions/${currentPost.id}/comment`, {
         content: comment.trim()
       });
       
-      const res = await axios.get(`/api/post/${post.id}`);
+      const res = await axios.get(`/api/post/${currentPost.id}`);
       const updatedPost = res.data;
       
       setComments(updatedPost.comments || []);
@@ -273,7 +427,7 @@ const PostModal = () => {
       
       postModal.setPost?.(updatedPost);
       
-      updatePost(post.id, {
+      updatePost(currentPost.id, {
         likes: updatedPost.likes,
         bookmarks: updatedPost.bookmarks,
         comments: updatedPost.comments
@@ -293,11 +447,311 @@ const PostModal = () => {
     return text.substring(0, maxLength).trim() + '...';
   };
 
-  if (!post) return null;
+  // Render a single post
+  const renderSinglePost = (postData: SafePost, index: number) => {
+    const formattedDate = format(new Date(postData.createdAt), 'PPP');
+    const isReel = postData?.tag === 'reel' || postData?.postType === 'reel';
+    const isAd = postData?.postType === 'ad';
+    const isText = postData?.postType === 'text';
 
-  const formattedDate = format(new Date(post.createdAt), 'PPP');
-  const listingAd = post.listing as SafeListing | undefined;
-  const shopAd = post.shop as SafeShop | undefined;
+    if (isReel) {
+      return (
+        <div key={postData.id} className="w-full h-full relative">
+          {/* Reel: Full screen media with overlay content */}
+          {postData.mediaUrl ? (
+            postData.mediaType === 'video' ? (
+              <>
+                <video
+                  src={postData.mediaUrl}
+                  autoPlay
+                  muted={isMuted}
+                  loop
+                  className="w-full h-full object-cover"
+                  controls={false}
+                />
+              </>
+            ) : (
+              <Image
+                src={postData.mediaUrl}
+                alt="Reel media"
+                fill
+                className="object-cover"
+              />
+            )
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-purple-900 to-blue-900 flex items-center justify-center">
+              <p className="text-white text-2xl text-center px-8 max-w-2xl leading-relaxed">{postData.content}</p>
+            </div>
+          )}
+
+          {/* Bottom overlay with structured layout */}
+          <div className="absolute bottom-0 left-0 right-0 p-6 z-20">
+            <div className="bg-black/70 backdrop-blur-md p-6 rounded-2xl max-w-lg shadow-2xl">
+              {/* Row 1: Avatar + Username + Verification Badge */}
+              <div className="flex items-center gap-3 mb-4">
+                <div className="relative w-12 h-12 flex-shrink-0">
+                  <Image
+                    src={postData.user.image || '/images/placeholder.jpg'}
+                    alt={postData.user.name || 'User'}
+                    fill
+                    className="rounded-full object-cover border-2 border-white/30"
+                  />
+                </div>
+                <div className="flex items-center gap-2 flex-1">
+                  <h3 className="font-semibold text-white text-base drop-shadow-lg">
+                    {postData.user.name || 'Anonymous'}
+                  </h3>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="#60A5FA" className="flex-shrink-0">
+                    <path d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z" stroke="#ffffff" strokeWidth="1.5" />
+                    <path d="M9 12.8929L10.8 14.5L15 9.5" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </div>
+              </div>
+
+              {/* Row 2: Date */}
+              <div className="mb-4">
+                <p className="text-white/80 text-sm drop-shadow-lg font-medium">{formattedDate}</p>
+              </div>
+
+              {/* Row 3: Caption with more/less functionality */}
+              {postData.content && (
+                <div className="mb-4">
+                  <div className="flex items-start gap-2">
+                    <p className={`text-white text-sm leading-relaxed flex-1 drop-shadow-lg ${showFullCaption ? '' : 'line-clamp-1'}`}>
+                      {showFullCaption ? postData.content : getTruncatedCaption(postData.content)}
+                    </p>
+                    {postData.content.length > 100 && (
+                      <button
+                        onClick={() => setShowFullCaption(!showFullCaption)}
+                        className="text-white/70 text-xs font-semibold hover:text-white transition-colors flex-shrink-0 drop-shadow-lg px-2 py-1 rounded-full hover:bg-white/10"
+                      >
+                        {showFullCaption ? 'less' : 'more'}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+              
+              {/* Row 4: Progress Bar (videos only) */}
+              {postData.mediaType === 'video' && (
+                <div className="mb-4">
+                  <div 
+                    className="w-full h-1.5 bg-white/20 rounded-full cursor-pointer hover:bg-white/30 transition-colors"
+                    onClick={handleProgressClick}
+                  >
+                    <div 
+                      className="h-full bg-white rounded-full transition-all duration-150 shadow-sm"
+                      style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    } else {
+      /* Regular post or text post: centered container */
+      return (
+        <div key={postData.id} className="w-full h-full flex items-center justify-center">
+          <div className="relative overflow-hidden w-full max-w-md mx-auto h-[600px] flex flex-col rounded-2xl">
+            {postData.mediaUrl ? (
+              postData.mediaType === 'video' ? (
+                <>
+                  <video 
+                    src={postData.mediaUrl} 
+                    className="w-full flex-1 object-cover"
+                    controls={false}
+                  />
+                  
+                  {/* Combined User Info and Video Controls */}
+                  <div className="absolute bottom-4 left-0 right-0 px-4 z-30">
+                    <div className="bg-black/70 backdrop-blur-md rounded-2xl p-6 text-white shadow-2xl">
+                      {/* User Info Section */}
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="relative w-10 h-10">
+                          <Image
+                            src={postData.user.image || '/images/placeholder.jpg'}
+                            alt={postData.user.name || 'User'}
+                            fill
+                            className="rounded-full object-cover border-2 border-white/20"
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-semibold text-sm">{postData.user.name || 'Anonymous'}</p>
+                          <p className="text-xs text-white/70">{formattedDate}</p>
+                        </div>
+                      </div>
+                      
+                      {/* Caption with more/less functionality */}
+                      <div className="mb-4">
+                        <div className="flex items-start gap-2">
+                          <p className={`text-sm leading-relaxed text-white/90 flex-1 ${showFullCaption ? '' : 'line-clamp-1'}`}>
+                            {postData.content}
+                          </p>
+                          {postData.content && postData.content.length > 80 && (
+                            <button
+                              onClick={() => setShowFullCaption(!showFullCaption)}
+                              className="text-white/70 text-xs font-semibold hover:text-white transition-colors flex-shrink-0 drop-shadow-lg px-2 py-1 rounded-full hover:bg-white/10"
+                            >
+                              {showFullCaption ? 'less' : 'more'}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                      
+                      {/* Modern Progress Bar */}
+                      <div 
+                        className="w-full h-1.5 bg-white/20 rounded-full cursor-pointer mb-3 hover:h-2 transition-all duration-200 shadow-inner"
+                        onClick={handleProgressClick}
+                      >
+                        <div 
+                          className="h-full bg-gradient-to-r from-blue-400 to-purple-500 rounded-full transition-all duration-300 shadow-lg relative overflow-hidden"
+                          style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }}
+                        >
+                          <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
+                        </div>
+                      </div>
+                      
+                      {/* Controls Row */}
+                      <div className="flex items-center justify-between text-white text-xs">
+                        <div className="flex items-center gap-3">
+                          <button 
+                            onClick={handlePlayPause}
+                            className="w-8 h-8 flex items-center justify-center hover:bg-white/20 rounded-full transition-all duration-200 hover:scale-105"
+                          >
+                            {isPlaying ? (
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                <rect x="6" y="4" width="4" height="16" rx="1" />
+                                <rect x="14" y="4" width="4" height="16" rx="1" />
+                              </svg>
+                            ) : (
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                <polygon points="5,3 19,12 5,21" />
+                              </svg>
+                            )}
+                          </button>
+                          
+                          <span className="font-mono text-white/80 font-medium">
+                            {formatTime(currentTime)} / {formatTime(duration)}
+                          </span>
+                        </div>
+                        
+                        <button 
+                          onClick={handleMuteToggle}
+                          className="w-8 h-8 flex items-center justify-center hover:bg-white/20 rounded-full transition-all duration-200 hover:scale-105"
+                        >
+                          {isMuted ? (
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" />
+                              <line x1="23" y1="9" x2="17" y2="15" />
+                              <line x1="17" y1="9" x2="23" y2="15" />
+                            </svg>
+                          ) : (
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" />
+                              <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                            </svg>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="relative flex-1">
+                  <Image src={postData.mediaUrl} alt="Post media" fill className="object-cover" />
+                  
+                  {/* User Info Overlay for Images */}
+                  <div className="absolute bottom-4 left-0 right-0 px-4 z-30">
+                    <div className="bg-black/70 backdrop-blur-md rounded-2xl p-6 text-white shadow-2xl">
+                      {/* User Info Section */}
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="relative w-10 h-10">
+                          <Image
+                            src={postData.user.image || '/images/placeholder.jpg'}
+                            alt={postData.user.name || 'User'}
+                            fill
+                            className="rounded-full object-cover border-2 border-white/20"
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-semibold text-sm">{postData.user.name || 'Anonymous'}</p>
+                          <p className="text-xs text-white/70">{formattedDate}</p>
+                        </div>
+                      </div>
+                      
+                      {/* Caption with more/less functionality */}
+                      <div className="flex items-start gap-2">
+                        <p className={`text-sm leading-relaxed text-white/90 flex-1 ${showFullCaption ? '' : 'line-clamp-1'}`}>
+                          {postData.content}
+                        </p>
+                        {postData.content && postData.content.length > 80 && (
+                          <button
+                            onClick={() => setShowFullCaption(!showFullCaption)}
+                            className="text-white/70 text-xs font-semibold hover:text-white transition-colors flex-shrink-0 drop-shadow-lg px-2 py-1 rounded-full hover:bg-white/10"
+                          >
+                            {showFullCaption ? 'less' : 'more'}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )
+            ) : (
+              /* Text only post */
+              <div className="flex-1 bg-white flex items-center justify-center p-8 relative">
+                <p className="text-gray-900 text-lg text-center leading-relaxed">{postData.content}</p>
+                
+                {/* User Info Overlay for Text Posts */}
+                <div className="absolute bottom-4 left-0 right-0 px-4 z-30">
+                  <div className="bg-black/70 backdrop-blur-md rounded-2xl p-6 text-white shadow-2xl">
+                    {/* User Info Section */}
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="relative w-10 h-10">
+                        <Image
+                          src={postData.user.image || '/images/placeholder.jpg'}
+                          alt={postData.user.name || 'User'}
+                          fill
+                          className="rounded-full object-cover border-2 border-white/20"
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-semibold text-sm">{postData.user.name || 'Anonymous'}</p>
+                        <p className="text-xs text-white/70">{formattedDate}</p>
+                      </div>
+                    </div>
+                    
+                    {/* Caption with more/less functionality */}
+                    <div className="flex items-start gap-2">
+                      <p className={`text-sm leading-relaxed text-white/90 flex-1 ${showFullCaption ? '' : 'line-clamp-1'}`}>
+                        {postData.content}
+                      </p>
+                      {postData.content && postData.content.length > 80 && (
+                        <button
+                          onClick={() => setShowFullCaption(!showFullCaption)}
+                          className="text-white/70 text-xs font-semibold hover:text-white transition-colors flex-shrink-0 drop-shadow-lg px-2 py-1 rounded-full hover:bg-white/10"
+                        >
+                          {showFullCaption ? 'less' : 'more'}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+  };
+
+  if (!currentPost) return null;
+
+  const formattedDate = format(new Date(currentPost.createdAt), 'PPP');
+  const listingAd = currentPost.listing as SafeListing | undefined;
+  const shopAd = currentPost.shop as SafeShop | undefined;
 
   // For ads, render the existing card components in a centered modal
   if (isAd) {
@@ -314,9 +768,9 @@ const PostModal = () => {
               <X size={24} />
             </button>
             {listingAd ? (
-              <ListingCard data={listingAd} currentUser={post.user} />
+              <ListingCard data={listingAd} currentUser={currentPost.user} />
             ) : shopAd ? (
-              <ShopCard data={shopAd} currentUser={post.user} />
+              <ShopCard data={shopAd} currentUser={currentPost.user} />
             ) : null}
           </div>
         </div>
@@ -333,313 +787,36 @@ const PostModal = () => {
       <div className="fixed inset-0 z-40 bg-black" onClick={handleClose} />
       
       {/* Main content area */}
-      <div className="fixed inset-0 z-50 flex">
-        {/* Post content area - FULL SCREEN for reels */}
-        <div className="flex-1 relative">
-          {isReel ? (
-            <>
-              {/* Reel: Full screen media with overlay content */}
-              {post.mediaUrl ? (
-                post.mediaType === 'video' ? (
-                  <>
-                    <video
-                      ref={setVideoRef}
-                      src={post.mediaUrl}
-                      autoPlay
-                      muted={isMuted}
-                      loop
-                      className="w-full h-full object-cover fixed inset-0"
-                      onTimeUpdate={handleVideoTimeUpdate}
-                      onLoadedMetadata={handleVideoLoadedMetadata}
-                      onPlay={() => setIsPlaying(true)}
-                      onPause={() => setIsPlaying(false)}
-                      controls={false}
-                    />
-                  </>
-                ) : (
-                  <Image
-                    src={post.mediaUrl}
-                    alt="Reel media"
-                    fill
-                    className="object-cover fixed inset-0"
-                  />
-                )
-              ) : (
-                <div className="fixed inset-0 bg-gradient-to-br from-purple-900 to-blue-900 flex items-center justify-center">
-                  <p className="text-white text-2xl text-center px-8 max-w-2xl leading-relaxed">{post.content}</p>
-                </div>
-              )}
-
-              {/* Bottom overlay with structured layout */}
-              <div className="absolute bottom-0 left-0 right-0 p-6 z-20">
-                <div className="bg-black/70 backdrop-blur-md p-6 rounded-2xl max-w-lg shadow-2xl">
-                  {/* Row 1: Avatar + Username + Verification Badge */}
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="relative w-12 h-12 flex-shrink-0">
-                      <Image
-                        src={post.user.image || '/images/placeholder.jpg'}
-                        alt={post.user.name || 'User'}
-                        fill
-                        className="rounded-full object-cover border-2 border-white/30"
-                      />
-                    </div>
-                    <div className="flex items-center gap-2 flex-1">
-                      <h3 className="font-semibold text-white text-base drop-shadow-lg">
-                        {post.user.name || 'Anonymous'}
-                      </h3>
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="#60A5FA" className="flex-shrink-0">
-                        <path d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z" stroke="#ffffff" strokeWidth="1.5" />
-                        <path d="M9 12.8929L10.8 14.5L15 9.5" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </div>
-                  </div>
-
-                  {/* Row 2: Date */}
-                  <div className="mb-4">
-                    <p className="text-white/80 text-sm drop-shadow-lg font-medium">{formattedDate}</p>
-                  </div>
-
-                  {/* Row 3: Caption with more/less functionality */}
-                  {post.content && (
-                    <div className="mb-4">
-                      <div className="flex items-start gap-2">
-                        <p className={`text-white text-sm leading-relaxed flex-1 drop-shadow-lg ${showFullCaption ? '' : 'line-clamp-1'}`}>
-                          {showFullCaption ? post.content : getTruncatedCaption(post.content)}
-                        </p>
-                        {post.content.length > 100 && (
-                          <button
-                            onClick={() => setShowFullCaption(!showFullCaption)}
-                            className="text-white/70 text-xs font-semibold hover:text-white transition-colors flex-shrink-0 drop-shadow-lg px-2 py-1 rounded-full hover:bg-white/10"
-                          >
-                            {showFullCaption ? 'less' : 'more'}
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                  
-                  {/* Row 4: Progress Bar (videos only) */}
-                  {post.mediaType === 'video' && (
-                    <div className="mb-4">
-                      <div 
-                        className="w-full h-1.5 bg-white/20 rounded-full cursor-pointer hover:bg-white/30 transition-colors"
-                        onClick={handleProgressClick}
-                      >
-                        <div 
-                          className="h-full bg-white rounded-full transition-all duration-150 shadow-sm"
-                          style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }}
-                        />
-                      </div>
-                    </div>
-                  )}
-                </div>
+      <div 
+        className="fixed inset-0 z-50 flex post-modal-container"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        {/* Post content area - TikTok style smooth scroll container */}
+        <div className="flex-1 relative overflow-hidden">
+          {/* Smooth scrolling container */}
+          <div 
+            className="w-full transition-transform duration-1000 ease-out"
+            style={{ 
+              height: `${posts.length * 100}vh`,
+              transform: `translateY(${(-currentPostIndex * 100) + scrollOffset}vh)`
+            }}
+          >
+            {posts.map((postData, index) => (
+              <div 
+                key={postData.id}
+                className="w-full h-screen absolute top-0 left-0"
+                style={{ transform: `translateY(${index * 100}vh)` }}
+              >
+                {renderSinglePost(postData, index)}
               </div>
-            </>
-          ) : (
-            /* Regular post or text post: centered container */
-            <div className="flex items-center justify-center h-full">
-              <div className="relative overflow-hidden w-full max-w-md mx-auto h-[600px] flex flex-col rounded-2xl">
-                {post.mediaUrl ? (
-                  post.mediaType === 'video' ? (
-                    <>
-                      <video 
-                        ref={setVideoRef}
-                        src={post.mediaUrl} 
-                        className="w-full flex-1 object-cover"
-                        onTimeUpdate={handleVideoTimeUpdate}
-                        onLoadedMetadata={handleVideoLoadedMetadata}
-                        onPlay={() => setIsPlaying(true)}
-                        onPause={() => setIsPlaying(false)}
-                        controls={false}
-                      />
-                      
-                      {/* Combined User Info and Video Controls */}
-                      <div className="absolute bottom-4 left-0 right-0 px-4 z-30">
-                        <div className="bg-black/70 backdrop-blur-md rounded-2xl p-6 text-white shadow-2xl">
-                          {/* User Info Section */}
-                          <div className="flex items-center gap-3 mb-4">
-                            <div className="relative w-10 h-10">
-                              <Image
-                                src={post.user.image || '/images/placeholder.jpg'}
-                                alt={post.user.name || 'User'}
-                                fill
-                                className="rounded-full object-cover border-2 border-white/20"
-                              />
-                            </div>
-                            <div className="flex-1">
-                              <p className="font-semibold text-sm">{post.user.name || 'Anonymous'}</p>
-                              <p className="text-xs text-white/70">{formattedDate}</p>
-                            </div>
-                          </div>
-                          
-                          {/* Caption with more/less functionality */}
-                          <div className="mb-4">
-                            <div className="flex items-start gap-2">
-                              <p className={`text-sm leading-relaxed text-white/90 flex-1 ${showFullCaption ? '' : 'line-clamp-1'}`}>
-                                {post.content}
-                              </p>
-                              {post.content && post.content.length > 80 && (
-                                <button
-                                  onClick={() => setShowFullCaption(!showFullCaption)}
-                                  className="text-white/70 text-xs font-semibold hover:text-white transition-colors flex-shrink-0 drop-shadow-lg px-2 py-1 rounded-full hover:bg-white/10"
-                                >
-                                  {showFullCaption ? 'less' : 'more'}
-                                </button>
-                              )}
-                            </div>
-                          </div>
-                          
-                          {/* Modern Progress Bar */}
-                          <div 
-                            className="w-full h-1.5 bg-white/20 rounded-full cursor-pointer mb-3 hover:h-2 transition-all duration-200 shadow-inner"
-                            onClick={handleProgressClick}
-                          >
-                            <div 
-                              className="h-full bg-gradient-to-r from-blue-400 to-purple-500 rounded-full transition-all duration-300 shadow-lg relative overflow-hidden"
-                              style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }}
-                            >
-                              <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
-                            </div>
-                          </div>
-                          
-                          {/* Controls Row */}
-                          <div className="flex items-center justify-between text-white text-xs">
-                            <div className="flex items-center gap-3">
-                              <button 
-                                onClick={handlePlayPause}
-                                className="w-8 h-8 flex items-center justify-center hover:bg-white/20 rounded-full transition-all duration-200 hover:scale-105"
-                              >
-                                {isPlaying ? (
-                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                                    <rect x="6" y="4" width="4" height="16" rx="1" />
-                                    <rect x="14" y="4" width="4" height="16" rx="1" />
-                                  </svg>
-                                ) : (
-                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                                    <polygon points="5,3 19,12 5,21" />
-                                  </svg>
-                                )}
-                              </button>
-                              
-                              <span className="font-mono text-white/80 font-medium">
-                                {formatTime(currentTime)} / {formatTime(duration)}
-                              </span>
-                            </div>
-                            
-                            <button 
-                              onClick={handleMuteToggle}
-                              className="w-8 h-8 flex items-center justify-center hover:bg-white/20 rounded-full transition-all duration-200 hover:scale-105"
-                            >
-                              {isMuted ? (
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                  <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" />
-                                  <line x1="23" y1="9" x2="17" y2="15" />
-                                  <line x1="17" y1="9" x2="23" y2="15" />
-                                </svg>
-                              ) : (
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                  <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" />
-                                  <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
-                                </svg>
-                              )}
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="relative flex-1">
-                      <Image src={post.mediaUrl} alt="Post media" fill className="object-cover" />
-                      
-                      {/* User Info Overlay for Images */}
-                      <div className="absolute bottom-4 left-0 right-0 px-4 z-30">
-                        <div className="bg-black/70 backdrop-blur-md rounded-2xl p-6 text-white shadow-2xl">
-                          {/* User Info Section */}
-                          <div className="flex items-center gap-3 mb-4">
-                            <div className="relative w-10 h-10">
-                              <Image
-                                src={post.user.image || '/images/placeholder.jpg'}
-                                alt={post.user.name || 'User'}
-                                fill
-                                className="rounded-full object-cover border-2 border-white/20"
-                              />
-                            </div>
-                            <div className="flex-1">
-                              <p className="font-semibold text-sm">{post.user.name || 'Anonymous'}</p>
-                              <p className="text-xs text-white/70">{formattedDate}</p>
-                            </div>
-                          </div>
-                          
-                          {/* Caption with more/less functionality */}
-                          <div className="flex items-start gap-2">
-                            <p className={`text-sm leading-relaxed text-white/90 flex-1 ${showFullCaption ? '' : 'line-clamp-1'}`}>
-                              {post.content}
-                            </p>
-                            {post.content && post.content.length > 80 && (
-                              <button
-                                onClick={() => setShowFullCaption(!showFullCaption)}
-                                className="text-white/70 text-xs font-semibold hover:text-white transition-colors flex-shrink-0 drop-shadow-lg px-2 py-1 rounded-full hover:bg-white/10"
-                              >
-                                {showFullCaption ? 'less' : 'more'}
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )
-                ) : (
-                  /* Text only post */
-                  <div className="flex-1 bg-white flex items-center justify-center p-8 relative">
-                    <p className="text-gray-900 text-lg text-center leading-relaxed">{post.content}</p>
-                    
-                    {/* User Info Overlay for Text Posts */}
-                    <div className="absolute bottom-4 left-0 right-0 px-4 z-30">
-                      <div className="bg-black/70 backdrop-blur-md rounded-2xl p-6 text-white shadow-2xl">
-                        {/* User Info Section */}
-                        <div className="flex items-center gap-3 mb-4">
-                          <div className="relative w-10 h-10">
-                            <Image
-                              src={post.user.image || '/images/placeholder.jpg'}
-                              alt={post.user.name || 'User'}
-                              fill
-                              className="rounded-full object-cover border-2 border-white/20"
-                            />
-                          </div>
-                          <div className="flex-1">
-                            <p className="font-semibold text-sm">{post.user.name || 'Anonymous'}</p>
-                            <p className="text-xs text-white/70">{formattedDate}</p>
-                          </div>
-                        </div>
-                        
-                        {/* Caption with more/less functionality */}
-                        <div className="flex items-start gap-2">
-                          <p className={`text-sm leading-relaxed text-white/90 flex-1 ${showFullCaption ? '' : 'line-clamp-1'}`}>
-                            {post.content}
-                          </p>
-                          {post.content && post.content.length > 80 && (
-                            <button
-                              onClick={() => setShowFullCaption(!showFullCaption)}
-                              className="text-white/70 text-xs font-semibold hover:text-white transition-colors flex-shrink-0 drop-shadow-lg px-2 py-1 rounded-full hover:bg-white/10"
-                            >
-                              {showFullCaption ? 'less' : 'more'}
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-              </div>
-            </div>
-          )}
+            ))}
+          </div>
         </div>
 
-        {/* Action buttons sidebar - positioned right next to content edge */}
-        <div className={`fixed top-1/2 transform -translate-y-1/2 flex flex-col items-center gap-6 text-white z-30 ${
-          isReel ? 'right-6' : 'left-1/2 ml-[calc(192px+60px)]'
-        }`}>
+        {/* Action buttons sidebar - positioned right side */}
+        <div className="fixed top-1/2 right-6 transform -translate-y-1/2 flex flex-col items-center gap-6 text-white z-30">
           {/* Close button */}
           <div className="flex flex-col items-center gap-2">
             <button onClick={handleClose} className="hover:scale-110 transition-transform">
@@ -652,7 +829,7 @@ const PostModal = () => {
 
           {/* User avatar */}
           <div className="border border-white rounded-full">
-            <Avatar src={post.user.image ?? undefined} />
+            <Avatar src={currentPost.user.image ?? undefined} />
           </div>
 
           {/* Like button */}
