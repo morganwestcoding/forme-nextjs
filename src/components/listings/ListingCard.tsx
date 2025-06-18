@@ -83,7 +83,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
       <div className="relative z-10">
         <div className="relative h-[345px] overflow-hidden">
           <div className="absolute top-4 left-4 z-20">
-            <div className="bg-black/40 border border-white backdrop-blur-sm rounded-lg text-center justify-center w-20 py-1.5 text-white">
+            <div className="bg-neutral-100 text-neutral-600 border rounded-lg text-center w-20 py-1.5">
               <span className="text-xs text-center">{data.category}</span>
             </div>
           </div>
@@ -104,7 +104,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
   <div className="flex flex-col items-center justify-between min-h-[40px] space-y-1 text-center">
     <div className="flex items-center space-x-1 h-[20px]">
       <Heart size={16} />
-      <span className="text-sm font-medium">3.8k</span>
+      <span className="text-xs font-medium">3.8k</span>
     </div>
     <span className="text-xs opacity-70">Likes</span>
   </div>
@@ -115,7 +115,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
   <div className="flex flex-col items-center justify-between min-h-[40px] space-y-1 text-center">
     <div className="flex items-center space-x-1 h-[20px]">
       <Star size={16} />
-      <span className="text-sm font-medium">4.7</span>
+      <span className="text-xs font-medium">4.7</span>
     </div>
     <span className="text-xs opacity-70">Rating</span>
   </div>
@@ -126,7 +126,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
   <div className="flex flex-col items-center justify-between min-h-[40px] space-y-1 text-center">
     <div className="flex items-center space-x-1 h-[20px]">
       <Clock size={15} className="text-white/80" />
-      <span className="text-sm font-medium">Open</span>
+      <span className="text-xs font-medium">Open</span>
     </div>
     <span className="text-xs  opacity-70">Closes 6:00PM</span>
   </div>
