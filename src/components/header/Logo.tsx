@@ -17,7 +17,7 @@ const Logo = ({ variant = 'horizontal' }: LogoProps) => {
       {variant === 'horizontal' ? (
         <Image
           alt="ForMe Logo"
-          className="h-6 w-20" 
+          className="h-7 w-11" 
           height={32}
           width={140}
           src="/logos/forme-long.png"
