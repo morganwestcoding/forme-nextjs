@@ -148,7 +148,7 @@ const PostModal = () => {
     return () => window.removeEventListener('keydown', handleKeyDown, { capture: true });
   }, [currentPostIndex, isScrolling, globalLock]);
 
-  // Add wheel event listener with higher sensitivity threshold
+  // Add wheel event listener with high sensitivity
   useEffect(() => {
     if (!currentPost) return;
 
@@ -162,10 +162,10 @@ const PostModal = () => {
         return;
       }
 
-      // Higher threshold - requires more intentional scrolling
-      if (e.deltaY > 55) { // Increased from 40 to 55
+      // Very low threshold - highly sensitive
+      if (e.deltaY > 20) { // Reduced from 35 to 20
         goToNextPost();
-      } else if (e.deltaY < -55) {
+      } else if (e.deltaY < -20) {
         goToPrevPost();
       }
     };
@@ -195,7 +195,7 @@ const PostModal = () => {
     }
     
     const distance = touchStart - touchEnd;
-    const minSwipeDistance = 75; // Higher threshold to match wheel sensitivity
+    const minSwipeDistance = 30; // Reduced from 45px to 30px - very sensitive
 
     if (Math.abs(distance) < minSwipeDistance) return;
 
@@ -607,7 +607,7 @@ const PostModal = () => {
       /* Regular post or text post: centered container */
       return (
         <div key={postData.id} className="w-full h-full flex items-center justify-center">
-          <div className="relative overflow-hidden w-full max-w-md mx-auto h-[600px] flex flex-col rounded-2xl">
+          <div className="relative overflow-hidden w-full max-w-md mx-auto h-[700px] flex flex-col rounded-2xl">
             {postData.mediaUrl ? (
               postData.mediaType === 'video' ? (
                 <>
@@ -839,30 +839,29 @@ const PostModal = () => {
       {/* Full viewport backdrop */}
       <div className="fixed inset-0 z-40 bg-black" onClick={handleClose} />
       
-      {/* Main content area */}
+      {/* Main content area - full screen with no gaps */}
       <div 
-        className="fixed inset-0 z-50 flex post-modal-container"
+        className="fixed inset-0 z-50 flex post-modal-container overflow-hidden"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {/* Post content area - TikTok style smooth scroll container */}
-        <div className="flex-1 relative overflow-hidden">
-          {/* TikTok-style smooth scrolling container - taller posts */}
+        {/* Post content area - perfect full screen fit */}
+        <div className="flex-1 relative w-full h-full">
+          {/* Full screen scrolling container - no extra space */}
           <div 
             className="w-full transition-transform duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)]"
             style={{ 
-              height: `${posts.length * 110}vh`, // Increased from 100vh to 110vh
-              transform: `translateY(${(-currentPostIndex * 110) + (scrollOffset * 1.1)}vh)` // Adjusted for taller posts
+              height: `${posts.length * 100}vh`, // Back to 100vh for perfect screen fit
+              transform: `translateY(${(-currentPostIndex * 100) + scrollOffset}vh)` // Back to 100vh spacing
             }}
           >
             {posts.map((postData, index) => (
               <div 
                 key={postData.id}
-                className="w-full absolute top-0 left-0" // Taller posts
+                className="w-full h-screen absolute top-0 left-0" // Full screen height, no extra space
                 style={{ 
-                  height: '110vh', // Increased from h-screen (100vh) to 110vh
-                  transform: `translateY(${index * 110}vh)` // Adjusted spacing for taller posts
+                  transform: `translateY(${index * 100}vh)` // Back to 100vh spacing for perfect fit
                 }}
               >
                 {renderSinglePost(postData, index)}
