@@ -99,7 +99,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
             <p className="text-xs drop-shadow-md font-thin flex items-center mb-3">
               {city}, {state} • 2.3 miles away
             </p>
-<div className="relative bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/20">
+<div className="relative bg-white/10 backdrop-blur-md rounded-2xl border border-white/20">
   <div className="grid grid-cols-3 gap-1">
     {/* Likes - Interactive */}
     <button 
@@ -117,7 +117,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
       className="text-center py-3 rounded-xl hover:bg-white/5 transition-all duration-200 group active:scale-95"
     >
       <div className="w-2 h-2 bg-pink-400 rounded-full mx-auto mb-2 opacity-60 group-hover:opacity-80 group-hover:scale-125 transition-all duration-200 likes-dot"></div>
-      <div className="text-sm font-semibold text-white mb-0.5 likes-count">3.8k</div>
+      <div className="text-xs font-semibold text-white mb-0.5 likes-count">3.8k</div>
       <div className="text-xs text-white/40 uppercase tracking-widest group-hover:text-white/60 transition-colors">Likes</div>
     </button>
 
@@ -130,7 +130,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
       className="text-center py-3 rounded-xl hover:bg-white/5 transition-all duration-200 group active:scale-95"
     >
       <div className="w-2 h-2 bg-yellow-400 rounded-full mx-auto mb-2 opacity-60 group-hover:opacity-80 group-hover:scale-125 transition-all duration-200"></div>
-      <div className="text-sm font-semibold text-white mb-0.5">4.7</div>
+      <div className="text-xs font-semibold text-white mb-0.5">4.7</div>
       <div className="text-xs text-white/40 uppercase tracking-widest group-hover:text-white/60 transition-colors">Rating</div>
     </button>
 
@@ -143,7 +143,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
       className="text-center py-3 rounded-xl hover:bg-white/5 transition-all duration-200 group active:scale-95"
     >
       <div className="w-2 h-2 bg-green-400 rounded-full mx-auto mb-2 opacity-60 group-hover:opacity-80 group-hover:scale-125 transition-all duration-200"></div>
-      <div className="text-sm font-semibold text-white mb-0.5">Open</div>
+      <div className="text-xs font-semibold text-white mb-0.5">Open</div>
       <div className="text-xs text-white/40 uppercase tracking-widest group-hover:text-white/60 transition-colors">6PM</div>
     </button>
   </div>
