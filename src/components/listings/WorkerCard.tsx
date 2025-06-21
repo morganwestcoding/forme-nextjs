@@ -49,16 +49,16 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
     <div className="cursor-pointer bg-white rounded-xl shadow-lg hover:shadow-2xl overflow-hidden relative">
       <div className="relative z-10">
         {/* Full height container matching ListingCard */}
-        <div className="relative h-[345px] overflow-hidden">
+        <div className="relative h-[340px] overflow-hidden">
           {/* Gradient background - starts from middle of profile picture */}
-          <div className="absolute top-0 left-0 right-0 h-[135px] bg-gradient-to-br from-[#60A5FA] via-[#89bcfb] to-[#60A5FA]"></div>
+          <div className="absolute top-0 left-0 right-0 h-[142px] bg-gradient-to-br from-[#60A5FA] via-[#89bcfb] to-[#60A5FA]"></div>
           
           {/* White background for bottom section */}
           <div className="absolute bottom-0 left-0 right-0 h-[145px] bg-white"></div>
 
           {/* Top badge */}
           <div className="absolute top-4 left-4 z-20">
-            <div className="bg-neutral-100 text-neutral-600 border rounded-lg text-center w-20 py-1.5">
+            <div className="bg-white/20 text-white border rounded-lg text-center w-20 py-1.5">
               <span className="text-xs text-center font-medium">{employee.jobTitle || 'Team'}</span>
             </div>
           </div>
@@ -70,36 +70,43 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
                 e.stopPropagation();
                 handleBookmark();
               }}
-              className={`p-2 rounded-full border backdrop-blur-md transition-all duration-200 ${
+              className={`p-2.5 rounded-full border backdrop-blur-md transition-all duration-200 ${
                 isBookmarked 
                   ? 'bg-white/30 text-yellow-400' 
                   : 'bg-neutral-100 text-neutral-600 hover:bg-white/30'
               }`}
             >
-              <Bookmark size={18} fill={isBookmarked ? 'currentColor' : 'none'} />
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" color="currentColor" fill="none">
+    <path d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+</svg>
             </button>
             <button 
               onClick={(e) => {
                 e.stopPropagation();
                 onBook?.();
               }}
-              className="p-2 rounded-full bg-neutral-100 text-neutral-600 border hover:bg-white/30 backdrop-blur-md transition-all duration-200"
+              className="p-2.5 rounded-full bg-neutral-100 text-gray-500 border hover:bg-white/30 backdrop-blur-md transition-all duration-200"
             >
-              <Calendar size={18} />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="19" height="19" color="currentColor" fill="none">
+    <path d="M16 2V6M8 2V6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+    <path d="M13 4H11C7.22876 4 5.34315 4 4.17157 5.17157C3 6.34315 3 8.22876 3 12V14C3 17.7712 3 19.6569 4.17157 20.8284C5.34315 22 7.22876 22 11 22H13C16.7712 22 18.6569 22 19.8284 20.8284C21 19.6569 21 17.7712 21 14V12C21 8.22876 21 6.34315 19.8284 5.17157C18.6569 4 16.7712 4 13 4Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+    <path d="M3 10H21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+    <path d="M11.9955 14H12.0045M11.9955 18H12.0045M15.991 14H16M8 14H8.00897M8 18H8.00897" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
             </button>
           </div>
 
           {/* Content on white background */}
-          <div className="absolute bottom-5 left-5 right-5 z-20">
+          <div className="absolute bottom-4 left-5 right-5 z-20">
             {/* Profile image - positioned above name */}
             <div className="mb-3">
-              <div className="relative w-20 h-20">
+              <div className="relative w-24 h-24">
       
                   <Image
                     src={employee.profileImage || '/people/headshot-3.png'}
                     alt={employee.fullName}
-                    width={72}
-                    height={72}
+                    width={75}
+                    height={75}
                     className="w-full h-full border-4 border-white rounded-xl object-cover"
                   />
               </div>
@@ -120,7 +127,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
             </div>
 
             {/* Stats section with white background styling */}
-            <div className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-gray-700 mb-3">
+            <div className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-gray-700">
               {/* Followers */}
               <div className="flex flex-col items-center justify-between min-h-[40px] space-y-1 text-center">
                 <div className="flex items-center space-x-1 h-[20px]">
@@ -156,7 +163,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
         </div>
 
         {/* Bottom action section on white background */}
-        <div className="px-5 pb-4 pt-2 -mt-3 bg-white relative z-20">
+        <div className="px-5 pb-4 bg-white relative z-20">
           <div className="flex gap-2">
             <button 
               onClick={(e) => {
@@ -170,7 +177,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
               }`}
             >
               <div className="flex items-center text-center justify-center gap-2">
-                <UserPlus size={18} />
+              
                 <span className="font-medium text-sm">
                   {isFollowing ? 'Following' : 'Follow'}
                 </span>
@@ -180,7 +187,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
               onClick={(e) => {
                 e.stopPropagation();
               }}
-              className="bg-gray-100 text-gray-700 p-3 w-12 rounded-xl hover:bg-gray-200 transition-all duration-200 shadow-sm"
+              className="bg-neutral-100 text-neutral-600 p-3 w-12 rounded-xl hover:bg-gray-200 transition-all duration-200 shadow-sm"
             >
               <MessageCircle size={18} />
             </button>

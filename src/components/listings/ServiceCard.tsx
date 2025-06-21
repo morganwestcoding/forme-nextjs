@@ -44,8 +44,8 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
 
       {/* Category label */}
       <div className="absolute top-4 left-4 z-10">
-        <div className="bg-black/40 border border-white backdrop-blur-sm rounded-lg text-center justify-center w-20 px-3 py-2 text-white">
-          <span className="text-xs font-medium">{service.category}</span>
+        <div className="bg-white/10 border border-white backdrop-blur-md rounded-lg text-center justify-center w-20 px-2.5 py-2 text-white">
+          <span className="text-xs">{service.category}</span>
         </div>
       </div>
 

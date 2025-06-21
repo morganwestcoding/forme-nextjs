@@ -83,7 +83,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
       <div className="relative z-10">
         <div className="relative h-[345px] overflow-hidden">
           <div className="absolute top-4 left-4 z-20">
-            <div className="bg-neutral-100 text-neutral-600 border rounded-lg text-center w-20 py-1.5">
+            <div className="bg-neutral-100 text-neutral-600 backdrop-blur-md border rounded-lg text-center w-20 py-1.5">
               <span className="text-xs text-center">{data.category}</span>
             </div>
           </div>
@@ -99,7 +99,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
             <p className="text-xs drop-shadow-md font-thin flex items-center mb-3">
               {city}, {state} • 2.3 miles away
             </p>
-            <div className="flex items-center justify-between bg-black/20 border-white border backdrop-blur-sm rounded-lg px-4 py-3 text-white">
+            <div className="flex items-center justify-between bg-white/15 backdrop-blur-md rounded-lg px-4 py-3 text-white">
   {/* Likes */}
   <div className="flex flex-col items-center justify-between min-h-[40px] space-y-1 text-center">
     <div className="flex items-center space-x-1 h-[20px]">
