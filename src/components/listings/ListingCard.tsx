@@ -99,36 +99,53 @@ const ListingCard: React.FC<ListingCardProps> = ({
             <p className="text-xs drop-shadow-md font-thin flex items-center mb-3">
               {city}, {state} • 2.3 miles away
             </p>
-            <div className="flex items-center justify-between bg-white/15 backdrop-blur-md rounded-lg px-4 py-3 text-white">
-  {/* Likes */}
-  <div className="flex flex-col items-center justify-between min-h-[40px] space-y-1 text-center">
-    <div className="flex items-center space-x-1 h-[20px]">
-      <Heart size={16} />
-      <span className="text-xs font-medium">3.8k</span>
-    </div>
-    <span className="text-xs opacity-70">Likes</span>
-  </div>
+<div className="relative bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/20">
+  <div className="grid grid-cols-3 gap-1">
+    {/* Likes - Interactive */}
+    <button 
+      onClick={() => {
+        // Handle like toggle
+        const currentLikes = parseInt(document.querySelector('.likes-count').textContent.replace('k', ''));
+        const newCount = currentLikes === 3.8 ? 3.9 : 3.8;
+        document.querySelector('.likes-count').textContent = newCount + 'k';
+        
+        // Add animation feedback
+        const dot = document.querySelector('.likes-dot');
+        dot.classList.add('animate-ping');
+        setTimeout(() => dot.classList.remove('animate-ping'), 600);
+      }}
+      className="text-center py-3 rounded-xl hover:bg-white/5 transition-all duration-200 group active:scale-95"
+    >
+      <div className="w-2 h-2 bg-pink-400 rounded-full mx-auto mb-2 opacity-60 group-hover:opacity-80 group-hover:scale-125 transition-all duration-200 likes-dot"></div>
+      <div className="text-sm font-semibold text-white mb-0.5 likes-count">3.8k</div>
+      <div className="text-xs text-white/40 uppercase tracking-widest group-hover:text-white/60 transition-colors">Likes</div>
+    </button>
 
-  <div className="w-px h-8 bg-white/30"></div>
+    {/* Rating - Interactive */}
+    <button 
+      onClick={() => {
+        // Handle rating interaction (could open rating modal)
+        console.log('Rating clicked');
+      }}
+      className="text-center py-3 rounded-xl hover:bg-white/5 transition-all duration-200 group active:scale-95"
+    >
+      <div className="w-2 h-2 bg-yellow-400 rounded-full mx-auto mb-2 opacity-60 group-hover:opacity-80 group-hover:scale-125 transition-all duration-200"></div>
+      <div className="text-sm font-semibold text-white mb-0.5">4.7</div>
+      <div className="text-xs text-white/40 uppercase tracking-widest group-hover:text-white/60 transition-colors">Rating</div>
+    </button>
 
-  {/* Rating */}
-  <div className="flex flex-col items-center justify-between min-h-[40px] space-y-1 text-center">
-    <div className="flex items-center space-x-1 h-[20px]">
-      <Star size={16} />
-      <span className="text-xs font-medium">4.7</span>
-    </div>
-    <span className="text-xs opacity-70">Rating</span>
-  </div>
-
-  <div className="w-px h-8 bg-white/30"></div>
-
-  {/* Hours */}
-  <div className="flex flex-col items-center justify-between min-h-[40px] space-y-1 text-center">
-    <div className="flex items-center space-x-1 h-[20px]">
-      <Clock size={15} className="text-white/80" />
-      <span className="text-xs font-medium">Open</span>
-    </div>
-    <span className="text-xs  opacity-70">Closes 6:00PM</span>
+    {/* Hours - Interactive */}
+    <button 
+      onClick={() => {
+        // Handle hours interaction (could show detailed hours)
+        console.log('Hours clicked');
+      }}
+      className="text-center py-3 rounded-xl hover:bg-white/5 transition-all duration-200 group active:scale-95"
+    >
+      <div className="w-2 h-2 bg-green-400 rounded-full mx-auto mb-2 opacity-60 group-hover:opacity-80 group-hover:scale-125 transition-all duration-200"></div>
+      <div className="text-sm font-semibold text-white mb-0.5">Open</div>
+      <div className="text-xs text-white/40 uppercase tracking-widest group-hover:text-white/60 transition-colors">6PM</div>
+    </button>
   </div>
 </div>
 

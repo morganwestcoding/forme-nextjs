@@ -58,7 +58,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
 
           {/* Top badge */}
           <div className="absolute top-4 left-4 z-20">
-            <div className="bg-white/20 text-white border rounded-lg text-center w-20 py-1.5">
+            <div className="bg-neutral-100 text-neutral-600 border rounded-lg text-center w-20 py-1.5">
               <span className="text-xs text-center font-medium">{employee.jobTitle || 'Team'}</span>
             </div>
           </div>
