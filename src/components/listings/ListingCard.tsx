@@ -99,56 +99,62 @@ const ListingCard: React.FC<ListingCardProps> = ({
             <p className="text-xs drop-shadow-md font-thin flex items-center mb-3">
               {city}, {state} • 2.3 miles away
             </p>
-<div className="relative bg-white/10 backdrop-blur-md rounded-2xl border border-white/20">
-  <div className="grid grid-cols-3 gap-1">
-    {/* Likes - Interactive */}
-    <button 
-      onClick={() => {
-        // Handle like toggle
-        const currentLikes = parseInt(document.querySelector('.likes-count').textContent.replace('k', ''));
-        const newCount = currentLikes === 3.8 ? 3.9 : 3.8;
-        document.querySelector('.likes-count').textContent = newCount + 'k';
-        
-        // Add animation feedback
-        const dot = document.querySelector('.likes-dot');
-        dot.classList.add('animate-ping');
-        setTimeout(() => dot.classList.remove('animate-ping'), 600);
-      }}
-      className="text-center py-3 rounded-xl hover:bg-white/5 transition-all duration-200 group active:scale-95"
-    >
-      <div className="w-2 h-2 bg-pink-400 rounded-full mx-auto mb-2 opacity-60 group-hover:opacity-80 group-hover:scale-125 transition-all duration-200 likes-dot"></div>
-      <div className="text-xs font-semibold text-white mb-0.5 likes-count">3.8k</div>
-      <div className="text-xs text-white/40 uppercase tracking-widest group-hover:text-white/60 transition-colors">Likes</div>
-    </button>
+<div className="relative bg-white/10 backdrop-blur-md rounded-2xl p-2 border border-white/20">
+  <div className="flex items-center">
+    {/* Likes and Rating - Grouped closer */}
+    <div className="flex items-center flex-[2]">
+      {/* Likes - Interactive */}
+      <button 
+   onClick={() => {
+  // Handle like toggle with null checks
+  const likesElement = document.querySelector('.likes-count');
+  if (likesElement && likesElement.textContent) {
+    const currentLikes = parseInt(likesElement.textContent.replace('k', '').replace('K', ''));
+    const newCount = currentLikes === 3.8 ? 3.9 : 3.8;
+    likesElement.textContent = newCount + 'K';
+  }
+}}
+        className="flex-1 flex flex-col items-center py-3 hover:bg-white/5 transition-colors duration-200 group rounded-xl"
+      >
+        <div className="w-2 h-2 bg-pink-400 rounded-full mb-3 likes-dot group-hover:animate-pulse opacity-50 group-hover:opacity-100 transition-all duration-200"></div>
+        <div className="text-xs font-medium text-white leading-none mb-1 likes-count">3.8K</div>
+        <div className="text-xs text-white/50 uppercase font-medium">Likes</div>
+      </button>
 
-    {/* Rating - Interactive */}
-    <button 
-      onClick={() => {
-        // Handle rating interaction (could open rating modal)
-        console.log('Rating clicked');
-      }}
-      className="text-center py-3 rounded-xl hover:bg-white/5 transition-all duration-200 group active:scale-95"
-    >
-      <div className="w-2 h-2 bg-yellow-400 rounded-full mx-auto mb-2 opacity-60 group-hover:opacity-80 group-hover:scale-125 transition-all duration-200"></div>
-      <div className="text-xs font-semibold text-white mb-0.5">4.7</div>
-      <div className="text-xs text-white/40 uppercase tracking-widest group-hover:text-white/60 transition-colors">Rating</div>
-    </button>
+      {/* Divider between likes and rating */}
+<div className="w-px h-7 bg-white/20 mx-1.5"></div>
 
-    {/* Hours - Interactive */}
+      {/* Rating - Interactive */}
+      <button 
+        onClick={() => {
+          // Handle rating interaction (could open rating modal)
+          console.log('Rating clicked');
+        }}
+        className="flex-1 flex flex-col items-center py-3 hover:bg-white/5 transition-colors duration-200 group rounded-xl"
+      >
+        <div className="w-2 h-2 bg-yellow-400 rounded-full mb-3 group-hover:animate-pulse opacity-50 group-hover:opacity-100 transition-all duration-200"></div>
+        <div className="text-xs font-medium text-white leading-none mb-1">4.7</div>
+        <div className="text-xs text-white/50 uppercase font-medium">Rating</div>
+      </button>
+    </div>
+
+    {/* Main divider between groups */}
+    <div className="w-px h-7 bg-white/20 mx-1.5"></div>
+
+    {/* Hours - Interactive with time range */}
     <button 
       onClick={() => {
         // Handle hours interaction (could show detailed hours)
         console.log('Hours clicked');
       }}
-      className="text-center py-3 rounded-xl hover:bg-white/5 transition-all duration-200 group active:scale-95"
+      className="flex-1 flex flex-col items-center py-3 hover:bg-white/5 transition-colors duration-200 group rounded-xl"
     >
-      <div className="w-2 h-2 bg-green-400 rounded-full mx-auto mb-2 opacity-60 group-hover:opacity-80 group-hover:scale-125 transition-all duration-200"></div>
-      <div className="text-xs font-semibold text-white mb-0.5">Open</div>
-      <div className="text-xs text-white/40 uppercase tracking-widest group-hover:text-white/60 transition-colors">6PM</div>
+      <div className="w-2 h-2 bg-green-400 rounded-full mb-3 group-hover:animate-pulse opacity-50 group-hover:opacity-100 transition-all duration-200"></div>
+      <div className="text-xs font-medium text-white leading-none mb-1">5:00-9:00</div>
+      <div className="text-xs text-white/50 uppercase font-medium">Open</div>
     </button>
   </div>
 </div>
-
           </div>
         </div>
 
