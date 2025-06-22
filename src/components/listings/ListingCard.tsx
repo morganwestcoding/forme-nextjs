@@ -99,7 +99,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
             <p className="text-xs drop-shadow-md font-thin flex items-center mb-3">
               {city}, {state} • 2.3 miles away
             </p>
-<div className="relative bg-white/10 backdrop-blur-md rounded-2xl p-2 border border-white/20">
+<div className="relative bg-white/10 backdrop-blur-md rounded-2xl p-1 border border-white/20">
   <div className="flex items-center">
     {/* Likes and Rating - Grouped closer */}
     <div className="flex items-center flex-[2]">
@@ -118,7 +118,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
       >
         <div className="w-2 h-2 bg-pink-400 rounded-full mb-3 likes-dot group-hover:animate-pulse opacity-50 group-hover:opacity-100 transition-all duration-200"></div>
         <div className="text-xs font-medium text-white leading-none mb-1 likes-count">3.8K</div>
-        <div className="text-xs text-white/50 uppercase font-medium">Likes</div>
+        <div className="text-xs text-white/50 font-medium">Likes</div>
       </button>
 
       {/* Divider between likes and rating */}
@@ -134,7 +134,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
       >
         <div className="w-2 h-2 bg-yellow-400 rounded-full mb-3 group-hover:animate-pulse opacity-50 group-hover:opacity-100 transition-all duration-200"></div>
         <div className="text-xs font-medium text-white leading-none mb-1">4.7</div>
-        <div className="text-xs text-white/50 uppercase font-medium">Rating</div>
+        <div className="text-xs text-white/50 font-medium">Rating</div>
       </button>
     </div>
 
@@ -151,7 +151,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
     >
       <div className="w-2 h-2 bg-green-400 rounded-full mb-3 group-hover:animate-pulse opacity-50 group-hover:opacity-100 transition-all duration-200"></div>
       <div className="text-xs font-medium text-white leading-none mb-1">5:00-9:00</div>
-      <div className="text-xs text-white/50 uppercase font-medium">Open</div>
+      <div className="text-xs text-white/50 font-medium">Open</div>
     </button>
   </div>
 </div>
