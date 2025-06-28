@@ -102,6 +102,10 @@ const MarketContent = ({
           type: 'worker',
           element: (
             <WorkerCard
+              data={{
+    title: listing.title,
+    imageSrc: listing.imageSrc
+  }}
               key={`employee-${employee.id}`}
               employee={employee}
               listingTitle={listing.title}
