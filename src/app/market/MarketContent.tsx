@@ -101,17 +101,18 @@ const MarketContent = ({
         rawCards.push({
           type: 'worker',
           element: (
-            <WorkerCard
-              data={{
+
+            <WorkerCard 
+  employee={employee}
+        listingTitle={listing.title}
+             data={{
     title: listing.title,
-    imageSrc: listing.imageSrc
+    imageSrc: listing.imageSrc,
+        category: listing.category
   }}
-              key={`employee-${employee.id}`}
-              employee={employee}
-              listingTitle={listing.title}
-              onBook={() => {}}
-              onFollow={() => {}}
-            />
+  onFollow={() => console.log('Follow')}
+  onBook={() => console.log('Book')}
+/>
           )
         });
       });

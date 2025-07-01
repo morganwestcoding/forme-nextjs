@@ -37,6 +37,8 @@ export type SafeListing = Omit<Listing, "createdAt"> & {
   storeHours: SafeStoreHours[];
   city?: string | null;  // Add this
   state?: string | null; // Add this
+    rating?: number;
+  isTrending?: boolean;
   
 };
 
