@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Award, TrendingUp, Star } from 'lucide-react';
+import { format } from 'date-fns';
 
 interface SafeStoreHours {
   dayOfWeek: string;
@@ -8,7 +9,7 @@ interface SafeStoreHours {
   isClosed: boolean;
 }
 
-interface SmartBadgeRatingProps {
+interface WorkerBadgeRatingProps {
   rating?: number;
   isTrending?: boolean;
   onRatingClick?: () => void;
@@ -16,7 +17,7 @@ interface SmartBadgeRatingProps {
   storeHours?: SafeStoreHours[];
 }
 
-const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
+const WorkerBadgeRating: React.FC<WorkerBadgeRatingProps> = ({
   rating = 4.7,
   isTrending = false,
   onRatingClick,
@@ -42,9 +43,8 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
 
   const getTimeStatus = () => {
     const now = new Date();
-    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const dayOfWeek = dayNames[now.getDay()];
-    const currentTime = now.toTimeString().slice(0, 5); // HH:MM format
+    const dayOfWeek = format(now, 'EEEE'); // e.g., 'Monday', 'Tuesday', etc.
+    const currentTime = format(now, 'HH:mm'); // 24-hour format
 
     // Find today's store hours
     const todayHours = storeHours.find(hours => 
@@ -190,10 +190,22 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
       const openMinutes = extractTimeMinutes(todayHours.openTime);
 
       if (currentMinutes < openMinutes) {
-        // Haven't opened yet today - show "Soon" instead of countdown
+        // Haven't opened yet today
+        const minutesUntilOpen = openMinutes - currentMinutes;
+        const hoursUntilOpen = Math.floor(minutesUntilOpen / 60);
+        const remainingMinutes = minutesUntilOpen % 60;
+        
+        let openMessage = 'Opens ';
+        if (hoursUntilOpen > 0) {
+          openMessage += `in ${hoursUntilOpen}h`;
+          if (remainingMinutes > 0) openMessage += ` ${remainingMinutes}m`;
+        } else {
+          openMessage += `in ${remainingMinutes}m`;
+        }
+
         return {
-          message: 'Soon',
-          color: 'orange',
+          message: openMessage,
+          color: 'yellow',
           timeRange
         };
       } else {
@@ -213,10 +225,10 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
   const getBadgeProps = () => {
     if (isTrending) {
       return {
-        bgColor: 'bg-gradient-to-r from-purple-500/20 to-violet-500/20',
-        borderColor: 'border-purple-400/40',
-        textColor: 'text-purple-200',
-        glowColor: 'shadow-purple-500/20',
+        bgColor: 'bg-gradient-to-r from-green-500/20 to-emerald-500/20',
+        borderColor: 'border-green-400/40',
+        textColor: 'text-green-200',
+        glowColor: 'shadow-green-500/20',
         label: 'Trending',
         icon: <TrendingUp className="w-3 h-3" />
       };
@@ -244,7 +256,7 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
   const badgeProps = getBadgeProps();
 
   return (
-    <div className="bg-white/10 backdrop-blur-md rounded-2xl p-2 border border-white/30 shadow-xl">
+
       <div className="flex items-center">
         {/* Rating Section - LEFT */}
         <button 
@@ -252,9 +264,8 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
             e.stopPropagation();
             onRatingClick?.();
           }}
-          className="flex-1 flex flex-col items-center py-3.5  hover:bg-white/10 transition-all duration-300 group rounded-l-xl relative overflow-hidden"
+          className="flex-1 flex flex-col items-center py-3 hover:bg-white/10 transition-all duration-300 group relative overflow-hidden"
         >
-          <div className="absolute inset-0 bg-gradient-to-t from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-l-xl"></div>
           <div className={`border rounded-lg px-3 py-1.5 mb-2 group-hover:scale-110 transition-all duration-300 ${badgeProps.bgColor} ${badgeProps.borderColor} ${badgeProps.glowColor} shadow-sm w-24 flex justify-center`}>
             <div className="flex items-center gap-1">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="12" height="12" className={badgeProps.textColor} fill="none">
@@ -267,11 +278,14 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
                 <path d="M7.26663 19.8262C8.76663 19.2506 9.00012 17.6366 9.00012 17.6366C9.00012 17.6366 7.73361 16.5982 6.23361 17.1738C4.73361 17.7494 4.50012 19.3634 4.50012 19.3634C4.50012 19.3634 5.76663 20.4018 7.26663 19.8262Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
                 <path d="M9.00012 17.6366C7.59501 16.4358 5.99957 14.0564 5.99957 11.7273C5.99957 10.7628 6.15445 9.84221 6.43571 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
               </svg>
-              <span className={`text-sm ${badgeProps.textColor}`}>{rating}</span>
+              <span className={`text-sm  ${badgeProps.textColor}`}>{rating}</span>
             </div>
           </div>
           <div className="text-xs text-white/80 font-medium tracking-wide">{badgeProps.label}</div>
         </button>
+
+        {/* Divider */}
+        <div className="w-px h-16 bg-gradient-to-b from-transparent via-white/40 to-transparent"></div>
 
         {/* Time Section - RIGHT */}
         <button 
@@ -279,25 +293,28 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
             e.stopPropagation();
             onTimeClick?.();
           }}
-          className="flex-1 flex flex-col items-center  py-3.5 hover:bg-white/10 transition-all duration-300 group rounded-r-xl relative overflow-hidden"
+          className="flex-1 flex flex-col items-center py-4 hover:bg-white/10 transition-all duration-300 group rounded-xl relative overflow-hidden"
         >
-          <div className="absolute inset-0 bg-gradient-to-t from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-r-xl"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
           <div className={`border rounded-lg px-3 py-1.5 mb-2 group-hover:scale-110 transition-all duration-300 shadow-sm w-24 flex justify-center ${
-            timeStatus.color === 'green' ? 'bg-gradient-to-r from-lime-500/20 to-green-600/20 border-lime-400/40 shadow-lime-500/20' :
-            timeStatus.color === 'orange' ? 'bg-gradient-to-r from-orange-500/20 to-amber-500/20 border-orange-400/40 shadow-orange-500/20' :
+            timeStatus.color === 'green' ? 'bg-gradient-to-r from-green-500/20 to-emerald-500/20 border-green-400/40 shadow-green-500/20' :
+            timeStatus.color === 'yellow' ? 'bg-gradient-to-r from-yellow-500/20 to-amber-500/20 border-yellow-400/40 shadow-yellow-500/20' :
+            timeStatus.color === 'orange' ? 'bg-gradient-to-r from-orange-500/20 to-red-500/20 border-orange-400/40 shadow-orange-500/20' :
             'bg-gradient-to-r from-red-500/20 to-rose-500/20 border-red-400/40 shadow-red-500/20'
           }`}>
             <div className="flex items-center gap-1">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="12" height="12" className={`${
-                timeStatus.color === 'green' ? 'text-lime-200' :
+                timeStatus.color === 'green' ? 'text-green-200' :
+                timeStatus.color === 'yellow' ? 'text-yellow-200' :
                 timeStatus.color === 'orange' ? 'text-orange-200' :
                 'text-red-200'
               }`} fill="none">
                 <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5"></circle>
                 <path d="M12 8V12L14 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
               </svg>
-              <span className={`text-sm ${
-                timeStatus.color === 'green' ? 'text-lime-200' :
+              <span className={`text-sm  ${
+                timeStatus.color === 'green' ? 'text-green-200' :
+                timeStatus.color === 'yellow' ? 'text-yellow-200' :
                 timeStatus.color === 'orange' ? 'text-orange-200' :
                 'text-red-200'
               }`}>
@@ -310,8 +327,8 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
           </div>
         </button>
       </div>
-    </div>
+  
   );
 };
 
-export default SmartBadgeRating;
+export default WorkerBadgeRating;
