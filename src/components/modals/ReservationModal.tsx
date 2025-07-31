@@ -2,7 +2,7 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { format } from 'date-fns';
+import { format, isSameDay, isAfter, parse } from 'date-fns';
 import { toast } from 'react-hot-toast';
 import useLoginModal from '@/app/hooks/useLoginModal';
 import useStripeCheckoutModal from '@/app/hooks/useStripeCheckoutModal';
@@ -38,7 +38,7 @@ const ReservationModal: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [note, setNote] = useState('');
   const [selectedEmployee, setSelectedEmployee] = useState<SelectedEmployee | null>(null);
-  const [selectedServiceState, setSelectedServiceState] = useState<SelectedService | null>(null);
+  const [selectedServices, setSelectedServices] = useState<SelectedService[]>([]);
   const [date, setDate] = useState<Date | null>(null);
   const [time, setTime] = useState('');
 
@@ -57,23 +57,77 @@ const ReservationModal: React.FC = () => {
     })) || [];
   }, [listing]);
 
-  const selectedService = useMemo(() => {
-    return selectedServiceState || (serviceId ? serviceOptions.find(s => s.value === serviceId) || null : null);
-  }, [serviceOptions, serviceId, selectedServiceState]);
+  // Initialize with serviceId if provided
+  useMemo(() => {
+    if (serviceId && serviceOptions.length > 0 && selectedServices.length === 0) {
+      const initialService = serviceOptions.find(s => s.value === serviceId);
+      if (initialService) {
+        setSelectedServices([initialService]);
+      }
+    }
+  }, [serviceId, serviceOptions, selectedServices.length]);
 
   const timeOptions = [
     '09:00', '10:00', '11:00', '12:00',
     '13:00', '14:00', '15:00', '16:00', '17:00'
   ];
 
-  const totalPrice = selectedService?.price || 0;
+  // Check if a time slot is in the past (only relevant for today)
+  const isTimeSlotDisabled = (timeSlot: string, checkDate?: Date) => {
+    const targetDate = checkDate || date;
+    if (!targetDate) return false;
+    
+    const today = new Date();
+    const isToday = isSameDay(targetDate, today);
+    
+    if (!isToday) return false; // If not today, no time restrictions
+    
+    // Parse the time slot and compare with current time
+    const [hours, minutes] = timeSlot.split(':').map(Number);
+    const slotTime = new Date();
+    slotTime.setHours(hours, minutes, 0, 0);
+    
+    // Add 1 hour buffer to current time to allow booking preparation
+    const currentTimeWithBuffer = new Date();
+    currentTimeWithBuffer.setHours(currentTimeWithBuffer.getHours() + 1);
+    
+    return slotTime <= currentTimeWithBuffer;
+  };
+
+  const totalPrice = selectedServices.reduce((sum, service) => sum + service.price, 0);
+
+  const toggleService = (service: SelectedService) => {
+    setSelectedServices(prev => {
+      const isSelected = prev.some(s => s.value === service.value);
+      if (isSelected) {
+        return prev.filter(s => s.value !== service.value);
+      } else {
+        return [...prev, service];
+      }
+    });
+  };
+
+  const isServiceSelected = (serviceValue: string) => {
+    return selectedServices.some(s => s.value === serviceValue);
+  };
+
+  // Check if current step requirements are met
+  const isStepComplete = () => {
+    switch (step) {
+      case 0: return selectedServices.length > 0;
+      case 1: return selectedEmployee !== null;
+      case 2: return date !== null;
+      case 3: return time !== '';
+      default: return true;
+    }
+  };
 
   const onBack = () => setStep((value) => value - 1);
   const onNext = () => setStep((value) => value + 1);
 
   const onSubmit = useCallback(() => {
     if (!currentUser) return loginModal.onOpen();
-    if (!date || !time || !selectedService || !selectedEmployee || !listing?.id) {
+    if (!date || !time || selectedServices.length === 0 || !selectedEmployee || !listing?.id) {
       toast.error('Please fill in all required fields');
       return;
     }
@@ -85,8 +139,13 @@ const ReservationModal: React.FC = () => {
       date,
       time,
       listingId: listing.id,
-      serviceId: selectedService.value,
-      serviceName: selectedService.label.split(' - ')[0],
+      serviceId: selectedServices[0].value, // Primary service for backward compatibility
+      serviceName: selectedServices[0].label.split(' - ')[0], // Primary service name
+      services: selectedServices.map(service => ({
+        serviceId: service.value,
+        serviceName: service.label.split(' - ')[0],
+        price: service.price
+      })),
       employeeId: selectedEmployee.value,
       employeeName: selectedEmployee.label,
       note,
@@ -96,32 +155,53 @@ const ReservationModal: React.FC = () => {
     stripeCheckoutModal.onOpen(reservationData);
     onClose();
     setIsLoading(false);
-  }, [totalPrice, date, time, listing, selectedService, selectedEmployee, currentUser, loginModal, stripeCheckoutModal, note, onClose]);
+  }, [totalPrice, date, time, listing, selectedServices, selectedEmployee, currentUser, loginModal, stripeCheckoutModal, note, onClose]);
+
+  // Reset state when modal closes
+  const handleClose = useCallback(() => {
+    setStep(0);
+    setNote('');
+    setSelectedEmployee(null);
+    setSelectedServices([]);
+    setDate(null);
+    setTime('');
+    onClose();
+  }, [onClose]);
 
   let bodyContent = (
     <div className="flex flex-col gap-6">
       <Heading
-        title="Which service are you interested in?"
-        subtitle="Choose one to continue."
+        title="Which services are you interested in?"
+        subtitle="Choose one or more services to continue."
       />
       <div className="grid grid-cols-2 gap-3">
         {serviceOptions.map(service => (
           <button
             key={service.value}
-            onClick={() => {
-              setSelectedServiceState(service);
-              setStep(1);
-            }}
-            className={`aspect-square p-4 rounded-xl border-2 transition-all duration-200 flex flex-col items-center justify-center text-center hover:shadow-md ${
-              selectedService?.value === service.value 
+            onClick={() => toggleService(service)}
+            className={`aspect-square p-4 rounded-xl border-2 transition-all duration-200 flex flex-col items-center justify-center text-center hover:shadow-md relative ${
+              isServiceSelected(service.value)
                 ? 'border-blue-500 bg-blue-50 shadow-md' 
                 : 'border-gray-200 hover:border-gray-300 bg-white'
             }`}
           >
+            {/* Checkbox indicator */}
+            <div className={`absolute top-2 right-2 w-5 h-5 rounded border-2 flex items-center justify-center transition-all duration-200 ${
+              isServiceSelected(service.value)
+                ? 'bg-blue-500 border-blue-500'
+                : 'border-gray-300 bg-white'
+            }`}>
+              {isServiceSelected(service.value) && (
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M2 6L5 9L10 3" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              )}
+            </div>
+
             <div className="flex flex-col items-center gap-2">
               {/* Service Icon */}
               <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                selectedService?.value === service.value 
+                isServiceSelected(service.value)
                   ? 'bg-blue-100 text-blue-600' 
                   : 'bg-gray-100 text-gray-600'
               }`}>
@@ -135,12 +215,12 @@ const ReservationModal: React.FC = () => {
               {/* Service Name */}
               <div className="flex flex-col gap-1">
                 <span className={`text-sm font-medium ${
-                  selectedService?.value === service.value ? 'text-blue-900' : 'text-gray-900'
+                  isServiceSelected(service.value) ? 'text-blue-900' : 'text-gray-900'
                 }`}>
                   {service.label.split(' - ')[0]}
                 </span>
                 <span className={`text-xs font-semibold ${
-                  selectedService?.value === service.value ? 'text-blue-600' : 'text-gray-600'
+                  isServiceSelected(service.value) ? 'text-blue-600' : 'text-gray-600'
                 }`}>
                   ${service.price}
                 </span>
@@ -149,6 +229,25 @@ const ReservationModal: React.FC = () => {
           </button>
         ))}
       </div>
+      
+      {/* Selected services summary */}
+      {selectedServices.length > 0 && (
+        <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
+          <div className="flex justify-between items-center">
+            <div>
+              <p className="text-sm font-medium text-blue-900">
+                {selectedServices.length} service{selectedServices.length > 1 ? 's' : ''} selected
+              </p>
+              <p className="text-xs text-blue-700">
+                {selectedServices.map(s => s.label.split(' - ')[0]).join(', ')}
+              </p>
+            </div>
+            <div className="text-right">
+              <p className="text-lg font-bold text-blue-600">${totalPrice}</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 
@@ -163,10 +262,7 @@ const ReservationModal: React.FC = () => {
           {employeeOptions.map(emp => (
             <button
               key={emp.value}
-              onClick={() => {
-                setSelectedEmployee(emp);
-                setStep(2);
-              }}
+              onClick={() => setSelectedEmployee(emp)}
               className={`aspect-square p-4 rounded-xl border-2 transition-all duration-200 flex flex-col items-center justify-center text-center hover:shadow-md ${
                 selectedEmployee?.value === emp.value 
                   ? 'border-blue-500 bg-blue-50 shadow-md' 
@@ -206,13 +302,21 @@ const ReservationModal: React.FC = () => {
         />
         <Calendar
           value={date || new Date()}
-          onChange={(value) => setDate(value)}
+          onChange={(value) => {
+            setDate(value);
+            // Clear selected time if it becomes invalid for the new date
+            if (time && isTimeSlotDisabled(time, value)) {
+              setTime('');
+            }
+          }}
         />
       </div>
     );
   }
 
   if (step === 3) {
+    const isToday = date && isSameDay(date, new Date());
+    
     bodyContent = (
       <div className="flex flex-col gap-6">
         <Heading
@@ -220,25 +324,39 @@ const ReservationModal: React.FC = () => {
           subtitle="Choose your preferred time slot."
         />
         <div className="grid grid-cols-3 gap-3">
-          {timeOptions.map(t => (
-            <button
-              key={t}
-              onClick={() => {
-                setTime(t);
-                setStep(4);
-              }}
-              className={`aspect-square p-3 rounded-xl border-2 transition-all duration-200 flex items-center justify-center hover:shadow-md ${
-                time === t 
-                  ? 'border-blue-500 bg-blue-50 text-blue-900 shadow-md' 
-                  : 'border-gray-200 hover:border-gray-300 bg-white text-gray-700'
-              }`}
-            >
-              <span className="font-medium text-sm">
-                {format(new Date(`2021-01-01T${t}`), 'hh:mm a')}
-              </span>
-            </button>
-          ))}
+          {timeOptions.map(t => {
+            const isDisabled = isTimeSlotDisabled(t);
+            const isSelected = time === t;
+            
+            return (
+              <button
+                key={t}
+                onClick={() => !isDisabled && setTime(t)}
+                disabled={isDisabled}
+                className={`aspect-square p-3 rounded-xl border-2 transition-all duration-200 flex items-center justify-center ${
+                  isDisabled
+                    ? 'border-gray-200 bg-gray-50 text-gray-300 cursor-not-allowed'
+                    : isSelected
+                      ? 'border-blue-500 bg-blue-50 text-blue-900 shadow-md' 
+                      : 'border-gray-200 hover:border-gray-300 bg-white text-gray-700 hover:shadow-md cursor-pointer'
+                }`}
+              >
+                <span className={`font-medium text-sm ${isDisabled ? 'line-through' : ''}`}>
+                  {format(new Date(`2021-01-01T${t}`), 'hh:mm a')}
+                </span>
+              </button>
+            );
+          })}
         </div>
+        
+        {/* Helper text for time restrictions */}
+        {isToday && (
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-3">
+            <p className="text-sm text-amber-700 text-center">
+              <span className="font-medium">Today's booking:</span> Times shown with 1 hour advance notice required
+            </p>
+          </div>
+        )}
       </div>
     );
   }
@@ -255,9 +373,16 @@ const ReservationModal: React.FC = () => {
         <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
           <h4 className="font-medium text-gray-900 mb-3">Booking Summary</h4>
           <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-gray-600">Service:</span>
-              <span className="font-medium">{selectedService?.label.split(' - ')[0]}</span>
+            <div className="flex justify-between items-start">
+              <span className="text-gray-600">Services:</span>
+              <div className="text-right">
+                {selectedServices.map((service, index) => (
+                  <div key={service.value} className="flex justify-between gap-4 mb-1">
+                    <span className="font-medium">{service.label.split(' - ')[0]}</span>
+                    <span className="font-medium">${service.price}</span>
+                  </div>
+                ))}
+              </div>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Professional:</span>
@@ -295,7 +420,7 @@ const ReservationModal: React.FC = () => {
     <Modal
       id="reservation-modal"
       modalContentId="reservation-modal-content"
-      disabled={isLoading}
+      disabled={isLoading || !isStepComplete()}
       isOpen={isOpen}
       title="Book Appointment"
       actionLabel={step === 4 ? "Reserve Now" : "Next"}
@@ -303,7 +428,7 @@ const ReservationModal: React.FC = () => {
       onSubmit={step === 4 ? onSubmit : onNext}
       secondaryActionLabel={step === 0 ? undefined : "Back"}
       secondaryAction={step === 0 ? undefined : onBack}
-      onClose={onClose}
+      onClose={handleClose}
       body={bodyContent}
       className="w-full md:w-4/6 lg:w-3/6 xl:w-2/5 my-0 mx-auto rounded-t-3xl"
     />
