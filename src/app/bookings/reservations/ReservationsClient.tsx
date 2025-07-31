@@ -4,9 +4,8 @@ import { toast } from "react-hot-toast";
 import axios from "axios";
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
-import { categories } from '@/components/Categories';
 import { SafeReservation, SafeUser } from "@/app/types";
-import ListingCard from "@/components/listings/ListingCard";
+import ReserveCard from "@/components/listings/ReserveCard";
 import Heading from "@/components/Heading";
 import Pagination from "@/components/pagination/Pagination";
 
@@ -56,11 +55,11 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
 
   return (
     <div className="pt-2 flex-1">
-        <div className="px-4"> 
-      <Heading
-        title={`Reservations (${totalResults})`}
-        subtitle="Bookings received for your listings"
-      />
+      <div className="px-4"> 
+        <Heading
+          title={`Reservations (${totalResults})`}
+          subtitle="Bookings received for your listings"
+        />
       </div>
       <div 
         className="
@@ -75,18 +74,17 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
         px-4
         "
       >
-        {reservations.map((reservation: any) => (
-          <ListingCard
+        {reservations.map((reservation: SafeReservation) => (
+          <ReserveCard
             key={reservation.id}
-            data={reservation.listing}
             reservation={reservation}
-            actionId={reservation.id}
-            disabled={processingId === reservation.id}
+            listing={reservation.listing}
             currentUser={currentUser}
-            categories={categories}
+            disabled={processingId === reservation.id}
             onAccept={() => onAccept(reservation.id)}
             onDecline={() => onDecline(reservation.id)}
             showAcceptDecline={true}
+            onCardClick={() => router.push(`/listings/${reservation.listing.id}`)}
           />
         ))}
       </div>

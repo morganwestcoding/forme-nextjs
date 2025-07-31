@@ -1,87 +1,46 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { format } from 'date-fns';
-import { SafeListing, SafeReservation, SafeUser, SafeService } from '@/app/types';
-import { Heart, Clock, Star, User, Scissors, Droplet, SprayCan, Waves, Palette, Flower, Dumbbell } from 'lucide-react';
+import { SafeListing, SafeUser } from '@/app/types';
+import { Star, Scissors, Droplet, SprayCan, Waves, Palette, Flower, Dumbbell } from 'lucide-react';
 import useReservationModal from '@/app/hooks/useReservationModal';
 import SmartBadgeRating from './SmartBadgeRating';
-import Avatar from '../ui/avatar';
 
 interface ListingCardProps {
   data: SafeListing;
-  reservation?: SafeReservation;
   currentUser?: SafeUser | null;
   categories?: { label: string; color: string }[];
-  actionId?: string;
-  actionLabel?: string;
-  onAction?: (id: string) => void;
-  onAccept?: () => void;
-  onDecline?: () => void;
-  disabled?: boolean;
-  showAcceptDecline?: boolean;
 }
 
 const ListingCard: React.FC<ListingCardProps> = ({
   data,
-  reservation,
   currentUser,
   categories,
-  actionId,
-  onAccept,
-  onDecline,
-  disabled,
-  showAcceptDecline,
 }) => {
   const router = useRouter();
   const reservationModal = useReservationModal();
 
-  const handleOpenReservation = () => {
-    reservationModal.onOpen(data, currentUser);
+  const getCategoryConfig = (category: string) => {
+    const configs: { [key: string]: { icon: React.ReactElement } } = {
+      'Spa': { icon: <Waves className="w-3 h-3" /> },
+      'Beauty': { icon: <Palette className="w-3 h-3" /> },
+      'Barber': { icon: <Scissors className="w-3 h-3" /> },
+      'Fitness': { icon: <Dumbbell className="w-3 h-3" /> },
+      'Salon': { icon: <SprayCan className="w-3 h-3" /> },
+      'Wellness': { icon: <Flower className="w-3 h-3" /> },
+      'Skincare': { icon: <Droplet className="w-3 h-3" /> }
+    };
+    return configs[category] || { icon: <Star className="w-3 h-3" /> };
   };
 
-const getCategoryConfig = (category: string) => {
-  const configs: { [key: string]: { icon: React.ReactElement } } = {
-    'Spa': { icon: <Waves className="w-3 h-3" /> },
-    'Beauty': { icon: <Palette className="w-3 h-3" /> },
-    'Barber': { icon: <Scissors className="w-3 h-3" /> },
-    'Fitness': { icon: <Dumbbell className="w-3 h-3" /> },
-    'Salon': { icon: <SprayCan className="w-3 h-3" /> },
-    'Wellness': { icon: <Flower className="w-3 h-3" /> },
-    'Skincare': { icon: <Droplet className="w-3 h-3" /> }
-  };
-  return configs[category] || { icon: <Star className="w-3 h-3" /> };
-};
   const [city, state] = data.location?.split(',').map(s => s.trim()) || [];
-
-  const getStatusBadgeStyles = (status: string) => {
-    switch (status) {
-      case 'accepted':
-        return 'bg-green-100 text-green-800';
-      case 'declined':
-        return 'bg-red-100 text-red-800';
-      default:
-        return 'bg-yellow-100 text-yellow-800';
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'accepted':
-        return 'accepted';
-      case 'declined':
-        return 'declined';
-      default:
-        return '...pending';
-    }
-  };
 
   return (
     <div
       onClick={() => router.push(`/listings/${data.id}`)}
-      className="cursor-pointer bg-white rounded-2xl shadow-lg hover:shadow-2xl overflow-hidden relative"
+      className="cursor-pointer bg-white rounded-2xl shadow-lg hover:shadow-2xl overflow-hidden relative transition-all duration-200"
     >
       <div className="absolute inset-0 z-0">
         <Image
@@ -95,14 +54,14 @@ const getCategoryConfig = (category: string) => {
 
       <div className="relative z-10">
         <div className="relative h-[345px] overflow-hidden">
-<div className="absolute top-4 left-4 z-20">
-  <div className="bg-white/90 backdrop-blur-md border border-white/30 rounded-lg text-center w-24 py-2 shadow-lg hover:bg-white/30 transition-all duration-300">
-    <div className="flex items-center justify-center gap-1.5">
-      {getCategoryConfig(data.category).icon}
-      <span className="text-xs font-normal text-black tracking-wide">{data.category}</span>
-    </div>
-  </div>
-</div>
+          <div className="absolute top-4 left-4 z-20">
+            <div className="bg-white/90 backdrop-blur-md border border-white/30 rounded-lg text-center w-24 py-2 shadow-lg hover:bg-white/30 transition-all duration-300">
+              <div className="flex items-center justify-center gap-1.5">
+                {getCategoryConfig(data.category).icon}
+                <span className="text-xs font-normal text-black tracking-wide">{data.category}</span>
+              </div>
+            </div>
+          </div>
 
           <div className="absolute bottom-5 left-5 right-5 text-white z-20">
             <div className="flex items-center space-x-2 mb-1">
@@ -115,118 +74,37 @@ const getCategoryConfig = (category: string) => {
             <p className="text-xs drop-shadow-md font-thin flex items-center mb-3">
               {city}, {state} • 2.3 miles away
             </p>
-<SmartBadgeRating 
-  rating={data.rating || 4.7}
-  isTrending={data.isTrending || false}
-  onRatingClick={() => {
-    console.log('Rating clicked');
-  }}
-  onTimeClick={() => {
-    console.log('Hours clicked');
-  }}
-storeHours={data.storeHours}
-/>
+            <SmartBadgeRating 
+              rating={data.rating || 4.7}
+              isTrending={data.isTrending || false}
+              onRatingClick={() => {
+                console.log('Rating clicked');
+              }}
+              onTimeClick={() => {
+                console.log('Hours clicked');
+              }}
+              storeHours={data.storeHours}
+            />
           </div>
         </div>
 
         <div className="px-5 pb-4 pt-2 -mt-3">
-        <button
-        onClick={(e) => {
-          e.stopPropagation();
-          reservationModal.onOpen(data, currentUser);}}
-      className="w-full bg-[#60A5FA]/50 backdrop-blur-md text-white p-3 rounded-xl
-      flex items-center justify-center hover:bg-white/10 transition-all
-      shadow-lg border border-white/10"
->
-              <div className="flex items-center text-center gap-3">
-                <div className="flex flex-col items-center text-center">
-                  <span className="font-medium text-sm">Reserve</span>
-                </div>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              reservationModal.onOpen(data, currentUser);
+            }}
+            className="w-full bg-[#60A5FA]/50 backdrop-blur-md text-white p-3 rounded-xl
+            flex items-center justify-center hover:bg-white/10 transition-all
+            shadow-lg border border-white/10"
+          >
+            <div className="flex items-center text-center gap-3">
+              <div className="flex flex-col items-center text-center">
+                <span className="font-medium text-sm">Reserve</span>
               </div>
-            </button>
+            </div>
+          </button>
         </div>
-
-        {reservation && (
-          <div className="p-4 flex flex-col gap-4 backdrop-blur-md bg-black/40 text-white">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Avatar src={reservation.user.image ?? undefined} />
-                <div>
-                  <h3 className="font-medium">{reservation.user.name}</h3>
-                  <p className="text-sm text-gray-300">{format(new Date(reservation.date), 'PP')}</p>
-                </div>
-              </div>
-              <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusBadgeStyles(reservation.status)}`}>
-                {getStatusText(reservation.status)}
-              </span>
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              <div className="bg-white/10 p-3 rounded-lg">
-                <span className="text-xs text-gray-300 block mb-1">Service</span>
-                <span className="font-medium text-sm">{reservation.serviceName}</span>
-              </div>
-              <div className="bg-white/10 p-3 rounded-lg">
-                <span className="text-xs text-gray-300 block mb-1">Time</span>
-                <span className="font-medium text-sm">{reservation.time}</span>
-              </div>
-              <div className="bg-white/10 p-3 rounded-lg">
-                <span className="text-xs text-gray-300 block mb-1">Employee</span>
-                <span className="font-medium text-sm">
-                  {data.employees?.find(emp => emp.id === reservation.employeeId)?.fullName || 'Not assigned'}
-                </span>
-              </div>
-              <div className="bg-white/10 p-3 rounded-lg">
-                <span className="text-xs text-gray-300 block mb-1">Date</span>
-                <span className="font-medium text-sm">{format(new Date(reservation.date), 'MMM d, yyyy')}</span>
-              </div>
-            </div>
-
-            {reservation.note && (
-              <div className="bg-white/10 p-3 rounded-lg">
-                <span className="text-xs text-gray-300 block mb-1">Note</span>
-                <p className="text-sm">{reservation.note}</p>
-              </div>
-            )}
-
-            <div className="flex justify-between items-center pt-2 border-t border-white/10">
-              <span className="text-gray-300 text-sm">Total</span>
-              <span className="font-semibold text-base">${reservation.totalPrice}</span>
-            </div>
-            {showAcceptDecline && (
-  <div className="p-4 flex justify-between gap-4">
-    <button
-      disabled={disabled}
-      onClick={(e) => {
-        e.stopPropagation();
-        onAccept?.();
-      }}
-      className={`flex-1 py-2 rounded-xl text-sm font-medium transition ${
-        disabled
-          ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
-          : 'bg-green-500 hover:bg-green-600 text-white'
-      }`}
-    >
-      Accept
-    </button>
-    <button
-      disabled={disabled}
-      onClick={(e) => {
-        e.stopPropagation();
-        onDecline?.();
-      }}
-      className={`flex-1 py-2 rounded-xl text-sm font-medium transition ${
-        disabled
-          ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
-          : 'bg-red-500 hover:bg-red-600 text-white'
-      }`}
-    >
-      Decline
-    </button>
-  </div>
-)}
-
-          </div>
-        )}
       </div>
     </div>
   );
