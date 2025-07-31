@@ -7,22 +7,15 @@ import { useRouter } from "next/navigation";
 import { SafeReservation, SafeUser } from "@/app/types";
 import ReserveCard from "@/components/listings/ReserveCard";
 import Heading from "@/components/Heading";
-import Pagination from "@/components/pagination/Pagination";
 
 interface ReservationsClientProps {
   reservations: SafeReservation[],
   currentUser?: SafeUser | null,
-  currentPage: number;
-  totalPages: number;
-  totalResults: number;
 }
 
 const ReservationsClient: React.FC<ReservationsClientProps> = ({
   reservations,
   currentUser,
-  currentPage,
-  totalPages,
-  totalResults
 }) => {
   const router = useRouter();
   const [processingId, setProcessingId] = useState('');
@@ -57,7 +50,7 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
     <div className="pt-2 flex-1">
       <div className="px-4"> 
         <Heading
-          title={`Reservations (${totalResults})`}
+          title={`Reservations (${reservations.length})`}
           subtitle="Bookings received for your listings"
         />
       </div>
@@ -72,6 +65,7 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
         2xl:grid-cols-3
         gap-4
         px-4
+        pb-8
         "
       >
         {reservations.map((reservation: SafeReservation) => (
@@ -88,16 +82,6 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
           />
         ))}
       </div>
-      
-      {totalPages > 1 && (
-        <div className="mt-10">
-          <Pagination 
-            currentPage={currentPage} 
-            totalPages={totalPages}
-            totalResults={totalResults}
-          />
-        </div>
-      )}
     </div>
   );
 }

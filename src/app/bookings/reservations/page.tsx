@@ -24,15 +24,10 @@ const ReservationsPage = async ({ searchParams }: ReservationsPageProps) => {
     );
   }
 
-  const currentPage = Number(searchParams?.page) || 1;
-  const ITEMS_PER_PAGE = 3;
 
   const reservations = await getReservations({ authorId: currentUser.id });
   
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
-  const paginatedReservations = reservations.slice(startIndex, endIndex);
-  const totalPages = Math.ceil(reservations.length / ITEMS_PER_PAGE);
+  
 
   if (reservations.length === 0) {
     return (
@@ -48,11 +43,8 @@ const ReservationsPage = async ({ searchParams }: ReservationsPageProps) => {
   return (
     <ClientOnly>
       <ReservationsClient
-        reservations={paginatedReservations}
+   reservations={reservations}
         currentUser={currentUser}
-        currentPage={currentPage}
-        totalPages={totalPages}
-        totalResults={reservations.length}
       />
     </ClientOnly>
   );
