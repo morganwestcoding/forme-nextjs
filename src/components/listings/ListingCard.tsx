@@ -96,10 +96,10 @@ const getCategoryConfig = (category: string) => {
       <div className="relative z-10">
         <div className="relative h-[345px] overflow-hidden">
 <div className="absolute top-4 left-4 z-20">
-  <div className="bg-white/20 backdrop-blur-md border border-white/30 rounded-lg text-center px-3 py-2 shadow-lg hover:bg-white/30 transition-all duration-300">
+  <div className="bg-white/90 backdrop-blur-md border border-white/30 rounded-lg text-center w-24 py-2 shadow-lg hover:bg-white/30 transition-all duration-300">
     <div className="flex items-center justify-center gap-1.5">
       {getCategoryConfig(data.category).icon}
-      <span className="text-xs font-semibold text-white tracking-wide">{data.category}</span>
+      <span className="text-xs font-normal text-black tracking-wide">{data.category}</span>
     </div>
   </div>
 </div>
@@ -140,7 +140,7 @@ storeHours={data.storeHours}
 >
               <div className="flex items-center text-center gap-3">
                 <div className="flex flex-col items-center text-center">
-                  <span className="font-medium text-sm">Explore Services</span>
+                  <span className="font-medium text-sm">Reserve</span>
                 </div>
               </div>
             </button>

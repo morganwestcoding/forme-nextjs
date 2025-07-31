@@ -75,10 +75,10 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
         <div className="relative h-[345px] overflow-hidden">
           {/* Category badge - top left (same as ListingCard) */}
           <div className="absolute top-4 left-4 z-20">
-            <div className="bg-white/20 backdrop-blur-md border border-white/30 rounded-xl text-center px-3 py-2 shadow-lg hover:bg-white/30 transition-all duration-300">
+            <div className="bg-white/90 backdrop-blur-md border border-white/30 rounded-xl text-center w-24 py-2 shadow-lg hover:bg-white/30 transition-all duration-300">
               <div className="flex items-center justify-center gap-1.5">
                 {getCategoryConfig(service.category).icon}
-                <span className="text-xs font-semibold text-white tracking-wide">{service.category}</span>
+                <span className="text-xs font-normal text-black tracking-wide">{service.category}</span>
               </div>
             </div>
           </div>
@@ -122,7 +122,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
           >
             <div className="flex items-center text-center gap-3">
               <div className="flex flex-col items-center text-center">
-                <span className="font-medium text-sm">View Details</span>
+                <span className="font-medium text-sm">Reserve</span>
               </div>
             </div>
           </button>

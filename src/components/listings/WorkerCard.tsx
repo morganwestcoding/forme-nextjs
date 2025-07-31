@@ -89,10 +89,10 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
         <div className="relative h-[345px] overflow-hidden">
           {/* Category badge - top left (same as other cards) */}
           <div className="absolute top-4 left-6 z-20">
-            <div className="bg-white/20 backdrop-blur-md border border-white/30 rounded-lg text-center px-3 py-2 shadow-lg hover:bg-white/30 transition-all duration-300">
+            <div className="bg-white/90 backdrop-blur-md border border-white/30 rounded-xl text-center w-24 py-2 shadow-lg hover:bg-white/30 transition-all duration-300">
               <div className="flex items-center justify-center gap-1.5">
                 {getCategoryConfig(data.category).icon}
-                <span className="text-xs font-semibold text-white tracking-wide">{data.category}</span>
+                <span className="text-xs font-normal text-black tracking-wide">{data.category}</span>
               </div>
             </div>
           </div>
@@ -108,7 +108,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
               className={`p-2.5 rounded-full border border-white/20 backdrop-blur-md transition-all duration-200 ${
                 isFollowing 
                   ? 'bg-blue-500/30 text-blue-200 border-blue-300/30' 
-                  : 'bg-white/10 text-white hover:bg-white/30'
+                  : 'bg-white/90 text-black hover:bg-white/30'
               }`}
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" color="currentColor" fill="none">
@@ -125,7 +125,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
                 e.stopPropagation();
                 // Handle like functionality
               }}
-              className="p-2.5 rounded-full border border-white/20 backdrop-blur-md transition-all duration-200 bg-white/10 text-white hover:bg-white/30 hover:text-red-300"
+              className="p-2.5 rounded-full border border-white/20 backdrop-blur-md transition-all duration-200 bg-white/90 text-black hover:bg-white/30 hover:text-red-300"
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" color="currentColor" fill="none">
                 <path d="M10.4107 19.9677C7.58942 17.858 2 13.0348 2 8.69444C2 5.82563 4.10526 3.5 7 3.5C8.5 3.5 10 4 12 6C14 4 15.5 3.5 17 3.5C19.8947 3.5 22 5.82563 22 8.69444C22 13.0348 16.4106 17.858 13.5893 19.9677C12.6399 20.6776 11.3601 20.6776 10.4107 19.9677Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -160,7 +160,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
             <div className="flex items-center text-center gap-3">
               <div className="flex flex-col items-center text-center">
                 <span className="font-medium text-sm">
-                  {isFollowing ? 'Following' : 'Follow'}
+               Reserve
                 </span>
               </div>
             </div>
