@@ -65,7 +65,7 @@ const UserButton: React.FC<UserButtonProps> = ({
 
   const buttonClass = noBg
     ? "flex items-center justify-start cursor-pointer outline-none touch-manipulation"
-    : "w-44 py-2.5 mt-1 px-4 bg-neutral-100 flex items-center justify-start mb-6 cursor-pointer rounded-xl border hover:bg-[#DFE2E2] transition-all outline-none";
+    : "w-44 py-2.5 mt-1 px-4 bg-blue-50 flex items-center justify-start mb-6 cursor-pointer rounded-xl border border-[#60A5FA] hover:bg-[#DFE2E2] transition-all outline-none";
 
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
