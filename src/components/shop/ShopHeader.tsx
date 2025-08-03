@@ -156,8 +156,8 @@ const ShopHeader: React.FC<ShopHeaderProps> = ({
     <path d="M16.4249 4.60509L17.4149 3.6151C18.2351 2.79497 19.5648 2.79497 20.3849 3.6151C21.205 4.43524 21.205 5.76493 20.3849 6.58507L19.3949 7.57506M16.4249 4.60509L9.76558 11.2644C9.25807 11.772 8.89804 12.4078 8.72397 13.1041L8 16L10.8959 15.276C11.5922 15.102 12.228 14.7419 12.7356 14.2344L19.3949 7.57506M16.4249 4.60509L19.3949 7.57506" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path>
     <path d="M18.9999 13.5C18.9999 16.7875 18.9999 18.4312 18.092 19.5376C17.9258 19.7401 17.7401 19.9258 17.5375 20.092C16.4312 21 14.7874 21 11.4999 21H11C7.22876 21 5.34316 21 4.17159 19.8284C3.00003 18.6569 3 16.7712 3 13V12.5C3 9.21252 3 7.56879 3.90794 6.46244C4.07417 6.2599 4.2599 6.07417 4.46244 5.90794C5.56879 5 7.21252 5 10.5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
 </svg> <span className="text-sm">Create</span>
-              </button>
-            
+            </button>
+          
             {isDropdownOpen && (
               <div 
                 ref={dropdownRef}
@@ -190,43 +190,104 @@ const ShopHeader: React.FC<ShopHeaderProps> = ({
         )}
       </div>
 
-      {/* Tabs */}
-      <div className="flex mb-6 border-b border-gray-200">
-        <button 
-          onClick={() => handleFilterChange('featured')}
-          className={`pb-4 flex text-sm items-center gap-2 mr-6 ${filters.category === 'featured' ? 'text-[#60A5FA] border-b-2 border-[#60A5FA]' : 'text-gray-500'}`}
-        >
-          <Sparkles className="w-5 h-5" />
-          <span>Featured</span>
-        </button>
-        <button 
-          onClick={() => handleFilterChange('trending')}
-          className={`pb-4 flex items-center text-sm gap-2 mr-6 ${filters.category === 'trending' ? 'text-[#60A5FA] border-b-2 border-[#60A5FA]' : 'text-gray-500'}`}
-        >
-          <TrendingUp className="w-5 h-5" />
-          <span>Trending</span>
-        </button>
-        <button 
-          onClick={() => handleFilterChange('products')}
-          className={`pb-4 flex text-sm items-center gap-2 mr-6 ${filters.category === 'products' ? 'text-[#60A5FA] border-b-2 border-[#60A5FA]' : 'text-gray-500'}`}
-        >
-          <ShoppingBag className="w-5 h-5" />
-          <span>Products</span>
-        </button>
-        <button 
-          onClick={() => handleFilterChange('shops')}
-          className={`pb-4 flex items-center text-sm gap-2 mr-6 ${filters.category === 'shops' ? 'text-[#60A5FA] border-b-2 border-[#60A5FA]' : 'text-gray-500'}`}
-        >
-          <Store className="w-5 h-5" />
-          <span>Shops</span>
-        </button>
-        <button 
-          onClick={() => handleFilterChange('categories')}
-          className={`pb-4 flex items-center text-sm gap-2 ${filters.category === 'categories' ? 'text-[#60A5FA] border-b-2 border-[#60A5FA]' : 'text-gray-500'}`}
-        >
-          <Layers className="w-5 h-5" />
-          <span>Categories</span>
-        </button>
+      {/* Centered Tabs */}
+      <div className="flex mb-6 border-b border-gray-200 relative justify-center">
+        <div className="flex gap-8">
+          <button 
+            onClick={() => handleFilterChange('featured')}
+            className={`pb-4 pt-2 px-4 flex text-sm items-center justify-center gap-2 transition-all duration-150 relative ${
+              filters.category === 'featured' 
+                ? 'font-medium text-[#60A5FA]' 
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            <Sparkles className={`w-5 h-5 transition-transform duration-150 ${
+              filters.category === 'featured' ? 'transform -translate-y-px' : ''
+            }`} />
+            <span className={`transition-transform duration-150 ${
+              filters.category === 'featured' ? 'transform -translate-y-px' : ''
+            }`}>Featured</span>
+            {filters.category === 'featured' && (
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#60A5FA]" />
+            )}
+          </button>
+          
+          <button 
+            onClick={() => handleFilterChange('trending')}
+            className={`pb-4 pt-2 px-4 flex items-center justify-center text-sm gap-2 transition-all duration-150 relative ${
+              filters.category === 'trending' 
+                ? 'font-medium text-[#60A5FA]' 
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            <TrendingUp className={`w-5 h-5 transition-transform duration-150 ${
+              filters.category === 'trending' ? 'transform -translate-y-px' : ''
+            }`} />
+            <span className={`transition-transform duration-150 ${
+              filters.category === 'trending' ? 'transform -translate-y-px' : ''
+            }`}>Trending</span>
+            {filters.category === 'trending' && (
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#60A5FA]" />
+            )}
+          </button>
+          
+          <button 
+            onClick={() => handleFilterChange('products')}
+            className={`pb-4 pt-2 px-4 flex text-sm items-center justify-center gap-2 transition-all duration-150 relative ${
+              filters.category === 'products' 
+                ? 'font-medium text-[#60A5FA]' 
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            <ShoppingBag className={`w-5 h-5 transition-transform duration-150 ${
+              filters.category === 'products' ? 'transform -translate-y-px' : ''
+            }`} />
+            <span className={`transition-transform duration-150 ${
+              filters.category === 'products' ? 'transform -translate-y-px' : ''
+            }`}>Products</span>
+            {filters.category === 'products' && (
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#60A5FA]" />
+            )}
+          </button>
+          
+          <button 
+            onClick={() => handleFilterChange('shops')}
+            className={`pb-4 pt-2 px-4 flex items-center justify-center text-sm gap-2 transition-all duration-150 relative ${
+              filters.category === 'shops' 
+                ? 'font-medium text-[#60A5FA]' 
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            <Store className={`w-5 h-5 transition-transform duration-150 ${
+              filters.category === 'shops' ? 'transform -translate-y-px' : ''
+            }`} />
+            <span className={`transition-transform duration-150 ${
+              filters.category === 'shops' ? 'transform -translate-y-px' : ''
+            }`}>Shops</span>
+            {filters.category === 'shops' && (
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#60A5FA]" />
+            )}
+          </button>
+          
+          <button 
+            onClick={() => handleFilterChange('categories')}
+            className={`pb-4 pt-2 px-4 flex items-center justify-center text-sm gap-2 transition-all duration-150 relative ${
+              filters.category === 'categories' 
+                ? 'font-medium text-[#60A5FA]' 
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            <Layers className={`w-5 h-5 transition-transform duration-150 ${
+              filters.category === 'categories' ? 'transform -translate-y-px' : ''
+            }`} />
+            <span className={`transition-transform duration-150 ${
+              filters.category === 'categories' ? 'transform -translate-y-px' : ''
+            }`}>Categories</span>
+            {filters.category === 'categories' && (
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#60A5FA]" />
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );
