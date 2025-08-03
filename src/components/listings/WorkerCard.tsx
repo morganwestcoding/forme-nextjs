@@ -128,41 +128,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
             </div>
           </div>
 
-          {/* Action buttons - top right */}
-          <div className="absolute top-4 right-6 flex gap-2 z-20">
-            {/* Follow/Add User Button */}
-            <button 
-              onClick={(e) => {
-                e.stopPropagation();
-                handleFollow();
-              }}
-              className={`p-2.5 rounded-full border border-white/20 backdrop-blur-md transition-all duration-200 ${
-                isFollowing 
-                  ? 'bg-blue-500/30 text-blue-200 border-blue-300/30' 
-                  : 'bg-white/90 text-black hover:bg-white/30'
-              }`}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" color="currentColor" fill="none">
-                <path d="M12 7.5C12 9.433 10.433 11 8.5 11C6.567 11 5 9.433 5 7.5C5 5.567 6.567 4 8.5 4C10.433 4 12 5.567 12 7.5Z" stroke="currentColor" strokeWidth="1.5"></path>
-                <path d="M13.5 11C15.433 11 17 9.433 17 7.5C17 5.567 15.433 4 13.5 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"></path>
-                <path d="M13.1429 20H3.85714C2.83147 20 2 19.2325 2 18.2857C2 15.9188 4.07868 14 6.64286 14H10.3571C11.4023 14 12.3669 14.3188 13.1429 14.8568" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-                <path d="M19 14V20M22 17L16 17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"></path>
-              </svg>
-            </button>
 
-            {/* Like/Heart Button */}
-            <button 
-              onClick={(e) => {
-                e.stopPropagation();
-                // Handle like functionality
-              }}
-              className="p-2.5 rounded-full border border-white/20 backdrop-blur-md transition-all duration-200 bg-white/90 text-black hover:bg-white/30 hover:text-red-300"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" color="currentColor" fill="none">
-                <path d="M10.4107 19.9677C7.58942 17.858 2 13.0348 2 8.69444C2 5.82563 4.10526 3.5 7 3.5C8.5 3.5 10 4 12 6C14 4 15.5 3.5 17 3.5C19.8947 3.5 22 5.82563 22 8.69444C22 13.0348 16.4106 17.858 13.5893 19.9677C12.6399 20.6776 11.3601 20.6776 10.4107 19.9677Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </button>
-          </div>
 
           {/* Main content at bottom with SmartBadgeWorker */}
           <div className="absolute bottom-5 left-5 right-5 text-white z-20">
