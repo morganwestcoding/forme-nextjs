@@ -123,7 +123,28 @@ const ReservationModal: React.FC = () => {
   };
 
   const onBack = () => setStep((value) => value - 1);
-  const onNext = () => setStep((value) => value + 1);
+  
+  const onNext = () => {
+    if (!isStepComplete()) {
+      // Show specific error messages for each step
+      switch (step) {
+        case 0:
+          toast.error('Please select at least one service');
+          break;
+        case 1:
+          toast.error('Please select a professional');
+          break;
+        case 2:
+          toast.error('Please select a date');
+          break;
+        case 3:
+          toast.error('Please select a time');
+          break;
+      }
+      return;
+    }
+    setStep((value) => value + 1);
+  };
 
   const onSubmit = useCallback(() => {
     if (!currentUser) return loginModal.onOpen();
@@ -420,12 +441,12 @@ const ReservationModal: React.FC = () => {
     <Modal
       id="reservation-modal"
       modalContentId="reservation-modal-content"
-      disabled={isLoading || !isStepComplete()}
+      disabled={isLoading} // Only disable when loading, not based on step completion
       isOpen={isOpen}
       title="Book Appointment"
       actionLabel={step === 4 ? "Reserve Now" : "Next"}
       actionId="reserve-button"
-      onSubmit={step === 4 ? onSubmit : onNext}
+      onSubmit={step === 4 ? onSubmit : onNext} // onNext now handles validation
       secondaryActionLabel={step === 0 ? undefined : "Back"}
       secondaryAction={step === 0 ? undefined : onBack}
       onClose={handleClose}

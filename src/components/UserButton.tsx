@@ -86,7 +86,7 @@ const UserButton: React.FC<UserButtonProps> = ({
         {currentUser.name?.split(" ")[0]}
       </span>
       <div className="h-1" /> {/* vertical space */}
-      <span className="text-[#71717A] text-xs leading-none">
+      <span className="text-[#60A5FA] text-xs leading-none">
         Free Version
       </span>
     </>
@@ -96,7 +96,7 @@ const UserButton: React.FC<UserButtonProps> = ({
         Login
       </span>
       <div className="h-1" /> {/* vertical space */}
-      <span className="text-[#71717A] text-xs leading-none">
+      <span className="text-[#60A5FA] text-xs leading-none">
         Free Version
       </span>
     </>

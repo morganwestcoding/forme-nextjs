@@ -3,8 +3,10 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { SafeService } from '@/app/types';
+import { SafeService, SafeListing, SafeUser } from '@/app/types';
 import SmartBadgePrice from './SmartBadgePrice';
+import useReservationModal from '@/app/hooks/useReservationModal';
+import useLoginModal from '@/app/hooks/useLoginModal';
 import { Heart, Clock, Star, User, Scissors, Droplet, SprayCan, Waves, Palette, Flower, Dumbbell } from 'lucide-react';
 
 interface ServiceCardProps {
@@ -12,6 +14,8 @@ interface ServiceCardProps {
   listingLocation: string | null;
   listingTitle: string;
   listingImage: string;
+  listing: SafeListing; // Add full listing data
+  currentUser?: SafeUser | null; // Add current user
   storeHours?: Array<{
     dayOfWeek: string;
     openTime: string;
@@ -25,6 +29,8 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   listingLocation,
   listingTitle,
   listingImage,
+  listing,
+  currentUser,
   storeHours = [
     { dayOfWeek: 'Monday', openTime: '09:00', closeTime: '21:00', isClosed: false },
     { dayOfWeek: 'Tuesday', openTime: '09:00', closeTime: '21:00', isClosed: false },
@@ -36,9 +42,25 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   ]
 }) => {
   const router = useRouter();
+  const reservationModal = useReservationModal();
+  const loginModal = useLoginModal();
 
-  const handleClick = () => {
+  // Handle card click (navigate to service page)
+  const handleCardClick = () => {
     router.push(`/services/${service.id}`);
+  };
+
+  // Handle reserve button click (open reservation modal)
+  const handleReserveClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card click
+    
+    if (!currentUser) {
+      loginModal.onOpen();
+      return;
+    }
+    
+    // Open reservation modal with this service pre-selected
+    reservationModal.onOpen(listing, currentUser, service.id);
   };
 
   const getCategoryConfig = (category: string) => {
@@ -58,7 +80,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
 
   return (
     <div
-      onClick={handleClick}
+      onClick={handleCardClick}
       className="cursor-pointer bg-white rounded-2xl shadow-lg hover:shadow-2xl overflow-hidden relative"
     >
       <div className="absolute inset-0 z-0">
@@ -77,7 +99,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
           <div className="absolute top-4 left-4 z-20">
             <div className="bg-white/90 backdrop-blur-md border border-white/30 rounded-xl text-center w-24 py-2 shadow-lg hover:bg-white/30 transition-all duration-300">
               <div className="flex items-center justify-center gap-1.5">
-                {getCategoryConfig(service.category).icon}
+      
                 <span className="text-xs font-normal text-black tracking-wide">{service.category}</span>
               </div>
             </div>
@@ -100,24 +122,27 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
               price={service.price}
               storeHours={storeHours}
               onPriceClick={() => {
-                // Handle price/booking click
-                console.log('Price clicked for service:', service.serviceName);
+                if (!currentUser) {
+                  loginModal.onOpen();
+                  return;
+                }
+                reservationModal.onOpen(listing, currentUser, service.id);
               }}
               onTimeClick={() => {
-                // Handle time click
-                console.log('Time clicked for service:', service.serviceName);
+                if (!currentUser) {
+                  loginModal.onOpen();
+                  return;
+                }
+                reservationModal.onOpen(listing, currentUser, service.id);
               }}
             />
           </div>
         </div>
 
-        {/* Bottom button (same as ListingCard) */}
+        {/* Bottom reserve button */}
         <div className="px-5 pb-4 pt-2 -mt-3">
           <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleClick();
-            }}
+            onClick={handleReserveClick}
             className="w-full bg-[#60A5FA]/50 backdrop-blur-md text-white p-3 rounded-xl flex items-center justify-center hover:bg-white/10 transition-all shadow-lg border border-white/10"
           >
             <div className="flex items-center text-center gap-3">
