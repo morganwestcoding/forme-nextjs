@@ -27,7 +27,6 @@ enum STEPS {
   BIOGRAPHY = 2,
   IMAGES = 3,
   SUBSCRIPTION = 4
-
 }
 
 const RegisterModal= () => {
@@ -53,7 +52,7 @@ const RegisterModal= () => {
       bio: '',
       image: '',
       imageSrc: '',
-      subscription: ''  // Add this
+      subscription: ''
     },
   });
 
@@ -61,8 +60,6 @@ const RegisterModal= () => {
   const category = watch('category');
   const image = watch('image');
   const imageSrc = watch('imageSrc');
-
-
 
   const setCustomValue = (id: string, value: any) => {
     setValue(id, value, {
@@ -96,6 +93,7 @@ const RegisterModal= () => {
       if (step === STEPS.ACCOUNT) {
         // Validate password
         const passwordValidation = validatePassword(data.password);
+        
         if (!Object.values(passwordValidation).every(Boolean)) {
           toast.error('Password does not meet requirements');
           return;
@@ -104,6 +102,7 @@ const RegisterModal= () => {
         // Check if email exists
         try {
           const response = await axios.get(`/api/check-email?email=${data.email}`);
+          
           if (response.data.exists) {
             toast.error('Email already exists');
             return;
@@ -113,6 +112,7 @@ const RegisterModal= () => {
           return;
         }
       }
+      
       return onNext();
     }
     
@@ -146,7 +146,6 @@ const RegisterModal= () => {
     loginModal.onOpen();
   }, [registerModal, loginModal])
 
-
   let bodyContent = (
     <div className="flex flex-col gap-4">
       <Heading
@@ -179,7 +178,6 @@ const RegisterModal= () => {
         errors={errors}
         showPasswordValidation={true}
         required
-      
       />
     </div>
   );
@@ -191,14 +189,12 @@ const RegisterModal= () => {
           title="Where are you located?"
           subtitle="This helps us show you the best experiences near you."
         />
-        <ProfileLocationInput // Use ListLocationSelect component
+        <ProfileLocationInput
           onLocationSubmit={(value) => setValue('location', value)}
         />  
       </div>
     );
   }
-
-
 
   if (step === STEPS.BIOGRAPHY) {
     bodyContent = (
@@ -214,8 +210,8 @@ const RegisterModal= () => {
         register={register}
         errors={errors}
         required
-        maxLength={300}
-        type="textarea" // Add this
+        maxLength={200}
+        type="textarea"
       />
       </div>
     )
@@ -234,7 +230,7 @@ const RegisterModal= () => {
               <ImageUpload
                 onChange={(value) => setCustomValue('image', value)}
                 value={image}
-                className="rounded-full bg-slate-50 w-32 h-32 overflow-hidden"
+                className="rounded-full bg-slate-50 w-56 h-32 overflow-hidden"
               />
               <label className="mt-4 text-neutral-500 text-sm font-light">
                 Profile Picture
@@ -273,7 +269,6 @@ const RegisterModal= () => {
     )
   }
 
-
   const footerContent = (
     <div className="flex flex-col gap-4 mt-3">
       <hr />
@@ -281,7 +276,6 @@ const RegisterModal= () => {
         className="
           text-black
           text-center 
-          
           mt-4 
           font-light
         "

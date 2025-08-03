@@ -11,7 +11,7 @@ const ModalBackdrop: React.FC<ModalBackdropProps> = ({ videoSrc }) => {
 
   useEffect(() => {
     if (videoRef.current) {
-      videoRef.current.playbackRate = 0.8; // ✅ Set half speed
+      videoRef.current.playbackRate = 1.0; // ✅ Set half speed
     }
   }, []);
 
@@ -19,7 +19,7 @@ const ModalBackdrop: React.FC<ModalBackdropProps> = ({ videoSrc }) => {
     <div className="fixed inset-0 z-1">
       <video
         ref={videoRef}
-        className="absolute inset-0 object-cover w-full h-full filter grayscale"
+        className="absolute inset-0 object-cover w-full h-full filter"
         autoPlay
         muted
         loop
@@ -28,7 +28,7 @@ const ModalBackdrop: React.FC<ModalBackdropProps> = ({ videoSrc }) => {
         <source src={videoSrc} type="video/mp4" />
         Your browser does not support the video tag.
       </video>
-      <div className="absolute inset-0 bg-[#60A5FA]/60 backdrop-blur-sm" />
+      <div className="absolute inset-0  " />
     </div>
   );
 };

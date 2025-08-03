@@ -17,7 +17,8 @@ const SubscriptionInput: React.FC<SubscriptionInputProps> = ({
       title: 'Bronze (Customer)',
       price: 'Free',
       category: 'Basic Access',
-      background: 'https://images.unsplash.com/photo-1556740758-90de374c12ad?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      accent: 'bg-gray-100 text-gray-700',
+      border: 'border-gray-200',
       features: [
         'Basic App Access',
         'Limited Profile Features',
@@ -30,7 +31,8 @@ const SubscriptionInput: React.FC<SubscriptionInputProps> = ({
       title: 'Silver (Pro Tier 1)',
       price: '$29.99/month',
       category: 'Professional',
-      background: 'https://images.unsplash.com/photo-1573588546512-2ace898aa480?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      accent: 'bg-slate-100 text-slate-700',
+      border: 'border-slate-200',
       features: [
         'Everything in Customer, plus...',
         'Post Photos & Manage Profile',
@@ -43,7 +45,8 @@ const SubscriptionInput: React.FC<SubscriptionInputProps> = ({
       title: 'Gold (Pro Tier 2)',
       price: '$59.99/month',
       category: 'Featured Professional',
-      background: 'https://images.unsplash.com/photo-1517637633369-e4cc28755e01?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      accent: 'bg-yellow-50 text-yellow-700',
+      border: 'border-yellow-200',
       features: [
         'Includes Silver, plus...',
         'Be Seen by Customers',
@@ -56,7 +59,8 @@ const SubscriptionInput: React.FC<SubscriptionInputProps> = ({
       title: 'Platinum (Pro Tier 3)',
       price: '$99.99/month',
       category: 'Premium Professional',
-      background: 'https://images.unsplash.com/photo-1540496905036-5937c10647cc?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      accent: 'bg-purple-50 text-purple-700',
+      border: 'border-purple-200',
       features: [
         'Includes Gold, plus...',
         'Guaranteed 8 Customers Monthly',
@@ -69,7 +73,8 @@ const SubscriptionInput: React.FC<SubscriptionInputProps> = ({
       title: 'Diamond (Enterprise)',
       price: 'Custom Pricing',
       category: 'Business Solutions',
-      background: 'https://media.istockphoto.com/id/532401256/photo/london-skyscrapers-skyline-view.jpg?s=612x612&w=0&k=20&c=-1K5D7v9-5srsEO8bwaYnBnRtO2iCKJ5ll2h8wFsiP0=',
+      accent: 'bg-blue-50 text-blue-700',
+      border: 'border-blue-200',
       features: [
         'Everything in Platinum, plus...',
         'Multi-User Access',
@@ -81,155 +86,142 @@ const SubscriptionInput: React.FC<SubscriptionInputProps> = ({
     }
   ];
 
+  const handleCardClick = (tierTitle: string) => {
+    if (expandedCard === tierTitle) {
+      setExpandedCard(null);
+    } else {
+      setExpandedCard(tierTitle);
+    }
+  };
+
+  const handleSelect = (tierTitle: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    onChange(tierTitle.toLowerCase());
+    setExpandedCard(null);
+  };
+
   return (
-    <div className="w-full max-h-[70vh] overflow-y-auto -mb-4 mt-2">
+    <div className="w-full max-h-[70vh] overflow-y-auto -mb-4 mt-4">
       <div className="grid grid-cols-2 gap-3">
-        {subscriptionTiers.map((tier) => (
-          <div
-            key={tier.title}
-            onClick={() => {
-              if (expandedCard === tier.title) {
-                setExpandedCard(null);
-              } else {
-                setExpandedCard(tier.title);
-              }
-            }}
-            className={`
-              relative 
-              cursor-pointer 
-              rounded-md 
-              overflow-hidden
-              transition-all 
-              duration-700
-              ease-in-out
-              ${expandedCard === tier.title ? 
-                'col-span-2 h-[400px] opacity-100' : 
-                expandedCard ? 
-                  'opacity-0 pointer-events-none absolute' : 
-                  'h-[125px] hover:shadow-lg opacity-100'
-              }
-            `}
-          >
-            <div 
+        {subscriptionTiers.map((tier) => {
+          const isSelected = value === tier.title.toLowerCase();
+          const isExpanded = expandedCard === tier.title;
+          
+          return (
+            <div
+              key={tier.title}
               className={`
-                absolute 
-                inset-0 
-                bg-cover 
-                bg-center
-                transition-all 
-                duration-700
-                ease-in-out
-                ${expandedCard === tier.title ? 'scale-100' : 'hover:scale-110'}
-              `}
-              style={{ backgroundImage: `url(${tier.background})` }}
-            />
-            <div 
-              className={`
-                absolute 
-                inset-0 
-                transition-all 
-                duration-300
-                ${expandedCard ? 
-                  'bg-black/55 hover:bg-black/60' :
-                  value === tier.title.toLowerCase() ?
-                    'bg-green-500/50 hover:bg-green-500/50' :
-                    'bg-black/55 hover:bg-black/60'
+                bg-white rounded-xl border-2 transition-all duration-300 cursor-pointer
+                ${isSelected 
+                  ? 'border-[#60A5FA] shadow-lg shadow-blue-100' 
+                  : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
                 }
+                ${isExpanded ? 'col-span-2 shadow-xl' : ''}
               `}
-            />
-            
-            {expandedCard === tier.title ? (
-              <div className="absolute inset-0 p-6 flex flex-col text-white">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <span className="text-gray-300 text-sm uppercase tracking-wider">
-                      {tier.category}
-                    </span>
-                    <h3 className="text-white text-sm font-bold mt-2 mb-1">
-                      {tier.title}
-                    </h3>
-                    <p className="text-white/90 text-sm">
-                      {tier.price}
-                    </p>
+              onClick={() => handleCardClick(tier.title)}
+            >
+              {/* Collapsed View */}
+              {!isExpanded && (
+                <div className="p-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className={`px-2 py-0.5 rounded-md text-xs font-medium ${tier.accent}`}>
+                          {tier.category}
+                        </div>
+                        {isSelected && (
+                          <div className="w-4 h-4 bg-[#60A5FA] rounded-full flex items-center justify-center">
+                            <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                          </div>
+                        )}
+                      </div>
+                      <h3 className="text-sm font-medium text-gray-900 leading-tight mb-1">
+                        {tier.title}
+                      </h3>
+                      <p className="text-sm font-medium text-[#60A5FA]">
+                        {tier.price}
+                      </p>
+                    </div>
+                    <div className="text-gray-400">
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </div>
                   </div>
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setExpandedCard(null);
-                    }}
-                    className="text-white/80 hover:text-white"
-                  >
-                    ✕
-                  </button>
                 </div>
-                
-                <p className="text-white/90 text-sm mt-4">
-                  {tier.fullDescription}
-                </p>
-                
-                <div className="grid grid-cols-2 gap-4 mt-4">
-                  <ul className="text-white/80 text-sm space-y-2">
-                    <h4 className="font-semibold text-white mb-2">Features:</h4>
-                    {tier.features.map((feature, index) => (
-                      <li key={index} className="flex items-center">
-                        <span className="mr-2">✓</span>
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-                  
-                  <div className="flex justify-end items-end">
-                    <button
+              )}
+
+              {/* Expanded View */}
+              {isExpanded && (
+                <div className="p-5">
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <div className={`inline-block px-2 py-1 rounded-md text-xs font-medium ${tier.accent} mb-2`}>
+                        {tier.category}
+                      </div>
+                      <h3 className="text-lg font-medium text-gray-900 mb-1">
+                        {tier.title}
+                      </h3>
+                      <p className="text-lg font-medium text-[#60A5FA]">
+                        {tier.price}
+                      </p>
+                    </div>
+                    <button 
                       onClick={(e) => {
                         e.stopPropagation();
-                        onChange(tier.title.toLowerCase());
                         setExpandedCard(null);
                       }}
-                      className={`
-                        p-2 rounded-full transition-all duration-300
-                        ${value === tier.title.toLowerCase() 
-                          ? 'bg-green-500 hover:bg-green-600' 
-                          : 'bg-white hover:bg-gray-100'
-                        }
-                      `}
+                      className="text-gray-400 hover:text-gray-600 p-1"
                     >
-                      {value === tier.title.toLowerCase() ? (
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <polyline points="20 6 9 17 4 12"></polyline>
-                        </svg>
-                      ) : (
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M12 5v14M5 12h14"></path>
-                        </svg>
-                      )}
+                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
                     </button>
                   </div>
+                  
+                  <p className="text-sm text-gray-600 mb-4 leading-relaxed">
+                    {tier.fullDescription}
+                  </p>
+                  
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <h4 className="font-medium text-gray-900 text-sm mb-2">Features included:</h4>
+                      <ul className="space-y-1">
+                        {tier.features.map((feature, index) => (
+                          <li key={index} className="flex items-center text-gray-600">
+                            <div className="w-3 h-3 bg-green-100 rounded-full flex items-center justify-center mr-2 flex-shrink-0">
+                              <svg className="w-2 h-2 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                              </svg>
+                            </div>
+                            <span className="text-xs">{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    
+                    <div className="flex justify-end items-end">
+                      <button
+                        onClick={(e) => handleSelect(tier.title, e)}
+                        className={`
+                          px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
+                          ${isSelected 
+                            ? 'bg-[#60A5FA] text-white shadow-lg shadow-blue-200' 
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          }
+                        `}
+                      >
+                        {isSelected ? 'Selected' : 'Select Plan'}
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <div className="
-                absolute 
-                inset-0 
-                px-6 
-                flex 
-                flex-col 
-                items-center 
-                justify-center 
-                text-center
-              ">
-                <span className="text-gray-300 text-sm font-extralight tracking-wider mb-1">
-                  {tier.category}
-                </span>
-                <h3 className="text-white text-sm font-semibold mb-1">
-                  {tier.title}
-                </h3>
-                <p className="text-white/90 text-sm font-thin">
-                  {tier.price}
-                </p>
-              </div>
-            )}
-          </div>
-        ))}
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
