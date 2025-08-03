@@ -45,9 +45,9 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   const reservationModal = useReservationModal();
   const loginModal = useLoginModal();
 
-  // Handle card click (navigate to service page)
+  // Handle card click (navigate to listing page)
   const handleCardClick = () => {
-    router.push(`/services/${service.id}`);
+    router.push(`/listings/${listing.id}`);
   };
 
   // Handle reserve button click (open reservation modal)
@@ -99,7 +99,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
           <div className="absolute top-4 left-4 z-20">
             <div className="bg-white/90 backdrop-blur-md border border-white/30 rounded-xl text-center w-24 py-2 shadow-lg hover:bg-white/30 transition-all duration-300">
               <div className="flex items-center justify-center gap-1.5">
-      
+        
                 <span className="text-xs font-normal text-black tracking-wide">{service.category}</span>
               </div>
             </div>

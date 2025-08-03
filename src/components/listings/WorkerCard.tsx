@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { SafeListing, SafeReservation, SafeUser, SafeEmployee, SafeService } from '@/app/types';
 import SmartBadgeWorker from './SmartBadgeWorker';
 import useReservationModal from '@/app/hooks/useReservationModal';
@@ -50,6 +51,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
   const [isFollowing, setIsFollowing] = useState(false);
   const reservationModal = useReservationModal();
   const loginModal = useLoginModal();
+  const router = useRouter();
 
   const getCategoryConfig = (category: string) => {
     const configs: { [key: string]: { icon: React.ReactElement } } = {
@@ -62,6 +64,11 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
       'Skincare': { icon: <Droplet className="w-3 h-3" /> }
     };
     return configs[category] || { icon: <Star className="w-3 h-3" /> };
+  };
+
+  // Handle card click (navigate to listing page)
+  const handleCardClick = () => {
+    router.push(`/listings/${listing.id}`);
   };
 
   const handleFollow = () => {
@@ -95,7 +102,10 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
   ];
 
   return (
-    <div className="cursor-pointer bg-white rounded-2xl shadow-lg hover:shadow-2xl overflow-hidden relative">
+    <div 
+      onClick={handleCardClick}
+      className="cursor-pointer bg-white rounded-2xl shadow-lg hover:shadow-2xl overflow-hidden relative"
+    >
       {/* Full background image - same as ServiceCard and ListingCard */}
       <div className="absolute inset-0 z-0">
         <Image
