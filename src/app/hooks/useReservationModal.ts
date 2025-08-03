@@ -9,7 +9,8 @@ interface ReservationModalStore {
   listing?: SafeListing;
   currentUser?: SafeUser | null;
   serviceId?: string;
-  onOpen: (listing: SafeListing, currentUser?: SafeUser | null, serviceId?: string) => void;
+  employeeId?: string;
+  onOpen: (listing: SafeListing, currentUser?: SafeUser | null, serviceId?: string, employeeId?: string) => void;
   onClose: () => void;
 }
 
@@ -18,10 +19,11 @@ const useReservationModal = create<ReservationModalStore>((set) => ({
   listing: undefined,
   currentUser: null,
   serviceId: undefined,
-  onOpen: (listing, currentUser, serviceId) =>
-    set({ isOpen: true, listing, currentUser, serviceId }),
+  employeeId: undefined,
+  onOpen: (listing, currentUser, serviceId, employeeId) =>
+    set({ isOpen: true, listing, currentUser, serviceId, employeeId }),
   onClose: () =>
-    set({ isOpen: false, listing: undefined, currentUser: null, serviceId: undefined }),
+    set({ isOpen: false, listing: undefined, currentUser: null, serviceId: undefined, employeeId: undefined }),
 }));
 
 export default useReservationModal;

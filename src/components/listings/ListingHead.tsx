@@ -110,7 +110,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   <div className="mb-3 text-sm text-gray-600">
                     <span className="font-semibold text-gray-900">4.8</span>
                     <span className="text-gray-500">(156 reviews)</span>
-                    <span className="mx-1"></span>
+                    <span className="mx-2">•</span>
                     <span className="font-semibold text-gray-900">1284</span>
                     <span className="text-gray-500">followers</span>
                   </div>
@@ -266,6 +266,8 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   imageSrc: mainImage,
                   category: listing.category
                 }}
+                listing={listing} // Add the full listing object
+                currentUser={currentUser} // Add the current user
                 onFollow={() => console.log('Follow clicked for:', employee.fullName)}
                 onBook={() => console.log('Book clicked for:', employee.fullName)}
               />

@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { SafeListing, SafeReservation, SafeUser, SafeEmployee, SafeService } from '@/app/types';
 import SmartBadgeWorker from './SmartBadgeWorker';
+import useReservationModal from '@/app/hooks/useReservationModal';
+import useLoginModal from '@/app/hooks/useLoginModal';
 import { 
 Heart, Clock, Star, User, Scissors, Droplet, SprayCan, Waves, Palette, Flower, Dumbbell 
 } from 'lucide-react';
@@ -30,6 +32,8 @@ interface WorkerCardProps {
     imageSrc: string;
     category: string;
   };
+  listing: SafeListing; // Add full listing data
+  currentUser?: SafeUser | null; // Add current user
   onFollow?: () => void;
   onBook?: () => void;
 }
@@ -38,10 +42,14 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
   employee,
   listingTitle,
   data,
+  listing,
+  currentUser,
   onFollow, 
   onBook,
 }) => {
   const [isFollowing, setIsFollowing] = useState(false);
+  const reservationModal = useReservationModal();
+  const loginModal = useLoginModal();
 
   const getCategoryConfig = (category: string) => {
     const configs: { [key: string]: { icon: React.ReactElement } } = {
@@ -59,6 +67,20 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
   const handleFollow = () => {
     setIsFollowing(!isFollowing);
     onFollow?.();
+  };
+
+  // Handle reserve button click
+  const handleReserveClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    if (!currentUser) {
+      loginModal.onOpen();
+      return;
+    }
+    
+    // Open reservation modal with this employee pre-selected
+    // Order: employeeId is 4th parameter, serviceId is 3rd (undefined in this case)
+    reservationModal.onOpen(listing, currentUser, undefined, employee.id);
   };
 
   // Default store hours for employee
@@ -91,7 +113,6 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
           <div className="absolute top-4 left-6 z-20">
             <div className="bg-white/90 backdrop-blur-md border border-white/30 rounded-xl text-center w-24 py-2 shadow-lg hover:bg-white/30 transition-all duration-300">
               <div className="flex items-center justify-center gap-1.5">
-
                 <span className="text-xs font-normal text-black tracking-wide">{data.category}</span>
               </div>
             </div>
@@ -138,9 +159,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
             <SmartBadgeWorker
               employee={employee}
               listingTitle={listingTitle}
-            
               followerCount={employee.followerCount || 1247}
-     
               onFollowerClick={() => {
                 console.log('Followers clicked for:', employee.fullName);
               }}
@@ -151,17 +170,12 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
         {/* Bottom action section (same as other cards) */}
         <div className="px-5 pb-4 pt-2 -mt-3">
           <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleFollow();
-            }}
+            onClick={handleReserveClick}
             className="w-full bg-[#60A5FA]/50 backdrop-blur-md text-white p-3 rounded-xl flex items-center justify-center hover:bg-white/10 transition-all shadow-lg border border-white/10"
           >
             <div className="flex items-center text-center gap-3">
               <div className="flex flex-col items-center text-center">
-                <span className="font-medium text-sm">
-               Reserve
-                </span>
+                <span className="font-medium text-sm">Reserve</span>
               </div>
             </div>
           </button>

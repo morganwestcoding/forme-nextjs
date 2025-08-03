@@ -139,7 +139,7 @@ const SmartBadgePrice: React.FC<SmartBadgePriceProps> = ({
 
       if (minutesUntilClose <= 30) {
         return {
-          message: `Closes in ${minutesUntilClose}m`,
+          message: `Closing`,
           color: 'orange',
           timeRange
         };
@@ -147,7 +147,7 @@ const SmartBadgePrice: React.FC<SmartBadgePriceProps> = ({
         const hoursUntilClose = Math.floor(minutesUntilClose / 60);
         const remainingMinutes = minutesUntilClose % 60;
         return {
-          message: `Closes in ${hoursUntilClose}h ${remainingMinutes}m`,
+          message: `Closing`,
           color: 'green',
           timeRange
         };

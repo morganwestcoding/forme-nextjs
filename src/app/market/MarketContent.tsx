@@ -92,6 +92,9 @@ const MarketContent = ({
               listingLocation={listing.location ?? ''}
               listingTitle={listing.title}
               listingImage={listing.galleryImages?.[0] || listing.imageSrc}
+              listing={listing} // Add the full listing object
+              currentUser={currentUser} // Add the current user
+              storeHours={listing.storeHours} // Add store hours
             />
           )
         });
@@ -101,18 +104,20 @@ const MarketContent = ({
         rawCards.push({
           type: 'worker',
           element: (
-
             <WorkerCard 
-  employee={employee}
-        listingTitle={listing.title}
-             data={{
-    title: listing.title,
-    imageSrc: listing.imageSrc,
-        category: listing.category
-  }}
-  onFollow={() => console.log('Follow')}
-  onBook={() => console.log('Book')}
-/>
+              key={`worker-${employee.id}`}
+              employee={employee}
+              listingTitle={listing.title}
+              data={{
+                title: listing.title,
+                imageSrc: listing.imageSrc,
+                category: listing.category
+              }}
+              listing={listing} // Add the full listing object
+              currentUser={currentUser} // Add the current user
+              onFollow={() => console.log('Follow')}
+              onBook={() => console.log('Book')}
+            />
           )
         });
       });
