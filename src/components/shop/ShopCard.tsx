@@ -4,6 +4,7 @@ import { useState } from "react";
 import { SafeShop, SafeUser } from "@/app/types";
 import { toast } from "react-hot-toast";
 import axios from "axios";
+import SmartBadgeShop from './SmartBadgeShop';
 
 interface ShopCardProps {
   data: SafeShop;
@@ -100,32 +101,21 @@ const ShopCard: React.FC<ShopCardProps> = ({
               </svg>
             </div>
             <p className="text-xs drop-shadow-md font-thin flex items-center mb-3">
-              {city && state ? `${city}, ${state}` : data.location || 'Online Shop'} • {followerCount} followers
+              {city && state ? `${city}, ${state}` : data.location || 'Online Shop'} • {productCount} products
             </p>
             
-            {/* Shop Stats Badge (similar to SmartBadgeRating) */}
-            <div className="flex items-center gap-3">
-              <div className="bg-white/20 backdrop-blur-md rounded-lg px-3 py-2 border border-white/30">
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-1.5">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" color="currentColor" fill="none">
-                      <path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                    <span className="text-sm font-medium">4.8</span>
-                  </div>
-                  
-                  <div className="w-px h-4 bg-white/30"></div>
-                  
-                  <div className="flex items-center gap-1.5">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" color="currentColor" fill="none">
-                      <path d="M8 11V8a4 4 0 014-4v0a4 4 0 014 4v3" />
-                      <path d="M19.225 12.65L20.075 20.65C20.1833 21.3955 19.6377 22.07 18.8917 22.1783C18.8306 22.1833 18.7694 22.1883 18.7083 22.1783L5.29168 22.1783C4.54334 22.1783 3.93334 21.5683 3.93334 20.82C3.93334 20.7589 3.93834 20.6977 3.94334 20.6367L4.77834 12.65C4.88584 11.8933 5.52751 11.3333 6.29168 11.3333L17.7083 11.3333C18.4725 11.3333 19.1142 11.8933 19.2217 12.65Z" />
-                    </svg>
-                    <span className="text-sm font-medium">{productCount}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+            {/* SmartBadgeShop - Rating + Followers */}
+            <SmartBadgeShop
+              rating={4.8} // You can make this dynamic from data
+              isTrending={data.isVerified} // Use verified status or add trending field
+              followerCount={followerCount}
+              onRatingClick={() => {
+                console.log('Rating clicked for shop:', data.name);
+              }}
+              onFollowerClick={() => {
+                console.log('Followers clicked for shop:', data.name);
+              }}
+            />
           </div>
         </div>
 
