@@ -6,6 +6,7 @@ import { useState } from "react";
 import { SafeProduct, SafeUser } from "@/app/types";
 import { toast } from "react-hot-toast";
 import axios from "axios";
+import SmartBadgeProduct from "./SmartBadgeProduct";
 
 interface ProductCardProps {
   data: SafeProduct;
@@ -90,6 +91,17 @@ const ProductCard: React.FC<ProductCardProps> = ({
     return 'text-green-200';
   };
 
+  // Handle rating click
+  const handleRatingClick = () => {
+    router.push(`/shop/products/${data.id}#reviews`);
+  };
+
+  // Handle price click
+  const handlePriceClick = () => {
+    // Could navigate to product page or show price details
+    router.push(`/shop/products/${data.id}`);
+  };
+
   return (
     <div
       onClick={() => router.push(`/shop/products/${data.id}`)}
@@ -140,49 +152,16 @@ const ProductCard: React.FC<ProductCardProps> = ({
               by {data.shop.name} • {getStockStatus()}
             </p>
             
-            {/* Product Stats Badge (similar to SmartBadgeShop) */}
-            <div className="flex items-center gap-3">
-              <div className="bg-white/20 backdrop-blur-md rounded-lg px-3 py-2 border border-white/30">
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-1.5">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" color="currentColor" fill="none">
-                      <path d="M12 2C13.1046 2 14 2.89543 14 4C14 5.10457 13.1046 6 12 6C10.8954 6 10 5.10457 10 4C10 2.89543 10.8954 2 12 2Z" stroke="currentColor" strokeWidth="1.5"/>
-                      <path d="M12 22C13.1046 22 14 21.1046 14 20C14 18.8954 13.1046 18 12 18C10.8954 18 10 18.8954 10 20C10 21.1046 10.8954 22 12 22Z" stroke="currentColor" strokeWidth="1.5"/>
-                      <path d="M5 12C5 13.1046 4.10457 14 3 14C1.89543 14 1 13.1046 1 12C1 10.8954 1.89543 10 3 10C4.10457 10 5 10.8954 5 12Z" stroke="currentColor" strokeWidth="1.5"/>
-                      <path d="M23 12C23 13.1046 22.1046 14 21 14C19.8954 14 19 13.1046 19 12C19 10.8954 19.8954 10 21 10C22.1046 10 23 10.8954 23 12Z" stroke="currentColor" strokeWidth="1.5"/>
-                    </svg>
-                    <span className="text-sm font-medium">
-                      {isOnSale && data.compareAtPrice ? (
-                        <>
-                          <span className="line-through text-gray-300 mr-1">${data.compareAtPrice.toFixed(2)}</span>
-                          <span>${data.price.toFixed(2)}</span>
-                        </>
-                      ) : (
-                        `$${data.price.toFixed(2)}`
-                      )}
-                    </span>
-                  </div>
-                  
-                  <div className="w-px h-4 bg-white/30"></div>
-                  
-                  <div className="flex items-center gap-1.5">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" color="currentColor" fill="none">
-                      <path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                    <span className="text-sm font-medium">4.9</span>
-                  </div>
-                  
-                  <div className="w-px h-4 bg-white/30"></div>
-                  
-                  <div className="flex items-center gap-1.5">
-                    <div className={`w-3 h-3 rounded-full ${!inStock ? 'bg-red-400' : lowStock ? 'bg-yellow-400' : 'bg-green-400'}`}></div>
-                    <span className={`text-sm font-medium ${getStockColor()}`}>
-                      {data.inventory}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
+            {/* Replace the stats badge with SmartBadgeProduct */}
+            <SmartBadgeProduct
+              rating={4.9} // You might want to calculate this from actual reviews
+              price={data.price}
+              compareAtPrice={data.compareAtPrice}
+              isFeatured={data.isFeatured}
+              isOnSale={isOnSale}
+              onRatingClick={handleRatingClick}
+              onPriceClick={handlePriceClick}
+            />
           </div>
         </div>
 

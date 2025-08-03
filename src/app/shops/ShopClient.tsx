@@ -137,50 +137,6 @@ const ShopClient: React.FC<ShopClientProps> = ({
           </div>
         </section>
         
-        {/* Categories Section - Only show if not searching */}
-        {!filters.searchQuery && (
-          <section>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold text-gray-800">Shop by Category</h2>
-            </div>
-            
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-              {categories.map((category) => (
-                <a 
-                  key={category.id} 
-                  href={`/shop/categories/${category.id}`}
-                  className="bg-white border rounded-xl overflow-hidden hover:shadow-md transition-shadow"
-                >
-                  <div className="p-4 flex flex-col items-center text-center">
-                    <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mb-3">
-                      {category.image ? (
-                        <img 
-                          src={category.image} 
-                          alt={category.name} 
-                          className="w-6 h-6 object-contain" 
-                        />
-                      ) : (
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500">
-                          <path d="M19.225 12.65L20.075 20.65C20.1833 21.3955 19.6377 22.07 18.8917 22.1783C18.8306 22.1833 18.7694 22.1883 18.7083 22.1783L5.29168 22.1783C4.54334 22.1783 3.93334 21.5683 3.93334 20.82C3.93334 20.7589 3.93834 20.6977 3.94334 20.6367L4.77834 12.65C4.88584 11.8933 5.52751 11.3333 6.29168 11.3333L17.7083 11.3333C18.4725 11.3333 19.1142 11.8933 19.2217 12.65Z" />
-                          <path d="M8 11V8a4 4 0 014-4v0a4 4 0 014 4v3" />
-                        </svg>
-                      )}
-                    </div>
-                    <h3 className="font-medium text-gray-900">{category.name}</h3>
-                    {category.productCount !== undefined && (
-                      <p className="text-xs text-gray-500 mt-1">{category.productCount} products</p>
-                    )}
-                  </div>
-                </a>
-              ))}
-              {categories.length === 0 && (
-                <div className="col-span-full py-8 text-center">
-                  <p className="text-gray-500">No categories found</p>
-                </div>
-              )}
-            </div>
-          </section>
-        )}
       </div>
     </div>
   );
