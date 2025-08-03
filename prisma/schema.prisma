@@ -218,10 +218,8 @@ model Shop {
   address        String?    // Add this for address
   zipCode        String?    // Add this for zipCode
   isOnlineOnly   Boolean    @default(false)  // Add this for isOnlineOnly
-  coordinates    Json?      // Add this for coordinates
   userId         String     @db.ObjectId
   storeUrl       String?    
-  socials        Json?
   galleryImages  String[]
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt

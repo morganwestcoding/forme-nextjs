@@ -88,7 +88,12 @@ export default async function getShopProducts(params: IShopProductsParams) {
     const products = await prisma.product.findMany({
       where: query,
       include: {
-        category: true,
+        category: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
         shop: {
           select: {
             id: true,
@@ -101,28 +106,40 @@ export default async function getShopProducts(params: IShopProductsParams) {
       ...(limit ? { take: limit } : {})
     });
 
-    // Transform to safe products
+    // Transform to SafeProduct format
     const safeProducts = products.map(product => ({
-      ...product,
+      id: product.id,
+      name: product.name,
+      description: product.description,
+      price: product.price,
+      compareAtPrice: product.compareAtPrice ?? undefined,
+      mainImage: product.mainImage,
+      galleryImages: product.galleryImages || [],
+      shopId: product.shopId,
       createdAt: product.createdAt.toISOString(),
       updatedAt: product.updatedAt.toISOString(),
-      // Parse JSON fields
-      options: product.options as any,
-      variants: product.variants as any,
-      reviews: product.reviews as any,
-      // Ensure consistency with our types
-      favoritedBy: product.favoritedBy || [],
-      galleryImages: product.galleryImages || [],
-      tags: product.tags || [],
+      sku: product.sku ?? undefined,
+      barcode: product.barcode ?? undefined,
+      categoryId: product.categoryId,
       category: {
         id: product.category.id,
         name: product.category.name
       },
+      tags: product.tags || [],
+      isPublished: product.isPublished,
+      isFeatured: product.isFeatured,
+      inventory: product.inventory,
+      lowStockThreshold: product.lowStockThreshold,
+      weight: product.weight ?? undefined,
       shop: {
         id: product.shop.id,
         name: product.shop.name,
         logo: product.shop.logo
-      }
+      },
+      favoritedBy: product.favoritedBy || [],
+      reviews: product.reviews ? (product.reviews as any) : undefined,
+      options: product.options ? (product.options as any) : undefined,
+      variants: product.variants ? (product.variants as any) : undefined,
     }));
 
     return safeProducts;

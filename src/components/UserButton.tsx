@@ -67,6 +67,9 @@ const UserButton: React.FC<UserButtonProps> = ({
     ? "flex items-center justify-start cursor-pointer outline-none touch-manipulation"
     : "w-44 py-2.5 mt-1 px-4 bg-blue-50 flex items-center justify-start mb-6 cursor-pointer rounded-xl border border-[#60A5FA] hover:bg-[#DFE2E2] transition-all outline-none";
 
+  // Determine dropdown width based on noBg prop
+  const dropdownWidthClass = noBg ? "min-w-44" : "w-44";
+
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger
@@ -80,43 +83,43 @@ const UserButton: React.FC<UserButtonProps> = ({
       >
         <Avatar src={currentUser?.image ?? undefined} />
         <div className="ml-3 flex flex-col items-start text-left">
-  {currentUser ? (
-    <>
-      <span className="text-black text-sm font-medium leading-none">
-        {currentUser.name?.split(" ")[0]}
-      </span>
-      <div className="h-1" /> {/* vertical space */}
-      <span className="text-[#60A5FA] text-xs leading-none">
-        Free Version
-      </span>
-    </>
-  ) : (
-    <>
-      <span className="text-black text-sm font-medium leading-none">
-        Login
-      </span>
-      <div className="h-1" /> {/* vertical space */}
-      <span className="text-[#60A5FA] text-xs leading-none">
-        Free Version
-      </span>
-    </>
-  )}
-</div>
-
+          {currentUser ? (
+            <>
+              <span className="text-black text-sm font-medium leading-none">
+                {currentUser.name?.split(" ")[0]}
+              </span>
+              <div className="h-1" /> {/* vertical space */}
+              <span className="text-[#60A5FA] text-xs leading-none">
+                Free Version
+              </span>
+            </>
+          ) : (
+            <>
+              <span className="text-black text-sm font-medium leading-none">
+                Login
+              </span>
+              <div className="h-1" /> {/* vertical space */}
+              <span className="text-[#60A5FA] text-xs leading-none">
+                Free Version
+              </span>
+            </>
+          )}
+        </div>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
-        className="bg-white bg-opacity-90 backdrop-blur-lg rounded-lg p-2 shadow-lg border-none z-[100]"
+        className={`bg-white bg-opacity-90 backdrop-blur-lg rounded-lg p-2 shadow-lg border-none z-[100] ${dropdownWidthClass}`}
         side="bottom"
         align="center"
         sideOffset={8}
       >
         {currentUser ? (
           <>
-            <DropdownMenuItem onClick={handleProfile}>Profile</DropdownMenuItem>
+            <DropdownMenuItem onClick={handleProfile}>My Profile</DropdownMenuItem>
             <DropdownMenuItem onClick={handleListings}>
               My Listings
             </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleRent}>My Analytics</DropdownMenuItem>
             <DropdownMenuItem onClick={handleRent}>Add Listing</DropdownMenuItem>
             <DropdownMenuItem onClick={handleSubscribe}>Subscription</DropdownMenuItem>
             <DropdownMenuSeparator />

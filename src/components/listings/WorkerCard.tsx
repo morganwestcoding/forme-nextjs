@@ -114,7 +114,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
           fill
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 card__overlay" />
+   <div className="absolute inset-0 card__overlay" />
       </div>
 
       <div className="relative z-10">

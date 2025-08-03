@@ -184,17 +184,8 @@ export type SafeShop = {
   address?: string | null;
   zipCode?: string | null;
   isOnlineOnly?: boolean;
-  coordinates?: { lat: number; lng: number } | null;
   userId: string;
   storeUrl?: string | null;
-  socials?: {
-    instagram?: string;
-    facebook?: string;
-    twitter?: string;
-    tiktok?: string;
-    youtube?: string;
-    [key: string]: string | undefined;
-  } | null;
   galleryImages: string[];
   createdAt: string;
   updatedAt: string;

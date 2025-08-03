@@ -17,7 +17,6 @@ import Heading from '@/components/Heading';
 import Input from '@/components/inputs/Input';
 import ImageUpload from '@/components/inputs/ImageUpload';
 import { SafeShop } from '@/app/types';
-import SocialLinksInput from '@/components/inputs/SocialLinksInput';
 import LocationSelect from '@/components/inputs/LocationSelect';
 import ShopLocationInput from '@/components/inputs/ShopLocationInput';
 import Toggle from '@/components/inputs/Toggle';
@@ -32,18 +31,8 @@ enum STEPS {
   IMAGES = 2,
   LOCATION = 3,
   PRODUCTS = 4,
-  SOCIAL = 5,
-  SETTINGS = 6,
+  SETTINGS = 5,
 }
-
-// Define initial values as constants
-const initialSocials: Record<string, string> = {
-  instagram: '',
-  facebook: '',
-  twitter: '',
-  tiktok: '',
-  youtube: ''
-};
 
 // Define initial empty product
 const initialProducts: ProductData[] = [];
@@ -78,8 +67,6 @@ const ShopModal = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState(STEPS.CATEGORY);
   
-  // Initialize with initial constants
-  const [socials, setSocials] = useState<Record<string, string>>(shop?.socials as Record<string, string> || initialSocials);
   const [products, setProducts] = useState<ProductData[]>(initialProducts);
   const [showProductModal, setShowProductModal] = useState(false);
 
@@ -113,20 +100,10 @@ const ShopModal = () => {
   useEffect(() => {
     if (shop) {
       Object.entries(shop).forEach(([key, value]) => {
-        if (key !== 'socials' && key !== 'products') {
+        if (key !== 'products') {
           setValue(key, value);
         }
       });
-      
-      // Handle socials separately to ensure proper typing
-      if (shop.socials && typeof shop.socials === 'object') {
-        // Create a clean copy with only string values
-        const cleanSocials: Record<string, string> = {};
-        Object.entries(shop.socials as Record<string, string>).forEach(([key, value]) => {
-          cleanSocials[key] = value || '';
-        });
-        setSocials(cleanSocials);
-      }
       
       // Load existing products if available
       if (shop.products && Array.isArray(shop.products)) {
@@ -167,7 +144,6 @@ const ShopModal = () => {
     
     // Reset all state to initial values
     setStep(STEPS.CATEGORY);
-    setSocials(initialSocials);
     setProducts(initialProducts);
 
     // Close the modal
@@ -230,15 +206,10 @@ const ShopModal = () => {
       }
     }
     
-    // No specific validation for products, social links, or settings as they're optional
+    // No specific validation for products or settings as they're optional
     
     setStep((value) => value + 1);
   }
-
-  // Ensure we work with properly typed socials
-  const handleSocialsChange = useCallback((newSocials: Record<string, string>) => {
-    setSocials(newSocials);
-  }, []);
 
   const handleRemoveProduct = (index: number) => {
     setProducts(prev => prev.filter((_, i) => i !== index));
@@ -250,25 +221,14 @@ const ShopModal = () => {
     address: string;
     zipCode: string;
     isOnlineOnly: boolean;
-    coordinates?: {
-      lat: number;
-      lng: number;
-    };
   } | null) => {
     if (locationData) {
       setValue('location', locationData.isOnlineOnly ? 'Online Shop' : `${locationData.city}, ${locationData.state}`, { shouldValidate: true });
       setValue('address', locationData.address, { shouldValidate: true });
       setValue('zipCode', locationData.zipCode, { shouldValidate: true });
       setValue('isOnlineOnly', locationData.isOnlineOnly, { shouldValidate: true });
-      
-      // If there are coordinates, we might want to save them too
-      if (locationData.coordinates) {
-        setValue('coordinates', locationData.coordinates, { shouldValidate: true });
-      }
     }
   };
-
-// In your ShopModal.tsx file, replace the onSubmit function with this enhanced debugging version:
 
 const onSubmit: SubmitHandler<FieldValues> = async (data) => {
   if (step !== STEPS.SETTINGS) {
@@ -276,17 +236,10 @@ const onSubmit: SubmitHandler<FieldValues> = async (data) => {
   }
   
   setIsLoading(true);
-  
-  // Ensure socials is a valid Record<string, string>
-  const cleanedSocials: Record<string, string> = {};
-  Object.entries(socials).forEach(([key, value]) => {
-    cleanedSocials[key] = value || '';
-  });
 
   // Prepare payload with all necessary data
   const payload = { 
     ...data, 
-    socials: cleanedSocials,
     category: category,
     products: products
   };
@@ -345,8 +298,6 @@ const handleAddProduct = (product: ProductData) => {
   setProducts(prev => [...prev, product]);
   setShowProductModal(false);
 };
-
-  // Rest of the component remains the same...
 
   const actionLabel = useMemo(() => {
     if (step === STEPS.SETTINGS) {
@@ -423,7 +374,6 @@ const handleAddProduct = (product: ProductData) => {
           disabled={isLoading}
           register={register}
           errors={errors}
-       
         />
       </div>
     );
@@ -538,21 +488,6 @@ const handleAddProduct = (product: ProductData) => {
             Start by adding your first product
           </div>
         )}
-      </div>
-    );
-  }
-
-  if (step === STEPS.SOCIAL) {
-    bodyContent = (
-      <div className="flex flex-col gap-6">
-        <Heading
-          title="Connect your social media"
-          subtitle="Share your online presence"
-        />
-        <SocialLinksInput 
-          value={socials}
-          onChange={handleSocialsChange}
-        />
       </div>
     );
   }
