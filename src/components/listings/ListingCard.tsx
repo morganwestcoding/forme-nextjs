@@ -109,7 +109,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
             </div>
           </button>
         </div>
-        
       </div>
     </div>
   );

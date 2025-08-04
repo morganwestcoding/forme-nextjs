@@ -14,7 +14,6 @@ import {
 } from "react-hook-form";
 import useLoginModal from "@/app/hooks/useLoginModal";
 import useRegisterModal from "@/app/hooks/useRegisterModal";
-import useStripeCheckoutModal, { SubscriptionData } from "@/app/hooks/useStripeCheckoutModal";
 import ImageUpload from "../inputs/ImageUpload";
 import Modal from "./Modal";
 import Input from "../inputs/Input";
@@ -34,11 +33,9 @@ const RegisterModal= () => {
   const [step, setStep] = useState(STEPS.ACCOUNT);
   const registerModal = useRegisterModal();
   const loginModal = useLoginModal();
-  const stripeCheckoutModal = useStripeCheckoutModal(); // Add this
   const [isLoading, setIsLoading] = useState(false);
   const [isInSubscriptionDetail, setIsInSubscriptionDetail] = useState(false);
   const [selectedTierName, setSelectedTierName] = useState<string>('');
-  const [selectedTierData, setSelectedTierData] = useState<any>(null); // Add this to store tier details
 
   const { 
     register, 
@@ -93,15 +90,9 @@ const RegisterModal= () => {
     };
   };
 
-  const handleSubscriptionDetailChange = (isInDetail: boolean, tierName?: string, tierData?: any) => {
-    console.log('handleSubscriptionDetailChange called:', {
-      isInDetail,
-      tierName,
-      tierData
-    });
+  const handleSubscriptionDetailChange = (isInDetail: boolean, tierName?: string) => {
     setIsInSubscriptionDetail(isInDetail);
     setSelectedTierName(tierName || '');
-    setSelectedTierData(tierData || null); // Store the full tier data
   };
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
@@ -134,7 +125,6 @@ const RegisterModal= () => {
     
     // Handle subscription selection if in detail view
     if (isInSubscriptionDetail) {
-      console.log('In subscription detail view, calling selectCurrentTier');
       // Call the tier select function from the subscription component
       if ((window as any).selectCurrentTier) {
         (window as any).selectCurrentTier();
@@ -142,66 +132,16 @@ const RegisterModal= () => {
       return;
     }
     
-    console.log('Final step - creating account and handling subscription');
-    console.log('Selected tier data:', selectedTierData);
-    console.log('Selected tier name:', selectedTierName);
-    console.log('Form data:', data);
-    
     setIsLoading(true);
 
-    try {
-      // First, create the user account
-      console.log('Creating user account...');
-      const userResponse = await axios.post('/api/register', data);
-      const createdUser = userResponse.data;
-      
-      console.log('User created successfully:', createdUser);
-      toast.success('Account created! Proceeding to payment...');
-
-      // Check if a subscription tier was selected
-      console.log('Checking subscription tier...');
-      console.log('selectedTierData exists:', !!selectedTierData);
-      console.log('selectedTierData.price:', selectedTierData?.price);
-      
-      if (selectedTierData && selectedTierData.price > 0) {
-        console.log('Paid subscription detected, preparing Stripe data...');
-        
-        // Prepare data for Stripe checkout
-        const stripeData: SubscriptionData = {
-          userId: createdUser.id,
-          subscriptionTier: selectedTierName,
-          tierPrice: selectedTierData.price,
-          tierDuration: selectedTierData.duration || 'monthly', // e.g., 'monthly', 'yearly'
-          tierFeatures: selectedTierData.features || [],
-          customerName: data.name || '',
-          customerEmail: data.email || '',
-          // Add any other subscription-related data your Stripe checkout needs
-          subscriptionType: 'new_user',
-          planId: selectedTierData.planId || selectedTierName.toLowerCase(),
-        };
-
-        console.log('Opening Stripe checkout with subscription data:', stripeData);
-
-        // Close the registration modal first
-        handleClose();
-
-        // Small delay to ensure modal closes before opening Stripe
-        setTimeout(() => {
-          console.log('Calling stripeCheckoutModal.onOpen for subscription');
-          stripeCheckoutModal.onOpen(stripeData, 'subscription');
-        }, 100);
-
-      } else {
-        // No paid subscription selected, complete registration normally
-        console.log('Free tier selected or no subscription, completing registration');
-        setStep(STEPS.ACCOUNT);
-        registerModal.onClose();
-        loginModal.onOpen();
-      }
-
-    } catch (error: any) {
-      console.error('Error during registration:', error);
-      
+    axios.post('/api/register', data)
+    .then(() => {
+      toast.success('Registered!');
+      setStep(STEPS.ACCOUNT);
+      registerModal.onClose();
+      loginModal.onOpen();
+    })
+    .catch((error: any) => {
       let errorMessage = 'Something went wrong!';
       
       if (error.response?.data) {
@@ -211,9 +151,10 @@ const RegisterModal= () => {
       }
       
       toast.error(errorMessage);
-    } finally {
+    })
+    .finally(() => {
       setIsLoading(false);
-    }
+    });
   }
 
   const onToggle = useCallback(() => {
@@ -221,26 +162,13 @@ const RegisterModal= () => {
     loginModal.onOpen();
   }, [registerModal, loginModal])
 
-  // Reset state when modal closes
-  const handleClose = useCallback(() => {
-    setStep(STEPS.ACCOUNT);
-    setIsInSubscriptionDetail(false);
-    setSelectedTierName('');
-    setSelectedTierData(null);
-    registerModal.onClose();
-  }, [registerModal]);
-
   // Determine action label based on current state
   const getActionLabel = () => {
     if (step === STEPS.SUBSCRIPTION) {
       if (isInSubscriptionDetail) {
-        // Show different labels based on whether it's a paid tier
-        if (selectedTierData && selectedTierData.price > 0) {
-          return `Subscribe to ${selectedTierName}`;
-        }
         return `Choose ${selectedTierName}`;
       }
-      return "Create Account";
+      return "Create";
     }
     return "Continue";
   };
@@ -360,66 +288,11 @@ const RegisterModal= () => {
           title="Choose your subscription"
           subtitle="Select the plan that best fits your needs"
         />
-        
-        {/* Debug info - remove this in production */}
-        {process.env.NODE_ENV === 'development' && (
-          <div className="mb-4 p-3 bg-gray-100 rounded text-xs">
-            <div>Debug Info:</div>
-            <div>isInSubscriptionDetail: {isInSubscriptionDetail.toString()}</div>
-            <div>selectedTierName: {selectedTierName}</div>
-            <div>selectedTierData: {selectedTierData ? JSON.stringify(selectedTierData, null, 2) : 'null'}</div>
-          </div>
-        )}
-        
         <SubscriptionInput
           onChange={(value) => setCustomValue('subscription', value)}
           value={watch('subscription')}
           onDetailStateChange={handleSubscriptionDetailChange}
         />
-        
-        {/* Show subscription summary if a tier is selected */}
-        {selectedTierData && isInSubscriptionDetail && (
-          <div className="bg-blue-50 rounded-xl p-4 border border-blue-200 mt-4">
-            <div className="flex justify-between items-center">
-              <div>
-                <p className="text-sm font-medium text-blue-900">
-                  {selectedTierName} Plan
-                </p>
-                <p className="text-xs text-blue-700">
-                  {selectedTierData.duration || 'Monthly'} billing
-                </p>
-              </div>
-              <div className="text-right">
-                <p className="text-lg font-bold text-blue-600">
-                  ${selectedTierData.price}
-                  <span className="text-xs font-normal">
-                    /{selectedTierData.duration === 'yearly' ? 'year' : 'month'}
-                  </span>
-                </p>
-              </div>
-            </div>
-            {selectedTierData.features && selectedTierData.features.length > 0 && (
-              <div className="mt-3 pt-3 border-t border-blue-200">
-                <p className="text-xs text-blue-700 mb-2">Included features:</p>
-                <ul className="text-xs text-blue-600 space-y-1">
-                  {selectedTierData.features.slice(0, 3).map((feature: string, index: number) => (
-                    <li key={index} className="flex items-center gap-2">
-                      <svg className="w-3 h-3 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
-                      {feature}
-                    </li>
-                  ))}
-                  {selectedTierData.features.length > 3 && (
-                    <li className="text-blue-500">
-                      +{selectedTierData.features.length - 3} more features
-                    </li>
-                  )}
-                </ul>
-              </div>
-            )}
-          </div>
-        )}
       </div>
     )
   }
@@ -451,17 +324,17 @@ const RegisterModal= () => {
 
   return (
     <Modal
-      backdropVideo="/videos/modal-bg.mp4"
-      disabled={isLoading}
-      isOpen={registerModal.isOpen}
-      title="Register"
-      actionLabel={getActionLabel()}
-      secondaryAction={step !== STEPS.ACCOUNT ? onBack : undefined}
-      secondaryActionLabel={step !== STEPS.ACCOUNT ? "Back" : undefined}
-      onClose={handleClose} // Use the updated handleClose function
-      onSubmit={handleSubmit(onSubmit)}
-      body={bodyContent}
-      footer={footerContent}
+     backdropVideo="/videos/modal-bg.mp4"
+    disabled={isLoading}
+    isOpen={registerModal.isOpen}
+    title="Register"
+    actionLabel={getActionLabel()}
+    secondaryAction={step !== STEPS.ACCOUNT ? onBack : undefined}
+    secondaryActionLabel={step !== STEPS.ACCOUNT ? "Back" : undefined}
+    onClose={registerModal.onClose}
+    onSubmit={handleSubmit(onSubmit)}
+    body={bodyContent}
+    footer={footerContent}
     />
   );
 }
