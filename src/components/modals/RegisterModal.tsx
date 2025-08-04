@@ -34,6 +34,8 @@ const RegisterModal= () => {
   const registerModal = useRegisterModal();
   const loginModal = useLoginModal();
   const [isLoading, setIsLoading] = useState(false);
+  const [isInSubscriptionDetail, setIsInSubscriptionDetail] = useState(false);
+  const [selectedTierName, setSelectedTierName] = useState<string>('');
 
   const { 
     register, 
@@ -88,6 +90,11 @@ const RegisterModal= () => {
     };
   };
 
+  const handleSubscriptionDetailChange = (isInDetail: boolean, tierName?: string) => {
+    setIsInSubscriptionDetail(isInDetail);
+    setSelectedTierName(tierName || '');
+  };
+
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     if (step !== STEPS.SUBSCRIPTION) {
       if (step === STEPS.ACCOUNT) {
@@ -114,6 +121,15 @@ const RegisterModal= () => {
       }
       
       return onNext();
+    }
+    
+    // Handle subscription selection if in detail view
+    if (isInSubscriptionDetail) {
+      // Call the tier select function from the subscription component
+      if ((window as any).selectCurrentTier) {
+        (window as any).selectCurrentTier();
+      }
+      return;
     }
     
     setIsLoading(true);
@@ -145,6 +161,17 @@ const RegisterModal= () => {
     registerModal.onClose();
     loginModal.onOpen();
   }, [registerModal, loginModal])
+
+  // Determine action label based on current state
+  const getActionLabel = () => {
+    if (step === STEPS.SUBSCRIPTION) {
+      if (isInSubscriptionDetail) {
+        return `Choose ${selectedTierName}`;
+      }
+      return "Create";
+    }
+    return "Continue";
+  };
 
   let bodyContent = (
     <div className="flex flex-col gap-4">
@@ -264,6 +291,7 @@ const RegisterModal= () => {
         <SubscriptionInput
           onChange={(value) => setCustomValue('subscription', value)}
           value={watch('subscription')}
+          onDetailStateChange={handleSubscriptionDetailChange}
         />
       </div>
     )
@@ -300,7 +328,7 @@ const RegisterModal= () => {
     disabled={isLoading}
     isOpen={registerModal.isOpen}
     title="Register"
-    actionLabel={step === STEPS.SUBSCRIPTION ? "Create" : "Continue"}
+    actionLabel={getActionLabel()}
     secondaryAction={step !== STEPS.ACCOUNT ? onBack : undefined}
     secondaryActionLabel={step !== STEPS.ACCOUNT ? "Back" : undefined}
     onClose={registerModal.onClose}

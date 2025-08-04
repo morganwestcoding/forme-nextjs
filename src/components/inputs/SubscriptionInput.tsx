@@ -1,16 +1,21 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface SubscriptionInputProps {
   onChange: (value: string) => void;
   value: string;
+  onDetailStateChange?: (isInDetail: boolean, tierName?: string) => void;
+  onTierSelect?: () => void;
 }
 
 const SubscriptionInput: React.FC<SubscriptionInputProps> = ({
   onChange,
-  value
+  value,
+  onDetailStateChange,
+  onTierSelect
 }) => {
-  const [expandedCard, setExpandedCard] = useState<string | null>(null);
+  const [showDetailView, setShowDetailView] = useState(false);
+  const [selectedTierForDetail, setSelectedTierForDetail] = useState<any>(null);
 
   const subscriptionTiers = [
     {
@@ -86,26 +91,94 @@ const SubscriptionInput: React.FC<SubscriptionInputProps> = ({
     }
   ];
 
-  const handleCardClick = (tierTitle: string) => {
-    if (expandedCard === tierTitle) {
-      setExpandedCard(null);
-    } else {
-      setExpandedCard(tierTitle);
+  // Notify parent component when detail state changes
+  useEffect(() => {
+    if (onDetailStateChange) {
+      onDetailStateChange(showDetailView, selectedTierForDetail?.title);
+    }
+  }, [showDetailView, selectedTierForDetail, onDetailStateChange]);
+
+  const handleTierClick = (tier: any) => {
+    setSelectedTierForDetail(tier);
+    setShowDetailView(true);
+  };
+
+  const handleSelectTier = () => {
+    if (selectedTierForDetail) {
+      onChange(selectedTierForDetail.title.toLowerCase());
+      setShowDetailView(false);
+      setSelectedTierForDetail(null);
+      if (onTierSelect) {
+        onTierSelect();
+      }
     }
   };
 
-  const handleSelect = (tierTitle: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    onChange(tierTitle.toLowerCase());
-    setExpandedCard(null);
+  const handleBackToGrid = () => {
+    setShowDetailView(false);
+    setSelectedTierForDetail(null);
   };
 
+  // Expose the select function to parent
+  useEffect(() => {
+    if (window) {
+      (window as any).selectCurrentTier = handleSelectTier;
+    }
+  }, [selectedTierForDetail]);
+
+  // DETAIL VIEW - Full modal step
+  if (showDetailView && selectedTierForDetail) {
+    return (
+      <div className="flex flex-col gap-6">
+        {/* Header with back button */}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleBackToGrid}
+            className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
+          >
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+            </svg>
+            <span className="text-sm">Back to all plans</span>
+          </button>
+        </div>
+
+        {/* Tier Header */}
+        <div className="text-center">
+          <span className={`inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium border ${selectedTierForDetail.accent} ${selectedTierForDetail.border} mb-4`}>
+            {selectedTierForDetail.category}
+          </span>
+          <h2 className="text-xl text-gray-900 mb-2">{selectedTierForDetail.title}</h2>
+          <p className="text-lg text-[#60A5FA] mb-4">{selectedTierForDetail.price}</p>
+          <p className="text-gray-600 text-sm leading-relaxed max-w-2xl mx-auto">{selectedTierForDetail.fullDescription}</p>
+        </div>
+
+        {/* Features List */}
+        <div>
+          <h3 className="text-lg text-gray-900 mb-4">Features included:</h3>
+          <div className="grid gap-2">
+            {selectedTierForDetail.features.map((feature: string, index: number) => (
+              <div key={index} className="flex items-start gap-3">
+                <div className="w-4 h-4 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                  <svg className="w-2.5 h-2.5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <span className="text-sm text-gray-700">{feature}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // GRID VIEW - Selection step
   return (
-    <div className="w-full max-h-[70vh] overflow-y-auto -mb-4 mt-4">
-      <div className="grid grid-cols-2 gap-3">
+    <div className="flex flex-col gap-6">
+      <div className="grid grid-cols-2 gap-4">
         {subscriptionTiers.map((tier) => {
           const isSelected = value === tier.title.toLowerCase();
-          const isExpanded = expandedCard === tier.title;
           
           return (
             <div
@@ -113,112 +186,41 @@ const SubscriptionInput: React.FC<SubscriptionInputProps> = ({
               className={`
                 bg-white rounded-xl border-2 transition-all duration-300 cursor-pointer
                 ${isSelected 
-                  ? 'border-[#60A5FA] shadow-lg shadow-blue-100' 
+                  ? 'border-[#60A5FA] shadow-lg shadow-blue-100 bg-blue-50' 
                   : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
                 }
-                ${isExpanded ? 'col-span-2 shadow-xl' : ''}
               `}
-              onClick={() => handleCardClick(tier.title)}
+              onClick={() => handleTierClick(tier)}
             >
-              {/* Collapsed View */}
-              {!isExpanded && (
-                <div className="p-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className={`px-2 py-0.5 rounded-md text-xs font-medium ${tier.accent}`}>
-                          {tier.category}
-                        </div>
-                        {isSelected && (
-                          <div className="w-4 h-4 bg-[#60A5FA] rounded-full flex items-center justify-center">
-                            <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                            </svg>
-                          </div>
-                        )}
-                      </div>
-                      <h3 className="text-sm font-medium text-gray-900 leading-tight mb-1">
-                        {tier.title}
-                      </h3>
-                      <p className="text-sm font-medium text-[#60A5FA]">
-                        {tier.price}
-                      </p>
-                    </div>
-                    <div className="text-gray-400">
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Expanded View */}
-              {isExpanded && (
-                <div className="p-5">
-                  <div className="flex items-start justify-between mb-4">
-                    <div>
-                      <div className={`inline-block px-2 py-1 rounded-md text-xs font-medium ${tier.accent} mb-2`}>
+              <div className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium border ${tier.accent} ${tier.border}`}>
                         {tier.category}
-                      </div>
-                      <h3 className="text-lg font-medium text-gray-900 mb-1">
-                        {tier.title}
-                      </h3>
-                      <p className="text-lg font-medium text-[#60A5FA]">
-                        {tier.price}
-                      </p>
+                      </span>
+                      {isSelected && (
+                        <div className="w-5 h-5 bg-[#60A5FA] rounded-full flex items-center justify-center">
+                          <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                      )}
                     </div>
-                    <button 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setExpandedCard(null);
-                      }}
-                      className="text-gray-400 hover:text-gray-600 p-1"
-                    >
-                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                      </svg>
-                    </button>
+                    <h3 className="text-sm text-gray-900 leading-tight mb-2">
+                      {tier.title}
+                    </h3>
+                    <p className="text-sm text-[#60A5FA] mb-2">
+                      {tier.price}
+                    </p>
                   </div>
-                  
-                  <p className="text-sm text-gray-600 mb-4 leading-relaxed">
-                    {tier.fullDescription}
-                  </p>
-                  
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div>
-                      <h4 className="font-medium text-gray-900 text-sm mb-2">Features included:</h4>
-                      <ul className="space-y-1">
-                        {tier.features.map((feature, index) => (
-                          <li key={index} className="flex items-center text-gray-600">
-                            <div className="w-3 h-3 bg-green-100 rounded-full flex items-center justify-center mr-2 flex-shrink-0">
-                              <svg className="w-2 h-2 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                              </svg>
-                            </div>
-                            <span className="text-xs">{feature}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    
-                    <div className="flex justify-end items-end">
-                      <button
-                        onClick={(e) => handleSelect(tier.title, e)}
-                        className={`
-                          px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
-                          ${isSelected 
-                            ? 'bg-[#60A5FA] text-white shadow-lg shadow-blue-200' 
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                          }
-                        `}
-                      >
-                        {isSelected ? 'Selected' : 'Select Plan'}
-                      </button>
-                    </div>
+                  <div className="text-gray-400 ml-2">
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                    </svg>
                   </div>
                 </div>
-              )}
+              </div>
             </div>
           );
         })}

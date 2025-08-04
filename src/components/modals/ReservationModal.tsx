@@ -4,6 +4,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { format, isSameDay, isAfter, parse } from 'date-fns';
 import { toast } from 'react-hot-toast';
+import axios from 'axios';
 import useLoginModal from '@/app/hooks/useLoginModal';
 import useStripeCheckoutModal from '@/app/hooks/useStripeCheckoutModal';
 import useReservationModal from '@/app/hooks/useReservationModal';
@@ -191,37 +192,100 @@ const ReservationModal: React.FC = () => {
     setStep((value) => value + 1);
   };
 
-  const onSubmit = useCallback(() => {
-    if (!currentUser) return loginModal.onOpen();
+  // Updated onSubmit function that creates reservation AND opens Stripe
+  const onSubmit = useCallback(async () => {
+    console.log('onSubmit called');
+    
+    if (!currentUser) {
+      console.log('No current user, opening login modal');
+      return loginModal.onOpen();
+    }
+    
     if (!date || !time || selectedServices.length === 0 || !selectedEmployee || !listing?.id) {
+      console.log('Missing required fields:', { date, time, selectedServices, selectedEmployee, listing: listing?.id });
       toast.error('Please fill in all required fields');
       return;
     }
 
     setIsLoading(true);
 
-    const reservationData = {
-      totalPrice,
-      date,
-      time,
-      listingId: listing.id,
-      serviceId: selectedServices[0].value, // Primary service for backward compatibility
-      serviceName: selectedServices[0].label.split(' - ')[0], // Primary service name
-      services: selectedServices.map(service => ({
-        serviceId: service.value,
-        serviceName: service.label.split(' - ')[0],
-        price: service.price
-      })),
-      employeeId: selectedEmployee.value,
-      employeeName: selectedEmployee.label,
-      note,
-      businessName: listing.title || '',
-    };
+    try {
+      // Create the reservation in the database using the existing API
+      const reservationPayload = {
+        listingId: listing.id,
+        serviceId: selectedServices[0].value, // Primary service for backward compatibility
+        serviceName: selectedServices[0].label.split(' - ')[0], // Primary service name
+        employeeId: selectedEmployee.value,
+        date: date.toISOString(),
+        time,
+        note,
+        totalPrice
+      };
 
-    stripeCheckoutModal.onOpen(reservationData);
-    onClose();
-    setIsLoading(false);
-  }, [totalPrice, date, time, listing, selectedServices, selectedEmployee, currentUser, loginModal, stripeCheckoutModal, note, onClose]);
+      console.log('Creating reservation with payload:', reservationPayload);
+
+      const response = await axios.post('/api/reservations', reservationPayload);
+      const createdReservation = response.data;
+
+      console.log('Reservation created successfully:', createdReservation);
+
+      toast.success('Reservation created! Proceeding to payment...');
+
+      // Prepare data for Stripe checkout
+      const stripeData = {
+        reservationId: createdReservation.id,
+        totalPrice,
+        date: date, // Keep as Date object
+        time,
+        listingId: listing.id,
+        serviceId: selectedServices[0].value,
+        serviceName: selectedServices[0].label.split(' - ')[0],
+        employeeId: selectedEmployee.value,
+        employeeName: selectedEmployee.label,
+        note,
+        businessName: listing.title || 'Business',
+        services: selectedServices.map(service => ({
+          serviceId: service.value,
+          serviceName: service.label.split(' - ')[0],
+          price: service.price
+        })),
+        // Add any other data your Stripe checkout needs
+        customerName: currentUser.name || '',
+        customerEmail: currentUser.email || '',
+      };
+
+      console.log('Opening Stripe checkout with data:', stripeData);
+
+      // Close the reservation modal first
+      handleClose();
+
+      // Small delay to ensure modal closes before opening Stripe
+      setTimeout(() => {
+        console.log('Calling stripeCheckoutModal.onOpen');
+        stripeCheckoutModal.onOpen(stripeData);
+      }, 100);
+
+    } catch (error: any) {
+      console.error('Error creating reservation:', error);
+      
+      // Show specific error message if available
+      const errorMessage = error.response?.data?.message || error.response?.data?.error || 'Failed to create reservation';
+      toast.error(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [
+    currentUser,
+    date,
+    time,
+    selectedServices,
+    selectedEmployee,
+    listing,
+    note,
+    totalPrice,
+    loginModal,
+    stripeCheckoutModal
+  ]);
 
   // Reset state when modal closes
   const handleClose = useCallback(() => {
@@ -619,12 +683,12 @@ const ReservationModal: React.FC = () => {
     <Modal
       id="reservation-modal"
       modalContentId="reservation-modal-content"
-      disabled={isLoading} // Only disable when loading, not based on step completion
+      disabled={isLoading}
       isOpen={isOpen}
       title="Book Appointment"
-      actionLabel={step === 4 ? "Reserve Now" : "Next"}
+      actionLabel={step === 4 ? "Reserve & Pay" : "Next"}
       actionId="reserve-button"
-      onSubmit={step === 4 ? onSubmit : onNext} // onNext now handles validation
+      onSubmit={step === 4 ? onSubmit : onNext}
       secondaryActionLabel={step === 0 ? undefined : "Back"}
       secondaryAction={step === 0 ? undefined : onBack}
       onClose={handleClose}

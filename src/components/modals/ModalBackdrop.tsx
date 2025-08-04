@@ -19,7 +19,7 @@ const ModalBackdrop: React.FC<ModalBackdropProps> = ({ videoSrc }) => {
     <div className="fixed inset-0 z-1">
       <video
         ref={videoRef}
-        className="absolute inset-0 object-cover w-full h-full filter"
+        className="absolute inset-0 object-cover w-full h-full filter "
         autoPlay
         muted
         loop
