@@ -65,9 +65,7 @@ export default async function getShopById(params: IParams) {
       productCount,
       followerCount,
       featuredProductItems,
-      // Format socials from JSON if needed
-      socials: shop.socials as Record<string, string> || {},
-      // User data formatting
+  
       user: {
         id: shop.user.id,
         name: shop.user.name,
