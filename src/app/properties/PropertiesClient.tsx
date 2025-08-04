@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { categories } from '@/components/Categories';
 import { SafeListing, SafeUser } from "@/app/types";
 import ClientProviders from "@/components/ClientProviders";
-import useRentModal from "@/app/hooks/useRentModal"; // Add this
+import useRentModal from "@/app/hooks/useRentModal";
 
 import Heading from "@/components/Heading";
 import ListingCard from "@/components/listings/ListingCard";
@@ -17,7 +17,6 @@ interface PropertiesClientProps {
   listings: SafeListing[],
   currentUser?: SafeUser | null,
 }
-
 
 export const dynamic = 'force-dynamic';
 
@@ -52,42 +51,39 @@ const PropertiesClient: React.FC<PropertiesClientProps> = ({
     })
   }, [router]);
 
-
   return ( 
     <Container>
-    <ClientProviders>
-      <div className="pt-2 flex-1">
-      <div 
-        className="
-          pt-6
-          flex-1
-          grid 
-          grid-cols-1
-          lg:grid-cols-2
-          xl:grid-cols-3
-          2xl:grid-cols-3
-          gap-4
-      px-4
-        "
-      >
-        {listings.map((listing: any) => (
-            <ListingCard
-            categories={categories}
-            key={listing.id}
-            data={listing}
-            actionId={listing.id}
-            onAction={() => onEdit(listing)}
-            disabled={editingId === listing.id}
-            actionLabel="Edit listing"
-            currentUser={currentUser}
-          />
-        ))}
-      </div>
-      
-      </div>
-    </ClientProviders>
+      <ClientProviders>
+        <div className="pt-2 flex-1">
+          <div 
+            className="
+              pt-6
+              flex-1
+              grid 
+              grid-cols-1
+              lg:grid-cols-2
+              xl:grid-cols-3
+              2xl:grid-cols-3
+              gap-4
+              px-4
+            "
+          >
+            {listings.map((listing: SafeListing) => (
+              <ListingCard
+                categories={categories}
+                key={listing.id}
+                data={listing}
+                onAction={() => onEdit(listing)}
+                disabled={editingId === listing.id}
+                actionLabel="Edit listing"
+                currentUser={currentUser}
+              />
+            ))}
+          </div>
+        </div>
+      </ClientProviders>
     </Container>
-   );
+  );
 }
  
 export default PropertiesClient;

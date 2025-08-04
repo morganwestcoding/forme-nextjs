@@ -12,7 +12,11 @@ interface ListingCardProps {
   data: SafeListing;
   currentUser?: SafeUser | null;
   categories?: { label: string; color: string }[];
+  onAction?: () => void;
+  disabled?: boolean;
+  actionLabel?: string;
 }
+
 
 const ListingCard: React.FC<ListingCardProps> = ({
   data,
@@ -105,6 +109,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
             </div>
           </button>
         </div>
+        
       </div>
     </div>
   );
