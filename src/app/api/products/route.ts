@@ -99,7 +99,7 @@ export async function POST(request: Request) {
               userId: currentUser.id,
               storeUrl: body.storeUrl || null,
               category: body.category || null,
-              socials: body.socials || null,
+    
               galleryImages: body.galleryImages || [],
               isVerified: false,
               shopEnabled: body.shopEnabled !== undefined ? body.shopEnabled : true,
