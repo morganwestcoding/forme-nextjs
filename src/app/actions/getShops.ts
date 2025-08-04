@@ -153,17 +153,8 @@ export default async function getShops(params: IShopsParams): Promise<SafeShop[]
         address: shop.address || undefined,
         zipCode: shop.zipCode || undefined,
         isOnlineOnly: shop.isOnlineOnly || false,
-        coordinates: shop.coordinates as { lat: number; lng: number } | null,
         userId: shop.userId,
         storeUrl: shop.storeUrl || undefined,
-        socials: shop.socials as {
-          instagram?: string;
-          facebook?: string;
-          twitter?: string;
-          tiktok?: string;
-          youtube?: string;
-          [key: string]: string | undefined;
-        } | null,
         galleryImages: shop.galleryImages,
         createdAt: shop.createdAt.toISOString(),
         updatedAt: shop.updatedAt.toISOString(),
