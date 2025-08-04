@@ -616,7 +616,7 @@ const ReservationModal: React.FC = () => {
         {isToday && (
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-3">
             <p className="text-sm text-amber-700 text-center">
-              <span className="font-medium">Today's booking:</span> Times shown with 1 hour advance notice required
+              <span className="font-medium">Today&apos;s booking:</span> Times shown with 1 hour advance notice required
             </p>
           </div>
         )}
