@@ -62,6 +62,7 @@ const UserButton: React.FC<UserButtonProps> = ({
     router.push(`/profile/${currentUser?.id}`)
   );
   const handleListings = handleClick(() => router.push("/properties"));
+  const handleAnalytics = handleClick(() => router.push("/analytics")); // New analytics handler
 
   const buttonClass = noBg
     ? "flex items-center justify-start cursor-pointer outline-none touch-manipulation"
@@ -119,7 +120,7 @@ const UserButton: React.FC<UserButtonProps> = ({
             <DropdownMenuItem onClick={handleListings}>
               My Listings
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleRent}>My Analytics</DropdownMenuItem>
+            <DropdownMenuItem onClick={handleAnalytics}>My Analytics</DropdownMenuItem>
             <DropdownMenuItem onClick={handleSubscribe}>Subscription</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleSignOut}>Sign Out</DropdownMenuItem>

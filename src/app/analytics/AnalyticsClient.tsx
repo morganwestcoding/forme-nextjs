@@ -1,3 +1,4 @@
+'use client';
 import React, { useState } from 'react';
 import { SafeUser } from '@/app/types';
 import { AnalyticsData } from '@/app/actions/getAnalyticsData';
