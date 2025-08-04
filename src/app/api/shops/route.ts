@@ -167,10 +167,10 @@ export async function POST(request: Request) {
     address,
     zipCode,
     isOnlineOnly,
-    coordinates,
+
     storeUrl,
     galleryImages,
-    socials,
+
     shopEnabled,
     listingId,
     products // Get the products array from the request body
@@ -178,7 +178,7 @@ export async function POST(request: Request) {
 
   console.log("Received fields:", { 
     name, description, category, logo, coverImage, location, 
-    address, zipCode, isOnlineOnly, storeUrl, galleryImages, socials,
+    address, zipCode, isOnlineOnly, storeUrl, galleryImages, 
     productsCount: products?.length || 0
   });
 
@@ -190,19 +190,7 @@ export async function POST(request: Request) {
     return new Response(`Missing required fields: ${missingFields.join(", ")}`, { status: 400 });
   }
 
-  let parsedSocials;
-  try {
-    parsedSocials = typeof socials === 'string' ? JSON.parse(socials) : socials;
-  } catch (error) {
-    return new Response("Invalid socials format", { status: 400 });
-  }
 
-  let parsedCoordinates;
-  try {
-    parsedCoordinates = typeof coordinates === 'string' ? JSON.parse(coordinates) : coordinates;
-  } catch (error) {
-    return new Response("Invalid coordinates format", { status: 400 });
-  }
 
   try {
     // Create the shop first
@@ -217,10 +205,10 @@ export async function POST(request: Request) {
         address: address || null,
         zipCode: zipCode || null,
         isOnlineOnly: isOnlineOnly || false,
-        coordinates: parsedCoordinates || null,
+
         userId: currentUser.id,
         storeUrl: storeUrl || null,
-        socials: parsedSocials || null,
+  
         galleryImages: galleryImages || [],
         isVerified: false,
         shopEnabled: shopEnabled !== undefined ? shopEnabled : true,
