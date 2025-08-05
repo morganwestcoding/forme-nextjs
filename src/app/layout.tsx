@@ -29,7 +29,7 @@ import ShopModal from '@/components/modals/ShopModal';
 import CreatePostModal from '@/components/modals/CreatePostModal';
 import ReservationModal from '@/components/modals/ReservationModal';
 import ForceAuthModal from '@/components/modals/ForceAuthModal';
-
+import ModalManager from '@/components/modals/ModalManager';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -75,6 +75,9 @@ export default async function RootLayout({
     <MobileNavBar currentUser={currentUser} />
   </div>
 ) : null}
+
+              {/* ModalManager for shared backdrop - renders for all auth modals */}
+              <ModalManager />
 
               <ShopModal/>
               <ToasterProvider/>

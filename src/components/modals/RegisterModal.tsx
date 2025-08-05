@@ -1,9 +1,5 @@
 'use client';
-import ModalButton from "./ModalButton";
 import axios from "axios";
-import { AiFillGithub } from "react-icons/ai";
-import { signIn } from "next-auth/react";
-import { FcGoogle } from "react-icons/fc";
 import { useCallback, useState } from "react";
 import { toast } from "react-hot-toast";
 import SubscriptionInput from "../inputs/SubscriptionInput";
@@ -19,7 +15,6 @@ import Modal from "./Modal";
 import Input from "../inputs/Input";
 import Heading from "../Heading";
 import ProfileLocationInput from "../inputs/ProfileLocationInput";
-import Logo from "../header/Logo";
 
 enum STEPS {
   ACCOUNT = 0,
@@ -139,8 +134,7 @@ const RegisterModal= () => {
       toast.success('Registered!');
       setStep(STEPS.ACCOUNT);
       registerModal.onClose();
-      
-      // Wait for close animation to complete before opening login
+      // Wait for register modal to slide out before opening login modal
       setTimeout(() => {
         loginModal.onOpen();
       }, 350);
@@ -161,14 +155,12 @@ const RegisterModal= () => {
     });
   }
 
-  // Updated onToggle with proper timing for smooth transition
   const onToggle = useCallback(() => {
     registerModal.onClose();
-    
-    // Wait for the close animation to complete, then open login modal
+    // Wait for register modal to slide out before opening login modal
     setTimeout(() => {
       loginModal.onOpen();
-    }, 350); // Slightly longer than the 300ms animation to ensure smooth transition
+    }, 350);
   }, [registerModal, loginModal])
 
   // Determine action label based on current state
@@ -333,17 +325,16 @@ const RegisterModal= () => {
 
   return (
     <Modal
-     backdropVideo="/videos/modal-bg.mp4"
-    disabled={isLoading}
-    isOpen={registerModal.isOpen}
-    title="Register"
-    actionLabel={getActionLabel()}
-    secondaryAction={step !== STEPS.ACCOUNT ? onBack : undefined}
-    secondaryActionLabel={step !== STEPS.ACCOUNT ? "Back" : undefined}
-    onClose={registerModal.onClose}
-    onSubmit={handleSubmit(onSubmit)}
-    body={bodyContent}
-    footer={footerContent}
+      disabled={isLoading}
+      isOpen={registerModal.isOpen}
+      title="Register"
+      actionLabel={getActionLabel()}
+      secondaryAction={step !== STEPS.ACCOUNT ? onBack : undefined}
+      secondaryActionLabel={step !== STEPS.ACCOUNT ? "Back" : undefined}
+      onClose={registerModal.onClose}
+      onSubmit={handleSubmit(onSubmit)}
+      body={bodyContent}
+      footer={footerContent}
     />
   );
 }

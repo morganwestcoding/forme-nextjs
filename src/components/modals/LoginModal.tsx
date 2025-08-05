@@ -58,24 +58,14 @@ const LoginModal = () => {
     });
   }
 
-  // Updated onToggle with proper timing for smooth transition
   const onToggle = useCallback(() => {
-    // First, trigger the close animation for login modal
     loginModal.onClose();
-    
-    // Wait for the close animation to complete, then open register modal
-    setTimeout(() => {
-      registerModal.onOpen();
-    }, 350); // Slightly longer than the 300ms animation to ensure smooth transition
+    registerModal.onOpen();
   }, [loginModal, registerModal]);
 
   const onForgotPassword = useCallback(() => {
     loginModal.onClose();
-    
-    // Same timing for forgot password modal
-    setTimeout(() => {
-      forgotPasswordModal.onOpen();
-    }, 350);
+    forgotPasswordModal.onOpen();
   }, [loginModal, forgotPasswordModal]);
 
   const bodyContent = (
@@ -129,7 +119,6 @@ const LoginModal = () => {
           gap-2
           text-black
           text-center 
-     
           font-light
           text-sm
         "
@@ -151,7 +140,6 @@ const LoginModal = () => {
 
   return (
     <Modal
-     backdropVideo="/videos/modal-bg.mp4"
       disabled={isLoading}
       isOpen={loginModal.isOpen}
       title="Login"
