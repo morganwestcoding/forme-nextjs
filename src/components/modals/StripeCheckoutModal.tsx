@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { toast } from "react-hot-toast";
 import Modal from "./Modal";
 import Heading from "../Heading";
@@ -33,7 +33,12 @@ const StripeCheckoutModal = () => {
       
       // Redirect to Stripe Checkout
       const stripe = await stripePromise;
-      const { error } = await stripe!.redirectToCheckout({
+      if (!stripe) {
+        toast.error('Stripe failed to load');
+        return;
+      }
+
+      const { error } = await stripe.redirectToCheckout({
         sessionId
       });
       
@@ -42,6 +47,7 @@ const StripeCheckoutModal = () => {
       }
       
     } catch (error: any) {
+      console.error('Checkout error:', error);
       toast.error(error?.response?.data?.error || 'Something went wrong');
     } finally {
       setIsLoading(false);
@@ -58,11 +64,21 @@ const StripeCheckoutModal = () => {
       })
     : '';
 
-  // Format time for display
+  // Format time for display - Fixed the 12 PM/AM handling
   const formatTime = (time: string) => {
     const [hours, minutes] = time.split(':');
     const hour = parseInt(hours);
-    return `${hour > 12 ? hour - 12 : hour}:${minutes} ${hour >= 12 ? 'PM' : 'AM'}`;
+    const isPM = hour >= 12;
+    let displayHour = hour;
+    
+    if (hour === 0) {
+      displayHour = 12; // 12 AM
+    } else if (hour > 12) {
+      displayHour = hour - 12; // Convert to 12-hour format
+    }
+    // hour === 12 stays as 12 (12 PM)
+    
+    return `${displayHour}:${minutes} ${isPM ? 'PM' : 'AM'}`;
   };
 
   const formattedTime = reservationData?.time ? formatTime(reservationData.time) : '';
@@ -103,6 +119,13 @@ const StripeCheckoutModal = () => {
                 <span className="font-medium">{formattedTime}</span>
               </div>
               
+              {reservationData.note && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Note:</span>
+                  <span className="font-medium text-right max-w-xs">{reservationData.note}</span>
+                </div>
+              )}
+              
               <div className="h-px w-full bg-gray-200 my-2"></div>
               
               <div className="flex justify-between">
@@ -128,7 +151,7 @@ const StripeCheckoutModal = () => {
               </div>
             </div>
             
-            <div className="text-xs text-gray-500">
+            <div className="text-xs text-gray-500 text-center">
               By clicking &quot;Proceed to Payment&quot;, you agree to our Terms of Service and Cancellation Policy.
             </div>
           </div>
@@ -142,7 +165,7 @@ const StripeCheckoutModal = () => {
       disabled={isLoading}
       isOpen={stripeCheckoutModal.isOpen}
       title="Checkout"
-      actionLabel="Proceed to Payment"
+      actionLabel={isLoading ? "Processing..." : "Proceed to Payment"}
       onClose={stripeCheckoutModal.onClose}
       onSubmit={handleCheckout}
       body={bodyContent}

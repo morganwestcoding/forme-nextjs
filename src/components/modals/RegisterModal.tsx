@@ -139,7 +139,11 @@ const RegisterModal= () => {
       toast.success('Registered!');
       setStep(STEPS.ACCOUNT);
       registerModal.onClose();
-      loginModal.onOpen();
+      
+      // Wait for close animation to complete before opening login
+      setTimeout(() => {
+        loginModal.onOpen();
+      }, 350);
     })
     .catch((error: any) => {
       let errorMessage = 'Something went wrong!';
@@ -157,9 +161,14 @@ const RegisterModal= () => {
     });
   }
 
+  // Updated onToggle with proper timing for smooth transition
   const onToggle = useCallback(() => {
     registerModal.onClose();
-    loginModal.onOpen();
+    
+    // Wait for the close animation to complete, then open login modal
+    setTimeout(() => {
+      loginModal.onOpen();
+    }, 350); // Slightly longer than the 300ms animation to ensure smooth transition
   }, [registerModal, loginModal])
 
   // Determine action label based on current state

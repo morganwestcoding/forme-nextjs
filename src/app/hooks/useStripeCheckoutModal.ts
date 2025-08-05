@@ -1,17 +1,17 @@
-// app/hooks/useStripeCheckoutModal.ts
 import { create } from 'zustand';
 
-interface ReservationData {
+export interface ReservationData {
   totalPrice: number;
-  date: Date;
+  date: string; // Changed from Date to string to match component usage
   time: string;
   listingId: string;
   serviceId: string;
-  serviceName?: string;
+  serviceName: string; // Made required since component expects it
   employeeId: string;
-  employeeName?: string;
+  employeeName: string; // Made required since component expects it
+  businessName: string; // Made required since component expects it
   note?: string;
-  businessName?: string;
+  userId?: string; // Added for API calls
 }
 
 interface StripeCheckoutModalStore {

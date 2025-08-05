@@ -58,14 +58,24 @@ const LoginModal = () => {
     });
   }
 
+  // Updated onToggle with proper timing for smooth transition
   const onToggle = useCallback(() => {
+    // First, trigger the close animation for login modal
     loginModal.onClose();
-    registerModal.onOpen();
+    
+    // Wait for the close animation to complete, then open register modal
+    setTimeout(() => {
+      registerModal.onOpen();
+    }, 350); // Slightly longer than the 300ms animation to ensure smooth transition
   }, [loginModal, registerModal]);
 
   const onForgotPassword = useCallback(() => {
     loginModal.onClose();
-    forgotPasswordModal.onOpen();
+    
+    // Same timing for forgot password modal
+    setTimeout(() => {
+      forgotPasswordModal.onOpen();
+    }, 350);
   }, [loginModal, forgotPasswordModal]);
 
   const bodyContent = (
