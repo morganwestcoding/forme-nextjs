@@ -27,6 +27,10 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
 }) => {
   return (
     <Container>
+              <div className="mb-6">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Favorites</h1>
+          <p className="text-gray-600">A one stop shop for all of your favorite things</p>
+        </div>
       <div className="pt-2 flex flex-col">
         <div className="
           pt-6
@@ -37,7 +41,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
           xl:grid-cols-3
           2xl:grid-cols-3
           gap-4
-      px-4
+      
         ">
           {listings.map((listing: any) => (
          
