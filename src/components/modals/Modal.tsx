@@ -1,12 +1,18 @@
 'use client';
 
-import React, { useCallback, useEffect, useImperativeHandle, useState, forwardRef } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useState,
+  forwardRef,
+} from "react";
 import { X } from "lucide-react";
 import ModalButton from "./ModalButton";
 import ModalBackdrop from './ModalBackdrop';
 
 export interface ModalHandle {
-  close: () => void; // expose animated close to parent
+  close: () => void; // expose animated close
 }
 
 interface ModalProps {
@@ -48,55 +54,38 @@ const Modal = forwardRef<ModalHandle, ModalProps>(({
 
   useEffect(() => {
     setShowModal(isOpen);
-    
-    // Prevent body scrolling when modal is open
     if (isOpen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
     }
-    
     return () => {
       document.body.style.overflow = '';
     };
   }, [isOpen]);
 
   const handleClose = useCallback(() => {
-    if (disabled) {
-      return;
-    }
-  
+    if (disabled) return;
     setShowModal(false);
-    
     setTimeout(() => {
-      onClose();
-    }, 300)
+      onClose(); // this flips your zustand store
+    }, 300);
   }, [onClose, disabled]);
 
-  // NEW: expose the animated close to parent via ref (minimal change)
-  useImperativeHandle(ref, () => ({
-    close: handleClose
-  }), [handleClose]);
+  // expose handleClose to parents
+  useImperativeHandle(ref, () => ({ close: handleClose }), [handleClose]);
 
   const handleSubmit = useCallback(() => {
-    if (disabled) {
-      return;
-    }
-
+    if (disabled) return;
     onSubmit();
   }, [onSubmit, disabled]);
 
   const handleSecondaryAction = useCallback(() => {
-    if (disabled || !secondaryAction) {
-      return;
-    }
-
+    if (disabled || !secondaryAction) return;
     secondaryAction();
   }, [secondaryAction, disabled]);
 
-  if (!isOpen) {
-    return null;
-  }
+  if (!isOpen) return null;
 
   return (
     <div 
@@ -115,7 +104,6 @@ const Modal = forwardRef<ModalHandle, ModalProps>(({
         zIndex: 9999,
       }}
     >
-
       {backdropVideo && <ModalBackdrop videoSrc={backdropVideo} />}
       <div 
         className="
@@ -153,10 +141,7 @@ const Modal = forwardRef<ModalHandle, ModalProps>(({
             >
               <div className="relative w-full">
                 <button 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleClose();
-                  }}
+                  onClick={(e) => { e.stopPropagation(); handleClose(); }}
                   className="absolute right-4 top-4 p-1 hover:opacity-70 transition z-10"
                 >
                   <X size={18} className="text-black" />
@@ -194,6 +179,7 @@ const Modal = forwardRef<ModalHandle, ModalProps>(({
                   </div>
                 )}
               </div>
+
             </div>
           </div>
         </div>

@@ -12,6 +12,7 @@ import Heading from "../Heading";
 import ProfileLocationInput from "../inputs/ProfileLocationInput";
 import SubscriptionInput from "../inputs/SubscriptionInput";
 import ImageUpload from "../inputs/ImageUpload";
+import Logo from "../header/Logo";
 
 enum STEPS {
   ACCOUNT = 0,
@@ -145,6 +146,9 @@ const RegisterModal= () => {
 
   let bodyContent = (
     <div className="flex flex-col gap-4">
+                        <div className="flex justify-center">
+      <Logo variant="horizontal" />
+    </div>
       <Heading
         title="Welcome to ForMe"
         subtitle="Create an account!"
@@ -196,6 +200,7 @@ const RegisterModal= () => {
   if (step === STEPS.BIOGRAPHY) {
     bodyContent = (
       <div className="flex flex-col gap-8">
+
         <Heading
           title="Tell us about yourself"
           subtitle="What makes you unique?"
