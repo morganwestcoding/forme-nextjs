@@ -184,7 +184,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, cat
     <>
       <div
         ref={cardRef}
-        className="bg-white rounded-3xl shadow overflow-hidden max-w-xl cursor-pointer hover:shadow-lg transition-all duration-300 group relative"
+        className="bg-white rounded-2xl shadow overflow-hidden max-w-xl cursor-pointer hover:shadow-lg transition-all duration-300 group relative"
         onClick={handleClick}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
