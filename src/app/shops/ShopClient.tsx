@@ -82,7 +82,7 @@ const ShopClient: React.FC<ShopClientProps> = ({
       <div className="space-y-8">
         {/* Shops Section */}
         <section>
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between ">
 
           </div>
           
