@@ -88,7 +88,7 @@ const LoginModal = () => {
   const bodyContent = (
     <div className="flex flex-col gap-4">
       <div className="flex justify-center mb-2">
-        <Logo variant="vertical" />
+        <Logo variant="horizontal" />
       </div>
       <Heading title="Welcome back" subtitle="Login to your account!" />
       <Input

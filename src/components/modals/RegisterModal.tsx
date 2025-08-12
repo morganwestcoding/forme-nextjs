@@ -1,9 +1,14 @@
+// components/modals/RegisterModal.tsx
 'use client';
 
 import axios from "axios";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
+import { useSession } from "next-auth/react";
+
 import useLoginModal from "@/app/hooks/useLoginModal";
 import useRegisterModal from "@/app/hooks/useRegisterModal";
 import Modal, { ModalHandle } from "./Modal";
@@ -22,7 +27,9 @@ enum STEPS {
   SUBSCRIPTION = 4
 }
 
-const RegisterModal= () => {
+const RegisterModal = () => {
+  const router = useRouter();
+  const { status } = useSession(); // watch auth flips (race-safety)
   const [step, setStep] = useState(STEPS.ACCOUNT);
   const registerModal = useRegisterModal();
   const loginModal = useLoginModal();
@@ -34,9 +41,7 @@ const RegisterModal= () => {
     handleSubmit,
     setValue,
     watch,
-    formState: {
-      errors,
-    },
+    formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: {
       name: '',
@@ -61,98 +66,115 @@ const RegisterModal= () => {
     })
   }
 
-  const onNext = () => {
-    setStep((currentStep) => currentStep + 1);
-  };
+  const onNext = () => setStep((s) => s + 1);
+  const onBack = () => setStep((s) => s - 1);
 
-  const onBack = () => {
-    setStep((currentStep) => currentStep - 1);
-  };
+  const validatePassword = (password: string) => ({
+    hasMinLength: password.length >= 6,
+    hasMaxLength: password.length <= 18,
+    hasUpperCase: /[A-Z]/.test(password),
+    hasLowerCase: /[a-z]/.test(password),
+    hasNumber: /[0-9]/.test(password),
+    hasSpecialChar: /[!@#$%^&*(),]/.test(password)
+  });
 
-  const validatePassword = (password: string) => {
-    return {
-      hasMinLength: password.length >= 6,
-      hasMaxLength: password.length <= 18,
-      hasUpperCase: /[A-Z]/.test(password),
-      hasLowerCase: /[a-z]/.test(password),
-      hasNumber: /[0-9]/.test(password),
-      hasSpecialChar: /[!@#$%^&*(),]/.test(password)
-    };
-  };
+  // Close this modal if session flips to authenticated (covers rare timing)
+  useEffect(() => {
+    if (status === 'authenticated' && registerModal.isOpen) {
+      if (modalRef.current?.close) {
+        modalRef.current.close();
+      } else {
+        registerModal.onClose();
+      }
+      const t = setTimeout(() => router.refresh(), 320);
+      return () => clearTimeout(t);
+    }
+  }, [status, registerModal.isOpen, router, registerModal]);
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+    // Stepper flow
     if (step !== STEPS.SUBSCRIPTION) {
       if (step === STEPS.ACCOUNT) {
-        // Validate password
-        const passwordValidation = validatePassword(data.password);
-        
-        if (!Object.values(passwordValidation).every(Boolean)) {
+        // Password checks
+        const p = validatePassword(data.password);
+        if (!Object.values(p).every(Boolean)) {
           toast.error('Password does not meet requirements');
           return;
         }
-
-        // Check if email exists
+        // Email exists check
         try {
           const response = await axios.get(`/api/check-email?email=${data.email}`);
-          
           if (response.data.exists) {
             toast.error('Email already exists');
             return;
           }
-        } catch (error) {
+        } catch {
           toast.error('Error checking email');
           return;
         }
       }
-      
       return onNext();
     }
-    
-    setIsLoading(true);
 
-    axios.post('/api/register', data)
-    .then(() => {
-      toast.success('Registered!');
-      setStep(STEPS.ACCOUNT);
-      // animate this modal closed first
-      modalRef.current?.close();
-      // then open login
+    // Final step: create -> auto login -> close -> refresh
+    setIsLoading(true);
+    try {
+      await axios.post('/api/register', data);
+      toast.success('Registered! Logging you in…');
+
+      // Immediately sign them in with the same credentials
+      const signInRes = await signIn('credentials', {
+        email: data.email,
+        password: data.password,
+        redirect: false
+      });
+
+      if (signInRes?.ok || signInRes?.status === 200) {
+        setStep(STEPS.ACCOUNT);
+        // animated close
+        if (modalRef.current?.close) {
+          modalRef.current.close();
+          setTimeout(() => {
+            router.refresh();
+          }, 320);
+        } else {
+          registerModal.onClose();
+          router.refresh();
+        }
+        return;
+      }
+
+      // If sign-in failed after registering, fall back to open Login
+      toast.error(signInRes?.error || 'Login after registration failed.');
+      if (modalRef.current?.close) modalRef.current.close();
       setTimeout(() => {
         loginModal.onOpen();
-      }, 400);
-    })
-    .catch((error: any) => {
+      }, 320);
+
+    } catch (error: any) {
       let errorMessage = 'Something went wrong!';
-      
-      if (error.response?.data) {
-        errorMessage = error.response.data;
-      } else if (error.message) {
-        errorMessage = error.message;
-      }
-      
+      if (error?.response?.data) errorMessage = error.response.data;
+      else if (error?.message) errorMessage = error.message;
       toast.error(errorMessage);
-    })
-    .finally(() => {
+    } finally {
       setIsLoading(false);
-    });
-  }
+    }
+  };
 
   const onToggle = useCallback(() => {
+    // Manual switch to Login (kept as-is)
     modalRef.current?.close();
     setTimeout(() => {
       loginModal.onOpen();
     }, 400);
-  }, [loginModal])
+  }, [loginModal]);
 
   let bodyContent = (
     <div className="flex flex-col gap-4">
-                        <div className="flex justify-center">
-      <Logo variant="horizontal" />
-    </div>
-      <Heading
-        title="Welcome to ForMe"
-        subtitle="Create an account!"
-      />
+      <div className="flex justify-center">
+        <Logo variant="horizontal" />
+      </div>
+      <Heading title="Welcome to ForMe" subtitle="Create an account!" />
       <Input
         id="email"
         label="Email"
@@ -200,23 +222,22 @@ const RegisterModal= () => {
   if (step === STEPS.BIOGRAPHY) {
     bodyContent = (
       <div className="flex flex-col gap-8">
-
         <Heading
           title="Tell us about yourself"
           subtitle="What makes you unique?"
         />
-      <Input
-        id="bio"
-        label="Tell Us About You..."
-        disabled={isLoading}
-        register={register}
-        errors={errors}
-        required
-        maxLength={200}
-        type="textarea"
-      />
+        <Input
+          id="bio"
+          label="Tell Us About You..."
+          disabled={isLoading}
+          register={register}
+          errors={errors}
+          required
+          maxLength={200}
+          type="textarea"
+        />
       </div>
-    )
+    );
   }
 
   if (step === STEPS.IMAGES) {
@@ -253,8 +274,8 @@ const RegisterModal= () => {
           </div>
         </div>
       </div>
-    )
-  };
+    );
+  }
 
   if (step === STEPS.SUBSCRIPTION) {
     bodyContent = (
@@ -268,33 +289,25 @@ const RegisterModal= () => {
           value={watch('subscription')}
         />
       </div>
-    )
+    );
   }
 
   const footerContent = (
     <div className="flex flex-col gap-4 mt-3">
       <hr />
-      <div 
-        className="
-          text-black
-          text-center 
-          mt-4 
-          font-light
-        "
-      >
-        <p>Already have an account?
+      <div className="text-black text-center mt-4 font-light">
+        <p>
+          Already have an account?
           <span 
             onClick={onToggle} 
-            className="
-              text-neutral-500
-              cursor-pointer 
-              hover:underline
-            "
-            > Log in</span>
+            className="text-neutral-500 cursor-pointer hover:underline"
+          >
+            {' '}Log in
+          </span>
         </p>
       </div>
     </div>
-  )
+  );
 
   return (
     <Modal

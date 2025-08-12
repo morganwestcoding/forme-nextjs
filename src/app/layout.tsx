@@ -1,6 +1,8 @@
+// app/layout.tsx
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+
 import RegisterModal from '@/components/modals/RegisterModal';
 import ToasterProvider from './providers/ToasterProvider';
 import LoginModal from '@/components/modals/LoginModal';
@@ -28,8 +30,8 @@ import StripeCheckoutModal from '@/components/modals/StripeCheckoutModal';
 import ShopModal from '@/components/modals/ShopModal';
 import CreatePostModal from '@/components/modals/CreatePostModal';
 import ReservationModal from '@/components/modals/ReservationModal';
-// REMOVE: import LoginTrigger from '@/components/LoginTrigger';
-import AuthModalController from '@/components/AuthModalController'; // NEW
+
+import AuthModalController from '@/components/AuthModalController';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -54,7 +56,7 @@ export default async function RootLayout({
   const isFirstTimeUser =
     currentUser &&
     new Date().getTime() - new Date(currentUser.createdAt).getTime() < 5 * 60 * 1000;
-  
+
   return (
     <FilterProvider>
       <CategoryProvider>
@@ -62,31 +64,26 @@ export default async function RootLayout({
           <ColorProvider>
             <html lang="en">
               <body className={inter.className}>
-                {currentUser ? (
-                  <div className="min-h-screen flex">
-                    <div className="hidden md:block fixed top-0 left-0 bottom-0 bg-white z-50">
-                      <Sidebar currentUser={currentUser} />
-                    </div>
-                    <div className="flex-1 md:pl-52">
-                      <main className="md:pt-0 pb-16 md:pb-0">
-                        {children}
-                      </main>
-                    </div>
+                {/* Always show the sidebar, signed in or not */}
+                <div className="min-h-screen flex">
+                  <div className="hidden md:block fixed top-0 left-0 bottom-0 bg-white z-50">
+                    <Sidebar currentUser={currentUser ?? null} />
                   </div>
-                ) : (
-                  <>
-                    {/* Show content without sidebar for non-authenticated users */}
-                    <main className="min-h-screen">
+
+                  {/* Main content shifts right when sidebar is visible on md+ */}
+                  <div className="flex-1 md:pl-52">
+                    <main className="md:pt-0 pb-16 md:pb-0">
                       {children}
                     </main>
+                  </div>
+                </div>
 
-                    {/* Auto-open login modal for non-authenticated users (stable controller) */}
-                    <ClientOnly>
-                      <AuthModalController />
-                    </ClientOnly>
-                  </>
-                )}
+                {/* Keep the auth auto-open controller mounted always; it only opens when unauthenticated */}
+                <ClientOnly>
+                  <AuthModalController />
+                </ClientOnly>
 
+                {/* Global modals/providers */}
                 <ShopModal/>
                 <ToasterProvider/>
                 <ReservationModal/>
