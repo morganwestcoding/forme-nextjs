@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React from 'react';
 import Image from 'next/image';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
@@ -9,6 +9,15 @@ import CreateChatButton from '@/components/profile/CreateChatButton';
 import PostCard from '@/components/feed/PostCard';
 import ListingCard from '@/components/listings/ListingCard';
 import { categories } from '@/components/Categories';
+
+// helper: truncate on word boundary with ellipsis
+const truncate = (text: string, max: number) => {
+  if (!text) return text;
+  if (text.length <= max) return text;
+  const cut = text.slice(0, max);
+  const atWord = cut.lastIndexOf(' ');
+  return (atWord > 0 ? cut.slice(0, atWord) : cut).trimEnd() + '…';
+};
 
 interface ProfileHeadProps {
   user: SafeUser;
@@ -35,20 +44,25 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
     galleryImages = [],
   } = user;
 
-  const [activeTab, setActiveTab] = useState<'Posts' | 'Listings' | 'Images' | 'Reels'>('Posts');
-  const [isFollowing, setIsFollowing] = useState(
+  const [activeTab, setActiveTab] = React.useState<
+    'Posts' | 'Listings' | 'Images' | 'Reels'
+  >('Posts');
+
+  const [isFollowing, setIsFollowing] = React.useState(
     !!currentUser?.following?.includes(id)
   );
-  const [followersCount, setFollowersCount] = useState(followers.length);
+  const [followersCount, setFollowersCount] = React.useState(followers.length);
 
-  const [city, state] = useMemo(
-    () => (location ? location.split(',').map(s => s.trim()) : [null, null]),
+  const [city, state] = React.useMemo(
+    () => (location ? location.split(',').map((s) => s.trim()) : [null, null]),
     [location]
   );
 
   const avatar = image || '/people/chicken-headshot.jpeg';
   const cover = imageSrc || '/assets/hero-background.jpeg';
-  const about = bio || 'No Bio Provided Yet..';
+
+  const aboutRaw = bio || 'No Bio Provided Yet..';
+  const about = React.useMemo(() => truncate(aboutRaw, 230), [aboutRaw]); // 230 chars
 
   const handleFollow = async () => {
     if (!currentUser) {
@@ -57,7 +71,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
     }
     try {
       const res = await axios.post(`/api/follow/${id}`);
-      setIsFollowing(!isFollowing);
+      setIsFollowing((f) => !f);
       setFollowersCount(res.data?.followers?.length ?? followersCount + (isFollowing ? -1 : 1));
       toast.success(isFollowing ? 'Unfollowed' : 'Followed');
     } catch {
@@ -92,7 +106,6 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                     >
                       {name ?? 'User'}
                     </h1>
-                    {/* Verified/check mark not shown for users by default; add if you have a flag */}
                   </div>
 
                   {/* Location badge */}
@@ -128,10 +141,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                       >
                         {isFollowing ? 'Following' : 'Follow'}
                       </button>
-                      <CreateChatButton
-                        currentUser={currentUser}
-                        otherUserId={id}
-                      />
+                      <CreateChatButton currentUser={currentUser} otherUserId={id} />
                     </>
                   ) : (
                     <button
@@ -304,8 +314,9 @@ function IconListings() {
 function IconImages() {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" color="currentColor" fill="none" viewBox="0 0 24 24">
-      <path d="M3 16l4.47-4.47a2.5 2.5 0 0 1 3.54 0L14 15.5M21 16l-2.47-2.47A2.5 2.5 0 0 0 17.25 13c-.48 0-.94.19-1.28.53L14 15.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M3.698 19.747C2.5 18.345 2.5 16.23 2.5 12s0-7.747 1.198-9.05C4.053 2.5 4.239 2.314 4.438 2.144 5.84.947 7.955.947 12 .947s6.16 0 7.562 1.197c.2.17.386.356.557.559C21.5 3.996 21.5 6.11 21.5 12s0 8.004-1.381 9.35c-.171.203-.357.389-.557.559C18.16 22.105 16.045 22.105 12 22.105s-6.16 0-7.562-1.197a4.1 4.1 0 0 1-.74-1.161Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M3 16L7.46967 11.5303C7.80923 11.1908 8.26978 11 8.75 11C9.23022 11 9.69077 11.1908 10.0303 11.5303L14 15.5M15.5 17L14 15.5M21 16L18.5303 13.5303C18.1908 13.1908 17.7302 13 17.25 13C16.7698 13 16.3092 13.1908 15.9697 13.5303L14 15.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+                    <path d="M15.5 8C15.7761 8 16 7.77614 16 7.5C16 7.22386 15.7761 7 15.5 7M15.5 8C15.2239 8 15 7.77614 15 7.5C15 7.22386 15.2239 7 15.5 7M15.5 8V7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+                    <path d="M3.69797 19.7472C2.5 18.3446 2.5 16.2297 2.5 12C2.5 7.77027 2.5 5.6554 3.69797 4.25276C3.86808 4.05358 4.05358 3.86808 4.25276 3.69797C5.6554 2.5 7.77027 2.5 12 2.5C16.2297 2.5 18.3446 2.5 19.7472 3.69797C19.9464 3.86808 20.1319 4.05358 20.302 4.25276C21.5 5.6554 21.5 7.77027 21.5 12C21.5 16.2297 21.5 18.3446 20.302 19.7472C20.1319 19.9464 19.9464 20.1319 19.7472 20.302C18.3446 21.5 16.2297 21.5 12 21.5C7.77027 21.5 5.6554 21.5 4.25276 20.302C4.05358 20.1319 3.86808 19.9464 3.69797 19.7472Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
     </svg>
   );
 }
