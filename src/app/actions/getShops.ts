@@ -1,185 +1,115 @@
-// app/actions/getShops.ts
 import prisma from "@/app/libs/prismadb";
-import { SafeShop } from "@/app/types";
 
 export interface IShopsParams {
   userId?: string;
-  location?: string;
-  verified?: boolean;
-  hasProducts?: boolean;
-  search?: string;
-  limit?: number;
-  sort?: 'newest' | 'products';
+  locationValue?: string;
   category?: string;
-  featured?: boolean;
+  state?: string;
+  city?: string;
+  order?: "asc" | "desc";
+  hasProducts?: boolean;
+  isVerified?: boolean;
 }
 
-export default async function getShops(params: IShopsParams): Promise<SafeShop[]> {
+export default async function getShops(params: IShopsParams) {
   try {
     const {
       userId,
-      location,
-      verified,
-      hasProducts,
-      search,
-      limit,
-      sort = 'newest',
+      locationValue,
       category,
-      featured
+      state,
+      city,
+      order,
+      hasProducts,
+      isVerified,
     } = params;
 
-    // Build query filters
-    let query: any = {
-      shopEnabled: true
-    };
+    const where: any = {};
 
-    // User filter
-    if (userId) {
-      query.userId = userId;
+    if (userId) where.userId = userId;
+    if (category) where.category = category;
+    if (isVerified !== undefined) where.isVerified = isVerified;
+
+    if (locationValue) {
+      where.location = locationValue;
     }
 
-    // Location filter
-    if (location) {
-      query.location = {
-        contains: location,
-        mode: 'insensitive'
-      };
+    // Loose location search
+    if (state || city) {
+      where.location = { contains: state || city, mode: "insensitive" };
     }
 
-    // Verification filter
-    if (verified) {
-      query.isVerified = true;
-    }
-
-    // Search filter
-    if (search) {
-      query.OR = [
-        { name: { contains: search, mode: 'insensitive' } },
-        { description: { contains: search, mode: 'insensitive' } }
-      ];
-    }
-
-    // Product existence filter
-    if (hasProducts) {
-      query.products = {
-        some: {
-          isPublished: true
-        }
-      };
-    }
-
-    // Category filter - can now filter by shop category directly
-    if (category) {
-      query.category = {
-        equals: category,
-        mode: 'insensitive'
-      };
-    }
-
-    // Featured shops filter
-    if (featured) {
-      // Define your criteria for featured shops - for example:
-      query.isVerified = true;
-      // Could also check for minimum number of products
-    }
-
-    // Determine ordering based on sort parameter
-    let orderBy = {};
-    switch (sort) {
-      case 'products':
-        // We'll sort post-query for product count
-        orderBy = { createdAt: 'desc' };
-        break;
-      case 'newest':
-      default:
-        orderBy = { createdAt: 'desc' };
-        break;
-    }
-
-    // Fetch shops with related data
-    const shops = await prisma.shop.findMany({
-      where: query,
+    const shopsRaw = await prisma.shop.findMany({
+      where,
       include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            image: true,
-            imageSrc: true
-          }
-        },
+        user: true,
         products: {
-          where: {
-            isPublished: true,
-            ...(featured ? { isFeatured: true } : {})
+          include: {
+            category: true,
           },
-          select: {
-            id: true,
-            name: true,
-            price: true,
-            mainImage: true
-          },
-          take: 4 // Get up to 4 featured products per shop
         },
-        _count: {
-          select: {
-            products: true
-          }
-        }
       },
-      orderBy,
-      ...(limit ? { take: limit } : {})
+      orderBy: { createdAt: order === "asc" ? "asc" : "desc" },
     });
 
-    // Process the shops data to match the SafeShop type
-    const safeShops = shops.map(shop => {
-      // Format featured products for display
-      const featuredProductItems = shop.products.map(product => ({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        image: product.mainImage
-      }));
+    const shops = hasProducts
+      ? shopsRaw.filter((s) => (s.products?.length ?? 0) > 0)
+      : shopsRaw;
 
-      // Convert null to undefined where needed to match SafeShop type
-      return {
-        id: shop.id,
-        name: shop.name,
-        description: shop.description,
-        category: shop.category || undefined, // Convert null to undefined
-        logo: shop.logo,
-        coverImage: shop.coverImage || undefined,
-        location: shop.location || undefined,
-        address: shop.address || undefined,
-        zipCode: shop.zipCode || undefined,
-        isOnlineOnly: shop.isOnlineOnly || false,
-        userId: shop.userId,
-        storeUrl: shop.storeUrl || undefined,
-        galleryImages: shop.galleryImages,
-        createdAt: shop.createdAt.toISOString(),
-        updatedAt: shop.updatedAt.toISOString(),
-        isVerified: shop.isVerified,
-        shopEnabled: shop.shopEnabled,
-        featuredProducts: shop.featuredProducts,
-        followers: shop.followers,
-        listingId: shop.listingId || undefined,
-        user: {
-          id: shop.user.id,
-          name: shop.user.name,
-          image: shop.user.image || shop.user.imageSrc || null
-        },
-        // Add calculated fields
-        productCount: shop._count.products,
-        followerCount: shop.followers.length,
-        featuredProductItems
-      } as SafeShop; // Use type assertion to ensure it matches SafeShop
-    });
+    const safeShops = shops.map((shop) => ({
+      ...shop,
+      createdAt: shop.createdAt.toISOString(),
+      updatedAt: shop.updatedAt.toISOString(),
 
-    // Apply post-query sorting for criteria that can't be sorted in Prisma directly
-    if (sort === 'products') {
-      safeShops.sort((a, b) => (b.productCount || 0) - (a.productCount || 0));
-    }
+      category: shop.category ?? null,
+      coverImage: shop.coverImage ?? null,
+      logo: shop.logo ?? null,
+      location: shop.location ?? null,
+      address: shop.address ?? null,
+      zipCode: shop.zipCode ?? null,
+      storeUrl: shop.storeUrl ?? null,
+      galleryImages: shop.galleryImages ?? [],
+      followers: shop.followers ?? [],
+      featuredProducts: shop.featuredProducts ?? [],
+      listingId: shop.listingId ?? null,
 
+      // convenience: city/state split like listing example
+      city: shop.location?.split(",")[0]?.trim() || null,
+      state: shop.location?.split(",")[1]?.trim() || null,
+
+      user: {
+        ...shop.user,
+        createdAt: shop.user.createdAt.toISOString(),
+        updatedAt: shop.user.updatedAt.toISOString(),
+        emailVerified: shop.user.emailVerified
+          ? shop.user.emailVerified.toISOString()
+          : null,
+      },
+
+      products: (shop.products ?? []).map((p) => ({
+        ...p,
+        createdAt: p.createdAt.toISOString(),
+        updatedAt: p.updatedAt.toISOString(),
+        description: p.description ?? "",
+        compareAtPrice: p.compareAtPrice ?? null,
+        sku: p.sku ?? null,
+        barcode: p.barcode ?? null,
+        mainImage: p.mainImage ?? "/images/placeholder.jpg",
+        galleryImages: p.galleryImages ?? [],
+        favoritedBy: p.favoritedBy ?? [],
+        options: p.options ?? null,
+        variants: p.variants ?? null,
+        reviews: p.reviews ?? null,
+        weight: p.weight ?? null,
+        category: p.category
+          ? { id: p.category.id, name: p.category.name }
+          : null,
+        // attach minimal shop ref for ProductCard UX
+        shop: { id: shop.id, name: shop.name },
+      })),
+    }));
+
+    console.log("Fetched shops count:", safeShops.length);
     return safeShops;
   } catch (error: any) {
     console.error("Error in getShops:", error);

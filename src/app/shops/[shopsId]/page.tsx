@@ -1,53 +1,22 @@
-import ShopClient from './ShopClient';
-import getCurrentUser from '@/app/actions/getCurrentUser';
-import getShopById from '@/app/actions/getShopById';
-import getShopProducts from '@/app/actions/getShopProducts';
-import ClientProviders from '@/components/ClientProviders';
-import EmptyState from '@/components/EmptyState';
+import getCurrentUser from "@/app/actions/getCurrentUser";
+import getShopById from "@/app/actions/getShopById";
+import EmptyState from "@/components/EmptyState";
+import ShopClient from "./ShopClient";
 
-interface IParams {
-  shopId?: string;
-}
-
-export const dynamic = 'force-dynamic';
-
-const ShopDetailPage = async ({ params }: { params: IParams }) => {
+const ShopPage = async ({ params }: { params: { shopsId?: string } }) => {
+  const shop = await getShopById({ shopId: params.shopsId }); // <-- map to shopId
   const currentUser = await getCurrentUser();
 
-  try {
-    // Fetch data in parallel
-    const [shop, products] = await Promise.all([
-      getShopById(params),
-      getShopProducts(params)
-    ]);
-
-    if (!shop) {
-      return (
-        <ClientProviders>
-          <EmptyState />
-        </ClientProviders>
-      );
-    }
-
+  if (!shop) {
     return (
-      <ClientProviders>
-        <ShopClient
-          shop={shop}
-          products={products || []}
-          currentUser={currentUser}
-          posts={[]} // Add shop posts here if available
-          categories={[]} // Add categories if needed for posts
-        />
-      </ClientProviders>
-    );
-  } catch (error) {
-    console.error("Error fetching shop data:", error);
-    return (
-      <ClientProviders>
-        <EmptyState />
-      </ClientProviders>
+      <EmptyState
+        title="Shop not found"
+        subtitle="This shop does not exist or was removed."
+      />
     );
   }
-}
- 
-export default ShopDetailPage;
+
+  return <ShopClient shop={shop as any} currentUser={currentUser} />;
+};
+
+export default ShopPage;
