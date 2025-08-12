@@ -3,9 +3,8 @@
 import { useEffect, useRef } from 'react';
 import useLoginModal from '@/app/hooks/useLoginModal';
 import useRegisterModal from '@/app/hooks/useRegisterModal';
-import useForgotPasswordModal from '@/app/hooks/useForgotPassword';
+import useForgotPasswordModal from '@/app/hooks/useForgotPasswordModal';
 
-// Consolidated ModalManager with inline backdrop
 const ModalManager = () => {
   const loginModal = useLoginModal();
   const registerModal = useRegisterModal();
@@ -55,7 +54,7 @@ const ModalManager = () => {
         zIndex: 9999,
       }}
     >
-      {/* Inline backdrop video */}
+      {/* Backdrop video */}
       <div className="fixed inset-0 z-1">
         <video
           ref={videoRef}

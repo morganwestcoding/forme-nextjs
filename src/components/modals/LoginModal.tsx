@@ -1,20 +1,16 @@
 'use client';
 
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { signIn } from 'next-auth/react';
-import { 
-  FieldValues, 
-  SubmitHandler, 
-  useForm
-} from "react-hook-form";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import useRegisterModal from "@/app/hooks/useRegisterModal";
 import useLoginModal from "@/app/hooks/useLoginModal";
-import Modal from "./Modal";
+import useForgotPasswordModal from "@/app/hooks/useForgotPasswordModal";
+import Modal, { ModalHandle } from "./Modal";
 import Input from "../inputs/Input";
 import Heading from "../Heading";
-import useForgotPasswordModal from "@/app/hooks/useForgotPassword";
 
 const LoginModal = () => {
   const router = useRouter();
@@ -22,51 +18,45 @@ const LoginModal = () => {
   const registerModal = useRegisterModal();
   const forgotPasswordModal = useForgotPasswordModal();
   const [isLoading, setIsLoading] = useState(false);
+  const modalRef = useRef<ModalHandle>(null);
 
-  const { 
-    register, 
-    handleSubmit,
-    formState: {
-      errors,
-    },
-  } = useForm<FieldValues>({
-    defaultValues: {
-      email: '',
-      password: ''
-    },
+  const { register, handleSubmit, formState: { errors } } = useForm<FieldValues>({
+    defaultValues: { email: '', password: '' },
   });
   
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
     setIsLoading(true);
 
-    signIn('credentials', { 
-      ...data, 
-      redirect: false,
-    })
-    .then((callback) => {
-      setIsLoading(false);
+    signIn('credentials', { ...data, redirect: false })
+      .then((callback) => {
+        setIsLoading(false);
 
-      if (callback?.ok) {
-        toast.success('Logged in');
-        router.refresh();
-        loginModal.onClose();
-      }
-      
-      if (callback?.error) {
-        toast.error(callback.error);
-      }
-    });
+        if (callback?.ok) {
+          toast.success('Logged in');
+          router.refresh();
+          loginModal.onClose();
+        }
+        
+        if (callback?.error) {
+          toast.error(callback.error);
+        }
+      });
   }
 
-  const onToggle = useCallback(() => {
-    loginModal.onClose();
-    registerModal.onOpen();
-  }, [loginModal, registerModal]);
+  const onToggleToRegister = useCallback(() => {
+    // animate this modal closed (slide-out), THEN open register
+    modalRef.current?.close();
+    setTimeout(() => {
+      registerModal.onOpen();
+    }, 400); // 300ms animation + small buffer
+  }, [registerModal]);
 
   const onForgotPassword = useCallback(() => {
-    loginModal.onClose();
-    forgotPasswordModal.onOpen();
-  }, [loginModal, forgotPasswordModal]);
+    modalRef.current?.close();
+    setTimeout(() => {
+      forgotPasswordModal.onOpen();
+    }, 400);
+  }, [forgotPasswordModal]);
 
   const bodyContent = (
     <div className="flex flex-col gap-4">
@@ -125,7 +115,7 @@ const LoginModal = () => {
       >
         <div>First time using ForMe?</div>
         <div 
-          onClick={onToggle} 
+          onClick={onToggleToRegister} 
           className="
             text-neutral-500 
             cursor-pointer 
@@ -140,6 +130,7 @@ const LoginModal = () => {
 
   return (
     <Modal
+      ref={modalRef}
       disabled={isLoading}
       isOpen={loginModal.isOpen}
       title="Login"

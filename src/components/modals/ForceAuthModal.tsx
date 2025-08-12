@@ -13,15 +13,20 @@ const ForceAuthModal: React.FC<ForceAuthModalProps> = ({ showRegisterInstead = f
   const registerModal = useRegisterModal();
 
   useEffect(() => {
-    if (showRegisterInstead) {
-      if (!registerModal.isOpen) {
-        registerModal.onOpen();
+    // Small delay to allow DOM to be ready for slide-in animation
+    const timer = setTimeout(() => {
+      if (showRegisterInstead) {
+        if (!registerModal.isOpen) {
+          registerModal.onOpen();
+        }
+      } else {
+        if (!loginModal.isOpen) {
+          loginModal.onOpen();
+        }
       }
-    } else {
-      if (!loginModal.isOpen) {
-        loginModal.onOpen();
-      }
-    }
+    }, 100); // Small delay for initial animation
+
+    return () => clearTimeout(timer);
   }, [showRegisterInstead, loginModal, registerModal]);
 
   return null;

@@ -1,20 +1,17 @@
 'use client';
+
 import axios from "axios";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
-import SubscriptionInput from "../inputs/SubscriptionInput";
-import { 
-  FieldValues, 
-  SubmitHandler,
-  useForm
-} from "react-hook-form";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import useLoginModal from "@/app/hooks/useLoginModal";
 import useRegisterModal from "@/app/hooks/useRegisterModal";
-import ImageUpload from "../inputs/ImageUpload";
-import Modal from "./Modal";
+import Modal, { ModalHandle } from "./Modal";
 import Input from "../inputs/Input";
 import Heading from "../Heading";
 import ProfileLocationInput from "../inputs/ProfileLocationInput";
+import SubscriptionInput from "../inputs/SubscriptionInput";
+import ImageUpload from "../inputs/ImageUpload";
 
 enum STEPS {
   ACCOUNT = 0,
@@ -29,8 +26,7 @@ const RegisterModal= () => {
   const registerModal = useRegisterModal();
   const loginModal = useLoginModal();
   const [isLoading, setIsLoading] = useState(false);
-  const [isInSubscriptionDetail, setIsInSubscriptionDetail] = useState(false);
-  const [selectedTierName, setSelectedTierName] = useState<string>('');
+  const modalRef = useRef<ModalHandle>(null);
 
   const { 
     register, 
@@ -53,8 +49,6 @@ const RegisterModal= () => {
     },
   });
 
-  const location = watch('location');
-  const category = watch('category');
   const image = watch('image');
   const imageSrc = watch('imageSrc');
 
@@ -85,11 +79,6 @@ const RegisterModal= () => {
     };
   };
 
-  const handleSubscriptionDetailChange = (isInDetail: boolean, tierName?: string) => {
-    setIsInSubscriptionDetail(isInDetail);
-    setSelectedTierName(tierName || '');
-  };
-
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     if (step !== STEPS.SUBSCRIPTION) {
       if (step === STEPS.ACCOUNT) {
@@ -118,26 +107,18 @@ const RegisterModal= () => {
       return onNext();
     }
     
-    // Handle subscription selection if in detail view
-    if (isInSubscriptionDetail) {
-      // Call the tier select function from the subscription component
-      if ((window as any).selectCurrentTier) {
-        (window as any).selectCurrentTier();
-      }
-      return;
-    }
-    
     setIsLoading(true);
 
     axios.post('/api/register', data)
     .then(() => {
       toast.success('Registered!');
       setStep(STEPS.ACCOUNT);
-      registerModal.onClose();
-      // Wait for register modal to slide out before opening login modal
+      // animate this modal closed first
+      modalRef.current?.close();
+      // then open login
       setTimeout(() => {
         loginModal.onOpen();
-      }, 350);
+      }, 400);
     })
     .catch((error: any) => {
       let errorMessage = 'Something went wrong!';
@@ -156,23 +137,11 @@ const RegisterModal= () => {
   }
 
   const onToggle = useCallback(() => {
-    registerModal.onClose();
-    // Wait for register modal to slide out before opening login modal
+    modalRef.current?.close();
     setTimeout(() => {
       loginModal.onOpen();
-    }, 350);
-  }, [registerModal, loginModal])
-
-  // Determine action label based on current state
-  const getActionLabel = () => {
-    if (step === STEPS.SUBSCRIPTION) {
-      if (isInSubscriptionDetail) {
-        return `Choose ${selectedTierName}`;
-      }
-      return "Create";
-    }
-    return "Continue";
-  };
+    }, 400);
+  }, [loginModal])
 
   let bodyContent = (
     <div className="flex flex-col gap-4">
@@ -292,7 +261,6 @@ const RegisterModal= () => {
         <SubscriptionInput
           onChange={(value) => setCustomValue('subscription', value)}
           value={watch('subscription')}
-          onDetailStateChange={handleSubscriptionDetailChange}
         />
       </div>
     )
@@ -325,10 +293,11 @@ const RegisterModal= () => {
 
   return (
     <Modal
+      ref={modalRef}
       disabled={isLoading}
       isOpen={registerModal.isOpen}
       title="Register"
-      actionLabel={getActionLabel()}
+      actionLabel={step === STEPS.SUBSCRIPTION ? "Create" : "Continue"}
       secondaryAction={step !== STEPS.ACCOUNT ? onBack : undefined}
       secondaryActionLabel={step !== STEPS.ACCOUNT ? "Back" : undefined}
       onClose={registerModal.onClose}
