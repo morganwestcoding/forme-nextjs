@@ -30,7 +30,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
   return (
     <Container>
       {/* Header */}
-      <div className="mb-6">
+        <div className="pt-4 mb-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Favorites</h1>
         <p className="text-gray-600">A one stop shop for all of your favorite things</p>
       </div>

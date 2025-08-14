@@ -48,12 +48,6 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
 
   return (
     <div className="pt-2 flex-1">
-      <div className="px-4"> 
-        <Heading
-          title={`Reservations (${reservations.length})`}
-          subtitle="Bookings received for your listings"
-        />
-      </div>
       <div 
         className="
         pt-6

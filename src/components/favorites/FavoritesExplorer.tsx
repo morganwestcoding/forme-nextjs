@@ -84,7 +84,7 @@ const FavoritesExplorer: React.FC<FavoritesExplorerProps> = ({
   return (
     <div className="min-h-0">
       {/* Search + controls */}
-      <div className="flex mt-4 mb-7 gap-2">
+      <div className="flex mt-4 mb-6 gap-2">
         <div className="relative flex-grow">
           <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
             <Search className="w-5 h-5 text-gray-400" />

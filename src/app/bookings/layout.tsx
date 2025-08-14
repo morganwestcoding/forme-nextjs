@@ -1,7 +1,7 @@
 import React from 'react';
-import BookingTabs from '@/components/BookinTabs';
 import Container from '@/components/Container';
 import ClientOnly from '@/components/ClientOnly';
+import BookingsHeader from './BookingsHeader';
 
 export default function BookingsLayout({
   children,
@@ -11,7 +11,14 @@ export default function BookingsLayout({
   return (
     <ClientOnly>
       <Container>
-        <BookingTabs />
+        <BookingsHeader
+          // optionally pass counts or handlers:
+          // bookingsCount={receivedCount}
+          // tripsCount={tripsCount}
+          // onSearch={(q) => console.log('search:', q)}
+          // onOpenFilters={() => console.log('filters')}
+          // onCreate={() => console.log('create')}
+        />
         {children}
       </Container>
     </ClientOnly>

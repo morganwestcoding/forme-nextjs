@@ -85,7 +85,7 @@ const ShopHeader: React.FC<ShopHeaderProps> = ({
   return (
     <div className="min-h-0">
       {/* Header and Description */}
-      <div className="mb-6 flex items-center gap-4">
+       <div className="pt-4 mb-4">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Vendors</h1>
           <p className="text-gray-600">Discover unique shops and products from our vendors</p>

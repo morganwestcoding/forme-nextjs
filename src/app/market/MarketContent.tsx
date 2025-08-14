@@ -171,7 +171,7 @@ const MarketContent = ({
   return (
     <Container>
       <div className="pb-6">
-        <div className="mb-6 flex items-center gap-4">
+     <div className="pt-4 mb-4">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Market</h1>
             <p className="text-gray-600">Discover unique services from our vendors</p>

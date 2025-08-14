@@ -142,10 +142,11 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
   return (
     <ClientProviders>
       <Container>
-        <div className="mb-6">
+        <div className=" pt-4 mb-4">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Discover</h1>
           <p className="text-gray-600">Share whats new with you and your business</p>
         </div>
+
 
         {/* NewsfeedHeader Component */}
         <NewsfeedHeader 

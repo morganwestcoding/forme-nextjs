@@ -38,12 +38,6 @@ const TripsClient: React.FC<TripsClientProps> = ({
 
   return (
     <div className="pt-2 flex-1">
-      <div className="px-4"> 
-        <Heading
-          title={`Trips (${reservations.length})`}
-          subtitle="Your bookings at other locations"
-        />
-      </div>
       <div 
         className="
         pt-6
