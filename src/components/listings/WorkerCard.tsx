@@ -154,7 +154,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
       <div className="relative z-10">
         <div className="relative h-[345px] overflow-hidden">
           {/* Category badge */}
-          <div className="absolute top-4 left-6 z-20">
+          <div className="absolute top-4 left-4 z-20">
             <div className="bg-white/90 backdrop-blur-md border border-white/30 rounded-xl text-center w-24 py-2 shadow-lg hover:bg-white/30 transition-all duration-300">
               <div className="flex items-center justify-center gap-1.5">
                 <span className="text-xs font-normal text-black tracking-wide">

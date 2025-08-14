@@ -173,53 +173,74 @@ const NewsfeedHeader: React.FC<NewsfeedHeaderProps> = ({
       </div>
 
       {/* Tabs */}
-      <div className="flex mb-6 border-b border-gray-200">
-        <button 
-          onClick={() => handleFilterChange('featured')}
-          className={`pb-4 flex text-sm items-center gap-2 mr-6 ${
-            viewState.filters.category === 'featured' 
-              ? `border-b-2` 
-              : 'text-gray-500'
-          }`}
-          style={viewState.filters.category === 'featured' ? {
-            color: currentCategory ? getCategoryStyle(currentCategory).color : '#60A5FA',
-            borderBottomColor: currentCategory ? getCategoryStyle(currentCategory).color : '#60A5FA'
-          } : {}}
-        >
-          <Sparkles className="w-5 h-5" />
-          <span>Featured</span>
-        </button>
-        <button 
-          onClick={() => handleFilterChange('trending')}
-          className={`pb-4 flex items-center text-sm gap-2 mr-6 ${
-            viewState.filters.category === 'trending' 
-              ? `border-b-2` 
-              : 'text-gray-500'
-          }`}
-          style={viewState.filters.category === 'trending' ? {
-            color: currentCategory ? getCategoryStyle(currentCategory).color : '#60A5FA',
-            borderBottomColor: currentCategory ? getCategoryStyle(currentCategory).color : '#60A5FA'
-          } : {}}
-        >
-          <TrendingUp className="w-5 h-5" />
-          <span>Trending</span>
-        </button>
-        <button 
-          onClick={() => handleFilterChange('categories')}
-          className={`pb-4 flex items-center text-sm gap-2 ${
-            viewState.filters.category === 'categories' || showCategories 
-              ? `border-b-2` 
-              : 'text-gray-500'
-          }`}
-          style={(viewState.filters.category === 'categories' || showCategories) ? {
-            color: currentCategory ? getCategoryStyle(currentCategory).color : '#60A5FA',
-            borderBottomColor: currentCategory ? getCategoryStyle(currentCategory).color : '#60A5FA'
-          } : {}}
-        >
-          <Layers className="w-5 h-5" />
-          <span>Categories</span>
-        </button>
-      </div>
+{/* Tabs - Centered like MarketExplorer */}
+<div className="flex border-b border-gray-200 relative justify-center mb-6">
+  <div className="flex gap-8">
+    <button 
+      onClick={() => handleFilterChange('featured')}
+      className={`pb-4 pt-2 px-4 flex text-sm items-center justify-center gap-2 transition-all duration-150 relative ${
+        viewState.filters.category === 'featured' 
+          ? 'font-medium' 
+          : 'text-gray-500 hover:text-gray-700'
+      }`}
+      style={viewState.filters.category === 'featured' ? {
+        color: currentCategory ? getCategoryStyle(currentCategory).color : '#60A5FA',
+      } : {}}
+    >
+      <Sparkles className="w-5 h-5" />
+      <span>Featured</span>
+      {viewState.filters.category === 'featured' && (
+        <div 
+          className="absolute bottom-0 left-0 right-0 h-0.5"
+          style={{ backgroundColor: currentCategory ? getCategoryStyle(currentCategory).color : '#60A5FA' }}
+        />
+      )}
+    </button>
+
+    <button 
+      onClick={() => handleFilterChange('trending')}
+      className={`pb-4 pt-2 px-4 flex text-sm items-center justify-center gap-2 transition-all duration-150 relative ${
+        viewState.filters.category === 'trending' 
+          ? 'font-medium' 
+          : 'text-gray-500 hover:text-gray-700'
+      }`}
+      style={viewState.filters.category === 'trending' ? {
+        color: currentCategory ? getCategoryStyle(currentCategory).color : '#60A5FA',
+      } : {}}
+    >
+      <TrendingUp className="w-5 h-5" />
+      <span>Trending</span>
+      {viewState.filters.category === 'trending' && (
+        <div 
+          className="absolute bottom-0 left-0 right-0 h-0.5"
+          style={{ backgroundColor: currentCategory ? getCategoryStyle(currentCategory).color : '#60A5FA' }}
+        />
+      )}
+    </button>
+
+    <button 
+      onClick={() => handleFilterChange('categories')}
+      className={`pb-4 pt-2 px-4 flex text-sm items-center justify-center gap-2 transition-all duration-150 relative ${
+        viewState.filters.category === 'categories' || showCategories
+          ? 'font-medium' 
+          : 'text-gray-500 hover:text-gray-700'
+      }`}
+      style={(viewState.filters.category === 'categories' || showCategories) ? {
+        color: currentCategory ? getCategoryStyle(currentCategory).color : '#60A5FA',
+      } : {}}
+    >
+      <Layers className="w-5 h-5" />
+      <span>Categories</span>
+      {(viewState.filters.category === 'categories' || showCategories) && (
+        <div 
+          className="absolute bottom-0 left-0 right-0 h-0.5"
+          style={{ backgroundColor: currentCategory ? getCategoryStyle(currentCategory).color : '#60A5FA' }}
+        />
+      )}
+    </button>
+  </div>
+</div>
+
 
       {/* Category Pills - Show when Categories tab is active */}
       {(showCategories || viewState.filters.category === 'categories') && (
