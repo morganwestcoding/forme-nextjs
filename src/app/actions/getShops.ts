@@ -1,3 +1,4 @@
+// app/actions/getShops.ts
 import prisma from "@/app/libs/prismadb";
 
 export interface IShopsParams {
@@ -6,9 +7,15 @@ export interface IShopsParams {
   category?: string;
   state?: string;
   city?: string;
+
+  // existing
   order?: "asc" | "desc";
   hasProducts?: boolean;
   isVerified?: boolean;
+
+  // NEW
+  limit?: number;
+  sort?: "newest" | "popular"; // 'popular' reserved; see note below
 }
 
 export default async function getShops(params: IShopsParams) {
@@ -22,6 +29,8 @@ export default async function getShops(params: IShopsParams) {
       order,
       hasProducts,
       isVerified,
+      limit,
+      sort,
     } = params;
 
     const where: any = {};
@@ -39,6 +48,21 @@ export default async function getShops(params: IShopsParams) {
       where.location = { contains: state || city, mode: "insensitive" };
     }
 
+    // Order mapping:
+    // - sort === 'newest' => createdAt desc
+    // - else use provided `order`
+    // - default createdAt desc
+    const orderBy =
+      sort === "newest"
+        ? { createdAt: "desc" as const }
+        : order
+        ? { createdAt: order }
+        : { createdAt: "desc" as const };
+
+    // Note: A true 'popular' sort (e.g., by followers count) would require
+    // a different model/query (e.g., _count on a relation). For now it
+    // falls back to `orderBy` above unless you add that structure.
+
     const shopsRaw = await prisma.shop.findMany({
       where,
       include: {
@@ -49,7 +73,8 @@ export default async function getShops(params: IShopsParams) {
           },
         },
       },
-      orderBy: { createdAt: order === "asc" ? "asc" : "desc" },
+      orderBy,
+      take: typeof limit === "number" ? Math.max(0, limit) : undefined,
     });
 
     const shops = hasProducts
@@ -109,7 +134,7 @@ export default async function getShops(params: IShopsParams) {
       })),
     }));
 
-    console.log("Fetched shops count:", safeShops.length);
+    // console.log("Fetched shops count:", safeShops.length);
     return safeShops;
   } catch (error: any) {
     console.error("Error in getShops:", error);
