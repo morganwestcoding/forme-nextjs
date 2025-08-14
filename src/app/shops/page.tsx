@@ -42,8 +42,8 @@ async function ShopPage({ searchParams }: ShopPageProps) {
     return (
       <Container>
         <ShopClient 
-          initialShops={shops}  // Removed the type casting
-          featuredProducts={featuredProducts}  // Removed the type casting
+          initialShops={shops}  
+          featuredProducts={featuredProducts}
           categories={categories}
           currentUser={currentUser}
         />

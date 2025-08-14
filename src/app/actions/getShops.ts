@@ -1,5 +1,6 @@
 // app/actions/getShops.ts
 import prisma from "@/app/libs/prismadb";
+import { SafeShop } from "@/app/types";
 
 export interface IShopsParams {
   userId?: string;
@@ -7,18 +8,73 @@ export interface IShopsParams {
   category?: string;
   state?: string;
   city?: string;
-
-  // existing
   order?: "asc" | "desc";
   hasProducts?: boolean;
   isVerified?: boolean;
 
-  // NEW
+  // extras for paging/sorting on the page
   limit?: number;
-  sort?: "newest" | "popular"; // 'popular' reserved; see note below
+  sort?: "newest" | "popular";
 }
 
-export default async function getShops(params: IShopsParams) {
+function toSafeShop(shop: any): SafeShop {
+  return {
+    id: shop.id,
+    name: shop.name ?? "",
+    description: shop.description ?? "", // SafeShop requires string
+    logo: shop.logo ?? "/images/placeholder.jpg", // SafeShop requires string
+    coverImage: shop.coverImage ?? null,
+    location: shop.location ?? null,
+    address: shop.address ?? null,
+    zipCode: shop.zipCode ?? null,
+    isOnlineOnly: shop.isOnlineOnly ?? false,
+
+    userId: shop.userId,
+    storeUrl: shop.storeUrl ?? null,
+    galleryImages: Array.isArray(shop.galleryImages) ? shop.galleryImages : [],
+
+    createdAt: shop.createdAt.toISOString(),
+    updatedAt: shop.updatedAt.toISOString(),
+
+    isVerified: shop.isVerified ?? false,
+    shopEnabled: shop.shopEnabled ?? true,
+
+    featuredProducts: Array.isArray(shop.featuredProducts) ? shop.featuredProducts : [],
+    followers: Array.isArray(shop.followers) ? shop.followers : [],
+    listingId: shop.listingId ?? null,
+
+    // IMPORTANT: SafeShop wants `string | undefined`, not null
+    category: shop.category ?? undefined,
+
+    user: {
+      id: shop.user.id,
+      name: shop.user.name,
+      image: shop.user.image,
+    },
+
+    // Optional summary props for UI cards; SafeShop marks `products?`
+    products: (shop.products ?? []).map((p: any) => ({
+      name: p.name,
+      image: p.mainImage ?? "/images/placeholder.jpg",
+      price: p.price,
+    })),
+    productCount: (shop.products ?? []).length,
+    followerCount: Array.isArray(shop.followers) ? shop.followers.length : 0,
+
+    // Optional: quick featured items list if you flag products in your schema
+    featuredProductItems: (shop.products ?? [])
+      .filter((p: any) => p.isFeatured === true)
+      .slice(0, 4)
+      .map((p: any) => ({
+        id: p.id,
+        name: p.name,
+        price: p.price,
+        image: p.mainImage ?? "/images/placeholder.jpg",
+      })),
+  };
+}
+
+export default async function getShops(params: IShopsParams): Promise<SafeShop[]> {
   try {
     const {
       userId,
@@ -34,7 +90,6 @@ export default async function getShops(params: IShopsParams) {
     } = params;
 
     const where: any = {};
-
     if (userId) where.userId = userId;
     if (category) where.category = category;
     if (isVerified !== undefined) where.isVerified = isVerified;
@@ -42,16 +97,10 @@ export default async function getShops(params: IShopsParams) {
     if (locationValue) {
       where.location = locationValue;
     }
-
-    // Loose location search
     if (state || city) {
       where.location = { contains: state || city, mode: "insensitive" };
     }
 
-    // Order mapping:
-    // - sort === 'newest' => createdAt desc
-    // - else use provided `order`
-    // - default createdAt desc
     const orderBy =
       sort === "newest"
         ? { createdAt: "desc" as const }
@@ -59,83 +108,23 @@ export default async function getShops(params: IShopsParams) {
         ? { createdAt: order }
         : { createdAt: "desc" as const };
 
-    // Note: A true 'popular' sort (e.g., by followers count) would require
-    // a different model/query (e.g., _count on a relation). For now it
-    // falls back to `orderBy` above unless you add that structure.
-
     const shopsRaw = await prisma.shop.findMany({
       where,
       include: {
         user: true,
         products: {
-          include: {
-            category: true,
-          },
+          include: { category: true },
         },
       },
       orderBy,
       take: typeof limit === "number" ? Math.max(0, limit) : undefined,
     });
 
-    const shops = hasProducts
+    const filtered = hasProducts
       ? shopsRaw.filter((s) => (s.products?.length ?? 0) > 0)
       : shopsRaw;
 
-    const safeShops = shops.map((shop) => ({
-      ...shop,
-      createdAt: shop.createdAt.toISOString(),
-      updatedAt: shop.updatedAt.toISOString(),
-
-      category: shop.category ?? null,
-      coverImage: shop.coverImage ?? null,
-      logo: shop.logo ?? null,
-      location: shop.location ?? null,
-      address: shop.address ?? null,
-      zipCode: shop.zipCode ?? null,
-      storeUrl: shop.storeUrl ?? null,
-      galleryImages: shop.galleryImages ?? [],
-      followers: shop.followers ?? [],
-      featuredProducts: shop.featuredProducts ?? [],
-      listingId: shop.listingId ?? null,
-
-      // convenience: city/state split like listing example
-      city: shop.location?.split(",")[0]?.trim() || null,
-      state: shop.location?.split(",")[1]?.trim() || null,
-
-      user: {
-        ...shop.user,
-        createdAt: shop.user.createdAt.toISOString(),
-        updatedAt: shop.user.updatedAt.toISOString(),
-        emailVerified: shop.user.emailVerified
-          ? shop.user.emailVerified.toISOString()
-          : null,
-      },
-
-      products: (shop.products ?? []).map((p) => ({
-        ...p,
-        createdAt: p.createdAt.toISOString(),
-        updatedAt: p.updatedAt.toISOString(),
-        description: p.description ?? "",
-        compareAtPrice: p.compareAtPrice ?? null,
-        sku: p.sku ?? null,
-        barcode: p.barcode ?? null,
-        mainImage: p.mainImage ?? "/images/placeholder.jpg",
-        galleryImages: p.galleryImages ?? [],
-        favoritedBy: p.favoritedBy ?? [],
-        options: p.options ?? null,
-        variants: p.variants ?? null,
-        reviews: p.reviews ?? null,
-        weight: p.weight ?? null,
-        category: p.category
-          ? { id: p.category.id, name: p.category.name }
-          : null,
-        // attach minimal shop ref for ProductCard UX
-        shop: { id: shop.id, name: shop.name },
-      })),
-    }));
-
-    // console.log("Fetched shops count:", safeShops.length);
-    return safeShops;
+    return filtered.map(toSafeShop);
   } catch (error: any) {
     console.error("Error in getShops:", error);
     throw new Error(`Failed to fetch shops: ${error.message}`);

@@ -1,8 +1,8 @@
 // ReservationModal.tsx
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
-import { format, isSameDay, isAfter, parse } from 'date-fns';
+import { useCallback, useMemo, useState, useEffect } from 'react';
+import { format, isSameDay } from 'date-fns';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import useLoginModal from '@/app/hooks/useLoginModal';
@@ -59,24 +59,18 @@ const ReservationModal: React.FC = () => {
     })) || [];
   }, [listing]);
 
-  // Initialize with employeeId if provided
-  useMemo(() => {
-    if (employeeId && employeeOptions.length > 0 && !selectedEmployee) {
-      const initialEmployee = employeeOptions.find(e => e.value === employeeId);
-      if (initialEmployee) {
-        setSelectedEmployee(initialEmployee);
-      }
-    }
+  // Initialize with employeeId if provided (useEffect, not useMemo)
+  useEffect(() => {
+    if (!employeeId || !employeeOptions.length || selectedEmployee) return;
+    const initial = employeeOptions.find(e => e.value === employeeId);
+    if (initial) setSelectedEmployee(initial);
   }, [employeeId, employeeOptions, selectedEmployee]);
 
-  // Initialize with serviceId if provided
-  useMemo(() => {
-    if (serviceId && serviceOptions.length > 0 && selectedServices.length === 0) {
-      const initialService = serviceOptions.find(s => s.value === serviceId);
-      if (initialService) {
-        setSelectedServices([initialService]);
-      }
-    }
+  // Initialize with serviceId if provided (useEffect, not useMemo)
+  useEffect(() => {
+    if (!serviceId || !serviceOptions.length || selectedServices.length > 0) return;
+    const initial = serviceOptions.find(s => s.value === serviceId);
+    if (initial) setSelectedServices([initial]);
   }, [serviceId, serviceOptions, selectedServices.length]);
 
   const timeOptions = [
@@ -84,25 +78,22 @@ const ReservationModal: React.FC = () => {
     '13:00', '14:00', '15:00', '16:00', '17:00'
   ];
 
-  // Check if a time slot is in the past (only relevant for today)
+  // Disable time slots within 1h of "now" if booking for today
   const isTimeSlotDisabled = (timeSlot: string, checkDate?: Date) => {
     const targetDate = checkDate || date;
     if (!targetDate) return false;
-    
+
     const today = new Date();
     const isToday = isSameDay(targetDate, today);
-    
-    if (!isToday) return false; // If not today, no time restrictions
-    
-    // Parse the time slot and compare with current time
+    if (!isToday) return false;
+
     const [hours, minutes] = timeSlot.split(':').map(Number);
     const slotTime = new Date();
     slotTime.setHours(hours, minutes, 0, 0);
-    
-    // Add 1 hour buffer to current time to allow booking preparation
+
     const currentTimeWithBuffer = new Date();
     currentTimeWithBuffer.setHours(currentTimeWithBuffer.getHours() + 1);
-    
+
     return slotTime <= currentTimeWithBuffer;
   };
 
@@ -111,25 +102,20 @@ const ReservationModal: React.FC = () => {
   const toggleService = (service: SelectedService) => {
     setSelectedServices(prev => {
       const isSelected = prev.some(s => s.value === service.value);
-      if (isSelected) {
-        return prev.filter(s => s.value !== service.value);
-      } else {
-        return [...prev, service];
-      }
+      return isSelected ? prev.filter(s => s.value !== service.value) : [...prev, service];
     });
   };
 
-  const isServiceSelected = (serviceValue: string) => {
-    return selectedServices.some(s => s.value === serviceValue);
-  };
+  const isServiceSelected = (serviceValue: string) =>
+    selectedServices.some(s => s.value === serviceValue);
 
   // Determine step order based on entry point
   const isEmployeeFirstFlow = !!employeeId;
-  
+
   // Check if current step requirements are met
   const isStepComplete = () => {
     if (isEmployeeFirstFlow) {
-      // Employee-first flow: Employee → Services → Date → Time → Notes
+      // Employee → Services → Date → Time → Notes
       switch (step) {
         case 0: return selectedEmployee !== null;
         case 1: return selectedServices.length > 0;
@@ -138,7 +124,7 @@ const ReservationModal: React.FC = () => {
         default: return true;
       }
     } else {
-      // Service-first flow: Services → Employee → Date → Time → Notes
+      // Services → Employee → Date → Time → Notes
       switch (step) {
         case 0: return selectedServices.length > 0;
         case 1: return selectedEmployee !== null;
@@ -150,41 +136,22 @@ const ReservationModal: React.FC = () => {
   };
 
   const onBack = () => setStep((value) => value - 1);
-  
+
   const onNext = () => {
     if (!isStepComplete()) {
-      // Show specific error messages for each step based on flow
       if (isEmployeeFirstFlow) {
-        // Employee-first flow
         switch (step) {
-          case 0:
-            toast.error('Please select a professional');
-            break;
-          case 1:
-            toast.error('Please select at least one service');
-            break;
-          case 2:
-            toast.error('Please select a date');
-            break;
-          case 3:
-            toast.error('Please select a time');
-            break;
+          case 0: toast.error('Please select a professional'); break;
+          case 1: toast.error('Please select at least one service'); break;
+          case 2: toast.error('Please select a date'); break;
+          case 3: toast.error('Please select a time'); break;
         }
       } else {
-        // Service-first flow
         switch (step) {
-          case 0:
-            toast.error('Please select at least one service');
-            break;
-          case 1:
-            toast.error('Please select a professional');
-            break;
-          case 2:
-            toast.error('Please select a date');
-            break;
-          case 3:
-            toast.error('Please select a time');
-            break;
+          case 0: toast.error('Please select at least one service'); break;
+          case 1: toast.error('Please select a professional'); break;
+          case 2: toast.error('Please select a date'); break;
+          case 3: toast.error('Please select a time'); break;
         }
       }
       return;
@@ -192,17 +159,13 @@ const ReservationModal: React.FC = () => {
     setStep((value) => value + 1);
   };
 
-  // Updated onSubmit function that creates reservation AND opens Stripe
+  // Create reservation then open Stripe checkout
   const onSubmit = useCallback(async () => {
-    console.log('onSubmit called');
-    
     if (!currentUser) {
-      console.log('No current user, opening login modal');
       return loginModal.onOpen();
     }
-    
+
     if (!date || !time || selectedServices.length === 0 || !selectedEmployee || !listing?.id) {
-      console.log('Missing required fields:', { date, time, selectedServices, selectedEmployee, listing: listing?.id });
       toast.error('Please fill in all required fields');
       return;
     }
@@ -210,32 +173,28 @@ const ReservationModal: React.FC = () => {
     setIsLoading(true);
 
     try {
-      // Create the reservation in the database using the existing API
+      // 1) Create reservation in DB
       const reservationPayload = {
         listingId: listing.id,
-        serviceId: selectedServices[0].value, // Primary service for backward compatibility
-        serviceName: selectedServices[0].label.split(' - ')[0], // Primary service name
+        serviceId: selectedServices[0].value,                 // primary for compatibility
+        serviceName: selectedServices[0].label.split(' - ')[0],
         employeeId: selectedEmployee.value,
-        date: date.toISOString(),
+        date: date.toISOString(),                             // store ISO in DB
         time,
         note,
-        totalPrice
+        totalPrice,
       };
-
-      console.log('Creating reservation with payload:', reservationPayload);
 
       const response = await axios.post('/api/reservations', reservationPayload);
       const createdReservation = response.data;
 
-      console.log('Reservation created successfully:', createdReservation);
-
       toast.success('Reservation created! Proceeding to payment...');
 
-      // Prepare data for Stripe checkout
+      // 2) Prepare Stripe data — date must be a STRING per ReservationData
       const stripeData = {
         reservationId: createdReservation.id,
         totalPrice,
-        date: date, // Keep as Date object
+        date: date.toISOString(),                             // ✅ string, not Date
         time,
         listingId: listing.id,
         serviceId: selectedServices[0].value,
@@ -247,29 +206,23 @@ const ReservationModal: React.FC = () => {
         services: selectedServices.map(service => ({
           serviceId: service.value,
           serviceName: service.label.split(' - ')[0],
-          price: service.price
+          price: service.price,
         })),
-        // Add any other data your Stripe checkout needs
         customerName: currentUser.name || '',
         customerEmail: currentUser.email || '',
       };
 
-      console.log('Opening Stripe checkout with data:', stripeData);
-
-      // Close the reservation modal first
+      // Close this modal before opening Stripe
       handleClose();
 
-      // Small delay to ensure modal closes before opening Stripe
       setTimeout(() => {
-        console.log('Calling stripeCheckoutModal.onOpen');
         stripeCheckoutModal.onOpen(stripeData);
       }, 100);
-
     } catch (error: any) {
-      console.error('Error creating reservation:', error);
-      
-      // Show specific error message if available
-      const errorMessage = error.response?.data?.message || error.response?.data?.error || 'Failed to create reservation';
+      const errorMessage =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        'Failed to create reservation';
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
@@ -298,40 +251,32 @@ const ReservationModal: React.FC = () => {
     onClose();
   }, [onClose]);
 
-  // Render content based on step and flow type
-  let bodyContent;
+  // -------- Render content by step/flow --------
+let bodyContent: React.ReactElement | undefined;
 
   if (isEmployeeFirstFlow) {
-    // Employee-first flow: Employee → Services → Date → Time → Notes
+    // Employee → Services
     if (step === 0) {
       bodyContent = (
         <div className="flex flex-col gap-6">
-          <Heading
-            title="Who would you like to book with?"
-            subtitle="Select a professional."
-          />
+          <Heading title="Who would you like to book with?" subtitle="Select a professional." />
           <div className="grid grid-cols-2 gap-3">
             {employeeOptions.map(emp => (
               <button
                 key={emp.value}
                 onClick={() => setSelectedEmployee(emp)}
                 className={`aspect-square p-4 rounded-xl border-2 transition-all duration-200 flex flex-col items-center justify-center text-center hover:shadow-md ${
-                  selectedEmployee?.value === emp.value 
-                    ? 'border-blue-500 bg-blue-50 shadow-md' 
+                  selectedEmployee?.value === emp.value
+                    ? 'border-blue-500 bg-blue-50 shadow-md'
                     : 'border-gray-200 hover:border-gray-300 bg-white'
                 }`}
               >
                 <div className="flex flex-col items-center gap-3">
-                  {/* Employee Avatar */}
                   <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold text-lg ${
-                    selectedEmployee?.value === emp.value 
-                      ? 'bg-blue-500' 
-                      : 'bg-gray-400'
+                    selectedEmployee?.value === emp.value ? 'bg-blue-500' : 'bg-gray-400'
                   }`}>
                     {emp.label.split(' ').map(n => n[0]).join('').toUpperCase()}
                   </div>
-                  
-                  {/* Employee Name */}
                   <span className={`text-sm font-medium text-center leading-tight ${
                     selectedEmployee?.value === emp.value ? 'text-blue-900' : 'text-gray-900'
                   }`}>
@@ -346,26 +291,18 @@ const ReservationModal: React.FC = () => {
     } else if (step === 1) {
       bodyContent = (
         <div className="flex flex-col gap-6">
-          <Heading
-            title="Which services are you interested in?"
-            subtitle="Choose one or more services to continue."
-          />
+          <Heading title="Which services are you interested in?" subtitle="Choose one or more services to continue." />
           <div className="grid grid-cols-2 gap-3">
             {serviceOptions.map(service => (
               <button
                 key={service.value}
                 onClick={() => toggleService(service)}
                 className={`aspect-square p-4 rounded-xl border-2 transition-all duration-200 flex flex-col items-center justify-center text-center hover:shadow-md relative ${
-                  isServiceSelected(service.value)
-                    ? 'border-blue-500 bg-blue-50 shadow-md' 
-                    : 'border-gray-200 hover:border-gray-300 bg-white'
+                  isServiceSelected(service.value) ? 'border-blue-500 bg-blue-50 shadow-md' : 'border-gray-200 hover:border-gray-300 bg-white'
                 }`}
               >
-                {/* Checkbox indicator */}
                 <div className={`absolute top-2 right-2 w-5 h-5 rounded border-2 flex items-center justify-center transition-all duration-200 ${
-                  isServiceSelected(service.value)
-                    ? 'bg-blue-500 border-blue-500'
-                    : 'border-gray-300 bg-white'
+                  isServiceSelected(service.value) ? 'bg-blue-500 border-blue-500' : 'border-gray-300 bg-white'
                 }`}>
                   {isServiceSelected(service.value) && (
                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -373,13 +310,9 @@ const ReservationModal: React.FC = () => {
                     </svg>
                   )}
                 </div>
-
                 <div className="flex flex-col items-center gap-2">
-                  {/* Service Icon */}
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                    isServiceSelected(service.value)
-                      ? 'bg-blue-100 text-blue-600' 
-                      : 'bg-gray-100 text-gray-600'
+                    isServiceSelected(service.value) ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
                   }`}>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none">
                       <path d="M7.99805 16H11.998M7.99805 11H15.998" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"></path>
@@ -387,17 +320,11 @@ const ReservationModal: React.FC = () => {
                       <path d="M7.49609 3.75C7.49609 2.7835 8.2796 2 9.24609 2H14.7461C15.7126 2 16.4961 2.7835 16.4961 3.75C16.4961 4.7165 15.7126 5.5 14.7461 5.5H9.24609C8.2796 5.5 7.49609 4.7165 7.49609 3.75Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"></path>
                     </svg>
                   </div>
-                  
-                  {/* Service Name */}
                   <div className="flex flex-col gap-1">
-                    <span className={`text-sm font-medium ${
-                      isServiceSelected(service.value) ? 'text-blue-900' : 'text-gray-900'
-                    }`}>
+                    <span className={`text-sm font-medium ${isServiceSelected(service.value) ? 'text-blue-900' : 'text-gray-900'}`}>
                       {service.label.split(' - ')[0]}
                     </span>
-                    <span className={`text-xs font-semibold ${
-                      isServiceSelected(service.value) ? 'text-blue-600' : 'text-gray-600'
-                    }`}>
+                    <span className={`text-xs font-semibold ${isServiceSelected(service.value) ? 'text-blue-600' : 'text-gray-600'}`}>
                       ${service.price}
                     </span>
                   </div>
@@ -405,8 +332,7 @@ const ReservationModal: React.FC = () => {
               </button>
             ))}
           </div>
-          
-          {/* Selected services summary */}
+
           {selectedServices.length > 0 && (
             <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
               <div className="flex justify-between items-center">
@@ -428,30 +354,22 @@ const ReservationModal: React.FC = () => {
       );
     }
   } else {
-    // Service-first flow: Services → Employee → Date → Time → Notes
+    // Services → Employee
     if (step === 0) {
       bodyContent = (
         <div className="flex flex-col gap-6">
-          <Heading
-            title="Which services are you interested in?"
-            subtitle="Choose one or more services to continue."
-          />
+          <Heading title="Which services are you interested in?" subtitle="Choose one or more services to continue." />
           <div className="grid grid-cols-2 gap-3">
             {serviceOptions.map(service => (
               <button
                 key={service.value}
                 onClick={() => toggleService(service)}
                 className={`aspect-square p-4 rounded-xl border-2 transition-all duration-200 flex flex-col items-center justify-center text-center hover:shadow-md relative ${
-                  isServiceSelected(service.value)
-                    ? 'border-blue-500 bg-blue-50 shadow-md' 
-                    : 'border-gray-200 hover:border-gray-300 bg-white'
+                  isServiceSelected(service.value) ? 'border-blue-500 bg-blue-50 shadow-md' : 'border-gray-200 hover:border-gray-300 bg-white'
                 }`}
               >
-                {/* Checkbox indicator */}
                 <div className={`absolute top-2 right-2 w-5 h-5 rounded border-2 flex items-center justify-center transition-all duration-200 ${
-                  isServiceSelected(service.value)
-                    ? 'bg-blue-500 border-blue-500'
-                    : 'border-gray-300 bg-white'
+                  isServiceSelected(service.value) ? 'bg-blue-500 border-blue-500' : 'border-gray-300 bg-white'
                 }`}>
                   {isServiceSelected(service.value) && (
                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -459,13 +377,9 @@ const ReservationModal: React.FC = () => {
                     </svg>
                   )}
                 </div>
-
                 <div className="flex flex-col items-center gap-2">
-                  {/* Service Icon */}
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                    isServiceSelected(service.value)
-                      ? 'bg-blue-100 text-blue-600' 
-                      : 'bg-gray-100 text-gray-600'
+                    isServiceSelected(service.value) ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
                   }`}>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none">
                       <path d="M7.99805 16H11.998M7.99805 11H15.998" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"></path>
@@ -473,17 +387,11 @@ const ReservationModal: React.FC = () => {
                       <path d="M7.49609 3.75C7.49609 2.7835 8.2796 2 9.24609 2H14.7461C15.7126 2 16.4961 2.7835 16.4961 3.75C16.4961 4.7165 15.7126 5.5 14.7461 5.5H9.24609C8.2796 5.5 7.49609 4.7165 7.49609 3.75Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"></path>
                     </svg>
                   </div>
-                  
-                  {/* Service Name */}
                   <div className="flex flex-col gap-1">
-                    <span className={`text-sm font-medium ${
-                      isServiceSelected(service.value) ? 'text-blue-900' : 'text-gray-900'
-                    }`}>
+                    <span className={`text-sm font-medium ${isServiceSelected(service.value) ? 'text-blue-900' : 'text-gray-900'}`}>
                       {service.label.split(' - ')[0]}
                     </span>
-                    <span className={`text-xs font-semibold ${
-                      isServiceSelected(service.value) ? 'text-blue-600' : 'text-gray-600'
-                    }`}>
+                    <span className={`text-xs font-semibold ${isServiceSelected(service.value) ? 'text-blue-600' : 'text-gray-600'}`}>
                       ${service.price}
                     </span>
                   </div>
@@ -491,8 +399,7 @@ const ReservationModal: React.FC = () => {
               </button>
             ))}
           </div>
-          
-          {/* Selected services summary */}
+
           {selectedServices.length > 0 && (
             <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
               <div className="flex justify-between items-center">
@@ -515,32 +422,24 @@ const ReservationModal: React.FC = () => {
     } else if (step === 1) {
       bodyContent = (
         <div className="flex flex-col gap-6">
-          <Heading
-            title="Who would you like to book with?"
-            subtitle="Select a professional."
-          />
+          <Heading title="Who would you like to book with?" subtitle="Select a professional." />
           <div className="grid grid-cols-2 gap-3">
             {employeeOptions.map(emp => (
               <button
                 key={emp.value}
                 onClick={() => setSelectedEmployee(emp)}
                 className={`aspect-square p-4 rounded-xl border-2 transition-all duration-200 flex flex-col items-center justify-center text-center hover:shadow-md ${
-                  selectedEmployee?.value === emp.value 
-                    ? 'border-blue-500 bg-blue-50 shadow-md' 
+                  selectedEmployee?.value === emp.value
+                    ? 'border-blue-500 bg-blue-50 shadow-md'
                     : 'border-gray-200 hover:border-gray-300 bg-white'
                 }`}
               >
                 <div className="flex flex-col items-center gap-3">
-                  {/* Employee Avatar */}
                   <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold text-lg ${
-                    selectedEmployee?.value === emp.value 
-                      ? 'bg-blue-500' 
-                      : 'bg-gray-400'
+                    selectedEmployee?.value === emp.value ? 'bg-blue-500' : 'bg-gray-400'
                   }`}>
                     {emp.label.split(' ').map(n => n[0]).join('').toUpperCase()}
                   </div>
-                  
-                  {/* Employee Name */}
                   <span className={`text-sm font-medium text-center leading-tight ${
                     selectedEmployee?.value === emp.value ? 'text-blue-900' : 'text-gray-900'
                   }`}>
@@ -555,19 +454,15 @@ const ReservationModal: React.FC = () => {
     }
   }
 
-  // Date and time steps are the same for both flows (step 2 and 3)
+  // Date
   if (step === 2) {
     bodyContent = (
       <div className="flex flex-col gap-6">
-        <Heading
-          title="Pick a date"
-          subtitle="When would you like to come in?"
-        />
+        <Heading title="Pick a date" subtitle="When would you like to come in?" />
         <Calendar
           value={date || new Date()}
           onChange={(value) => {
             setDate(value);
-            // Clear selected time if it becomes invalid for the new date
             if (time && isTimeSlotDisabled(time, value)) {
               setTime('');
             }
@@ -577,20 +472,17 @@ const ReservationModal: React.FC = () => {
     );
   }
 
+  // Time
   if (step === 3) {
     const isToday = date && isSameDay(date, new Date());
-    
+
     bodyContent = (
       <div className="flex flex-col gap-6">
-        <Heading
-          title="Pick a time"
-          subtitle="Choose your preferred time slot."
-        />
+        <Heading title="Pick a time" subtitle="Choose your preferred time slot." />
         <div className="grid grid-cols-3 gap-3">
           {timeOptions.map(t => {
             const isDisabled = isTimeSlotDisabled(t);
             const isSelected = time === t;
-            
             return (
               <button
                 key={t}
@@ -600,7 +492,7 @@ const ReservationModal: React.FC = () => {
                   isDisabled
                     ? 'border-gray-200 bg-gray-50 text-gray-300 cursor-not-allowed'
                     : isSelected
-                      ? 'border-blue-500 bg-blue-50 text-blue-900 shadow-md' 
+                      ? 'border-blue-500 bg-blue-50 text-blue-900 shadow-md'
                       : 'border-gray-200 hover:border-gray-300 bg-white text-gray-700 hover:shadow-md cursor-pointer'
                 }`}
               >
@@ -611,8 +503,7 @@ const ReservationModal: React.FC = () => {
             );
           })}
         </div>
-        
-        {/* Helper text for time restrictions */}
+
         {isToday && (
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-3">
             <p className="text-sm text-amber-700 text-center">
@@ -624,22 +515,18 @@ const ReservationModal: React.FC = () => {
     );
   }
 
+  // Notes / Summary
   if (step === 4) {
     bodyContent = (
       <div className="flex flex-col gap-6">
-        <Heading
-          title="Add a note (optional)"
-          subtitle="Any special requests?"
-        />
-        
-        {/* Booking Summary */}
+        <Heading title="Add a note (optional)" subtitle="Any special requests?" />
         <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
           <h4 className="font-medium text-gray-900 mb-3">Booking Summary</h4>
           <div className="space-y-2 text-sm">
             <div className="flex justify-between items-start">
               <span className="text-gray-600">Services:</span>
               <div className="text-right">
-                {selectedServices.map((service, index) => (
+                {selectedServices.map((service) => (
                   <div key={service.value} className="flex justify-between gap-4 mb-1">
                     <span className="font-medium">{service.label.split(' - ')[0]}</span>
                     <span className="font-medium">${service.price}</span>
