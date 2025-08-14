@@ -167,7 +167,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
           {/* Bottom content */}
           <div className="absolute bottom-5 left-5 right-5 text-white z-20">
             {/* ======= MOVED PROFILE HEADER OUTSIDE THE BADGE ======= */}
-            <div className="flex items-center gap-3 mb-3 px-3 pt-3">
+            <div className="flex items-center gap-3 mb-3 px-2 pt-3">
               {/* Initials avatar */}
               <div className="relative w-16 h-16 flex-shrink-0">
                 <div
@@ -209,7 +209,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
                     />
                   </svg>
                 </div>
-                <p className="text-xs text-white/80 font-light drop-shadow-md">
+                <p className="text-xs text-white font-light drop-shadow-md">
                   Specialist at {listingTitle}
                 </p>
               </div>

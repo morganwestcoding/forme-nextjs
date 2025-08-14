@@ -113,7 +113,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
             </div>
             
             {/* Business and location */}
-            <p className="text-xs drop-shadow-md font-thin flex items-center mb-3">
+            <p className="text-xs drop-shadow-md font-thin flex items-center mb-5">
               {listingTitle} • {city}, {state}
             </p>
 
