@@ -75,7 +75,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
                 <path d="M9 12.8929L10.8 14.5L15 9.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
-            <p className="text-xs drop-shadow-md font-thin flex items-center mb-3">
+            <p className="text-xs drop-shadow-md font-thin flex items-center mb-4">
               {city}, {state} • 2.3 miles away
             </p>
             <SmartBadgeRating 
