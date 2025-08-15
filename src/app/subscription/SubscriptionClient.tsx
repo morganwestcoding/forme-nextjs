@@ -5,10 +5,9 @@ import { useMemo, useState } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { SafeUser } from "@/app/types";
-import Heading from "@/components/Heading";
+import FeatureComparison from "@/components/subscription/FeatureComparison";
 import { Check, Star, ChevronRight, ChevronLeft, HelpCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
-import FeatureComparison from "@/components/subscription/FeatureComparison";
 
 type Billing = "monthly" | "yearly";
 
@@ -181,43 +180,7 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
     setDetailPlanId(planId);
   };
 
-  const confirmSelection = async () => {
-    if (!detailPlanId) return;
-    const chosen = planById(detailPlanId);
-    try {
-      setSaving(true);
-      await axios.post("/api/subscription/select", { plan: chosen.title });
-      const label = cleanLabel(chosen.title);
-      const canon = canonicalize(chosen.title);
-      const isPaid = canon !== "bronze";
-      toast.success(`${label} ${isPaid ? "activated" : "selected"}.`);
-      setDetailPlanId(null);
-      setSelectedPlanId(chosen.id);
-      router.refresh();
-    } catch (e: any) {
-      toast.error(e?.response?.data || "Failed to update subscription.");
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const currentPlanLabel = cleanLabel(currentUser?.subscriptionTier); // ✅ single declaration
-
-  // Comparison (no hooks inside .map)
-  const Comparison = () => {
-    const matrix = [
-      { feature: "Member Discounts", quartz: "—", pearl: "✓", sapphire: "✓", ruby: "✓", emerald: "✓", diamond: "Custom" },
-      { feature: "ForMe Cash (Monthly Credit)", quartz: "—", pearl: "✓", sapphire: "✓", ruby: "✓", emerald: "✓", diamond: "Custom" },
-      { feature: "Cadence Scheduling", quartz: "—", pearl: "✓", sapphire: "✓", ruby: "✓", emerald: "✓", diamond: "Custom" },
-      { feature: "Featured/Priority Placement", quartz: "—", pearl: "—", sapphire: "—", ruby: "Featured", emerald: "Priority", diamond: "Custom" },
-      { feature: "Lead Insights", quartz: "—", pearl: "—", sapphire: "Basic", ruby: "Advanced", emerald: "Advanced", diamond: "Enterprise" },
-      { feature: "Support Level", quartz: "Standard", pearl: "Priority", sapphire: "Priority", ruby: "Priority", emerald: "Premium", diamond: "24/7" },
-      { feature: "Team Seats", quartz: "1", pearl: "1", sapphire: "1", ruby: "1", emerald: "1–2", diamond: "Multi-user" },
-    ];
-    return (
-<FeatureComparison/>
-    );
-  };
+  const currentPlanLabel = cleanLabel(currentUser?.subscriptionTier);
 
   // FAQ (single open index; no per-item hooks)
   const FAQ = () => {
@@ -260,40 +223,39 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
     <div className="max-w-6xl mx-auto pb-10 pt-4">
       {/* Header */}
       <header className="text-left mb-10">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-[#60A5FA] to-[#1f82fa] bg-clip-text text-transparent">
+        <h1 className="text-3xl font-bold text-black ">
           Choose the perfect plan
         </h1>
         <p className="text-slate-600 mt-2">
           Current plan: <span className="font-medium">{currentPlanLabel}</span>
         </p>
 
-{/* Billing Toggle (centered) */}
-<div className="mt-6 flex justify-center">
-  <div className="w-fit flex items-center gap-3 px-6 py-3 rounded-xl bg-white shadow border border-slate-200">
-    <span className={`text-sm ${billing === "monthly" ? "text-slate-900 font-medium" : "text-slate-500"}`}>
-      Monthly
-    </span>
+        {/* Billing Toggle (centered) */}
+        <div className="mt-6 flex justify-center">
+          <div className="w-fit flex items-center gap-3 px-6 py-3 rounded-xl bg-white shadow border border-slate-200">
+            <span className={`text-sm ${billing === "monthly" ? "text-slate-900 font-medium" : "text-slate-500"}`}>
+              Monthly
+            </span>
 
-    <label className="relative inline-flex items-center cursor-pointer">
-      <input
-        type="checkbox"
-        className="sr-only peer"
-        checked={billing === "yearly"}
-        onChange={(e) => setBilling(e.target.checked ? "yearly" : "monthly")}
-      />
-      <div className="w-12 h-6 bg-slate-200 rounded-full peer peer-checked:bg-gradient-to-r peer-checked:from-blue-500 peer-checked:to-violet-500 transition-colors"></div>
-      <div className="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform peer-checked:translate-x-6"></div>
-    </label>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                className="sr-only peer"
+                checked={billing === "yearly"}
+                onChange={(e) => setBilling(e.target.checked ? "yearly" : "monthly")}
+              />
+              <div className="w-12 h-6 bg-slate-200 rounded-full peer peer-checked:bg-gradient-to-r peer-checked:from-[#60A5FA] peer-checked:to-[#1f82fa] transition-colors"></div>
+              <div className="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform peer-checked:translate-x-6"></div>
+            </label>
 
-    <span className={`text-sm flex items-center gap-2 ${billing === "yearly" ? "text-slate-900 font-medium" : "text-slate-500"}`}>
-      Yearly
-      <span className={`text-white text-xs px-2 py-0.5 rounded-full ${billing === "yearly" ? "bg-pink-500" : "bg-slate-300"}`}>
-        Save 20%
-      </span>
-    </span>
-  </div>
-</div>
-
+            <span className={`text-sm flex items-center gap-2 ${billing === "yearly" ? "text-slate-900 font-medium" : "text-slate-500"}`}>
+              Yearly
+              <span className={`text-white text-xs px-2 py-0.5 rounded-full ${billing === "yearly" ? "bg-green-500" : "bg-slate-300"}`}> 
+                Save 20%
+              </span>
+            </span>
+          </div>
+        </div>
       </header>
 
       {/* Pricing Cards */}
@@ -326,8 +288,8 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
                   <span className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium border ${p.categoryPill.bg} ${p.categoryPill.text} ${p.categoryPill.border}`}>
                     {p.categoryPill.label}
                   </span>
-                  <h2 className="text-2xl font-semibold mt-3">{cleanLabel(p.title)}</h2>
-                  <div className="mt-2 text-4xl font-bold text-blue-600">
+                <h2 className="text-2xl font-semibold mt-3">{cleanLabel(p.title)}</h2>
+                  <div className="mt-2 text-3xl font-bold text-[#60A5FA]">
                     {priceText}
                     {p.id !== "diamond" && (
                       <span className="text-base text-slate-500 font-normal">/{billing === "yearly" ? "year" : "mo"}</span>
@@ -349,16 +311,22 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
                   ))}
                 </ul>
 
+                {/* Unified button color + Selected text */}
                 <button
                   onClick={() => handleChoose(p.id)}
                   className={`
-                    w-full inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-white font-semibold
-                    transition shadow
-                    ${p.popular ? "bg-gradient-to-r from-[#60A5FA] to-[#1f82fa] hover:opacity-95" : "bg-slate-800 hover:bg-slate-900"}
+                    w-full inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5
+                    text-white font-semibold transition shadow
+                    bg-gradient-to-r from-[#60A5FA] to-[#1f82fa] hover:opacity-95
+                    ${isSelected ? "ring-2 ring-blue-300" : ""}
                   `}
                 >
-                  Choose Plan
-                  <ChevronRight className="w-4 h-4" />
+                  {isSelected ? "Selected" : "Choose Plan"}
+                  {isSelected ? (
+                    <Check className="w-4 h-4" />
+                  ) : (
+                    <ChevronRight className="w-4 h-4" />
+                  )}
                 </button>
               </div>
             </div>
@@ -371,6 +339,68 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
         const p = planById(detailPlanId);
         const price = priceFor(p);
         const priceText = formatPrice(price, p.id);
+
+        const isFree = p.id === "quartz";
+        const isEnterprise = p.id === "diamond";
+
+        const handleSelect = async () => {
+          if (isEnterprise) {
+            toast("We’ll follow up about Enterprise.");
+            window.location.href = "/contact";
+            return;
+          }
+
+          if (isFree) {
+            try {
+              setSaving(true);
+              await axios.post("/api/subscription/select", {
+                plan: p.title,
+                interval: billing,
+              });
+              toast.success(`${cleanLabel(p.title)} selected`);
+              setDetailPlanId(null);
+              setSelectedPlanId(p.id);
+              // Make sure server picks up the change
+              router.refresh();
+            } catch (e: any) {
+              toast.error(e?.response?.data || "Failed to update subscription.");
+            } finally {
+              setSaving(false);
+            }
+            return;
+          }
+
+          // Paid → create subscription checkout session
+          try {
+            setSaving(true);
+            const res = await axios.post("/api/subscription/checkout", {
+              planId: p.id as "pearl" | "sapphire" | "ruby" | "emerald",
+              interval: billing,
+            });
+
+            const { sessionId } = res.data || {};
+            if (!sessionId) {
+              toast.error("Failed to create Stripe session");
+              setSaving(false);
+              return;
+            }
+
+            const { loadStripe } = await import("@stripe/stripe-js");
+            const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+            if (!stripe) throw new Error("Stripe failed to load");
+
+            const { error } = await stripe.redirectToCheckout({ sessionId });
+            if (error) {
+              console.error("Stripe redirect error:", error);
+              toast.error(error.message || "Stripe redirect failed");
+            }
+          } catch (err: any) {
+            console.error(err);
+            toast.error(err?.response?.data?.error || "Checkout failed");
+          } finally {
+            setSaving(false);
+          }
+        };
 
         return (
           <div className="mt-10 rounded-2xl bg-white shadow-lg border border-slate-100 p-6">
@@ -422,11 +452,11 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
                 </div>
 
                 <button
-                  onClick={confirmSelection}
+                  onClick={handleSelect}
                   disabled={saving}
                   className="mt-5 w-full rounded-xl bg-gradient-to-r from-[#60A5FA] to-[#1f82fa] text-white font-semibold px-4 py-2.5 shadow hover:opacity-95 disabled:opacity-60"
                 >
-                  {saving ? "Saving…" : "Select this plan"}
+                  {isEnterprise ? "Contact Sales" : saving ? "Processing…" : "Select this plan"}
                 </button>
               </div>
             </div>
@@ -434,10 +464,16 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
         );
       })()}
 
-      <Comparison />
+      {/* Comparison */}
+      <FeatureComparison />
+
+      {/* FAQ */}
       <FAQ />
     </div>
   );
 };
 
 export default SubscriptionClient;
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;

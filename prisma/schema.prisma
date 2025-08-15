@@ -28,10 +28,21 @@ model User {
   imageSrc       String?      
   location       String?
   galleryImages  String[]
+
   isSubscribed    Boolean @default(false)
   subscriptionStartDate DateTime?
   subscriptionEndDate DateTime?
   subscriptionTier String? // Add this field
+
+  // --- Stripe subscription fields ---
+  stripeCustomerId             String?
+  stripeSubscriptionId         String?
+  subscriptionPriceId          String?
+  subscriptionStatus           String?   // trialing | active | past_due | canceled | unpaid | etc.
+  subscriptionBillingInterval  String?   // monthly | yearly
+  currentPeriodEnd             DateTime?
+
+
   following    String[]      @db.ObjectId
   followers    String[]      @db.ObjectId
   comments Comment[]
