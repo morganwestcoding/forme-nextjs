@@ -55,7 +55,7 @@ const MarketContent = ({
   const [viewState, setViewState] = useState<ViewState>({
     mode: 'grid',
     filters: {
-      category: 'all',
+    category: searchParams.category ?? 'featured', // ✅ default Featured
     }
   });
 

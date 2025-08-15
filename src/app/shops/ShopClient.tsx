@@ -25,7 +25,7 @@ const ShopClient: React.FC<ShopClientProps> = ({
   const router = useRouter();
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [filters, setFilters] = useState({
-    category: 'all',
+    category: 'featured',
     searchQuery: ''
   });
   

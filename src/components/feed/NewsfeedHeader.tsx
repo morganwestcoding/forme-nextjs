@@ -173,73 +173,59 @@ const NewsfeedHeader: React.FC<NewsfeedHeaderProps> = ({
       </div>
 
       {/* Tabs */}
-{/* Tabs - Centered like MarketExplorer */}
 <div className="flex border-b border-gray-200 relative justify-center mb-6">
   <div className="flex gap-8">
-    <button 
-      onClick={() => handleFilterChange('featured')}
-      className={`pb-4 pt-2 px-4 flex text-sm items-center justify-center gap-2 transition-all duration-150 relative ${
-        viewState.filters.category === 'featured' 
-          ? 'font-medium' 
-          : 'text-gray-500 hover:text-gray-700'
-      }`}
-      style={viewState.filters.category === 'featured' ? {
-        color: currentCategory ? getCategoryStyle(currentCategory).color : '#60A5FA',
-      } : {}}
-    >
-      <Sparkles className="w-5 h-5" strokeWidth={1.75} />
-      <span>Featured</span>
-      {viewState.filters.category === 'featured' && (
-        <div 
-          className="absolute bottom-0 left-0 right-0 h-0.5"
-          style={{ backgroundColor: currentCategory ? getCategoryStyle(currentCategory).color : '#60A5FA' }}
-        />
-      )}
-    </button>
+    {[
+      { key: 'featured', label: 'Featured', Icon: Sparkles },
+      { key: 'trending', label: 'Trending', Icon: TrendingUp },
+      { key: 'categories', label: 'Categories', Icon: Layers },
+    ].map(({ key, label, Icon }) => {
+      const isActive =
+        key === 'categories'
+          ? viewState.filters.category === 'categories' || showCategories
+          : viewState.filters.category === key;
 
-    <button 
-      onClick={() => handleFilterChange('trending')}
-      className={`pb-4 pt-2 px-4 flex text-sm items-center justify-center gap-2 transition-all duration-150 relative ${
-        viewState.filters.category === 'trending' 
-          ? 'font-medium' 
-          : 'text-gray-500 hover:text-gray-700'
-      }`}
-      style={viewState.filters.category === 'trending' ? {
-        color: currentCategory ? getCategoryStyle(currentCategory).color : '#60A5FA',
-      } : {}}
-    >
-      <TrendingUp className="w-5 h-5" strokeWidth={1.75} />
-      <span>Trending</span>
-      {viewState.filters.category === 'trending' && (
-        <div 
-          className="absolute bottom-0 left-0 right-0 h-0.5"
-          style={{ backgroundColor: currentCategory ? getCategoryStyle(currentCategory).color : '#60A5FA' }}
-        />
-      )}
-    </button>
+      const activeColor =
+        currentCategory ? getCategoryStyle(currentCategory).color : '#60A5FA';
 
-    <button 
-      onClick={() => handleFilterChange('categories')}
-      className={`pb-4 pt-2 px-4 flex text-sm items-center justify-center gap-2 transition-all duration-150 relative ${
-        viewState.filters.category === 'categories' || showCategories
-          ? 'font-medium' 
-          : 'text-gray-500 hover:text-gray-700'
-      }`}
-      style={(viewState.filters.category === 'categories' || showCategories) ? {
-        color: currentCategory ? getCategoryStyle(currentCategory).color : '#60A5FA',
-      } : {}}
-    >
-      <Layers className="w-5 h-5" strokeWidth={1.75} />
-      <span>Categories</span>
-      {(viewState.filters.category === 'categories' || showCategories) && (
-        <div 
-          className="absolute bottom-0 left-0 right-0 h-0.5"
-          style={{ backgroundColor: currentCategory ? getCategoryStyle(currentCategory).color : '#60A5FA' }}
-        />
-      )}
-    </button>
+      return (
+        <button
+          key={key}
+          onClick={() =>
+            handleFilterChange(key === 'categories' ? 'categories' : key)
+          }
+          // Fixed dimensions + no font toggling to prevent shifts
+          className={`
+            relative flex items-center justify-center gap-2
+            px-4 pt-2 pb-4 h-10
+            text-sm font-medium whitespace-nowrap
+            transition-colors duration-150
+            ${isActive ? '' : 'text-gray-500 hover:text-gray-700'}
+            after:absolute after:inset-x-0 after:bottom-0
+            after:h-0.5 after:rounded
+            after:transition-colors after:duration-150
+            after:${isActive ? '' : 'bg-transparent'}
+          `}
+          style={{
+            color: isActive ? activeColor : undefined,
+            // underline color when active
+            ['--underline' as any]: activeColor,
+          }}
+        >
+          <Icon className="w-5 h-5" strokeWidth={1.75} />
+          <span>{label}</span>
+          {/* persistent underline via inline style so presence doesn't change layout */}
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-0.5 rounded"
+            style={{ backgroundColor: isActive ? activeColor : 'transparent' }}
+          />
+        </button>
+      );
+    })}
   </div>
 </div>
+
 
 
 

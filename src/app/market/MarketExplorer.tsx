@@ -170,93 +170,50 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
         </button>
       </div>
 
-{/* Tabs */}
-{/* Centered Tabs */}
-<div className="flex border-b border-gray-200 relative justify-center">
+{/* Tabs — no layout shift */}
+<div className="flex border-b border-gray-200 relative justify-center mb-0">
   <div className="flex gap-8">
-    <button 
-      onClick={() => handleFilterChange('featured')}
-      className={`pb-4 pt-2 px-4 flex text-sm items-center justify-center gap-2 transition-all duration-150 relative ${
-        viewState.filters.category === 'featured' 
-          ? 'font-medium' 
-          : 'text-gray-500 hover:text-gray-700'
-      }`}
-      style={viewState.filters.category === 'featured' ? {
-        color: currentCategory ? getCategoryStyle(currentCategory).color : '#60A5FA',
-      } : {}}
-    >
-      <Sparkles className={`w-5 h-5 transition-transform duration-150 ${
-        viewState.filters.category === 'featured' ? 'transform -translate-y-px' : ''
-      }`} strokeWidth={1.75}
-      />
-      <span className={`transition-transform duration-150 ${
-        viewState.filters.category === 'featured' ? 'transform -translate-y-px' : ''
-      }`}>Featured</span>
-      {viewState.filters.category === 'featured' && (
-        <div 
-          className="absolute bottom-0 left-0 right-0 h-0.5"
-          style={{ 
-            backgroundColor: currentCategory ? getCategoryStyle(currentCategory).color : '#60A5FA'
-          }}
-        />
-      )}
-    </button>
-    
-    <button 
-      onClick={() => handleFilterChange('trending')}
-      className={`pb-4 pt-2 px-4 flex items-center justify-center text-sm gap-2 transition-all duration-150 relative ${
-        viewState.filters.category === 'trending' 
-          ? 'font-medium' 
-          : 'text-gray-500 hover:text-gray-700'
-      }`}
-      style={viewState.filters.category === 'trending' ? {
-        color: currentCategory ? getCategoryStyle(currentCategory).color : '#60A5FA',
-      } : {}}
-    >
-      <TrendingUp className={`w-5 h-5 transition-transform duration-150 ${
-        viewState.filters.category === 'trending' ? 'transform -translate-y-px' : ''
-      }`} strokeWidth={1.75}/>
-      <span className={`transition-transform duration-150 ${
-        viewState.filters.category === 'trending' ? 'transform -translate-y-px' : ''
-      }`}>Trending</span>
-      {viewState.filters.category === 'trending' && (
-        <div 
-          className="absolute bottom-0 left-0 right-0 h-0.5"
-          style={{ 
-            backgroundColor: currentCategory ? getCategoryStyle(currentCategory).color : '#60A5FA'
-          }}
-        />
-      )}
-    </button>
-    
-    <button 
-      onClick={() => handleFilterChange('categories')}
-      className={`pb-4 pt-2 px-4 flex items-center justify-center text-sm gap-2 transition-all duration-150 relative ${
-        viewState.filters.category === 'categories' || showCategories 
-          ? 'font-medium' 
-          : 'text-gray-500 hover:text-gray-700'
-      }`}
-      style={(viewState.filters.category === 'categories' || showCategories) ? {
-        color: currentCategory ? getCategoryStyle(currentCategory).color : '#60A5FA',
-      } : {}}
-    >
-      <Layers className={`w-5 h-5 transition-transform duration-150 ${
-        (viewState.filters.category === 'categories' || showCategories) ? 'transform -translate-y-px' : ''
-      }`} strokeWidth={1.75}/>
-      <span className={`transition-transform duration-150 ${
-        (viewState.filters.category === 'categories' || showCategories) ? 'transform -translate-y-px' : ''
-      }`}>Categories</span>
-      {(viewState.filters.category === 'categories' || showCategories) && (
-        <div 
-          className="absolute bottom-0 left-0 right-0 h-0.5"
-          style={{ 
-            backgroundColor: currentCategory ? getCategoryStyle(currentCategory).color : '#60A5FA'
-          }}
-        />
-      )}
-    </button>
+    {[
+      { key: 'featured', label: 'Featured', Icon: Sparkles },
+      { key: 'trending', label: 'Trending', Icon: TrendingUp },
+      { key: 'categories', label: 'Categories', Icon: Layers },
+    ].map(({ key, label, Icon }) => {
+      const isActive =
+        key === 'categories'
+          ? viewState.filters.category === 'categories' || showCategories
+          : viewState.filters.category === key;
+
+      const activeColor =
+        currentCategory ? getCategoryStyle(currentCategory).color : '#60A5FA';
+
+      return (
+        <button
+          key={key}
+          onClick={() => handleFilterChange(key)}
+          className={`
+            relative flex items-center justify-center gap-2
+            px-4 pt-2 pb-4 h-10
+            text-sm font-medium whitespace-nowrap
+            transition-colors duration-150
+            ${isActive ? '' : 'text-gray-500 hover:text-gray-700'}
+          `}
+          style={{ color: isActive ? activeColor : undefined }}
+        >
+          <Icon className="w-5 h-5" strokeWidth={1.75} />
+          <span>{label}</span>
+
+          {/* Persistent underline: only color toggles */}
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-0.5 rounded"
+            style={{ backgroundColor: isActive ? activeColor : 'transparent' }}
+          />
+        </button>
+      );
+    })}
   </div>
 </div>
+
 
 
     

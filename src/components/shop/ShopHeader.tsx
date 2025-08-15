@@ -93,7 +93,7 @@ const ShopHeader: React.FC<ShopHeaderProps> = ({
       </div>
 
       {/* Search and Controls Row */}
-      <div className="flex mt-4 mb-7 gap-2">
+      <div className="flex mt-4 mb-8 gap-2">
         {/* Search Bar */}
         <form className="relative flex-grow" onSubmit={handleSearchSubmit}>
           <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
@@ -190,132 +190,87 @@ const ShopHeader: React.FC<ShopHeaderProps> = ({
         )}
       </div>
 
-      {/* Centered Tabs */}
-      <div className="flex mb-6 border-b border-gray-200 relative justify-center">
-        <div className="flex gap-8">
-          <button 
-            onClick={() => handleFilterChange('featured')}
-            className={`pb-4 pt-2 px-4 flex text-sm items-center justify-center gap-2 transition-all duration-150 relative ${
-              filters.category === 'featured' 
-                ? 'font-medium text-[#60A5FA]' 
-                : 'text-gray-500 hover:text-gray-700'
-            }`}
-          >
-            <Sparkles className={`w-5 h-5 transition-transform duration-150 ${
-              filters.category === 'featured' ? 'transform -translate-y-px' : ''
-            }`} 
-               strokeWidth={1.75}/>
-            <span className={`transition-transform duration-150 ${
-              filters.category === 'featured' ? 'transform -translate-y-px' : ''
-            }`}>Featured</span>
-            {filters.category === 'featured' && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#60A5FA]" />
-            )}
-          </button>
-          
-          <button 
-            onClick={() => handleFilterChange('trending')}
-            className={`pb-4 pt-2 px-4 flex items-center justify-center text-sm gap-2 transition-all duration-150 relative ${
-              filters.category === 'trending' 
-                ? 'font-medium text-[#60A5FA]' 
-                : 'text-gray-500 hover:text-gray-700'
-            }`}
-          >
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" 
-       width="24" height="24" fill="none" 
-       className={`transition-transform duration-150 ${
-         filters.category === 'trending' ? 'transform -translate-y-px' : ''
-       }`} style={{ color: 'currentColor' }}>
-    <path d="M20 13V8H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-    <path d="M20 8L15 13C14.1174 13.8826 13.6762 14.3238 13.1346 14.3726C13.045 14.3807 12.955 14.3807 12.8654 14.3726C12.3238 14.3238 11.8826 13.8826 11 13C10.1174 12.1174 9.67615 11.6762 9.13457 11.6274C9.04504 11.6193 8.95496 11.6193 8.86543 11.6274C8.32385 11.6762 7.88256 12.1174 7 13L4 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+{/* Centered Tabs — no layout shift */}
+<div className="flex mb-6 border-b border-gray-200 relative justify-center">
+  <div className="flex gap-8">
+    {[
+      { key: 'featured', label: 'Featured', Icon: Sparkles, type: 'lucide' },
+      { key: 'trending', label: 'Trending', Icon: TrendingUp, type: 'lucide' },
+      { key: 'products', label: 'Products', type: 'products' },
+      { key: 'shops', label: 'Shops', type: 'shops' },
+      { key: 'categories', label: 'Categories', Icon: Layers, type: 'lucide' },
+    ].map(({ key, label, Icon, type }) => {
+      const isActive =
+        key === 'categories' ? filters.category === 'categories' : filters.category === key;
+      const activeColor = '#60A5FA';
 
-  </svg>
-            <span className={`transition-transform duration-150 ${
-              filters.category === 'trending' ? 'transform -translate-y-px' : ''
-            }`}>Trending</span>
-            {filters.category === 'trending' && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#60A5FA]" />
-            )}
-          </button>
-          
-{/* Products */}
-<button 
-  onClick={() => handleFilterChange('products')}
-  className={`pb-4 pt-2 px-4 flex text-sm items-center justify-center gap-2 transition-all duration-150 relative ${
-    filters.category === 'products' 
-      ? 'font-medium text-[#60A5FA]' 
-      : 'text-gray-500 hover:text-gray-700'
-  }`}
->
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" 
-       width="24" height="24" fill="none" 
-       className={`transition-transform duration-150 ${
-         filters.category === 'products' ? 'transform -translate-y-px' : ''
-       }`} style={{ color: 'currentColor' }}>
-    <path d="M2.5 7.5V13.5C2.5 17.2712 2.5 19.1569 3.67157 20.3284C4.84315 21.5 6.72876 21.5 10.5 21.5H13.5C17.2712 21.5 19.1569 21.5 20.3284 20.3284C21.5 19.1569 21.5 17.2712 21.5 13.5V7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-    <path d="M3.86909 5.31461L2.5 7.5H21.5L20.2478 5.41303C19.3941 3.99021 18.9673 3.2788 18.2795 2.8894C17.5918 2.5 16.7621 2.5 15.1029 2.5H8.95371C7.32998 2.5 6.51812 2.5 5.84013 2.8753C5.16215 3.2506 4.73113 3.93861 3.86909 5.31461Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-    <path d="M12 7.5V2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-    <path d="M10 10.5H14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-  </svg>
-  <span className={`transition-transform duration-150 ${
-    filters.category === 'products' ? 'transform -translate-y-px' : ''
-  }`}>Products</span>
-  {filters.category === 'products' && (
-    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#60A5FA]" />
-  )}
-</button>
+      return (
+        <button
+          key={key}
+          onClick={() => handleFilterChange(key)}
+          className={`
+            relative flex items-center justify-center gap-2
+            px-4 pt-2 pb-4 h-10
+            text-sm font-medium whitespace-nowrap
+            transition-colors duration-150
+            ${isActive ? '' : 'text-gray-500 hover:text-gray-700'}
+          `}
+          style={{ color: isActive ? activeColor : undefined }}
+        >
+          {/* Icon */}
+          {type === 'lucide' && Icon ? (
+            <Icon className="w-5 h-5" strokeWidth={1.75} />
+          ) : null}
 
-{/* Shops */}
-<button 
-  onClick={() => handleFilterChange('shops')}
-  className={`pb-4 pt-2 px-4 flex items-center justify-center text-sm gap-2 transition-all duration-150 relative ${
-    filters.category === 'shops' 
-      ? 'font-medium text-[#60A5FA]' 
-      : 'text-gray-500 hover:text-gray-700'
-  }`}
->
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" 
-       width="24" height="24" fill="none"
-       className={`transition-transform duration-150 ${
-         filters.category === 'shops' ? 'transform -translate-y-px' : ''
-       }`} style={{ color: 'currentColor' }}>
-    <path d="M8 16L16.7201 15.2733C19.4486 15.046 20.0611 14.45 20.3635 11.7289L21 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-    <path d="M6 6H22" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-    <circle cx="6" cy="20" r="2" stroke="currentColor" strokeWidth="1.5"/>
-    <circle cx="17" cy="20" r="2" stroke="currentColor" strokeWidth="1.5"/>
-    <path d="M8 20L15 20" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-    <path d="M2 2H2.966C3.91068 2 4.73414 2.62459 4.96326 3.51493L7.93852 15.0765C8.08887 15.6608 7.9602 16.2797 7.58824 16.7616L6.63213 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-  </svg>
-  <span className={`transition-transform duration-150 ${
-    filters.category === 'shops' ? 'transform -translate-y-px' : ''
-  }`}>Shops</span>
-  {filters.category === 'shops' && (
-    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#60A5FA]" />
-  )}
-</button>
+          {type === 'products' ? (
+            <svg
+              xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+              width="20" height="20" fill="none"
+              className="flex-shrink-0"
+              style={{ color: 'currentColor' }}
+            >
+              <path d="M2.5 7.5V13.5C2.5 17.2712 2.5 19.1569 3.67157 20.3284C4.84315 21.5 6.72876 21.5 10.5 21.5H13.5C17.2712 21.5 19.1569 21.5 20.3284 20.3284C21.5 19.1569 21.5 17.2712 21.5 13.5V7.5"
+                    stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M3.86909 5.31461L2.5 7.5H21.5L20.2478 5.41303C19.3941 3.99021 18.9673 3.2788 18.2795 2.8894C17.5918 2.5 16.7621 2.5 15.1029 2.5H8.95371C7.32998 2.5 6.51812 2.5 5.84013 2.8753C5.16215 3.2506 4.73113 3.93861 3.86909 5.31461Z"
+                    stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M12 7.5V2.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M10 10.5H14" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          ) : null}
 
-          
-          <button 
-            onClick={() => handleFilterChange('categories')}
-            className={`pb-4 pt-2 px-4 flex items-center justify-center text-sm gap-2 transition-all duration-150 relative ${
-              filters.category === 'categories' 
-                ? 'font-medium text-[#60A5FA]' 
-                : 'text-gray-500 hover:text-gray-700'
-            }`}
-          >
-            <Layers className={`w-5 h-5 transition-transform duration-150 ${
-              filters.category === 'categories' ? 'transform -translate-y-px' : ''
-            }`} 
-              strokeWidth={1.75}/>
-            <span className={`transition-transform duration-150 ${
-              filters.category === 'categories' ? 'transform -translate-y-px' : ''
-            }`}>Categories</span>
-            {filters.category === 'categories' && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#60A5FA]" />
-            )}
-          </button>
-        </div>
-      </div>
+          {type === 'shops' ? (
+            <svg
+              xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+              width="20" height="20" fill="none"
+              className="flex-shrink-0"
+              style={{ color: 'currentColor' }}
+            >
+              <path d="M8 16L16.7201 15.2733C19.4486 15.046 20.0611 14.45 20.3635 11.7289L21 6"
+                    stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+              <path d="M6 6H22" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+              <circle cx="6" cy="20" r="2" stroke="currentColor" strokeWidth="1.75" />
+              <circle cx="17" cy="20" r="2" stroke="currentColor" strokeWidth="1.75" />
+              <path d="M8 20L15 20" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+              <path d="M2 2H2.966C3.91068 2 4.73414 2.62459 4.96326 3.51493L7.93852 15.0765C8.08887 15.6608 7.9602 16.2797 7.58824 16.7616L6.63213 18"
+                    stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+            </svg>
+          ) : null}
+
+          {/* Label */}
+          <span>{label}</span>
+
+          {/* Persistent underline */}
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-0.5 rounded"
+            style={{ backgroundColor: isActive ? activeColor : 'transparent' }}
+          />
+        </button>
+      );
+    })}
+  </div>
+</div>
+
     </div>
   );
 };
