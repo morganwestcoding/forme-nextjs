@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Avatar from "./ui/avatar";
 import { signOut } from "next-auth/react";
-import { useCallback, useState, useEffect } from "react";
+import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import useRegisterModal from "@/app/hooks/useRegisterModal";
 import useLoginModal from "@/app/hooks/useLoginModal";
@@ -39,11 +39,21 @@ const UserButton: React.FC<UserButtonProps> = ({
   const subscribeModal = useSubscribeModal();
   const [isOpen, setIsOpen] = useState(false);
 
-  const formatTier = (tier: string | null | undefined) => {
-    if (!tier) return "Free";
-    const baseTier = tier.split(" ")[0];
-    return baseTier.charAt(0).toUpperCase() + baseTier.slice(1).toLowerCase();
+  // Format a tier string:
+  // - remove anything in parentheses
+  // - capitalize the first letter
+  // - default to "Bronze" if empty/missing
+  const formatTier = (tier?: string | null) => {
+    const cleaned = String(tier || "")
+      .replace(/\s*\(.*\)\s*$/, "") // strip " (customer)" etc.
+      .trim()
+      .toLowerCase();
+
+    const base = cleaned || "bronze";
+    return base.charAt(0).toUpperCase() + base.slice(1);
   };
+
+  const planLabel = formatTier(currentUser?.subscriptionTier);
 
   const handleClick = (callback: () => void) => (e: React.MouseEvent) => {
     e.preventDefault();
@@ -57,18 +67,17 @@ const UserButton: React.FC<UserButtonProps> = ({
   const handleLogin = handleClick(() => loginModal.onOpen());
   const handleRegister = handleClick(() => registerModal.onOpen());
   const handleRent = handleClick(() => rentModal.onOpen());
-  const handleSubscribe = handleClick(() => subscribeModal.onOpen());
-  const handleProfile = handleClick(() =>
-    router.push(`/profile/${currentUser?.id}`)
-  );
+  const handleSubscribe = handleClick(() => router.push("/subscription"));
+  const handleProfile = handleClick(() => {
+    if (currentUser?.id) router.push(`/profile/${currentUser.id}`);
+  });
   const handleListings = handleClick(() => router.push("/properties"));
-  const handleAnalytics = handleClick(() => router.push("/analytics")); // New analytics handler
+  const handleAnalytics = handleClick(() => router.push("/analytics"));
 
   const buttonClass = noBg
     ? "flex items-center justify-start cursor-pointer outline-none touch-manipulation"
     : "w-44 py-2.5 mt-1 px-4 bg-blue-50 flex items-center justify-start mb-6 cursor-pointer rounded-xl border border-[#60A5FA] hover:bg-[#DFE2E2] transition-all outline-none";
 
-  // Determine dropdown width based on noBg prop
   const dropdownWidthClass = noBg ? "min-w-44" : "w-44";
 
   return (
@@ -89,9 +98,9 @@ const UserButton: React.FC<UserButtonProps> = ({
               <span className="text-black text-sm font-medium leading-none">
                 {currentUser.name?.split(" ")[0]}
               </span>
-              <div className="h-1" /> {/* vertical space */}
+              <div className="h-1" />
               <span className="text-[#60A5FA] text-xs leading-none">
-                Free Version
+                {planLabel}
               </span>
             </>
           ) : (
@@ -99,9 +108,9 @@ const UserButton: React.FC<UserButtonProps> = ({
               <span className="text-black text-sm font-medium leading-none">
                 Login
               </span>
-              <div className="h-1" /> {/* vertical space */}
+              <div className="h-1" />
               <span className="text-[#60A5FA] text-xs leading-none">
-                Free Version
+                {formatTier(undefined)}{/* shows "Bronze" */}
               </span>
             </>
           )}
@@ -117,9 +126,7 @@ const UserButton: React.FC<UserButtonProps> = ({
         {currentUser ? (
           <>
             <DropdownMenuItem onClick={handleProfile}>My Profile</DropdownMenuItem>
-            <DropdownMenuItem onClick={handleListings}>
-              My Listings
-            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleListings}>My Listings</DropdownMenuItem>
             <DropdownMenuItem onClick={handleAnalytics}>My Analytics</DropdownMenuItem>
             <DropdownMenuItem onClick={handleSubscribe}>Subscription</DropdownMenuItem>
             <DropdownMenuSeparator />

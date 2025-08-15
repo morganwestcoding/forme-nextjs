@@ -6,8 +6,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
-import { useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 
 import useLoginModal from "@/app/hooks/useLoginModal";
 import useRegisterModal from "@/app/hooks/useRegisterModal";
@@ -15,7 +14,6 @@ import Modal, { ModalHandle } from "./Modal";
 import Input from "../inputs/Input";
 import Heading from "../Heading";
 import ProfileLocationInput from "../inputs/ProfileLocationInput";
-import SubscriptionInput from "../inputs/SubscriptionInput";
 import ImageUpload from "../inputs/ImageUpload";
 import Logo from "../header/Logo";
 
@@ -24,12 +22,11 @@ enum STEPS {
   LOCATION = 1,
   BIOGRAPHY = 2,
   IMAGES = 3,
-  SUBSCRIPTION = 4
 }
 
 const RegisterModal = () => {
   const router = useRouter();
-  const { status } = useSession(); // watch auth flips (race-safety)
+  const { status } = useSession(); // watch auth flips
   const [step, setStep] = useState(STEPS.ACCOUNT);
   const registerModal = useRegisterModal();
   const loginModal = useLoginModal();
@@ -51,7 +48,6 @@ const RegisterModal = () => {
       bio: '',
       image: '',
       imageSrc: '',
-      subscription: ''
     },
   });
 
@@ -63,8 +59,8 @@ const RegisterModal = () => {
       shouldDirty: true,
       shouldTouch: true,
       shouldValidate: true
-    })
-  }
+    });
+  };
 
   const onNext = () => setStep((s) => s + 1);
   const onBack = () => setStep((s) => s - 1);
@@ -78,7 +74,7 @@ const RegisterModal = () => {
     hasSpecialChar: /[!@#$%^&*(),]/.test(password)
   });
 
-  // Close this modal if session flips to authenticated (covers rare timing)
+  // Close this modal if session flips to authenticated (rare race guard)
   useEffect(() => {
     if (status === 'authenticated' && registerModal.isOpen) {
       if (modalRef.current?.close) {
@@ -92,10 +88,9 @@ const RegisterModal = () => {
   }, [status, registerModal.isOpen, router, registerModal]);
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-    // Stepper flow
-    if (step !== STEPS.SUBSCRIPTION) {
+    // For steps before final, advance
+    if (step !== STEPS.IMAGES) {
       if (step === STEPS.ACCOUNT) {
-        // Password checks
         const p = validatePassword(data.password);
         if (!Object.values(p).every(Boolean)) {
           toast.error('Password does not meet requirements');
@@ -103,8 +98,8 @@ const RegisterModal = () => {
         }
         // Email exists check
         try {
-          const response = await axios.get(`/api/check-email?email=${data.email}`);
-          if (response.data.exists) {
+          const response = await axios.get(`/api/check-email?email=${encodeURIComponent(data.email)}`);
+          if (response.data?.exists) {
             toast.error('Email already exists');
             return;
           }
@@ -116,35 +111,33 @@ const RegisterModal = () => {
       return onNext();
     }
 
-    // Final step: create -> auto login -> close -> refresh
+    // Final step: create -> auto login -> close -> go to /subscription
     setIsLoading(true);
     try {
       await axios.post('/api/register', data);
       toast.success('Registered! Logging you in…');
 
-      // Immediately sign them in with the same credentials
       const signInRes = await signIn('credentials', {
         email: data.email,
         password: data.password,
         redirect: false
       });
 
+      // After login, close modal and route to the Subscription page
       if (signInRes?.ok || signInRes?.status === 200) {
         setStep(STEPS.ACCOUNT);
-        // animated close
         if (modalRef.current?.close) {
           modalRef.current.close();
-          setTimeout(() => {
-            router.refresh();
-          }, 320);
         } else {
           registerModal.onClose();
-          router.refresh();
         }
+        // Navigate to subscription page
+        setTimeout(() => {
+          router.push('/subscription');
+        }, 250);
         return;
       }
 
-      // If sign-in failed after registering, fall back to open Login
       toast.error(signInRes?.error || 'Login after registration failed.');
       if (modalRef.current?.close) modalRef.current.close();
       setTimeout(() => {
@@ -162,7 +155,6 @@ const RegisterModal = () => {
   };
 
   const onToggle = useCallback(() => {
-    // Manual switch to Login (kept as-is)
     modalRef.current?.close();
     setTimeout(() => {
       loginModal.onOpen();
@@ -277,21 +269,6 @@ const RegisterModal = () => {
     );
   }
 
-  if (step === STEPS.SUBSCRIPTION) {
-    bodyContent = (
-      <div className="flex flex-col">
-        <Heading
-          title="Choose your subscription"
-          subtitle="Select the plan that best fits your needs"
-        />
-        <SubscriptionInput
-          onChange={(value) => setCustomValue('subscription', value)}
-          value={watch('subscription')}
-        />
-      </div>
-    );
-  }
-
   const footerContent = (
     <div className="flex flex-col gap-4 mt-3">
       <hr />
@@ -309,13 +286,16 @@ const RegisterModal = () => {
     </div>
   );
 
+  // Primary button text
+  const actionLabel = step === STEPS.IMAGES ? "Create" : "Continue";
+
   return (
     <Modal
       ref={modalRef}
       disabled={isLoading}
       isOpen={registerModal.isOpen}
       title="Register"
-      actionLabel={step === STEPS.SUBSCRIPTION ? "Create" : "Continue"}
+      actionLabel={actionLabel}
       secondaryAction={step !== STEPS.ACCOUNT ? onBack : undefined}
       secondaryActionLabel={step !== STEPS.ACCOUNT ? "Back" : undefined}
       onClose={registerModal.onClose}

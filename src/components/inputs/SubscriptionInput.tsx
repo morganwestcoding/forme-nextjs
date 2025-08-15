@@ -30,7 +30,8 @@ const SubscriptionInput: React.FC<SubscriptionInputProps> = ({
         'View Professionals',
         'Basic Booking'
       ],
-      fullDescription: 'Perfect for users who want to explore the platform and access basic features. Browse through professionals and make basic bookings.'
+      fullDescription:
+        'Perfect for users who want to explore the platform and access basic features. Browse through professionals and make basic bookings.'
     },
     {
       title: 'Silver (Pro Tier 1)',
@@ -44,7 +45,8 @@ const SubscriptionInput: React.FC<SubscriptionInputProps> = ({
         'See Potential Customers',
         'Scannable QR Code'
       ],
-      fullDescription: 'Ideal for professionals starting their journey. Get essential tools to showcase your services and connect with potential customers.'
+      fullDescription:
+        'Ideal for professionals starting their journey. Get essential tools to showcase your services and connect with potential customers.'
     },
     {
       title: 'Gold (Pro Tier 2)',
@@ -58,7 +60,8 @@ const SubscriptionInput: React.FC<SubscriptionInputProps> = ({
         'Featured Placement',
         'Expanded Market Reach'
       ],
-      fullDescription: 'Take your business to the next level with enhanced visibility and features. Get featured placement and reach more customers in your area.'
+      fullDescription:
+        'Take your business to the next level with enhanced visibility and features. Get featured placement and reach more customers in your area.'
     },
     {
       title: 'Platinum (Pro Tier 3)',
@@ -72,7 +75,8 @@ const SubscriptionInput: React.FC<SubscriptionInputProps> = ({
         'Priority Placement',
         'Premium Support'
       ],
-      fullDescription: 'Our premium tier for serious professionals. Get guaranteed customers, priority placement, and exclusive features to maximize your success.'
+      fullDescription:
+        'Our premium tier for serious professionals. Get guaranteed customers, priority placement, and exclusive features to maximize your success.'
     },
     {
       title: 'Diamond (Enterprise)',
@@ -87,30 +91,33 @@ const SubscriptionInput: React.FC<SubscriptionInputProps> = ({
         'Premium Support',
         'Advertising & Sponsored Listings'
       ],
-      fullDescription: 'Tailored solutions for businesses and organizations. Get advanced features, multi-user access, and comprehensive analytics to scale your operations.'
+      fullDescription:
+        'Tailored solutions for businesses and organizations. Get advanced features, multi-user access, and comprehensive analytics to scale your operations.'
     }
   ];
 
-  // Notify parent component when detail state changes
+  // Notify parent on detail state changes
   useEffect(() => {
     if (onDetailStateChange) {
       onDetailStateChange(showDetailView, selectedTierForDetail?.title);
     }
   }, [showDetailView, selectedTierForDetail, onDetailStateChange]);
 
+  const toValue = (title: string) => title.toLowerCase(); // keep your existing lowercase convention
+
   const handleTierClick = (tier: any) => {
+    // ✅ Immediately select the tier so the form captures it even if user never presses "Select"
+    onChange(toValue(tier.title));
     setSelectedTierForDetail(tier);
     setShowDetailView(true);
   };
 
   const handleSelectTier = () => {
     if (selectedTierForDetail) {
-      onChange(selectedTierForDetail.title.toLowerCase());
+      onChange(toValue(selectedTierForDetail.title)); // keep consistent
       setShowDetailView(false);
       setSelectedTierForDetail(null);
-      if (onTierSelect) {
-        onTierSelect();
-      }
+      onTierSelect?.();
     }
   };
 
@@ -119,41 +126,46 @@ const SubscriptionInput: React.FC<SubscriptionInputProps> = ({
     setSelectedTierForDetail(null);
   };
 
-  // Expose the select function to parent
+  // Expose the select function to parent (unchanged)
   useEffect(() => {
-    if (window) {
+    if (typeof window !== 'undefined') {
       (window as any).selectCurrentTier = handleSelectTier;
     }
   }, [selectedTierForDetail]);
 
-  // DETAIL VIEW - Full modal step
+  // DETAIL VIEW
   if (showDetailView && selectedTierForDetail) {
     return (
       <div className="flex flex-col gap-6">
-        {/* Header with back button */}
         <div className="flex items-center gap-3">
           <button
             onClick={handleBackToGrid}
             className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
           >
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+              <path
+                fillRule="evenodd"
+                d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                clipRule="evenodd"
+              />
             </svg>
             <span className="text-sm">Back to all plans</span>
           </button>
         </div>
 
-        {/* Tier Header */}
         <div className="text-center">
-          <span className={`inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium border ${selectedTierForDetail.accent} ${selectedTierForDetail.border} mb-4`}>
+          <span
+            className={`inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium border ${selectedTierForDetail.accent} ${selectedTierForDetail.border} mb-4`}
+          >
             {selectedTierForDetail.category}
           </span>
           <h2 className="text-xl text-gray-900 mb-2">{selectedTierForDetail.title}</h2>
           <p className="text-lg text-[#60A5FA] mb-4">{selectedTierForDetail.price}</p>
-          <p className="text-gray-600 text-sm leading-relaxed max-w-2xl mx-auto">{selectedTierForDetail.fullDescription}</p>
+          <p className="text-gray-600 text-sm leading-relaxed max-w-2xl mx-auto">
+            {selectedTierForDetail.fullDescription}
+          </p>
         </div>
 
-        {/* Features List */}
         <div>
           <h3 className="text-lg text-gray-900 mb-4">Features included:</h3>
           <div className="grid gap-2">
@@ -161,7 +173,11 @@ const SubscriptionInput: React.FC<SubscriptionInputProps> = ({
               <div key={index} className="flex items-start gap-3">
                 <div className="w-4 h-4 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
                   <svg className="w-2.5 h-2.5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                 </div>
                 <span className="text-sm text-gray-700">{feature}</span>
@@ -169,28 +185,39 @@ const SubscriptionInput: React.FC<SubscriptionInputProps> = ({
             ))}
           </div>
         </div>
+
+        <div className="flex justify-center">
+          <button
+            onClick={handleSelectTier}
+            className="px-4 py-2 rounded-lg bg-[#60A5FA] text-white hover:opacity-90 transition"
+          >
+            Select this plan
+          </button>
+        </div>
       </div>
     );
   }
 
-  // GRID VIEW - Selection step
+  // GRID VIEW
   return (
     <div className="flex flex-col gap-6">
       <div className="grid grid-cols-2 gap-4">
         {subscriptionTiers.map((tier) => {
-          const isSelected = value === tier.title.toLowerCase();
-          
+          const selectedValue = (value || '').trim().toLowerCase();
+          const tierValue = toValue(tier.title);
+          const isSelected = selectedValue === tierValue;
+
           return (
             <div
               key={tier.title}
               className={`
                 bg-white rounded-xl border-2 transition-all duration-300 cursor-pointer
-                ${isSelected 
-                  ? 'border-[#60A5FA] shadow-lg shadow-blue-100 bg-blue-50' 
+                ${isSelected
+                  ? 'border-[#60A5FA] shadow-lg shadow-blue-100 bg-blue-50'
                   : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
                 }
               `}
-              onClick={() => handleTierClick(tier)}
+              onClick={() => handleTierClick(tier)} // ✅ selects immediately
             >
               <div className="p-4">
                 <div className="flex items-center justify-between">
@@ -202,7 +229,11 @@ const SubscriptionInput: React.FC<SubscriptionInputProps> = ({
                       {isSelected && (
                         <div className="w-5 h-5 bg-[#60A5FA] rounded-full flex items-center justify-center">
                           <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            <path
+                              fillRule="evenodd"
+                              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                              clipRule="evenodd"
+                            />
                           </svg>
                         </div>
                       )}
@@ -216,7 +247,11 @@ const SubscriptionInput: React.FC<SubscriptionInputProps> = ({
                   </div>
                   <div className="text-gray-400 ml-2">
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                      <path
+                        fillRule="evenodd"
+                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                   </div>
                 </div>
