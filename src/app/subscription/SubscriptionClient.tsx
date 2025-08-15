@@ -257,36 +257,43 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
+    <div className="max-w-6xl mx-auto pb-10 pt-4">
       {/* Header */}
-      <header className="text-center mb-10">
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-500 to-violet-500 bg-clip-text text-transparent">
+      <header className="text-left mb-10">
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-[#60A5FA] to-[#1f82fa] bg-clip-text text-transparent">
           Choose the perfect plan
         </h1>
         <p className="text-slate-600 mt-2">
           Current plan: <span className="font-medium">{currentPlanLabel}</span>
         </p>
 
-        {/* Billing Toggle */}
-        <div className="mt-6 inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-white shadow border border-slate-200">
-          <span className={`text-sm ${billing === "monthly" ? "text-slate-900 font-medium" : "text-slate-500"}`}>Monthly</span>
-          <label className="relative inline-flex items-center cursor-pointer">
-            <input
-              type="checkbox"
-              className="sr-only peer"
-              checked={billing === "yearly"}
-              onChange={(e) => setBilling(e.target.checked ? "yearly" : "monthly")}
-            />
-            <div className="w-12 h-6 bg-slate-200 rounded-full peer peer-checked:bg-gradient-to-r peer-checked:from-blue-500 peer-checked:to-violet-500 transition-colors"></div>
-            <div className="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform peer-checked:translate-x-6"></div>
-          </label>
-          <span className={`text-sm flex items-center gap-2 ${billing === "yearly" ? "text-slate-900 font-medium" : "text-slate-500"}`}>
-            Yearly
-            <span className={`text-white text-xs px-2 py-0.5 rounded-full ${billing === "yearly" ? "bg-pink-500" : "bg-slate-300"}`}>
-              Save 20%
-            </span>
-          </span>
-        </div>
+{/* Billing Toggle (centered) */}
+<div className="mt-6 flex justify-center">
+  <div className="w-fit flex items-center gap-3 px-6 py-3 rounded-xl bg-white shadow border border-slate-200">
+    <span className={`text-sm ${billing === "monthly" ? "text-slate-900 font-medium" : "text-slate-500"}`}>
+      Monthly
+    </span>
+
+    <label className="relative inline-flex items-center cursor-pointer">
+      <input
+        type="checkbox"
+        className="sr-only peer"
+        checked={billing === "yearly"}
+        onChange={(e) => setBilling(e.target.checked ? "yearly" : "monthly")}
+      />
+      <div className="w-12 h-6 bg-slate-200 rounded-full peer peer-checked:bg-gradient-to-r peer-checked:from-blue-500 peer-checked:to-violet-500 transition-colors"></div>
+      <div className="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform peer-checked:translate-x-6"></div>
+    </label>
+
+    <span className={`text-sm flex items-center gap-2 ${billing === "yearly" ? "text-slate-900 font-medium" : "text-slate-500"}`}>
+      Yearly
+      <span className={`text-white text-xs px-2 py-0.5 rounded-full ${billing === "yearly" ? "bg-pink-500" : "bg-slate-300"}`}>
+        Save 20%
+      </span>
+    </span>
+  </div>
+</div>
+
       </header>
 
       {/* Pricing Cards */}
@@ -308,7 +315,7 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
             >
               {p.badge && (
                 <div className="absolute -top-3 right-4">
-                  <span className="px-3 py-1 text-xs font-medium text-white rounded-full bg-pink-500 shadow">
+                  <span className="px-3 py-3 text-xs font-medium text-white rounded-full bg-[#60A5FA] shadow">
                     {p.badge}
                   </span>
                 </div>
@@ -347,7 +354,7 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
                   className={`
                     w-full inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-white font-semibold
                     transition shadow
-                    ${p.popular ? "bg-gradient-to-r from-blue-500 to-violet-500 hover:opacity-95" : "bg-slate-800 hover:bg-slate-900"}
+                    ${p.popular ? "bg-gradient-to-r from-[#60A5FA] to-[#1f82fa] hover:opacity-95" : "bg-slate-800 hover:bg-slate-900"}
                   `}
                 >
                   Choose Plan
@@ -417,7 +424,7 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
                 <button
                   onClick={confirmSelection}
                   disabled={saving}
-                  className="mt-5 w-full rounded-xl bg-gradient-to-r from-blue-500 to-violet-500 text-white font-semibold px-4 py-2.5 shadow hover:opacity-95 disabled:opacity-60"
+                  className="mt-5 w-full rounded-xl bg-gradient-to-r from-[#60A5FA] to-[#1f82fa] text-white font-semibold px-4 py-2.5 shadow hover:opacity-95 disabled:opacity-60"
                 >
                   {saving ? "Saving…" : "Select this plan"}
                 </button>

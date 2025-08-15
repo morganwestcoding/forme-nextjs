@@ -81,7 +81,7 @@ const FeatureComparison: React.FC = () => {
 
   return (
     <section className="mt-16">
-      <h2 className="text-3xl font-semibold text-center bg-gradient-to-r from-blue-500 to-violet-500 bg-clip-text text-transparent">
+      <h2 className="text-3xl font-semibold text-left bg-gradient-to-r from-[#60A5FA] to-[#1f82fa] bg-clip-text text-transparent">
         Feature Comparison
       </h2>
       <div className="mt-8 overflow-x-auto rounded-2xl shadow-lg bg-white">
