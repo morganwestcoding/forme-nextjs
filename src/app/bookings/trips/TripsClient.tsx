@@ -5,12 +5,11 @@ import axios from "axios";
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { SafeReservation, SafeUser } from "@/app/types";
-import Heading from "@/components/Heading";
 import ReserveCard from "@/components/listings/ReserveCard";
 
 interface TripsClientProps {
-  reservations: SafeReservation[],
-  currentUser?: SafeUser | null,
+  reservations: SafeReservation[];
+  currentUser?: SafeUser | null;
 }
 
 const TripsClient: React.FC<TripsClientProps> = ({
@@ -20,39 +19,23 @@ const TripsClient: React.FC<TripsClientProps> = ({
   const router = useRouter();
   const [deletingId, setDeletingId] = useState('');
 
-  const onCancel = useCallback((id: string) => {
+  const onCancel = useCallback(async (id: string) => {
     setDeletingId(id);
-
-    axios.delete(`/api/reservations/${id}`)
-    .then(() => {
+    try {
+      await axios.delete(`/api/reservations/${id}`);
       toast.success('Reservation cancelled');
       router.refresh();
-    })
-    .catch((error) => {
-      toast.error(error?.response?.data?.error)
-    })
-    .finally(() => {
+    } catch (error: any) {
+      toast.error(error?.response?.data?.error || 'Something went wrong.');
+    } finally {
       setDeletingId('');
-    })
+    }
   }, [router]);
 
   return (
     <div className="pt-2 flex-1">
-      <div 
-        className="
-        pt-6
-        flex-1
-        grid 
-        grid-cols-1
-        lg:grid-cols-2
-        xl:grid-cols-3
-        2xl:grid-cols-3
-        gap-4
-        px-4
-        pb-8
-        "
-      >
-        {reservations.map((reservation: SafeReservation) => (
+      <div className="pt-6 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-4 px-4 pb-8">
+        {reservations.map((reservation) => (
           <ReserveCard
             key={reservation.id}
             reservation={reservation}
@@ -60,7 +43,7 @@ const TripsClient: React.FC<TripsClientProps> = ({
             currentUser={currentUser}
             disabled={deletingId === reservation.id}
             onCancel={() => onCancel(reservation.id)}
-            showCancel={true}
+            showCancel={true}            // sender/outgoing mode
             onCardClick={() => router.push(`/listings/${reservation.listing.id}`)}
           />
         ))}
@@ -68,5 +51,5 @@ const TripsClient: React.FC<TripsClientProps> = ({
     </div>
   );
 }
- 
+
 export default TripsClient;
