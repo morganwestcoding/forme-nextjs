@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import { Search, Sparkles, Layers } from 'lucide-react';
+import { Search, Sparkles, Layers, Inbox, Send } from 'lucide-react';
+
 
 interface BookingsHeaderProps {
   title?: string;
@@ -61,7 +62,7 @@ const BookingsHeader: React.FC<BookingsHeaderProps> = ({
       </div>
 
       {/* Search & Controls — same layout vibe as MarketExplorer */}
-      <div className="flex mt-2 mb-8 gap-2 ">
+      <div className="flex mt-2 mb-7 gap-2 ">
         {/* Search Bar */}
         <form onSubmit={submitSearch} className="relative flex-grow">
           <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
@@ -108,58 +109,93 @@ const BookingsHeader: React.FC<BookingsHeaderProps> = ({
         </button>
       </div>
 
-      {/* Centered Tabs — identical pattern to MarketExplorer */}
-      <div className="flex border-b border-gray-200 relative justify-center">
-        <div className="flex gap-8">
-          {/* Bookings */}
-          <button
-            onClick={() => handleGo(bookingsHref)}
-            className={`pb-4 pt-2 px-4 flex text-sm items-center justify-center gap-2 transition-all duration-150 relative ${
-              isBookingsActive ? 'font-medium' : 'text-gray-500 hover:text-gray-700'
-            }`}
-            style={isBookingsActive ? { color: accentHex } : {}}
-          >
-            <span className={`transition-transform duration-150 ${isBookingsActive ? 'transform -translate-y-px' : ''}`}>
-              Bookings
-            </span>
-            {typeof bookingsCount === 'number' && (
-              <span className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">
-                {bookingsCount}
-              </span>
-            )}
-            {isBookingsActive && (
-              <div
-                className="absolute bottom-0 left-0 right-0 h-0.5"
-                style={{ backgroundColor: accentHex }}
-              />
-            )}
-          </button>
+{/* Centered Tabs */}
+<div className="flex border-b border-gray-200 relative justify-center">
+  <div className="flex gap-8">
 
-          {/* Trips */}
-          <button
-            onClick={() => handleGo(tripsHref)}
-            className={`pb-4 pt-2 px-4 flex text-sm items-center justify-center gap-2 transition-all duration-150 relative ${
-              isTripsActive ? 'font-medium' : 'text-gray-500 hover:text-gray-700'
-            }`}
-            style={isTripsActive ? { color: accentHex } : {}}
-          >
-            <span className={`transition-transform duration-150 ${isTripsActive ? 'transform -translate-y-px' : ''}`}>
-              Trips
-            </span>
-            {typeof tripsCount === 'number' && (
-              <span className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">
-                {tripsCount}
-              </span>
-            )}
-            {isTripsActive && (
-              <div
-                className="absolute bottom-0 left-0 right-0 h-0.5"
-                style={{ backgroundColor: accentHex }}
-              />
-            )}
-          </button>
-        </div>
-      </div>
+    {/* Received (bookings to you) */}
+    <button
+      onClick={() => handleGo(bookingsHref)}
+      className={`pb-4 pt-2 px-4 flex text-sm items-center justify-center gap-2 transition-all duration-150 relative ${
+        isBookingsActive ? 'font-medium' : 'text-gray-500 hover:text-gray-700'
+      }`}
+      style={isBookingsActive ? { color: accentHex } : {}}
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        width="24"
+        height="24"
+        fill="none"
+        className={`transition-transform duration-150 ${
+          isBookingsActive ? 'transform -translate-y-px' : ''
+        }`}
+        style={{ color: 'currentColor' }}
+      >
+        <path d="M7 2.5C5.59269 2.66536 4.62427 3.01488 3.89124 3.75363C2.5 5.15575 2.5 7.41242 2.5 11.9258C2.5 16.4391 2.5 18.6958 3.89124 20.0979C5.28249 21.5 7.52166 21.5 12 21.5C16.4783 21.5 18.7175 21.5 20.1088 20.0979C21.5 18.6958 21.5 16.4391 21.5 11.9258C21.5 7.41242 21.5 5.15575 20.1088 3.75363C19.3757 3.01488 18.4073 2.66536 17 2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M9.5 8C9.99153 8.5057 11.2998 10.5 12 10.5M14.5 8C14.0085 8.5057 12.7002 10.5 12 10.5M12 10.5V2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M21.5 13.5H16.5743C15.7322 13.5 15.0706 14.2036 14.6995 14.9472C14.2963 15.7551 13.4889 16.5 12 16.5C10.5111 16.5 9.70373 15.7551 9.30054 14.9472C8.92942 14.2036 8.26777 13.5 7.42566 13.5H2.5" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+      </svg>
+      <span className={`transition-transform duration-150 ${
+        isBookingsActive ? 'transform -translate-y-px' : ''
+      }`}>
+Incoming
+      </span>
+      {typeof bookingsCount === 'number' && (
+        <span className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">
+          {bookingsCount}
+        </span>
+      )}
+      {isBookingsActive && (
+        <div className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: accentHex }} />
+      )}
+    </button>
+
+    {/* Sent (bookings you made) */}
+    <button
+      onClick={() => handleGo(tripsHref)}
+      className={`pb-4 pt-2 px-4 flex text-sm items-center justify-center gap-2 transition-all duration-150 relative ${
+        isTripsActive ? 'font-medium' : 'text-gray-500 hover:text-gray-700'
+      }`}
+      style={isTripsActive ? { color: accentHex } : {}}
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        width="24"
+        height="24"
+        fill="none"
+        className={`transition-transform duration-150 ${
+          isTripsActive ? 'transform -translate-y-px' : ''
+        }`}
+        style={{ color: 'currentColor' }}
+      >
+    <path d="M6.5 2.5C5.3579 2.68817 4.53406 3.03797 3.89124 3.6882C2.5 5.09548 2.5 7.36048 2.5 11.8905C2.5 16.4204 2.5 18.6854 3.89124 20.0927C5.28249 21.5 7.52166 21.5 12 21.5C16.4783 21.5 18.7175 21.5 20.1088 20.0927C21.5 18.6854 21.5 16.4204 21.5 11.8905C21.5 7.36048 21.5 5.09548 20.1088 3.6882C19.4659 3.03797 18.6421 2.68817 17.5 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+    <path d="M9.5 5C9.99153 4.4943 11.2998 2.5 12 2.5M14.5 5C14.0085 4.4943 12.7002 2.5 12 2.5M12 2.5V10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+    <path d="M21.5 13.5H16.5743C15.7322 13.5 15.0706 14.2036 14.6995 14.9472C14.2963 15.7551 13.4889 16.5 12 16.5C10.5111 16.5 9.70373 15.7551 9.30054 14.9472C8.92942 14.2036 8.26777 13.5 7.42566 13.5H2.5" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path>
+
+      </svg>
+      <span className={`transition-transform duration-150 ${
+        isTripsActive ? 'transform -translate-y-px' : ''
+      }`}>
+    Outgoing
+      </span>
+      {typeof tripsCount === 'number' && (
+        <span className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">
+          {tripsCount}
+        </span>
+      )}
+      {isTripsActive && (
+        <div className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: accentHex }} />
+      )}
+    </button>
+
+  </div>
+</div>
+
+
+
+
     </div>
   );
 };
