@@ -16,7 +16,7 @@ interface FavoritesClientProps {
   totalResults: number;
 }
 
-type FavoriteTab = 'Reels' | 'Stores' | 'Listings' | 'Shops' | 'Products';
+type FavoriteTab = 'Reels' | 'Stores' | 'Market' | 'Shops' | 'Vendors';
 
 const FavoritesClient: React.FC<FavoritesClientProps> = ({
   listings,
@@ -25,7 +25,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
   const [viewState, setViewState] = React.useState<{ mode: 'grid' | 'list' }>({
     mode: 'grid',
   });
-  const [activeTab, setActiveTab] = React.useState<FavoriteTab>('Listings');
+  const [activeTab, setActiveTab] = React.useState<FavoriteTab>('Market');
 
   return (
     <Container>
@@ -45,7 +45,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
 
       {/* Content */}
       <div className="pt-4 flex flex-col">
-        {activeTab === 'Listings' && (
+        {activeTab === 'Market' && (
           <div
             className={`
               ${viewState.mode === 'grid'
@@ -77,8 +77,8 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
         {activeTab === 'Shops' && (
           <EmptyState title="No favorite shops yet" subtitle="Follow shops to see them in your favorites." />
         )}
-        {activeTab === 'Products' && (
-          <EmptyState title="No favorite products yet" subtitle="Favorite products to find them quickly here." />
+        {activeTab === 'Vendors' && (
+          <EmptyState title="No favorite Vendors yet" subtitle="Favorite Vendors to find them quickly here." />
         )}
       </div>
     </Container>

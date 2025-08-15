@@ -187,7 +187,8 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
     >
       <Sparkles className={`w-5 h-5 transition-transform duration-150 ${
         viewState.filters.category === 'featured' ? 'transform -translate-y-px' : ''
-      }`} />
+      }`} strokeWidth={1.75}
+      />
       <span className={`transition-transform duration-150 ${
         viewState.filters.category === 'featured' ? 'transform -translate-y-px' : ''
       }`}>Featured</span>
@@ -214,7 +215,7 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
     >
       <TrendingUp className={`w-5 h-5 transition-transform duration-150 ${
         viewState.filters.category === 'trending' ? 'transform -translate-y-px' : ''
-      }`} />
+      }`} strokeWidth={1.75}/>
       <span className={`transition-transform duration-150 ${
         viewState.filters.category === 'trending' ? 'transform -translate-y-px' : ''
       }`}>Trending</span>
@@ -241,7 +242,7 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
     >
       <Layers className={`w-5 h-5 transition-transform duration-150 ${
         (viewState.filters.category === 'categories' || showCategories) ? 'transform -translate-y-px' : ''
-      }`} />
+      }`} strokeWidth={1.75}/>
       <span className={`transition-transform duration-150 ${
         (viewState.filters.category === 'categories' || showCategories) ? 'transform -translate-y-px' : ''
       }`}>Categories</span>

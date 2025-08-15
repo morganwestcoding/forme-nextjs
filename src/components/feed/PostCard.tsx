@@ -194,12 +194,15 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, cat
 
           {/* Category badge */}
           {post.category && (
-            <div className="absolute top-4 left-4 z-20">
-              <div className="bg-neutral-100 text-neutral-600 border rounded-lg text-center w-20 py-1.5">
-                <span className="text-xs">{post.category}</span>
+            <div className="bg-white/90 top-4 left-4 absolute backdrop-blur-md border border-white/30 rounded-xl text-center w-24 py-2 shadow-md hover:bg-white/30 transition-all duration-300">
+              <div className="flex items-center justify-center gap-1.5">
+        
+                <span className="text-xs font-normal text-black tracking-wide">{post.category}</span>
               </div>
             </div>
           )}
+
+          
 
           {/* More options button */}
           <button

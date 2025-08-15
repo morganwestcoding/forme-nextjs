@@ -187,7 +187,7 @@ const NewsfeedHeader: React.FC<NewsfeedHeaderProps> = ({
         color: currentCategory ? getCategoryStyle(currentCategory).color : '#60A5FA',
       } : {}}
     >
-      <Sparkles className="w-5 h-5" />
+      <Sparkles className="w-5 h-5" strokeWidth={1.75} />
       <span>Featured</span>
       {viewState.filters.category === 'featured' && (
         <div 
@@ -208,7 +208,7 @@ const NewsfeedHeader: React.FC<NewsfeedHeaderProps> = ({
         color: currentCategory ? getCategoryStyle(currentCategory).color : '#60A5FA',
       } : {}}
     >
-      <TrendingUp className="w-5 h-5" />
+      <TrendingUp className="w-5 h-5" strokeWidth={1.75} />
       <span>Trending</span>
       {viewState.filters.category === 'trending' && (
         <div 
@@ -229,7 +229,7 @@ const NewsfeedHeader: React.FC<NewsfeedHeaderProps> = ({
         color: currentCategory ? getCategoryStyle(currentCategory).color : '#60A5FA',
       } : {}}
     >
-      <Layers className="w-5 h-5" />
+      <Layers className="w-5 h-5" strokeWidth={1.75} />
       <span>Categories</span>
       {(viewState.filters.category === 'categories' || showCategories) && (
         <div 
@@ -240,6 +240,7 @@ const NewsfeedHeader: React.FC<NewsfeedHeaderProps> = ({
     </button>
   </div>
 </div>
+
 
 
       {/* Category Pills - Show when Categories tab is active */}

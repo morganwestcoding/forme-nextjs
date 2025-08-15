@@ -6,11 +6,13 @@ import { useState, useEffect } from "react";
 import { useCategory } from "@/CategoryContext";
 import { SafeUser } from "@/app/types";
 import { SafePost } from "@/app/types";
+
 import axios from 'axios';
 import useInboxModal from '@/app/hooks/useInboxModal';
 import { useColorContext } from "@/app/context/ColorContext";
 import Logo from "../header/Logo";
 import UserButton from "../UserButton";
+import { IoStorefrontOutline } from "react-icons/io5"; // ← added
 
 interface SidebarProps {
   currentUser?: SafeUser | null;
@@ -65,7 +67,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     }
   }, [pathname]);
 
-  // Add this useEffect hook
+  // Fetch reservation count
   useEffect(() => {
     const fetchReservationCount = async () => {
       if (currentUser) {
@@ -81,32 +83,16 @@ const Sidebar: React.FC<SidebarProps> = ({
     fetchReservationCount();
   }, [currentUser]);
 
-
-  // Handler for navigation and modals with explicit sidebar closing
+  // Navigation helpers
   const handleNavigate = (route: string, buttonId: string) => {
-    // Update selected button state
     setSelectedButton(buttonId);
-    
-    // Close sidebar if on mobile - do this BEFORE navigation
-    if (isMobile && onMobileClose) {
-      onMobileClose();
-    }
-    
-    // Navigate to the route
+    if (isMobile && onMobileClose) onMobileClose();
     router.push(route);
   };
 
-  // Handler for modal opening with explicit sidebar closing
   const handleModalOpen = (modalFunction: () => void, buttonId: string) => {
-    // Update selected button state
     setSelectedButton(buttonId);
-    
-    // Close sidebar if on mobile - do this BEFORE opening modal
-    if (isMobile && onMobileClose) {
-      onMobileClose();
-    }
-    
-    // Open the modal with a slight delay to ensure sidebar closes first
+    if (isMobile && onMobileClose) onMobileClose();
     setTimeout(() => {
       modalFunction();
     }, 10);
@@ -117,7 +103,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       return {
         color: isTransitioning ? prevHexColor : hexColor,
         transition: 'color 0.8s ease-in-out'
-      };
+      } as React.CSSProperties;
     }
     return {};
   };
@@ -126,9 +112,8 @@ const Sidebar: React.FC<SidebarProps> = ({
     <div className="h-screen overflow-y-auto shadow-sm bg-white">
       <div className="flex flex-col items-center w-56 h-full pb-10 pt-12 z-50">
         {/* Top Bar Layout with Logo and UserButton */}
- <Logo variant="vertical" />
-
- <UserButton currentUser={currentUser} />
+        <Logo variant="vertical" />
+        <UserButton currentUser={currentUser} />
 
         {/* Mobile Close Button */}
         {isMobile && (
@@ -163,10 +148,12 @@ const Sidebar: React.FC<SidebarProps> = ({
         )}
 
         <div className="flex flex-col w-full px-6 pt-2">
-          {/* Explore & Discover - Centered headers with aligned icons */}
+          {/* Explore & Discover */}
           <div className="mb-6">
             <div className="text-xs text-neutral-400 uppercase mb-2 text-center font-medium">Explore & Discover</div>
             <ul className="list-none m-0 p-0 flex flex-col items-center space-y-1">
+              
+              {/* Discover */}
               <li className="relative w-full">
                 <div 
                   className={`
@@ -186,16 +173,21 @@ const Sidebar: React.FC<SidebarProps> = ({
                       className="flex-shrink-0"
                       style={selectedButton === 'home' ? getTextColorStyle(true) : {}}
                     >
-                      <path d="M15.0002 17C14.2007 17.6224 13.1504 18 12.0002 18C10.8499 18 9.79971 17.6224 9.00018 17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                      <path d="M2.35157 13.2135C1.99855 10.9162 1.82204 9.76763 2.25635 8.74938C2.69065 7.73112 3.65421 7.03443 5.58132 5.64106L7.02117 4.6C9.41847 2.86667 10.6171 2 12.0002 2C13.3832 2 14.5819 2.86667 16.9792 4.6L18.419 5.64106C20.3462 7.03443 21.3097 7.73112 21.744 8.74938C22.1783 9.76763 22.0018 10.9162 21.6488 13.2135L21.3478 15.1724C20.8473 18.4289 20.5971 20.0572 19.4292 21.0286C18.2613 22 16.5538 22 13.139 22H10.8614C7.44652 22 5.73909 22 4.57118 21.0286C3.40327 20.0572 3.15305 18.4289 2.65261 15.1724L2.35157 13.2135Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+
+    <path d="M5.63604 18.3638C4.00736 16.7351 3 14.4851 3 11.9999C3 7.02929 7.02944 2.99986 12 2.99986C14.4853 2.99986 16.7353 4.00721 18.364 5.63589M20.2941 8.49986C20.7487 9.57574 21 10.7584 21 11.9999C21 16.9704 16.9706 20.9999 12 20.9999C10.7586 20.9999 9.57589 20.7485 8.5 20.2939" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+    <path d="M15.8292 3.82152C18.5323 2.13939 20.7205 1.51937 21.6005 2.39789C23.1408 3.93544 20.0911 9.48081 14.7889 14.7838C9.48663 20.0868 3.93971 23.1394 2.39946 21.6018C1.52414 20.728 2.13121 18.5599 3.79165 15.8774" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
                     </svg>
                   </div>
+
+
+
                   <span className={`ml-3 text-sm ${selectedButton === 'home' ? 'font-medium' : ''}`}>
                    Discover
                   </span>
                 </div>
               </li>
 
+              {/* Market – replaced icon with IoStorefrontOutline */}
               <li className="relative w-full">
                 <div 
                   className={`
@@ -215,9 +207,11 @@ const Sidebar: React.FC<SidebarProps> = ({
                       className="flex-shrink-0"
                       style={selectedButton === 'market' ? getTextColorStyle(true) : {}}
                     >
-                      <path d="M3 10.9871V15.4925C3 18.3243 3 19.7403 3.87868 20.62C4.75736 21.4998 6.17157 21.4998 9 21.4998H15C17.8284 21.4998 19.2426 21.4998 20.1213 20.62C21 19.7403 21 18.3243 21 15.4925V10.9871" stroke="currentColor" strokeWidth="1.5" />
-                      <path d="M15 16.9768C14.3159 17.584 13.2268 17.9768 12 17.9768C10.7732 17.9768 9.68409 17.584 9 16.9768" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                      <path d="M17.7957 2.50294L6.14983 2.53202C4.41166 2.44248 3.966 3.78259 3.966 4.43768C3.966 5.02359 3.89055 5.87774 2.82524 7.4831C1.75993 9.08846 1.83998 9.56536 2.44071 10.6767C2.93928 11.5991 4.20741 11.9594 4.86862 12.02C6.96883 12.0678 7.99065 10.2517 7.99065 8.97523C9.03251 12.1825 11.9955 12.1825 13.3158 11.8157C14.6385 11.4483 15.7717 10.1331 16.0391 8.97523C16.195 10.4142 16.6682 11.2538 18.0663 11.8308C19.5145 12.4284 20.7599 11.515 21.3848 10.9294C22.0096 10.3439 22.4107 9.04401 21.2967 7.6153C20.5285 6.63001 20.2084 5.7018 20.1032 4.73977C20.0423 4.18234 19.9888 3.58336 19.5971 3.20219C19.0247 2.64515 18.2035 2.47613 17.7957 2.50294Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+
+    <path d="M3.00003 10.9871V15.4925C3.00003 18.3243 3.00003 19.7403 3.87871 20.62C4.75739 21.4998 6.1716 21.4998 9.00003 21.4998H15C17.8284 21.4998 19.2426 21.4998 20.1213 20.62C21 19.7403 21 18.3243 21 15.4925V10.9871" stroke="currentColor" stroke-width="1.5"></path>
+    <path d="M15 16.9768C14.3159 17.584 13.2268 17.9768 12 17.9768C10.7732 17.9768 9.68412 17.584 9.00003 16.9768" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+    <path d="M17.7957 2.50294L6.14986 2.53202C4.41169 2.44248 3.96603 3.78259 3.96603 4.43768C3.96603 5.02359 3.89058 5.87774 2.82527 7.4831C1.75996 9.08846 1.84001 9.56536 2.44074 10.6767C2.93931 11.5991 4.20744 11.9594 4.86865 12.02C6.96886 12.0678 7.99068 10.2517 7.99068 8.97523C9.03254 12.1825 11.9956 12.1825 13.3158 11.8157C14.6386 11.4483 15.7717 10.1331 16.0391 8.97523C16.195 10.4142 16.6682 11.2538 18.0663 11.8308C19.5145 12.4284 20.7599 11.515 21.3848 10.9294C22.0097 10.3439 22.4107 9.04401 21.2968 7.6153C20.5286 6.63001 20.2084 5.7018 20.1033 4.73977C20.0423 4.18234 19.9888 3.58336 19.5972 3.20219C19.0248 2.64515 18.2036 2.47613 17.7957 2.50294Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+
                     </svg>
                   </div>
                   <span className={`ml-3 text-sm ${selectedButton === 'market' ? 'font-medium' : ''}`}>
@@ -225,6 +219,8 @@ const Sidebar: React.FC<SidebarProps> = ({
                   </span>
                 </div>
               </li>
+
+              {/* Vendors (shops) */}
               <li className="relative w-full">
                 <div 
                   className={`
@@ -244,55 +240,26 @@ const Sidebar: React.FC<SidebarProps> = ({
                       className="flex-shrink-0"
                       style={selectedButton === 'shops' ? getTextColorStyle(true) : {}}
                     >
-                      <path 
-                        d="M8 16L16.7201 15.2733C19.4486 15.046 20.0611 14.45 20.3635 11.7289L21 6" 
-                        stroke="currentColor" 
-                        strokeWidth="1.5" 
-                        strokeLinecap="round" 
-                      />
-                      <path 
-                        d="M6 6H22" 
-                        stroke="currentColor" 
-                        strokeWidth="1.5" 
-                        strokeLinecap="round" 
-                      />
-                      <circle 
-                        cx="6" 
-                        cy="20" 
-                        r="1.5" 
-                        stroke="currentColor" 
-                        strokeWidth="1.5" 
-                      />
-                      <circle 
-                        cx="17" 
-                        cy="20" 
-                        r="1.5" 
-                        stroke="currentColor" 
-                        strokeWidth="1.5" 
-                      />
-                      <path 
-                        d="M8 20L15 20" 
-                        stroke="currentColor" 
-                        strokeWidth="1.5" 
-                        strokeLinecap="round" 
-                      />
-                      <path 
-                        d="M2 2H2.966C3.91068 2 4.73414 2.62459 4.96326 3.51493L7.93852 15.0765C8.08887 15.6608 7.9602 16.2797 7.58824 16.7616L6.63213 18" 
-                        stroke="currentColor" 
-                        strokeWidth="1.5" 
-                        strokeLinecap="round" 
-                      />
+
+
+    <path d="M2.5 7.5V13.5C2.5 17.2712 2.5 19.1569 3.67157 20.3284C4.84315 21.5 6.72876 21.5 10.5 21.5H13.5C17.2712 21.5 19.1569 21.5 20.3284 20.3284C21.5 19.1569 21.5 17.2712 21.5 13.5V7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+    <path d="M3.86909 5.31461L2.5 7.5H21.5L20.2478 5.41303C19.3941 3.99021 18.9673 3.2788 18.2795 2.8894C17.5918 2.5 16.7621 2.5 15.1029 2.5H8.95371C7.32998 2.5 6.51812 2.5 5.84013 2.8753C5.16215 3.2506 4.73113 3.93861 3.86909 5.31461Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+    <path d="M12 7.5V2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+    <path d="M10 10.5H14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+
+
                     </svg>
                   </div>
                   <span className={`ml-3 text-sm ${selectedButton === 'shops' ? 'font-medium' : ''}`}>
                     Vendors
                   </span>
                 </div>
-                </li>
+              </li>
+
             </ul>
           </div>
           
-          {/* My Content - Centered headers with aligned icons */}
+          {/* My Content */}
           <div className="mb-6">
             <div className="text-xs text-neutral-400 uppercase mb-2 text-center font-medium">My Content</div>
             <ul className="list-none m-0 p-0 flex flex-col items-center space-y-1">
@@ -343,11 +310,10 @@ const Sidebar: React.FC<SidebarProps> = ({
                       className="flex-shrink-0"
                       style={selectedButton === 'Appointments' ? getTextColorStyle(true) : {}}
                     >
-    <path d="M16 2V6M8 2V6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-    
-    <path d="M13 4H11C7.22876 4 5.34315 4 4.17157 5.17157C3 6.34315 3 8.22876 3 12V14C3 17.7712 3 19.6569 4.17157 20.8284C5.34315 22 7.22876 22 11 22H13C16.7712 22 18.6569 22 19.8284 20.8284C21 19.6569 21 17.7712 21 14V12C21 8.22876 21 6.34315 19.8284 5.17157C18.6569 4 16.7712 4 13 4Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-    <path d="M3 10H21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-    <path d="M11.9955 14H12.0045M11.9955 18H12.0045M15.991 14H16M8 14H8.00897M8 18H8.00897" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                      <path d="M16 2V6M8 2V6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+                      <path d="M13 4H11C7.22876 4 5.34315 4 4.17157 5.17157C3 6.34315 3 8.22876 3 12V14C3 17.7712 3 19.6569 4.17157 20.8284C5.34315 22 7.22876 22 11 22H13C16.7712 22 18.6569 22 19.8284 20.8284C21 19.6569 21 17.7712 21 14V12C21 8.22876 21 6.34315 19.8284 5.17157C18.6569 4 16.7712 4 13 4Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+                      <path d="M3 10H21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+                      <path d="M11.9955 14H12.0045M11.9955 18H12.0045M15.991 14H16M8 14H8.00897M8 18H8.00897" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
                     </svg>
                   </div>
                   <span className={`ml-3 text-sm ${selectedButton === 'Appointments' ? 'font-medium' : ''}`}>
@@ -357,7 +323,8 @@ const Sidebar: React.FC<SidebarProps> = ({
               </li>
             </ul>
           </div>
-          {/* Connections - Centered headers with aligned icons */}
+
+          {/* Connections */}
           <div className="mb-6">
             <div className="text-xs text-neutral-400 uppercase mb-2 text-center font-medium">Connections</div>
             <ul className="list-none m-0 p-0 flex flex-col items-center space-y-1">
