@@ -7,7 +7,7 @@ import ShopCard from '@/components/shop/ShopCard';
 import ProductCard from '@/components/shop/ProductCard';
 import ShopHeader from '@/components/shop/ShopHeader';
 import Container from '@/components/Container';
-import EmptyState from '@/components/EmptyState';
+import useShopModal from '@/app/hooks/useShopModal';
 
 interface ShopClientProps {
   initialShops: SafeShop[];
@@ -23,6 +23,8 @@ const ShopClient: React.FC<ShopClientProps> = ({
   currentUser
 }) => {
   const router = useRouter();
+  const shopModal = useShopModal();
+
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [filters, setFilters] = useState({
     category: 'featured',
@@ -44,31 +46,13 @@ const ShopClient: React.FC<ShopClientProps> = ({
         shop.description.toLowerCase().includes(filters.searchQuery.toLowerCase())
       )
     : initialShops;
-    
-  // Debug info - you can remove this in production
-  console.log("All shops:", initialShops);
-  console.log("Filtered shops:", filteredShops);
-  console.log("Shop IDs:", initialShops.map(shop => shop.id).join(', '));
 
-  // Handle manual refresh
-  const handleRefresh = () => {
-    router.refresh();
-  };
-
-  if (initialShops.length === 0 && featuredProducts.length === 0) {
-    return (
-      <EmptyState 
-        title="No shops or products found"
-        subtitle="Try changing your search criteria or create a new shop."
-      />
-    );
-  }
+  // Manual refresh (if you keep it)
+  const handleRefresh = () => router.refresh();
 
   return (
     <div className="flex-1">
-
-      
-      {/* Shop Header */}
+      {/* Shop Header — always visible */}
       <div className="mb-6">
         <ShopHeader 
           currentUser={currentUser}
@@ -82,33 +66,38 @@ const ShopClient: React.FC<ShopClientProps> = ({
       <div className="space-y-8">
         {/* Shops Section */}
         <section>
-          <div className="flex items-center justify-between ">
-
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredShops.map((shop) => (
-              <ShopCard
-                key={shop.id}
-                data={shop}
-                currentUser={currentUser}
-              />
-            ))}
-            {filteredShops.length === 0 && (
-              <div className="col-span-full py-8 text-center">
-                <p className="text-gray-500">No shops found matching your criteria</p>
-              </div>
-            )}
-          </div>
+          {filteredShops.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredShops.map((shop) => (
+                <ShopCard
+                  key={shop.id}
+                  data={shop}
+                  currentUser={currentUser}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-24 text-center border border-dashed border-gray-200 rounded-2xl bg-white">
+              <h3 className="text-xl font-semibold text-gray-900">No shops found</h3>
+              <p className="mt-1 text-gray-500">Be the first one to create a shop!</p>
+              {currentUser && (
+                <button
+                  onClick={() => shopModal.onOpen()}
+                  className="mt-4 inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#60A5FA] to-[#1f82fa] text-white font-semibold hover:opacity-95"
+                >
+                  Create Shop
+                </button>
+              )}
+            </div>
+          )}
         </section>
         
         {/* Featured Products Section */}
         <section>
-
           <div className={
             viewMode === 'grid' 
-            ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-            : "space-y-4"
+              ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+              : "space-y-4"
           }>
             {filteredProducts.length > 0 ? (
               filteredProducts.slice(0, 8).map((product) => (
@@ -119,13 +108,12 @@ const ShopClient: React.FC<ShopClientProps> = ({
                 />
               ))
             ) : (
-              <div className="col-span-full py-8 text-center">
-                <p className="text-gray-500">No products found matching your criteria</p>
+              <div className="col-span-full py-16 text-center text-gray-500">
+                No products found matching your criteria
               </div>
             )}
           </div>
         </section>
-        
       </div>
     </div>
   );

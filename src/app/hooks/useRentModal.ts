@@ -1,19 +1,21 @@
-// hooks/useRentModal.ts
+// app/hooks/useRentModal.ts
 import { create } from 'zustand';
-import { SafeListing } from '@/app/types';
+import { SafeListing, SafeUser } from '@/app/types';
 
-interface RentModalStore {
+type RentListing = (SafeListing & { user?: SafeUser }) | null;
+
+type RentModalStore = {
   isOpen: boolean;
-  listing: SafeListing | null;
-  onOpen: (listing?: SafeListing) => void;
+  listing: RentListing;
+  onOpen: (listing?: RentListing) => void;
   onClose: () => void;
-}
+};
 
 const useRentModal = create<RentModalStore>((set) => ({
   isOpen: false,
   listing: null,
-  onOpen: (listing) => set({ isOpen: true, listing: listing || null }),
-  onClose: () => set({ isOpen: false, listing: null })
+  onOpen: (listing = null) => set({ isOpen: true, listing }),
+  onClose: () => set({ isOpen: false, listing: null }),
 }));
 
 export default useRentModal;

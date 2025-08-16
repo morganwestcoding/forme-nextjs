@@ -1,3 +1,4 @@
+// components/listing/ListingHead.tsx
 'use client';
 
 import React, { useState } from 'react';
@@ -6,6 +7,7 @@ import WorkerCard from './WorkerCard';
 import PostCard from '../feed/PostCard';
 import { SafePost, SafeUser, SafeListing } from '@/app/types';
 import useReservationModal from '@/app/hooks/useReservationModal';
+import useRentModal from '@/app/hooks/useRentModal';
 
 interface ServiceItem {
   id: string;
@@ -20,8 +22,8 @@ interface ListingHeadProps {
   listing: SafeListing & { user: SafeUser };
   currentUser?: SafeUser | null;
   Services: ServiceItem[];
-  posts?: SafePost[]; // Add posts for Reels tab
-  categories?: any[]; // Add categories for PostCard
+  posts?: SafePost[];
+  categories?: any[];
 }
 
 const ListingHead: React.FC<ListingHeadProps> = ({ 
@@ -37,43 +39,39 @@ const ListingHead: React.FC<ListingHeadProps> = ({
   const [city, state] = location?.split(',').map(s => s.trim()) || [];
 
   const reservationModal = useReservationModal();
+  const rentModal = useRentModal();
 
-  // Get the main image to display
   const mainImage = galleryImages?.[0] || imageSrc;
 
-  // Truncate description to 200 characters
   const truncatedDescription = description && description.length > 230
     ? description.substring(0, 230) 
     : description;
 
-  // Handle reserve button click
   const handleReserveClick = () => {
     if (!currentUser) {
-      // You might want to open a login modal here instead
       console.log('User needs to login');
       return;
     }
-    
     reservationModal.onOpen(listing, currentUser);
   };
+
+  // Only show "Edit Profile" when viewing your own listing.
+  // Hide Follow & Reserve in that case.
+  const isOwner = !!currentUser?.id && currentUser.id === user?.id;
 
   return (
     <div className="w-full">
       {/* Header with Final Design */}
       <div className="w-full relative">
-        <div >
-          <div >
-            
+        <div>
+          <div>
             {/* Enhanced Background */}
             <div 
               className="rounded-2xl p-6 border border-gray-100/50 backdrop-blur-sm shadow-sm"
-              style={{
-                background: 'linear-gradient(145deg, #ffffff 0%, #fafbfc 100%)'
-              }}
+              style={{ background: 'linear-gradient(145deg, #ffffff 0%, #fafbfc 100%)' }}
             >
               {/* Content Layout */}
               <div className="flex items-start gap-6 mb-8">
-                
                 {/* Left: Square Image sized to content height */}
                 <div className="relative flex-shrink-0">
                   <div className="w-[130px] h-[130px] rounded-xl overflow-hidden relative shadow-sm">
@@ -91,22 +89,22 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                     <h1 className="text-xl font-bold tracking-tight text-gray-900 leading-tight" style={{ letterSpacing: '-0.025em' }}>
                       {title}
                     </h1>
-         <div className='text-white drop-shadow-sm'>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="26" height="26" fill="#60A5FA">
-                      <path d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z" stroke="currentColor" strokeWidth="1.5" />
-                      <path d="M9 12.8929L10.8 14.5L15 9.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
+                    <div className='text-white drop-shadow-sm'>
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="26" height="26" fill="#60A5FA">
+                        <path d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z" stroke="currentColor" strokeWidth="1.5" />
+                        <path d="M9 12.8929L10.8 14.5L15 9.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
                     </div>
                   </div>
                   
-              {/* Location badge with soft styling */}
+                  {/* Location badge */}
                   <div className="mb-3">
                     <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-50 text-[#60A5FA] border border-[#60A5FA]">
                       {city}{state ? `, ${state}` : ''}
                     </span>
                   </div>
                   
-                  {/* Stats line */}
+                  {/* Stats line (placeholder metrics) */}
                   <div className="mb-3 text-sm text-gray-600">
                     <span className="font-semibold text-gray-900">4.8</span>
                     <span className="text-gray-500">(156 reviews)</span>
@@ -123,19 +121,31 @@ const ListingHead: React.FC<ListingHeadProps> = ({
 
               {/* Bottom section - Centered action buttons */}
               <div className="flex items-center justify-center pt-6 border-t border-gray-100">
-                {/* Action buttons - centered and balanced */}
                 <div className="flex gap-4">
-                  <button className="group inline-flex items-center justify-center px-24 py-3 rounded-xl text-sm font-medium bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 shadow-sm transition-all duration-200">
-                    <span>Follow</span>
-                  </button>
+                  {isOwner ? (
+                    // Owner view: ONLY show Edit Profile
+                    <button
+                      onClick={() => rentModal.onOpen(listing)}
+                      className="group inline-flex items-center justify-center px-24 py-3 rounded-xl text-sm font-medium bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 shadow-sm transition-all duration-200"
+                    >
+                      Edit Profile
+                    </button>
+                  ) : (
+                    // Visitor view: show Follow + Reserve (no Edit)
+                    <>
+                      <button className="group inline-flex items-center justify-center px-24 py-3 rounded-xl text-sm font-medium bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 shadow-sm transition-all duration-200">
+                        <span>Follow</span>
+                      </button>
 
-                  <button 
-                    onClick={handleReserveClick}
-                    className="group inline-flex items-center justify-center px-24 py-3 rounded-xl text-sm font-medium text-white shadow-sm hover:shadow-md transition-all duration-200 border border-[#60A5FA] hover:bg-blue-600" 
-                    style={{ backgroundColor: '#60A5FA' }}
-                  >
-                    <span>Reserve</span>
-                  </button>
+                      <button 
+                        onClick={handleReserveClick}
+                        className="group inline-flex items-center justify-center px-24 py-3 rounded-xl text-sm font-medium text-white shadow-sm hover:shadow-md transition-all duration-200 border border-[#60A5FA] hover:bg-blue-600" 
+                        style={{ backgroundColor: '#60A5FA' }}
+                      >
+                        <span>Reserve</span>
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -197,11 +207,11 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 key: 'Reels', 
                 label: 'Reels', 
                 icon: () => (
- <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none">
-    <path d="M18.9737 15.0215C18.9795 14.9928 19.0205 14.9928 19.0263 15.0215C19.3302 16.5081 20.4919 17.6698 21.9785 17.9737C22.0072 17.9795 22.0072 18.0205 21.9785 18.0263C20.4919 18.3302 19.3302 19.4919 19.0263 20.9785C19.0205 21.0072 18.9795 21.0072 18.9737 20.9785C18.6698 19.4919 17.5081 18.3302 16.0215 18.0263C15.9928 18.0205 15.9928 17.9795 16.0215 17.9737C17.5081 17.6698 18.6698 16.5081 18.9737 15.0215Z" stroke="currentColor" strokeWidth="1.5"></path>
-    <path d="M14.6469 12.6727C15.3884 12.1531 15.7591 11.8934 15.9075 11.5158C16.0308 11.2021 16.0308 10.7979 15.9075 10.4842C15.7591 10.1066 15.3884 9.84685 14.6469 9.3273C14.1274 8.9633 13.5894 8.60214 13.1167 8.3165C12.7229 8.07852 12.2589 7.82314 11.7929 7.57784C11.005 7.16312 10.6111 6.95576 10.2297 7.00792C9.91348 7.05115 9.58281 7.25237 9.38829 7.5199C9.1536 7.84266 9.12432 8.30677 9.06577 9.23497C9.02725 9.84551 9 10.4661 9 11C9 11.5339 9.02725 12.1545 9.06577 12.765C9.12432 13.6932 9.1536 14.1573 9.38829 14.4801C9.58281 14.7476 9.91348 14.9489 10.2297 14.9921C10.6111 15.0442 11.005 14.8369 11.7929 14.4221C12.2589 14.1768 12.7229 13.9215 13.1167 13.6835C13.5894 13.3978 14.1274 13.0367 14.6469 12.6727Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"></path>
-    <path d="M21.872 14.8357C22 13.9227 22 12.7279 22 11C22 8.19974 22 6.79961 21.455 5.73005C20.9757 4.78924 20.2108 4.02433 19.27 3.54497C18.2004 3 16.8003 3 14 3H10C7.19974 3 5.79961 3 4.73005 3.54497C3.78924 4.02433 3.02433 4.78924 2.54497 5.73005C2 6.79961 2 8.19974 2 11C2 13.8003 2 15.2004 2.54497 16.27C3.02433 17.2108 3.78924 17.9757 4.73005 18.455C5.79961 19 7.19974 19 10 19H13.4257" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-</svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none">
+                    <path d="M18.9737 15.0215C18.9795 14.9928 19.0205 14.9928 19.0263 15.0215C19.3302 16.5081 20.4919 17.6698 21.9785 17.9737C22.0072 17.9795 22.0072 18.0205 21.9785 18.0263C20.4919 18.3302 19.3302 19.4919 19.0263 20.9785C19.0205 21.0072 18.9795 21.0072 18.9737 20.9785C18.6698 19.4919 17.5081 18.3302 16.0215 18.0263C15.9928 18.0205 15.9928 17.9795 16.0215 17.9737C17.5081 17.6698 18.6698 16.5081 18.9737 15.0215Z" stroke="currentColor" strokeWidth="1.5"></path>
+                    <path d="M14.6469 12.6727C15.3884 12.1531 15.7591 11.8934 15.9075 11.5158C16.0308 11.2021 16.0308 10.7979 15.9075 10.4842C15.7591 10.1066 15.3884 9.84685 14.6469 9.3273C14.1274 8.9633 13.5894 8.60214 13.1167 8.3165C12.7229 8.07852 12.2589 7.82314 11.7929 7.57784C11.005 7.16312 10.6111 6.95576 10.2297 7.00792C9.91348 7.05115 9.58281 7.25237 9.38829 7.5199C9.1536 7.84266 9.12432 8.30677 9.06577 9.23497C9.02725 9.84551 9 10.4661 9 11C9 11.5339 9.02725 12.1545 9.06577 12.765C9.12432 13.6932 9.1536 14.1573 9.38829 14.4801C9.58281 14.7476 9.91348 14.9489 10.2297 14.9921C10.6111 15.0442 11.005 14.8369 11.7929 14.4221C12.2589 14.1768 12.7229 13.9215 13.1167 13.6835C13.5894 13.3978 14.1274 13.0367 14.6469 12.6727Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"></path>
+                    <path d="M21.872 14.8357C22 13.9227 22 12.7279 22 11C22 8.19974 22 6.79961 21.455 5.73005C20.9757 4.78924 20.2108 4.02433 19.27 3.54497C18.2004 3 16.8003 3 14 3H10C7.19974 3 5.79961 3 4.73005 3.54497C3.78924 4.02433 3.02433 4.78924 2.54497 5.73005C2 6.79961 2 8.19974 2 11C2 13.8003 2 15.2004 2.54497 16.27C3.02433 17.2108 3.78924 17.9757 4.73005 18.455C5.79961 19 7.19974 19 10 19H13.4257" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+                  </svg>
                 )
               },
             ].map(({ key, label, icon: Icon }) => (
@@ -246,8 +256,8 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 listingLocation={location}
                 listingTitle={title}
                 listingImage={mainImage}
-                listing={listing} // Pass the full listing
-                currentUser={currentUser} // Pass the current user
+                listing={listing}
+                currentUser={currentUser}
                 storeHours={storeHours}
               />
             ))}
@@ -256,7 +266,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
 
         {activeTab === 'Team' && employees.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {employees.map((employee, index) => (
+            {employees.map((employee: any, index: number) => (
               <WorkerCard
                 key={employee.id || index}
                 employee={employee}
@@ -266,8 +276,8 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   imageSrc: mainImage,
                   category: listing.category
                 }}
-                listing={listing} // Add the full listing object
-                currentUser={currentUser} // Add the current user
+                listing={listing}
+                currentUser={currentUser}
                 onFollow={() => console.log('Follow clicked for:', employee.fullName)}
                 onBook={() => console.log('Book clicked for:', employee.fullName)}
               />

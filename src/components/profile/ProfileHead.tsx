@@ -1,3 +1,4 @@
+// components/profile/ProfileHead.tsx
 'use client';
 
 import React from 'react';
@@ -9,6 +10,7 @@ import CreateChatButton from '@/components/profile/CreateChatButton';
 import PostCard from '@/components/feed/PostCard';
 import ListingCard from '@/components/listings/ListingCard';
 import { categories } from '@/components/Categories';
+import useRegisterModal from '@/app/hooks/useRegisterModal';
 
 // helper: truncate on word boundary with ellipsis
 const truncate = (text: string, max: number) => {
@@ -42,7 +44,10 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
     followers = [],
     following = [],
     galleryImages = [],
+    email,
   } = user;
+
+  const registerModal = useRegisterModal();
 
   const [activeTab, setActiveTab] = React.useState<
     'Posts' | 'Listings' | 'Images' | 'Reels'
@@ -77,6 +82,22 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
     } catch {
       toast.error('Something went wrong');
     }
+  };
+
+  const isOwner = !!currentUser?.id && currentUser.id === id;
+
+  const openEditProfile = () => {
+    registerModal.onOpen({
+      mode: 'edit',
+      prefill: {
+        name: name ?? '',
+        email: email ?? '',
+        location: location ?? '',
+        bio: bio ?? '',
+        image: image ?? '',
+        imageSrc: imageSrc ?? '',
+      },
+    });
   };
 
   return (
@@ -133,7 +154,15 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
               {/* Actions — centered, like ListingHead */}
               <div className="flex items-center justify-center pt-6 border-t border-gray-100">
                 <div className="flex gap-4">
-                  {currentUser && currentUser.id !== id ? (
+                  {isOwner ? (
+                    <button
+                      className="group inline-flex items-center justify-center px-24 py-3 rounded-xl text-sm font-medium text-white shadow-sm hover:shadow-md transition-all duration-200 border border-[#60A5FA] hover:bg-blue-600"
+                      style={{ backgroundColor: '#60A5FA' }}
+                      onClick={openEditProfile}
+                    >
+                      Edit Profile
+                    </button>
+                  ) : (
                     <>
                       <button
                         onClick={handleFollow}
@@ -141,16 +170,8 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                       >
                         {isFollowing ? 'Following' : 'Follow'}
                       </button>
-                      <CreateChatButton currentUser={currentUser} otherUserId={id} />
+                      {currentUser && <CreateChatButton currentUser={currentUser} otherUserId={id} />}
                     </>
-                  ) : (
-                    <button
-                      className="group inline-flex items-center justify-center px-24 py-3 rounded-xl text-sm font-medium text-white shadow-sm hover:shadow-md transition-all duration-200 border border-[#60A5FA] hover:bg-blue-600"
-                      style={{ backgroundColor: '#60A5FA' }}
-                      onClick={() => (window.location.href = '/settings')}
-                    >
-                      Edit Profile
-                    </button>
                   )}
                 </div>
               </div>
@@ -160,7 +181,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
         </div>
       </div>
 
-      {/* Tabs (same structure as ListingHead/ShopHead) */}
+      {/* Tabs */}
       <div className="mt-6">
         <div className="flex border-b border-gray-200 relative justify-center">
           <div className="flex gap-8">
@@ -168,7 +189,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
               { key: 'Posts', label: 'Posts', icon: IconPosts },
               { key: 'Listings', label: 'Listings', icon: IconListings },
               { key: 'Images', label: 'Images', icon: IconImages },
-   
+              { key: 'Reels', label: 'Reels', icon: IconPosts },
             ].map(({ key, label, icon: Icon }) => (
               <button
                 key={key}
@@ -208,94 +229,86 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
       <div className="px-4 sm:px-0 mt-6">
         {/* POSTS */}
         {activeTab === 'Posts' && (
-          <>
-            {posts.length ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {posts.map((post) => (
-                  <PostCard
-                    key={post.id}
-                    post={post}
-                    currentUser={currentUser}
-                    categories={categories}
-                  />
-                ))}
-              </div>
-            ) : (
-              <EmptyBlock text="No posts yet" />
-            )}
-          </>
+          posts.length ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {posts.map((post) => (
+                <PostCard
+                  key={post.id}
+                  post={post}
+                  currentUser={currentUser}
+                  categories={categories}
+                />
+              ))}
+            </div>
+          ) : (
+            <EmptyBlock text="No posts yet" />
+          )
         )}
 
         {/* LISTINGS */}
         {activeTab === 'Listings' && (
-          <>
-            {listings.length ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {listings.map((listing) => (
-                  <ListingCard
-                    key={listing.id}
-                    data={listing}
-                    currentUser={currentUser}
-                    categories={categories}
-                  />
-                ))}
-              </div>
-            ) : (
-              <EmptyBlock text="No listings yet" />
-            )}
-          </>
+          listings.length ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {listings.map((listing) => (
+                <ListingCard
+                  key={listing.id}
+                  data={listing}
+                  currentUser={currentUser}
+                  categories={categories}
+                />
+              ))}
+            </div>
+          ) : (
+            <EmptyBlock text="No listings yet" />
+          )
         )}
 
         {/* IMAGES */}
         {activeTab === 'Images' && (
-          <>
-            {galleryImages.length ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                {galleryImages.map((img, i) => (
-                  <div
-                    key={i}
-                    className="aspect-square relative rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 group"
-                  >
-                    <Image
-                      src={img}
-                      alt={`${name || 'User'} - Image ${i + 1}`}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <EmptyBlock text="No images yet" />
-            )}
-          </>
+          galleryImages.length ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              {galleryImages.map((img, i) => (
+                <div
+                  key={i}
+                  className="aspect-square relative rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 group"
+                >
+                  <Image
+                    src={img}
+                    alt={`${name || 'User'} - Image ${i + 1}`}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <EmptyBlock text="No images yet" />
+          )
         )}
 
-        {/* REELS (reuse posts for now, or filter by type if you store it) */}
+        {/* REELS */}
         {activeTab === 'Reels' && (
-          <>
-            {posts.length ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {posts.map((post) => (
-                  <PostCard
-                    key={post.id}
-                    post={post}
-                    currentUser={currentUser}
-                    categories={categories}
-                  />
-                ))}
-              </div>
-            ) : (
-              <EmptyBlock text="No reels yet" />
-            )}
-          </>
+          posts.length ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {posts.map((post) => (
+                <PostCard
+                  key={post.id}
+                  post={post}
+                  currentUser={currentUser}
+                  categories={categories}
+                />
+              ))}
+            </div>
+          ) : (
+            <EmptyBlock text="No reels yet" />
+          )
         )}
       </div>
     </div>
   );
 };
 
-/** tiny inline icons to mirror your other heads */
+/** tiny inline icons */
 function IconPosts() {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" color="currentColor" fill="none" viewBox="0 0 24 24">
@@ -315,13 +328,12 @@ function IconListings() {
 function IconImages() {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" color="currentColor" fill="none" viewBox="0 0 24 24">
-                    <path d="M3 16L7.46967 11.5303C7.80923 11.1908 8.26978 11 8.75 11C9.23022 11 9.69077 11.1908 10.0303 11.5303L14 15.5M15.5 17L14 15.5M21 16L18.5303 13.5303C18.1908 13.1908 17.7302 13 17.25 13C16.7698 13 16.3092 13.1908 15.9697 13.5303L14 15.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-                    <path d="M15.5 8C15.7761 8 16 7.77614 16 7.5C16 7.22386 15.7761 7 15.5 7M15.5 8C15.2239 8 15 7.77614 15 7.5C15 7.22386 15.2239 7 15.5 7M15.5 8V7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-                    <path d="M3.69797 19.7472C2.5 18.3446 2.5 16.2297 2.5 12C2.5 7.77027 2.5 5.6554 3.69797 4.25276C3.86808 4.05358 4.05358 3.86808 4.25276 3.69797C5.6554 2.5 7.77027 2.5 12 2.5C16.2297 2.5 18.3446 2.5 19.7472 3.69797C19.9464 3.86808 20.1319 4.05358 20.302 4.25276C21.5 5.6554 21.5 7.77027 21.5 12C21.5 16.2297 21.5 18.3446 20.302 19.7472C20.1319 19.9464 19.9464 20.1319 19.7472 20.302C18.3446 21.5 16.2297 21.5 12 21.5C7.77027 21.5 5.6554 21.5 4.25276 20.302C4.05358 20.1319 3.86808 19.9464 3.69797 19.7472Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+      <path d="M3 16L7.46967 11.5303C7.80923 11.1908 8.26978 11 8.75 11C9.23022 11 9.69077 11.1908 10.0303 11.5303L14 15.5M15.5 17L14 15.5M21 16L18.5303 13.5303C18.1908 13.1908 17.7302 13 17.25 13C16.7698 13 16.3092 13.1908 15.9697 13.5303L14 15.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M15.5 8C15.7761 8 16 7.77614 16 7.5C16 7.22386 15.7761 7 15.5 7M15.5 8C15.2239 8 15 7.77614 15 7.5C15 7.22386 15.2239 7 15.5 7M15.5 8V7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M3.698 19.747C2.5 18.345 2.5 16.23 2.5 12s0-6.77 1.198-8.2A3.6 3.6 0 0 1 4.253 3.698C5.655 2.5 7.77 2.5 12 2.5s6.345 0 7.747 1.198A3.6 3.6 0 0 1 20.302 4.253C21.5 5.655 21.5 7.77 21.5 12s0 6.345-1.198 7.747a3.6 3.6 0 0 1-1.553 1.553C17.345 22.5 15.23 22.5 12 22.5s-6.345 0-7.747-1.198a3.6 3.6 0 0 1-1.553-1.553Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   );
 }
-
 
 function EmptyBlock({ text }: { text: string }) {
   return (

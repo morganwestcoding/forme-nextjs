@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { SafeUser } from '@/app/types';
 import useShopModal from '@/app/hooks/useShopModal';
 import useProductModal from '@/app/hooks/useProductModal';
-import { Grid, List, Search, ShoppingBag, Store, Layers, Sparkles, TrendingUp, Plus } from 'lucide-react';
+import { Grid, List, Search, Layers, Sparkles, TrendingUp } from 'lucide-react';
 
 interface ShopHeaderProps {
   currentUser?: SafeUser | null;
@@ -48,16 +48,11 @@ const ShopHeader: React.FC<ShopHeaderProps> = ({
         setIsDropdownOpen(false);
       }
     }
-    
     document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
-  };
+  const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -65,27 +60,17 @@ const ShopHeader: React.FC<ShopHeaderProps> = ({
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (onFilterChange) {
-      onFilterChange({
-        ...filters,
-        searchQuery: searchTerm
-      });
-    }
+    onFilterChange?.({ ...filters, searchQuery: searchTerm });
   };
 
   const handleFilterChange = (category: string) => {
-    if (onFilterChange) {
-      onFilterChange({
-        ...filters,
-        category
-      });
-    }
+    onFilterChange?.({ ...filters, category });
   };
 
   return (
     <div className="min-h-0">
       {/* Header and Description */}
-       <div className="pt-4 mb-4">
+      <div className="pt-4 mb-4">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Vendors</h1>
           <p className="text-gray-600">Discover unique shops and products from our vendors</p>
@@ -131,31 +116,36 @@ const ShopHeader: React.FC<ShopHeaderProps> = ({
         </div>
 
         {/* Filters Button */}
-        <button className="shadow-sm bg-white
-                text-gray-500 hover:text-gray-700 py-3 px-4 rounded-xl 
-                hover:bg-neutral-100 transition-colors 
-                flex items-center space-x-2  text-sm">
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" color="currentColor" fill="none">
-    <path d="M14.5405 2V4.48622C14.5405 6.23417 14.5405 7.10814 14.7545 7.94715C14.9685 8.78616 15.3879 9.55654 16.2267 11.0973L17.3633 13.1852C19.5008 17.1115 20.5696 19.0747 19.6928 20.53L19.6792 20.5522C18.7896 22 16.5264 22 12 22C7.47357 22 5.21036 22 4.3208 20.5522L4.30725 20.53C3.43045 19.0747 4.49918 17.1115 6.63666 13.1852L7.7733 11.0973C8.61209 9.55654 9.03149 8.78616 9.24548 7.94715C9.45947 7.10814 9.45947 6.23417 9.45947 4.48622V2" stroke="currentColor" stroke-width="1.5"></path>
-    <path d="M9 16.002L9.00868 15.9996" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-    <path d="M15 18.002L15.0087 17.9996" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-    <path d="M8 2L16 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-    <path d="M7.5 11.5563C8.5 10.4029 10.0994 11.2343 12 12.3182C14.5 13.7439 16 12.65 16.5 11.6152" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
-</svg><span>Filters</span>
+        <button
+          className="shadow-sm bg-white text-gray-500 hover:text-gray-700 py-3 px-4 rounded-xl hover:bg-neutral-100 transition-colors flex items-center space-x-2 text-sm"
+          type="button"
+        >
+          {/* Bag/filters icon */}
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" color="currentColor" fill="none">
+            <path d="M14.5405 2V4.48622C14.5405 6.23417 14.5405 7.10814 14.7545 7.94715C14.9685 8.78616 15.3879 9.55654 16.2267 11.0973L17.3633 13.1852C19.5008 17.1115 20.5696 19.0747 19.6928 20.53L19.6792 20.5522C18.7896 22 16.5264 22 12 22C7.47357 22 5.21036 22 4.3208 20.5522L4.30725 20.53C3.43045 19.0747 4.49918 17.1115 6.63666 13.1852L7.7733 11.0973C8.61209 9.55654 9.03149 8.78616 9.24548 7.94715C9.45947 7.10814 9.45947 6.23417 9.45947 4.48622V2" stroke="currentColor" strokeWidth="1.5"></path>
+            <path d="M9 16.002L9.00868 15.9996" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+            <path d="M15 18.002L15.0087 17.9996" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+            <path d="M8 2L16 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+            <path d="M7.5 11.5563C8.5 10.4029 10.0994 11.2343 12 12.3182C14.5 13.7439 16 12.65 16.5 11.6152" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"></path>
+          </svg>
+          <span>Filters</span>
         </button>
         
         {/* Create Button with Dropdown */}
         {currentUser && (
-          <div>
+          <div className="relative">
             <button 
               ref={buttonRef}
               onClick={toggleDropdown}
-className="flex items-center justify-center py-3 space-x-2 px-4 shadow-sm rounded-xl transition-all bg-white text-gray-500 hover:bg-neutral-200"
+              className="flex items-center justify-center py-3 space-x-2 px-4 shadow-sm rounded-xl transition-all bg-white text-gray-500 hover:bg-neutral-200"
+              type="button"
             >
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" color="currentColor" fill="none">
-    <path d="M16.4249 4.60509L17.4149 3.6151C18.2351 2.79497 19.5648 2.79497 20.3849 3.6151C21.205 4.43524 21.205 5.76493 20.3849 6.58507L19.3949 7.57506M16.4249 4.60509L9.76558 11.2644C9.25807 11.772 8.89804 12.4078 8.72397 13.1041L8 16L10.8959 15.276C11.5922 15.102 12.228 14.7419 12.7356 14.2344L19.3949 7.57506M16.4249 4.60509L19.3949 7.57506" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path>
-    <path d="M18.9999 13.5C18.9999 16.7875 18.9999 18.4312 18.092 19.5376C17.9258 19.7401 17.7401 19.9258 17.5375 20.092C16.4312 21 14.7874 21 11.4999 21H11C7.22876 21 5.34316 21 4.17159 19.8284C3.00003 18.6569 3 16.7712 3 13V12.5C3 9.21252 3 7.56879 3.90794 6.46244C4.07417 6.2599 4.2599 6.07417 4.46244 5.90794C5.56879 5 7.21252 5 10.5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-</svg> <span className="text-sm">Create</span>
+              {/* Pencil icon */}
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" color="currentColor" fill="none">
+                <path d="M16.4249 4.60509L17.4149 3.6151C18.2351 2.79497 19.5648 2.79497 20.3849 3.6151C21.205 4.43524 21.205 5.76493 20.3849 6.58507L19.3949 7.57506M16.4249 4.60509L9.76558 11.2644C9.25807 11.772 8.89804 12.4078 8.72397 13.1041L8 16L10.8959 15.276C11.5922 15.102 12.228 14.7419 12.7356 14.2344L19.3949 7.57506M16.4249 4.60509L19.3949 7.57506" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"></path>
+                <path d="M18.9999 13.5C18.9999 16.7875 18.9999 18.4312 18.092 19.5376C17.9258 19.7401 17.7401 19.9258 17.5375 20.092C16.4312 21 14.7874 21 11.4999 21H11C7.22876 21 5.34316 21 4.17159 19.8284C3.00003 18.6569 3 16.7712 3 13V12.5C3 9.21252 3 7.56879 3.90794 6.46244C4.07417 6.2599 4.2599 6.07417 4.46244 5.90794C5.56879 5 7.21252 5 10.5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+              </svg> 
+              <span className="text-sm">Create</span>
             </button>
           
             {isDropdownOpen && (
@@ -190,87 +180,86 @@ className="flex items-center justify-center py-3 space-x-2 px-4 shadow-sm rounde
         )}
       </div>
 
-{/* Centered Tabs — no layout shift */}
-<div className="flex mb-6 border-b border-gray-200 relative justify-center">
-  <div className="flex gap-8">
-    {[
-      { key: 'featured', label: 'Featured', Icon: Sparkles, type: 'lucide' },
-      { key: 'trending', label: 'Trending', Icon: TrendingUp, type: 'lucide' },
-      { key: 'products', label: 'Products', type: 'products' },
-      { key: 'shops', label: 'Shops', type: 'shops' },
-      { key: 'categories', label: 'Categories', Icon: Layers, type: 'lucide' },
-    ].map(({ key, label, Icon, type }) => {
-      const isActive =
-        key === 'categories' ? filters.category === 'categories' : filters.category === key;
-      const activeColor = '#60A5FA';
+      {/* Centered Tabs — no layout shift */}
+      <div className="flex mb-6 border-b border-gray-200 relative justify-center">
+        <div className="flex gap-8">
+          {[
+            { key: 'featured', label: 'Featured', Icon: Sparkles, type: 'lucide' },
+            { key: 'trending', label: 'Trending', Icon: TrendingUp, type: 'lucide' },
+            { key: 'products', label: 'Products', type: 'products' },
+            { key: 'shops', label: 'Shops', type: 'shops' },
+            { key: 'categories', label: 'Categories', Icon: Layers, type: 'lucide' },
+          ].map(({ key, label, Icon, type }) => {
+            const isActive =
+              key === 'categories' ? filters.category === 'categories' : filters.category === key;
+            const activeColor = '#60A5FA';
 
-      return (
-        <button
-          key={key}
-          onClick={() => handleFilterChange(key)}
-          className={`
-            relative flex items-center justify-center gap-2
-            px-4 pt-2 pb-4 h-10
-            text-sm font-medium whitespace-nowrap
-            transition-colors duration-150
-            ${isActive ? '' : 'text-gray-500 hover:text-gray-700'}
-          `}
-          style={{ color: isActive ? activeColor : undefined }}
-        >
-          {/* Icon */}
-          {type === 'lucide' && Icon ? (
-            <Icon height={22} width={22} strokeWidth={1.75} />
-          ) : null}
+            return (
+              <button
+                key={key}
+                onClick={() => handleFilterChange(key)}
+                className={`
+                  relative flex items-center justify-center gap-2
+                  px-4 pt-2 pb-4 h-10
+                  text-sm font-medium whitespace-nowrap
+                  transition-colors duration-150
+                  ${isActive ? '' : 'text-gray-500 hover:text-gray-700'}
+                `}
+                style={{ color: isActive ? activeColor : undefined }}
+              >
+                {/* Icon */}
+                {type === 'lucide' && Icon ? (
+                  <Icon height={22} width={22} strokeWidth={1.75} />
+                ) : null}
 
-          {type === 'products' ? (
-            <svg
-              xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-              width="22" height="22" fill="none"
-              className="flex-shrink-0"
-              style={{ color: 'currentColor' }}
-            >
-              <path d="M2.5 7.5V13.5C2.5 17.2712 2.5 19.1569 3.67157 20.3284C4.84315 21.5 6.72876 21.5 10.5 21.5H13.5C17.2712 21.5 19.1569 21.5 20.3284 20.3284C21.5 19.1569 21.5 17.2712 21.5 13.5V7.5"
-                    stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M3.86909 5.31461L2.5 7.5H21.5L20.2478 5.41303C19.3941 3.99021 18.9673 3.2788 18.2795 2.8894C17.5918 2.5 16.7621 2.5 15.1029 2.5H8.95371C7.32998 2.5 6.51812 2.5 5.84013 2.8753C5.16215 3.2506 4.73113 3.93861 3.86909 5.31461Z"
-                    stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M12 7.5V2.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M10 10.5H14" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          ) : null}
+                {type === 'products' ? (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                    width="22" height="22" fill="none"
+                    className="flex-shrink-0"
+                    style={{ color: 'currentColor' }}
+                  >
+                    <path d="M2.5 7.5V13.5C2.5 17.2712 2.5 19.1569 3.67157 20.3284C4.84315 21.5 6.72876 21.5 10.5 21.5H13.5C17.2712 21.5 19.1569 21.5 20.3284 20.3284C21.5 19.1569 21.5 17.2712 21.5 13.5V7.5"
+                          stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M3.86909 5.31461L2.5 7.5H21.5L20.2478 5.41303C19.3941 3.99021 18.9673 3.2788 18.2795 2.8894C17.5918 2.5 16.7621 2.5 15.1029 2.5H8.95371C7.32998 2.5 6.51812 2.5 5.84013 2.8753C5.16215 3.2506 4.73113 3.93861 3.86909 5.31461Z"
+                          stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M12 7.5V2.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M10 10.5H14" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                ) : null}
 
-          {type === 'shops' ? (
-            <svg
-              xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-              width="22" height="22" fill="none"
-              className="flex-shrink-0"
-              style={{ color: 'currentColor' }}
-            >
-              <path d="M8 16L16.7201 15.2733C19.4486 15.046 20.0611 14.45 20.3635 11.7289L21 6"
-                    stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
-              <path d="M6 6H22" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
-              <circle cx="6" cy="20" r="2" stroke="currentColor" strokeWidth="1.75" />
-              <circle cx="17" cy="20" r="2" stroke="currentColor" strokeWidth="1.75" />
-              <path d="M8 20L15 20" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
-              <path d="M2 2H2.966C3.91068 2 4.73414 2.62459 4.96326 3.51493L7.93852 15.0765C8.08887 15.6608 7.9602 16.2797 7.58824 16.7616L6.63213 18"
-                    stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
-            </svg>
-          ) : null}
+                {type === 'shops' ? (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                    width="22" height="22" fill="none"
+                    className="flex-shrink-0"
+                    style={{ color: 'currentColor' }}
+                  >
+                    <path d="M8 16L16.7201 15.2733C19.4486 15.046 20.0611 14.45 20.3635 11.7289L21 6"
+                          stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+                    <path d="M6 6H22" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+                    <circle cx="6" cy="20" r="2" stroke="currentColor" strokeWidth="1.75" />
+                    <circle cx="17" cy="20" r="2" stroke="currentColor" strokeWidth="1.75" />
+                    <path d="M8 20L15 20" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+                    <path d="M2 2H2.966C3.91068 2 4.73414 2.62459 4.96326 3.51493L7.93852 15.0765C8.08887 15.6608 7.9602 16.2797 7.58824 16.7616L6.63213 18"
+                          stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+                  </svg>
+                ) : null}
 
-          {/* Label */}
-          <span>{label}</span>
+                {/* Label */}
+                <span>{label}</span>
 
-          {/* Persistent underline */}
-          <span
-            aria-hidden
-            className="pointer-events-none absolute inset-x-0 bottom-0 h-0.5 rounded"
-            style={{ backgroundColor: isActive ? activeColor : 'transparent' }}
-          />
-        </button>
-      );
-    })}
-  </div>
-</div>
-
+                {/* Persistent underline */}
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute inset-x-0 bottom-0 h-0.5 rounded"
+                  style={{ backgroundColor: isActive ? activeColor : 'transparent' }}
+                />
+              </button>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 };

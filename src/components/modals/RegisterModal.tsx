@@ -2,7 +2,7 @@
 'use client';
 
 import axios from "axios";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
@@ -26,18 +26,21 @@ enum STEPS {
 
 const RegisterModal = () => {
   const router = useRouter();
-  const { status } = useSession(); // watch auth flips
+  const { status } = useSession();
   const [step, setStep] = useState(STEPS.ACCOUNT);
   const registerModal = useRegisterModal();
   const loginModal = useLoginModal();
   const [isLoading, setIsLoading] = useState(false);
   const modalRef = useRef<ModalHandle>(null);
 
+  const isEdit = registerModal.mode === 'edit';
+
   const { 
     register, 
     handleSubmit,
     setValue,
     watch,
+    reset,
     formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: {
@@ -53,6 +56,36 @@ const RegisterModal = () => {
 
   const image = watch('image');
   const imageSrc = watch('imageSrc');
+
+  // Prefill when opened in edit mode
+  useEffect(() => {
+    if (registerModal.isOpen && registerModal.prefill) {
+      const p = registerModal.prefill;
+      reset({
+        name: p.name ?? '',
+        email: p.email ?? '',
+        password: '', // never prefill
+        location: p.location ?? '',
+        bio: p.bio ?? '',
+        image: p.image ?? '',
+        imageSrc: p.imageSrc ?? '',
+      });
+      setStep(STEPS.ACCOUNT);
+    }
+  }, [registerModal.isOpen, registerModal.prefill, reset]);
+
+  // Close this modal if session flips to authenticated during registration flow
+  useEffect(() => {
+    if (!isEdit && status === 'authenticated' && registerModal.isOpen) {
+      if (modalRef.current?.close) {
+        modalRef.current.close();
+      } else {
+        registerModal.onClose();
+      }
+      const t = setTimeout(() => router.refresh(), 320);
+      return () => clearTimeout(t);
+    }
+  }, [status, registerModal.isOpen, router, registerModal, isEdit]);
 
   const setCustomValue = (id: string, value: any) => {
     setValue(id, value, {
@@ -74,29 +107,21 @@ const RegisterModal = () => {
     hasSpecialChar: /[!@#$%^&*(),]/.test(password)
   });
 
-  // Close this modal if session flips to authenticated (rare race guard)
-  useEffect(() => {
-    if (status === 'authenticated' && registerModal.isOpen) {
-      if (modalRef.current?.close) {
-        modalRef.current.close();
-      } else {
-        registerModal.onClose();
-      }
-      const t = setTimeout(() => router.refresh(), 320);
-      return () => clearTimeout(t);
-    }
-  }, [status, registerModal.isOpen, router, registerModal]);
+  const handleClose = useCallback(() => {
+    registerModal.onClose();
+    registerModal.clear();
+    setStep(STEPS.ACCOUNT);
+  }, [registerModal]);
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     // For steps before final, advance
     if (step !== STEPS.IMAGES) {
-      if (step === STEPS.ACCOUNT) {
-        const p = validatePassword(data.password);
+      if (!isEdit && step === STEPS.ACCOUNT) {
+        const p = validatePassword(data.password || '');
         if (!Object.values(p).every(Boolean)) {
           toast.error('Password does not meet requirements');
           return;
         }
-        // Email exists check
         try {
           const response = await axios.get(`/api/check-email?email=${encodeURIComponent(data.email)}`);
           if (response.data?.exists) {
@@ -111,9 +136,27 @@ const RegisterModal = () => {
       return onNext();
     }
 
-    // Final step: create -> auto login -> close -> go to /subscription
+    // Final step:
     setIsLoading(true);
     try {
+      if (isEdit) {
+        // EDIT PROFILE
+        const payload = {
+          name: data.name,
+          location: data.location,
+          bio: data.bio,
+          image: data.image,
+          imageSrc: data.imageSrc,
+        };
+        await axios.put('/api/users/me', payload);
+        toast.success('Profile updated!');
+        if (modalRef.current?.close) modalRef.current.close();
+        handleClose();
+        router.refresh();
+        return;
+      }
+
+      // REGISTER FLOW
       await axios.post('/api/register', data);
       toast.success('Registered! Logging you in…');
 
@@ -123,15 +166,10 @@ const RegisterModal = () => {
         redirect: false
       });
 
-      // After login, close modal and route to the Subscription page
       if (signInRes?.ok || signInRes?.status === 200) {
         setStep(STEPS.ACCOUNT);
-        if (modalRef.current?.close) {
-          modalRef.current.close();
-        } else {
-          registerModal.onClose();
-        }
-        // Navigate to subscription page
+        if (modalRef.current?.close) modalRef.current.close();
+        registerModal.onClose();
         setTimeout(() => {
           router.push('/subscription');
         }, 250);
@@ -155,22 +193,26 @@ const RegisterModal = () => {
   };
 
   const onToggle = useCallback(() => {
+    if (isEdit) return; // no toggle in edit mode
     modalRef.current?.close();
     setTimeout(() => {
       loginModal.onOpen();
     }, 400);
-  }, [loginModal]);
+  }, [loginModal, isEdit]);
 
+  // ---------- BODY ----------
   let bodyContent = (
     <div className="flex flex-col gap-4">
-      <div className="flex justify-center">
-        <Logo variant="horizontal" />
-      </div>
-      <Heading title="Welcome to ForMe" subtitle="Create an account!" />
+      {!isEdit && (
+        <div className="flex justify-center">
+          <Logo variant="horizontal" />
+        </div>
+      )}
+      <Heading title={isEdit ? "Edit your profile" : "Welcome to ForMe"} subtitle={isEdit ? "Update your info" : "Create an account!"} />
       <Input
         id="email"
         label="Email"
-        disabled={isLoading}
+        disabled={isLoading || isEdit}
         register={register}
         errors={errors}
         required
@@ -184,16 +226,18 @@ const RegisterModal = () => {
         errors={errors}
         required
       />
-      <Input
-        id="password"
-        label="Password"
-        type="password"
-        disabled={isLoading}
-        register={register}
-        errors={errors}
-        showPasswordValidation={true}
-        required
-      />
+      {!isEdit && (
+        <Input
+          id="password"
+          label="Password"
+          type="password"
+          disabled={isLoading}
+          register={register}
+          errors={errors}
+          showPasswordValidation={true}
+          required
+        />
+      )}
     </div>
   );
 
@@ -201,8 +245,8 @@ const RegisterModal = () => {
     bodyContent = (
       <div className="flex flex-col gap-8">
         <Heading
-          title="Where are you located?"
-          subtitle="This helps us show you the best experiences near you."
+          title={isEdit ? "Update your location" : "Where are you located?"}
+          subtitle={isEdit ? "Keep this current so people can find you." : "This helps us show you the best experiences near you."}
         />
         <ProfileLocationInput
           onLocationSubmit={(value) => setValue('location', value)}
@@ -215,8 +259,8 @@ const RegisterModal = () => {
     bodyContent = (
       <div className="flex flex-col gap-8">
         <Heading
-          title="Tell us about yourself"
-          subtitle="What makes you unique?"
+          title={isEdit ? "Update your bio" : "Tell us about yourself"}
+          subtitle={isEdit ? "Share a little about you." : "What makes you unique?"}
         />
         <Input
           id="bio"
@@ -236,8 +280,8 @@ const RegisterModal = () => {
     bodyContent = (
       <div className="flex flex-col gap-8">
         <Heading
-          title="Add your profile images"
-          subtitle="Make your profile stand out!"
+          title={isEdit ? "Update your profile images" : "Add your profile images"}
+          subtitle={isEdit ? "Freshen up your look." : "Make your profile stand out!"}
         />
         <div className="grid grid-cols-2">
           <div className="flex flex-col items-center gap-3">
@@ -269,39 +313,43 @@ const RegisterModal = () => {
     );
   }
 
-  const footerContent = (
-    <div className="flex flex-col gap-4 mt-3">
-      <hr />
-      <div className="text-black text-center mt-4 font-light">
-        <p>
-          Already have an account?
-          <span 
-            onClick={onToggle} 
-            className="text-neutral-500 cursor-pointer hover:underline"
-          >
-            {' '}Log in
-          </span>
-        </p>
+  // ---------- FOOTER ----------
+  // IMPORTANT: Modal.footer expects ReactElement | undefined (NOT null)
+  const footerContent = useMemo<React.ReactElement | undefined>(() => {
+    if (isEdit) return undefined; // <-- fix: return undefined instead of null
+    return (
+      <div className="flex flex-col gap-4 mt-3">
+        <hr />
+        <div className="text-black text-center mt-4 font-light">
+          <p>
+            Already have an account?
+            <span 
+              onClick={onToggle} 
+              className="text-neutral-500 cursor-pointer hover:underline"
+            >
+              {' '}Log in
+            </span>
+          </p>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }, [isEdit, onToggle]);
 
-  // Primary button text
-  const actionLabel = step === STEPS.IMAGES ? "Create" : "Continue";
+  const actionLabel = step === STEPS.IMAGES ? (isEdit ? "Save" : "Create") : "Continue";
 
   return (
     <Modal
       ref={modalRef}
       disabled={isLoading}
       isOpen={registerModal.isOpen}
-      title="Register"
+      title={isEdit ? "Edit Profile" : "Register"}
       actionLabel={actionLabel}
       secondaryAction={step !== STEPS.ACCOUNT ? onBack : undefined}
       secondaryActionLabel={step !== STEPS.ACCOUNT ? "Back" : undefined}
-      onClose={registerModal.onClose}
+      onClose={handleClose}
       onSubmit={handleSubmit(onSubmit)}
       body={bodyContent}
-      footer={footerContent}
+      footer={footerContent} // type-safe now
     />
   );
 }

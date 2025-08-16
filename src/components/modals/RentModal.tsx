@@ -1,12 +1,9 @@
+// components/modals/RentModal.tsx
 'use client';
 
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-import { 
-  FieldValues, 
-  SubmitHandler, 
-  useForm
-} from 'react-hook-form';
+import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState, useCallback, useEffect } from "react";
 
@@ -60,7 +57,7 @@ const RentModal = () => {
   const [step, setStep] = useState(STEPS.CATEGORY);
   const [services, setServices] = useState<Service[]>(listing?.services || initialServices);
   const [employees, setEmployees] = useState<string[]>(
-    listing?.employees.map(emp => emp.fullName) || initialEmployees
+    (listing?.employees || []).map((emp: any) => emp.fullName) || initialEmployees
   );
   const [storeHours, setStoreHours] = useState<StoreHourType[]>(listing?.storeHours || initialStoreHours);
 
@@ -69,9 +66,7 @@ const RentModal = () => {
     handleSubmit,
     setValue,
     watch,
-    formState: {
-      errors,
-    },
+    formState: { errors },
     reset,
   } = useForm<FieldValues>({
     defaultValues: {
@@ -82,14 +77,18 @@ const RentModal = () => {
       imageSrc: listing?.imageSrc || '',
       title: listing?.title || '',
       description: listing?.description || '',
-      phoneNumber: listing?.phoneNumber || '',
+      phoneNumber: (listing as any)?.phoneNumber || '',
       website: listing?.website || '',
       galleryImages: listing?.galleryImages || [],
     }
   });
 
+  // ensure step resets when opening
+  useEffect(() => {
+    if (rentModal.isOpen) setStep(STEPS.CATEGORY);
+  }, [rentModal.isOpen]);
+
   const handleClose = useCallback(() => {
-    // Reset form to initial values
     reset({
       category: '',
       location: null,
@@ -102,45 +101,42 @@ const RentModal = () => {
       website: '',
       galleryImages: [],
     });
-    
-    // Reset all state to initial values
     setStep(STEPS.CATEGORY);
     setServices(initialServices);
     setEmployees(initialEmployees);
     setStoreHours(initialStoreHours);
-
-    // Close the modal
     rentModal.onClose();
   }, [reset, rentModal]);
 
+  // Pre-fill when a listing is provided
   useEffect(() => {
-    if (listing) {
-      Object.entries(listing).forEach(([key, value]) => {
-        setValue(key, value);
-      });
-      setServices(listing.services);
-      setEmployees(listing.employees.map(emp => emp.fullName));
-      setStoreHours(listing.storeHours || []);
-    }
+    if (!listing) return;
+    setValue('category', listing.category || '');
+    setValue('location', listing.location || null);
+    setValue('address', listing.address || '');
+    setValue('zipCode', listing.zipCode || '');
+    setValue('imageSrc', listing.imageSrc || '');
+    setValue('title', listing.title || '');
+    setValue('description', listing.description || '');
+    setValue('phoneNumber', (listing as any).phoneNumber || '');
+    setValue('website', listing.website || '');
+    setValue('galleryImages', listing.galleryImages || []);
+
+    setServices(listing.services || initialServices);
+    setEmployees((listing.employees || []).map((emp: any) => emp.fullName));
+    setStoreHours(listing.storeHours || initialStoreHours);
   }, [listing, setValue]);
 
   const category = watch('category');
   const imageSrc = watch('imageSrc');
-  const location = watch('location');
   const address = watch('address');
   const zipCode = watch('zipCode');
 
   const setCustomValue = (id: string, value: any) => {
-    setValue(id, value, {
-      shouldDirty: true,
-      shouldTouch: true,
-      shouldValidate: true
-    })
-  }
+    setValue(id, value, { shouldDirty: true, shouldTouch: true, shouldValidate: true });
+  };
 
-  const onBack = () => {
-    setStep((value) => value - 1);
-  }
+  const onBack = () => setStep((value) => value - 1);
 
   const onNext = () => {
     if (step === STEPS.CATEGORY && !category) {
@@ -150,7 +146,7 @@ const RentModal = () => {
       return toast.error('Please fill in all location fields.');
     }
     setStep((value) => value + 1);
-  }
+  };
 
   const handleServicesChange = useCallback((newServices: Service[]) => {
     setServices(newServices);
@@ -196,33 +192,26 @@ const RentModal = () => {
       }
       
       router.refresh();
-      reset();
-      setStep(STEPS.CATEGORY);
-      rentModal.onClose();
-    } catch (error) {
+      handleClose();
+    } catch {
       toast.error('Something went wrong.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const modalWidthClasses = useMemo(() => {
-
-    return 'w-full md:w-4/6 lg:w-3/6 xl:w-2/5'
-  }, [step]);
+  const modalWidthClasses = useMemo(() => 'w-full md:w-4/6 lg:w-3/6 xl:w-2/5', [step]);
 
   const actionLabel = useMemo(() => {
     if (step === STEPS.EMPLOYEE) {
-      return isEditMode ? 'Update' : 'Create'
+      return isEditMode ? 'Update' : 'Create';
     }
-    return 'Next'
+    return 'Next';
   }, [step, isEditMode]);
 
   const secondaryActionLabel = useMemo(() => {
-    if (step === STEPS.CATEGORY) {
-      return undefined
-    }
-    return 'Back'
+    if (step === STEPS.CATEGORY) return undefined;
+    return 'Back';
   }, [step]);
 
   let bodyContent = (
@@ -231,39 +220,35 @@ const RentModal = () => {
         title={isEditMode ? "Edit your establishment" : "Define your establishment"}
         subtitle="Pick a category"
       />
-        <div className="grid grid-cols-4 gap-3">
-          {categories.slice(0, 4).map((item) => (
-            <CategoryInput
-              key={item.label}
-              onClick={(category) => setCustomValue('category', category)}
-              selected={category === item.label}
-              label={item.label}
-              color={item.color}
-            />
-          ))}
-        </div>
-        
-        <div className="grid grid-cols-4 gap-3">
-          {categories.slice(4).map((item) => (
-            <CategoryInput
-              key={item.label}
-              onClick={(category) => setCustomValue('category', category)}
-              selected={category === item.label}
-              label={item.label}
-              color={item.color}
-            />
-          ))}
-        </div>
+      <div className="grid grid-cols-4 gap-3">
+        {categories.slice(0, 4).map((item) => (
+          <CategoryInput
+            key={item.label}
+            onClick={(category) => setCustomValue('category', category)}
+            selected={category === item.label}
+            label={item.label}
+            color={item.color}
+          />
+        ))}
+      </div>
+      <div className="grid grid-cols-4 gap-3">
+        {categories.slice(4).map((item) => (
+          <CategoryInput
+            key={item.label}
+            onClick={(category) => setCustomValue('category', category)}
+            selected={category === item.label}
+            label={item.label}
+            color={item.color}
+          />
+        ))}
+      </div>
     </div>
   );
 
   if (step === STEPS.LOCATION) {
     bodyContent = (
       <div className="flex flex-col gap-8">
-        <Heading
-          title="Where is your place located?"
-          subtitle="Help guests find you!"
-        />
+        <Heading title="Where is your place located?" subtitle="Help guests find you!" />
         <ListLocationSelect
           id="location"
           onLocationSubmit={handleLocationSubmit}
@@ -277,16 +262,13 @@ const RentModal = () => {
   if (step === STEPS.INFO) {
     bodyContent = (
       <div className="flex flex-col gap-8">
-        <Heading
-          title="Share some basics about your place"
-          subtitle="What amenities do you have?"
-        />
+        <Heading title="Share some basics about your place" subtitle="What amenities do you have?" />
         <ServiceSelector 
           id="service-selector"
           onServicesChange={handleServicesChange} 
           existingServices={services}
         />
-        <div ></div>
+        <div />
       </div>
     );
   }
@@ -304,7 +286,6 @@ const RentModal = () => {
           onGalleryChange={(values) => setCustomValue('galleryImages', values)}
           value={imageSrc}
           galleryImages={watch('galleryImages') || []}
-          
         />
       </div>
     );
@@ -313,40 +294,11 @@ const RentModal = () => {
   if (step === STEPS.DESCRIPTION) {
     bodyContent = (
       <div className="flex flex-col gap-3">
-        <Heading
-          title="How would you describe your place?"
-          subtitle="Short and sweet works best!"
-        />
-        <Input
-          id="title"
-          label="Title"
-          disabled={isLoading}
-          register={register}
-          errors={errors}
-          required
-        />
-        <Input
-          id="description"
-          label="Description"
-          disabled={isLoading}
-          register={register}
-          errors={errors}
-          required
-        />
-        <Input
-          id="phone"
-          label="Phone Number"
-          disabled={isLoading}
-          register={register}
-          errors={errors}
-        />
-        <Input
-          id="website"
-          label="Website"
-          disabled={isLoading}
-          register={register}
-          errors={errors}
-        />
+        <Heading title="How would you describe your place?" subtitle="Short and sweet works best!" />
+        <Input id="title" label="Title" disabled={isLoading} register={register} errors={errors} required />
+        <Input id="description" label="Description" disabled={isLoading} register={register} errors={errors} required />
+        <Input id="phoneNumber" label="Phone Number" disabled={isLoading} register={register} errors={errors} />
+        <Input id="website" label="Website" disabled={isLoading} register={register} errors={errors} />
       </div>
     );
   }
@@ -354,49 +306,37 @@ const RentModal = () => {
   if (step === STEPS.HOURS) {
     bodyContent = (
       <div className="flex flex-col gap-8">
-        <Heading
-          title="Share your store hours"
-          subtitle="What hours each day is your store open?"
-        />
-        <StoreHours 
-          onChange={(hours) => setStoreHours(hours)}
-        />
+        <Heading title="Share your store hours" subtitle="What hours each day is your store open?" />
+        <StoreHours onChange={(hours) => setStoreHours(hours)} />
       </div>
     );
   }
 
   if (step === STEPS.EMPLOYEE) {
     bodyContent = (
-      <div  className="flex flex-col gap-8">
-        <Heading
-          title={isEditMode ? "Update your employees" : "Add your employees"}
-          subtitle="Let us know who is available for work!"
-        />
-        <EmployeeSelector 
-        
-          onEmployeesChange={handleEmployeesChange} 
-          existingEmployees={employees}
-        />
+      <div className="flex flex-col gap-8">
+        <Heading title={isEditMode ? "Update your employees" : "Add your employees"} subtitle="Let us know who is available for work!" />
+        <EmployeeSelector onEmployeesChange={handleEmployeesChange} existingEmployees={employees} />
       </div>
     );
   }
 
   return (
     <Modal
-    id="rent-modal"
-    modalContentId="modal-content-with-actions"
-    disabled={isLoading}
-    isOpen={rentModal.isOpen}
-    title={isEditMode ? "Edit your listing" : "Join the fun!"}
-    actionLabel={actionLabel}
-    actionId="submit-button"
-    onSubmit={handleSubmit(onSubmit)}
-    secondaryActionLabel={secondaryActionLabel}
-    secondaryAction={step === STEPS.CATEGORY ? undefined : onBack}
-    onClose={handleClose}  // Changed from rentModal.onClose to handleClose
-    body={bodyContent}
-    className={modalWidthClasses}
-  />
+      id="rent-modal"
+      modalContentId="modal-content-with-actions"
+      disabled={isLoading}
+      isOpen={rentModal.isOpen}
+      title={isEditMode ? "Edit your listing" : "Join the fun!"}
+      actionLabel={actionLabel}
+      actionId="submit-button"
+      onSubmit={handleSubmit(onSubmit)}
+      secondaryActionLabel={secondaryActionLabel}
+      secondaryAction={step === STEPS.CATEGORY ? undefined : onBack}
+      onClose={handleClose}
+      body={bodyContent}
+      className={modalWidthClasses}
+    />
   );
 }
 
