@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { SafeUser } from '@/app/types';
 import useShopModal from '@/app/hooks/useShopModal';
 import useProductModal from '@/app/hooks/useProductModal';
+import GlobalSearch from '../search/GlobalSearch';
 import { Grid, List, Search, Layers, Sparkles, TrendingUp } from 'lucide-react';
 
 interface ShopHeaderProps {
@@ -80,24 +81,10 @@ const ShopHeader: React.FC<ShopHeaderProps> = ({
       {/* Search and Controls Row */}
       <div className="flex mt-4 mb-8 gap-2">
         {/* Search Bar */}
-        <form className="relative flex-grow" onSubmit={handleSearchSubmit}>
-          <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-            <Search className="w-5 h-5 text-gray-400" />
-          </div>
-          <input 
-            type="text" 
-            placeholder="Search shops, products, categories..." 
-            className="w-full h-12 pl-12 pr-4 border text-sm border-gray-200 rounded-xl"
-            value={searchTerm}
-            onChange={handleSearchChange}
-          />
-          <button 
-            type="submit" 
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-          >
-            <span className="sr-only">Search</span>
-          </button>
-        </form>
+        <div className="relative flex-grow">
+          <GlobalSearch placeholder="Search posts, users, listings, shops, products…" />
+        </div>
+
 
         {/* View Mode Toggle */}
         <div className="bg-[#EBF4FE] rounded-xl flex items-center p-1 shadow-sm px-2">

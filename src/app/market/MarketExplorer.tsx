@@ -3,6 +3,7 @@ import { Search, Grid, List, Sparkles, TrendingUp, Layers } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { categories } from '@/components/Categories';
 import useRentModal from '@/app/hooks/useRentModal';
+import GlobalSearch from '@/components/search/GlobalSearch';
 import { ChevronRight, User, Calendar, Clock, ExternalLink, Heart, Share2, Star, ChevronDown, Scissors, Droplet, SprayCan, Waves, Palette, Flower, Dumbbell, SearchCheckIcon } from 'lucide-react';
 
 interface ViewState {
@@ -119,15 +120,9 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
       <div className="flex mt-4 mb-8 gap-2">
         {/* Search Bar */}
         <div className="relative flex-grow">
-          <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-            <Search className="w-5 h-5 text-gray-400" />
-          </div>
-          <input 
-            type="text" 
-            placeholder="Search services, locations, categories..." 
-            className="w-full h-12 pl-12 pr-4 border text-sm  border-gray-200 rounded-xl"
-          />
+          <GlobalSearch placeholder="Search posts, users, listings, shops, products…" />
         </div>
+
 
         {/* View Toggle */}
         <div className="bg-[#EBF4FE] rounded-xl flex items-center shadow-sm p-1 px-2">

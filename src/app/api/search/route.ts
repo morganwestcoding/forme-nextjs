@@ -4,7 +4,7 @@ import prisma from "@/app/libs/prismadb";
 
 type Result = {
   id: string;
-  type: "user" | "listing" | "post" | "shop" | "product";
+  type: "user" | "listing" | "post" | "shop" | "product" | "employee" | "service";
   title: string;          // main line
   subtitle?: string;      // secondary line
   image?: string | null;  // avatar/thumbnail if available
@@ -12,7 +12,7 @@ type Result = {
 };
 
 function hrefFor(r: Result): string {
-  // Adjust these routes to match your app
+  // Adjust these routes to match your app’s actual pages
   switch (r.type) {
     case "user":
       return `/users/${r.id}`;
@@ -24,6 +24,10 @@ function hrefFor(r: Result): string {
       return `/shops/${r.id}`;
     case "product":
       return `/products/${r.id}`;
+    case "employee":
+      return `/employees/${r.id}`;   // change if you nest employees by listing
+    case "service":
+      return `/services/${r.id}`;    // change if you nest services by listing
     default:
       return "/";
   }
@@ -37,15 +41,18 @@ export async function GET(req: Request) {
     return NextResponse.json({ results: [] });
   }
 
-  // Limits per section to keep response snappy
-  const LIMIT = 5;
+  const LIMIT = 5; // per-entity cap
 
   try {
-    // NOTE: Using simple contains filters for Mongo via Prisma.
-    // For very large datasets, consider adding MongoDB text indexes
-    // and using a custom aggregation route.
-
-    const [users, listings, posts, shops, products] = await Promise.all([
+    const [
+      users,
+      listings,
+      posts,
+      shops,
+      products,
+      employees,
+      services,
+    ] = await Promise.all([
       prisma.user.findMany({
         where: {
           OR: [
@@ -106,13 +113,49 @@ export async function GET(req: Request) {
           OR: [
             { name: { contains: q, mode: "insensitive" } },
             { description: { contains: q, mode: "insensitive" } },
-            // Mongo string[]: use "hasSome" to check tags overlap
+            // Simple tag match; for full-text use Atlas Search later
             { tags: { hasSome: [q] } },
           ],
         },
         select: { id: true, name: true, mainImage: true, price: true },
         take: LIMIT,
         orderBy: { createdAt: "desc" },
+      }),
+      prisma.employee.findMany({
+        where: {
+          OR: [
+            { fullName: { contains: q, mode: "insensitive" } },
+            { jobTitle: { contains: q, mode: "insensitive" } },
+          ],
+        },
+        select: {
+          id: true,
+          fullName: true,
+          jobTitle: true,
+          profileImage: true,
+          listingId: true,
+          listing: { select: { title: true } },
+        },
+        take: LIMIT,
+      }),
+      prisma.service.findMany({
+        where: {
+          OR: [
+            { serviceName: { contains: q, mode: "insensitive" } },
+            { category: { contains: q, mode: "insensitive" } },
+            // also allow matching the parent listing title
+            { listing: { is: { title: { contains: q, mode: "insensitive" } } } },
+          ],
+        },
+        select: {
+          id: true,
+          serviceName: true,
+          price: true,
+          category: true,
+          listingId: true,
+          listing: { select: { title: true, imageSrc: true, location: true } },
+        },
+        take: LIMIT,
       }),
     ]);
 
@@ -123,7 +166,7 @@ export async function GET(req: Request) {
         title: u.name || u.email || "User",
         subtitle: u.location || u.email || "",
         image: u.image || null,
-        href: "", // fill later
+        href: "",
       })),
       ...listings.map((l) => ({
         id: l.id,
@@ -155,6 +198,24 @@ export async function GET(req: Request) {
         title: p.name,
         subtitle: p.price != null ? `$${p.price.toFixed(2)}` : "",
         image: p.mainImage,
+        href: "",
+      })),
+      ...employees.map((e) => ({
+        id: e.id,
+        type: "employee" as const,
+        title: e.fullName,
+        subtitle: [e.jobTitle, e.listing?.title].filter(Boolean).join(" • "),
+        image: e.profileImage || null,
+        href: "",
+      })),
+      ...services.map((s) => ({
+        id: s.id,
+        type: "service" as const,
+        title: s.serviceName,
+        subtitle: [s.category, s.listing?.title, s.price != null ? `$${s.price}` : ""]
+          .filter(Boolean)
+          .join(" • "),
+        image: s.listing?.imageSrc || null,
         href: "",
       })),
     ].map((r) => ({ ...r, href: hrefFor(r) }));

@@ -5,7 +5,15 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 
-type ItemType = "user" | "listing" | "post" | "shop" | "product";
+type ItemType =
+  | "user"
+  | "listing"
+  | "post"
+  | "shop"
+  | "product"
+  | "employee"
+  | "service";
+
 type ResultItem = {
   id: string;
   type: ItemType;
@@ -21,13 +29,26 @@ const typeLabel: Record<ItemType, string> = {
   post: "Posts",
   shop: "Shops",
   product: "Products",
+  employee: "Employees",
+  service: "Services",
 };
 
 function groupByType(items: ResultItem[]) {
-  return items.reduce<Record<ItemType, ResultItem[]>>((acc, item) => {
-    (acc[item.type] ||= []).push(item);
-    return acc;
-  }, { user: [], listing: [], post: [], shop: [], product: [] });
+  return items.reduce<Record<ItemType, ResultItem[]>>(
+    (acc, item) => {
+      (acc[item.type] ||= []).push(item);
+      return acc;
+    },
+    {
+      user: [],
+      listing: [],
+      post: [],
+      shop: [],
+      product: [],
+      employee: [],
+      service: [],
+    }
+  );
 }
 
 // Debounce hook
@@ -46,7 +67,7 @@ interface GlobalSearchProps {
 }
 
 const GlobalSearch: React.FC<GlobalSearchProps> = ({
-  placeholder = "Search posts, users, listings, shops, products…",
+  placeholder = "Search posts, users, listings, shops, products, employees, services…",
   className,
 }) => {
   const router = useRouter();
@@ -81,7 +102,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
           setOpen(true);
           setActiveIdx(items.length ? 0 : -1);
         }
-      } catch (e) {
+      } catch {
         if (!ignore) {
           setResults([]);
           setOpen(true);
@@ -177,62 +198,68 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
           {/* Results grouped */}
           {!loading && flatItems.length > 0 && (
             <div className="py-2">
-              {(
-                Object.keys(grouped) as Array<keyof typeof grouped>
-              ).map((typeKey) => {
-                const section = grouped[typeKey] || [];
-                if (!section.length) return null;
-                return (
-                  <div key={typeKey}>
-                    <div className="px-4 pt-2 pb-1 text-[11px] uppercase tracking-wide text-gray-400">
-                      {typeLabel[typeKey as ItemType]}
-                    </div>
-                    <ul className="mb-1">
-                      {section.map((item) => {
-                        const idx = flatItems.findIndex((x) => x.id === item.id && x.type === item.type);
-                        const active = idx === activeIdx;
-                        return (
-                          <li
-                            key={`${item.type}-${item.id}`}
-                            data-idx={idx}
-                            className={`px-3 py-2 cursor-pointer flex items-center gap-3 ${
-                              active ? "bg-[#EBF4FE]" : "hover:bg-gray-50"
-                            }`}
-                            onMouseEnter={() => setActiveIdx(idx)}
-                            onClick={() => onSelect(item)}
-                          >
-                            {/* Thumbnail */}
-                            <div className="w-8 h-8 rounded-md bg-gray-100 overflow-hidden shrink-0">
-                              {item.image ? (
-                                // eslint-disable-next-line @next/next/no-img-element
-                                <img
-                                  src={item.image}
-                                  alt=""
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center text-[10px] text-gray-400">
-                                  {typeKey}
+              {(Object.keys(grouped) as Array<keyof typeof grouped>).map(
+                (typeKey) => {
+                  const section = grouped[typeKey] || [];
+                  if (!section.length) return null;
+                  return (
+                    <div key={typeKey}>
+                      <div className="px-4 pt-2 pb-1 text-[11px] uppercase tracking-wide text-gray-400">
+                        {typeLabel[typeKey as ItemType]}
+                      </div>
+                      <ul className="mb-1">
+                        {section.map((item) => {
+                          const idx = flatItems.findIndex(
+                            (x) => x.id === item.id && x.type === item.type
+                          );
+                          const active = idx === activeIdx;
+                          return (
+                            <li
+                              key={`${item.type}-${item.id}`}
+                              data-idx={idx}
+                              className={`px-3 py-2 cursor-pointer flex items-center gap-3 ${
+                                active ? "bg-[#EBF4FE]" : "hover:bg-gray-50"
+                              }`}
+                              onMouseEnter={() => setActiveIdx(idx)}
+                              onClick={() => onSelect(item)}
+                            >
+                              {/* Thumbnail */}
+                              <div className="w-8 h-8 rounded-md bg-gray-100 overflow-hidden shrink-0">
+                                {item.image ? (
+                                  // eslint-disable-next-line @next/next/no-img-element
+                                  <img
+                                    src={item.image}
+                                    alt=""
+                                    className="w-full h-full object-cover"
+                                  />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center text-[10px] text-gray-400">
+                                    {typeKey}
+                                  </div>
+                                )}
+                              </div>
+                              {/* Text */}
+                              <div className="min-w-0">
+                                <div className="text-sm text-gray-900 truncate">
+                                  {item.title}
                                 </div>
-                              )}
-                            </div>
-                            {/* Text */}
-                            <div className="min-w-0">
-                              <div className="text-sm text-gray-900 truncate">{item.title}</div>
-                              {!!item.subtitle && (
-                                <div className="text-xs text-gray-500 truncate">{item.subtitle}</div>
-                              )}
-                            </div>
-                            <div className="ml-auto text-[10px] uppercase tracking-wide text-gray-400">
-                              {typeKey}
-                            </div>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
-                );
-              })}
+                                {!!item.subtitle && (
+                                  <div className="text-xs text-gray-500 truncate">
+                                    {item.subtitle}
+                                  </div>
+                                )}
+                              </div>
+                              <div className="ml-auto text-[10px] uppercase tracking-wide text-gray-400">
+                                {typeKey}
+                              </div>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
+                  );
+                }
+              )}
             </div>
           )}
         </div>

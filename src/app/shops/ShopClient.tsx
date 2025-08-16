@@ -1,3 +1,4 @@
+// components/shop/ShopClient.tsx
 'use client';
 
 import { useState } from 'react';
@@ -8,6 +9,7 @@ import ProductCard from '@/components/shop/ProductCard';
 import ShopHeader from '@/components/shop/ShopHeader';
 import Container from '@/components/Container';
 import useShopModal from '@/app/hooks/useShopModal';
+import EmptyState from '@/components/EmptyState';
 
 interface ShopClientProps {
   initialShops: SafeShop[];
@@ -77,18 +79,10 @@ const ShopClient: React.FC<ShopClientProps> = ({
               ))}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center py-24 text-center border border-dashed border-gray-200 rounded-2xl bg-white">
-              <h3 className="text-xl font-semibold text-gray-900">No shops found</h3>
-              <p className="mt-1 text-gray-500">Be the first one to create a shop!</p>
-              {currentUser && (
-                <button
-                  onClick={() => shopModal.onOpen()}
-                  className="mt-4 inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#60A5FA] to-[#1f82fa] text-white font-semibold hover:opacity-95"
-                >
-                  Create Shop
-                </button>
-              )}
-            </div>
+            <EmptyState 
+              title="No shops found"
+              subtitle="Be the first one to create a shop!"
+            />
           )}
         </section>
         
@@ -108,8 +102,11 @@ const ShopClient: React.FC<ShopClientProps> = ({
                 />
               ))
             ) : (
-              <div className="col-span-full py-16 text-center text-gray-500">
-                No products found matching your criteria
+              <div className="col-span-full">
+                <EmptyState 
+                  title="No products found"
+                  subtitle="Try adjusting your filters or search"
+                />
               </div>
             )}
           </div>
