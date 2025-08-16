@@ -4,23 +4,24 @@ import React, {
   useCallback,
   useEffect,
   useImperativeHandle,
+  useRef,
   useState,
   forwardRef,
 } from "react";
 import { X } from "lucide-react";
 import ModalButton from "./ModalButton";
-import ModalBackdrop from './ModalBackdrop';
+import ModalBackdrop from "./ModalBackdrop";
 
 export interface ModalHandle {
   close: () => void; // expose animated close
 }
 
 interface ModalProps {
-  backdropVideo?: string; 
-  id?: string;  
-  modalContentId?: string;  
-  isOpen?: boolean;
-  onClose: () => void;
+  backdropVideo?: string;
+  id?: string;
+  modalContentId?: string;
+  isOpen?: boolean;                 // controlled by store
+  onClose: () => void;              // should flip store.isOpen -> false
   onSubmit: () => void;
   title?: string;
   body?: React.ReactElement;
@@ -29,50 +30,55 @@ interface ModalProps {
   disabled?: boolean;
   secondaryAction?: () => void;
   secondaryActionLabel?: string;
-  className?: string;  
+  className?: string;
   actionId?: string;
 }
 
-const Modal = forwardRef<ModalHandle, ModalProps>(({ 
+const ANIM_MS = 300;
+
+const Modal = forwardRef<ModalHandle, ModalProps>(({
   id,
   modalContentId,
-  isOpen, 
-  onClose, 
-  onSubmit, 
-  title, 
-  body, 
+  isOpen = false,
+  onClose,
+  onSubmit,
+  title,
+  body,
   actionLabel,
-  footer, 
+  footer,
   disabled,
   secondaryAction,
   secondaryActionLabel,
-  className, 
+  className,
   actionId,
-  backdropVideo
+  backdropVideo,
 }, ref) => {
-  const [showModal, setShowModal] = useState(isOpen);
+  const [showModal, setShowModal] = useState<boolean>(isOpen);
+  const containerRef = useRef<HTMLDivElement>(null);
 
+  // Sync internal animation state with external isOpen
   useEffect(() => {
     setShowModal(isOpen);
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     }
     return () => {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     };
   }, [isOpen]);
 
+  // Close with animation, then flip the store after 300ms
   const handleClose = useCallback(() => {
     if (disabled) return;
     setShowModal(false);
-    setTimeout(() => {
-      onClose(); // this flips your zustand store
-    }, 300);
+    const t = setTimeout(() => {
+      onClose();
+    }, ANIM_MS);
+    return () => clearTimeout(t);
   }, [onClose, disabled]);
 
-  // expose handleClose to parents
   useImperativeHandle(ref, () => ({ close: handleClose }), [handleClose]);
 
   const handleSubmit = useCallback(() => {
@@ -85,62 +91,57 @@ const Modal = forwardRef<ModalHandle, ModalProps>(({
     secondaryAction();
   }, [secondaryAction, disabled]);
 
+  // Backdrop click
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (disabled) return;
+    // Only close if click was on the backdrop, not on content
+    if (e.target === e.currentTarget) {
+      handleClose();
+    }
+  };
+
+  // Escape to close
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") handleClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [isOpen, handleClose]);
+
   if (!isOpen) return null;
 
   return (
-    <div 
-      className="
-        fixed 
-        inset-0 
-        z-50
-        bg-neutral-800/90
-      "
-      style={{
-        position: 'fixed',
-        top: 0,
-        right: 0,
-        bottom: 0,
-        left: 0,
-        zIndex: 9999,
-      }}
+    <div
+      ref={containerRef}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={title ? `${id || "modal"}-title` : undefined}
+      className="fixed inset-0 z-[9999] bg-neutral-900/70"
+      onMouseDown={handleBackdropClick}
     >
       {backdropVideo && <ModalBackdrop videoSrc={backdropVideo} />}
-      <div 
-        className="
-          justify-center 
-          items-center 
-          flex 
-          overflow-x-hidden 
-          overflow-y-auto 
-          fixed 
-          inset-0
-          outline-none 
-          focus:outline-none 
-        "
-      >
-        <div className={`relative ${className || 'w-full md:w-4/6 lg:w-3/6 xl:w-2/5'} my-2 mx-auto h-full lg:h-auto md:h-auto`}>
-          <div className={`translate duration-300 h-full ${showModal ? 'translate-y-0' : 'translate-y-full'} ${showModal ? 'opacity-100' : 'opacity-0'}`}>
-            <div 
-              id={id} 
-              className="
-                translate 
-                h-full 
-                lg:h-auto 
-                md:h-auto 
-                border-0 
-                rounded-3xl 
-                relative 
-                flex 
-                flex-col 
-                w-full 
-                bg-white
-                backdrop-blur-md 
-                outline-none 
-                focus:outline-none
-              "
+
+      <div className="fixed inset-0 flex items-center justify-center overflow-y-auto">
+        <div
+          className={`relative ${className || "w-full md:w-4/6 lg:w-3/6 xl:w-2/5"} my-2 mx-auto h-full lg:h-auto md:h-auto`}
+          // stop backdrop handler when clicking inside content
+          onMouseDown={(e) => e.stopPropagation()}
+        >
+          {/* Slide + fade */}
+          <div
+            className={`duration-300 h-full transform transition-all
+              ${showModal ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"}`}
+          >
+            <div
+              id={id}
+              className="h-full lg:h-auto md:h-auto border-0 rounded-3xl relative flex flex-col w-full bg-white/95 backdrop-blur-md outline-none"
             >
+              {/* Close (X) */}
               <div className="relative w-full">
-                <button 
+                <button
+                  aria-label="Close"
                   onClick={(e) => { e.stopPropagation(); handleClose(); }}
                   className="absolute right-4 top-4 p-1 hover:opacity-70 transition z-10"
                 >
@@ -148,13 +149,20 @@ const Modal = forwardRef<ModalHandle, ModalProps>(({
                 </button>
               </div>
 
-              <div id={`${modalContentId}-wrapper`} className="flex flex-col flex-1">
-                <div id={modalContentId} className="flex flex-col flex-1">
+              {/* Content */}
+              <div id={`${modalContentId || "modal-content"}-wrapper`} className="flex flex-col flex-1">
+                {title && (
+                  <h2 id={`${id || "modal"}-title`} className="sr-only">
+                    {title}
+                  </h2>
+                )}
+                <div id={modalContentId || "modal-content"} className="flex flex-col flex-1">
                   <div className="relative p-6 text-black flex-auto">
                     {body}
                   </div>
                 </div>
-                {(actionLabel || secondaryActionLabel) && (
+
+                {(actionLabel || secondaryActionLabel || footer) && (
                   <div className="flex flex-col gap-2 p-6">
                     <div className="flex flex-row items-center gap-4 w-full">
                       {secondaryAction && secondaryActionLabel && (
@@ -162,15 +170,15 @@ const Modal = forwardRef<ModalHandle, ModalProps>(({
                           id="secondary-action-button"
                           outline
                           label={secondaryActionLabel}
-                          disabled={disabled} 
+                          disabled={disabled}
                           onClick={handleSecondaryAction}
-                        />  
+                        />
                       )}
                       {actionLabel && (
                         <ModalButton
                           id={actionId || "primary-action-button"}
                           label={actionLabel}
-                          disabled={disabled} 
+                          disabled={disabled}
                           onClick={handleSubmit}
                         />
                       )}
@@ -179,7 +187,6 @@ const Modal = forwardRef<ModalHandle, ModalProps>(({
                   </div>
                 )}
               </div>
-
             </div>
           </div>
         </div>
@@ -188,5 +195,5 @@ const Modal = forwardRef<ModalHandle, ModalProps>(({
   );
 });
 
-Modal.displayName = 'Modal';
+Modal.displayName = "Modal";
 export default Modal;
