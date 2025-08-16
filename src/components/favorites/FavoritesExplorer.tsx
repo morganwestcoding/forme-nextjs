@@ -1,8 +1,10 @@
+// components/favorites/FavoritesExplorer.tsx
 'use client';
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, Grid, List as ListIcon } from 'lucide-react';
+import { Search, Grid, List as ListIcon, Building2 } from 'lucide-react';
+import { IoStorefrontOutline } from 'react-icons/io5';
 import GlobalSearch from '../search/GlobalSearch';
 
 type FavoriteTab = 'Reels' | 'Stores' | 'Market' | 'Shops' | 'Vendors';
@@ -22,7 +24,7 @@ const FavoritesExplorer: React.FC<FavoritesExplorerProps> = ({
   viewState,
   setViewState,
   activeTab,
-  setActiveTab
+  setActiveTab,
 }) => {
   const router = useRouter();
   const [query, setQuery] = useState('');
@@ -31,14 +33,117 @@ const FavoritesExplorer: React.FC<FavoritesExplorerProps> = ({
     setViewState((prev) => ({ ...prev, mode }));
   };
 
-  // Tabs you want to show — keep aligned with the page's tabs
-  const tabs: FavoriteTab[] = ['Reels', 'Market', 'Vendors']; // add 'Stores', 'Shops' if needed
+  const activeColor = '#60A5FA';
+
+  const tabs: { key: FavoriteTab; label: FavoriteTab; Icon: JSX.Element }[] = [
+    {
+      key: 'Reels',
+      label: 'Reels',
+      Icon: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="22"
+          height="22"
+          color="currentColor"
+          fill="none"
+          viewBox="0 0 24 24"
+          className="flex-shrink-0"
+        >
+          <path
+            d="M18.974 15.022c.006-.029.047-.029.052 0 .304 1.486 1.466 2.648 2.953 2.952.028.006.028.047 0 .052-1.487.304-2.649 1.466-2.953 2.953-.005.028-.046.028-.052 0-.304-1.487-1.466-2.649-2.953-2.953-.029-.005-.029-.046 0-.052 1.487-.304 2.649-1.466 2.953-2.952Z"
+            stroke="currentColor"
+            strokeWidth="1.5"
+          />
+          <path
+            d="M14.647 12.673c.741-.52 1.112-.78 1.26-1.158.123-.314.123-.718 0-1.032-.148-.378-.519-.638-1.26-1.158-.52-.364-1.058-.725-1.53-1.011a40 40 0 0 0-1.324-.738c-.788-.415-1.182-.622-1.563-.57-.316.043-.647.245-.842.513-.235.322-.264.787-.323 1.715C9.027 9.846 9 10.466 9 11c0 .534.027 1.155.066 1.765.058.928.088 1.393.323 1.716.195.267.526.468.842.511.381.052.775-.156 1.563-.57.446-.235.91-.49 1.383-.728.472-.286 1.01-.647 1.53-1.021Z"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+          />
+          <path
+            d="M21.872 14.836C22 13.923 22 12.728 22 11c0-2.8 0-4.2-.545-5.27A4.5 4.5 0 0 0 19.27 3.545C18.2 3 16.8 3 14 3h-4c-2.8 0-4.2 0-5.27.545A4.5 4.5 0 0 0 2.545 5.73C2 6.8 2 8.2 2 11c0 2.8 0 4.2.545 5.27a4.5 4.5 0 0 0 2.185 2.185C5.8 19 7.2 19 10 19h3.426"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      ),
+    },
+    {
+      key: 'Market',
+      label: 'Market',
+      Icon: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          color="currentColor"
+          fill="none"
+          className="flex-shrink-0"
+        >
+          <path
+            d="M3.00003 10.9871V15.4925C3.00003 18.3243 3.00003 19.7403 3.87871 20.62C4.75739 21.4998 6.1716 21.4998 9.00003 21.4998H15C17.8284 21.4998 19.2426 21.4998 20.1213 20.62C21 19.7403 21 18.3243 21 15.4925V10.9871"
+            stroke="currentColor"
+            strokeWidth="1.5"
+          />
+          <path
+            d="M15 16.9768C14.3159 17.584 13.2268 17.9768 12 17.9768C10.7732 17.9768 9.68412 17.584 9.00003 16.9768"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+          />
+          <path
+            d="M17.7957 2.50294L6.14986 2.53202C4.41169 2.44248 3.96603 3.78259 3.96603 4.43768C3.96603 5.02359 3.89058 5.87774 2.82527 7.4831C1.75996 9.08846 1.84001 9.56536 2.44074 10.6767C2.93931 11.5991 4.20744 11.9594 4.86865 12.02C6.96886 12.0678 7.99068 10.2517 7.99068 8.97523C9.03254 12.1825 11.9956 12.1825 13.3158 11.8157C14.6386 11.4483 15.7717 10.1331 16.0391 8.97523C16.195 10.4142 16.6682 11.2538 18.0663 11.8308C19.5145 12.4284 20.7599 11.515 21.3848 10.9294C22.0097 10.3439 22.4107 9.04401 21.2968 7.6153C20.5286 6.63001 20.2084 5.7018 20.1033 4.73977C20.0423 4.18234 19.9888 3.58336 19.5972 3.20219C19.0248 2.64515 18.2036 2.47613 17.7957 2.50294Z"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      ),
+    },
+
+    {
+      key: 'Vendors',
+      label: 'Vendors',
+      Icon: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          color="currentColor"
+          fill="none"
+          className="flex-shrink-0"
+        >
+          <path
+            d="M2.5 7.5V13.5C2.5 17.2712 2.5 19.1569 3.67157 20.3284C4.84315 21.5 6.72876 21.5 10.5 21.5H13.5C17.2712 21.5 19.1569 21.5 20.3284 20.3284C21.5 19.1569 21.5 17.2712 21.5 13.5V7.5"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M3.86909 5.31461L2.5 7.5H21.5L20.2478 5.41303C19.3941 3.99021 18.9673 3.2788 18.2795 2.8894C17.5918 2.5 16.7621 2.5 15.1029 2.5H8.95371C7.32998 2.5 6.51812 2.5 5.84013 2.8753C5.16215 3.2506 4.73113 3.93861 3.86909 5.31461Z"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path d="M12 7.5V2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M10 10.5H14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      ),
+    },
+  ];
 
   return (
-    // Sticky header keeps the explorer visible even with empty states or long lists
-    <div className="sticky top-0 z-30 bg-white/85 backdrop-blur supports-[backdrop-filter]:bg-white/70 border-b border-gray-100">
+    // Sticky with NO white background
+    <div className="sticky top-0 z-30 bg-transparent">
       {/* Search + controls */}
-      <div className="flex mt-4 mb-4 gap-2 px-1">
+      <div className="flex mt-4 mb-8 gap-2">
         <div className="relative flex-grow">
           <GlobalSearch placeholder="Search posts, users, listings, shops, products…" />
         </div>
@@ -83,13 +188,11 @@ const FavoritesExplorer: React.FC<FavoritesExplorerProps> = ({
         </button>
       </div>
 
-      {/* Centered Tabs */}
+      {/* Tabs */}
       <div className="flex border-b border-gray-200 mb-2 relative justify-center">
         <div className="flex gap-8">
-          {tabs.map((key) => {
+          {tabs.map(({ key, label, Icon }) => {
             const isActive = activeTab === key;
-            const activeColor = '#60A5FA';
-
             return (
               <button
                 key={key}
@@ -104,7 +207,8 @@ const FavoritesExplorer: React.FC<FavoritesExplorerProps> = ({
                 style={{ color: isActive ? activeColor : undefined }}
                 aria-pressed={isActive}
               >
-                <span>{key}</span>
+                {Icon}
+                <span>{label}</span>
                 <span
                   aria-hidden
                   className="pointer-events-none absolute inset-x-0 bottom-0 h-0.5 rounded-full"
