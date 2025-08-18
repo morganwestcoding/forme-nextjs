@@ -423,8 +423,6 @@ const RentModal = () => {
         <Heading title="How would you describe your place?" subtitle="Short and sweet works best!" />
         <Input id="title" label="Title" disabled={isLoading} register={register} errors={errors} required />
         <Input id="description" label="Description" disabled={isLoading} register={register} errors={errors} required />
-        <Input id="phoneNumber" label="Phone Number" disabled={isLoading} register={register} errors={errors} />
-        <Input id="website" label="Website" disabled={isLoading} register={register} errors={errors} />
       </div>
     );
   }

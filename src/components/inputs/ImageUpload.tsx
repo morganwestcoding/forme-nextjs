@@ -52,7 +52,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
               relative
               cursor-pointer
               hover:bg-neutral-200
-             bg-neutral-100
+             bg-slate-100
               shadow-md
               p-6
               rounded-lg

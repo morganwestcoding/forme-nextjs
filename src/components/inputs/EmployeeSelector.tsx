@@ -8,34 +8,23 @@ type EmployeeSelectorProps = {
   id?: string;
 };
 
-const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({ 
-  onEmployeesChange, 
+const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
+  onEmployeesChange,
   existingEmployees,
-  id 
+  id,
 }) => {
-  const [employees, setEmployees] = useState<string[]>(existingEmployees);
-  const [focusedInputs, setFocusedInputs] = useState<boolean[]>(existingEmployees.map(() => false));
+  const [employees, setEmployees] = useState<string[]>(existingEmployees ?? []);
 
   useEffect(() => {
     onEmployeesChange(employees);
   }, [employees, onEmployeesChange]);
 
   const handleInputChange = (index: number, value: string) => {
-    const updatedEmployees = [...employees];
-    updatedEmployees[index] = value;
-    setEmployees(updatedEmployees);
-  };
-
-  const handleFocus = (index: number) => {
-    const newFocusedInputs = [...focusedInputs];
-    newFocusedInputs[index] = true;
-    setFocusedInputs(newFocusedInputs);
-  };
-
-  const handleBlur = (index: number) => {
-    const newFocusedInputs = [...focusedInputs];
-    newFocusedInputs[index] = false;
-    setFocusedInputs(newFocusedInputs);
+    setEmployees((prev) => {
+      const next = [...prev];
+      next[index] = value;
+      return next;
+    });
   };
 
   return (
@@ -48,39 +37,41 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
               id={`employee-input-${index}`}
               value={employee}
               onChange={(e) => handleInputChange(index, e.target.value)}
-              onFocus={() => handleFocus(index)}
-              onBlur={() => handleBlur(index)}
-              className="
+              placeholder=" "  // important for floating label (same as your Input)
+              className={`
                 peer
-                w-full 
-                p-3 
-                pt-3.5
-                font-light 
-                bg-slate-50 
-                border-neutral-500
+                w-full
+                p-3
+                pt-6
+                bg-neutral-50
+                border-neutral-300
                 border
-                rounded-md
+                rounded-lg
                 outline-none
                 transition
+                text-black
                 disabled:opacity-70
                 disabled:cursor-not-allowed
-                text-black
-                h-[60px]
-              "
-              placeholder=" "
+                pl-4 pr-4
+                focus:border-black
+              `}
             />
-            <label 
+            <label
               htmlFor={`employee-input-${index}`}
               className={`
-                absolute 
+                absolute
                 text-sm
-                duration-150 
-                transform 
-                top-5 
+                duration-150
+                transform
+                -translate-y-3
+                top-5
                 left-4
-                origin-[0] 
+                origin-[0]
                 text-neutral-500
-                ${employee || focusedInputs[index] ? 'scale-100 -translate-y-3' : 'translate-y-0'}
+                peer-placeholder-shown:scale-100
+                peer-placeholder-shown:translate-y-0
+                peer-focus:scale-75
+                peer-focus:-translate-y-4
               `}
             >
               Employee Name

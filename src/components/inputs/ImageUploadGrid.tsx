@@ -72,16 +72,16 @@ const ImageUploadGrid: React.FC<ImageUploadGridProps> = ({
                  cursor-pointer
                  hover:opacity-70
                  transition
-                 border-dashed 
-                 border
-                 border-neutral-500
+          hover:bg-neutral-200
+               bg-slate-100
                  flex
+                 shadow-md
                  flex-col
                  justify-center
                  items-center
                  gap-2
                  text-white
-                 rounded-lg
+                 rounded-xl
                "
              >
                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" color="#71717A" fill="none">
@@ -127,9 +127,9 @@ const ImageUploadGrid: React.FC<ImageUploadGridProps> = ({
                    cursor-pointer
                    hover:opacity-70
                    transition
-                   border-dashed 
-                   border
-                   border-neutral-500
+  bg-slate-100
+                   shadow-md
+                   hover:bg-neutral-200
                    flex
                    flex-col
                    justify-center
