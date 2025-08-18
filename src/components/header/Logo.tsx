@@ -15,13 +15,15 @@ const Logo = ({ variant = 'horizontal' }: LogoProps) => {
     <div className="mt-2 mb-6">
     <Link href="/" prefetch={false} className='overflow-hidden'>
       {variant === 'horizontal' ? (
+        <div className="-mb-6 bg-blue-50 mt-6 border-[#60A5FA] border shadow rounded-xl px-6 py-3.5">
         <Image
           alt="ForMe Logo"
-          className=" -mb-4 mt-6" 
-          height={30}
-          width={130}
-          src="/logos/forme-long.png"
+           
+          height={15}
+          width={120}
+          src="/logos/forme-long-blue.png"
         />
+        </div>
       ) : (
         <Image
           alt="ForMe Logo"

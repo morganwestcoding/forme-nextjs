@@ -133,7 +133,7 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
                 title="Total Listings"
                 value={overview.totalListings}
                 icon={Calendar}
-                color="#60A5FA"
+                color="0A5FA"
               />
               <StatCard
                 title="Total Reservations"
