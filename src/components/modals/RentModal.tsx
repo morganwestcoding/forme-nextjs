@@ -55,6 +55,10 @@ const RentModal = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState(STEPS.CATEGORY);
+
+  // For remounting child inputs with internal state (selects, etc.)
+  const [resetKey, setResetKey] = useState(0);
+
   const [services, setServices] = useState<Service[]>(listing?.services || initialServices);
   const [employees, setEmployees] = useState<string[]>(
     (listing?.employees || []).map((emp: any) => emp.fullName) || initialEmployees
@@ -83,12 +87,58 @@ const RentModal = () => {
     }
   });
 
-  // ensure step resets when opening
+  // Reset step each time modal opens (and blank everything when creating)
   useEffect(() => {
-    if (rentModal.isOpen) setStep(STEPS.CATEGORY);
-  }, [rentModal.isOpen]);
+    if (!rentModal.isOpen) return;
+    setStep(STEPS.CATEGORY);
+
+    if (!isEditMode) {
+      reset({
+        category: '',
+        location: null,
+        address: '',
+        zipCode: '',
+        imageSrc: '',
+        title: '',
+        description: '',
+        phoneNumber: '',
+        website: '',
+        galleryImages: [],
+      });
+      setServices(initialServices);
+      setEmployees(initialEmployees);
+      setStoreHours(initialStoreHours);
+      setResetKey((k) => k + 1); // remount children (AddressAutocomplete, selects, etc.)
+    }
+  }, [rentModal.isOpen, isEditMode, reset]);
+
+  // ---- helpers to clear per-step data
+  const clearLocation = () => {
+    setValue('location', null, { shouldDirty: true, shouldValidate: true, shouldTouch: true });
+    setValue('address', '',   { shouldDirty: true, shouldValidate: true, shouldTouch: true });
+    setValue('zipCode', '',   { shouldDirty: true, shouldValidate: true, shouldTouch: true });
+    setResetKey((k) => k + 1); // remount selects/autocomplete so UI really blanks
+  };
+
+  const clearInfo = () => setServices(initialServices);
+
+  const clearImages = () => {
+    setValue('imageSrc', '', { shouldDirty: true, shouldValidate: true, shouldTouch: true });
+    setValue('galleryImages', [], { shouldDirty: true, shouldValidate: true, shouldTouch: true });
+  };
+
+  const clearDescription = () => {
+    setValue('title', '',        { shouldDirty: true, shouldValidate: true, shouldTouch: true });
+    setValue('description', '',  { shouldDirty: true, shouldValidate: true, shouldTouch: true });
+    setValue('phoneNumber', '',  { shouldDirty: true, shouldValidate: true, shouldTouch: true });
+    setValue('website', '',      { shouldDirty: true, shouldValidate: true, shouldTouch: true });
+  };
+
+  const clearHours = () => setStoreHours(initialStoreHours);
+  const clearEmployees = () => setEmployees(initialEmployees);
 
   const handleClose = useCallback(() => {
+    // full reset
     reset({
       category: '',
       location: null,
@@ -101,31 +151,34 @@ const RentModal = () => {
       website: '',
       galleryImages: [],
     });
-    setStep(STEPS.CATEGORY);
     setServices(initialServices);
     setEmployees(initialEmployees);
     setStoreHours(initialStoreHours);
+    setStep(STEPS.CATEGORY);
+    setResetKey((k) => k + 1); // remount children w/ internal state
     rentModal.onClose();
   }, [reset, rentModal]);
 
-  // Pre-fill when a listing is provided
+  // Pre-fill when editing
   useEffect(() => {
     if (!listing) return;
-    setValue('category', listing.category || '');
-    setValue('location', listing.location || null);
-    setValue('address', listing.address || '');
-    setValue('zipCode', listing.zipCode || '');
-    setValue('imageSrc', listing.imageSrc || '');
-    setValue('title', listing.title || '');
-    setValue('description', listing.description || '');
-    setValue('phoneNumber', (listing as any).phoneNumber || '');
-    setValue('website', listing.website || '');
-    setValue('galleryImages', listing.galleryImages || []);
-
+    reset({
+      category: listing.category || '',
+      location: listing.location || null,
+      address: listing.address || '',
+      zipCode: listing.zipCode || '',
+      imageSrc: listing.imageSrc || '',
+      title: listing.title || '',
+      description: listing.description || '',
+      phoneNumber: (listing as any).phoneNumber || '',
+      website: listing.website || '',
+      galleryImages: listing.galleryImages || [],
+    });
     setServices(listing.services || initialServices);
     setEmployees((listing.employees || []).map((emp: any) => emp.fullName));
     setStoreHours(listing.storeHours || initialStoreHours);
-  }, [listing, setValue]);
+    setResetKey((k) => k + 1);
+  }, [listing, reset]);
 
   const category = watch('category');
   const imageSrc = watch('imageSrc');
@@ -136,7 +189,39 @@ const RentModal = () => {
     setValue(id, value, { shouldDirty: true, shouldTouch: true, shouldValidate: true });
   };
 
-  const onBack = () => setStep((value) => value - 1);
+  /**
+   * FIXED BACK LOGIC:
+   * Clear the step you're RETURNING TO (step - 1), not the step you're leaving.
+   * So when you go from INFO → Back → LOCATION, we clear LOCATION (ZIP becomes blank).
+   */
+  const onBack = () => {
+    if (step === STEPS.CATEGORY) return;
+
+    const goingTo = (step - 1) as STEPS;
+
+    switch (goingTo) {
+      case STEPS.LOCATION:
+        clearLocation();
+        break;
+      case STEPS.INFO:
+        clearInfo();
+        break;
+      case STEPS.IMAGES:
+        clearImages();
+        break;
+      case STEPS.DESCRIPTION:
+        clearDescription();
+        break;
+      case STEPS.HOURS:
+        clearHours();
+        break;
+      case STEPS.EMPLOYEE:
+        clearEmployees();
+        break;
+    }
+
+    setStep(goingTo);
+  };
 
   const onNext = () => {
     if (step === STEPS.CATEGORY && !category) {
@@ -146,27 +231,6 @@ const RentModal = () => {
       return toast.error('Please fill in all location fields.');
     }
     setStep((value) => value + 1);
-  };
-
-  const handleServicesChange = useCallback((newServices: Service[]) => {
-    setServices(newServices);
-  }, []);
-
-  const handleEmployeesChange = useCallback((newEmployees: string[]) => {
-    setEmployees(newEmployees);
-  }, []);
-
-  const handleLocationSubmit = (locationData: {
-    state: string;
-    city: string;
-    address: string;
-    zipCode: string;
-  } | null) => {
-    if (locationData) {
-      setValue('location', `${locationData.city}, ${locationData.state}`, { shouldValidate: true });
-      setValue('address', locationData.address, { shouldValidate: true });
-      setValue('zipCode', locationData.zipCode, { shouldValidate: true });
-    }
   };
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
@@ -214,6 +278,7 @@ const RentModal = () => {
     return 'Back';
   }, [step]);
 
+  // ----- BODY
   let bodyContent = (
     <div className="flex flex-col gap-3">
       <Heading
@@ -227,7 +292,6 @@ const RentModal = () => {
             onClick={(category) => setCustomValue('category', category)}
             selected={category === item.label}
             label={item.label}
-       
           />
         ))}
       </div>
@@ -238,7 +302,6 @@ const RentModal = () => {
             onClick={(category) => setCustomValue('category', category)}
             selected={category === item.label}
             label={item.label}
-
           />
         ))}
       </div>
@@ -250,8 +313,15 @@ const RentModal = () => {
       <div className="flex flex-col gap-8">
         <Heading title="Where is your place located?" subtitle="Help guests find you!" />
         <ListLocationSelect
+          key={`loc-${resetKey}`}          // remount to clear selects/labels
           id="location"
-          onLocationSubmit={handleLocationSubmit}
+          onLocationSubmit={(locationData) => {
+            if (locationData) {
+              setValue('location', `${locationData.city}, ${locationData.state}`, { shouldValidate: true });
+              setValue('address', locationData.address, { shouldValidate: true });
+              setValue('zipCode', locationData.zipCode, { shouldValidate: true });
+            }
+          }}
           register={register}
           errors={errors}
         />   
@@ -264,8 +334,9 @@ const RentModal = () => {
       <div className="flex flex-col gap-8">
         <Heading title="Share some basics about your place" subtitle="What amenities do you have?" />
         <ServiceSelector 
+          key={`svc-${resetKey}`}          // remount if we cleared Info
           id="service-selector"
-          onServicesChange={handleServicesChange} 
+          onServicesChange={setServices} 
           existingServices={services}
         />
         <div />
@@ -281,6 +352,7 @@ const RentModal = () => {
           subtitle="Show guests what your place looks like!"
         />
         <ImageUploadGrid
+          key={`img-${resetKey}`}          // remount when images cleared
           id="image-upload"
           onChange={(value) => setCustomValue('imageSrc', value)}
           onGalleryChange={(values) => setCustomValue('galleryImages', values)}
@@ -307,7 +379,7 @@ const RentModal = () => {
     bodyContent = (
       <div className="flex flex-col gap-8">
         <Heading title="Share your store hours" subtitle="What hours each day is your store open?" />
-        <StoreHours onChange={(hours) => setStoreHours(hours)} />
+        <StoreHours key={`hrs-${resetKey}`} onChange={(hours) => setStoreHours(hours)} />
       </div>
     );
   }
@@ -316,7 +388,11 @@ const RentModal = () => {
     bodyContent = (
       <div className="flex flex-col gap-8">
         <Heading title={isEditMode ? "Update your employees" : "Add your employees"} subtitle="Let us know who is available for work!" />
-        <EmployeeSelector onEmployeesChange={handleEmployeesChange} existingEmployees={employees} />
+        <EmployeeSelector
+          key={`emp-${resetKey}`}          // remount when we clear employees
+          onEmployeesChange={setEmployees}
+          existingEmployees={employees}
+        />
       </div>
     );
   }

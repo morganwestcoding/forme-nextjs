@@ -57,7 +57,7 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({
   }) => {
     const stateOption = states.find(s => s.label === addressData.state);
     if (stateOption) {
-      setSelectedState(stateOption);
+      setSelectedState(stateOption as LocationSelection);
       const cityOption: LocationSelection = {
         label: addressData.city,
         value: addressData.city
@@ -66,12 +66,8 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({
     }
   
     setCoordinates(addressData.coordinates);
-  
-    const zipInput = document.getElementById('zipCode') as HTMLInputElement;
-    if (zipInput) {
-      zipInput.value = addressData.zipCode;
-    }
-  
+
+    // ✅ DO NOT write directly to the DOM here — let RHF own the value.
     onLocationSubmit({
       address: addressData.address,
       city: addressData.city,

@@ -83,7 +83,7 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setQuery(value);
-    rhfOnChange(e); // keep react-hook-form in sync
+    rhfOnChange(e); // keep RHF in sync
 
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
@@ -102,7 +102,6 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
   };
 
   const parseSuggestion = (s: Suggestion) => {
-    // Street address = first component
     const address = (s.place_name?.split(',')[0] || '').trim();
 
     let city = '', state = '', zipCode = '';
@@ -126,7 +125,6 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
 
   const applySuggestion = (s: Suggestion) => {
     const parsed = parseSuggestion(s);
-    // Put the full street line in the visible input
     setQuery(parsed.address);
     setShowSuggestions(false);
     setActiveIndex(-1);
@@ -152,7 +150,6 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
       e.preventDefault();
       setActiveIndex((i) => {
         const ni = Math.min(i + 1, suggestions.length - 1);
-        // Ensure into view
         listRef.current?.children[ni]?.scrollIntoView({ block: 'nearest' });
         return ni;
       });
@@ -231,7 +228,6 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
         {label}
       </label>
 
-      {/* Suggestions dropdown */}
       {showSuggestions && suggestions.length > 0 && (
         <div
           id={`${id}-listbox`}
@@ -258,7 +254,6 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
         </div>
       )}
 
-      {/* Inline error message (optional, matches your Input email error style) */}
       {errors[id] && (
         <span className="text-rose-500 text-xs mt-1 block">
           {typeof errors[id]?.message === 'string'
