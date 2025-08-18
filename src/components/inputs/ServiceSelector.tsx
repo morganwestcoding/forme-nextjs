@@ -30,12 +30,14 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
       : [{ serviceName: '', price: 0, category: '' }]
   );
 
+  // keep price as string for editing
   const [priceInputs, setPriceInputs] = useState<string[]>(
     (existingServices?.length ? existingServices : [{ price: 0 } as Service]).map((s) =>
       s.price && s.price !== 0 ? s.price.toFixed(2) : ''
     )
   );
 
+  // label size control (xs while focused)
   const [focusedName, setFocusedName] = useState<boolean[]>(
     (existingServices?.length ? existingServices : services).map(() => false)
   );
@@ -48,6 +50,7 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
     []
   );
 
+  // emit numeric values upward
   useEffect(() => {
     const next = services.map((svc, i) => ({
       ...svc,
@@ -65,7 +68,6 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
   };
 
   const handlePriceChange = (idx: number, raw: string) => {
-    // allow digits + dot; prevent other characters
     const normalized = raw.replace(/[^\d.]/g, '');
     setPriceInputs((prev) => {
       const copy = [...prev];
@@ -109,17 +111,17 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
 
         const hasCategory = !!svc.category;
 
-        const labelPosition = (focused: boolean, hasValue: boolean, left: string) =>
+        // match FloatingLabelSelect's float behavior
+        const labelPos = (focused: boolean, hasValue: boolean, left: string) =>
           focused || hasValue
             ? `top-6 -translate-y-4 ${left}`
             : `top-1/2 -translate-y-1/2 ${left}`;
-
         const labelSize = (focused: boolean) => (focused ? 'text-xs' : 'text-sm');
 
         return (
           <div key={`svc-row-${i}`} className="flex flex-row items-center mb-3 gap-3">
             <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-3">
-              {/* SERVICE NAME */}
+              {/* SERVICE NAME — NO fixed height; same paddings/typography as select */}
               <div className="relative">
                 <input
                   id={`serviceName-${i}`}
@@ -132,21 +134,28 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
                     const copy = [...focusedName]; copy[i] = false; setFocusedName(copy);
                   }}
                   placeholder=" "
-                  className="peer w-full p-3 pt-6 bg-neutral-50 border border-neutral-300 rounded-lg outline-none transition disabled:opacity-70 disabled:cursor-not-allowed h-16 pl-4 pr-4 focus:border-black"
+                  className={[
+                    'peer w-full rounded-lg outline-none transition border !h-auto', // kill any previous h-*
+                    'bg-[#fafafa] border-neutral-300 focus:border-black',
+                    'text-[14px] leading-[20px]',
+                    'pt-6 pb-3 pl-4 pr-10', // 24 / 12 / 16 / 40
+                    'disabled:opacity-70 disabled:cursor-not-allowed',
+                  ].join(' ')}
                 />
                 <label
                   htmlFor={`serviceName-${i}`}
                   className={[
-                    'absolute origin-[0] pointer-events-none transition-all duration-150 text-neutral-500',
+                    'absolute origin-[0] pointer-events-none transition-all duration-150',
+                    'text-neutral-500',
                     labelSize(nameFocused),
-                    labelPosition(nameFocused, nameHasValue, 'left-4'),
+                    labelPos(nameFocused, nameHasValue, 'left-4'),
                   ].join(' ')}
                 >
                   Service Name
                 </label>
               </div>
 
-              {/* PRICE — always normalized to decimal */}
+              {/* PRICE — same metrics; decimal on blur */}
               <div className="relative">
                 <input
                   id={`servicePrice-${i}`}
@@ -161,21 +170,28 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
                   }}
                   inputMode="decimal"
                   placeholder=" "
-                  className="peer w-full p-3 pt-6 bg-neutral-50 border border-neutral-300 rounded-lg outline-none transition disabled:opacity-70 disabled:cursor-not-allowed h-16 pl-4 pr-4 focus:border-black"
+                  className={[
+                    'peer w-full rounded-lg outline-none transition border !h-auto',
+                    'bg-[#fafafa] border-neutral-300 focus:border-black',
+                    'text-[14px] leading-[20px]',
+                    'pt-6 pb-3 pl-4 pr-10',
+                    'disabled:opacity-70 disabled:cursor-not-allowed',
+                  ].join(' ')}
                 />
                 <label
                   htmlFor={`servicePrice-${i}`}
                   className={[
-                    'absolute origin-[0] pointer-events-none transition-all duration-150 text-neutral-500',
+                    'absolute origin-[0] pointer-events-none transition-all duration-150',
+                    'text-neutral-500',
                     labelSize(priceFocused),
-                    labelPosition(priceFocused, priceHasValue, 'left-4'),
+                    labelPos(priceFocused, priceHasValue, 'left-4'),
                   ].join(' ')}
                 >
                   Price
                 </label>
               </div>
 
-              {/* CATEGORY */}
+              {/* CATEGORY — keep your FloatingLabelSelect untouched */}
               <div className="relative">
                 <FloatingLabelSelect
                   label="Category"

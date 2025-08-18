@@ -135,24 +135,42 @@ const FloatingLabelSelect: React.FC<FloatingLabelSelectProps> = ({
   const selectRef =
     useRef<SelectInstance<FLSelectOption, false, GroupBase<FLSelectOption>>>(null);
 
-  const float = focused || hasValue;
+  // Label rules: position floats when focused OR has value; size is xs ONLY while focused
+  const labelFloated = focused || hasValue;
+  const labelSize = focused ? 'text-xs' : 'text-sm';
+  const labelPos  = labelFloated
+    ? 'top-6 -translate-y-4'
+    : 'top-1/2 -translate-y-1/2';
+
+  // Open the menu when clicking/tapping anywhere on the control
+  const openMenu = () => {
+    // @ts-expect-error runtime method exists in react-select
+    selectRef.current?.openMenu?.();
+    selectRef.current?.focus();
+  };
 
   return (
     <div
-      className={`relative ${className || ''}`}
+      className={`relative cursor-pointer ${className || ''}`}
       tabIndex={-1}
-      onPointerDownCapture={() => {
-        selectRef.current?.focus();
-        if (!menuOpen) {
-          // @ts-expect-error runtime method exists
-          selectRef.current?.openMenu?.();
-        }
+      onPointerDownCapture={(e) => {
+        // Prevent double toggles; just ensure it opens
+        e.preventDefault();
+        openMenu();
+      }}
+      onMouseDownCapture={(e) => {
+        e.preventDefault();
+        openMenu();
+      }}
+      onTouchStartCapture={(e) => {
+        // mobile tap-to-open
+        e.preventDefault();
+        openMenu();
       }}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          // @ts-expect-error runtime method exists
-          selectRef.current?.openMenu?.();
+          openMenu();
         }
       }}
     >
@@ -185,7 +203,10 @@ const FloatingLabelSelect: React.FC<FloatingLabelSelectProps> = ({
         className={[
           'absolute left-4 origin-[0] pointer-events-none transition-all duration-150',
           error ? 'text-rose-500' : 'text-neutral-500',
-          float ? 'top-6 text-xs -translate-y-4' : 'top-1/2 text-sm -translate-y-1/2',
+          // size only while focused
+          labelSize,
+          // position floats when focused OR has value
+          labelPos,
         ].join(' ')}
       >
         {label}
