@@ -2,6 +2,7 @@
 import { create } from "zustand";
 
 type Prefill = {
+  id?: string;            // <<< add this
   name?: string;
   email?: string;
   location?: string;

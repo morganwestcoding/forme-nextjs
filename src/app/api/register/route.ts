@@ -27,7 +27,7 @@ export async function POST(request: Request) {
       email,
       password,
       location,
-      subscription, // string like "silver (pro tier 1)" etc., lowercased by UI
+      subscription, 
       bio,
       image,
       imageSrc,

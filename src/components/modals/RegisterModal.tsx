@@ -17,6 +17,23 @@ import ProfileLocationInput from "../inputs/ProfileLocationInput";
 import ImageUpload from "../inputs/ImageUpload";
 import Logo from "../header/Logo";
 
+/** ---------------------------------------------
+ * Utilities
+ * --------------------------------------------- */
+function safeToastError(err: any, fallback = "Something went wrong!") {
+  const data = err?.response?.data;
+  const msg =
+    (typeof data === "object" && (data?.error || data?.message)) ||
+    (typeof err?.message === "string" && err.message) ||
+    (typeof data === "string" && !/<[a-z][\s\S]*>/i.test(data) && data) ||
+    null;
+
+  const finalMsg =
+    typeof msg === "string" && msg.length < 240 ? msg : fallback;
+
+  toast.error(finalMsg);
+}
+
 enum STEPS {
   ACCOUNT = 0,
   LOCATION = 1,
@@ -44,6 +61,8 @@ const RegisterModal = () => {
     formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: {
+      // IMPORTANT: include userId for edit flow (prefill supplies it)
+      userId: '',
       name: '',
       email: '',
       password: '',
@@ -62,6 +81,7 @@ const RegisterModal = () => {
     if (registerModal.isOpen && registerModal.prefill) {
       const p = registerModal.prefill;
       reset({
+        userId: p.id ?? '',
         name: p.name ?? '',
         email: p.email ?? '',
         password: '', // never prefill
@@ -88,7 +108,7 @@ const RegisterModal = () => {
   }, [status, registerModal.isOpen, router, registerModal, isEdit]);
 
   const setCustomValue = (id: string, value: any) => {
-    setValue(id, value, {
+    setValue(id, value ?? '', {
       shouldDirty: true,
       shouldTouch: true,
       shouldValidate: true
@@ -114,12 +134,12 @@ const RegisterModal = () => {
   }, [registerModal]);
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-    // For steps before final, advance
+    // Stepper handling
     if (step !== STEPS.IMAGES) {
       if (!isEdit && step === STEPS.ACCOUNT) {
         const p = validatePassword(data.password || '');
         if (!Object.values(p).every(Boolean)) {
-          toast.error('Password does not meet requirements');
+          toast.error('Password must be 6–18 chars, include upper/lowercase, number & special char.');
           return;
         }
         try {
@@ -128,19 +148,26 @@ const RegisterModal = () => {
             toast.error('Email already exists');
             return;
           }
-        } catch {
-          toast.error('Error checking email');
+        } catch (e) {
+          safeToastError(e, "Could not validate email uniqueness.");
           return;
         }
       }
-      return onNext();
+      onNext();
+      return;
     }
 
     // Final step:
     setIsLoading(true);
     try {
       if (isEdit) {
-        // EDIT PROFILE
+        // EDIT PROFILE: use dedicated update endpoint
+        const userId = String(data.userId || '').trim();
+        if (!userId) {
+          toast.error("Missing user id for update.");
+          return;
+        }
+
         const payload = {
           name: data.name,
           location: data.location,
@@ -148,7 +175,9 @@ const RegisterModal = () => {
           image: data.image,
           imageSrc: data.imageSrc,
         };
-        await axios.put('/api/users/me', payload);
+
+        await axios.put(`/api/users/${userId}`, payload);
+
         toast.success('Profile updated!');
         if (modalRef.current?.close) modalRef.current.close();
         handleClose();
@@ -156,8 +185,17 @@ const RegisterModal = () => {
         return;
       }
 
-      // REGISTER FLOW
-      await axios.post('/api/register', data);
+      // REGISTER FLOW (create)
+      await axios.post('/api/register', {
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        location: data.location,
+        bio: data.bio,
+        image: data.image,
+        imageSrc: data.imageSrc,
+        // If you pass subscription elsewhere, keep as-is; omitted here for clarity
+      });
       toast.success('Registered! Logging you in…');
 
       const signInRes = await signIn('credentials', {
@@ -183,10 +221,7 @@ const RegisterModal = () => {
       }, 320);
 
     } catch (error: any) {
-      let errorMessage = 'Something went wrong!';
-      if (error?.response?.data) errorMessage = error.response.data;
-      else if (error?.message) errorMessage = error.message;
-      toast.error(errorMessage);
+      safeToastError(error);
     } finally {
       setIsLoading(false);
     }
@@ -200,7 +235,7 @@ const RegisterModal = () => {
     }, 400);
   }, [loginModal, isEdit]);
 
-  // ---------- BODY ----------
+  /** ---------- BODY ---------- */
   let bodyContent = (
     <div className="flex flex-col gap-4">
       {!isEdit && (
@@ -249,7 +284,7 @@ const RegisterModal = () => {
           subtitle={isEdit ? "Keep this current so people can find you." : "This helps us show you the best experiences near you."}
         />
         <ProfileLocationInput
-          onLocationSubmit={(value) => setValue('location', value)}
+          onLocationSubmit={(value) => setCustomValue('location', value)}
         />  
       </div>
     );
@@ -313,10 +348,11 @@ const RegisterModal = () => {
     );
   }
 
-  // ---------- FOOTER ----------
-  // IMPORTANT: Modal.footer expects ReactElement | undefined (NOT null)
+  /** ---------- FOOTER ---------- 
+   * IMPORTANT: Modal.footer expects ReactElement | undefined (NOT null)
+   */
   const footerContent = useMemo<React.ReactElement | undefined>(() => {
-    if (isEdit) return undefined; // <-- fix: return undefined instead of null
+    if (isEdit) return undefined; // return undefined in edit mode
     return (
       <div className="flex flex-col gap-4 mt-3">
         <hr />
@@ -335,7 +371,8 @@ const RegisterModal = () => {
     );
   }, [isEdit, onToggle]);
 
-  const actionLabel = step === STEPS.IMAGES ? (isEdit ? "Save" : "Create") : "Continue";
+  const actionLabel =
+    step === STEPS.IMAGES ? (isEdit ? "Save" : "Create") : "Continue";
 
   return (
     <Modal
@@ -349,9 +386,9 @@ const RegisterModal = () => {
       onClose={handleClose}
       onSubmit={handleSubmit(onSubmit)}
       body={bodyContent}
-      footer={footerContent} // type-safe now
+      footer={footerContent}
     />
   );
-}
+};
 
 export default RegisterModal;
