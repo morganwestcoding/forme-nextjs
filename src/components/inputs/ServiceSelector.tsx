@@ -1,289 +1,238 @@
+// components/inputs/ServiceSelector.tsx
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { categories } from '../Categories';
-import Select, { StylesConfig, SingleValue } from 'react-select';
+import FloatingLabelSelect, { FLSelectOption } from './FloatingLabelSelect';
 
 export type Service = {
- serviceName: string;
- price: number;
- category: string;
+  serviceName: string;
+  price: number;
+  category: string;
 };
 
 type ServiceSelectorProps = {
- onServicesChange: (services: Service[]) => void;
- existingServices: Service[];
- id?: string;
+  onServicesChange: (services: Service[]) => void;
+  existingServices: Service[];
+  id?: string;
 };
 
-interface CategoryOption {
- label: string;
- value: string;
-}
+const MAX_ROWS = 6;
 
-const ServiceSelector: React.FC<ServiceSelectorProps> = ({ 
- onServicesChange, 
- existingServices,
- id 
+const ServiceSelector: React.FC<ServiceSelectorProps> = ({
+  onServicesChange,
+  existingServices,
+  id,
 }) => {
- const [services, setServices] = useState<Service[]>(existingServices);
- const [inputValues, setInputValues] = useState<string[]>(existingServices.map(service => service.price.toFixed(2)));
- const [focusedInputs, setFocusedInputs] = useState<boolean[]>(existingServices.map(() => false));
+  const [services, setServices] = useState<Service[]>(
+    existingServices?.length
+      ? existingServices
+      : [{ serviceName: '', price: 0, category: '' }]
+  );
 
- useEffect(() => {
-   onServicesChange(services.map((service, index) => ({
-     ...service,
-     price: parseFloat(inputValues[index]) || 0
-   })));
- }, [services, inputValues, onServicesChange]);
+  const [priceInputs, setPriceInputs] = useState<string[]>(
+    (existingServices?.length ? existingServices : [{ price: 0 } as Service]).map((s) =>
+      s.price && s.price !== 0 ? s.price.toFixed(2) : ''
+    )
+  );
 
- const handleInputChange = (index: number, field: keyof Service, value: string) => {
-   const updatedServices = [...services];
-   const updatedInputValues = [...inputValues];
+  const [focusedName, setFocusedName] = useState<boolean[]>(
+    (existingServices?.length ? existingServices : services).map(() => false)
+  );
+  const [focusedPrice, setFocusedPrice] = useState<boolean[]>(
+    (existingServices?.length ? existingServices : services).map(() => false)
+  );
 
-   if (field === 'price') {
-     updatedInputValues[index] = value;
-     setInputValues(updatedInputValues);
-     updatedServices[index] = {
-        ...updatedServices[index],
-        [field]: parseFloat(value) || 0,
-     };
-   } else {
-     updatedServices[index] = { ...updatedServices[index], [field]: value };
-   }
-   setServices(updatedServices);
- };
+  const categoryOptions: FLSelectOption[] = useMemo(
+    () => categories.map((c) => ({ label: c.label, value: c.label })),
+    []
+  );
 
- const handleFocus = (index: number) => {
-   const newFocusedInputs = [...focusedInputs];
-   newFocusedInputs[index] = true;
-   setFocusedInputs(newFocusedInputs);
- };
+  useEffect(() => {
+    const next = services.map((svc, i) => ({
+      ...svc,
+      price: parseFloat(priceInputs[i]) || 0,
+    }));
+    onServicesChange(next);
+  }, [services, priceInputs, onServicesChange]);
 
- const handleBlur = (index: number) => {
-   const updatedInputValues = [...inputValues];
-   updatedInputValues[index] = parseFloat(inputValues[index]).toFixed(2);
-   setInputValues(updatedInputValues);
+  const setRow = (idx: number, patch: Partial<Service>) => {
+    setServices((prev) => {
+      const copy = [...prev];
+      copy[idx] = { ...copy[idx], ...patch };
+      return copy;
+    });
+  };
 
-   const newFocusedInputs = [...focusedInputs];
-   newFocusedInputs[index] = false;
-   setFocusedInputs(newFocusedInputs);
- };
+  const handlePriceChange = (idx: number, raw: string) => {
+    // allow digits + dot; prevent other characters
+    const normalized = raw.replace(/[^\d.]/g, '');
+    setPriceInputs((prev) => {
+      const copy = [...prev];
+      copy[idx] = normalized;
+      return copy;
+    });
+  };
 
- const handleCategoryChange = (index: number, selectedOption: SingleValue<CategoryOption>) => {
-   handleInputChange(index, 'category', selectedOption?.value || '');
- };
+  const handlePriceBlur = (idx: number) => {
+    setPriceInputs((prev) => {
+      const copy = [...prev];
+      const num = parseFloat(copy[idx]);
+      copy[idx] = isNaN(num) ? '' : num.toFixed(2);
+      return copy;
+    });
+  };
 
- const addService = () => {
-   if (services.length < 6) {
-     setServices([...services, { serviceName: '', price: 0, category: '' }]);
-     setInputValues([...inputValues, '0.00']);
-     setFocusedInputs([...focusedInputs, false]);
-   }
- };
+  const addService = () => {
+    if (services.length >= MAX_ROWS) return;
+    setServices((prev) => [...prev, { serviceName: '', price: 0, category: '' }]);
+    setPriceInputs((prev) => [...prev, '']);
+    setFocusedName((prev) => [...prev, false]);
+    setFocusedPrice((prev) => [...prev, false]);
+  };
 
- const removeService = (indexToRemove: number) => {
-   const updatedServices = services.filter((_, index) => index !== indexToRemove);
-   const updatedInputValues = inputValues.filter((_, index) => index !== indexToRemove);
-   const updatedFocusedInputs = focusedInputs.filter((_, index) => index !== indexToRemove);
-   
-   setServices(updatedServices);
-   setInputValues(updatedInputValues);
-   setFocusedInputs(updatedFocusedInputs);
- };
+  const removeService = (indexToRemove: number) => {
+    setServices((prev) => prev.filter((_, i) => i !== indexToRemove));
+    setPriceInputs((prev) => prev.filter((_, i) => i !== indexToRemove));
+    setFocusedName((prev) => prev.filter((_, i) => i !== indexToRemove));
+    setFocusedPrice((prev) => prev.filter((_, i) => i !== indexToRemove));
+  };
 
- const selectClasses = {
-   control: (state: any) => `
-     !w-full 
-     !p-3 
-     !pt-3.5
-     !bg-slate-50 
-     !border 
-     !border-neutral-500
-     !rounded-sm
-     !outline-none 
-     !transition
-     !h-[60px]
-     ${state.isFocused ? '!border-black' : '!border-neutral-500'}
-   `,
-   option: (state: any) => `
-     !py-4 !px-4 !cursor-pointer
-     ${state.isFocused ? '!bg-neutral-100' : '!bg-white'}
-     ${state.isSelected ? '!bg-neutral-200 !text-black' : ''}
-     !text-black hover:!text-neutral-500
-     !font-normal
-   `,
-   singleValue: () => '!text-black pt-3.5',
-  dropdownIndicator: (state: any) => `
-  !px-2  // Padding around the chevron
-`,
-indicatorSeparator: () => `!hidden`,
+  return (
+    <div id={id} className="w-full -mt-4">
+      {services.map((svc, i) => {
+        const nameFocused = focusedName[i];
+        const nameHasValue = !!svc.serviceName;
 
-   input: () => '!text-neutral-500 !font-normal',
-   placeholder: () => '!text-neutral-500 !text-sm !font-normal', 
-   menu: () => '!bg-white !rounded-sm !border !border-neutral-200 !shadow-md !mt-1',
-   menuList: () => '!p-0',
-   valueContainer: () => '!p-0',
-   container: (state: any) => `
-     !relative !w-full
-     ${state.isFocused ? 'peer-focus:border-black' : ''}
+        const priceFocused = focusedPrice[i];
+        const priceHasValue = !!priceInputs[i];
 
-   `
- };
+        const hasCategory = !!svc.category;
 
- return (
-   <div id={id} className="max-w-2xl -mt-4 -mb-8">
-     {services.map((service, index) => (
-       <div 
-         key={index} 
-         id={`service-row-${index}`}
-         className="flex flex-row items-center mb-3 gap-3"
-       >
-         <div className="flex-1 flex gap-3">
-           <div className="relative w-1/3">
-             <input
-               type="text"
-               id={`serviceName-${index}`}
-               value={service.serviceName}
-               onChange={(e) => handleInputChange(index, 'serviceName', e.target.value)}
-               onFocus={() => handleFocus(index)}
-               onBlur={() => handleBlur(index)}
-               className="
-                 peer
-                 w-full 
-                 p-3 
-                 pt-3.5
-                 font-light 
-                 bg-slate-50 
-                 border-neutral-500
-                 border
-                 rounded-sm
-                 outline-none
-                 transition
-                 disabled:opacity-70
-                 disabled:cursor-not-allowed
-                 text-black
-                 h-[60px]
-               "
-               placeholder=" "
-             />
-             <label 
-               htmlFor={`serviceName-${index}`}
-               className={`
-                 absolute 
-                 text-sm
-                 duration-150 
-                 transform 
-                 top-5 
-                 left-4
-                 origin-[0] 
-                 text-neutral-500
-                 ${service.serviceName || focusedInputs[index] ? 'scale-100 -translate-y-3' : 'translate-y-0'}
-               `}
-             >
-               Service Name
-             </label>
-           </div>
-           
-           <div className="relative w-1/3">
-             <input
-               type="text"
-               id={`service-price-${index}`}
-               value={inputValues[index]}
-               onChange={(e) => handleInputChange(index, 'price', e.target.value)}
-               onFocus={() => handleFocus(index)}
-               onBlur={() => handleBlur(index)}
-               className="
-                 peer
-                 w-full 
-                 p-3 
-                 pt-3.5
-                 pl-8
-                 font-light 
-                 bg-slate-50 
-                 border-neutral-500
-                 border
-                 rounded-sm
-                 outline-none
-                 transition
-                 disabled:opacity-70
-                 disabled:cursor-not-allowed
-                 text-black
-                 h-[60px]
-               "
-               placeholder=" "
-             />
-             <span className="absolute left-4 top-[52%] transform -translate-y-1/2 text-neutral-500">$</span>
-           </div>
-           
-           <div className="relative w-1/3">
-             <Select<CategoryOption>
-               id={`service-category-${index}`}
-               value={service.category ? { label: service.category, value: service.category } : null}
-               onChange={(selectedOption) => handleCategoryChange(index, selectedOption)}
-               options={categories.map(category => ({ label: category.label, value: category.label }))}
-               classNames={selectClasses}
-               placeholder=" "
-             />
-             <label 
-               className={`
-                 absolute 
-                 text-sm
-                 duration-150 
-                 transform 
-                 top-5 
-                 left-4
-                 origin-[0] 
-                 text-neutral-500
-                 ${service.category ? 'scale-100 -translate-y-3' : 'translate-y-0'}
-               `}
-             >
-               Category
-             </label>
-           </div>
-         </div>
-         
-         {services.length > 1 && (
-           <button
-             onClick={() => removeService(index)}
-             className="ml-2 p-2 hover:bg-slate-100 rounded-full transition"
-             aria-label="Remove service"
-           >
-             <svg 
-               xmlns="http://www.w3.org/2000/svg" 
-               fill="none" 
-               viewBox="0 0 24 24" 
-               strokeWidth={1.5} 
-               stroke="currentColor" 
-               className="w-5 h-5 text-neutral-500 hover:text-neutral-800"
-             >
-               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-             </svg>
-           </button>
-         )}
-       </div>
-     ))}
-     
-     {services.length < 6 && (
-       <button
-         onClick={addService}
-         className="mt-2 flex items-center gap-2 text-sm font-medium text-neutral-600 hover:text-neutral-800 rounded-md p-2 hover:bg-slate-100 transition"
-       >
-         <svg 
-           xmlns="http://www.w3.org/2000/svg" 
-           fill="none" 
-           viewBox="0 0 24 24" 
-           strokeWidth={1.5} 
-           stroke="currentColor" 
-           className="w-5 h-5"
-         >
-           <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-         </svg>
-         Add Service
-       </button>
-     )}
-   </div>
- );
+        const labelPosition = (focused: boolean, hasValue: boolean, left: string) =>
+          focused || hasValue
+            ? `top-6 -translate-y-4 ${left}`
+            : `top-1/2 -translate-y-1/2 ${left}`;
+
+        const labelSize = (focused: boolean) => (focused ? 'text-xs' : 'text-sm');
+
+        return (
+          <div key={`svc-row-${i}`} className="flex flex-row items-center mb-3 gap-3">
+            <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-3">
+              {/* SERVICE NAME */}
+              <div className="relative">
+                <input
+                  id={`serviceName-${i}`}
+                  value={svc.serviceName}
+                  onChange={(e) => setRow(i, { serviceName: e.target.value })}
+                  onFocus={() => {
+                    const copy = [...focusedName]; copy[i] = true; setFocusedName(copy);
+                  }}
+                  onBlur={() => {
+                    const copy = [...focusedName]; copy[i] = false; setFocusedName(copy);
+                  }}
+                  placeholder=" "
+                  className="peer w-full p-3 pt-6 bg-neutral-50 border border-neutral-300 rounded-lg outline-none transition disabled:opacity-70 disabled:cursor-not-allowed h-16 pl-4 pr-4 focus:border-black"
+                />
+                <label
+                  htmlFor={`serviceName-${i}`}
+                  className={[
+                    'absolute origin-[0] pointer-events-none transition-all duration-150 text-neutral-500',
+                    labelSize(nameFocused),
+                    labelPosition(nameFocused, nameHasValue, 'left-4'),
+                  ].join(' ')}
+                >
+                  Service Name
+                </label>
+              </div>
+
+              {/* PRICE — always normalized to decimal */}
+              <div className="relative">
+                <input
+                  id={`servicePrice-${i}`}
+                  value={priceInputs[i]}
+                  onChange={(e) => handlePriceChange(i, e.target.value)}
+                  onFocus={() => {
+                    const copy = [...focusedPrice]; copy[i] = true; setFocusedPrice(copy);
+                  }}
+                  onBlur={() => {
+                    const copy = [...focusedPrice]; copy[i] = false; setFocusedPrice(copy);
+                    handlePriceBlur(i);
+                  }}
+                  inputMode="decimal"
+                  placeholder=" "
+                  className="peer w-full p-3 pt-6 bg-neutral-50 border border-neutral-300 rounded-lg outline-none transition disabled:opacity-70 disabled:cursor-not-allowed h-16 pl-4 pr-4 focus:border-black"
+                />
+                <label
+                  htmlFor={`servicePrice-${i}`}
+                  className={[
+                    'absolute origin-[0] pointer-events-none transition-all duration-150 text-neutral-500',
+                    labelSize(priceFocused),
+                    labelPosition(priceFocused, priceHasValue, 'left-4'),
+                  ].join(' ')}
+                >
+                  Price
+                </label>
+              </div>
+
+              {/* CATEGORY */}
+              <div className="relative">
+                <FloatingLabelSelect
+                  label="Category"
+                  options={categoryOptions}
+                  value={hasCategory ? { label: svc.category, value: svc.category } : null}
+                  onChange={(opt) => setRow(i, { category: opt ? opt.label : '' })}
+                  isLoading={false}
+                  isDisabled={false}
+                />
+              </div>
+            </div>
+
+            {services.length > 1 && (
+              <button
+                type="button"
+                onClick={() => removeService(i)}
+                className="ml-1 p-2 hover:bg-neutral-100 rounded-full transition"
+                aria-label="Remove service"
+                title="Remove service"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-5 h-5 text-neutral-500 hover:text-neutral-800"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+          </div>
+        );
+      })}
+
+      {services.length < MAX_ROWS && (
+        <button
+          type="button"
+          onClick={addService}
+          className="mt-2 flex items-center gap-2 text-sm font-medium text-neutral-600 hover:text-neutral-800 rounded-md p-2 hover:bg-neutral-100 transition"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="w-5 h-5"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+          Add Service
+        </button>
+      )}
+    </div>
+  );
 };
 
 export default ServiceSelector;

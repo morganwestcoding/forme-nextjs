@@ -36,11 +36,11 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({
   errors,
   id
 }) => {
-  const [selectedCountry] = useState<string>('6252001');
+  const [selectedCountry] = useState<string>('6252001'); // USA geonameid
   const [selectedState, setSelectedState] = useState<LocationSelection | null>(null);
   const [selectedCity, setSelectedCity] = useState<LocationSelection | null>(null);
   const [coordinates, setCoordinates] = useState<{lat: number; lng: number} | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading] = useState(false);
 
   const { states } = useStates(selectedCountry);
   const { cities } = useCities(selectedState?.value ?? '');
@@ -67,7 +67,7 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({
   
     setCoordinates(addressData.coordinates);
 
-    // ✅ DO NOT write directly to the DOM here — let RHF own the value.
+    // Let parent (RHF owner) receive the values
     onLocationSubmit({
       address: addressData.address,
       city: addressData.city,
@@ -79,6 +79,20 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({
 
   return (
     <div id={id} className="flex flex-col gap-3 text-sm -mt-4">
+      {/* Hidden RHF fields so state/city participate in validation & errors */}
+      <input
+        type="hidden"
+        {...register('state', { required: true })}
+        value={selectedState?.label ?? ''}
+        readOnly
+      />
+      <input
+        type="hidden"
+        {...register('city', { required: true })}
+        value={selectedCity?.label ?? ''}
+        readOnly
+      />
+
       <AddressAutocomplete
         id="address"
         label="Street Address"
@@ -128,7 +142,12 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({
 
       <div className="mt-4">
         <MapComponent 
-          coordinates={coordinates || { lat: 34.0522, lng: -118.2437 }}
+          coordinates={coordinates}
+          location={
+            !coordinates && selectedCity && selectedState
+              ? `${selectedCity.label}, ${selectedState.label}`
+              : null
+          }
           zoom={coordinates ? 15 : 10}
         />
       </div>

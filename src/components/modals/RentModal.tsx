@@ -1,4 +1,3 @@
-// components/modals/RentModal.tsx
 'use client';
 
 import axios from 'axios';
@@ -72,6 +71,8 @@ const RentModal = () => {
     watch,
     formState: { errors },
     reset,
+    setError,
+    clearErrors,
   } = useForm<FieldValues>({
     defaultValues: {
       category: listing?.category || '',
@@ -84,6 +85,9 @@ const RentModal = () => {
       phoneNumber: (listing as any)?.phoneNumber || '',
       website: listing?.website || '',
       galleryImages: listing?.galleryImages || [],
+      // Hidden fields we validate through ListLocationSelect
+      state: '',
+      city: '',
     }
   });
 
@@ -104,6 +108,8 @@ const RentModal = () => {
         phoneNumber: '',
         website: '',
         galleryImages: [],
+        state: '',
+        city: '',
       });
       setServices(initialServices);
       setEmployees(initialEmployees);
@@ -117,6 +123,8 @@ const RentModal = () => {
     setValue('location', null, { shouldDirty: true, shouldValidate: true, shouldTouch: true });
     setValue('address', '',   { shouldDirty: true, shouldValidate: true, shouldTouch: true });
     setValue('zipCode', '',   { shouldDirty: true, shouldValidate: true, shouldTouch: true });
+    setValue('state',  '',    { shouldDirty: true, shouldValidate: true, shouldTouch: true });
+    setValue('city',   '',    { shouldDirty: true, shouldValidate: true, shouldTouch: true });
     setResetKey((k) => k + 1); // remount selects/autocomplete so UI really blanks
   };
 
@@ -150,6 +158,8 @@ const RentModal = () => {
       phoneNumber: '',
       website: '',
       galleryImages: [],
+      state: '',
+      city: '',
     });
     setServices(initialServices);
     setEmployees(initialEmployees);
@@ -173,6 +183,8 @@ const RentModal = () => {
       phoneNumber: (listing as any).phoneNumber || '',
       website: listing.website || '',
       galleryImages: listing.galleryImages || [],
+      state: listing.state || '',
+      city: listing.city || '',
     });
     setServices(listing.services || initialServices);
     setEmployees((listing.employees || []).map((emp: any) => emp.fullName));
@@ -185,14 +197,16 @@ const RentModal = () => {
   const address = watch('address');
   const zipCode = watch('zipCode');
 
+  // watch hidden fields (from ListLocationSelect hidden inputs)
+  const stateVal = watch('state');
+  const cityVal  = watch('city');
+
   const setCustomValue = (id: string, value: any) => {
     setValue(id, value, { shouldDirty: true, shouldTouch: true, shouldValidate: true });
   };
 
   /**
-   * FIXED BACK LOGIC:
-   * Clear the step you're RETURNING TO (step - 1), not the step you're leaving.
-   * So when you go from INFO → Back → LOCATION, we clear LOCATION (ZIP becomes blank).
+   * onBack: clear the step you're returning to
    */
   const onBack = () => {
     if (step === STEPS.CATEGORY) return;
@@ -223,13 +237,51 @@ const RentModal = () => {
     setStep(goingTo);
   };
 
+  /**
+   * onNext: validate LOCATION fully (state, city, address, zip)
+   * and set RHF errors so selects/inputs turn red.
+   */
   const onNext = () => {
     if (step === STEPS.CATEGORY && !category) {
       return toast.error('Please select a category.');
     }
-    if (step === STEPS.LOCATION && (!address || !zipCode)) {
-      return toast.error('Please fill in all location fields.');
+
+    if (step === STEPS.LOCATION) {
+      let invalid = false;
+
+      if (!stateVal) {
+        setError('state', { type: 'required', message: 'State is required' });
+        invalid = true;
+      } else {
+        clearErrors('state');
+      }
+
+      if (!cityVal) {
+        setError('city', { type: 'required', message: 'City is required' });
+        invalid = true;
+      } else {
+        clearErrors('city');
+      }
+
+      if (!address) {
+        setError('address', { type: 'required', message: 'Address is required' });
+        invalid = true;
+      } else {
+        clearErrors('address');
+      }
+
+      if (!zipCode) {
+        setError('zipCode', { type: 'required', message: 'ZIP is required' });
+        invalid = true;
+      } else {
+        clearErrors('zipCode');
+      }
+
+      if (invalid) {
+        return toast.error('Please fill in all location fields.');
+      }
     }
+
     setStep((value) => value + 1);
   };
 
@@ -320,6 +372,8 @@ const RentModal = () => {
               setValue('location', `${locationData.city}, ${locationData.state}`, { shouldValidate: true });
               setValue('address', locationData.address, { shouldValidate: true });
               setValue('zipCode', locationData.zipCode, { shouldValidate: true });
+              setValue('state', locationData.state, { shouldValidate: true });
+              setValue('city', locationData.city, { shouldValidate: true });
             }
           }}
           register={register}

@@ -23,25 +23,29 @@ interface FloatingLabelSelectProps {
   isSearchable?: boolean;
 }
 
-const CONTROL_HEIGHT = 58; // your updated height
+const CONTROL_HEIGHT = 58;
 const BORDER_RADIUS  = 8;
 const PADDING_LEFT   = 16;
-const PADDING_RIGHT  = 40; // chevron space
-const PADDING_TOP    = 24; // room when label is floated
+const PADDING_RIGHT  = 40;
+const PADDING_TOP    = 24;
 const PADDING_BOTTOM = 12;
-const FONT_SIZE_PX   = 14; // small selected text
+const FONT_SIZE_PX   = 14;
 const LINE_HEIGHT_PX = 20;
 
-const makeStyles = (error?: boolean): StylesConfig<FLSelectOption, false, GroupBase<FLSelectOption>> => ({
+const makeStyles = (
+  error?: boolean
+): StylesConfig<FLSelectOption, false, GroupBase<FLSelectOption>> => ({
   control: (base, state) => ({
     ...base,
     minHeight: CONTROL_HEIGHT,
     height: CONTROL_HEIGHT,
     borderRadius: BORDER_RADIUS,
-    backgroundColor: '#fafafa', // neutral-50
+    backgroundColor: '#fafafa',
     borderColor: error ? '#f43f5e' : state.isFocused ? '#000000' : '#d4d4d4',
     boxShadow: 'none',
-    ':hover': { borderColor: error ? '#f43f5e' : state.isFocused ? '#000000' : '#d4d4d4' },
+    ':hover': {
+      borderColor: error ? '#f43f5e' : state.isFocused ? '#000000' : '#d4d4d4',
+    },
     padding: 0,
     cursor: 'pointer',
   }),
@@ -54,7 +58,7 @@ const makeStyles = (error?: boolean): StylesConfig<FLSelectOption, false, GroupB
   }),
   placeholder: (base) => ({
     ...base,
-    opacity: 0, // label acts as placeholder
+    opacity: 0,
     fontSize: `${FONT_SIZE_PX}px`,
     lineHeight: `${LINE_HEIGHT_PX}px`,
   }),
@@ -99,22 +103,17 @@ const makeStyles = (error?: boolean): StylesConfig<FLSelectOption, false, GroupB
     ...base,
     borderRadius: 6,
     padding: '10px 14px',
-    backgroundColor: state.isSelected ? '#e5e5e5' : state.isFocused ? '#f5f5f5' : '#ffffff',
+    backgroundColor: state.isSelected
+      ? '#e5e5e5'
+      : state.isFocused
+      ? '#f5f5f5'
+      : '#ffffff',
     color: '#000000',
     cursor: 'pointer',
     fontSize: `${FONT_SIZE_PX}px`,
     lineHeight: `${LINE_HEIGHT_PX}px`,
   }),
 });
-
-const classNames = {
-  container: () => 'relative w-full',
-  control: (state: any) =>
-    [
-      'bg-neutral-50 border rounded-lg transition outline-none',
-      state.isFocused ? 'border-black' : 'border-neutral-300',
-    ].join(' '),
-};
 
 const FloatingLabelSelect: React.FC<FloatingLabelSelectProps> = ({
   label,
@@ -133,10 +132,10 @@ const FloatingLabelSelect: React.FC<FloatingLabelSelectProps> = ({
   const hasValue = !!value;
 
   const styles = useMemo(() => makeStyles(error), [error]);
-  const selectRef = useRef<SelectInstance<FLSelectOption, false, GroupBase<FLSelectOption>>>(null);
+  const selectRef =
+    useRef<SelectInstance<FLSelectOption, false, GroupBase<FLSelectOption>>>(null);
 
-  const float = focused || hasValue; // position: above vs centered
-  const sizeClass = focused ? 'text-xs' : 'text-sm'; // size: xs while focused, sm otherwise
+  const float = focused || hasValue;
 
   return (
     <div
@@ -160,7 +159,6 @@ const FloatingLabelSelect: React.FC<FloatingLabelSelectProps> = ({
       <Select<FLSelectOption, false, GroupBase<FLSelectOption>>
         ref={selectRef}
         classNamePrefix="fls"
-        classNames={classNames as any}
         styles={styles}
         options={options}
         value={value}
@@ -183,14 +181,11 @@ const FloatingLabelSelect: React.FC<FloatingLabelSelectProps> = ({
         menuPosition="fixed"
       />
 
-      {/* Centered by default; floats above while focused/has value.
-          Size is xs when focused, sm otherwise (both empty+blurred and filled+blurred). */}
       <label
         className={[
           'absolute left-4 origin-[0] pointer-events-none transition-all duration-150',
           error ? 'text-rose-500' : 'text-neutral-500',
-          sizeClass,
-          float ? 'top-6 -translate-y-4' : 'top-1/2 -translate-y-1/2',
+          float ? 'top-6 text-xs -translate-y-4' : 'top-1/2 text-sm -translate-y-1/2',
         ].join(' ')}
       >
         {label}
