@@ -61,8 +61,8 @@ const RegisterModal = () => {
     formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: {
-      // IMPORTANT: include userId for edit flow (prefill supplies it)
-      userId: '',
+    userId: '',
+ id: '',
       name: '',
       email: '',
       password: '',
@@ -76,15 +76,15 @@ const RegisterModal = () => {
   const image = watch('image');
   const imageSrc = watch('imageSrc');
 
-  // Prefill when opened in edit mode
   useEffect(() => {
     if (registerModal.isOpen && registerModal.prefill) {
       const p = registerModal.prefill;
       reset({
-        userId: p.id ?? '',
+userId: p.id ?? '',
+ id: p.id ?? '',
         name: p.name ?? '',
         email: p.email ?? '',
-        password: '', // never prefill
+        password: '',
         location: p.location ?? '',
         bio: p.bio ?? '',
         image: p.image ?? '',
@@ -93,6 +93,7 @@ const RegisterModal = () => {
       setStep(STEPS.ACCOUNT);
     }
   }, [registerModal.isOpen, registerModal.prefill, reset]);
+
 
   // Close this modal if session flips to authenticated during registration flow
   useEffect(() => {

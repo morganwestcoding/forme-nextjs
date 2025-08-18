@@ -86,10 +86,12 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
 
   const isOwner = !!currentUser?.id && currentUser.id === id;
 
+// components/profile/ProfileHead.tsx
   const openEditProfile = () => {
     registerModal.onOpen({
       mode: 'edit',
       prefill: {
+ id, // <<< add this so the modal knows which user to update
         name: name ?? '',
         email: email ?? '',
         location: location ?? '',
@@ -99,6 +101,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
       },
     });
   };
+
 
   return (
     <div className="w-full">

@@ -4,32 +4,30 @@ import { Waves, Anchor, Rocket, Palette, Droplet, User } from 'lucide-react';
 import React from 'react';
 
 interface CategoryInputProps {
-  color: string;
   label: string;
   selected?: boolean;
   onClick: (value: string) => void;
 }
 
-const iconMap: {[key: string]: React.ComponentType<{className?: string}>} = {
-  'Massage': Waves,
-  'Wellness': Anchor,
-  'Fitness': Rocket,
-  'Nails': Palette,
-  'Spa': Droplet,
-  'Barber': User,
-  'Beauty': Palette,
-  'Salon': Waves
+const iconMap: { [key: string]: React.ComponentType<{ className?: string }> } = {
+  Massage: Waves,
+  Wellness: Anchor,
+  Fitness: Rocket,
+  Nails: Palette,
+  Spa: Droplet,
+  Barber: User,
+  Beauty: Palette,
+  Salon: Waves,
 };
 
 const CategoryInput: React.FC<CategoryInputProps> = ({
-  color,
   label,
   selected,
-  onClick
+  onClick,
 }) => {
-  const Icon = iconMap[label] || Waves; // Default to Waves if no icon found
+  const Icon = iconMap[label] || Waves;
 
-  return ( 
+  return (
     <div
       onClick={() => onClick(label)}
       className={`
@@ -44,27 +42,30 @@ const CategoryInput: React.FC<CategoryInputProps> = ({
         transition-all
         duration-300
         cursor-pointer
-        ${selected 
-          ? `${color} text-white` 
-          : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'}
+        ${selected
+          ? 'bg-[#60A5FA] text-white'
+          : 'bg-neutral-100 text-neutral-600 hover:bg-blue-50'}
       `}
     >
-      <Icon className={`
-        w-5
-        h-5 
-        transition
-        ${selected ? 'scale-110' : 'scale-100'}
-      `} />
-      <span className={`
-        text-xs
-      
-        transition
-        ${selected ? 'scale-105' : 'scale-100'}
-      `}>
+      <Icon
+        className={`
+          w-5
+          h-5
+          transition
+          ${selected ? 'scale-110' : 'scale-100'}
+        `}
+      />
+      <span
+        className={`
+          text-xs
+          transition
+          ${selected ? 'scale-105' : 'scale-100'}
+        `}
+      >
         {label}
       </span>
     </div>
-   );
-}
- 
+  );
+};
+
 export default CategoryInput;

@@ -227,7 +227,7 @@ const RentModal = () => {
             onClick={(category) => setCustomValue('category', category)}
             selected={category === item.label}
             label={item.label}
-            color={item.color}
+       
           />
         ))}
       </div>
@@ -238,7 +238,7 @@ const RentModal = () => {
             onClick={(category) => setCustomValue('category', category)}
             selected={category === item.label}
             label={item.label}
-            color={item.color}
+
           />
         ))}
       </div>

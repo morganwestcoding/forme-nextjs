@@ -1,20 +1,20 @@
 'use client';
 
 import React, { useState } from 'react';
-import Select from 'react-select';
 import useStates from '@/app/hooks/useStates';
 import useCities from '@/app/hooks/useCities';
 import Input from '../inputs/Input';
 import { FieldValues, UseFormRegister, FieldErrors } from "react-hook-form";
 import MapComponent from '../MapComponent';
 import AddressAutocomplete from './AddressAutocomplete';
+import FloatingLabelSelect, { FLSelectOption } from './FloatingLabelSelect';
 
 interface LocationSelection {
   label: string;
   value: string;
 }
 
-interface ListLocationInputProps {
+interface ListLocationSelectProps {
   onLocationSubmit: (location: {
     state: string;
     city: string;
@@ -30,7 +30,7 @@ interface ListLocationInputProps {
   id?: string;
 }
 
-const ListLocationInput: React.FC<ListLocationInputProps> = ({ 
+const ListLocationSelect: React.FC<ListLocationSelectProps> = ({ 
   onLocationSubmit, 
   register, 
   errors,
@@ -42,8 +42,8 @@ const ListLocationInput: React.FC<ListLocationInputProps> = ({
   const [coordinates, setCoordinates] = useState<{lat: number; lng: number} | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { states, loading: statesLoading } = useStates(selectedCountry);
-  const { cities, loading: citiesLoading } = useCities(selectedState?.value ?? '');
+  const { states } = useStates(selectedCountry);
+  const { cities } = useCities(selectedState?.value ?? '');
 
   const handleAddressSelect = (addressData: {
     address: string;
@@ -81,27 +81,6 @@ const ListLocationInput: React.FC<ListLocationInputProps> = ({
     });
   };
 
-  const baseSelectClasses = {
-    option: (state: any) => `
-      !py-4 !px-4 !cursor-pointer
-      ${state.isFocused ? '!bg-neutral-300' : '!bg-neutral-5'}
-      ${state.isSelected ? '!bg-neutral-400 !text-black' : ''}
-      !text-black hover:!text-neutral-500
-      !font-normal!  
-    `,
-    dropdownIndicator: () => `
-      !flex !items-center !pb-3 !px-4
-    `,
-    indicatorSeparator: () => `!hidden`,
-    singleValue: () => '!text-black',
-    input: () => '!text-neutral-500 !font-normal!',
-    placeholder: () => '!text-neutral-500 !text-sm !font-normal', 
-    menu: () => '!bg-neutral-5 !rounded-sm !shadow-md !mt-1 !z-[9999]',
-    menuList: () => '!p-0',
-    valueContainer: () => '!p-0.5',
-    container: () => '!relative !w-full'
-  };
-
   return (
     <div id={id} className="flex flex-col gap-3 text-sm -mt-4">
       <AddressAutocomplete
@@ -115,74 +94,33 @@ const ListLocationInput: React.FC<ListLocationInputProps> = ({
       />
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
-        <div className="relative">
-          <Select
-            id="state-select"
-            options={states}
-            value={selectedState}
-            isSearchable={false} 
-            onChange={(option) => setSelectedState(option)}
-            classNames={{
-              ...baseSelectClasses,
-              control: (state: any) => `
-                !w-full !pl-3 !pb-1 !pt-3
-                !bg-neutral-50 !border !border-neutral-200
-                !rounded-lg 
-                ${errors['state'] ? '!border-rose-500' : ''}
-              `
-            }}
-            placeholder=" "
-          />
-          <label className={`
-            absolute 
-            left-4
-            text-sm
-            duration-150 
-            transform 
-            top-5 
-            origin-[0] 
-            text-neutral-500
-            ${selectedState ? 'scale-100 -translate-y-3' : 'translate-y-0'}
-          `}>
-            State
-          </label>
-        </div>
+        {/* STATE */}
+        <FloatingLabelSelect
+          label="State"
+          options={states as FLSelectOption[]}
+          value={selectedState as FLSelectOption | null}
+          onChange={(opt) => setSelectedState(opt as LocationSelection | null)}
+          isLoading={false}
+          isDisabled={false}
+          error={!!errors['state']}
+          noOptionsMessage={() => 'No states found'}
+        />
 
-        <div className="relative">
-          <Select
-            id="city-select"
-            options={cities}
-            value={selectedCity}
-            isSearchable={false} 
-            onChange={(option) => setSelectedCity(option)}
-            classNames={{
-              ...baseSelectClasses,
-              control: (state: any) => `
-                !w-full !pl-3 !pb-1 !pt-3
-                !bg-neutral-50 !border !border-neutral-200
-                !rounded-lg !outline-none !transition
-                !ring-0 !outline-0 !box-shadow-none
-                ${state.isFocused ? '!border-neutral-500' : '!border-neutral-200'}
-                ${errors['city'] ? '!border-rose-500' : ''}
-              `
-            }}
-            placeholder=" "
-          />
-          <label className={`
-            absolute 
-            text-sm
-            duration-150 
-            transform 
-            top-5 
-            left-4
-            origin-[0] 
-            text-neutral-500
-            ${selectedCity ? 'scale-100 -translate-y-3' : 'translate-y-0'}
-          `}>
-            City
-          </label>
-        </div>
+        {/* CITY */}
+        <FloatingLabelSelect
+          label="City"
+          options={cities as FLSelectOption[]}
+          value={selectedCity as FLSelectOption | null}
+          onChange={(opt) => setSelectedCity(opt as LocationSelection | null)}
+          isLoading={false}
+          isDisabled={!selectedState}
+          error={!!errors['city']}
+          noOptionsMessage={() =>
+            selectedState ? 'No cities found' : 'Please select a state first'
+          }
+        />
 
+        {/* ZIP */}
         <Input
           id="zipCode"
           label="ZIP Code"
@@ -202,4 +140,4 @@ const ListLocationInput: React.FC<ListLocationInputProps> = ({
   );
 };
 
-export default ListLocationInput;
+export default ListLocationSelect;

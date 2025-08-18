@@ -1,26 +1,31 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { FieldValues, UseFormRegister, FieldErrors } from "react-hook-form";
+import { useState, useEffect, useRef, useCallback } from 'react';
+import {
+  FieldValues,
+  UseFormRegister,
+  FieldErrors,
+} from 'react-hook-form';
 
 interface AddressAutocompleteProps {
-    id: string;
-    label: string;
-    register: UseFormRegister<FieldValues>;
-    required?: boolean;
-    disabled?: boolean;
-    errors: FieldErrors;  // Add this line
-    onAddressSelect: (address: {
-      address: string;
-      city: string;
-      state: string;
-      zipCode: string;
-      coordinates: {
-        lat: number;
-        lng: number;
-      };
-    }) => void;
-  }
+  id: string;
+  label: string;
+  register: UseFormRegister<FieldValues>;
+  required?: boolean;
+  disabled?: boolean;
+  errors: FieldErrors;
+  onAddressSelect: (address: {
+    address: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    coordinates: {
+      lat: number;
+      lng: number;
+    };
+  }) => void;
+}
+
 interface Suggestion {
   place_name: string;
   geometry: {
@@ -39,140 +44,227 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
   register,
   required,
   disabled,
-  onAddressSelect
+  errors,
+  onAddressSelect,
 }) => {
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const debounceTimeout = useRef<NodeJS.Timeout>();
+  const [activeIndex, setActiveIndex] = useState<number>(-1);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+  const debounceRef = useRef<NodeJS.Timeout>();
 
-  const getSuggestions = async (input: string) => {
+  // Pull handlers/refs from RHF register so we can merge our onChange
+  const {
+    ref: inputRefFromRegister,
+    onChange: rhfOnChange,
+    onBlur: rhfOnBlur,
+    name,
+  } = register(id, { required });
+
+  const fetchSuggestions = useCallback(async (input: string) => {
+    if (!process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN) return [];
     try {
-      const response = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(input)}.json?` + 
-        `access_token=${process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}&` +  // Changed this line
-        'country=us&' +
-        'types=address'
-      );
-      const data = await response.json();
-      return data.features || [];
-    } catch (error) {
-      console.error('Error fetching suggestions:', error);
+      const url =
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
+          input
+        )}.json?` +
+        `access_token=${process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}&` +
+        `country=us&types=address&limit=6`;
+      const res = await fetch(url);
+      const data = await res.json();
+      return (data?.features as Suggestion[]) || [];
+    } catch {
       return [];
     }
-  };
+  }, []);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setQuery(value);
+    rhfOnChange(e); // keep react-hook-form in sync
 
-    if (debounceTimeout.current) {
-      clearTimeout(debounceTimeout.current);
-    }
+    if (debounceRef.current) clearTimeout(debounceRef.current);
 
     if (value.length > 2) {
-      debounceTimeout.current = setTimeout(async () => {
-        const newSuggestions = await getSuggestions(value);
-        setSuggestions(newSuggestions);
-        setShowSuggestions(true);
+      debounceRef.current = setTimeout(async () => {
+        const next = await fetchSuggestions(value);
+        setSuggestions(next);
+        setShowSuggestions(next.length > 0);
+        setActiveIndex(-1);
       }, 300);
     } else {
       setSuggestions([]);
       setShowSuggestions(false);
+      setActiveIndex(-1);
     }
   };
 
-  const handleSuggestionClick = (suggestion: Suggestion) => {
-    const addressComponents = suggestion.place_name.split(',');
-    const address = addressComponents[0].trim();
-    
+  const parseSuggestion = (s: Suggestion) => {
+    // Street address = first component
+    const address = (s.place_name?.split(',')[0] || '').trim();
+
     let city = '', state = '', zipCode = '';
-    suggestion.context.forEach(context => {
-      if (context.id.startsWith('place')) {
-        city = context.text;
-      } else if (context.id.startsWith('region')) {
-        state = context.text;
-      } else if (context.id.startsWith('postcode')) {
-        zipCode = context.text;
-      }
-    });
+    for (const c of s.context || []) {
+      if (c.id.startsWith('place')) city = c.text;
+      if (c.id.startsWith('region')) state = c.text;
+      if (c.id.startsWith('postcode')) zipCode = c.text;
+    }
 
-    setQuery(address);
-    setShowSuggestions(false);
-
-    onAddressSelect({
+    return {
       address,
       city,
       state,
       zipCode,
       coordinates: {
-        lat: suggestion.geometry.coordinates[1],
-        lng: suggestion.geometry.coordinates[0]
+        lat: s.geometry.coordinates[1],
+        lng: s.geometry.coordinates[0],
+      },
+    };
+  };
+
+  const applySuggestion = (s: Suggestion) => {
+    const parsed = parseSuggestion(s);
+    // Put the full street line in the visible input
+    setQuery(parsed.address);
+    setShowSuggestions(false);
+    setActiveIndex(-1);
+    onAddressSelect(parsed);
+  };
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const clickHandler = (e: MouseEvent) => {
+      if (!rootRef.current) return;
+      if (!rootRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
       }
-    });
+    };
+    document.addEventListener('mousedown', clickHandler);
+    return () => document.removeEventListener('mousedown', clickHandler);
+  }, []);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!showSuggestions || suggestions.length === 0) return;
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setActiveIndex((i) => {
+        const ni = Math.min(i + 1, suggestions.length - 1);
+        // Ensure into view
+        listRef.current?.children[ni]?.scrollIntoView({ block: 'nearest' });
+        return ni;
+      });
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setActiveIndex((i) => {
+        const ni = Math.max(i - 1, 0);
+        listRef.current?.children[ni]?.scrollIntoView({ block: 'nearest' });
+        return ni;
+      });
+    } else if (e.key === 'Enter') {
+      if (activeIndex >= 0 && activeIndex < suggestions.length) {
+        e.preventDefault();
+        applySuggestion(suggestions[activeIndex]);
+      }
+    } else if (e.key === 'Escape') {
+      setShowSuggestions(false);
+    }
   };
 
   return (
-    <div className="relative">
+    <div className="w-full relative" ref={rootRef}>
       <input
-        {...register(id, { required })}
         id={id}
+        name={name}
+        ref={inputRefFromRegister}
         value={query}
-        onChange={handleInputChange}
+        onChange={handleChange}
+        onBlur={rhfOnBlur}
+        onKeyDown={handleKeyDown}
         disabled={disabled}
         placeholder=" "
-        className="
+        autoComplete="off"
+        className={`
           peer
-          w-full 
-          p-4
-          pl-4
+          w-full
+          p-3
           pt-6
-          font-light 
           bg-neutral-50
           border
-          border-neutral-300
           rounded-lg
           outline-none
           transition
           disabled:opacity-70
           disabled:cursor-not-allowed
-          text-black
+          ${errors[id] ? 'border-rose-500' : 'border-neutral-300'}
+          ${errors[id] ? 'focus:border-rose-500' : 'focus:border-black'}
+          pl-4 pr-4
           h-[60px]
-        "
+        `}
+        aria-autocomplete="list"
+        aria-controls={`${id}-listbox`}
+        aria-expanded={showSuggestions}
+        aria-activedescendant={
+          activeIndex >= 0 ? `${id}-option-${activeIndex}` : undefined
+        }
       />
-      <label 
-        className="
-          absolute 
+      <label
+        htmlFor={id}
+        className={`
+          absolute
           text-sm
-          duration-150 
-          transform 
-          -translate-y-3 
-          top-5 
+          duration-150
+          transform
+          -translate-y-3
+          top-5
           left-4
-          origin-[0] 
-          text-neutral-600
-          peer-placeholder-shown:scale-100 
-          peer-placeholder-shown:translate-y-0 
+          origin-[0]
+          ${errors[id] ? 'text-rose-500' : 'text-neutral-500'}
+          peer-placeholder-shown:scale-100
+          peer-placeholder-shown:translate-y-0
           peer-focus:scale-75
           peer-focus:-translate-y-4
-        "
+        `}
       >
         {label}
       </label>
 
-      {/* Suggestions dropdown remains the same */}
+      {/* Suggestions dropdown */}
       {showSuggestions && suggestions.length > 0 && (
-        <div className="absolute w-full bg-white shadow-md rounded-md mt-1 z-[9999] max-h-[200px] overflow-y-auto">
-          {suggestions.map((suggestion, index) => (
+        <div
+          id={`${id}-listbox`}
+          role="listbox"
+          ref={listRef}
+          className="absolute w-full bg-white shadow-md rounded-md mt-1 z-[9999] max-h-[220px] overflow-y-auto border border-neutral-200"
+        >
+          {suggestions.map((sugg, index) => (
             <div
-              key={index}
-              className="p-3 hover:bg-neutral-100 cursor-pointer text-sm text-neutral-600"
-              onClick={() => handleSuggestionClick(suggestion)}
+              id={`${id}-option-${index}`}
+              role="option"
+              aria-selected={activeIndex === index}
+              key={`${sugg.place_name}-${index}`}
+              className={`p-3 cursor-pointer text-sm text-neutral-700 transition-colors
+                ${activeIndex === index ? 'bg-blue-50' : 'hover:bg-neutral-100'}
+              `}
+              onMouseEnter={() => setActiveIndex(index)}
+              onMouseLeave={() => setActiveIndex(-1)}
+              onClick={() => applySuggestion(sugg)}
             >
-              {suggestion.place_name}
+              {sugg.place_name}
             </div>
           ))}
         </div>
+      )}
+
+      {/* Inline error message (optional, matches your Input email error style) */}
+      {errors[id] && (
+        <span className="text-rose-500 text-xs mt-1 block">
+          {typeof errors[id]?.message === 'string'
+            ? (errors[id]?.message as string)
+            : 'Please enter a valid address'}
+        </span>
       )}
     </div>
   );
