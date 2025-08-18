@@ -38,7 +38,7 @@ const PostCategoryModal = ({
               onClick={(value) => setSelectedCategory(value)}
               selected={selectedCategory === item.label}
               label={item.label}
-              color={item.color}
+         
             />
           </div>
         ))}

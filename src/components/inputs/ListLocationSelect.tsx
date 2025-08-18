@@ -126,7 +126,7 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({
           isDisabled={!selectedState}
           error={!!errors['city']}
           noOptionsMessage={() =>
-            selectedState ? 'No cities found' : 'Please select a state first'
+            selectedState ? 'No cities found' : 'Select a state'
           }
         />
 

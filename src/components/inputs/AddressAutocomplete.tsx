@@ -24,19 +24,18 @@ interface AddressAutocompleteProps {
       lng: number;
     };
   }) => void;
+
+  /** Optional: bias results near this lat/lng. If omitted, we try browser geolocation, then US centroid. */
+  proximity?: { lat: number; lng: number };
 }
 
 interface Suggestion {
   place_name: string;
-  geometry: {
-    coordinates: [number, number];
-  };
-  context: Array<{
-    id: string;
-    text: string;
-    short_code?: string;
-  }>;
+  geometry: { coordinates: [number, number] };
+  context: Array<{ id: string; text: string; short_code?: string }>;
 }
+
+const US_CENTROID = { lat: 39.8283, lng: -98.5795 }; // neutral fallback
 
 const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
   id,
@@ -46,11 +45,16 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
   disabled,
   errors,
   onAddressSelect,
+  proximity, // optional override from parent
 }) => {
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number>(-1);
+
+  const [effectiveProximity, setEffectiveProximity] =
+    useState<{ lat: number; lng: number } | null>(null);
+
   const rootRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<NodeJS.Timeout>();
@@ -63,22 +67,57 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
     name,
   } = register(id, { required });
 
+  // Establish proximity:
+  // 1) prop `proximity` if supplied
+  // 2) browser geolocation (user permission)
+  // 3) neutral US centroid
+  useEffect(() => {
+    if (proximity) {
+      setEffectiveProximity(proximity);
+      return;
+    }
+    if (typeof window !== 'undefined' && 'geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          setEffectiveProximity({
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude,
+          });
+        },
+        () => setEffectiveProximity(US_CENTROID),
+        { enableHighAccuracy: false, timeout: 4000, maximumAge: 600000 }
+      );
+    } else {
+      setEffectiveProximity(US_CENTROID);
+    }
+  }, [proximity]);
+
   const fetchSuggestions = useCallback(async (input: string) => {
     if (!process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN) return [];
     try {
-      const url =
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
-          input
-        )}.json?` +
-        `access_token=${process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}&` +
-        `country=us&types=address&limit=6`;
+      const params = new URLSearchParams({
+        access_token: process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN,
+        country: 'us',
+        types: 'address',            // keep address-only; expand to "address,place,postcode" if needed
+        limit: '6',
+        autocomplete: 'true',
+        language: 'en',
+      });
+
+      if (effectiveProximity) {
+        // Mapbox expects lng,lat order
+        params.set('proximity', `${effectiveProximity.lng},${effectiveProximity.lat}`);
+      }
+
+      const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(input)}.json?${params.toString()}`;
+
       const res = await fetch(url);
       const data = await res.json();
       return (data?.features as Suggestion[]) || [];
     } catch {
       return [];
     }
-  }, []);
+  }, [effectiveProximity]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
