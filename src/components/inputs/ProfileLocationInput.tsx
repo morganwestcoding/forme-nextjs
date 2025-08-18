@@ -1,6 +1,12 @@
 'use client';
-import React, { useMemo, useState } from 'react';
-import Select, { SingleValue } from 'react-select';
+
+import React, { useMemo, useRef, useState } from 'react';
+import Select, {
+  SingleValue,
+  StylesConfig,
+  GroupBase,
+  type SelectInstance,
+} from 'react-select';
 import useStates from '@/app/hooks/useStates';
 import useCities from '@/app/hooks/useCities';
 import MapComponent from '../MapComponent';
@@ -11,51 +17,106 @@ interface ProfileLocationInputProps {
   onLocationSubmit: (location: string | null) => void;
 }
 
-/** ------- Shared select styles to match <Input> exactly ------- */
-const makeSelectClasses = (hasError = false) => ({
-  control: (state: any) => `
-    w-full
-    bg-neutral-50
-    border
-    ${hasError ? 'border-rose-500' : state.isFocused ? 'border-black' : 'border-neutral-300'}
-    rounded-lg
-    outline-none
-    transition
-    min-h-[56px]        /* p-3 pt-6 equivalent height */
-    shadow-none
-  `,
-  valueContainer: () => `
-    px-4 pr-10
-    py-3 pt-6          /* matches Input’s p-3 pt-6 */
-  `,
-  placeholder: () => `
-    opacity-0          /* keep placeholder for a11y, but hide (we use floating label) */
-    text-sm
-  `,
-  singleValue: () => `text-black`,
-  input: () => `text-neutral-700`,
-  menu: () => `
-    bg-white border border-neutral-200
-    rounded-lg shadow-md mt-1 z-[9999]
-  `,
-  menuList: () => `p-1`,
-  option: (state: any) => `
-    cursor-pointer px-3 py-2 rounded-md
-    ${state.isSelected ? 'bg-neutral-200 text-black' : state.isFocused ? 'bg-neutral-100' : ''}
-  `,
-  indicatorsContainer: () => `
-    absolute right-0 top-0 h-full flex items-center pr-3
-  `,
-  dropdownIndicator: (state: any) => `
-    p-0 m-0
-    ${state.isFocused ? 'text-black' : 'text-neutral-500'}
-  `,
-  clearIndicator: () => `p-0 m-0`,
-  indicatorSeparator: () => `hidden`,
-  container: () => `relative w-full`,
-});
+/** ---- Dimensions to mirror your <Input> layout ---- **/
+const CONTROL_HEIGHT = 64;   // h-16 (taller, as requested)
+const BORDER_RADIUS  = 8;    // rounded-lg
+const PADDING_LEFT   = 16;   // pl-4
+const PADDING_RIGHT  = 40;   // room for chevron (similar to pr-*)
+const PADDING_TOP    = 24;   // pt-6 → matches Input baseline under label
+const PADDING_BOTTOM = 12;   // pb-3 → matches Input
+const FONT_SIZE_PX   = 16;   // text-base
+const LINE_HEIGHT_PX = 24;   // leading-6 (keeps baseline alignment crisp)
 
-/** A small wrapper that gives react-select a real floating label like your Input */
+/** Strong styles to enforce exact look/size/alignment */
+const selectStyles: StylesConfig<LocationSelection, false, GroupBase<LocationSelection>> = {
+  control: (base, state) => ({
+    ...base,
+    minHeight: CONTROL_HEIGHT,
+    height: CONTROL_HEIGHT,
+    borderRadius: BORDER_RADIUS,
+    backgroundColor: '#fafafa',                               // bg-neutral-50
+    borderColor: state.isFocused ? '#000000' : '#d4d4d4',     // black vs neutral-300
+    boxShadow: 'none',
+    ':hover': { borderColor: state.isFocused ? '#000000' : '#d4d4d4' },
+    padding: 0,
+    cursor: 'pointer',
+  }),
+  valueContainer: (base) => ({
+    ...base,
+    paddingLeft: PADDING_LEFT,
+    paddingRight: PADDING_RIGHT,
+    paddingTop: PADDING_TOP,       // ← baseline under label
+    paddingBottom: PADDING_BOTTOM, // ← matches Input
+  }),
+  placeholder: (base) => ({
+    ...base,
+    opacity: 0,                    // we use a floating label
+    fontSize: `${FONT_SIZE_PX}px`,
+    lineHeight: `${LINE_HEIGHT_PX}px`,
+  }),
+  singleValue: (base) => ({
+    ...base,
+    color: '#000000',
+    fontSize: `${FONT_SIZE_PX}px`,
+    lineHeight: `${LINE_HEIGHT_PX}px`, // ← lock baseline
+    margin: 0,
+    padding: 0,
+  }),
+  input: (base) => ({
+    ...base,
+    color: '#262626',              // neutral-700
+    fontSize: `${FONT_SIZE_PX}px`,
+    lineHeight: `${LINE_HEIGHT_PX}px`,
+    margin: 0,
+    padding: 0,
+  }),
+  indicatorsContainer: (base) => ({
+    ...base,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    height: CONTROL_HEIGHT,
+    paddingRight: 12,
+    color: '#737373',              // neutral-500
+  }),
+  indicatorSeparator: () => ({ display: 'none' }),
+  dropdownIndicator: (base) => ({ ...base, padding: 0, margin: 0 }),
+  clearIndicator: (base) => ({ ...base, padding: 0, margin: 0 }),
+
+  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+  menu: (base) => ({
+    ...base,
+    borderRadius: BORDER_RADIUS,
+    border: '1px solid #e5e5e5',   // neutral-200
+    overflow: 'hidden',
+    marginTop: 4,
+  }),
+  menuList: (base) => ({ ...base, padding: 8 }),
+  option: (base, state) => ({
+    ...base,
+    borderRadius: 6,
+    padding: '10px 14px',
+    backgroundColor: state.isSelected
+      ? '#e5e5e5' // neutral-200
+      : state.isFocused
+      ? '#f5f5f5' // neutral-100
+      : '#ffffff',
+    color: '#000000',
+    cursor: 'pointer',
+  }),
+};
+
+/** Tailwind classNames just to mirror focus border color */
+const classNames = {
+  container: () => 'relative w-full',
+  control: (state: any) =>
+    [
+      'bg-neutral-50 border rounded-lg transition outline-none',
+      state.isFocused ? 'border-black' : 'border-neutral-300',
+    ].join(' '),
+};
+
+/** Floating-label Select with bulletproof opening and aligned baseline */
 function FloatingLabelSelect(props: {
   label: string;
   value: LocationSelection | null;
@@ -64,16 +125,40 @@ function FloatingLabelSelect(props: {
   isLoading?: boolean;
   isDisabled?: boolean;
   noOptionsMessage?: () => string;
+  styles?: StylesConfig<LocationSelection, false, GroupBase<LocationSelection>>;
 }) {
   const [focused, setFocused] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const hasValue = !!props.value;
-  const classes = useMemo(() => makeSelectClasses(false), []);
+
+  const styles = useMemo(() => props.styles ?? selectStyles, [props.styles]);
+  const selectRef = useRef<SelectInstance<LocationSelection, false, GroupBase<LocationSelection>>>(null);
 
   return (
-    <div className="relative">
-      <Select<LocationSelection, false>
-        classNames={classes as any}
-        classNamePrefix="forme"
+    <div
+      className="relative"
+      tabIndex={-1}
+      onPointerDownCapture={() => {
+        // Make field + chevron open reliably even in modals
+        selectRef.current?.focus();
+        if (!menuOpen) {
+          // @ts-expect-error internal method exists at runtime
+          selectRef.current?.openMenu?.();
+        }
+      }}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          // @ts-expect-error internal method
+          selectRef.current?.openMenu?.();
+        }
+      }}
+    >
+      <Select<LocationSelection, false, GroupBase<LocationSelection>>
+        ref={selectRef}
+        classNamePrefix="rsloc"
+        classNames={classNames as any}
+        styles={styles}
         options={props.options}
         value={props.value}
         onChange={props.onChange}
@@ -85,20 +170,22 @@ function FloatingLabelSelect(props: {
         noOptionsMessage={props.noOptionsMessage}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
-        // ensure keyboard focus isn’t swallowed
-        tabSelectsValue
-        // keep the menu above modals reliably
+        onMenuOpen={() => setMenuOpen(true)}
+        onMenuClose={() => setMenuOpen(false)}
+        openMenuOnClick
+        openMenuOnFocus
+        menuShouldScrollIntoView
+        isSearchable
+        // keep menu above modal
         menuPortalTarget={typeof window !== 'undefined' ? document.body : null}
-        styles={{
-          menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-        }}
+        menuPosition="fixed"
       />
+      {/* Floating label: never block clicks; positioned to match Input */}
       <label
         className={[
-          'absolute left-4 top-5 origin-[0] text-sm text-neutral-500',
+          'absolute left-4 top-5 origin-[0] text-sm text-neutral-500 pointer-events-none',
           'transition-transform duration-150',
-          // when focused or has a value, mimic Input: scale-75 and raise by ~1rem
-          (focused || hasValue) ? 'scale-75 -translate-y-4' : 'scale-100 translate-y-0'
+          (focused || hasValue) ? 'scale-75 -translate-y-4' : 'scale-100 translate-y-0',
         ].join(' ')}
       >
         {props.label}
@@ -140,7 +227,6 @@ const ProfileLocationInput: React.FC<ProfileLocationInputProps> = ({ onLocationS
           isLoading={statesLoading}
           noOptionsMessage={() => 'No states found'}
         />
-
         <FloatingLabelSelect
           label="City"
           options={cities}
