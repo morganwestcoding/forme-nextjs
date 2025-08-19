@@ -36,12 +36,12 @@ const postTypes = [
     color: 'bg-[#10B981]',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none">
-        <path d="M20 18V6M6 20H18M18 4H6M4 6V18" stroke="#000000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M7.99901 10C7.70512 8.43128 8.73403 8.05948 11.9564 8M11.9564 8C14.9534 8.06735 16.1887 8.30534 15.9138 10M11.9564 8V16M10.4724 16H13.4405" stroke="#000000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M21 2H19C18.4477 2 18 2.44772 18 3V5C18 5.55228 18.4477 6 19 6H21C21.5523 6 22 5.55228 22 5V3C22 2.44772 21.5523 2 21 2Z" stroke="#000000" strokeWidth="1.5" />
-        <path d="M5 2H3C2.44772 2 2 2.44772 2 3V5C2 5.55228 2.44772 6 3 6H5C5.55228 6 6 5.55228 6 5V3C6 2.44772 5.55228 2 5 2Z" stroke="#000000" strokeWidth="1.5" />
-        <path d="M21 18H19C18.4477 18 18 18.4477 18 19V21C18 21.5523 18.4477 22 19 22H21C21.5523 22 22 21.5523 22 21V19C22 18.4477 21.5523 18 21 18Z" stroke="#000000" strokeWidth="1.5" />
-        <path d="M5 18H3C2.44772 18 2 18.4477 2 19V21C2 21.5523 2.44772 22 3 22H5C5.55228 22 6 21.5523 6 21V19C6 18.4477 5.55228 18 5 18Z" stroke="#000000" strokeWidth="1.5" />
+        <path d="M20 18V6M6 20H18M18 4H6M4 6V18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M7.99901 10C7.70512 8.43128 8.73403 8.05948 11.9564 8M11.9564 8C14.9534 8.06735 16.1887 8.30534 15.9138 10M11.9564 8V16M10.4724 16H13.4405" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M21 2H19C18.4477 2 18 2.44772 18 3V5C18 5.55228 18.4477 6 19 6H21C21.5523 6 22 5.55228 22 5V3C22 2.44772 21.5523 2 21 2Z" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M5 2H3C2.44772 2 2 2.44772 2 3V5C2 5.55228 2.44772 6 3 6H5C5.55228 6 6 5.55228 6 5V3C6 2.44772 5.55228 2 5 2Z" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M21 18H19C18.4477 18 18 18.4477 18 19V21C18 21.5523 18.4477 22 19 22H21C21.5523 22 22 21.5523 22 21V19C22 18.4477 21.5523 18 21 18Z" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M5 18H3C2.44772 18 2 18.4477 2 19V21C2 21.5523 2.44772 22 3 22H5C5.55228 22 6 21.5523 6 21V19C6 18.4477 5.55228 18 5 18Z" stroke="currentColor" strokeWidth="1.5" />
       </svg>
     )
   },
@@ -169,28 +169,31 @@ const CreatePostModal = () => {
   }, [step]);
 
   const bodyContent = useMemo(() => {
-    if (step === STEPS.TYPE) {
-      return (
-        <div className="flex flex-col gap-4">
-          <Heading title="What type of post?" subtitle="Choose one to get started" />
-          <div className="grid grid-cols-3 gap-3">
-            {postTypes.map((type) => (
-              <div
-                key={type.label}
-                onClick={() => setPostType(type.label)}
-                className={`
-                  rounded-xl p-4 shadow flex flex-col items-center justify-center gap-2 cursor-pointer transition-all
-                  ${postType === type.label ? `${type.color} text-white` : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'}
-                `}
-              >
-                <div className="w-5 h-5">{type.icon}</div>
-                <span className="text-xs">{type.label}</span>
-              </div>
-            ))}
+if (step === STEPS.TYPE) {
+  return (
+    <div className="flex flex-col gap-4">
+      <Heading title="What type of post?" subtitle="Choose one to get started" />
+      <div className="grid grid-cols-3 gap-3">
+        {postTypes.map((type) => (
+          <div
+            key={type.label}
+            onClick={() => setPostType(type.label)}
+            className={`
+              rounded-xl p-4 shadow flex flex-col items-center justify-center gap-2 cursor-pointer transition-all
+              ${postType === type.label 
+                ? 'bg-[#60A5FA] text-white'   // 👈 always brand blue when selected
+                : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'}
+            `}
+          >
+            <div className="w-5 h-5">{type.icon}</div>
+            <span className="text-xs">{type.label}</span>
           </div>
-        </div>
-      );
-    }
+        ))}
+      </div>
+    </div>
+  );
+}
+
     
     if (step === STEPS.MEDIA) {
       return (
