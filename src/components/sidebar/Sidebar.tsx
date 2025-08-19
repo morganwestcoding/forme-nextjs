@@ -147,7 +147,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           </div>
         )}
 
-        <div className="flex flex-col w-full px-6 pt-2">
+        <div className="flex flex-col w-full px-6 pt-4">
           {/* Explore & Discover */}
           <div className="mb-6">
             <div className="text-xs text-neutral-400 uppercase mb-2 text-center font-medium">Explore & Discover</div>

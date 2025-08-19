@@ -6,6 +6,8 @@ export type MediaType = 'image' | 'video' | 'gif';
 export interface MediaData {
   url: string;
   type: MediaType;
+    width?: number | null;
+  height?: number | null;
 }
 
 export interface PostMedia {

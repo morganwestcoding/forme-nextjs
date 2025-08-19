@@ -1,3 +1,4 @@
+// components/modals/MessageModal.tsx
 'use client';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
@@ -45,8 +46,7 @@ const MessageModal: React.FC = () => {
     try {
       const response = await axios.get(`/api/messages/${messageModal.conversationId}`);
       setMessages(response.data);
-    } catch (error) {
-      console.error('Error fetching messages:', error);
+    } catch {
       toast.error('Failed to load messages');
     } finally {
       setIsLoading(false);
@@ -63,31 +63,20 @@ const MessageModal: React.FC = () => {
       setNewMessage('');
       setTimeout(scrollToBottom, 0);
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error('Error sending message:', error.response?.data);
-        toast.error(error.response?.data?.error || 'Failed to send message');
-      } else {
-        console.error('Unexpected error:', error);
-        toast.error('An unexpected error occurred');
-      }
+      toast.error('Failed to send message');
     }
   }, [newMessage, messageModal.conversationId]);
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      sendMessage();
-    }
+    if (e.key === 'Enter') sendMessage();
   };
 
   const groupMessagesByDate = (messages: Message[]) => {
     const groups: { [key: string]: Message[] } = {};
-    // Sort messages by createdAt in ascending order
     messages.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
     messages.forEach(message => {
       const date = new Date(message.createdAt).toLocaleDateString();
-      if (!groups[date]) {
-        groups[date] = [];
-      }
+      if (!groups[date]) groups[date] = [];
       groups[date].push(message);
     });
     return groups;
@@ -95,7 +84,7 @@ const MessageModal: React.FC = () => {
 
   const renderDateSeparator = (date: string) => (
     <div className="flex justify-center my-4">
-      <span className="bg-gray-200 text-gray-600 text-xs px-2 py-1 rounded-lg">
+      <span className="bg-white/10 text-neutral-300 text-xs px-3 py-1 rounded-lg shadow">
         {date}
       </span>
     </div>
@@ -105,11 +94,11 @@ const MessageModal: React.FC = () => {
     <div className="flex flex-col h-[450px]">
       {isLoading ? (
         <div className="flex-grow flex items-center justify-center">
-          <p>Loading messages...</p>
+          <p className="text-neutral-400">Loading messages...</p>
         </div>
       ) : (
         <>
-          <div className="flex-grow overflow-y-auto mb-4 p-4">
+          <div className="flex-grow overflow-y-auto mb-4 px-4 custom-scrollbar">
             <div className="space-y-4 flex flex-col">
               {Object.entries(groupMessagesByDate(messages)).map(([date, dateMessages]) => (
                 <React.Fragment key={date}>
@@ -128,34 +117,30 @@ const MessageModal: React.FC = () => {
                           ? 'flex-row'
                           : 'flex-row-reverse'
                       }`}>
-<div className={`w-11 h-11 rounded-full overflow-hidden flex-shrink-0 ${
-  message.senderId === messageModal.otherUserId ? 'mr-2' : 'ml-2'
-}`}>
-  <div className="w-full h-full relative">
-    <Image
-      src={message.sender.image || '/placeholder-avatar.png'}
-      alt={message.sender.name || 'User'}
-      layout="fill"
-      objectFit="cover"
-      className="rounded-full"
-    />
-  </div>
-</div>
+                        <div className={`w-9 h-9 rounded-full overflow-hidden flex-shrink-0 ${
+                          message.senderId === messageModal.otherUserId ? 'mr-2' : 'ml-2'
+                        }`}>
+                          <Image
+                            src={message.sender.image || '/placeholder-avatar.png'}
+                            alt={message.sender.name || 'User'}
+                            width={36}
+                            height={36}
+                            className="rounded-full object-cover"
+                          />
+                        </div>
                         <div className={`flex flex-col ${
                           message.senderId === messageModal.otherUserId ? 'items-start' : 'items-end'
                         }`}>
                           <div
-                            className={`max-w-[100%] p-3 rounded-lg ${
+                            className={`max-w-[70%] px-3 py-2 rounded-2xl shadow-sm text-sm ${
                               message.senderId === messageModal.otherUserId
-                                ? 'bg-gray-500 text-white text-sm'
-                                : 'bg-blue-500 text-white text-sm'
+                                ? 'bg-white/10 text-white'
+                                : 'bg-blue-500 text-white'
                             }`}
                           >
                             <p>{message.content}</p>
                           </div>
-                          <p className={`text-xs mt-1 text-gray-400 ${
-                            message.senderId === messageModal.otherUserId ? 'self-start' : 'self-end'
-                          }`}>
+                          <p className="text-xs mt-1 text-neutral-400">
                             {new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </p>
                         </div>
@@ -168,24 +153,22 @@ const MessageModal: React.FC = () => {
             <div ref={messagesEndRef} />
           </div>
       
-          <div className="flex items-center p-4 mb-1">
+          <div className="flex items-center p-3 border-t border-white/10">
             <input
               type="text"
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Type a message..."
-              className="flex-grow p-3 text-sm text-[#a2a2a2] mr-2 bg-white rounded-lg focus:outline-none"
+              className="flex-grow px-3 py-2 text-sm text-white bg-white/10 backdrop-blur-md rounded-2xl focus:outline-none border border-white/20"
             />
             <button
               onClick={sendMessage}
-              className="bg-white bg-opacity-25 border border-white rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0 ml-1"
+              className="ml-2 bg-blue-500 hover:bg-blue-600 transition w-10 h-10 flex items-center justify-center rounded-full shadow-md"
             >
-              <div className='-ml-0.5'>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" color="#ffffff" fill="none">
-                  <path d="M11.922 4.79004C16.6963 3.16245 19.0834 2.34866 20.3674 3.63261C21.6513 4.91656 20.8375 7.30371 19.21 12.078L18.1016 15.3292C16.8517 18.9958 16.2267 20.8291 15.1964 20.9808C14.9195 21.0216 14.6328 20.9971 14.3587 20.9091C13.3395 20.5819 12.8007 18.6489 11.7231 14.783C11.4841 13.9255 11.3646 13.4967 11.0924 13.1692C11.0134 13.0742 10.9258 12.9866 10.8308 12.9076C10.5033 12.6354 10.0745 12.5159 9.21705 12.2769C5.35111 11.1993 3.41814 10.6605 3.0909 9.64127C3.00292 9.36724 2.97837 9.08053 3.01916 8.80355C3.17088 7.77332 5.00419 7.14834 8.6708 5.89838L11.922 4.79004Z" stroke="currentColor" stroke-width="1.5" />
-                </svg>
-              </div>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="white" strokeWidth="1.5">
+                <path d="M11.9 4.8c4.8-1.6 7.2-2.4 8.5-1.1s.6 3.6-1.1 8.5l-1.1 3.3c-1.2 3.7-1.8 5.6-2.8 5.7-.3.1-.6.1-.9 0-1-.3-1.6-2.3-2.7-6.2-.2-.9-.3-1.3-.6-1.6-.1-.1-.2-.2-.3-.3-.3-.3-.7-.4-1.6-.6-3.9-1.1-5.8-1.6-6.2-2.7-.1-.3-.1-.6 0-.9.2-1 2.1-1.6 5.7-2.8l3.2-1.1z"/>
+              </svg>
             </button>
           </div>
         </>
@@ -198,7 +181,7 @@ const MessageModal: React.FC = () => {
       isOpen={messageModal.isOpen}
       onClose={messageModal.onClose}
       onSubmit={sendMessage}
-      title="Message"
+      title="Messages"
       body={bodyContent}
     />
   );

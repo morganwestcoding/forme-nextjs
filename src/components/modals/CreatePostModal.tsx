@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import Modal from '@/components/modals/Modal';
 import Heading from '@/components/Heading';
 import { toast } from 'react-hot-toast';
@@ -10,6 +10,96 @@ import PostCategoryModal from '@/components/modals/PostCategoryModal';
 import { useRouter } from 'next/navigation';
 import MediaUpload from '@/components/inputs/MediaUpload';
 import { MediaData } from '@/app/types';
+
+/** ================== Cloudinary text overlay helpers ================== */
+
+type OverlayPos =
+  | 'top-left' | 'top-center' | 'top-right'
+  | 'center-left' | 'center' | 'center-right'
+  | 'bottom-left' | 'bottom-center' | 'bottom-right';
+
+const OVERLAY_MARGIN_PX = 16;   // matches preview padding
+const WRAP_PERCENT = 0.9;       // matches preview maxWidth: 90%
+
+function encodeTextForOverlay(text: string) {
+  return encodeURIComponent(text)
+    .replace(/%2C/g, '%252C')
+    .replace(/%2F/g, '%252F');
+}
+
+function posToGravity(pos: OverlayPos) {
+  switch (pos) {
+    case 'top-left': return 'north_west';
+    case 'top-center': return 'north';
+    case 'top-right': return 'north_east';
+    case 'center-left': return 'west';
+    case 'center': return 'center';
+    case 'center-right': return 'east';
+    case 'bottom-left': return 'south_west';
+    case 'bottom-center': return 'south';
+    case 'bottom-right': return 'south_east';
+  }
+}
+
+function posToAlign(pos: OverlayPos) {
+  if (pos.endsWith('left')) return 'left';
+  if (pos.endsWith('right')) return 'right';
+  return 'center';
+}
+
+function posToOffsets(pos: OverlayPos) {
+  const x = (pos.endsWith('left') || pos.endsWith('right')) ? OVERLAY_MARGIN_PX : 0;
+  let y = (pos.startsWith('top') || pos.startsWith('bottom')) ? OVERLAY_MARGIN_PX : 0;
+  if (pos.startsWith('bottom')) y = -y;
+  return { x, y };
+}
+
+function buildCloudinaryOverlayUrl(
+  originalUrl: string,
+  {
+    text,
+    sizePx,             // already scaled to asset px
+    color = 'ffffff',
+    pos = 'bottom-center' as OverlayPos,
+    font = 'Arial',
+    weight = 'bold',
+  }: {
+    text: string;
+    sizePx: number;      // IMPORTANT: this is in asset pixels
+    color?: string;
+    pos?: OverlayPos;
+    font?: string;
+    weight?: 'thin' | 'light' | 'normal' | 'bold' | 'black';
+  }
+) {
+  if (!originalUrl.includes('/upload/')) return originalUrl;
+
+  const i = originalUrl.indexOf('/upload/');
+  const prefix = originalUrl.slice(0, i + '/upload/'.length);
+  const suffix = originalUrl.slice(i + '/upload/'.length);
+
+  const encodedText = encodeTextForOverlay(text);
+  const gravity = posToGravity(pos);
+  const align = posToAlign(pos);
+  const { x, y } = posToOffsets(pos);
+
+  const clamped = Math.max(12, Math.floor(sizePx));
+  const styleChunk = `${font}_${clamped}_${weight}_${align}`;
+
+  const layer =
+    `l_text:${styleChunk}:${encodedText},` +
+    `co_rgb:${color},` +
+    `c_fit,fl_relative,w_${WRAP_PERCENT}`;
+
+  const apply =
+    `fl_layer_apply,g_${gravity}` +
+    (x ? `,x_${x}` : '') +
+    (y ? `,y_${y}` : '');
+
+  return `${prefix}${layer}/${apply}/${suffix}`;
+}
+
+/** ================== Steps & Post Types ================== */
 
 enum STEPS {
   TYPE = 0,
@@ -41,7 +131,7 @@ const postTypes = [
         <path d="M21 2H19C18.4477 2 18 2.44772 18 3V5C18 5.55228 18.4477 6 19 6H21C21.5523 6 22 5.55228 22 5V3C22 2.44772 21.5523 2 21 2Z" stroke="currentColor" strokeWidth="1.5" />
         <path d="M5 2H3C2.44772 2 2 2.44772 2 3V5C2 5.55228 2.44772 6 3 6H5C5.55228 6 6 5.55228 6 5V3C6 2.44772 5.55228 2 5 2Z" stroke="currentColor" strokeWidth="1.5" />
         <path d="M21 18H19C18.4477 18 18 18.4477 18 19V21C18 21.5523 18.4477 22 19 22H21C21.5523 22 22 21.5523 22 21V19C22 18.4477 21.5523 18 21 18Z" stroke="currentColor" strokeWidth="1.5" />
-        <path d="M5 18H3C2.44772 18 2 18.4477 2 19V21C2 21.5523 2.44772 22 3 22H5C5.55228 22 6 21.5523 6 21V19C6 18.4477 5.55228 18 5 18Z" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M5 18H3C2.44772 18 2 18.4477 2 19V21C2 21.5523 2.44772 22 3 22H5C5.55228 22 6 21.55228 6 21V19C6 18.44772 5.55228 18 5 18Z" stroke="currentColor" strokeWidth="1.5" />
       </svg>
     )
   },
@@ -58,6 +148,8 @@ const postTypes = [
   }
 ];
 
+/** ================== Component ================== */
+
 const CreatePostModal = () => {
   const router = useRouter();
   const modal = useCreatePostModal();
@@ -68,10 +160,34 @@ const CreatePostModal = () => {
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  /** Overlay state for Reels */
+  const [overlayText, setOverlayText] = useState('');
+  const [overlaySize, setOverlaySize] = useState(48); // CSS px (slider)
+  const [overlayColor, setOverlayColor] = useState<'ffffff' | '000000'>('ffffff');
+  const [overlayPos, setOverlayPos] = useState<OverlayPos>('bottom-center');
+
+  /** Measure preview width so we can scale CSS px -> Cloudinary px */
+  const previewRef = useRef<HTMLDivElement>(null);
+  const [previewWidth, setPreviewWidth] = useState<number>(0);
+
+  useEffect(() => {
+    if (!previewRef.current) return;
+    const ro = new ResizeObserver((entries) => {
+      const w = entries[0]?.contentRect?.width ?? 0;
+      setPreviewWidth(Math.round(w));
+    });
+    ro.observe(previewRef.current);
+    return () => ro.disconnect();
+  }, [previewRef]);
+
   const handleClose = useCallback(() => {
     setPostType('');
     setContent('');
     setMediaData(null);
+    setOverlayText('');
+    setOverlaySize(48);
+    setOverlayColor('ffffff');
+    setOverlayPos('bottom-center');
     setStep(STEPS.TYPE);
     modal.onClose();
   }, [modal]);
@@ -80,22 +196,57 @@ const CreatePostModal = () => {
     if (!content.trim() && postType !== 'Reel') {
       return toast.error('Please write something');
     }
-    
     if (postType === 'Reel' && !mediaData) {
       return toast.error('Please upload media for your reel');
     }
-    
+
     setIsLoading(true);
-    
+
+    // Convert CSS font-size to Cloudinary font-size (asset px)
+    const assetW = mediaData?.width; // from MediaUpload
+    const cssPx = overlayText.trim() ? overlaySize : 0;
+    const sizePx =
+      overlayText.trim() && assetW && previewWidth
+        ? Math.max(12, Math.round(cssPx * (assetW / previewWidth)))
+        : Math.max(12, Math.round(cssPx)); // fallback if we miss a width
+
+    let finalMediaUrl = mediaData?.url || null;
+    let overlayMeta: any = null;
+
+    if (postType === 'Reel' && mediaData && overlayText.trim()) {
+      overlayMeta = {
+        text: overlayText.trim(),
+        sizeCssPx: overlaySize,
+        sizePx,               // baked pixel size
+        color: overlayColor,
+        pos: overlayPos,
+        font: 'Arial',
+        weight: 'bold',
+        margin: OVERLAY_MARGIN_PX,
+        wrapPercent: WRAP_PERCENT,
+        assetWidth: assetW ?? null,
+        previewWidth,
+      };
+      finalMediaUrl = buildCloudinaryOverlayUrl(mediaData.url, {
+        text: overlayMeta.text,
+        sizePx,
+        color: overlayMeta.color,
+        pos: overlayMeta.pos,
+        font: overlayMeta.font,
+        weight: overlayMeta.weight,
+      });
+    }
+
     const postData = {
-      content: content || '', // Allow empty content for reels
+      content: content || '',
       category: selectedCategory,
-      mediaUrl: mediaData?.url || null,
+      mediaUrl: finalMediaUrl,
       mediaType: mediaData?.type || null,
+      imageSrc: mediaData?.type === 'image' ? finalMediaUrl : null,
       location: null,
-      imageSrc: mediaData?.type === 'image' ? mediaData.url : null, // For backward compatibility
       tag: postType,
-      postType
+      postType,
+      mediaOverlay: overlayMeta,
     };
 
     try {
@@ -117,112 +268,189 @@ const CreatePostModal = () => {
 
   const onSubmit = () => {
     if (step === STEPS.TYPE) {
-      if (!postType) {
-        return toast.error('Choose a post type');
-      }
-      
-      // If it's a reel, go to media upload step
-      if (postType === 'Reel') {
-        return setStep(STEPS.MEDIA);
-      }
-      
-      // For other post types, go directly to content
+      if (!postType) return toast.error('Choose a post type');
+      if (postType === 'Reel') return setStep(STEPS.MEDIA);
       return setStep(STEPS.CONTENT);
     }
-    
     if (step === STEPS.MEDIA) {
-      if (!mediaData) {
-        return toast.error('Please upload media for your reel');
-      }
+      if (!mediaData) return toast.error('Please upload media for your reel');
       return setStep(STEPS.CONTENT);
     }
-    
-    // Final step - validate and submit
     if (postType !== 'Reel' && !content.trim()) {
       return toast.error('Please write something');
     }
-    
     setCategoryModalOpen(true);
   };
 
   const handleSecondaryAction = () => {
     if (step === STEPS.CONTENT) {
-      // Go back to media step for reels, or type step for other posts
       setStep(postType === 'Reel' ? STEPS.MEDIA : STEPS.TYPE);
     } else if (step === STEPS.MEDIA) {
       setStep(STEPS.TYPE);
     }
   };
 
-  const actionLabel = useMemo(() => {
-    if (step === STEPS.CONTENT) {
-      return 'Submit';
-    }
-    return 'Next';
-  }, [step]);
-
-  const secondaryActionLabel = useMemo(() => {
-    if (step === STEPS.TYPE) {
-      return undefined;
-    }
-    return 'Back';
-  }, [step]);
+  const actionLabel = useMemo(() => (step === STEPS.CONTENT ? 'Submit' : 'Next'), [step]);
+  const secondaryActionLabel = useMemo(() => (step === STEPS.TYPE ? undefined : 'Back'), [step]);
 
   const bodyContent = useMemo(() => {
-if (step === STEPS.TYPE) {
-  return (
-    <div className="flex flex-col gap-4">
-      <Heading title="What type of post?" subtitle="Choose one to get started" />
-      <div className="grid grid-cols-3 gap-3">
-        {postTypes.map((type) => (
-          <div
-            key={type.label}
-            onClick={() => setPostType(type.label)}
-            className={`
-              rounded-xl p-4 shadow flex flex-col items-center justify-center gap-2 cursor-pointer transition-all
-              ${postType === type.label 
-                ? 'bg-[#60A5FA] text-white'   // 👈 always brand blue when selected
-                : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'}
-            `}
-          >
-            <div className="w-5 h-5">{type.icon}</div>
-            <span className="text-xs">{type.label}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-    
-    if (step === STEPS.MEDIA) {
+    if (step === STEPS.TYPE) {
       return (
         <div className="flex flex-col gap-4">
-          <Heading 
-            title="Upload your media" 
-            subtitle="Add a photo, video, or GIF for your reel" 
-          />
-          <div className="w-full max-w-md mx-auto">
-            <MediaUpload
-              onMediaUpload={setMediaData}
-              currentMedia={mediaData}
-            />
+          <Heading title="What type of post?" subtitle="Choose one to get started" />
+          <div className="grid grid-cols-3 gap-3">
+            {postTypes.map((type) => (
+              <div
+                key={type.label}
+                onClick={() => setPostType(type.label)}
+                className={`
+                  rounded-xl p-4 shadow flex flex-col items-center justify-center gap-2 cursor-pointer transition-all
+                  ${postType === type.label ? 'bg-[#60A5FA] text-white' : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'}
+                `}
+              >
+                <div className="w-5 h-5">{type.icon}</div>
+                <span className="text-xs">{type.label}</span>
+              </div>
+            ))}
           </div>
+        </div>
+      );
+    }
+
+    if (step === STEPS.MEDIA) {
+      const showOverlayControls = postType === 'Reel';
+      return (
+        <div className="flex flex-col gap-4">
+          <Heading
+            title="Upload your media"
+            subtitle={showOverlayControls ? 'Add a photo, video, or GIF and optional on-media text' : 'Add a photo, video, or GIF'}
+          />
+
+          {/* Preview with overlay */}
+          <div ref={previewRef} className="w-full max-w-md mx-auto relative">
+            <MediaUpload onMediaUpload={setMediaData} currentMedia={mediaData} />
+
+            {mediaData && overlayText.trim().length > 0 && (
+              <div
+                className="pointer-events-none absolute inset-0 flex"
+                style={{
+                  justifyContent:
+                    overlayPos.endsWith('left') ? 'flex-start' :
+                    overlayPos.endsWith('right') ? 'flex-end' :
+                    'center',
+                  alignItems:
+                    overlayPos.startsWith('top') ? 'flex-start' :
+                    overlayPos.startsWith('bottom') ? 'flex-end' :
+                    'center',
+                  padding: `${OVERLAY_MARGIN_PX}px`,
+                }}
+              >
+                <span
+                  className="px-1"
+                  style={{
+                    fontSize: `${overlaySize}px`, // CSS px in preview
+                    color: overlayColor === 'ffffff' ? '#fff' : '#000',
+                    textShadow: overlayColor === 'ffffff'
+                      ? '0 1px 2px rgba(0,0,0,0.45)'
+                      : '0 1px 2px rgba(255,255,255,0.45)',
+                    lineHeight: 1.1,
+                    fontWeight: 700,
+                    maxWidth: `${WRAP_PERCENT * 100}%`,
+                    wordBreak: 'break-word',
+                    textAlign:
+                      overlayPos.endsWith('left') ? 'left' :
+                      overlayPos.endsWith('right') ? 'right' :
+                      'center',
+                  }}
+                >
+                  {overlayText}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Overlay controls */}
+          {showOverlayControls && (
+            <div className="flex flex-col gap-3">
+              <div className="grid grid-cols-1 gap-2">
+                <label className="text-sm font-medium text-neutral-800">Text on media</label>
+                <input
+                  type="text"
+                  value={overlayText}
+                  onChange={(e) => setOverlayText(e.target.value)}
+                  placeholder="Add text (optional)"
+                  className="w-full rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm shadow-sm"
+                />
+              </div>
+
+              <div className="grid grid-cols-3 gap-3">
+                <div className="flex flex-col">
+                  <label className="text-sm font-medium text-neutral-800">Size</label>
+                  <input
+                    type="range"
+                    min={16}
+                    max={96}
+                    step={1}
+                    value={overlaySize}
+                    onChange={(e) => setOverlaySize(Number(e.target.value))}
+                  />
+                  <div className="text-xs text-neutral-500 mt-1">{overlaySize}px</div>
+                </div>
+
+                <div className="flex flex-col">
+                  <label className="text-sm font-medium text-neutral-800">Color</label>
+                  <select
+                    value={overlayColor}
+                    onChange={(e) => setOverlayColor(e.target.value as 'ffffff' | '000000')}
+                    className="rounded-xl border border-neutral-200 bg-white px-2 py-2 text-sm shadow-sm"
+                  >
+                    <option value="ffffff">White</option>
+                    <option value="000000">Black</option>
+                  </select>
+                </div>
+
+                <div className="flex flex-col">
+                  <label className="text-sm font-medium text-neutral-800">Position</label>
+                  <select
+                    value={overlayPos}
+                    onChange={(e) => setOverlayPos(e.target.value as OverlayPos)}
+                    className="rounded-xl border border-neutral-200 bg-white px-2 py-2 text-sm shadow-sm"
+                  >
+                    <option value="top-left">Top Left</option>
+                    <option value="top-center">Top Center</option>
+                    <option value="top-right">Top Right</option>
+                    <option value="center-left">Center Left</option>
+                    <option value="center">Center</option>
+                    <option value="center-right">Center Right</option>
+                    <option value="bottom-left">Bottom Left</option>
+                    <option value="bottom-center">Bottom Center</option>
+                    <option value="bottom-right">Bottom Right</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="text-xs text-neutral-500">
+                The baked text size is scaled to match your preview width.
+              </div>
+            </div>
+          )}
+
           {mediaData && (
             <div className="text-center text-sm text-neutral-600">
-              {mediaData.type === 'video' ? 'Video' : 
+              {mediaData.type === 'video' ? 'Video' :
                mediaData.type === 'gif' ? 'GIF' : 'Image'} uploaded successfully
             </div>
           )}
         </div>
       );
     }
-    
+
+    // CONTENT step
     return (
       <div className="flex flex-col gap-4">
-        <Heading 
-          title={postType === 'Reel' ? 'Add a caption' : 'Write your post'} 
-          subtitle={postType === 'Reel' ? 'Tell people about your reel (optional)' : 'Share your thoughts'} 
+        <Heading
+          title={postType === 'Reel' ? 'Add a caption' : 'Write your post'}
+          subtitle={postType === 'Reel' ? 'Tell people about your reel (optional)' : 'Share your thoughts'}
         />
         <div className="relative w-full">
           <textarea
@@ -232,23 +460,10 @@ if (step === STEPS.TYPE) {
             onChange={(e) => setContent(e.target.value)}
             disabled={isLoading}
           />
-          <button
-            onClick={onSubmit}
-            className="absolute bottom-4 right-4 bg-[#60A5FA] text-white p-3 rounded-xl hover:opacity-80 transition disabled:opacity-50"
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            ) : (
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
-              </svg>
-            )}
-          </button>
         </div>
       </div>
     );
-  }, [step, postType, content, mediaData, isLoading]);
+  }, [step, postType, content, mediaData, isLoading, overlayText, overlaySize, overlayColor, overlayPos, previewWidth]);
 
   return (
     <>

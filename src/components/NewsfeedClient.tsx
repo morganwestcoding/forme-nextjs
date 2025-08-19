@@ -36,46 +36,42 @@ interface NewsfeedClientProps {
   listings: SafeListing[];
 }
 
-/** Animation timing (identical to MarketContent/ShopClient) */
+/** Animation timing (aligned with MarketContent/ShopClient) */
 const MIN_LOADER_MS = 1800;
 const FADE_DURATION_MS = 520;
 const FADE_STAGGER_BASE_MS = 140;
 const FADE_STAGGER_STEP_MS = 30;
 const CONTAINER_FADE_MS = 700;
 
-const NewsfeedClient: React.FC<NewsfeedClientProps> = ({ 
-  initialPosts, 
-  currentUser, 
+const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
+  initialPosts,
+  currentUser,
   categoryToUse,
-  listings 
+  listings,
 }) => {
   const setPosts = usePostStore((state) => state.setPosts);
   const storePosts = usePostStore((state) => state.posts);
   const { selectedCategory } = useCategory();
   const { filters } = useFilter();
 
-  // Data fetch/loading
   const [loading, setLoading] = useState(false);
-
-  // UI loader to control animation start (enforces minimum loader time)
   const [uiLoading, setUiLoading] = useState(true);
   const [animatedItems, setAnimatedItems] = useState<JSX.Element[]>([]);
 
-  // Updated ViewState for horizontal/vertical toggle
   const [viewState, setViewState] = useState<ViewState>({
     mode: 'horizontal',
     filters: {
       category: 'featured',
       sortBy: 'date',
-      sortOrder: 'desc'
-    }
+      sortOrder: 'desc',
+    },
   });
-  
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const filterParam = searchParams?.get('filter') || 'for-you';
-  
-  // Create searchParams object for NewsfeedHeader
+
+  // Build NewsfeedHeader props from URL
   const headerSearchParams = {
     userId: searchParams?.get('userId') || undefined,
     locationValue: searchParams?.get('locationValue') || undefined,
@@ -88,41 +84,36 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
     page: searchParams?.get('page') || undefined,
   };
 
-  // Fetch posts whenever filter or category changes
+  // Fetch posts on category/filter change
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         setLoading(true);
-        setUiLoading(true); // start UI loader so we can time the animations
+        setUiLoading(true);
 
-        // Construct query parameters
-        const params: any = {};
-        
-        // Category from URL first, then context fallback
+        const params: Record<string, string | number> = {};
         const categoryParam = searchParams?.get('category');
+
         if (categoryParam) {
           params.category = categoryParam;
         } else if (selectedCategory && selectedCategory !== 'Default') {
           params.category = selectedCategory;
         }
-        
+
         if (filterParam) params.filter = filterParam;
-        
-        // Location filters
+
         if (filters.location?.state) params.state = filters.location.state;
         if (filters.location?.city) params.city = filters.location.city;
-        
-        // Sort
+
         if (filters.sort?.order) params.order = filters.sort.order;
-        
-        // Correct API path (singular)
+
+        // Correct endpoint (singular)
         const { data } = await axios.get('/api/post', { params });
         setPosts(data);
       } catch (error) {
         console.error('Error fetching posts:', error);
       } finally {
         setLoading(false);
-        // enforce minimum loader time before flipping uiLoading off
         setTimeout(() => setUiLoading(false), MIN_LOADER_MS);
       }
     };
@@ -130,26 +121,23 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
     fetchPosts();
   }, [selectedCategory, filterParam, filters, setPosts, searchParams]);
 
-  // Build the flattened list of feed items (posts + interspersed listings)
+  // Build interleaved feed (posts + listings)
   const flatFeedItems = useMemo(() => {
     if (!storePosts || storePosts.length === 0) return [];
 
     const out: JSX.Element[] = [];
+
     storePosts.forEach((post, index) => {
       out.push(
         <div
           key={`post-${post.id}`}
-          className="group/card hover:z-10 relative group-hover/grid:opacity-100 hover:!opacity-100 transition-opacity duration-300"
+          className="group/card relative transition-opacity duration-300 group-hover/grid:opacity-100 hover:z-10 hover:!opacity-100"
         >
-          <PostCard 
-            post={post}
-            currentUser={currentUser}
-            categories={categories}
-          />
+          <PostCard post={post} currentUser={currentUser} categories={categories} />
         </div>
       );
 
-      // Every 3rd item, inject a ListingCard (matches your current logic)
+      // Inject a ListingCard after every 3 posts (if provided)
       if ((index + 1) % 3 === 0 && listings.length > 0) {
         const listingIndex = Math.floor((index + 1) / 3) - 1;
         const listing = listings[listingIndex % listings.length];
@@ -157,13 +145,9 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
         out.push(
           <div
             key={`listing-${listing.id}-${listingIndex}`}
-            className="group/card hover:z-10 relative group-hover/grid:opacity-100 hover:!opacity-100 transition-opacity duration-300"
+            className="group/card relative transition-opacity duration-300 group-hover/grid:opacity-100 hover:z-10 hover:!opacity-100"
           >
-            <ListingCard
-              currentUser={currentUser}
-              data={listing}
-              categories={categories}
-            />
+            <ListingCard currentUser={currentUser} data={listing} categories={categories} />
           </div>
         );
       }
@@ -172,10 +156,10 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
     return out;
   }, [storePosts, listings, currentUser]);
 
-  // Build animated wrappers ONLY when uiLoading completes
+  // Wrap in staggered fade-in containers (runs after uiLoading completes)
   const buildAnimatedItems = () =>
     flatFeedItems.map((el, idx) => {
-      const delay = FADE_STAGGER_BASE_MS + (idx % 12) * FADE_STAGGER_STEP_MS; // identical stagger
+      const delay = FADE_STAGGER_BASE_MS + (idx % 12) * FADE_STAGGER_STEP_MS;
       return (
         <div
           key={`feedwrap-${idx}`}
@@ -197,16 +181,15 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
     }
   }, [uiLoading, flatFeedItems]);
 
-  // Helper function to get appropriate empty state message
   const getEmptyStateMessage = () => {
     if (filterParam === 'following') {
-      return { title: "You're not following anyone yet", subtitle: "Follow users to see their posts here" };
+      return { title: "You're not following anyone yet", subtitle: 'Follow users to see their posts here' };
     } else if (filterParam === 'likes') {
-      return { title: "No liked posts yet", subtitle: "Posts you like will appear here" };
+      return { title: 'No liked posts yet', subtitle: 'Posts you like will appear here' };
     } else if (filterParam === 'bookmarks') {
-      return { title: "No bookmarked posts yet", subtitle: "Posts you bookmark will appear here" };
+      return { title: 'No bookmarked posts yet', subtitle: 'Posts you bookmark will appear here' };
     } else {
-      return { title: "No posts found", subtitle: "Be the first one to post!" };
+      return { title: 'No posts found', subtitle: 'Be the first one to post!' };
     }
   };
 
@@ -214,11 +197,11 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
     <ClientProviders>
       <Container>
         <div className="pt-4 mb-4">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Discover</h1>
+          <h1 className="mb-2 text-3xl font-bold text-gray-900">Discover</h1>
           <p className="text-gray-600">Share whats new with you and your business</p>
         </div>
 
-        <NewsfeedHeader 
+        <NewsfeedHeader
           searchParams={headerSearchParams}
           viewState={viewState}
           setViewState={setViewState}
@@ -237,7 +220,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
 
         {/* Feed */}
         {(!storePosts || storePosts.length === 0) ? (
-          <EmptyState 
+          <EmptyState
             title={getEmptyStateMessage().title}
             subtitle={getEmptyStateMessage().subtitle}
           />
@@ -246,12 +229,12 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
             className={`transition-opacity ease-out ${uiLoading ? 'opacity-0' : 'opacity-100'}`}
             style={{ transitionDuration: `${CONTAINER_FADE_MS}ms` }}
           >
-            {viewState.mode === 'horizontal' && (
-              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-4 group/grid">
-                {animatedItems}
-              </div>
-            )}
-            {/* If you add vertical mode later, reuse animatedItems there too */}
+    {viewState.mode === 'horizontal' && (
+  <div className="group/grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+    {animatedItems}
+  </div>
+)}
+            {/* If you add a 'vertical' mode later, render animatedItems there too */}
           </div>
         )}
       </Container>
