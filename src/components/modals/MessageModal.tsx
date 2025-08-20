@@ -71,32 +71,33 @@ const MessageModal: React.FC = () => {
     if (e.key === 'Enter') sendMessage();
   };
 
+  // Group messages by calendar date (normalized)
   const groupMessagesByDate = (msgs: Message[]) => {
-    const groups: { [key: string]: Message[] } = {};
+    const groups: Record<string, Message[]> = {};
     msgs
       .slice()
       .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
-      .forEach(message => {
-        const date = new Date(message.createdAt).toDateString(); // normalize key
-        if (!groups[date]) groups[date] = [];
-        groups[date].push(message);
+      .forEach(m => {
+        const key = new Date(m.createdAt).toDateString();
+        (groups[key] ||= []).push(m);
       });
     return groups;
   };
 
-  const renderDateSeparator = (date: string) => {
-    const d = new Date(date);
+  // Sleek date divider; "Aug 19" for this year, "Aug 19, 2023" otherwise
+  const renderDateSeparator = (dateKey: string) => {
+    const d = new Date(dateKey);
     const now = new Date();
-    const isOlderThanYear = now.getFullYear() !== d.getFullYear();
-
-    const formatted = isOlderThanYear
-      ? d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
-      : d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+    const formatted = d.toLocaleDateString(undefined, {
+      month: 'short',
+      day: 'numeric',
+      ...(now.getFullYear() !== d.getFullYear() ? { year: 'numeric' } : {}),
+    });
 
     return (
       <div className="relative flex items-center my-6">
         <div className="flex-grow border-t border-neutral-300/40" />
-        <span className="mx-4 bg-white/90 text-neutral-700 font-medium text-xs px-4 py-2 rounded-lg shadow-sm backdrop-blur-sm">
+        <span className="mx-4 bg-white/90 text-neutral-700 font-medium text-xs px-3 py-1 rounded-full shadow-sm backdrop-blur-sm">
           {formatted}
         </span>
         <div className="flex-grow border-t border-neutral-300/40" />
@@ -114,18 +115,21 @@ const MessageModal: React.FC = () => {
         <>
           <div className="flex-grow overflow-y-auto mb-4 px-4 custom-scrollbar">
             <div className="space-y-4 flex flex-col">
-              {Object.entries(groupMessagesByDate(messages)).map(([date, dateMessages]) => (
-                <React.Fragment key={date}>
-                  {renderDateSeparator(date)}
-                  {dateMessages.map(message => {
+              {Object.entries(groupMessagesByDate(messages)).map(([dateKey, dateMessages]) => (
+                <React.Fragment key={dateKey}>
+                  {renderDateSeparator(dateKey)}
+                  {dateMessages.map((message, idx) => {
                     const isOther = message.senderId === messageModal.otherUserId;
+                    // show timestamp only on the last message of this day
+                    const showTime = idx === dateMessages.length - 1;
+
                     return (
                       <div key={message.id} className="w-full">
-                        <div
-                          className={`w-full flex ${isOther ? 'justify-start' : 'justify-end'}`}
-                        >
+                        <div className={`w-full flex ${isOther ? 'justify-start' : 'justify-end'}`}>
+                          {/* IMPORTANT: make the inner row full width so max-w percentages
+                             are calculated against the whole row, not content size */}
                           <div
-                            className={`relative flex ${
+                            className={`relative w-full flex ${
                               isOther ? 'flex-row' : 'flex-row-reverse'
                             } items-start gap-2`}
                           >
@@ -140,9 +144,9 @@ const MessageModal: React.FC = () => {
                               />
                             </div>
 
-                            {/* Dynamic bubble */}
+                            {/* Bubble: single line until ~70% width, then wrap */}
                             <div
-                              className={`inline-block max-w-[70%] rounded-2xl px-4 py-3 shadow-sm border ${
+                              className={`inline-block w-auto max-w-[70%] rounded-2xl px-4 py-3 shadow-sm border ${
                                 isOther
                                   ? 'bg-white/10 text-white border-white/20'
                                   : 'bg-[#3B82F6] text-white border-transparent'
@@ -151,19 +155,20 @@ const MessageModal: React.FC = () => {
                               <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">
                                 {message.content}
                               </p>
-                              <div
-                                className={`mt-1 text-[11px] ${
-                                  isOther ? 'text-white/70' : 'text-white/70'
-                                }`}
-                              >
-                                {new Date(message.createdAt).toLocaleTimeString([], {
-                                  hour: '2-digit',
-                                  minute: '2-digit',
-                                })}
-                              </div>
                             </div>
                           </div>
                         </div>
+
+                        {showTime && (
+                          <div className="mt-1 px-12 flex justify-end">
+                            <span className="text-[11px] text-neutral-500">
+                              {new Date(message.createdAt).toLocaleTimeString([], {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     );
                   })}
