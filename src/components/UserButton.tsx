@@ -118,7 +118,7 @@ const UserButton: React.FC<UserButtonProps> = ({
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
-        className={`bg-white bg-opacity-90 backdrop-blur-lg rounded-lg p-2 shadow-lg border-none z-[100] ${dropdownWidthClass}`}
+        className={`bg-white bg-opacity-90 backdrop-blur-lg rounded-lg p-3 shadow-lg border-none z-[100] ${dropdownWidthClass}`}
         side="bottom"
         align="center"
         sideOffset={8}

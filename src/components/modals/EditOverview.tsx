@@ -30,7 +30,7 @@ const EditOverview: React.FC<EditOverviewProps> = ({ items, onSelect }) => {
               'bg-white border border-neutral-200 shadow-sm hover:shadow-md',
               'transition focus:outline-none focus:ring-2 focus:ring-neutral-300',
               // size & layout
-              'h-36 flex flex-col justify-between'
+              'h-28 flex flex-col justify-between'
             ].join(' ')}
           >
             <div className="space-y-1">

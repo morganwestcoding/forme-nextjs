@@ -19,14 +19,12 @@ interface AddressAutocompleteProps {
     city: string;
     state: string;
     zipCode: string;
-    coordinates: {
-      lat: number;
-      lng: number;
-    };
+    coordinates: { lat: number; lng: number };
   }) => void;
-
-  /** Optional: bias results near this lat/lng. If omitted, we try browser geolocation, then US centroid. */
   proximity?: { lat: number; lng: number };
+
+  /** NEW: prefill the visible input (e.g., saved address in edit mode) */
+  initialValue?: string;
 }
 
 interface Suggestion {
@@ -35,7 +33,7 @@ interface Suggestion {
   context: Array<{ id: string; text: string; short_code?: string }>;
 }
 
-const US_CENTROID = { lat: 39.8283, lng: -98.5795 }; // neutral fallback
+const US_CENTROID = { lat: 39.8283, lng: -98.5795 };
 
 const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
   id,
@@ -45,9 +43,10 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
   disabled,
   errors,
   onAddressSelect,
-  proximity, // optional override from parent
+  proximity,
+  initialValue,                // ⬅️ NEW
 }) => {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(initialValue ?? ''); // ⬅️ start with initial
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number>(-1);
@@ -59,7 +58,6 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
   const listRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<NodeJS.Timeout>();
 
-  // Pull handlers/refs from RHF register so we can merge our onChange
   const {
     ref: inputRefFromRegister,
     onChange: rhfOnChange,
@@ -67,10 +65,13 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
     name,
   } = register(id, { required });
 
-  // Establish proximity:
-  // 1) prop `proximity` if supplied
-  // 2) browser geolocation (user permission)
-  // 3) neutral US centroid
+  // Keep input in sync if initialValue changes (e.g. open modal with existing data)
+  useEffect(() => {
+    if (typeof initialValue === 'string') {
+      setQuery(initialValue);
+    }
+  }, [initialValue]);
+
   useEffect(() => {
     if (proximity) {
       setEffectiveProximity(proximity);
@@ -78,12 +79,7 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
     }
     if (typeof window !== 'undefined' && 'geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          setEffectiveProximity({
-            lat: pos.coords.latitude,
-            lng: pos.coords.longitude,
-          });
-        },
+        (pos) => setEffectiveProximity({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
         () => setEffectiveProximity(US_CENTROID),
         { enableHighAccuracy: false, timeout: 4000, maximumAge: 600000 }
       );
@@ -98,19 +94,15 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
       const params = new URLSearchParams({
         access_token: process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN,
         country: 'us',
-        types: 'address',            // keep address-only; expand to "address,place,postcode" if needed
+        types: 'address',
         limit: '6',
         autocomplete: 'true',
         language: 'en',
       });
-
       if (effectiveProximity) {
-        // Mapbox expects lng,lat order
         params.set('proximity', `${effectiveProximity.lng},${effectiveProximity.lat}`);
       }
-
       const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(input)}.json?${params.toString()}`;
-
       const res = await fetch(url);
       const data = await res.json();
       return (data?.features as Suggestion[]) || [];
@@ -122,10 +114,9 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setQuery(value);
-    rhfOnChange(e); // keep RHF in sync
+    rhfOnChange(e);
 
     if (debounceRef.current) clearTimeout(debounceRef.current);
-
     if (value.length > 2) {
       debounceRef.current = setTimeout(async () => {
         const next = await fetchSuggestions(value);
@@ -142,23 +133,15 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
 
   const parseSuggestion = (s: Suggestion) => {
     const address = (s.place_name?.split(',')[0] || '').trim();
-
     let city = '', state = '', zipCode = '';
     for (const c of s.context || []) {
       if (c.id.startsWith('place')) city = c.text;
       if (c.id.startsWith('region')) state = c.text;
       if (c.id.startsWith('postcode')) zipCode = c.text;
     }
-
     return {
-      address,
-      city,
-      state,
-      zipCode,
-      coordinates: {
-        lat: s.geometry.coordinates[1],
-        lng: s.geometry.coordinates[0],
-      },
+      address, city, state, zipCode,
+      coordinates: { lat: s.geometry.coordinates[1], lng: s.geometry.coordinates[0] },
     };
   };
 
@@ -170,13 +153,10 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
     onAddressSelect(parsed);
   };
 
-  // Close dropdown on outside click
   useEffect(() => {
     const clickHandler = (e: MouseEvent) => {
       if (!rootRef.current) return;
-      if (!rootRef.current.contains(e.target as Node)) {
-        setShowSuggestions(false);
-      }
+      if (!rootRef.current.contains(e.target as Node)) setShowSuggestions(false);
     };
     document.addEventListener('mousedown', clickHandler);
     return () => document.removeEventListener('mousedown', clickHandler);
@@ -184,7 +164,6 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (!showSuggestions || suggestions.length === 0) return;
-
     if (e.key === 'ArrowDown') {
       e.preventDefault();
       setActiveIndex((i) => {
@@ -223,45 +202,24 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
         placeholder=" "
         autoComplete="off"
         className={`
-          peer
-          w-full
-          p-3
-          pt-6
-          bg-neutral-50
-          border
-          rounded-lg
-          outline-none
-          transition
-          disabled:opacity-70
-          disabled:cursor-not-allowed
+          peer w-full p-3 pt-6 bg-neutral-50 border rounded-lg outline-none transition
+          disabled:opacity-70 disabled:cursor-not-allowed
           ${errors[id] ? 'border-rose-500' : 'border-neutral-300'}
           ${errors[id] ? 'focus:border-rose-500' : 'focus:border-black'}
-          pl-4 pr-4
-          h-[60px]
+          pl-4 pr-4 h-[60px]
         `}
         aria-autocomplete="list"
         aria-controls={`${id}-listbox`}
         aria-expanded={showSuggestions}
-        aria-activedescendant={
-          activeIndex >= 0 ? `${id}-option-${activeIndex}` : undefined
-        }
+        aria-activedescendant={activeIndex >= 0 ? `${id}-option-${activeIndex}` : undefined}
       />
       <label
         htmlFor={id}
         className={`
-          absolute
-          text-sm
-          duration-150
-          transform
-          -translate-y-3
-          top-5
-          left-4
-          origin-[0]
+          absolute text-sm duration-150 transform -translate-y-3 top-5 left-4 origin-[0]
           ${errors[id] ? 'text-rose-500' : 'text-neutral-500'}
-          peer-placeholder-shown:scale-100
-          peer-placeholder-shown:translate-y-0
-          peer-focus:scale-75
-          peer-focus:-translate-y-4
+          peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0
+          peer-focus:scale-75 peer-focus:-translate-y-4
         `}
       >
         {label}

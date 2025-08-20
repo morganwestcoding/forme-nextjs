@@ -1,3 +1,4 @@
+// components/modals/RentModal.tsx
 'use client';
 
 import axios from 'axios';
@@ -5,6 +6,7 @@ import { toast } from 'react-hot-toast';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState, useCallback, useEffect } from "react";
+import { FiArrowLeft } from 'react-icons/fi';
 
 import useRentModal from '@/app/hooks/useRentModal';
 import Modal from "./Modal";
@@ -17,6 +19,7 @@ import ListLocationSelect from '../inputs/ListLocationSelect';
 import EmployeeSelector from '../inputs/EmployeeSelector';
 import StoreHours, { StoreHourType }  from '../inputs/StoreHours';
 import ImageUploadGrid from '../inputs/ImageUploadGrid';
+import EditOverview from './EditOverview';
 
 enum STEPS {
   CATEGORY = 0,
@@ -27,6 +30,9 @@ enum STEPS {
   HOURS = 5,
   EMPLOYEE = 6,
 }
+
+/** Virtual hub step for edit mode */
+const EDIT_HUB_STEP = -1;
 
 const initialServices: Service[] = [
   { serviceName: '', price: 0, category: '' },
@@ -53,7 +59,7 @@ const RentModal = () => {
   const isEditMode = !!listing;
 
   const [isLoading, setIsLoading] = useState(false);
-  const [step, setStep] = useState(STEPS.CATEGORY);
+  const [step, setStep] = useState<number>(isEditMode ? EDIT_HUB_STEP : STEPS.CATEGORY);
 
   // For remounting child inputs with internal state (selects, etc.)
   const [resetKey, setResetKey] = useState(0);
@@ -86,15 +92,15 @@ const RentModal = () => {
       website: listing?.website || '',
       galleryImages: listing?.galleryImages || [],
       // Hidden fields we validate through ListLocationSelect
-      state: '',
-      city: '',
+      state: listing?.state || '',
+      city: listing?.city || '',
     }
   });
 
   // Reset step each time modal opens (and blank everything when creating)
   useEffect(() => {
     if (!rentModal.isOpen) return;
-    setStep(STEPS.CATEGORY);
+    setStep(isEditMode ? EDIT_HUB_STEP : STEPS.CATEGORY);
 
     if (!isEditMode) {
       reset({
@@ -118,14 +124,14 @@ const RentModal = () => {
     }
   }, [rentModal.isOpen, isEditMode, reset]);
 
-  // ---- helpers to clear per-step data
+  // ---- helpers to clear per-step data (used in create flow back nav)
   const clearLocation = () => {
     setValue('location', null, { shouldDirty: true, shouldValidate: true, shouldTouch: true });
     setValue('address', '',   { shouldDirty: true, shouldValidate: true, shouldTouch: true });
     setValue('zipCode', '',   { shouldDirty: true, shouldValidate: true, shouldTouch: true });
     setValue('state',  '',    { shouldDirty: true, shouldValidate: true, shouldTouch: true });
     setValue('city',   '',    { shouldDirty: true, shouldValidate: true, shouldTouch: true });
-    setResetKey((k) => k + 1); // remount selects/autocomplete so UI really blanks
+    setResetKey((k) => k + 1);
   };
 
   const clearInfo = () => setServices(initialServices);
@@ -165,7 +171,7 @@ const RentModal = () => {
     setEmployees(initialEmployees);
     setStoreHours(initialStoreHours);
     setStep(STEPS.CATEGORY);
-    setResetKey((k) => k + 1); // remount children w/ internal state
+    setResetKey((k) => k + 1);
     rentModal.onClose();
   }, [reset, rentModal]);
 
@@ -196,6 +202,9 @@ const RentModal = () => {
   const imageSrc = watch('imageSrc');
   const address = watch('address');
   const zipCode = watch('zipCode');
+  const galleryImages = watch('galleryImages') || [];
+  const title = watch('title');
+  const description = watch('description');
 
   // watch hidden fields (from ListLocationSelect hidden inputs)
   const stateVal = watch('state');
@@ -206,9 +215,17 @@ const RentModal = () => {
   };
 
   /**
-   * onBack: clear the step you're returning to
+   * onBack:
+   * - In edit mode, always return to the hub (no clearing).
+   * - In create flow, go to previous step and clear that section.
    */
   const onBack = () => {
+    if (isEditMode) {
+      // From any section (including Category), go back to hub
+      setStep(EDIT_HUB_STEP);
+      return;
+    }
+
     if (step === STEPS.CATEGORY) return;
 
     const goingTo = (step - 1) as STEPS;
@@ -286,6 +303,9 @@ const RentModal = () => {
   };
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+    // No primary action on the Edit Overview hub
+    if (step === EDIT_HUB_STEP) return;
+
     if (step !== STEPS.EMPLOYEE) {
       return onNext();
     }
@@ -319,6 +339,7 @@ const RentModal = () => {
   const modalWidthClasses = useMemo(() => 'w-full md:w-4/6 lg:w-3/6 xl:w-2/5', [step]);
 
   const actionLabel = useMemo(() => {
+    if (step === EDIT_HUB_STEP) return undefined; // hide primary button on hub
     if (step === STEPS.EMPLOYEE) {
       return isEditMode ? 'Update' : 'Create';
     }
@@ -326,29 +347,71 @@ const RentModal = () => {
   }, [step, isEditMode]);
 
   const secondaryActionLabel = useMemo(() => {
-    if (step === STEPS.CATEGORY) return undefined;
-    return 'Back';
-  }, [step]);
+    if (step === EDIT_HUB_STEP) return undefined;                 // no back on hub
+    if (isEditMode && step === STEPS.CATEGORY) return 'Back';     // show back to hub on category in edit mode
+    return step === STEPS.CATEGORY ? undefined : 'Back';          // in create flow, hide back on first step
+  }, [step, isEditMode]);
+
+  // ----- Edit Overview items (for edit mode hub)
+  const servicesCount = useMemo(
+    () => services.filter(s => (s.serviceName?.trim() || '') && (Number(s.price) > 0)).length,
+    [services]
+  );
+  const employeesCount = useMemo(
+    () => employees.filter(e => (e || '').trim().length > 0).length,
+    [employees]
+  );
+  const imagesCount = (imageSrc ? 1 : 0) + (Array.isArray(galleryImages) ? galleryImages.length : 0);
+
+  const overviewItems = useMemo(() => ([
+    {
+      key: STEPS.CATEGORY,
+      title: 'Category',
+      description: category ? `Selected: ${category}` : 'Pick a category',
+    },
+    {
+      key: STEPS.LOCATION,
+      title: 'Location',
+      description: (cityVal && stateVal) ? `${cityVal}, ${stateVal}` : 'Address, City, State, ZIP',
+    },
+    {
+      key: STEPS.INFO,
+      title: 'Services',
+      description: servicesCount ? `${servicesCount} service${servicesCount > 1 ? 's' : ''}` : 'Add services',
+    },
+    {
+      key: STEPS.IMAGES,
+      title: 'Images',
+      description: imagesCount ? `${imagesCount} image${imagesCount > 1 ? 's' : ''}` : 'Add photos',
+    },
+    {
+      key: STEPS.DESCRIPTION,
+      title: 'Details',
+      description: title ? `Title: ${title}` : 'Title & Description',
+    },
+    {
+      key: STEPS.HOURS,
+      title: 'Hours',
+      description: 'Set store hours',
+    },
+    {
+      key: STEPS.EMPLOYEE,
+      title: 'Employees',
+      description: employeesCount ? `${employeesCount} added` : 'Add employees',
+    },
+  ]), [category, cityVal, stateVal, servicesCount, imagesCount, title, employeesCount]);
 
   // ----- BODY
   let bodyContent = (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-4">
       <Heading
         title={isEditMode ? "Edit your establishment" : "Define your establishment"}
         subtitle="Pick a category"
       />
-      <div className="grid grid-cols-4 gap-3">
-        {categories.slice(0, 4).map((item) => (
-          <CategoryInput
-            key={item.label}
-            onClick={(category) => setCustomValue('category', category)}
-            selected={category === item.label}
-            label={item.label}
-          />
-        ))}
-      </div>
-      <div className="grid grid-cols-4 gap-3">
-        {categories.slice(4).map((item) => (
+
+      {/* Single responsive grid; no duplication */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {categories.map((item) => (
           <CategoryInput
             key={item.label}
             onClick={(category) => setCustomValue('category', category)}
@@ -360,25 +423,44 @@ const RentModal = () => {
     </div>
   );
 
+  // ----- Edit Mode Hub
+  if (isEditMode && step === EDIT_HUB_STEP) {
+    bodyContent = (
+      <div className="flex flex-col gap-6">
+        <Heading title="Quick Edit" subtitle="Jump straight to the section you want to update." />
+        <EditOverview
+          items={overviewItems}
+          onSelect={(k) => setStep(k)}
+        />
+      </div>
+    );
+  }
+
   if (step === STEPS.LOCATION) {
     bodyContent = (
       <div className="flex flex-col gap-8">
         <Heading title="Where is your place located?" subtitle="Help guests find you!" />
-        <ListLocationSelect
-          key={`loc-${resetKey}`}          // remount to clear selects/labels
-          id="location"
-          onLocationSubmit={(locationData) => {
-            if (locationData) {
-              setValue('location', `${locationData.city}, ${locationData.state}`, { shouldValidate: true });
-              setValue('address', locationData.address, { shouldValidate: true });
-              setValue('zipCode', locationData.zipCode, { shouldValidate: true });
-              setValue('state', locationData.state, { shouldValidate: true });
-              setValue('city', locationData.city, { shouldValidate: true });
-            }
-          }}
-          register={register}
-          errors={errors}
-        />   
+<ListLocationSelect
+  key={`loc-${resetKey}`}
+  id="location"
+  initialLocation={isEditMode ? (listing?.location ?? null) : null}
+  initialAddress={isEditMode ? (listing?.address ?? null) : null}     // ⬅️ NEW
+  initialZipCode={isEditMode ? (listing?.zipCode ?? null) : null}     // ⬅️ NEW
+  onLocationSubmit={(loc) => {
+    if (!loc) return;
+    setValue('location', `${loc.city}, ${loc.state}`, { shouldValidate: true });
+    setValue('state', loc.state, { shouldValidate: true });
+    setValue('city',  loc.city,  { shouldValidate: true });
+
+    // only overwrite if provided (prevents clearing defaults)
+    if (loc.address) setValue('address', loc.address, { shouldValidate: true });
+    if (loc.zipCode) setValue('zipCode', loc.zipCode, { shouldValidate: true });
+  }}
+  register={register}
+  errors={errors}
+/>
+
+
       </div>
     );
   }
@@ -411,7 +493,7 @@ const RentModal = () => {
           onChange={(value) => setCustomValue('imageSrc', value)}
           onGalleryChange={(values) => setCustomValue('galleryImages', values)}
           value={imageSrc}
-          galleryImages={watch('galleryImages') || []}
+          galleryImages={galleryImages}
         />
       </div>
     );
@@ -460,7 +542,7 @@ const RentModal = () => {
       actionId="submit-button"
       onSubmit={handleSubmit(onSubmit)}
       secondaryActionLabel={secondaryActionLabel}
-      secondaryAction={step === STEPS.CATEGORY ? undefined : onBack}
+      secondaryAction={step === EDIT_HUB_STEP ? undefined : onBack}
       onClose={handleClose}
       body={bodyContent}
       className={modalWidthClasses}
