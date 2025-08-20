@@ -12,10 +12,10 @@ type Result = {
 };
 
 function hrefFor(r: Result): string {
-  // Adjust these routes to match your app’s actual pages
+  // ✅ Route users to /profile/:id (was /users/:id)
   switch (r.type) {
     case "user":
-      return `/users/${r.id}`;
+      return `/profile/${r.id}`;
     case "listing":
       return `/listings/${r.id}`;
     case "post":
@@ -25,9 +25,9 @@ function hrefFor(r: Result): string {
     case "product":
       return `/products/${r.id}`;
     case "employee":
-      return `/employees/${r.id}`;   // change if you nest employees by listing
+      return `/employees/${r.id}`;   // update if nested
     case "service":
-      return `/services/${r.id}`;    // change if you nest services by listing
+      return `/services/${r.id}`;    // update if nested
     default:
       return "/";
   }
@@ -196,7 +196,7 @@ export async function GET(req: Request) {
         id: p.id,
         type: "product" as const,
         title: p.name,
-        subtitle: p.price != null ? `$${p.price.toFixed(2)}` : "",
+        subtitle: p.price != null ? `$${Number(p.price).toFixed(2)}` : "",
         image: p.mainImage,
         href: "",
       })),
