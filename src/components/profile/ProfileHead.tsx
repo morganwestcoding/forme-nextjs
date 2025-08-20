@@ -159,7 +159,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
 
                     {/* Right group: 3-dot menu */}
                     <button
-                      className="p-1 rounded-full hover:bg-gray-100 transition text-neutral-600"
+                      className="p-1 rounded-full hover:bg-gray-100 transition text-neutral-400"
                       aria-label="More options"
                     >
                       <svg

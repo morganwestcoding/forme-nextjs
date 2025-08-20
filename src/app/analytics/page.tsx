@@ -5,6 +5,7 @@ import ClientProviders from "@/components/ClientProviders";
 import EmptyState from "@/components/EmptyState";
 import AnalyticsClient from "./AnalyticsClient";
 import { redirect } from "next/navigation";
+import Container from "@/components/Container";
 
 export const dynamic = 'force-dynamic';
 
@@ -21,10 +22,13 @@ const AnalyticsPage = async () => {
 
     return (
       <ClientProviders>
+        <Container>
         <AnalyticsClient
           currentUser={currentUser}
           analyticsData={analyticsData}
         />
+        </Container>
+     
       </ClientProviders>
     );
   } catch (error) {

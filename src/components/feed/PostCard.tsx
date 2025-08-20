@@ -212,7 +212,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
               {/* Name + time */}
               <div onClick={handleUserClick} className="cursor-pointer flex flex-col">
                 <div className="flex items-center text-white gap-1">
-                  <p className="text-sm font-semibold text-white">
+                  <p className="text-sm text-white">
                     {post.user.name || 'Anonymous'}
                   </p>
                   {/* Verified Badge SVG */}

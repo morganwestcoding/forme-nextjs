@@ -88,8 +88,7 @@ export default function ImageUpload({
   return (
     <div className="w-full">
       <div className="mb-2 flex items-center justify-between">
-        <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100">{label}</span>
-        <span className="text-xs text-neutral-500 dark:text-neutral-400">{hint ?? acceptText}</span>
+  
       </div>
 
       <CldUploadWidget

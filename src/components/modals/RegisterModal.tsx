@@ -16,6 +16,7 @@ import Heading from "../Heading";
 import ProfileLocationInput from "../inputs/ProfileLocationInput";
 import ImageUpload from "../inputs/ImageUpload";
 import Logo from "../header/Logo";
+import EditOverview from "./EditOverview";
 
 /** ---------------------------------------------
  * Utilities
@@ -41,13 +42,14 @@ enum STEPS {
   IMAGES = 3,
 }
 
+/** A virtual step used only in edit mode for the hub */
+const EDIT_HUB_STEP = -1;
+
 const RegisterModal = () => {
   const router = useRouter();
   const { status } = useSession();
-  const [step, setStep] = useState(STEPS.ACCOUNT);
   const registerModal = useRegisterModal();
   const loginModal = useLoginModal();
-  const [isLoading, setIsLoading] = useState(false);
   const modalRef = useRef<ModalHandle>(null);
 
   const isEdit = registerModal.mode === 'edit';
@@ -61,8 +63,8 @@ const RegisterModal = () => {
     formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: {
-    userId: '',
- id: '',
+      userId: '',
+      id: '',
       name: '',
       email: '',
       password: '',
@@ -73,15 +75,24 @@ const RegisterModal = () => {
     },
   });
 
+  // Watches for completion badges + image convenience
+  const name = watch('name');
+  const email = watch('email');
+  const locationVal = watch('location');
+  const bioVal = watch('bio');
   const image = watch('image');
   const imageSrc = watch('imageSrc');
+
+  // Step state: start at overview hub when editing
+  const [step, setStep] = useState<number>(isEdit ? EDIT_HUB_STEP : STEPS.ACCOUNT);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (registerModal.isOpen && registerModal.prefill) {
       const p = registerModal.prefill;
       reset({
-userId: p.id ?? '',
- id: p.id ?? '',
+        userId: p.id ?? '',
+        id: p.id ?? '',
         name: p.name ?? '',
         email: p.email ?? '',
         password: '',
@@ -90,10 +101,9 @@ userId: p.id ?? '',
         image: p.image ?? '',
         imageSrc: p.imageSrc ?? '',
       });
-      setStep(STEPS.ACCOUNT);
+      setStep(isEdit ? EDIT_HUB_STEP : STEPS.ACCOUNT);
     }
-  }, [registerModal.isOpen, registerModal.prefill, reset]);
-
+  }, [registerModal.isOpen, registerModal.prefill, reset, isEdit]);
 
   // Close this modal if session flips to authenticated during registration flow
   useEffect(() => {
@@ -117,7 +127,15 @@ userId: p.id ?? '',
   };
 
   const onNext = () => setStep((s) => s + 1);
-  const onBack = () => setStep((s) => s - 1);
+
+  // In edit mode, Back ALWAYS returns to the Edit Overview (hub)
+  const onBack = () => {
+    if (isEdit && step !== EDIT_HUB_STEP) {
+      setStep(EDIT_HUB_STEP);
+      return;
+    }
+    setStep((s) => s - 1);
+  };
 
   const validatePassword = (password: string) => ({
     hasMinLength: password.length >= 6,
@@ -131,11 +149,14 @@ userId: p.id ?? '',
   const handleClose = useCallback(() => {
     registerModal.onClose();
     registerModal.clear();
-    setStep(STEPS.ACCOUNT);
-  }, [registerModal]);
+    setStep(isEdit ? EDIT_HUB_STEP : STEPS.ACCOUNT);
+  }, [registerModal, isEdit]);
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-    // Stepper handling
+    // No primary action on the Edit Overview
+    if (step === EDIT_HUB_STEP) return;
+
+    // Stepper handling (non-final)
     if (step !== STEPS.IMAGES) {
       if (!isEdit && step === STEPS.ACCOUNT) {
         const p = validatePassword(data.password || '');
@@ -195,7 +216,6 @@ userId: p.id ?? '',
         bio: data.bio,
         image: data.image,
         imageSrc: data.imageSrc,
-        // If you pass subscription elsewhere, keep as-is; omitted here for clarity
       });
       toast.success('Registered! Logging you in…');
 
@@ -277,6 +297,46 @@ userId: p.id ?? '',
     </div>
   );
 
+  if (isEdit && step === EDIT_HUB_STEP) {
+    bodyContent = (
+      <div className="flex flex-col gap-6">
+        <Heading
+          title="Quick Edit"
+          subtitle="Jump straight to the section you want to update."
+        />
+        <EditOverview
+          items={[
+            {
+              key: STEPS.ACCOUNT,
+              title: 'Account',
+              description: 'Name & email',
+              complete: Boolean(name && email),
+            },
+            {
+              key: STEPS.LOCATION,
+              title: 'Location',
+              description: 'Where you are',
+              complete: Boolean(locationVal),
+            },
+            {
+              key: STEPS.BIOGRAPHY,
+              title: 'Biography',
+              description: 'Tell us about you',
+              complete: Boolean((bioVal || '').trim().length > 0),
+            },
+            {
+              key: STEPS.IMAGES,
+              title: 'Images',
+              description: 'Profile & background',
+              complete: Boolean(image || imageSrc),
+            },
+          ]}
+          onSelect={(k) => setStep(k)}
+        />
+      </div>
+    );
+  }
+
   if (step === STEPS.LOCATION) {
     bodyContent = (
       <div className="flex flex-col gap-8">
@@ -298,44 +358,44 @@ userId: p.id ?? '',
           title={isEdit ? "Update your bio" : "Tell us about yourself"}
           subtitle={isEdit ? "Share a little about you." : "What makes you unique?"}
         />
-        <Input
-          id="bio"
-          label="Tell Us About You..."
-          disabled={isLoading}
-          register={register}
-          errors={errors}
-          required
-          maxLength={200}
-          type="textarea"
-        />
+ <Input
+  id="bio"
+  label="Biography"
+  disabled={isLoading}
+  register={register}
+  errors={errors}
+  required
+  maxLength={200}
+  type="textarea"
+  inputClassName="pt-8"   // adds a little extra space under the label
+/>
+
       </div>
     );
   }
 
-// ...imports & component setup unchanged
-
   if (step === STEPS.IMAGES) {
     bodyContent = (
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-4">
         <Heading
           title={isEdit ? "Update your profile images" : "Add your profile images"}
           subtitle={isEdit ? "Freshen up your look." : "Make your profile stand out!"}
         />
 
-        <div className="grid grid-cols-2 gap-8">
+        <div className="grid grid-cols-2 gap-4">
           {/* Profile picture — true circle */}
           <div className="flex flex-col items-center gap-3">
             <div className="w-full flex flex-col items-center">
               <ImageUpload
                 onChange={(v) => setCustomValue('image', v)}
                 value={image}
-                ratio="square"
-                rounded="full"
-                className="w-40 h-40 rounded-full overflow-hidden"
-                label="Image"
-                hint="PNG, JPG, JPEG, WEBP, SVG • Max ~10MB"
+      
+            
+            className="w-64 h-40 rounded-2xl overflow-hidden"
+            
+         
               />
-              <label className="mt-4 text-neutral-500 text-sm font-light">
+              <label className="mt-4 text-neutral-500 text-sm ">
                 Profile Picture
               </label>
             </div>
@@ -347,12 +407,11 @@ userId: p.id ?? '',
               <ImageUpload
                 onChange={(v) => setCustomValue('imageSrc', v)}
                 value={imageSrc}
-                // explicit size disables auto-aspect inside the component
                 className="w-64 h-40 rounded-2xl overflow-hidden"
-                label="Image"
-                hint="PNG, JPG, JPEG, WEBP, SVG • Max ~10MB"
+            
+
               />
-              <label className="mt-4 text-neutral-500 font-light text-sm">
+              <label className="mt-4 text-neutral-500 text-sm">
                 Profile Background
               </label>
             </div>
@@ -363,10 +422,10 @@ userId: p.id ?? '',
   }
 
   /** ---------- FOOTER ---------- 
-   * IMPORTANT: Modal.footer expects ReactElement | undefined (NOT null)
+   * Modal.footer expects ReactElement | undefined (NOT null)
    */
   const footerContent = useMemo<React.ReactElement | undefined>(() => {
-    if (isEdit) return undefined; // return undefined in edit mode
+    if (isEdit) return undefined; // hide in edit mode
     return (
       <div className="flex flex-col gap-4 mt-3">
         <hr />
@@ -385,8 +444,14 @@ userId: p.id ?? '',
     );
   }, [isEdit, onToggle]);
 
-  const actionLabel =
-    step === STEPS.IMAGES ? (isEdit ? "Save" : "Create") : "Continue";
+  // Primary button label — hidden on the Edit Overview
+  const actionLabel: string | undefined =
+    step === EDIT_HUB_STEP ? undefined
+    : step === STEPS.IMAGES ? (isEdit ? "Save" : "Create")
+    : "Continue";
+
+  // Secondary/back button shows in edit mode for any step except the hub
+  const showBack = isEdit ? step !== EDIT_HUB_STEP : step !== STEPS.ACCOUNT;
 
   return (
     <Modal
@@ -395,8 +460,8 @@ userId: p.id ?? '',
       isOpen={registerModal.isOpen}
       title={isEdit ? "Edit Profile" : "Register"}
       actionLabel={actionLabel}
-      secondaryAction={step !== STEPS.ACCOUNT ? onBack : undefined}
-      secondaryActionLabel={step !== STEPS.ACCOUNT ? "Back" : undefined}
+      secondaryAction={showBack ? onBack : undefined}
+      secondaryActionLabel={showBack ? "Back" : undefined}
       onClose={handleClose}
       onSubmit={handleSubmit(onSubmit)}
       body={bodyContent}
