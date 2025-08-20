@@ -1,10 +1,11 @@
+// components/posts/PostCard.tsx
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import { format } from 'date-fns';
+import { format, differenceInMinutes, differenceInHours, differenceInDays, differenceInMonths } from 'date-fns';
 import { MoreHorizontal } from 'lucide-react';
 import { SafePost, SafeUser } from '@/app/types';
 import usePostModal from '@/app/hooks/usePostModal';
@@ -30,9 +31,35 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
   const cardRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const formattedDate = format(new Date(post.createdAt), 'MMM dd');
   const isReel = post.tag === 'Reel' || post.postType === 'reel';
 
+  /** ---------- Helpers ---------- */
+  const formatViews = (n: number | undefined | null) => {
+    const v = typeof n === 'number' ? n : 0;
+    if (v < 1000) return `${v}`;
+    if (v < 1_000_000) return `${(v / 1000).toFixed(v % 1000 === 0 ? 0 : 1)}k`;
+    return `${(v / 1_000_000).toFixed(v % 1_000_000 === 0 ? 0 : 1)}M`;
+  };
+
+  // Show minutes/hours/days until the post is 1 month old; then switch to M.d.yy (e.g., 6.11.25)
+  const getPrettyTime = (iso: string) => {
+    const created = new Date(iso);
+    const now = new Date();
+    if (differenceInMonths(now, created) >= 1) {
+      return format(created, 'M.d.yy');
+    }
+    const mins = differenceInMinutes(now, created);
+    if (mins < 60) return `${mins}m`;
+    const hrs = differenceInHours(now, created);
+    if (hrs < 24) return `${hrs}h`;
+    const days = differenceInDays(now, created);
+    return `${days}d`;
+  };
+
+  const prettyTime = getPrettyTime(post.createdAt);
+  const viewsLabel = `${formatViews((post as any).views) || '0'} views`;
+
+  /** ---------- Handlers ---------- */
   const handleCardClick = async () => {
     if (!currentUser) return;
     try {
@@ -147,10 +174,16 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
       <div className="relative h-[400px]">
         {renderMedia()}
 
-        {/* Category badge */}
+        {/* Category badge — EXACT same structure/styles as ListingCard */}
         {post.category && (
-          <div className="absolute left-4 top-4 w-24 rounded-xl border border-white/30 bg-white/90 py-2 text-center shadow backdrop-blur-md transition-all duration-300 hover:bg-white">
-            <span className="text-xs font-normal tracking-wide text-black">{post.category}</span>
+          <div className="absolute top-4 left-4 z-20">
+            <div className="bg-white/90 backdrop-blur-md border border-white/30 rounded-xl text-center w-24 py-2 shadow-lg hover:bg-white/30 transition-all duration-300">
+              <div className="flex items-center justify-center gap-1.5">
+                <span className="text-xs font-normal text-black tracking-wide">
+                  {post.category}
+                </span>
+              </div>
+            </div>
           </div>
         )}
 
@@ -162,10 +195,11 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
           <MoreHorizontal className="h-4 w-4 text-white" />
         </button>
 
-        {/* ✅ Restored in-card user info with your exact styling */}
+        {/* User bar at bottom (time + views rules applied) */}
         <div className="absolute bottom-4 left-4 right-4">
           <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/30 shadow-xl">
             <div className="flex items-center gap-3">
+              {/* Avatar */}
               <div className="relative h-9 w-9 overflow-hidden rounded-full">
                 <Image
                   src={post.user.image || '/images/placeholder.jpg'}
@@ -174,18 +208,43 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
                   className="object-cover"
                 />
               </div>
-              <div onClick={handleUserClick} className="cursor-pointer">
-                <p className="text-sm font-semibold text-white">{post.user.name || 'Anonymous'}</p>
-                <p className="text-xs text-white/80 leading-tight">{formattedDate}</p>
+
+              {/* Name + time */}
+              <div onClick={handleUserClick} className="cursor-pointer flex flex-col">
+                <div className="flex items-center text-white gap-1">
+                  <p className="text-sm font-semibold text-white">
+                    {post.user.name || 'Anonymous'}
+                  </p>
+                  {/* Verified Badge SVG */}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    width="18"
+                    height="18"
+                    fill="#60A5FA"
+                    className="shrink-0"
+                  >
+                    <path
+                      d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                    <path
+                      d="M9 12.8929L10.8 14.5L15 9.5"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </div>
+                <p className="text-xs text-white/80 leading-tight">
+                  {prettyTime} • {viewsLabel}
+                </p>
               </div>
             </div>
           </div>
         </div>
-
-        {/* Readability overlay for reels */}
-        {isReel && (
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
-        )}
       </div>
     </div>
   );

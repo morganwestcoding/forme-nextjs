@@ -1,3 +1,4 @@
+// components/NewsfeedClient.tsx
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
@@ -10,7 +11,7 @@ import { usePostStore } from '@/app/hooks/usePostStore';
 import { useCategory } from '@/CategoryContext';
 import { useFilter } from '@/FilterContext';
 import Container from './Container';
-import EmptyState from '@/components/EmptyState';
+// import EmptyState from '@/components/EmptyState'; // ⬅️ removed
 import NewsfeedHeader from './feed/NewsfeedHeader';
 import PostCard from './feed/PostCard';
 import ListingCard from '@/components/listings/ListingCard';
@@ -181,18 +182,6 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
     }
   }, [uiLoading, flatFeedItems]);
 
-  const getEmptyStateMessage = () => {
-    if (filterParam === 'following') {
-      return { title: "You're not following anyone yet", subtitle: 'Follow users to see their posts here' };
-    } else if (filterParam === 'likes') {
-      return { title: 'No liked posts yet', subtitle: 'Posts you like will appear here' };
-    } else if (filterParam === 'bookmarks') {
-      return { title: 'No bookmarked posts yet', subtitle: 'Posts you bookmark will appear here' };
-    } else {
-      return { title: 'No posts found', subtitle: 'Be the first one to post!' };
-    }
-  };
-
   return (
     <ClientProviders>
       <Container>
@@ -218,25 +207,18 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
           </div>
         )}
 
-        {/* Feed */}
-        {(!storePosts || storePosts.length === 0) ? (
-          <EmptyState
-            title={getEmptyStateMessage().title}
-            subtitle={getEmptyStateMessage().subtitle}
-          />
-        ) : (
-          <div
-            className={`transition-opacity ease-out ${uiLoading ? 'opacity-0' : 'opacity-100'}`}
-            style={{ transitionDuration: `${CONTAINER_FADE_MS}ms` }}
-          >
-    {viewState.mode === 'horizontal' && (
-  <div className="group/grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-    {animatedItems}
-  </div>
-)}
-            {/* If you add a 'vertical' mode later, render animatedItems there too */}
-          </div>
-        )}
+        {/* Feed (always render; no empty state) */}
+        <div
+          className={`transition-opacity ease-out ${uiLoading ? 'opacity-0' : 'opacity-100'}`}
+          style={{ transitionDuration: `${CONTAINER_FADE_MS}ms` }}
+        >
+          {viewState.mode === 'horizontal' && (
+            <div className="group/grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {animatedItems}
+            </div>
+          )}
+          {/* If you add a 'vertical' mode later, render animatedItems there too */}
+        </div>
       </Container>
     </ClientProviders>
   );
