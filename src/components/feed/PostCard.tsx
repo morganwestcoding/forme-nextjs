@@ -197,10 +197,10 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
 
         {/* User bar at bottom (time + views rules applied) */}
         <div className="absolute bottom-4 left-4 right-4">
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/30 shadow-xl">
+          <div className="bg-white/10 backdrop-blur-md rounded-xl p-3.5 border border-white/30 shadow-xl">
             <div className="flex items-center gap-3">
               {/* Avatar */}
-              <div className="relative h-9 w-9 overflow-hidden rounded-full">
+              <div className="relative border border-white/50 h-9 w-9 overflow-hidden rounded-full">
                 <Image
                   src={post.user.image || '/images/placeholder.jpg'}
                   alt={post.user.name || 'User'}

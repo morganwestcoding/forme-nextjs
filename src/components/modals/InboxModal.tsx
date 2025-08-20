@@ -282,7 +282,7 @@ const InboxModal = () => {
                 key={c.id}
                 className="w-full flex items-center gap-3 cursor-pointer
                            bg-white border border-gray-200 hover:bg-gray-50
-                           rounded-2xl p-4 transition shadow-sm"
+                           rounded-xl p-4 transition shadow-sm"
                 onClick={() => openConversation(c.id, c.otherUser.id)}
               >
                 <Avatar src={c.otherUser.image} name={c.otherUser.name} size={44} />

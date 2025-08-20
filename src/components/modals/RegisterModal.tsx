@@ -312,6 +312,8 @@ userId: p.id ?? '',
     );
   }
 
+// ...imports & component setup unchanged
+
   if (step === STEPS.IMAGES) {
     bodyContent = (
       <div className="flex flex-col gap-8">
@@ -319,25 +321,36 @@ userId: p.id ?? '',
           title={isEdit ? "Update your profile images" : "Add your profile images"}
           subtitle={isEdit ? "Freshen up your look." : "Make your profile stand out!"}
         />
-        <div className="grid grid-cols-2">
+
+        <div className="grid grid-cols-2 gap-8">
+          {/* Profile picture — true circle */}
           <div className="flex flex-col items-center gap-3">
             <div className="w-full flex flex-col items-center">
               <ImageUpload
-                onChange={(value) => setCustomValue('image', value)}
+                onChange={(v) => setCustomValue('image', v)}
                 value={image}
-                className="rounded-full bg-slate-50 w-56 h-32 overflow-hidden"
+                ratio="square"
+                rounded="full"
+                className="w-40 h-40 rounded-full overflow-hidden"
+                label="Image"
+                hint="PNG, JPG, JPEG, WEBP, SVG • Max ~10MB"
               />
               <label className="mt-4 text-neutral-500 text-sm font-light">
                 Profile Picture
               </label>
             </div>
           </div>
+
+          {/* Background image */}
           <div className="flex flex-col items-center gap-3">
             <div className="w-full flex flex-col items-center">
               <ImageUpload
-                onChange={(value) => setCustomValue('imageSrc', value)}
+                onChange={(v) => setCustomValue('imageSrc', v)}
                 value={imageSrc}
-                className="rounded-lg bg-slate-50 h-32 w-56 aspect-video overflow-hidden"
+                // explicit size disables auto-aspect inside the component
+                className="w-64 h-40 rounded-2xl overflow-hidden"
+                label="Image"
+                hint="PNG, JPG, JPEG, WEBP, SVG • Max ~10MB"
               />
               <label className="mt-4 text-neutral-500 font-light text-sm">
                 Profile Background

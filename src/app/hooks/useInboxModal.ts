@@ -13,7 +13,8 @@ const useInboxModal = create<InboxModalStore>((set) => ({
   isOpen: false,
   currentUser: null,
   onOpen: (user) => set({ isOpen: true, currentUser: user }),
-  onClose: () => set({ isOpen: false, currentUser: null }),
+  // 👇 keep currentUser so MessageModal can restore the inbox with it
+  onClose: () => set((s) => ({ isOpen: false, currentUser: s.currentUser })),
 }));
 
 export default useInboxModal;
