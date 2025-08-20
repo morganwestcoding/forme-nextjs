@@ -1,7 +1,8 @@
 // components/listing/ListingHead.tsx
 'use client';
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
+import axios from 'axios';
 import ServiceCard from './ServiceCard';
 import WorkerCard from './WorkerCard';
 import PostCard from '../feed/PostCard';
@@ -35,7 +36,17 @@ const ListingHead: React.FC<ListingHeadProps> = ({
   categories = []
 }) => {
   const { title, location, galleryImages, imageSrc, description, employees = [], user, storeHours = [] } = listing;
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+
+  // --- NEW: followers state derived from listing.followers ---
+  const initialFollowers = useMemo<string[]>(
+    () => (Array.isArray((listing as any).followers) ? (listing as any).followers : []),
+    [listing]
+  );
+  const [followers, setFollowers] = useState<string[]>(initialFollowers);
+
+  // Whether the viewing user follows this listing
+  const isFollowing = !!currentUser?.id && followers.includes(currentUser.id);
+
   const [activeTab, setActiveTab] = useState<'Services' | 'Team' | 'Reviews' | 'Images' | 'Reels'>('Services');
   const [city, state] = location?.split(',').map(s => s.trim()) || [];
 
@@ -56,9 +67,39 @@ const ListingHead: React.FC<ListingHeadProps> = ({
     reservationModal.onOpen(listing, currentUser);
   };
 
-  // Only show "Edit Profile" when viewing your own listing.
-  // Hide Follow & Reserve in that case.
   const isOwner = !!currentUser?.id && currentUser.id === user?.id;
+
+  // --- NEW: follow/unfollow handler with optimistic UI ---
+  const handleToggleFollow = async () => {
+    if (isOwner) return;
+    if (!currentUser?.id) {
+      console.log('User must be logged in to follow');
+      return;
+    }
+
+    // Optimistic update
+    setFollowers(prev =>
+      prev.includes(currentUser.id)
+        ? prev.filter(id => id !== currentUser.id)
+        : [...prev, currentUser.id]
+    );
+
+    try {
+      const res = await axios.post(`/api/follow/${listing.id}?type=listing`);
+      const updated = res.data as { followers?: string[] };
+      if (Array.isArray(updated?.followers)) {
+        setFollowers(updated.followers);
+      }
+    } catch (err) {
+      console.error('Failed to toggle follow:', err);
+      // Revert optimistic change on error
+      setFollowers(prev =>
+        prev.includes(currentUser.id)
+          ? prev.filter(id => id !== currentUser.id)
+          : [...prev, currentUser.id]
+      );
+    }
+  };
 
   return (
     <div className="w-full">
@@ -86,81 +127,75 @@ const ListingHead: React.FC<ListingHeadProps> = ({
 
                 {/* Right: Title, Location, Description */}
                 <div className="flex-1 min-w-0">
-{/* Header row */}
-<div className="flex items-center justify-between mb-3">
-  {/* Left side: Title, Badge, Heart */}
-  <div className="flex items-center gap-2">
-    <h1
-      className="text-xl font-bold tracking-tight text-gray-900 leading-tight"
-      style={{ letterSpacing: '-0.025em' }}
-    >
-      {title}
-    </h1>
+                  {/* Header row */}
+                  <div className="flex items-center justify-between mb-3">
+                    {/* Left side: Title, Badge, Heart */}
+                    <div className="flex items-center gap-2">
+                      <h1
+                        className="text-xl font-bold tracking-tight text-gray-900 leading-tight"
+                        style={{ letterSpacing: '-0.025em' }}
+                      >
+                        {title}
+                      </h1>
 
-    {/* Badge */}
-    <div className="drop-shadow-sm text-white inline-flex -mr-1">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        width="26"
-        height="26"
-        fill="#60A5FA"
-      >
-        <path
-          d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z"
-          stroke="currentColor"
-          strokeWidth="1.5"
-        />
-        <path
-          d="M9 12.8929L10.8 14.5L15 9.5"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    </div>
+                      {/* Badge */}
+                      <div className="drop-shadow-sm text-white inline-flex -mr-1">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          width="26"
+                          height="26"
+                          fill="#60A5FA"
+                        >
+                          <path
+                            d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                          />
+                          <path
+                            d="M9 12.8929L10.8 14.5L15 9.5"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </div>
 
-    {/* Heart right of badge */}
-    <HeartButton
-      listingId={listing.id}
-      currentUser={currentUser}
-      variant="listingHead"
-      favoriteIds={listing.favoriteIds || []}
-    />
-  </div>
+                      {/* Heart right of badge */}
+                      <HeartButton
+                        listingId={listing.id}
+                        currentUser={currentUser}
+                        variant="listingHead"
+                        favoriteIds={listing.favoriteIds || []}
+                      />
+                    </div>
 
-  {/* Right side: 3-dot menu button */}
-{/* Right side: 3-dot menu button */}
-<button className="p-1 rounded-full hover:bg-gray-100 transition text-neutral-500">
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    width="24"
-    height="24"
-    className="stroke-current fill-current"
-  >
-    <path
-      d="M13.5 4.5C13.5 3.67157 12.8284 3 12 3C11.1716 3 10.5 3.67157 10.5 4.5C10.5 5.32843 11.1716 6 12 6C12.8284 6 13.5 5.32843 13.5 4.5Z"
-      strokeWidth="1"
-    />
-    <path
-      d="M13.5 12C13.5 11.1716 12.8284 10.5 12 10.5C11.1716 10.5 10.5 11.1716 10.5 12C10.5 12.8284 11.1716 13.5 12 13.5C12.8284 13.5 13.5 12.8284 13.5 12Z"
-      strokeWidth="1"
-    />
-    <path
-      d="M13.5 19.5C13.5 18.6716 12.8284 18 12 18C11.1716 18 10.5 18.6716 10.5 19.5C10.5 20.3284 11.1716 21 12 21C12.8284 21 13.5 20.3284 13.5 19.5Z"
-      strokeWidth="1"
-    />
-  </svg>
-</button>
+                    {/* Right side: 3-dot menu button */}
+                    <button className="p-1 rounded-full hover:bg-gray-100 transition text-neutral-500">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        height="24"
+                        className="stroke-current fill-current"
+                      >
+                        <path
+                          d="M13.5 4.5C13.5 3.67157 12.8284 3 12 3C11.1716 3 10.5 3.67157 10.5 4.5C10.5 5.32843 11.1716 6 12 6C12.8284 6 13.5 5.32843 13.5 4.5Z"
+                          strokeWidth="1"
+                        />
+                        <path
+                          d="M13.5 12C13.5 11.1716 12.8284 10.5 12 10.5C11.1716 10.5 10.5 11.1716 10.5 12C10.5 12.8284 11.1716 13.5 12 13.5C12.8284 13.5 13.5 12.8284 13.5 12Z"
+                          strokeWidth="1"
+                        />
+                        <path
+                          d="M13.5 19.5C13.5 18.6716 12.8284 18 12 18C11.1716 18 10.5 18.6716 10.5 19.5C10.5 20.3284 11.1716 21 12 21C12.8284 21 13.5 20.3284 13.5 19.5Z"
+                          strokeWidth="1"
+                        />
+                      </svg>
+                    </button>
+                  </div>
 
-</div>
-
-
-
-
-                  
                   {/* Location badge */}
                   <div className="mb-3">
                     <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-50 text-[#60A5FA] border border-[#60A5FA]">
@@ -168,13 +203,13 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                     </span>
                   </div>
                   
-                  {/* Stats line (placeholder metrics) */}
+                  {/* Stats line with ACCURATE followers */}
                   <div className="mb-3 text-sm text-gray-600">
                     <span className="font-semibold text-gray-900">4.8</span>
                     <span className="text-gray-500">(156 reviews)</span>
                     <span className="mx-2">•</span>
-                    <span className="font-semibold text-gray-900">1284</span>
-                    <span className="text-gray-500">followers</span>
+                    <span className="font-semibold text-gray-900">{followers.length}</span>
+                    <span className="text-gray-500"> followers</span>
                   </div>
                   
                   <div className="text-gray-700 text-sm leading-relaxed">
@@ -184,34 +219,39 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               </div>
 
               {/* Bottom section - Centered action buttons */}
-              <div className="flex items-center justify-center pt-6 border-t border-gray-100">
-                <div className="flex gap-4">
-                  {isOwner ? (
-                    // Owner view: ONLY show Edit Profile
-                    <button
-                      onClick={() => rentModal.onOpen(listing)}
-                      className="group inline-flex items-center justify-center px-24 py-3 rounded-xl text-sm font-medium bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 shadow-sm transition-all duration-200"
-                    >
-                      Edit Profile
-                    </button>
-                  ) : (
-                    // Visitor view: show Follow + Reserve (no Edit)
-                    <>
-                      <button className="group inline-flex items-center justify-center px-24 py-3 rounded-xl text-sm font-medium bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 shadow-sm transition-all duration-200">
-                        <span>Follow</span>
-                      </button>
+{/* Bottom section - Centered action buttons */}
+<div className="flex items-center justify-center pt-6 border-t border-gray-100">
+  <div className="flex gap-4">
+    {isOwner ? (
+      // Owner view: ONLY show Edit Profile
+      <button
+        onClick={() => rentModal.onOpen(listing)}
+        className="group inline-flex items-center justify-center px-24 py-3 rounded-xl text-sm font-medium bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 shadow-sm transition-all duration-200"
+      >
+        Edit Profile
+      </button>
+    ) : (
+      // Visitor view: Follow + Reserve
+      <>
+        <button
+          onClick={handleToggleFollow}
+          className="group inline-flex items-center justify-center px-24 py-3 rounded-xl text-sm font-medium bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 shadow-sm transition-all duration-200"
+        >
+          <span>{isFollowing ? 'Following' : 'Follow'}</span>
+        </button>
 
-                      <button 
-                        onClick={handleReserveClick}
-                        className="group inline-flex items-center justify-center px-24 py-3 rounded-xl text-sm font-medium text-white shadow-sm hover:shadow-md transition-all duration-200 border border-[#60A5FA] hover:bg-blue-600" 
-                        style={{ backgroundColor: '#60A5FA' }}
-                      >
-                        <span>Reserve</span>
-                      </button>
-                    </>
-                  )}
-                </div>
-              </div>
+        <button 
+          onClick={handleReserveClick}
+          className="group inline-flex items-center justify-center px-24 py-3 rounded-xl text-sm font-medium text-white shadow-sm hover:shadow-md transition-all duration-200 border border-[#60A5FA] hover:bg-blue-600" 
+          style={{ backgroundColor: '#60A5FA' }}
+        >
+          <span>Reserve</span>
+        </button>
+      </>
+    )}
+  </div>
+</div>
+
             </div>
           </div>
         </div>
@@ -262,7 +302,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 icon: () => (
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none">
                     <path d="M3 16L7.46967 11.5303C7.80923 11.1908 8.26978 11 8.75 11C9.23022 11 9.69077 11.1908 10.0303 11.5303L14 15.5M15.5 17L14 15.5M21 16L18.5303 13.5303C18.1908 13.1908 17.7302 13 17.25 13C16.7698 13 16.3092 13.1908 15.9697 13.5303L14 15.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-                    <path d="M15.5 8C15.7761 8 16 7.77614 16 7.5C16 7.22386 15.7761 7 15.5 7M15.5 8C15.2239 8 15 7.77614 15 7.5C15 7.22386 15.2239 7 15.5 7M15.5 8V7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+                    <path d="M15.5 8C15.7761 8 16 7.77614 16 7.5C16 7.22386 15.7761 7 15.5 7M15.5 8C15.2239 8 15 7.77614 15 7.5C15 7.22386 15.2239 7 15.5 7M15.5 8V7" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5"></path>
                     <path d="M3.69797 19.7472C2.5 18.3446 2.5 16.2297 2.5 12C2.5 7.77027 2.5 5.6554 3.69797 4.25276C3.86808 4.05358 4.05358 3.86808 4.25276 3.69797C5.6554 2.5 7.77027 2.5 12 2.5C16.2297 2.5 18.3446 2.5 19.7472 3.69797C19.9464 3.86808 20.1319 4.05358 20.302 4.25276C21.5 5.6554 21.5 7.77027 21.5 12C21.5 16.2297 21.5 18.3446 20.302 19.7472C20.1319 19.9464 19.9464 20.1319 19.7472 20.302C18.3446 21.5 16.2297 21.5 12 21.5C7.77027 21.5 5.6554 21.5 4.25276 20.302C4.05358 20.1319 3.86808 19.9464 3.69797 19.7472Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
                   </svg>
                 )
@@ -377,7 +417,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="48" height="48" className="text-gray-300 mx-auto mb-4" fill="none">
                     <path d="M3 16L7.46967 11.5303C7.80923 11.1908 8.26978 11 8.75 11C9.23022 11 9.69077 11.1908 10.0303 11.5303L14 15.5M15.5 17L14 15.5M21 16L18.5303 13.5303C18.1908 13.1908 17.7302 13 17.25 13C16.7698 13 16.3092 13.1908 15.9697 13.5303L14 15.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-                    <path d="M15.5 8C15.7761 8 16 7.77614 16 7.5C16 7.22386 15.7761 7 15.5 7M15.5 8C15.2239 8 15 7.77614 15 7.5C15 7.22386 15.2239 7 15.5 7M15.5 8V7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+                    <path d="M15.5 8C15.7761 8 16 7.77614 16 7.5C16 7.22386 15.7761 7 15.5 7M15.5 8C15.2239 8 15 7.77614 15 7.5C15 7.22386 15.2239 7 15.5 7M15.5 8V7" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5"></path>
                     <path d="M3.69797 19.7472C2.5 18.3446 2.5 16.2297 2.5 12C2.5 7.77027 2.5 5.6554 3.69797 4.25276C3.86808 4.05358 4.05358 3.86808 4.25276 3.69797C5.6554 2.5 7.77027 2.5 12 2.5C16.2297 2.5 18.3446 2.5 19.7472 3.69797C19.9464 3.86808 20.1319 4.05358 20.302 4.25276C21.5 5.6554 21.5 7.77027 21.5 12C21.5 16.2297 21.5 18.3446 20.302 19.7472C20.1319 19.9464 19.9464 20.1319 19.7472 20.302C18.3446 21.5 16.2297 21.5 12 21.5C7.77027 21.5 5.6554 21.5 4.25276 20.302C4.05358 20.1319 3.86808 19.9464 3.69797 19.7472Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
                   </svg>
                   <p className="font-medium">No images available</p>

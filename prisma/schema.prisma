@@ -88,7 +88,7 @@ model Listing {
   website       String?
   address       String?
   zipCode       String?
-  
+  followers    String[] @default([]) // <— userIds of followers
   galleryImages  String[]
   employees Employee[]
   storeHours     StoreHours[]
