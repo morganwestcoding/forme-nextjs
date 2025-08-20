@@ -27,7 +27,7 @@ const EditOverview: React.FC<EditOverviewProps> = ({ items, onSelect }) => {
             className={[
               // card shell
               'group relative rounded-2xl p-5 text-left',
-              'bg-white border border-neutral-200 shadow-sm hover:shadow-lg',
+              'bg-white border border-neutral-200 shadow-sm hover:shadow-md',
               'transition focus:outline-none focus:ring-2 focus:ring-neutral-300',
               // size & layout
               'h-36 flex flex-col justify-between'

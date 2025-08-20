@@ -1,4 +1,3 @@
-// components/modals/RegisterModal.tsx
 'use client';
 
 import axios from "axios";
@@ -345,6 +344,7 @@ const RegisterModal = () => {
           subtitle={isEdit ? "Keep this current so people can find you." : "This helps us show you the best experiences near you."}
         />
         <ProfileLocationInput
+          initialLocation={isEdit ? (registerModal.prefill?.location ?? locationVal ?? null) : null}
           onLocationSubmit={(value) => setCustomValue('location', value)}
         />  
       </div>
@@ -358,18 +358,17 @@ const RegisterModal = () => {
           title={isEdit ? "Update your bio" : "Tell us about yourself"}
           subtitle={isEdit ? "Share a little about you." : "What makes you unique?"}
         />
- <Input
-  id="bio"
-  label="Biography"
-  disabled={isLoading}
-  register={register}
-  errors={errors}
-  required
-  maxLength={200}
-  type="textarea"
-  inputClassName="pt-8"   // adds a little extra space under the label
-/>
-
+        <Input
+          id="bio"
+          label="Biography"
+          disabled={isLoading}
+          register={register}
+          errors={errors}
+          required
+          maxLength={200}
+          type="textarea"
+          inputClassName="pt-8"
+        />
       </div>
     );
   }
@@ -389,11 +388,7 @@ const RegisterModal = () => {
               <ImageUpload
                 onChange={(v) => setCustomValue('image', v)}
                 value={image}
-      
-            
-            className="w-64 h-40 rounded-2xl overflow-hidden"
-            
-         
+                className="w-64 h-40 rounded-2xl overflow-hidden"
               />
               <label className="mt-4 text-neutral-500 text-sm ">
                 Profile Picture
@@ -408,8 +403,6 @@ const RegisterModal = () => {
                 onChange={(v) => setCustomValue('imageSrc', v)}
                 value={imageSrc}
                 className="w-64 h-40 rounded-2xl overflow-hidden"
-            
-
               />
               <label className="mt-4 text-neutral-500 text-sm">
                 Profile Background
