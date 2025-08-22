@@ -1,3 +1,4 @@
+// components/inputs/ServiceSelector.tsx
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
@@ -6,10 +7,11 @@ import FloatingLabelSelect, { FLSelectOption } from './FloatingLabelSelect';
 import ImageUpload from './ImageUpload';
 
 export type Service = {
+  id?: string;           // carry DB id so PUT can upsert, not delete
   serviceName: string;
   price: number;
   category: string;
-  imageSrc?: string;
+ imageSrc?: string | null;
 };
 
 type ServiceSelectorProps = {
@@ -34,6 +36,7 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
 
   const initialRows: Service[] = hasExisting
     ? existingServices.map((s) => ({
+        id: s.id,
         serviceName: s.serviceName ?? '',
         price: typeof s.price === 'number' ? s.price : 0,
         category: s.category ?? '',
@@ -103,6 +106,7 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
     setFocusedPrice((prev) => [...prev, false]);
   };
 
+  // helpers for float labels
   const labelPos = (focused: boolean, hasValue: boolean, left: string) =>
     focused || hasValue
       ? `top-6 -translate-y-4 ${left}`

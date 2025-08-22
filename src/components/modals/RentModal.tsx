@@ -19,6 +19,16 @@ import StoreHours, { StoreHourType }  from '../inputs/StoreHours';
 import ImageUploadGrid from '../inputs/ImageUploadGrid';
 import EditOverview from './EditOverview';
 
+/** ---------------- Helpers ---------------- */
+function splitLocation(loc?: string | null): { city: string; state: string } {
+  if (!loc) return { city: '', state: '' };
+  const parts = loc.split(',').map(p => p.trim()).filter(Boolean);
+  if (parts.length >= 2) return { city: parts[0] ?? '', state: parts[1] ?? '' };
+  // fallback for odd inputs
+  return { city: parts[0] ?? '', state: '' };
+}
+
+/** ---------------- Steps ------------------ */
 enum STEPS {
   CATEGORY = 0,
   LOCATION = 1,
@@ -59,7 +69,6 @@ const RentModal = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState<number>(isEditMode ? EDIT_HUB_STEP : STEPS.CATEGORY);
-
   const [resetKey, setResetKey] = useState(0);
 
   const [services, setServices] = useState<Service[]>(listing?.services || initialServices);
@@ -67,8 +76,6 @@ const RentModal = () => {
     (listing?.employees || []).map((emp: any) => emp.fullName) || initialEmployees
   );
   const [storeHours, setStoreHours] = useState<StoreHourType[]>(listing?.storeHours || initialStoreHours);
-
-  // which service index is being edited in the ServiceSelector (single row mode)
   const [editingServiceIndex, setEditingServiceIndex] = useState<number | null>(null);
 
   const { 
@@ -83,7 +90,8 @@ const RentModal = () => {
   } = useForm<FieldValues>({
     defaultValues: {
       category: listing?.category || '',
-      location: listing?.location || null,
+      // ---- EXACTLY like register flow: a single string field ----
+      location: listing?.location || '',
       address: listing?.address || '',
       zipCode: listing?.zipCode || '',
       imageSrc: listing?.imageSrc || '',
@@ -92,11 +100,11 @@ const RentModal = () => {
       phoneNumber: (listing as any)?.phoneNumber || '',
       website: listing?.website || '',
       galleryImages: listing?.galleryImages || [],
-      state: listing?.state || '',
-      city: listing?.city || '',
+      // ❌ removed hidden state/city fields
     }
   });
 
+  // Reset step & fields when opened/closed
   useEffect(() => {
     if (!rentModal.isOpen) return;
     setStep(isEditMode ? EDIT_HUB_STEP : STEPS.CATEGORY);
@@ -105,7 +113,7 @@ const RentModal = () => {
     if (!isEditMode) {
       reset({
         category: '',
-        location: null,
+        location: '',
         address: '',
         zipCode: '',
         imageSrc: '',
@@ -114,8 +122,6 @@ const RentModal = () => {
         phoneNumber: '',
         website: '',
         galleryImages: [],
-        state: '',
-        city: '',
       });
       setServices(initialServices);
       setEmployees(initialEmployees);
@@ -124,34 +130,64 @@ const RentModal = () => {
     }
   }, [rentModal.isOpen, isEditMode, reset]);
 
-  const clearLocation = () => {
-    setValue('location', null, { shouldDirty: true, shouldValidate: true, shouldTouch: true });
-    setValue('address', '',   { shouldDirty: true, shouldValidate: true, shouldTouch: true });
-    setValue('zipCode', '',   { shouldDirty: true, shouldValidate: true, shouldTouch: true });
-    setValue('state',  '',    { shouldDirty: true, shouldValidate: true, shouldTouch: true });
-    setValue('city',   '',    { shouldDirty: true, shouldValidate: true, shouldTouch: true });
+  // Prefill when editing
+  useEffect(() => {
+    if (!listing) return;
+    reset({
+      category: listing.category || '',
+      location: listing.location || '',
+      address: listing.address || '',
+      zipCode: listing.zipCode || '',
+      imageSrc: listing.imageSrc || '',
+      title: listing.title || '',
+      description: listing.description || '',
+      phoneNumber: (listing as any).phoneNumber || '',
+      website: listing.website || '',
+      galleryImages: listing.galleryImages || [],
+    });
+    setServices(listing.services || initialServices);
+    setEmployees((listing.employees || []).map((emp: any) => emp.fullName));
+    setStoreHours(listing.storeHours || initialStoreHours);
+    setEditingServiceIndex(null);
     setResetKey((k) => k + 1);
+  }, [listing, reset]);
+
+  const category = watch('category');
+  const locationVal = watch('location'); // 👈 the only field for city/state
+  const address = watch('address');
+  const zipCode = watch('zipCode');
+  const imageSrc = watch('imageSrc');
+  const galleryImages = watch('galleryImages') || [];
+  const title = watch('title');
+
+  const setCustomValue = (id: string, value: any) => {
+    setValue(id, value, { shouldDirty: true, shouldTouch: true, shouldValidate: true });
   };
 
+  // Helpers to clear per-step data
+  const clearLocation = () => {
+    setValue('location', '', { shouldDirty: true, shouldValidate: true, shouldTouch: true });
+    setValue('address', '',  { shouldDirty: true, shouldValidate: true, shouldTouch: true });
+    setValue('zipCode', '',  { shouldDirty: true, shouldValidate: true, shouldTouch: true });
+    setResetKey((k) => k + 1);
+  };
   const clearImages = () => {
     setValue('imageSrc', '', { shouldDirty: true, shouldValidate: true, shouldTouch: true });
     setValue('galleryImages', [], { shouldDirty: true, shouldValidate: true, shouldTouch: true });
   };
-
   const clearDescription = () => {
     setValue('title', '',        { shouldDirty: true, shouldValidate: true, shouldTouch: true });
     setValue('description', '',  { shouldDirty: true, shouldValidate: true, shouldTouch: true });
     setValue('phoneNumber', '',  { shouldDirty: true, shouldValidate: true, shouldTouch: true });
     setValue('website', '',      { shouldDirty: true, shouldValidate: true, shouldTouch: true });
   };
-
   const clearHours = () => setStoreHours(initialStoreHours);
   const clearEmployees = () => setEmployees(initialEmployees);
 
   const handleClose = useCallback(() => {
     reset({
       category: '',
-      location: null,
+      location: '',
       address: '',
       zipCode: '',
       imageSrc: '',
@@ -160,8 +196,6 @@ const RentModal = () => {
       phoneNumber: '',
       website: '',
       galleryImages: [],
-      state: '',
-      city: '',
     });
     setServices(initialServices);
     setEmployees(initialEmployees);
@@ -172,58 +206,28 @@ const RentModal = () => {
     rentModal.onClose();
   }, [reset, rentModal]);
 
-  useEffect(() => {
-    if (!listing) return;
-    reset({
-      category: listing.category || '',
-      location: listing.location || null,
-      address: listing.address || '',
-      zipCode: listing.zipCode || '',
-      imageSrc: listing.imageSrc || '',
-      title: listing.title || '',
-      description: listing.description || '',
-      phoneNumber: (listing as any).phoneNumber || '',
-      website: listing.website || '',
-      galleryImages: listing.galleryImages || [],
-      state: listing.state || '',
-      city: listing.city || '',
-    });
-    setServices(listing.services || initialServices);
-    setEmployees((listing.employees || []).map((emp: any) => emp.fullName));
-    setStoreHours(listing.storeHours || initialStoreHours);
-    setEditingServiceIndex(null);
-    setResetKey((k) => k + 1);
-  }, [listing, reset]);
-
-  const category = watch('category');
-  const imageSrc = watch('imageSrc');
-  const address = watch('address');
-  const zipCode = watch('zipCode');
-  const galleryImages = watch('galleryImages') || [];
-  const title = watch('title');
-  const description = watch('description');
-
-  const stateVal = watch('state');
-  const cityVal  = watch('city');
-
-  const setCustomValue = (id: string, value: any) => {
-    setValue(id, value, { shouldDirty: true, shouldTouch: true, shouldValidate: true });
-  };
-
   const onBack = () => {
     if (isEditMode) {
       setStep(EDIT_HUB_STEP);
       return;
     }
     if (step === STEPS.CATEGORY) return;
-
     if (step === STEPS.IMAGES) {
       setStep(STEPS.SERVICES_LIST);
       return;
     }
-    setStep((s) => (s - 1) as STEPS);
+    const goingTo = (step - 1) as STEPS;
+    switch (goingTo) {
+      case STEPS.LOCATION: clearLocation(); break;
+      case STEPS.DESCRIPTION: clearDescription(); break;
+      case STEPS.HOURS: clearHours(); break;
+      case STEPS.EMPLOYEE: clearEmployees(); break;
+      default: break;
+    }
+    setStep(goingTo);
   };
 
+  /** VALIDATION (aligned to register pattern: check single "location") */
   const onNext = () => {
     if (step === STEPS.CATEGORY && !category) {
       return toast.error('Please select a category.');
@@ -231,11 +235,12 @@ const RentModal = () => {
 
     if (step === STEPS.LOCATION) {
       let invalid = false;
-      if (!stateVal) { setError('state', { type: 'required', message: 'State is required' }); invalid = true; } else { clearErrors('state'); }
-      if (!cityVal)  { setError('city',  { type: 'required', message: 'City is required'  }); invalid = true; } else { clearErrors('city'); }
-      if (!address)  { setError('address',{ type: 'required', message: 'Address is required' }); invalid = true; } else { clearErrors('address'); }
-      if (!zipCode)  { setError('zipCode',{ type: 'required', message: 'ZIP is required'     }); invalid = true; } else { clearErrors('zipCode'); }
-      if (invalid) return toast.error('Please fill in all location fields.');
+
+      if (!locationVal) { setError('location', { type: 'required', message: 'Location is required' }); invalid = true; } else { clearErrors('location'); }
+      if (!address)     { setError('address',  { type: 'required', message: 'Address is required'  }); invalid = true; } else { clearErrors('address'); }
+      if (!zipCode)     { setError('zipCode',  { type: 'required', message: 'ZIP is required'      }); invalid = true; } else { clearErrors('zipCode'); }
+
+      if (invalid) return toast.error('Please fill in your location, address, and ZIP.');
     }
 
     if (step === STEPS.SERVICES_LIST) {
@@ -260,8 +265,14 @@ const RentModal = () => {
     }
     
     setIsLoading(true);
+
+    // Derive state/city for backend compatibility
+    const { city, state } = splitLocation(String(data.location || ''));
+
     const payload = { 
-      ...data, 
+      ...data,
+      city,
+      state,
       services,
       employees,
       storeHours,
@@ -275,9 +286,11 @@ const RentModal = () => {
         await axios.post('/api/listings', payload);
         toast.success('Listing created successfully!');
       }
+      
       router.refresh();
       handleClose();
-    } catch {
+    } catch (e) {
+      console.error('[LISTING_SAVE]', e);
       toast.error('Something went wrong.');
     } finally {
       setIsLoading(false);
@@ -310,14 +323,42 @@ const RentModal = () => {
   const imagesCount = (imageSrc ? 1 : 0) + (Array.isArray(galleryImages) ? galleryImages.length : 0);
 
   const overviewItems = useMemo(() => ([
-    { key: STEPS.CATEGORY,      title: 'Category',   description: category ? `Selected: ${category}` : 'Pick a category' },
-    { key: STEPS.LOCATION,      title: 'Location',   description: (cityVal && stateVal) ? `${cityVal}, ${stateVal}` : 'Address, City, State, ZIP' },
-    { key: STEPS.SERVICES_LIST, title: 'Services',   description: servicesCount ? `${servicesCount} service${servicesCount > 1 ? 's' : ''}` : 'Add services' },
-    { key: STEPS.IMAGES,        title: 'Images',     description: imagesCount ? `${imagesCount} image${imagesCount > 1 ? 's' : ''}` : 'Add photos' },
-    { key: STEPS.DESCRIPTION,   title: 'Details',    description: title ? `Title: ${title}` : 'Title & Description' },
-    { key: STEPS.HOURS,         title: 'Hours',      description: 'Set store hours' },
-    { key: STEPS.EMPLOYEE,      title: 'Employees',  description: employeesCount ? `${employeesCount} added` : 'Add employees' },
-  ]), [category, cityVal, stateVal, servicesCount, imagesCount, title, employeesCount]);
+    {
+      key: STEPS.CATEGORY,
+      title: 'Category',
+      description: category ? `Selected: ${category}` : 'Pick a category',
+    },
+    {
+      key: STEPS.LOCATION,
+      title: 'Location',
+      description: locationVal ? locationVal : 'Address, City, State, ZIP',
+    },
+    {
+      key: STEPS.SERVICES_LIST,
+      title: 'Services',
+      description: servicesCount ? `${servicesCount} service${servicesCount > 1 ? 's' : ''}` : 'Add services',
+    },
+    {
+      key: STEPS.IMAGES,
+      title: 'Images',
+      description: imagesCount ? `${imagesCount} image${imagesCount > 1 ? 's' : ''}` : 'Add photos',
+    },
+    {
+      key: STEPS.DESCRIPTION,
+      title: 'Details',
+      description: title ? `Title: ${title}` : 'Title & Description',
+    },
+    {
+      key: STEPS.HOURS,
+      title: 'Hours',
+      description: 'Set store hours',
+    },
+    {
+      key: STEPS.EMPLOYEE,
+      title: 'Employees',
+      description: employeesCount ? `${employeesCount} added` : 'Add employees',
+    },
+  ]), [category, locationVal, servicesCount, imagesCount, title, employeesCount]);
 
   const formatPrice = (p?: number) => {
     const n = Number(p);
@@ -342,13 +383,14 @@ const RentModal = () => {
     setStep(STEPS.SERVICES_FORM);
   };
 
-  // ---------- BODY ----------
+  // ----- BODY
   let bodyContent = (
     <div className="flex flex-col gap-4">
       <Heading
         title={isEditMode ? "Edit your establishment" : "Define your establishment"}
         subtitle="Pick a category"
       />
+
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {categories.map((item) => (
           <CategoryInput
@@ -384,13 +426,17 @@ const RentModal = () => {
           initialLocation={isEditMode ? (listing?.location ?? null) : null}
           initialAddress={isEditMode ? (listing?.address ?? null) : null}
           initialZipCode={isEditMode ? (listing?.zipCode ?? null) : null}
-          onLocationSubmit={(loc) => {
-            if (!loc) return;
-            setValue('location', `${loc.city}, ${loc.state}`, { shouldValidate: true });
-            setValue('state', loc.state, { shouldValidate: true });
-            setValue('city',  loc.city,  { shouldValidate: true });
-            if (loc.address) setValue('address', loc.address, { shouldValidate: true });
-            if (loc.zipCode) setValue('zipCode', loc.zipCode, { shouldValidate: true });
+          onLocationSubmit={(value) => {
+            setCustomValue('location', value ?? '');
+            if (value) clearErrors('location');
+          }}
+          onAddressSelect={(data) => {
+            setCustomValue('address', data.address);
+            setCustomValue('zipCode', data.zipCode);
+            // also ensure 'location' matches the address pick (redundant but safe)
+            const locStr = `${data.city}, ${data.state}`;
+            setCustomValue('location', locStr);
+            clearErrors(['address', 'zipCode', 'location']);
           }}
           register={register}
           errors={errors}
@@ -404,10 +450,9 @@ const RentModal = () => {
 
     bodyContent = (
       <div className="flex flex-col gap-6">
-        <Heading title="Your services" subtitle="Review and edit." />
+        <Heading title="Your services" subtitle="Review and edit each one." />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* Existing services */}
           {validServices.map((s, i) => {
             const bg = s.imageSrc || imageSrc || '';
             return (
@@ -415,7 +460,6 @@ const RentModal = () => {
                 key={`svc-card-${i}`}
                 className="relative overflow-hidden rounded-2xl border border-neutral-200 bg-white"
               >
-                {/* Image with over-image edit button */}
                 <div
                   className="relative h-32 w-full bg-center bg-cover"
                   style={{ backgroundImage: bg ? `url(${bg})` : 'none', backgroundColor: bg ? undefined : '#f5f5f5' }}
@@ -427,7 +471,6 @@ const RentModal = () => {
                     aria-label="Edit service"
                     title="Edit service"
                   >
-                    {/* Your SVG (edit/pencil) */}
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" color="currentColor" fill="none">
                       <path d="M16.4249 4.60509L17.4149 3.6151C18.2351 2.79497 19.5648 2.79497 20.3849 3.6151C21.205 4.43524 21.205 5.76493 20.3849 6.58507L19.3949 7.57506M16.4249 4.60509L9.76558 11.2644C9.25807 11.772 8.89804 12.4078 8.72397 13.1041L8 16L10.8959 15.276C11.5922 15.102 12.228 14.7419 12.7356 14.2344L19.3949 7.57506M16.4249 4.60509L19.3949 7.57506" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"></path>
                       <path d="M18.9999 13.5C18.9999 16.7875 18.9999 18.4312 18.092 19.5376C17.9258 19.7401 17.7401 19.9258 17.5375 20.092C16.4312 21 14.7874 21 11.4999 21H11C7.22876 21 5.34316 21 4.17159 19.8284C3.00003 18.6569 3 16.7712 3 13V12.5C3 9.21252 3 7.56879 3.90794 6.46244C4.07417 6.2599 4.2599 6.07417 4.46244 5.90794C5.56879 5 7.21252 5 10.5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
@@ -454,7 +497,6 @@ const RentModal = () => {
             );
           })}
 
-          {/* Add new service card */}
           {(services?.length || 0) < MAX_SERVICES && (
             <button
               type="button"
@@ -462,7 +504,6 @@ const RentModal = () => {
               className="group relative overflow-hidden rounded-2xl border border-neutral-200 bg-white text-left focus:outline-none focus:ring-2 focus:ring-black/10 transition"
             >
               <div className="relative h-32 w-full bg-neutral-100">
-                {/* Centered square + */}
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="w-12 h-12 rounded-xl border border-neutral-300 bg-white flex items-center justify-center shadow-sm group-hover:bg-neutral-50 transition">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -491,7 +532,7 @@ const RentModal = () => {
           id="service-selector"
           onServicesChange={setServices}
           existingServices={services}
-          listingImageSrc={listing?.imageSrc || imageSrc || ''}
+          listingImageSrc={imageSrc || ''}
           singleIndex={editingServiceIndex ?? undefined}
         />
       </div>
@@ -501,10 +542,7 @@ const RentModal = () => {
   if (step === STEPS.IMAGES) {
     bodyContent = (
       <div className="flex flex-col gap-8">
-        <Heading
-          title={isEditMode ? "Update your photos" : "Add photos of your place"}
-          subtitle="Show guests what your place looks like!"
-        />
+        <Heading title={isEditMode ? "Update your photos" : "Add photos of your place"} subtitle="Show guests what your place looks like!" />
         <ImageUploadGrid
           key={`img-${resetKey}`}
           id="image-upload"

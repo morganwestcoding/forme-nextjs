@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Select, {
   GroupBase,
   SingleValue,
   StylesConfig,
+  components as RSComponents,
   type SelectInstance,
 } from 'react-select';
 
@@ -17,19 +18,27 @@ interface FloatingLabelSelectProps {
   onChange: (v: SingleValue<FLSelectOption>) => void;
   isLoading?: boolean;
   isDisabled?: boolean;
-  noOptionsMessage?: () => string;
+  /** Accept either react-select’s signature or a simple function */
+  noOptionsMessage?: (obj?: any) => string;
   error?: boolean;
   className?: string;
   isSearchable?: boolean;
+
+  /** Helps avoid browser autofill collisions */
+  name?: string;
+  inputId?: string;
+
+  /** Clear the internal search box when opening/closing/selecting (default true) */
+  clearSearchOnOpen?: boolean;
 }
 
 const CONTROL_HEIGHT = 58;
-const BORDER_RADIUS  = 8;
-const PADDING_LEFT   = 16;
-const PADDING_RIGHT  = 40;
-const PADDING_TOP    = 24;
+const BORDER_RADIUS = 8;
+const PADDING_LEFT = 16;
+const PADDING_RIGHT = 40;
+const PADDING_TOP = 24;
 const PADDING_BOTTOM = 12;
-const FONT_SIZE_PX   = 14;
+const FONT_SIZE_PX = 14;
 const LINE_HEIGHT_PX = 20;
 
 const makeStyles = (
@@ -94,7 +103,7 @@ const makeStyles = (
   menu: (base) => ({
     ...base,
     borderRadius: BORDER_RADIUS,
-    border: '1px solid #e5e5e5',
+    border: '1px solid #e5e5e5', // ✅ fixed string
     overflow: 'hidden',
     marginTop: 4,
   }),
@@ -115,6 +124,11 @@ const makeStyles = (
   }),
 });
 
+/** Custom Input to discourage Chrome autofill injecting stray text */
+const AutoCompleteOffInput = (props: any) => (
+  <RSComponents.Input {...props} autoComplete="new-password" />
+);
+
 const FloatingLabelSelect: React.FC<FloatingLabelSelectProps> = ({
   label,
   value,
@@ -126,35 +140,43 @@ const FloatingLabelSelect: React.FC<FloatingLabelSelectProps> = ({
   error,
   className,
   isSearchable = true,
+  name,
+  inputId,
+  clearSearchOnOpen = true,
 }) => {
   const [focused, setFocused] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const hasValue = !!value;
 
+  // Control the internal react-select search box to prevent ghost text (e.g., "ron")
+  const [inputValue, setInputValue] = useState('');
+
   const styles = useMemo(() => makeStyles(error), [error]);
   const selectRef =
     useRef<SelectInstance<FLSelectOption, false, GroupBase<FLSelectOption>>>(null);
 
-  // Label rules: position floats when focused OR has value; size is xs ONLY while focused
+  // Floating-label behavior
   const labelFloated = focused || hasValue;
   const labelSize = focused ? 'text-xs' : 'text-sm';
-  const labelPos  = labelFloated
-    ? 'top-6 -translate-y-4'
-    : 'top-1/2 -translate-y-1/2';
+  const labelPos = labelFloated ? 'top-6 -translate-y-4' : 'top-1/2 -translate-y-1/2';
 
-  // Open the menu when clicking/tapping anywhere on the control
+  // Unified “open” behavior anywhere on the control wrapper
   const openMenu = () => {
     // @ts-expect-error runtime method exists in react-select
     selectRef.current?.openMenu?.();
     selectRef.current?.focus();
   };
 
+  // Clear the search box when menu closes to avoid leftover text
+  useEffect(() => {
+    if (!menuOpen && inputValue) setInputValue('');
+  }, [menuOpen, inputValue]);
+
   return (
     <div
       className={`relative cursor-pointer ${className || ''}`}
       tabIndex={-1}
       onPointerDownCapture={(e) => {
-        // Prevent double toggles; just ensure it opens
         e.preventDefault();
         openMenu();
       }}
@@ -163,7 +185,6 @@ const FloatingLabelSelect: React.FC<FloatingLabelSelectProps> = ({
         openMenu();
       }}
       onTouchStartCapture={(e) => {
-        // mobile tap-to-open
         e.preventDefault();
         openMenu();
       }}
@@ -180,7 +201,10 @@ const FloatingLabelSelect: React.FC<FloatingLabelSelectProps> = ({
         styles={styles}
         options={options}
         value={value}
-        onChange={onChange}
+        onChange={(opt) => {
+          onChange(opt);
+          if (clearSearchOnOpen) setInputValue('');
+        }}
         isLoading={isLoading}
         isDisabled={isDisabled}
         getOptionLabel={(o) => o.label}
@@ -189,12 +213,30 @@ const FloatingLabelSelect: React.FC<FloatingLabelSelectProps> = ({
         noOptionsMessage={noOptionsMessage}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
-        onMenuOpen={() => setMenuOpen(true)}
-        onMenuClose={() => setMenuOpen(false)}
+        onMenuOpen={() => {
+          setMenuOpen(true);
+          if (clearSearchOnOpen) setInputValue('');
+        }}
+        onMenuClose={() => {
+          setMenuOpen(false);
+          if (clearSearchOnOpen) setInputValue('');
+        }}
         openMenuOnClick
         openMenuOnFocus
         menuShouldScrollIntoView
         isSearchable={isSearchable}
+        /** Keep the search box controlled to block autofill “ghost” values */
+        inputValue={inputValue}
+        onInputChange={(val, meta) => {
+          if (meta.action === 'input-change') setInputValue(val);
+          if (meta.action === 'menu-close' && clearSearchOnOpen) setInputValue('');
+          return val;
+        }}
+        /** Reduce browser autofill & make distinct per field */
+        name={name || 'fls-select'}
+        inputId={inputId}
+        components={{ Input: AutoCompleteOffInput }}
+        /** Render menu to body to avoid clipping inside modals */
         menuPortalTarget={typeof window !== 'undefined' ? document.body : null}
         menuPosition="fixed"
       />
@@ -203,9 +245,7 @@ const FloatingLabelSelect: React.FC<FloatingLabelSelectProps> = ({
         className={[
           'absolute left-4 origin-[0] pointer-events-none transition-all duration-150',
           error ? 'text-rose-500' : 'text-neutral-500',
-          // size only while focused
           labelSize,
-          // position floats when focused OR has value
           labelPos,
         ].join(' ')}
       >

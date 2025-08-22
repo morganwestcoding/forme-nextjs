@@ -3,19 +3,27 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { SafeService, SafeListing, SafeUser } from '@/app/types';
+import { SafeListing, SafeUser } from '@/app/types';
 import SmartBadgePrice from './SmartBadgePrice';
 import useReservationModal from '@/app/hooks/useReservationModal';
 import useLoginModal from '@/app/hooks/useLoginModal';
-import { Heart, Clock, Star, User, Scissors, Droplet, SprayCan, Waves, Palette, Flower, Dumbbell } from 'lucide-react';
+import { Star, Scissors, Droplet, SprayCan, Waves, Palette, Flower, Dumbbell } from 'lucide-react';
+
+type ServiceLike = {
+  id: string;
+  serviceName: string;
+  price: number;
+  category: string;
+  imageSrc?: string | null; // <- allow null
+};
 
 interface ServiceCardProps {
-  service: SafeService;
+  service: ServiceLike;                       // <- accepts SafeService or plain Service item
   listingLocation: string | null;
   listingTitle: string;
-  listingImage: string;
-  listing: SafeListing; // Add full listing data
-  currentUser?: SafeUser | null; // Add current user
+  listingImage?: string | null;               // <- may be null/undefined; we’ll fallback
+  listing: SafeListing;
+  currentUser?: SafeUser | null;
   storeHours?: Array<{
     dayOfWeek: string;
     openTime: string;
@@ -45,38 +53,36 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   const reservationModal = useReservationModal();
   const loginModal = useLoginModal();
 
-  // Handle card click (navigate to listing page)
-  const handleCardClick = () => {
-    router.push(`/listings/${listing.id}`);
-  };
+  const handleCardClick = () => router.push(`/listings/${listing.id}`);
 
-  // Handle reserve button click (open reservation modal)
   const handleReserveClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent card click
-    
+    e.stopPropagation();
     if (!currentUser) {
       loginModal.onOpen();
       return;
     }
-    
-    // Open reservation modal with this service pre-selected
     reservationModal.onOpen(listing, currentUser, service.id);
   };
 
   const getCategoryConfig = (category: string) => {
-    const configs: { [key: string]: { icon: React.ReactElement } } = {
-      'Spa': { icon: <Waves className="w-3 h-3" /> },
-      'Beauty': { icon: <Palette className="w-3 h-3" /> },
-      'Barber': { icon: <Scissors className="w-3 h-3" /> },
-      'Fitness': { icon: <Dumbbell className="w-3 h-3" /> },
-      'Salon': { icon: <SprayCan className="w-3 h-3" /> },
-      'Wellness': { icon: <Flower className="w-3 h-3" /> },
-      'Skincare': { icon: <Droplet className="w-3 h-3" /> }
+    const iconClass = "w-3 h-3";
+    const configs: Record<string, { icon: React.ReactElement }> = {
+      'Spa': { icon: <Waves className={iconClass} /> },
+      'Beauty': { icon: <Palette className={iconClass} /> },
+      'Barber': { icon: <Scissors className={iconClass} /> },
+      'Fitness': { icon: <Dumbbell className={iconClass} /> },
+      'Salon': { icon: <SprayCan className={iconClass} /> },
+      'Wellness': { icon: <Flower className={iconClass} /> },
+      'Skincare': { icon: <Droplet className={iconClass} /> },
     };
-    return configs[category] || { icon: <Star className="w-3 h-3" /> };
+    return configs[category] || { icon: <Star className={iconClass} /> };
   };
 
   const [city, state] = listingLocation?.split(',').map(s => s.trim()) || [];
+  const cityState = [city, state].filter(Boolean).join(', ');
+
+  // Prefer the service image first, then listing-level fallback, then placeholder
+  const primaryImage = service.imageSrc || listingImage || '/placeholder-service.png';
 
   return (
     <div
@@ -85,8 +91,8 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
     >
       <div className="absolute inset-0 z-0">
         <Image
-          src={listingImage || '/placeholder-service.png'}
-          alt={service.serviceName}
+          src={primaryImage}
+          alt={service.serviceName || 'Service'}
           fill
           className="w-full h-full object-cover"
         />
@@ -95,29 +101,26 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
 
       <div className="relative z-10">
         <div className="relative h-[345px] overflow-hidden">
-          {/* Category badge - top left (same as ListingCard) */}
+          {/* Category badge - top left */}
           <div className="absolute top-4 left-4 z-20">
             <div className="bg-white/90 backdrop-blur-md border border-white/30 rounded-xl text-center w-24 py-2 shadow-lg hover:bg-white/30 transition-all duration-300">
               <div className="flex items-center justify-center gap-1.5">
-        
+                {/* {getCategoryConfig(service.category).icon} */}
                 <span className="text-xs font-normal text-black tracking-wide">{service.category}</span>
               </div>
             </div>
           </div>
 
-          {/* Main content at bottom (same layout as ListingCard) */}
+          {/* Bottom content */}
           <div className="absolute bottom-5 left-5 right-5 text-white z-20">
-            {/* Service name and business info */}
             <div className="flex items-center space-x-2 mb-1">
               <h1 className="text-xl font-medium drop-shadow-lg">{service.serviceName}</h1>
             </div>
-            
-            {/* Business and location */}
+
             <p className="text-xs drop-shadow-md font-thin flex items-center mb-5">
-              {listingTitle} • {city}, {state}
+              {listingTitle}{cityState ? ` • ${cityState}` : ''}
             </p>
 
-            {/* SmartBadgePrice component */}
             <SmartBadgePrice
               price={service.price}
               storeHours={storeHours}

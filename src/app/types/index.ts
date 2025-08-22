@@ -20,6 +20,7 @@ export type SafeService = {
   serviceName: string;
   price: number;
   category: string;
+   imageSrc?: string | null; // <- add this
   // listingId is omitted as it's a relational field to the Listing model
 };
 

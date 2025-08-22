@@ -9,9 +9,7 @@ export default async function getListingById(params: IParams) {
     const { listingId } = params;
 
     const listing = await prisma.listing.findUnique({
-      where: {
-        id: listingId,
-      },
+      where: { id: listingId },
       include: {
         user: true,
         services: true,
@@ -20,19 +18,18 @@ export default async function getListingById(params: IParams) {
       }
     });
 
-    if (!listing) {
-      return null;
-    }
+    if (!listing) return null;
 
     return {
       ...listing,
       createdAt: listing.createdAt.toISOString(),
-      favoriteIds: [], // Added missing required field
+      favoriteIds: [],
       services: listing.services.map(service => ({
         id: service.id,
         serviceName: service.serviceName,
         price: service.price,
-        category: service.category
+        category: service.category,
+        imageSrc: service.imageSrc ?? null, // include image
       })),
       employees: listing.employees.map(employee => ({
         id: employee.id,
@@ -46,7 +43,7 @@ export default async function getListingById(params: IParams) {
         closeTime: hour.closeTime,
         isClosed: hour.isClosed
       })),
-      galleryImages: listing.galleryImages || [], // Added missing required field
+      galleryImages: listing.galleryImages || [],
       phoneNumber: listing.phoneNumber || null,
       website: listing.website || null,
       address: listing.address || null,
@@ -60,7 +57,6 @@ export default async function getListingById(params: IParams) {
         emailVerified: listing.user.emailVerified?.toISOString() || null,
       }
     };
-    
   } catch (error: any) {
     throw new Error(error);
   }
