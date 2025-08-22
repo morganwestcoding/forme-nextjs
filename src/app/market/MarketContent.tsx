@@ -1,18 +1,13 @@
+// components/MarketContent.tsx
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Masonry from 'react-masonry-css';
-
-import ListingCard from '@/components/listings/ListingCard';
-// import ServiceCard from '@/components/listings/ServiceCard'; // ❌ removed from feed
-import WorkerCard from '@/components/listings/WorkerCard';
-import { categories } from '@/components/Categories';
 import Container from '@/components/Container';
-import MarketExplorer from './MarketExplorer';
-import PropagateLoaderWrapper from '@/components/loaders/PropagateLoaderWrapper';
 import { SafeListing, SafeUser } from '@/app/types';
-import RentModal from '@/components/modals/RentModal'; // ✅ mount the modal so rentModal.onOpen() has UI
+import PropagateLoaderWrapper from '@/components/loaders/PropagateLoaderWrapper';
+import ListingCard from '@/components/listings/ListingCard';
+import MarketExplorer from './MarketExplorer';
+import RentModal from '@/components/modals/RentModal';
 
 interface MarketContentProps {
   searchParams: {
@@ -43,143 +38,45 @@ interface ViewState {
   };
 }
 
-// Only two card types in feed now
-type CardType = 'listing' | 'worker';
+const MIN_LOADER_MS = 1200;
 
-const MIN_LOADER_MS = 1800;
-
-const MarketContent = ({
+const MarketContent: React.FC<MarketContentProps> = ({
   searchParams,
   listings,
   currentUser
-}: MarketContentProps) => {
-  const router = useRouter();
-
+}) => {
+  // View state (for MarketExplorer controls)
   const [viewState, setViewState] = useState<ViewState>({
     mode: 'grid',
     filters: {
       category: searchParams.category ?? 'featured',
-    }
+    },
   });
 
-  const [shuffledCards, setShuffledCards] = useState<JSX.Element[]>([]);
+  // Loader (nice UX delay)
   const [isLoading, setIsLoading] = useState(true);
+  useEffect(() => {
+    const t = setTimeout(() => setIsLoading(false), MIN_LOADER_MS);
+    return () => clearTimeout(t);
+  }, [listings]);
+
+  // Optional: memoize an empty-state check
+  const hasListings = useMemo(() => Array.isArray(listings) && listings.length > 0, [listings]);
 
   const renderListView = () => (
     <div className="text-sm text-gray-500">List view goes here.</div>
   );
 
-  const generateShuffledCards = () => {
-    const rawCards: { type: CardType; element: JSX.Element }[] = [];
-
-    listings.forEach((listing) => {
-      // Listing itself
-      rawCards.push({
-        type: 'listing',
-        element: (
-          <ListingCard
-            key={`listing-${listing.id}`}
-            currentUser={currentUser}
-            data={listing}
-            categories={categories}
-          />
-        )
-      });
-
-      // ❗️Services are intentionally excluded from the feed
-
-      // Workers (kept)
-      listing.employees?.forEach((employee) => {
-        rawCards.push({
-          type: 'worker',
-          element: (
-            <WorkerCard 
-              key={`worker-${employee.id}`}
-              employee={employee}
-              listingTitle={listing.title}
-              data={{
-                title: listing.title,
-                imageSrc: listing.imageSrc,
-                category: listing.category
-              }}
-              listing={listing}
-              currentUser={currentUser}
-              onFollow={() => console.log('Follow')}
-              onBook={() => console.log('Book')}
-            />
-          )
-        });
-      });
-    });
-
-    // Shuffle & avoid same-type stacking
-    const shuffled = [...rawCards].sort(() => 0.5 - Math.random());
-    const columns = 3;
-    const layout: (typeof rawCards[0] | null)[] = Array(shuffled.length).fill(null);
-    let i = 0;
-
-    for (const card of shuffled) {
-      while (i < layout.length) {
-        const aboveIndex = i - columns;
-        const above = layout[aboveIndex]?.type;
-        if (above !== card.type) {
-          layout[i] = card;
-          i++;
-          break;
-        }
-        i++;
-      }
-    }
-
-    // Staggered fade-in
-    return layout.reduce<JSX.Element[]>((acc, card, idx) => {
-      if (!card) return acc;
-      acc.push(
-        <div
-          key={`card-${idx}`}
-          style={{
-            opacity: 0,
-            animation: `fadeInUp 520ms ease-out forwards`,
-            animationDelay: `${140 + (idx % 12) * 30}ms`,
-            willChange: 'transform, opacity',
-          }}
-        >
-          {card.element}
-        </div>
-      );
-      return acc;
-    }, []);
-  };
-
-  useEffect(() => {
-    const cards = generateShuffledCards();
-    const t = setTimeout(() => {
-      setShuffledCards(cards);
-      setIsLoading(false);
-    }, MIN_LOADER_MS);
-    return () => clearTimeout(t);
-  }, [listings]);
-
-  const masonryBreakpoints = useMemo(
-    () => ({
-      default: 3,
-      1024: 3,
-      768: 2,
-      0: 1
-    }),
-    []
-  );
-
   return (
     <Container>
-      {/* ✅ Mount the modal once so useRentModal controls it app-wide */}
+      {/* Mount edit modal so updates from here trigger router.refresh in the modal */}
       <RentModal />
 
       <div className="pb-6">
         <div className="pt-4 mb-4">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Market</h1>
-            <p className="text-gray-600">Discover unique services from our vendors</p>
+            <p className="text-gray-600">Discover unique places from our vendors</p>
           </div>
         </div>
 
@@ -202,13 +99,30 @@ const MarketContent = ({
 
         <div className={`transition-opacity duration-700 ease-out ${isLoading ? 'opacity-0' : 'opacity-100'}`}>
           {viewState.mode === 'grid' ? (
-            <Masonry
-              breakpointCols={masonryBreakpoints}
-              className="flex gap-4"
-              columnClassName="space-y-4"
-            >
-              {shuffledCards}
-            </Masonry>
+            hasListings ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {listings.map((listing, idx) => (
+                  <div
+                    key={listing.id}
+                    style={{
+                      opacity: 0,
+                      animation: `fadeInUp 520ms ease-out forwards`,
+                      animationDelay: `${140 + (idx % 12) * 30}ms`,
+                      willChange: 'transform, opacity',
+                    }}
+                  >
+                    <ListingCard
+                      currentUser={currentUser}
+                      data={listing}
+                    />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center text-gray-500 shadow-sm">
+                No listings found. Try adjusting your filters.
+              </div>
+            )
           ) : (
             renderListView()
           )}
@@ -220,9 +134,9 @@ const MarketContent = ({
 
 export default MarketContent;
 
-/* ----- Keep keyframes in your globals.css -----
+/* ----- Add these keyframes to your globals.css if you don't have them already -----
 @keyframes fadeInUp {
   from { opacity: 0; transform: translate3d(0, 8px, 0); }
   to   { opacity: 1; transform: translate3d(0, 0, 0); }
 }
------------------------------------------------- */
+------------------------------------------------------------------------------------- */

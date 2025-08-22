@@ -1,3 +1,4 @@
+// components/modals/RentModal.tsx
 'use client';
 
 import axios from 'axios';
@@ -24,7 +25,6 @@ function splitLocation(loc?: string | null): { city: string; state: string } {
   if (!loc) return { city: '', state: '' };
   const parts = loc.split(',').map(p => p.trim()).filter(Boolean);
   if (parts.length >= 2) return { city: parts[0] ?? '', state: parts[1] ?? '' };
-  // fallback for odd inputs
   return { city: parts[0] ?? '', state: '' };
 }
 
@@ -58,7 +58,7 @@ const initialStoreHours: StoreHourType[] = [
   { dayOfWeek: 'Thursday', openTime: '8:00 AM', closeTime: '8:00 PM', isClosed: false },
   { dayOfWeek: 'Friday', openTime: '8:00 AM', closeTime: '8:00 PM', isClosed: false },
   { dayOfWeek: 'Saturday', openTime: '8:00 AM', closeTime: '8:00 PM', isClosed: false },
-  { dayOfWeek: 'Sunday', openTime: '8:00 AM', closeTime: '8:00 PM', isClosed: false },
+  { dayOfWeek: 'Sunday', openTime: '10:00 AM', closeTime: '6:00 PM', isClosed: false },
 ];
 
 const RentModal = () => {
@@ -78,6 +78,7 @@ const RentModal = () => {
   const [storeHours, setStoreHours] = useState<StoreHourType[]>(listing?.storeHours || initialStoreHours);
   const [editingServiceIndex, setEditingServiceIndex] = useState<number | null>(null);
 
+  // 👇 IMPORTANT: mirror RegisterModal — use FieldValues, not a custom interface
   const { 
     register, 
     handleSubmit,
@@ -90,7 +91,7 @@ const RentModal = () => {
   } = useForm<FieldValues>({
     defaultValues: {
       category: listing?.category || '',
-      // ---- EXACTLY like register flow: a single string field ----
+      // single string, same as register flow
       location: listing?.location || '',
       address: listing?.address || '',
       zipCode: listing?.zipCode || '',
@@ -100,11 +101,10 @@ const RentModal = () => {
       phoneNumber: (listing as any)?.phoneNumber || '',
       website: listing?.website || '',
       galleryImages: listing?.galleryImages || [],
-      // ❌ removed hidden state/city fields
     }
   });
 
-  // Reset step & fields when opened/closed
+  // Reset step & fields when modal opens/closes
   useEffect(() => {
     if (!rentModal.isOpen) return;
     setStep(isEditMode ? EDIT_HUB_STEP : STEPS.CATEGORY);
@@ -130,7 +130,7 @@ const RentModal = () => {
     }
   }, [rentModal.isOpen, isEditMode, reset]);
 
-  // Prefill when editing
+  // Prefill when editing (kept so router.refresh reflects immediately after save)
   useEffect(() => {
     if (!listing) return;
     reset({
@@ -152,19 +152,20 @@ const RentModal = () => {
     setResetKey((k) => k + 1);
   }, [listing, reset]);
 
+  // Watches (used in overview and validation)
   const category = watch('category');
-  const locationVal = watch('location'); // 👈 the only field for city/state
+  const locationVal = watch('location');
   const address = watch('address');
   const zipCode = watch('zipCode');
   const imageSrc = watch('imageSrc');
-  const galleryImages = watch('galleryImages') || [];
+  const galleryImages = (watch('galleryImages') as string[]) || [];
   const title = watch('title');
 
   const setCustomValue = (id: string, value: any) => {
     setValue(id, value, { shouldDirty: true, shouldTouch: true, shouldValidate: true });
   };
 
-  // Helpers to clear per-step data
+  // Clear helpers when going back
   const clearLocation = () => {
     setValue('location', '', { shouldDirty: true, shouldValidate: true, shouldTouch: true });
     setValue('address', '',  { shouldDirty: true, shouldValidate: true, shouldTouch: true });
@@ -227,7 +228,7 @@ const RentModal = () => {
     setStep(goingTo);
   };
 
-  /** VALIDATION (aligned to register pattern: check single "location") */
+  /** VALIDATION (same spirit as RegisterModal) */
   const onNext = () => {
     if (step === STEPS.CATEGORY && !category) {
       return toast.error('Please select a category.');
@@ -252,14 +253,10 @@ const RentModal = () => {
   };
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+    // No primary action on the Edit Overview
     if (step === EDIT_HUB_STEP) return;
 
-    if (step === STEPS.SERVICES_FORM) {
-      setEditingServiceIndex(null);
-      setStep(STEPS.SERVICES_LIST);
-      return;
-    }
-
+    // If not on the last step, advance like RegisterModal
     if (step !== STEPS.EMPLOYEE) {
       return onNext();
     }
@@ -282,11 +279,14 @@ const RentModal = () => {
       if (isEditMode && listing) {
         await axios.put(`/api/listings/${listing.id}`, payload);
         toast.success('Listing updated successfully!');
-      } else {
-        await axios.post('/api/listings', payload);
-        toast.success('Listing created successfully!');
+        router.refresh();
+        // 👇 Keep modal open & jump back to edit hub (your request)
+        setStep(EDIT_HUB_STEP);
+        return;
       }
-      
+
+      await axios.post('/api/listings', payload);
+      toast.success('Listing created successfully!');
       router.refresh();
       handleClose();
     } catch (e) {
@@ -306,11 +306,11 @@ const RentModal = () => {
     return 'Next';
   }, [step, isEditMode]);
 
+  // In edit mode: show Back except on hub
   const secondaryActionLabel = useMemo(() => {
     if (step === EDIT_HUB_STEP) return undefined;
-    if (isEditMode && step === STEPS.CATEGORY) return 'Back';
-    return step === STEPS.CATEGORY ? undefined : 'Back';
-  }, [step, isEditMode]);
+    return 'Back';
+  }, [step]);
 
   const servicesCount = useMemo(
     () => (services || []).filter(s => (s.serviceName?.trim() || '') && (Number(s.price) > 0)).length,
@@ -433,7 +433,6 @@ const RentModal = () => {
           onAddressSelect={(data) => {
             setCustomValue('address', data.address);
             setCustomValue('zipCode', data.zipCode);
-            // also ensure 'location' matches the address pick (redundant but safe)
             const locStr = `${data.city}, ${data.state}`;
             setCustomValue('location', locStr);
             clearErrors(['address', 'zipCode', 'location']);
@@ -597,7 +596,7 @@ const RentModal = () => {
       actionLabel={actionLabel}
       actionId="submit-button"
       onSubmit={handleSubmit(onSubmit)}
-      secondaryActionLabel={secondaryActionLabel}
+      secondaryActionLabel={step === EDIT_HUB_STEP ? undefined : secondaryActionLabel}
       secondaryAction={step === EDIT_HUB_STEP ? undefined : onBack}
       onClose={handleClose}
       body={bodyContent}

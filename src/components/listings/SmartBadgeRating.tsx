@@ -244,7 +244,7 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
   const badgeProps = getBadgeProps();
 
   return (
-    <div className="bg-white/10 backdrop-blur-md rounded-2xl p-2 border border-white/30 shadow-xl">
+    <div>
       <div className="flex items-center">
         {/* Rating Section - LEFT */}
         <button 
@@ -252,10 +252,10 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
             e.stopPropagation();
             onRatingClick?.();
           }}
-          className="flex-1 flex flex-col items-center py-3.5  hover:bg-white/10 transition-all duration-300 group rounded-l-xl relative overflow-hidden"
+          className="flex-1 flex flex-col items-center py-3  hover:bg-white/10 transition-all duration-300 group rounded-l-xl relative overflow-hidden"
         >
           <div className="absolute inset-0 bg-gradient-to-t from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-l-xl"></div>
-          <div className={`border rounded-lg px-3 py-1.5 mb-2 group-hover:scale-110 transition-all duration-300 ${badgeProps.bgColor} ${badgeProps.borderColor} ${badgeProps.glowColor} shadow-sm w-24 flex justify-center`}>
+          <div className={`border rounded-lg px-3 py-1.5 group-hover:scale-110 transition-all duration-300 ${badgeProps.bgColor} ${badgeProps.borderColor} ${badgeProps.glowColor} shadow-sm w-28 flex justify-center`}>
             <div className="flex items-center gap-1">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="12" height="12" className={badgeProps.textColor} fill="none">
                 <path d="M18.5202 6.22967C18.8121 7.89634 17.5004 9 17.5004 9C17.5004 9 15.8969 8.437 15.605 6.77033C15.3131 5.10366 16.6248 4 16.6248 4C16.6248 4 18.2284 4.56301 18.5202 6.22967Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
@@ -270,7 +270,7 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
               <span className={`text-sm ${badgeProps.textColor}`}>{rating}</span>
             </div>
           </div>
-          <div className="text-xs text-white/80 font-medium tracking-wide">{badgeProps.label}</div>
+          
         </button>
 
         {/* Time Section - RIGHT */}
@@ -279,10 +279,10 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
             e.stopPropagation();
             onTimeClick?.();
           }}
-          className="flex-1 flex flex-col items-center  py-3.5 hover:bg-white/10 transition-all duration-300 group rounded-r-xl relative overflow-hidden"
+          className="flex-1 flex flex-col items-center  py-3 hover:bg-white/10 transition-all duration-300 group rounded-r-xl relative overflow-hidden"
         >
           <div className="absolute inset-0 bg-gradient-to-t from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-r-xl"></div>
-          <div className={`border rounded-lg px-3 py-1.5 mb-2 group-hover:scale-110 transition-all duration-300 shadow-sm w-24 flex justify-center ${
+          <div className={`border rounded-lg px-3 py-1.5 group-hover:scale-110 transition-all duration-300 shadow-sm w-28 flex justify-center ${
             timeStatus.color === 'green' ? 'bg-gradient-to-r from-lime-500/20 to-green-600/20 border-lime-400/40 shadow-lime-500/20' :
             timeStatus.color === 'orange' ? 'bg-gradient-to-r from-orange-500/20 to-amber-500/20 border-orange-400/40 shadow-orange-500/20' :
             'bg-gradient-to-r from-red-500/20 to-rose-500/20 border-red-400/40 shadow-red-500/20'
@@ -306,7 +306,7 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
             </div>
           </div>
           <div className="text-xs text-white/80 font-medium tracking-wide">
-            {timeStatus.timeRange}
+     
           </div>
         </button>
       </div>
