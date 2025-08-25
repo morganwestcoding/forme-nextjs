@@ -1,4 +1,3 @@
-// components/inputs/ServiceSelector.tsx
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
@@ -11,7 +10,7 @@ export type Service = {
   serviceName: string;
   price: number;
   category: string;
- imageSrc?: string | null;
+  imageSrc?: string | null;
 };
 
 type ServiceSelectorProps = {
@@ -23,7 +22,8 @@ type ServiceSelectorProps = {
   singleIndex?: number;
 };
 
-const MAX_ROWS = 6;
+// ⬇️ remove hard limit (previously 6)
+const MAX_ROWS = Number.POSITIVE_INFINITY;
 
 const ServiceSelector: React.FC<ServiceSelectorProps> = ({
   onServicesChange,
@@ -99,7 +99,7 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
   };
 
   const addService = () => {
-    if (services.length >= MAX_ROWS) return;
+    // ⬇️ no ceiling; always add a fresh row
     setServices((prev) => [...prev, { serviceName: '', price: 0, category: '', imageSrc: '' }]);
     setPriceInputs((prev) => [...prev, '']);
     setFocusedName((prev) => [...prev, false]);

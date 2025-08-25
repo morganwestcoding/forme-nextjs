@@ -4,9 +4,9 @@
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useMemo, useState, useCallback, useEffect } from "react";
-
+import ServiceCard from '../listings/ServiceCard';
 import useRentModal from '@/app/hooks/useRentModal';
 import Modal from "./Modal";
 import CategoryInput from '../inputs/CategoryInput';
@@ -16,7 +16,7 @@ import Heading from '../Heading';
 import ServiceSelector, { Service } from '../inputs/ServiceSelector';
 import ListLocationSelect from '../inputs/ListLocationSelect';
 import EmployeeSelector from '../inputs/EmployeeSelector';
-import StoreHours, { StoreHourType }  from '../inputs/StoreHours';
+import StoreHours, { StoreHourType } from '../inputs/StoreHours';
 import ImageUploadGrid from '../inputs/ImageUploadGrid';
 import EditOverview from './EditOverview';
 
@@ -41,7 +41,6 @@ enum STEPS {
 }
 
 const EDIT_HUB_STEP = -1;
-const MAX_SERVICES = 6;
 
 const initialServices: Service[] = [
   { serviceName: '', price: 0, category: '' },
@@ -63,6 +62,9 @@ const initialStoreHours: StoreHourType[] = [
 
 const RentModal = () => {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   const rentModal = useRentModal();
   const listing = rentModal.listing;
   const isEditMode = !!listing;
@@ -78,7 +80,6 @@ const RentModal = () => {
   const [storeHours, setStoreHours] = useState<StoreHourType[]>(listing?.storeHours || initialStoreHours);
   const [editingServiceIndex, setEditingServiceIndex] = useState<number | null>(null);
 
-  // 👇 IMPORTANT: mirror RegisterModal — use FieldValues, not a custom interface
   const { 
     register, 
     handleSubmit,
@@ -91,7 +92,6 @@ const RentModal = () => {
   } = useForm<FieldValues>({
     defaultValues: {
       category: listing?.category || '',
-      // single string, same as register flow
       location: listing?.location || '',
       address: listing?.address || '',
       zipCode: listing?.zipCode || '',
@@ -130,7 +130,7 @@ const RentModal = () => {
     }
   }, [rentModal.isOpen, isEditMode, reset]);
 
-  // Prefill when editing (kept so router.refresh reflects immediately after save)
+  // Prefill when editing
   useEffect(() => {
     if (!listing) return;
     reset({
@@ -152,7 +152,7 @@ const RentModal = () => {
     setResetKey((k) => k + 1);
   }, [listing, reset]);
 
-  // Watches (used in overview and validation)
+  // Watches
   const category = watch('category');
   const locationVal = watch('location');
   const address = watch('address');
@@ -165,7 +165,7 @@ const RentModal = () => {
     setValue(id, value, { shouldDirty: true, shouldTouch: true, shouldValidate: true });
   };
 
-  // Clear helpers when going back
+  // Clear helpers when going back (create mode)
   const clearLocation = () => {
     setValue('location', '', { shouldDirty: true, shouldValidate: true, shouldTouch: true });
     setValue('address', '',  { shouldDirty: true, shouldValidate: true, shouldTouch: true });
@@ -208,10 +208,12 @@ const RentModal = () => {
   }, [reset, rentModal]);
 
   const onBack = () => {
+    // In edit mode, Back always returns to the Quick Edit hub
     if (isEditMode) {
       setStep(EDIT_HUB_STEP);
       return;
     }
+    // Create mode: go to previous logical step
     if (step === STEPS.CATEGORY) return;
     if (step === STEPS.IMAGES) {
       setStep(STEPS.SERVICES_LIST);
@@ -228,7 +230,7 @@ const RentModal = () => {
     setStep(goingTo);
   };
 
-  /** VALIDATION (same spirit as RegisterModal) */
+  /** VALIDATION for create flow (kept) */
   const onNext = () => {
     if (step === STEPS.CATEGORY && !category) {
       return toast.error('Please select a category.');
@@ -252,18 +254,45 @@ const RentModal = () => {
     setStep((value) => value + 1);
   };
 
+  /** SUBMIT — now section-wise Update in edit mode */
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-    // No primary action on the Edit Overview
     if (step === EDIT_HUB_STEP) return;
 
-    // If not on the last step, advance like RegisterModal
+    // EDIT MODE: Update immediately for any step, then return to hub
+    if (isEditMode && listing) {
+      try {
+        setIsLoading(true);
+        const { city, state } = splitLocation(String(data.location || ''));
+
+        const payload = { 
+          ...data,
+          city,
+          state,
+          services,
+          employees,
+          storeHours,
+        };
+
+        await axios.put(`/api/listings/${listing.id}`, payload);
+        toast.success('Listing updated!');
+        router.refresh();
+        setStep(EDIT_HUB_STEP);
+        return;
+      } catch (e) {
+        console.error('[LISTING_UPDATE]', e);
+        toast.error('Update failed.');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    // CREATE MODE: keep wizard behavior
     if (step !== STEPS.EMPLOYEE) {
       return onNext();
     }
     
     setIsLoading(true);
 
-    // Derive state/city for backend compatibility
     const { city, state } = splitLocation(String(data.location || ''));
 
     const payload = { 
@@ -276,15 +305,6 @@ const RentModal = () => {
     };
 
     try {
-      if (isEditMode && listing) {
-        await axios.put(`/api/listings/${listing.id}`, payload);
-        toast.success('Listing updated successfully!');
-        router.refresh();
-        // 👇 Keep modal open & jump back to edit hub (your request)
-        setStep(EDIT_HUB_STEP);
-        return;
-      }
-
       await axios.post('/api/listings', payload);
       toast.success('Listing created successfully!');
       router.refresh();
@@ -299,14 +319,15 @@ const RentModal = () => {
 
   const modalWidthClasses = useMemo(() => 'w-full md:w-4/6 lg:w-3/6 xl:w-2/5', [step]);
 
+  /** BUTTON LABELS — edit mode shows Update/Back only */
   const actionLabel = useMemo(() => {
     if (step === EDIT_HUB_STEP) return undefined;
-    if (step === STEPS.EMPLOYEE) return isEditMode ? 'Update' : 'Create';
+    if (isEditMode) return 'Update';
+    if (step === STEPS.EMPLOYEE) return 'Create';
     if (step === STEPS.SERVICES_FORM) return 'Save';
     return 'Next';
   }, [step, isEditMode]);
 
-  // In edit mode: show Back except on hub
   const secondaryActionLabel = useMemo(() => {
     if (step === EDIT_HUB_STEP) return undefined;
     return 'Back';
@@ -371,17 +392,41 @@ const RentModal = () => {
     setStep(STEPS.SERVICES_FORM);
   };
 
+  // Always create a brand-new service and go to Services Form from Services List view
   const addNewService = () => {
-    if ((services?.length || 0) >= MAX_SERVICES) {
-      toast.error(`You can only add up to ${MAX_SERVICES} services.`);
-      return;
-    }
     const next = [...(services || []), { serviceName: '', price: 0, category: '', imageSrc: '' }];
     setServices(next);
     const newIndex = next.length - 1;
     setEditingServiceIndex(newIndex);
     setStep(STEPS.SERVICES_FORM);
   };
+
+  /** 🔗 URL-trigger: when opened with ?addService=1, append a fresh service and jump to ServiceSelector */
+  useEffect(() => {
+    if (!rentModal.isOpen) return;
+
+    const spStr =
+      searchParams?.toString() ??
+      (typeof window !== 'undefined' ? window.location.search.replace(/^\?/, '') : '');
+
+    const sp = new URLSearchParams(spStr);
+    const wantsAdd = sp.get('addService') === '1';
+    if (!wantsAdd) return;
+
+    setServices(prev => {
+      const next = [...prev, { serviceName: '', price: 0, category: '', imageSrc: '' }];
+      setEditingServiceIndex(next.length - 1);
+      return next;
+    });
+    setStep(STEPS.SERVICES_FORM);
+
+    const nextParams = new URLSearchParams(spStr);
+    nextParams.delete('addService');
+    const basePath = pathname ?? (typeof window !== 'undefined' ? window.location.pathname : '/');
+    const href = nextParams.toString() ? `${basePath}?${nextParams}` : basePath;
+    router.replace(href, { scroll: false });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rentModal.isOpen]);
 
   // ----- BODY
   let bodyContent = (
@@ -445,78 +490,52 @@ const RentModal = () => {
   }
 
   if (step === STEPS.SERVICES_LIST) {
-    const validServices = (services || []).filter(s => (s.serviceName?.trim() || '') || s.category || s.price);
+    const validServices = (services || []).filter(
+      s => (s.serviceName?.trim() || '') || s.category || s.price
+    );
 
     bodyContent = (
       <div className="flex flex-col gap-6">
         <Heading title="Your services" subtitle="Review and edit each one." />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {validServices.map((s, i) => {
-            const bg = s.imageSrc || imageSrc || '';
-            return (
-              <div
-                key={`svc-card-${i}`}
-                className="relative overflow-hidden rounded-2xl border border-neutral-200 bg-white"
-              >
-                <div
-                  className="relative h-32 w-full bg-center bg-cover"
-                  style={{ backgroundImage: bg ? `url(${bg})` : 'none', backgroundColor: bg ? undefined : '#f5f5f5' }}
-                >
-                  <button
-                    type="button"
-                    onClick={() => openEditForIndex(i)}
-                    className="absolute top-3 right-3 w-9 h-9 rounded-xl border border-neutral-200 bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-sm hover:bg-white transition"
-                    aria-label="Edit service"
-                    title="Edit service"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" color="currentColor" fill="none">
-                      <path d="M16.4249 4.60509L17.4149 3.6151C18.2351 2.79497 19.5648 2.79497 20.3849 3.6151C21.205 4.43524 21.205 5.76493 20.3849 6.58507L19.3949 7.57506M16.4249 4.60509L9.76558 11.2644C9.25807 11.772 8.89804 12.4078 8.72397 13.1041L8 16L10.8959 15.276C11.5922 15.102 12.228 14.7419 12.7356 14.2344L19.3949 7.57506M16.4249 4.60509L19.3949 7.57506" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"></path>
-                      <path d="M18.9999 13.5C18.9999 16.7875 18.9999 18.4312 18.092 19.5376C17.9258 19.7401 17.7401 19.9258 17.5375 20.092C16.4312 21 14.7874 21 11.4999 21H11C7.22876 21 5.34316 21 4.17159 19.8284C3.00003 18.6569 3 16.7712 3 13V12.5C3 9.21252 3 7.56879 3.90794 6.46244C4.07417 6.2599 4.2599 6.07417 4.46244 5.90794C5.56879 5 7.21252 5 10.5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-                    </svg>
-                  </button>
-                </div>
+        <div className="grid grid-cols-2 gap-3">
+          {validServices.map((s, i) => (
+            <ServiceCard
+              key={`svc-card-${s.id ?? i}`}
+              service={{
+                id: String(s.id ?? i),
+                serviceName: s.serviceName || 'Untitled Service',
+                price: Number(s.price) || 0,
+                category: s.category || '',
+              }}
+              currentUser={undefined}
+              onClick={() => openEditForIndex(i)}
+              onEdit={() => openEditForIndex(i)}
+            />
+          ))}
 
-                <div className="p-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="text-sm font-semibold text-neutral-900 truncate">
-                        {s.serviceName || 'Untitled Service'}
-                      </p>
-                      <p className="text-xs text-neutral-500 mt-0.5 truncate">
-                        {s.category || 'No category'}
-                      </p>
-                    </div>
-                    <span className="shrink-0 rounded-lg bg-neutral-100 px-2 py-1 text-xs font-medium text-neutral-700">
-                      {formatPrice(s.price)}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-
-          {(services?.length || 0) < MAX_SERVICES && (
-            <button
-              type="button"
-              onClick={addNewService}
-              className="group relative overflow-hidden rounded-2xl border border-neutral-200 bg-white text-left focus:outline-none focus:ring-2 focus:ring-black/10 transition"
-            >
-              <div className="relative h-32 w-full bg-neutral-100">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-12 h-12 rounded-xl border border-neutral-300 bg-white flex items-center justify-center shadow-sm group-hover:bg-neutral-50 transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M12 5v14M5 12h14" />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-              <div className="p-4">
-                <p className="text-sm font-semibold text-neutral-900">Add a service</p>
-                <p className="text-xs text-neutral-500 mt-0.5">Name, price, category</p>
-              </div>
-            </button>
-          )}
+          {/* Add Service tile — not nested in another <button> to avoid hydration errors */}
+          <button
+            type="button"
+            onClick={addNewService}
+            className={[
+              'group relative w-full',
+              'rounded-2xl border-2 border-gray-200 bg-white p-4',
+              'flex flex-col items-center justify-center text-center gap-2.5',
+              'hover:border-blue-500 hover:shadow-md transition-all duration-200',
+              'h-[140px]',
+            ].join(' ')}
+          >
+            <div className="rounded-full flex items-center justify-center bg-gray-100 text-gray-600 group-hover:bg-blue-50 group-hover:text-blue-600">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              </svg>
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-gray-900">Add a service</p>
+              <p className="text-xs text-gray-500">Name, price, category</p>
+            </div>
+          </button>
         </div>
       </div>
     );
@@ -603,6 +622,6 @@ const RentModal = () => {
       className={modalWidthClasses}
     />
   );
-}
+};
 
 export default RentModal;

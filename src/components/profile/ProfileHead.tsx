@@ -11,7 +11,6 @@ import PostCard from '@/components/feed/PostCard';
 import ListingCard from '@/components/listings/ListingCard';
 import { categories } from '@/components/Categories';
 import useRegisterModal from '@/app/hooks/useRegisterModal';
-import HeartButton from '@/components/HeartButton'; // <-- Added
 
 // helper: truncate on word boundary with ellipsis
 const truncate = (text: string, max: number) => {
@@ -87,12 +86,11 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
 
   const isOwner = !!currentUser?.id && currentUser.id === id;
 
-  // components/profile/ProfileHead.tsx
   const openEditProfile = () => {
     registerModal.onOpen({
       mode: 'edit',
       prefill: {
-        id, // <<< keep so modal knows which user to update
+        id,
         name: name ?? '',
         email: email ?? '',
         location: location ?? '',
@@ -123,9 +121,9 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
 
                 {/* Right: meta */}
                 <div className="flex-1 min-w-0">
-                  {/* Name row with badge + heart + 3-dots (like ListingHead) */}
+                  {/* Name row with badge + 3-dots */}
                   <div className="flex items-center justify-between mb-3">
-                    {/* Left group: name + badge + heart */}
+                    {/* Left group: name + badge */}
                     <div className="flex items-center gap-2">
                       <h1
                         className="text-xl font-bold tracking-tight text-gray-900 leading-tight"
@@ -144,17 +142,6 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                             strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                       </div>
-
-                      {/* Heart (use listingHead variant look). 
-                          NOTE: uses the first listing id if available; otherwise it won't render. */}
-                      {!!listings?.[0]?.id && (
-                        <HeartButton
-                          listingId={listings[0].id}
-                          currentUser={currentUser ?? undefined}
-                          variant="listingHead"
-                          favoriteIds={currentUser?.favoriteIds || []}
-                        />
-                      )}
                     </div>
 
                     {/* Right group: 3-dot menu */}
@@ -233,29 +220,21 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
         <div className="flex border-b border-gray-200 relative justify-center">
           <div className="flex gap-8">
             {[
-              { key: 'Posts', label: 'Posts', icon: IconPosts },
-              { key: 'Listings', label: 'Listings', icon: IconListings },
-              { key: 'Images', label: 'Images', icon: IconImages },
-              { key: 'Reels', label: 'Reels', icon: IconPosts },
-            ].map(({ key, label, icon: Icon }) => (
+              { key: 'Posts', label: 'Posts' },
+              { key: 'Listings', label: 'Listings' },
+              { key: 'Images', label: 'Images' },
+            ].map(({ key, label }) => (
               <button
                 key={key}
                 onClick={() => setActiveTab(key as typeof activeTab)}
-                className={`pb-4 pt-3 px-6 flex items-center justify-center text-sm gap-2.5 transition-all duration-200 relative group ${
+                className={`pb-4 pt-3 px-6 text-sm transition-all duration-200 relative group ${
                   activeTab === key ? 'font-semibold' : 'text-gray-500 hover:text-gray-700'
                 }`}
                 style={activeTab === key ? { color: '#60A5FA' } : {}}
               >
-                <div
-                  className={`transition-all duration-200 ${
-                    activeTab === key ? 'transform -translate-y-px scale-105' : 'group-hover:scale-105'
-                  }`}
-                >
-                  <Icon />
-                </div>
                 <span
-                  className={`transition-all duration-200 ${
-                    activeTab === key ? 'transform -translate-y-px' : ''
+                  className={`transition-transform duration-200 ${
+                    activeTab === key ? '-translate-y-px' : ''
                   }`}
                 >
                   {label}
@@ -333,54 +312,11 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
           )
         )}
 
-        {/* REELS */}
-        {activeTab === 'Reels' && (
-          posts.length ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {posts.map((post) => (
-                <PostCard
-                  key={post.id}
-                  post={post}
-                  currentUser={currentUser}
-                  categories={categories}
-                />
-              ))}
-            </div>
-          ) : (
-            <EmptyBlock text="No reels yet" />
-          )
-        )}
+      
       </div>
     </div>
   );
 };
-
-/** tiny inline icons */
-function IconPosts() {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" color="currentColor" fill="none" viewBox="0 0 24 24">
-      <path d="M18.974 15.022c.006-.029.047-.029.052 0 .304 1.486 1.466 2.648 2.953 2.952.028.006.028.047 0 .052-1.487.304-2.649 1.466-2.953 2.953-.005.028-.046.028-.052 0-.304-1.487-1.466-2.649-2.953-2.953-.029-.005-.029-.046 0-.052 1.487-.304 2.649-1.466 2.953-2.952Z" stroke="currentColor" strokeWidth="1.5"/>
-      <path d="M14.647 12.673c.741-.52 1.112-.78 1.26-1.158.123-.314.123-.718 0-1.032-.148-.378-.519-.638-1.26-1.158-.52-.364-1.058-.725-1.53-1.011a40 40 0 0 0-1.324-.738c-.788-.415-1.182-.622-1.563-.57-.316.043-.647.245-.842.513-.235.322-.264.787-.323 1.715C9.027 9.846 9 10.466 9 11c0 .534.027 1.155.066 1.765.058.928.088 1.393.323 1.716.195.267.526.468.842.511.381.052.775-.156 1.563-.57.446-.235.91-.49 1.383-.728.472-.286 1.01-.647 1.53-1.021Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-      <path d="M21.872 14.836C22 13.923 22 12.728 22 11c0-2.8 0-4.2-.545-5.27A4.5 4.5 0 0 0 19.27 3.545C18.2 3 16.8 3 14 3h-4c-2.8 0-4.2 0-5.27.545A4.5 4.5 0 0 0 2.545 5.73C2 6.8 2 8.2 2 11c0 2.8 0 4.2.545 5.27a4.5 4.5 0 0 0 2.185 2.185C5.8 19 7.2 19 10 19h3.426" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  );
-}
-function IconListings() {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" color="currentColor" fill="none" viewBox="0 0 24 24">
-      <path d="M4 7h16M4 12h16M4 17h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-    </svg>
-  );
-}
-function IconImages() {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" color="currentColor" fill="none" viewBox="0 0 24 24">
-      <path d="M3 16L7.46967 11.5303C7.80923 11.1908 8.26978 11 8.75 11C9.23022 11 9.69077 11.1908 10.0303 11.5303L14 15.5M15.5 17L14 15.5M21 16L18.5303 13.5303C18.1908 13.1908 17.7302 13 17.25 13C16.7698 13 16.3092 13.1908 15.9697 13.5303L14 15.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M15.5 8C15.7761 8 16 7.77614 16 7.5C16 7.22386 15.7761 7 15.5 7M15.5 8C15.2239 8 15 7.77614 15 7.5C15 7.22386 15.2239 7 15.5 7M15.5 8V7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M3.698 19.747C2.5 18.345 2.5 16.23 2.5 12s0-6.77 1.198-8.2A3.6 3.6 0 0 1 4.253 3.698C5.655 2.5 7.77 2.5 12 2.5s6.345 0 7.747 1.198A3.6 3.6 0 0 1 20.302 4.253C21.5 5.655 21.5 7.77 21.5 12s0 6.345-1.198 7.747a3.6 3.6 0 0 1-1.553 1.553C17.345 22.5 15.23 22.5 12 22.5s-6.345 0-7.747-1.198a3.6 3.6 0 0 1-1.553-1.553Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  );
-}
 
 function EmptyBlock({ text }: { text: string }) {
   return (
