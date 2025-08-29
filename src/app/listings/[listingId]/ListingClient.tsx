@@ -33,10 +33,6 @@ const ListingClient: React.FC<ListingClientProps> = ({
 
   return (
     <Container>
-      {/* Ensure both modals are present */}
-      <ReservationModal />
-      <RentModal />
-
       <div className="max-w-screen-lg">
         <div className="flex flex-col">
 <ListingHead

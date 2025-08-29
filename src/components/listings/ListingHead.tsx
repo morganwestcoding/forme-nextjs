@@ -335,27 +335,31 @@ const ListingHead: React.FC<ListingHeadProps> = ({
           </div>
         )}
 
-        {activeTab === 'Images' && (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {galleryImages && galleryImages.length > 0 ? (
-              galleryImages.map((image, index) => (
-                <div key={index} className="aspect-square relative rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 group">
-                  <img
-                    src={image}
-                    alt={`${title} - Image ${index + 1}`}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-              ))
-            ) : (
-              <div className="col-span-full text-center text-gray-500 py-12">
-                <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm">
-                  <p className="font-medium">No images available</p>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
+{activeTab === 'Images' && (
+  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+    {galleryImages && galleryImages.length > 0 ? (
+      galleryImages.map((image, index) => (
+        <div
+          key={index}
+          className="relative rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 group"
+          style={{ aspectRatio: '1 / 1' }} // force perfect square
+        >
+          <img
+            src={image}
+            alt={`${title} - Image ${index + 1}`}
+            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+        </div>
+      ))
+    ) : (
+      <div className="col-span-full text-center text-gray-500 py-12">
+        <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm">
+          <p className="font-medium">No images available</p>
+        </div>
+      </div>
+    )}
+  </div>
+)}
 
         {activeTab === 'Reels' && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
