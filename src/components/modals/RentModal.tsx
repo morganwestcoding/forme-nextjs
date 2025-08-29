@@ -1,8 +1,6 @@
-// components/modals/RentModal.tsx
 'use client';
 
 import axios from 'axios';
-import { toast } from 'react-hot-toast';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useMemo, useState, useCallback, useEffect } from "react";
@@ -80,6 +78,10 @@ const RentModal = () => {
   const [storeHours, setStoreHours] = useState<StoreHourType[]>(listing?.storeHours || initialStoreHours);
   const [editingServiceIndex, setEditingServiceIndex] = useState<number | null>(null);
 
+  /** Inline status (no toasts) */
+  const [saveStatus, setSaveStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [lastUpdatedKey, setLastUpdatedKey] = useState<number | null>(null);
+
   const { 
     register, 
     handleSubmit,
@@ -109,6 +111,8 @@ const RentModal = () => {
     if (!rentModal.isOpen) return;
     setStep(isEditMode ? EDIT_HUB_STEP : STEPS.CATEGORY);
     setEditingServiceIndex(null);
+    setSaveStatus(null);
+    setLastUpdatedKey(null);
 
     if (!isEditMode) {
       reset({
@@ -151,6 +155,20 @@ const RentModal = () => {
     setEditingServiceIndex(null);
     setResetKey((k) => k + 1);
   }, [listing, reset]);
+
+  // Auto-hide success status after a short time
+  useEffect(() => {
+    if (saveStatus?.type !== 'success') return;
+    const t = setTimeout(() => setSaveStatus(null), 2500);
+    return () => clearTimeout(t);
+  }, [saveStatus]);
+
+  // Auto-clear highlight after a short time
+  useEffect(() => {
+    if (lastUpdatedKey == null) return;
+    const t = setTimeout(() => setLastUpdatedKey(null), 3000);
+    return () => clearTimeout(t);
+  }, [lastUpdatedKey]);
 
   // Watches
   const category = watch('category');
@@ -204,6 +222,8 @@ const RentModal = () => {
     setStep(STEPS.CATEGORY);
     setEditingServiceIndex(null);
     setResetKey((k) => k + 1);
+    setSaveStatus(null);
+    setLastUpdatedKey(null);
     rentModal.onClose();
   }, [reset, rentModal]);
 
@@ -230,10 +250,11 @@ const RentModal = () => {
     setStep(goingTo);
   };
 
-  /** VALIDATION for create flow (kept) */
+  /** VALIDATION for create flow (no toasts; rely on field errors/flow) */
   const onNext = () => {
     if (step === STEPS.CATEGORY && !category) {
-      return toast.error('Please select a category.');
+      // keep simple—require category but no toast; user sees step doesn't advance
+      return;
     }
 
     if (step === STEPS.LOCATION) {
@@ -243,7 +264,7 @@ const RentModal = () => {
       if (!address)     { setError('address',  { type: 'required', message: 'Address is required'  }); invalid = true; } else { clearErrors('address'); }
       if (!zipCode)     { setError('zipCode',  { type: 'required', message: 'ZIP is required'      }); invalid = true; } else { clearErrors('zipCode'); }
 
-      if (invalid) return toast.error('Please fill in your location, address, and ZIP.');
+      if (invalid) return;
     }
 
     if (step === STEPS.SERVICES_LIST) {
@@ -254,7 +275,7 @@ const RentModal = () => {
     setStep((value) => value + 1);
   };
 
-  /** SUBMIT — now section-wise Update in edit mode */
+  /** SUBMIT — section-wise Update in edit mode (no toasts) */
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     if (step === EDIT_HUB_STEP) return;
 
@@ -262,6 +283,7 @@ const RentModal = () => {
     if (isEditMode && listing) {
       try {
         setIsLoading(true);
+        setSaveStatus(null);
         const { city, state } = splitLocation(String(data.location || ''));
 
         const payload = { 
@@ -273,20 +295,25 @@ const RentModal = () => {
           storeHours,
         };
 
+        const justUpdatedKey = step; // capture before we change steps
+
         await axios.put(`/api/listings/${listing.id}`, payload);
-        toast.success('Listing updated!');
+
         router.refresh();
+        setLastUpdatedKey(justUpdatedKey);
+        setSaveStatus({ type: 'success', message: 'Changes saved.' });
         setStep(EDIT_HUB_STEP);
         return;
-      } catch (e) {
-        console.error('[LISTING_UPDATE]', e);
-        toast.error('Update failed.');
+      } catch (e: any) {
+        console.error('[LISTING_UPDATE]', e?.response?.data || e);
+        setSaveStatus({ type: 'error', message: typeof e?.response?.data === 'string' ? e.response.data : 'Update failed.' });
+        return;
       } finally {
         setIsLoading(false);
       }
     }
 
-    // CREATE MODE: keep wizard behavior
+    // CREATE MODE: keep wizard behavior (no toasts)
     if (step !== STEPS.EMPLOYEE) {
       return onNext();
     }
@@ -306,12 +333,11 @@ const RentModal = () => {
 
     try {
       await axios.post('/api/listings', payload);
-      toast.success('Listing created successfully!');
       router.refresh();
       handleClose();
     } catch (e) {
       console.error('[LISTING_SAVE]', e);
-      toast.error('Something went wrong.');
+      // optional: setSaveStatus({ type: 'error', message: 'Failed to create listing.' });
     } finally {
       setIsLoading(false);
     }
@@ -381,12 +407,6 @@ const RentModal = () => {
     },
   ]), [category, locationVal, servicesCount, imagesCount, title, employeesCount]);
 
-  const formatPrice = (p?: number) => {
-    const n = Number(p);
-    if (!n || n <= 0) return '—';
-    return `$${n.toFixed(2)}`;
-  };
-
   const openEditForIndex = (i: number) => {
     setEditingServiceIndex(i);
     setStep(STEPS.SERVICES_FORM);
@@ -451,11 +471,24 @@ const RentModal = () => {
 
   if (isEditMode && step === EDIT_HUB_STEP) {
     bodyContent = (
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-4">
+        {/* Inline status banners */}
+        {saveStatus?.type === 'success' && (
+          <div className="rounded-xl border border-green-200 bg-green-50 text-green-700 px-4 py-2 text-sm">
+            {saveStatus.message}
+          </div>
+        )}
+        {saveStatus?.type === 'error' && (
+          <div className="rounded-xl border border-rose-200 bg-rose-50 text-rose-700 px-4 py-2 text-sm">
+            {saveStatus.message}
+          </div>
+        )}
+
         <Heading title="Quick Edit" subtitle="Jump straight to the section you want to update." />
         <EditOverview
           items={overviewItems}
-          onSelect={(k) => setStep(k)}
+          onSelect={(k) => { setSaveStatus(null); setLastUpdatedKey(null); setStep(k); }}
+          updatedKey={lastUpdatedKey ?? undefined}   // 👈 highlight the just-saved section
         />
       </div>
     );
@@ -514,7 +547,7 @@ const RentModal = () => {
             />
           ))}
 
-          {/* Add Service tile — not nested in another <button> to avoid hydration errors */}
+          {/* Add Service tile */}
           <button
             type="button"
             onClick={addNewService}

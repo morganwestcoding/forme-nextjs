@@ -231,10 +231,10 @@ const NewsfeedHeader: React.FC<NewsfeedHeaderProps> = ({
       <div className="flex border-b border-gray-200 relative justify-center mb-6">
         <div className="flex gap-8">
           {[
-            { key: 'featured', label: 'Featured', Icon: Sparkles },
-            { key: 'trending', label: 'Trending', Icon: TrendingUp },
-            { key: 'categories', label: 'Categories', Icon: Layers },
-          ].map(({ key, label, Icon }) => {
+            { key: 'featured', label: 'Featured'},
+            { key: 'trending', label: 'Trending'},
+            { key: 'categories', label: 'Categories'},
+          ].map(({ key, label}) => {
             const isActive =
               key === 'categories'
                 ? viewState.filters.category === 'categories' || showCategories
@@ -266,7 +266,7 @@ const NewsfeedHeader: React.FC<NewsfeedHeaderProps> = ({
                 }}
                 aria-pressed={isActive}
               >
-                <Icon height={22} width={22} strokeWidth={1.75} />
+ 
                 <span>{label}</span>
                 <span
                   aria-hidden

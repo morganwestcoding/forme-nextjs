@@ -65,7 +65,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser }) => {
               role="button"
               aria-label="Like"
               onClick={(e) => e.stopPropagation()}
-              className="hover:scale-[1.06] transition-transform"
+              className="hover:scale-[1.06] transition-transform "
               title="Save"
             >
               <svg
@@ -73,7 +73,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser }) => {
                 viewBox="0 0 24 24"
                 width="30"
                 height="30"
-                style={{ filter: 'drop-shadow(0 6px 20px rgba(0,0,0,0.30))' }}
+                style={{ filter: 'drop-shadow(0 6px 20px rgba(0,0,0,0.30)) backdrop-blur-sm ' }}
               >
                 <defs>
                   {/* soft top highlight for glass */}
