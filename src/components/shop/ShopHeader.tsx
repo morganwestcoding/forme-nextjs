@@ -171,12 +171,12 @@ const ShopHeader: React.FC<ShopHeaderProps> = ({
       <div className="flex mb-6 border-b border-gray-200 relative justify-center">
         <div className="flex gap-8">
           {[
-            { key: 'featured', label: 'Featured', Icon: Sparkles, type: 'lucide' },
-            { key: 'trending', label: 'Trending', Icon: TrendingUp, type: 'lucide' },
+            { key: 'featured', label: 'Featured', },
+            { key: 'trending', label: 'Trending',  },
             { key: 'products', label: 'Products', type: 'products' },
             { key: 'shops', label: 'Shops', type: 'shops' },
-            { key: 'categories', label: 'Categories', Icon: Layers, type: 'lucide' },
-          ].map(({ key, label, Icon, type }) => {
+            { key: 'categories', label: 'Categories' },
+          ].map(({ key, label, type }) => {
             const isActive =
               key === 'categories' ? filters.category === 'categories' : filters.category === key;
             const activeColor = '#60A5FA';
@@ -194,44 +194,7 @@ const ShopHeader: React.FC<ShopHeaderProps> = ({
                 `}
                 style={{ color: isActive ? activeColor : undefined }}
               >
-                {/* Icon */}
-                {type === 'lucide' && Icon ? (
-                  <Icon height={22} width={22} strokeWidth={1.75} />
-                ) : null}
-
-                {type === 'products' ? (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-                    width="22" height="22" fill="none"
-                    className="flex-shrink-0"
-                    style={{ color: 'currentColor' }}
-                  >
-                    <path d="M2.5 7.5V13.5C2.5 17.2712 2.5 19.1569 3.67157 20.3284C4.84315 21.5 6.72876 21.5 10.5 21.5H13.5C17.2712 21.5 19.1569 21.5 20.3284 20.3284C21.5 19.1569 21.5 17.2712 21.5 13.5V7.5"
-                          stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M3.86909 5.31461L2.5 7.5H21.5L20.2478 5.41303C19.3941 3.99021 18.9673 3.2788 18.2795 2.8894C17.5918 2.5 16.7621 2.5 15.1029 2.5H8.95371C7.32998 2.5 6.51812 2.5 5.84013 2.8753C5.16215 3.2506 4.73113 3.93861 3.86909 5.31461Z"
-                          stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M12 7.5V2.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M10 10.5H14" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                ) : null}
-
-                {type === 'shops' ? (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-                    width="22" height="22" fill="none"
-                    className="flex-shrink-0"
-                    style={{ color: 'currentColor' }}
-                  >
-                    <path d="M8 16L16.7201 15.2733C19.4486 15.046 20.0611 14.45 20.3635 11.7289L21 6"
-                          stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
-                    <path d="M6 6H22" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
-                    <circle cx="6" cy="20" r="2" stroke="currentColor" strokeWidth="1.75" />
-                    <circle cx="17" cy="20" r="2" stroke="currentColor" strokeWidth="1.75" />
-                    <path d="M8 20L15 20" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
-                    <path d="M2 2H2.966C3.91068 2 4.73414 2.62459 4.96326 3.51493L7.93852 15.0765C8.08887 15.6608 7.9602 16.2797 7.58824 16.7616L6.63213 18"
-                          stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
-                  </svg>
-                ) : null}
+         
 
                 {/* Label */}
                 <span>{label}</span>
