@@ -110,11 +110,11 @@ const ShopCard: React.FC<ShopCardProps> = ({
                 style={{ filter: 'drop-shadow(0 6px 20px rgba(0,0,0,0.30))' }}
               >
                 <defs>
-                  <linearGradient id="heartGlassGradShop" x1="0" y1="0" x2="0" y2="1">
+         
                     <stop offset="0" stopColor="rgba(255,255,255,0.75)" />
                     <stop offset="0.55" stopColor="rgba(255,255,255,0.18)" />
                     <stop offset="1" stopColor="rgba(255,255,255,0.00)" />
-                  </linearGradient>
+      
                 </defs>
                 {/* Base glass body */}
                 <path

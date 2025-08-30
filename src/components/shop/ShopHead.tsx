@@ -225,12 +225,12 @@ const ShopHead: React.FC<ShopHeadProps> = ({
         <div className="flex border-b border-gray-200 relative justify-center">
           <div className="flex gap-8">
             {[
-              { key: 'Products', label: 'Products', icon: IconProducts },
-              { key: 'Team', label: 'Team', icon: IconTeam },
-              { key: 'Reviews', label: 'Reviews', icon: IconReviews },
-              { key: 'Images', label: 'Images', icon: IconImages },
-              { key: 'Reels', label: 'Reels', icon: IconReels },
-            ].map(({ key, label, icon: Icon }) => (
+              { key: 'Products', label: 'Products'},
+              { key: 'Team', label: 'Team'},
+              { key: 'Reviews', label: 'Reviews'},
+              { key: 'Images', label: 'Images'},
+              { key: 'Reels', label: 'Reels'},
+            ].map(({ key, label}) => (
               <button
                 key={key}
                 onClick={() => setActiveTab(key as 'Products' | 'Team' | 'Reviews' | 'Images' | 'Reels')}
@@ -240,9 +240,7 @@ const ShopHead: React.FC<ShopHeadProps> = ({
                 style={activeTab === key ? { color: '#60A5FA' } : {}}
                 type="button"
               >
-                <div className={`transition-all duration-200 ${activeTab === key ? 'transform -translate-y-px scale-105' : 'group-hover:scale-105'}`}>
-                  <Icon />
-                </div>
+       
                 <span className={`transition-all duration-200 ${activeTab === key ? 'transform -translate-y-px' : ''}`}>
                   {label}
                 </span>
