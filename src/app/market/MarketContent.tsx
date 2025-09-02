@@ -100,7 +100,7 @@ const MarketContent: React.FC<MarketContentProps> = ({
         <div className={`transition-opacity duration-700 ease-out ${isLoading ? 'opacity-0' : 'opacity-100'}`}>
           {viewState.mode === 'grid' ? (
             hasListings ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                 {listings.map((listing, idx) => (
                   <div
                     key={listing.id}
