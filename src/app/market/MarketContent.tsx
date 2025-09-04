@@ -1,13 +1,14 @@
-// components/MarketContent.tsx
+// components/market/MarketContent.tsx
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
 import Container from '@/components/Container';
-import { SafeListing, SafeUser } from '@/app/types';
+import { SafeListing, SafeUser, SafeEmployee } from '@/app/types';
 import PropagateLoaderWrapper from '@/components/loaders/PropagateLoaderWrapper';
 import ListingCard from '@/components/listings/ListingCard';
 import MarketExplorer from './MarketExplorer';
 import RentModal from '@/components/modals/RentModal';
+import WorkerCard from '@/components/listings/WorkerCard';
 
 interface MarketContentProps {
   searchParams: {
@@ -23,6 +24,9 @@ interface MarketContentProps {
   };
   listings: SafeListing[];
   currentUser: SafeUser | null;
+
+  /** Optional external feed; if omitted we derive from listings[].employees */
+  trendingEmployees?: SafeEmployee[];
 }
 
 interface ViewState {
@@ -43,7 +47,8 @@ const MIN_LOADER_MS = 1200;
 const MarketContent: React.FC<MarketContentProps> = ({
   searchParams,
   listings,
-  currentUser
+  currentUser,
+  trendingEmployees = [],
 }) => {
   // View state (for MarketExplorer controls)
   const [viewState, setViewState] = useState<ViewState>({
@@ -60,8 +65,47 @@ const MarketContent: React.FC<MarketContentProps> = ({
     return () => clearTimeout(t);
   }, [listings]);
 
-  // Optional: memoize an empty-state check
-  const hasListings = useMemo(() => Array.isArray(listings) && listings.length > 0, [listings]);
+  const hasListings = useMemo(
+    () => Array.isArray(listings) && listings.length > 0,
+    [listings]
+  );
+
+  // Derive a “trending” pool if no external list is supplied.
+  const derivedTrending = useMemo(() => {
+    const pairs: { employee: SafeEmployee; listing: SafeListing }[] = [];
+
+    listings.forEach((l) => {
+      const anyListing = l as unknown as { employees?: SafeEmployee[]; galleryImages?: string[] };
+      if (Array.isArray(anyListing.employees) && anyListing.employees.length) {
+        anyListing.employees.forEach((emp) => {
+          pairs.push({ employee: emp, listing: l });
+        });
+      }
+    });
+
+    pairs.sort((a, b) => {
+      const ar = (a.employee as any).rating ?? 0;
+      const br = (b.employee as any).rating ?? 0;
+      if (br !== ar) return br - ar;
+      const af = (a.employee as any).followerCount ?? 0;
+      const bf = (b.employee as any).followerCount ?? 0;
+      return bf - af;
+    });
+
+    return pairs.slice(0, 12); // keep a healthy pool
+  }, [listings]);
+
+  // If caller provides trendingEmployees (without listing context), pair them with a fallback listing.
+  const finalTrending = useMemo(() => {
+    if (trendingEmployees.length === 0) return derivedTrending;
+
+    const fallbackListing = listings[0];
+    return trendingEmployees.slice(0, 12).map((emp) => ({
+      employee: emp,
+      listing: (listings.find((l: any) => l.id === (emp as any).listingId) ||
+        fallbackListing) as SafeListing,
+    }));
+  }, [trendingEmployees, derivedTrending, listings]);
 
   const renderListView = () => (
     <div className="text-sm text-gray-500">List view goes here.</div>
@@ -72,10 +116,12 @@ const MarketContent: React.FC<MarketContentProps> = ({
       {/* Mount edit modal so updates from here trigger router.refresh in the modal */}
       <RentModal />
 
-      <div className="pb-6">
-        <div className="pt-4 mb-4">
+      <div className="">
+        <div className="pt-2 mb-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Market</h1>
+            <h1 className="text-3xl md:text-3xl font-bold text-black leading-tight tracking-wide">
+              Market
+            </h1>
             <p className="text-gray-600">Discover unique places from our vendors</p>
           </div>
         </div>
@@ -97,27 +143,94 @@ const MarketContent: React.FC<MarketContentProps> = ({
           </div>
         )}
 
-        <div className={`transition-opacity duration-700 ease-out ${isLoading ? 'opacity-0' : 'opacity-100'}`}>
+        <div
+          className={`transition-opacity duration-700 ease-out ${
+            isLoading ? 'opacity-0' : 'opacity-100'
+          }`}
+        >
           {viewState.mode === 'grid' ? (
             hasListings ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                {listings.map((listing, idx) => (
+              <>
+                {/* ===== Listings Row (4 visible, horizontal scroll for more) ===== */}
+                <div className="overflow-x-auto overflow-y-hidden">
                   <div
-                    key={listing.id}
-                    style={{
-                      opacity: 0,
-                      animation: `fadeInUp 520ms ease-out forwards`,
-                      animationDelay: `${140 + (idx % 12) * 30}ms`,
-                      willChange: 'transform, opacity',
-                    }}
+                    className="
+                      grid grid-flow-col auto-cols-[calc((100%-48px)/4)]
+                      gap-4 pr-4
+                      snap-x snap-mandatory
+                    "
+                    // 48px = 3 gaps * 16px (gap-4) between 4 visible cols
                   >
-                    <ListingCard
-                      currentUser={currentUser}
-                      data={listing}
-                    />
+                    {listings.map((listing, idx) => (
+                      <div
+                        key={listing.id}
+                        className="snap-start"
+                        style={{
+                          opacity: 0,
+                          animation: `fadeInUp 520ms ease-out forwards`,
+                          animationDelay: `${140 + (idx % 12) * 30}ms`,
+                          willChange: 'transform, opacity',
+                        }}
+                      >
+                        <ListingCard currentUser={currentUser} data={listing} />
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                </div>
+
+                {/* ===== Trending Teammates (3 visible, horizontal scroll for more) ===== */}
+                {finalTrending.length > 0 && (
+                  <>
+                    <h2 className="text-lg md:text-lg text-black font-semibold leading-tight tracking-wide py-4 mt-4">
+                      Trending Teammates
+                    </h2>
+
+                    <div className="overflow-x-auto overflow-y-hidden">
+                      <div
+                        className="
+                          grid grid-flow-col auto-cols-[calc((100%-32px)/3)]
+                          gap-4 pr-4
+                          snap-x snap-mandatory
+                        "
+                        // 32px = 2 gaps * 16px between 3 visible cols
+                      >
+                        {finalTrending.map(({ employee, listing }, idx) => {
+                          const li: any = listing as any;
+                          const imageSrc =
+                            li?.imageSrc ||
+                            (Array.isArray(li?.galleryImages) ? li.galleryImages[0] : undefined) ||
+                            '/placeholder.jpg';
+
+                          return (
+                            <div
+                              key={(employee as any).id ?? `${(employee as any).fullName}-${idx}`}
+                              className="snap-start"
+                              style={{
+                                opacity: 0,
+                                animation: `fadeInUp 520ms ease-out forwards`,
+                                animationDelay: `${160 + (idx % 12) * 30}ms`,
+                                willChange: 'transform, opacity',
+                              }}
+                            >
+                              <WorkerCard
+                                employee={employee}
+                                listingTitle={listing.title}
+                                data={{
+                                  title: listing.title,
+                                  imageSrc,
+                                  category: (listing as any).category ?? 'General',
+                                }}
+                                listing={listing}
+                                currentUser={currentUser ?? undefined}
+                              />
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </>
             ) : (
               <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center text-gray-500 shadow-sm">
                 No listings found. Try adjusting your filters.
@@ -134,9 +247,9 @@ const MarketContent: React.FC<MarketContentProps> = ({
 
 export default MarketContent;
 
-/* ----- Add these keyframes to your globals.css if you don't have them already -----
+/* If you don't already have it in globals.css:
 @keyframes fadeInUp {
   from { opacity: 0; transform: translate3d(0, 8px, 0); }
   to   { opacity: 1; transform: translate3d(0, 0, 0); }
 }
-------------------------------------------------------------------------------------- */
+*/

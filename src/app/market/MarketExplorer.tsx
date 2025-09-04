@@ -1,3 +1,4 @@
+// components/market/MarketExplorer.tsx
 import React from 'react';
 import { Grid, List } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -78,6 +79,28 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
     return { color: hexColor, bgColor: category.color };
   };
 
+  // Treat '', 'featured', and 'all' as NOT filtered
+  const stateCat = (viewState?.filters?.category ?? '').toString().toLowerCase().trim();
+  const urlCat = (searchParams?.category ?? '').toString().toLowerCase().trim();
+  const effectiveCat = (stateCat || urlCat);
+
+  const categoryIsActive =
+    effectiveCat !== '' && effectiveCat !== 'featured' && effectiveCat !== 'all';
+
+  const hasPriceFilter =
+    viewState?.filters?.minPrice !== undefined ||
+    viewState?.filters?.maxPrice !== undefined ||
+    searchParams.minPrice !== undefined ||
+    searchParams.maxPrice !== undefined;
+
+  const hasLocationFilter =
+    !!(viewState?.filters?.city?.trim() ||
+       viewState?.filters?.state?.trim() ||
+       (searchParams.city as any)?.toString()?.trim() ||
+       (searchParams.state as any)?.toString()?.trim());
+
+  const isFiltered = categoryIsActive || hasPriceFilter || hasLocationFilter;
+
   return (
     <div className="min-h-0">
       {/* Search and Controls */}
@@ -136,9 +159,9 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
         </button>
       </div>
 
-      {/* Category Pills — uniform size, no "All" */}
-      <div className="pb-6">
-        <div className="flex flex-wrap gap-3">
+      {/* Category Pills — centered, bordered top & bottom */}
+      <div className="py-5 border-y border-gray-200">
+        <div className="flex flex-wrap justify-center items-center gap-3">
           {categories.map((category) => {
             const isSelected = currentCategory === category.label;
             const categoryStyle = getCategoryStyle(category.label);
@@ -152,12 +175,21 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
                 style={isSelected ? { backgroundColor: categoryStyle.color, color: 'white' } : {}}
                 type="button"
               >
-                <span className="truncate px-2">{category.label}</span>
+                <span className="px-2">{category.label}</span>
               </button>
             );
           })}
         </div>
       </div>
+
+      {/* Featured Storefronts header — matches other headers, cleaner spacing */}
+      {!isFiltered && (
+        <h2 className="font-display text-xl md:text-xl text-black font-semibold leading-tight tracking-wide py-4 mt-1">
+          Featured Storefronts
+        </h2>
+      )}
+
+      {/* Listing cards follow */}
     </div>
   );
 };

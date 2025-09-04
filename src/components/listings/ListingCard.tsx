@@ -30,7 +30,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser }) => {
         hover:shadow-xl
         max-w-[250px]"
     >
-      {/* Background image + readable scrim */}
+      {/* Background image + lighter-at-top, bottom-heavy gradient */}
       <div className="absolute inset-0 z-0">
         <Image
           src={cardImage}
@@ -40,7 +40,22 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser }) => {
           sizes="(max-width:768px) 100vw, 33vw"
           priority={false}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              'linear-gradient(to top,' +
+              'rgba(0,0,0,0.98) 0%,' +
+              'rgba(0,0,0,0.96) 12%,' +
+              'rgba(0,0,0,0.90) 26%,' +
+              'rgba(0,0,0,0.70) 42%,' +
+              'rgba(0,0,0,0.45) 56%,' +
+              'rgba(0,0,0,0.20) 70%,' +   // fade earlier
+              'rgba(0,0,0,0.06) 82%,' +   // very light near top
+              'rgba(0,0,0,0.00) 90%,' +   // fully clear sooner
+              'rgba(0,0,0,0.00) 100%)',
+          }}
+        />
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors" />
       </div>
 
@@ -93,7 +108,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser }) => {
 
           {/* Bottom info */}
           <div className="absolute bottom-5 left-5 right-5 z-20">
-            {/* Title + inline badge (badge stays with last word) */}
+            {/* Title + inline badge (stays with last word) */}
             <div className="mb-1">
               <h1 className="text-white text-[20px] leading-6 font-semibold drop-shadow inline">
                 <span className="align-middle">{data.title}</span>
@@ -124,7 +139,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser }) => {
               </h1>
             </div>
 
-            {/* Location line, then miles-away below */}
+            {/* Location (one line) + miles away below */}
             <div className="text-white/90 text-[11px] leading-4 mb-2">
               <div className="flex items-center gap-1">
                 <span>
