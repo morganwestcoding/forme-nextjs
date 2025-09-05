@@ -184,7 +184,7 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
 
       {/* Featured Storefronts header — matches other headers, cleaner spacing */}
       {!isFiltered && (
-        <h2 className="font-display text-xl md:text-xl text-black font-semibold leading-tight tracking-wide py-4 mt-1">
+        <h2 className=" md:text-base text-black text-xs font-medium py-4 mt-4">
           Featured Storefronts
         </h2>
       )}

@@ -2,7 +2,6 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { SafeListing, SafeUser, SafeEmployee } from '@/app/types';
 import SmartBadgeWorker from './SmartBadgeWorker';
@@ -109,33 +108,22 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
   return (
     <div
       onClick={handleCardClick}
-      className="cursor-pointer bg-white rounded-2xl shadow-lg hover:shadow-2xl overflow-hidden relative"
+      className="cursor-pointer bg-white rounded-2xl shadow-lg hover:shadow-2xl overflow-hidden relative ring-1 ring-black/5"
     >
-      {/* Full background image */}
-      <div className="absolute inset-0 z-0">
-        <Image
-          src={data.imageSrc || '/placeholder.jpg'}
-          alt={data.title}
-          fill
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 card__overlay" />
-      </div>
+      {/* Plain light background; no overlay */}
+      <div className="absolute inset-0 z-0 bg-white" />
 
       <div className="relative z-10">
-        {/* Reduced height (unchanged from previous step) */}
+        {/* Reduced height */}
         <div className="relative h-[175px] overflow-hidden">
- 
-
-
-          {/* Centered content (avatar left, text+badge right) */}
-          <div className="absolute inset-0 z-20 text-white">
+          {/* Centered content */}
+          <div className="absolute inset-0 z-20 text-gray-900">
             <div className="h-full w-full flex items-center justify-center px-4">
               <div className="flex items-center gap-4">
-                {/* Bigger initials avatar — ONLY thing on the left */}
+                {/* Bigger initials avatar — only thing on the left */}
                 <div className="flex-shrink-0">
                   <div
-                    className="w-20 h-20 rounded-full flex items-center justify-center text-white font-semibold shadow-lg border-2 border-white/50"
+                    className="w-20 h-20 rounded-full flex items-center justify-center text-white font-semibold shadow-md ring-2 ring-gray-100"
                     style={{ backgroundColor: avatarBg }}
                     aria-label="Employee initials"
                     title={employee.fullName}
@@ -144,10 +132,10 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
                   </div>
                 </div>
 
-                {/* Right column: name, title, THEN SmartBadgeWorker */}
+                {/* Right column: name, title, SmartBadgeWorker */}
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <h1 className="text-lg font-medium text-white drop-shadow-lg">
+                    <h1 className="text-lg font-semibold text-gray-900">
                       {employee.fullName}
                     </h1>
                     {/* Verified-ish glyph */}
@@ -156,8 +144,8 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
                       viewBox="0 0 24 24"
                       width="20"
                       height="20"
-                      fill="#60A5FA"
-                      className="text-white"
+                      fill="#2563EB"
+                      className="shrink-0"
                     >
                       <path
                         d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z"
@@ -166,7 +154,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
                       />
                       <path
                         d="M9 12.8929L10.8 14.5L15 9.5"
-                        stroke="currentColor"
+                        stroke="white"
                         strokeWidth="1.5"
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -174,29 +162,24 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
                     </svg>
                   </div>
 
-                  <p className="text-xs text-white/90 font-light drop-shadow-md">
-                    {employee.jobTitle ? `${employee.jobTitle} at ${listingTitle}` : `Specialist at ${listingTitle}`}
+                  <p className="text-xs text-gray-600">
+                    {jobLabel}
                   </p>
 
-                  {/* Badge directly under job title */}
+                  {/* SmartBadge directly under title (already light-surface style) */}
                   <div className="mt-2">
                     <SmartBadgeWorker
                       employee={employee}
                       listingTitle={listingTitle}
                       followerCount={employee.followerCount || 1247}
-                      onFollowerClick={() => {
-                        /* no-op */
-                      }}
                     />
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          {/* /Centered content */}
+          {/* /centered content */}
         </div>
-
-        {/* No reserve button */}
       </div>
     </div>
   );

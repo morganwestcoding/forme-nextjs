@@ -110,7 +110,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser }) => {
           <div className="absolute bottom-5 left-5 right-5 z-20">
             {/* Title + inline badge (stays with last word) */}
             <div className="mb-1">
-              <h1 className="text-white text-[20px] leading-6 font-semibold drop-shadow inline">
+              <h1 className="text-white text-md leading-6 font-semibold drop-shadow inline">
                 <span className="align-middle">{data.title}</span>
                 <span className="inline-flex items-center align-middle ml-1 translate-y-[1px]">
                   <svg

@@ -181,7 +181,7 @@ const MarketContent: React.FC<MarketContentProps> = ({
                 {/* ===== Trending Teammates (3 visible, horizontal scroll for more) ===== */}
                 {finalTrending.length > 0 && (
                   <>
-                    <h2 className="text-lg md:text-lg text-black font-semibold leading-tight tracking-wide py-4 mt-4">
+                    <h2 className=" md:text-base text-black text-xs font-medium py-4 mt-4">
                       Trending Teammates
                     </h2>
 
