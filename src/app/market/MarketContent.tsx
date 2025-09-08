@@ -168,8 +168,6 @@ const MarketContent: React.FC<MarketContentProps> = ({
 
   return (
     <Container>
-      {/* Mount edit modal so updates from here trigger router.refresh in the modal */}
-      <RentModal />
 
       {/* Main Market Title - Always Visible */}
       <div className="pt-2 mb-4">

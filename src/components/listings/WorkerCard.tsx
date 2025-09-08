@@ -20,8 +20,8 @@ interface WorkerCardProps {
   employee: SafeEmployee & {
     followerCount?: number;
     followingCount?: number;
-    profileImage?: string;
-    jobTitle?: string;
+    profileImage?: string | null;
+    jobTitle?: string | null;
     rating?: number;
     isTrending?: boolean;
     availabilityStatus?: 'free' | 'busy' | 'booked';

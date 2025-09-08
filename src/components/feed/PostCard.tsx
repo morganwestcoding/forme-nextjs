@@ -165,27 +165,14 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
   return (
     <div
       ref={cardRef}
-      className="group relative cursor-pointer overflow-hidden rounded-2xl bg-white shadow transition-all duration-300 hover:shadow-lg"
+      className="group cursor-pointer relative overflow-hidden rounded-xl bg-white shadow-lg transition-all duration-300 hover:shadow-xl max-w-[250px]"
       onClick={handleCardClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      {/* Keep rows tidy */}
-      <div className="relative h-[400px]">
+      {/* Match ListingCard height */}
+      <div className="relative h-[350px]">
         {renderMedia()}
-
-        {/* Category badge — EXACT same structure/styles as ListingCard */}
-        {post.category && (
-          <div className="absolute top-4 left-4 z-20">
-            <div className="bg-white/90 backdrop-blur-md border border-white/30 rounded-xl text-center w-24 py-2 shadow-lg hover:bg-white/30 transition-all duration-300">
-              <div className="flex items-center justify-center gap-1.5">
-                <span className="text-xs font-normal text-black tracking-wide">
-                  {post.category}
-                </span>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* More button */}
         <button
@@ -197,7 +184,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
 
         {/* User bar at bottom (time + views rules applied) */}
         <div className="absolute bottom-4 left-4 right-4">
-          <div className="bg-white/10 backdrop-blur-md rounded-xl p-3.5 border border-white/30 shadow">
+          <div className="bg-white/10 backdrop-blur-md rounded-xl p-3 border border-white/30 shadow">
             <div className="flex items-center gap-3">
               {/* Avatar */}
               <div className="relative border border-white/50 h-9 w-9 overflow-hidden rounded-full">
@@ -212,7 +199,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
               {/* Name + time */}
               <div onClick={handleUserClick} className="cursor-pointer flex flex-col">
                 <div className="flex items-center text-white gap-1">
-                  <p className="text-sm text-white">
+                  <p className="text-xs text-white">
                     {post.user.name || 'Anonymous'}
                   </p>
                   {/* Verified Badge SVG */}
@@ -246,6 +233,8 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
           </div>
         </div>
       </div>
+
+      <div className="pb-2" />
     </div>
   );
 };
