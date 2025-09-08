@@ -55,6 +55,12 @@ const PostModal = () => {
   const touchVelocityRef = useRef(0);
   const lastTouchY = useRef(0);
   const lastTouchTime = useRef(0);
+  
+  // Enhanced scroll debouncing
+  const lastScrollTime = useRef(0);
+  const wheelTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const accumulatedDelta = useRef(0);
+  const isNavigatingRef = useRef(false);
 
   const currentPost = posts[currentPostIndex] || post;
 
@@ -69,7 +75,6 @@ const PostModal = () => {
   const [showShareSuccess, setShowShareSuccess] = useState(false);
   const [showFullCaption, setShowFullCaption] = useState(false);
 
-  // Simplified video state management
   const videoRefs = useRef<Map<string, HTMLVideoElement>>(new Map());
   const [videoStates, setVideoStates] = useState<Map<string, {
     isPlaying: boolean;
@@ -80,12 +85,15 @@ const PostModal = () => {
 
   const userId = useMemo(() => currentUser?.id, [currentUser]);
 
-  // Ultra-smooth navigation
-  const navigateToPost = useCallback((targetIndex: number) => {
-    if (targetIndex < 0 || targetIndex >= posts.length || targetIndex === currentPostIndex) {
+  // TikTok-style continuous navigation with enhanced debouncing
+  const navigateToPost = useCallback((direction: 1 | -1) => {
+    const targetIndex = currentPostIndex + direction;
+    
+    if (targetIndex < 0 || targetIndex >= posts.length || isNavigatingRef.current) {
       return;
     }
 
+    isNavigatingRef.current = true;
     setIsScrolling(true);
     setCurrentPostIndex(targetIndex);
 
@@ -93,61 +101,88 @@ const PostModal = () => {
       postModal.setPost?.(posts[targetIndex]);
     }
 
+    // Reset navigation flags after transition
     setTimeout(() => {
       setIsScrolling(false);
-    }, 250);
-  }, [currentPostIndex, posts, postModal]);
+      isNavigatingRef.current = false;
+    }, 400); // Slightly longer to ensure smooth transition
+  }, [currentPostIndex, posts.length, postModal]);
 
-  // Enhanced wheel handling
+  // Enhanced wheel handling with better debouncing
   useEffect(() => {
     if (!containerRef.current || posts.length <= 1) return;
-
-    let wheelAccumulator = 0;
-    let wheelTimeout: NodeJS.Timeout;
 
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
       e.stopImmediatePropagation();
 
-      if (isScrolling) return;
+      const now = Date.now();
+      
+      // If already navigating, ignore all wheel events
+      if (isNavigatingRef.current) return;
 
-      wheelAccumulator += e.deltaY;
-      clearTimeout(wheelTimeout);
+      // Reset accumulated delta if too much time has passed
+      if (now - lastScrollTime.current > 150) {
+        accumulatedDelta.current = 0;
+      }
 
-      wheelTimeout = setTimeout(() => {
-        if (Math.abs(wheelAccumulator) > 15) {
-          if (wheelAccumulator > 0) {
-            navigateToPost(currentPostIndex + 1);
-          } else {
-            navigateToPost(currentPostIndex - 1);
-          }
+      lastScrollTime.current = now;
+      accumulatedDelta.current += e.deltaY;
+
+      // Clear existing timeout
+      if (wheelTimeoutRef.current) {
+        clearTimeout(wheelTimeoutRef.current);
+      }
+
+      // Set new timeout to process accumulated scroll
+      wheelTimeoutRef.current = setTimeout(() => {
+        const threshold = 50; // Minimum scroll amount needed
+        
+        if (Math.abs(accumulatedDelta.current) >= threshold && !isNavigatingRef.current) {
+          const direction = accumulatedDelta.current > 0 ? 1 : -1;
+          navigateToPost(direction);
         }
-        wheelAccumulator = 0;
-      }, 30);
+        
+        accumulatedDelta.current = 0;
+      }, 30); // Small delay to accumulate rapid scroll events
     };
 
     const container = containerRef.current;
-    container.addEventListener('wheel', handleWheel, { passive: false });
+    
+    // Use capture phase and set passive to false for better control
+    container.addEventListener('wheel', handleWheel, { 
+      passive: false, 
+      capture: true 
+    });
 
     return () => {
-      container.removeEventListener('wheel', handleWheel);
-      clearTimeout(wheelTimeout);
+      container.removeEventListener('wheel', handleWheel, true);
+      if (wheelTimeoutRef.current) {
+        clearTimeout(wheelTimeoutRef.current);
+      }
     };
-  }, [currentPostIndex, isScrolling, navigateToPost, posts.length]);
+  }, [currentPostIndex, navigateToPost, posts.length]);
 
-  // Keyboard navigation
+  // Keyboard navigation with debouncing
   useEffect(() => {
+    let keyDebounceTimeout: NodeJS.Timeout | null = null;
+
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (isScrolling) return;
+      if (isNavigatingRef.current) return;
+
+      // Clear existing timeout
+      if (keyDebounceTimeout) {
+        clearTimeout(keyDebounceTimeout);
+      }
 
       switch (e.key) {
         case 'ArrowUp':
           e.preventDefault();
-          navigateToPost(currentPostIndex - 1);
+          keyDebounceTimeout = setTimeout(() => navigateToPost(-1), 50);
           break;
         case 'ArrowDown':
           e.preventDefault();
-          navigateToPost(currentPostIndex + 1);
+          keyDebounceTimeout = setTimeout(() => navigateToPost(1), 50);
           break;
         case ' ':
           e.preventDefault();
@@ -160,12 +195,17 @@ const PostModal = () => {
     };
 
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentPostIndex, isScrolling, navigateToPost, currentPost?.id]);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      if (keyDebounceTimeout) {
+        clearTimeout(keyDebounceTimeout);
+      }
+    };
+  }, [navigateToPost, currentPost?.id]);
 
-  // Touch handling
+  // Touch handling for continuous scroll
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    if (posts.length <= 1) return;
+    if (posts.length <= 1 || isNavigatingRef.current) return;
 
     const touch = e.touches[0];
     setTouchStartY(touch.clientY);
@@ -179,7 +219,7 @@ const PostModal = () => {
   }, [posts.length]);
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    if (!isDragging || posts.length <= 1) return;
+    if (!isDragging || posts.length <= 1 || isNavigatingRef.current) return;
 
     const touch = e.touches[0];
     const currentTime = Date.now();
@@ -193,9 +233,10 @@ const PostModal = () => {
     const rawOffset = touch.clientY - touchStartY;
     let offset = rawOffset;
 
+    // Light resistance at boundaries for smoother feel
     if ((currentPostIndex === 0 && offset > 0) || 
         (currentPostIndex === posts.length - 1 && offset < 0)) {
-      offset = rawOffset * 0.25;
+      offset = rawOffset * 0.3;
     }
 
     setDragOffset(offset);
@@ -205,7 +246,7 @@ const PostModal = () => {
   }, [isDragging, touchStartY, currentPostIndex, posts.length]);
 
   const handleTouchEnd = useCallback(() => {
-    if (!isDragging) return;
+    if (!isDragging || isNavigatingRef.current) return;
 
     setIsDragging(false);
 
@@ -213,12 +254,12 @@ const PostModal = () => {
     const offset = dragOffset;
     const duration = Date.now() - touchStartTime;
 
-    const velocityThreshold = 0.5;
-    const distanceThreshold = window.innerHeight * 0.15;
-    const quickSwipeTime = 150;
+    const velocityThreshold = 0.3;
+    const distanceThreshold = window.innerHeight * 0.1;
+    const quickSwipeTime = 100;
 
     let shouldNavigate = false;
-    let direction = 0;
+    let direction: 1 | -1 = 1;
 
     if (Math.abs(velocity) > velocityThreshold) {
       shouldNavigate = true;
@@ -228,20 +269,19 @@ const PostModal = () => {
       shouldNavigate = true;
       direction = offset < 0 ? 1 : -1;
     }
-    else if (duration < quickSwipeTime && Math.abs(offset) > 30) {
+    else if (duration < quickSwipeTime && Math.abs(offset) > 20) {
       shouldNavigate = true;
       direction = offset < 0 ? 1 : -1;
     }
 
-    if (shouldNavigate && !isScrolling) {
-      const targetIndex = currentPostIndex + direction;
-      navigateToPost(targetIndex);
+    if (shouldNavigate && !isNavigatingRef.current) {
+      navigateToPost(direction);
     }
 
     setDragOffset(0);
-  }, [isDragging, dragOffset, touchStartTime, currentPostIndex, isScrolling, navigateToPost]);
+  }, [isDragging, dragOffset, touchStartTime, navigateToPost]);
 
-  // Simplified video functions
+  // Video functions
   const getVideoState = (postId: string) => {
     return videoStates.get(postId) || {
       isPlaying: false,
@@ -255,7 +295,6 @@ const PostModal = () => {
     setVideoStates(prev => new Map(prev.set(postId, { ...getVideoState(postId), ...updates })));
   };
 
-  // Fixed video ref callback - no infinite loop
   const createVideoRefCallback = (postId: string) => {
     return (video: HTMLVideoElement | null) => {
       if (video && !videoRefs.current.has(postId)) {
@@ -271,7 +310,6 @@ const PostModal = () => {
         video.addEventListener('play', handlePlay);
         video.addEventListener('pause', handlePause);
 
-        // Cleanup function stored on the element
         (video as any)._cleanup = () => {
           video.removeEventListener('timeupdate', handleTimeUpdate);
           video.removeEventListener('loadedmetadata', handleLoadedMetadata);
@@ -573,12 +611,15 @@ const PostModal = () => {
           overscrollBehavior: 'none'
         }}
       >
+        {/* TikTok-style continuous scroll container */}
         <div 
           className="relative w-full ultra-smooth"
           style={{ 
             height: `${posts.length * 100}vh`,
+            // This creates the continuous scroll effect - you can see adjacent posts during transition
             transform: `translate3d(0, ${(-currentPostIndex * 100) + (isDragging ? (dragOffset / window.innerHeight) * 100 : 0)}vh, 0)`,
-            transition: isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.23, 1, 0.32, 1)',
+            // Smooth transition that shows the sliding effect like TikTok
+            transition: isDragging ? 'none' : 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
             willChange: 'transform'
           }}
         >
@@ -592,6 +633,7 @@ const PostModal = () => {
                 key={postData.id}
                 className="absolute top-0 left-0 w-full h-screen ultra-smooth"
                 style={{ 
+                  // Each post is positioned at its index * 100vh for continuous scroll
                   transform: `translate3d(0, ${index * 100}vh, 0)`,
                   willChange: 'transform'
                 }}
@@ -616,7 +658,7 @@ const PostModal = () => {
                           alt="Reel media"
                           fill
                           className="object-cover"
-                          priority={index === currentPostIndex}
+                          priority={Math.abs(index - currentPostIndex) <= 1}
                         />
                       )
                     ) : (
@@ -767,7 +809,7 @@ const PostModal = () => {
                                   </div>
                                   
                                   <div className="flex items-center justify-between text-white text-sm">
-<div className="flex items-center gap-3">
+                                    <div className="flex items-center gap-3">
                                       <button 
                                         onClick={() => handlePlayPause(postData.id)}
                                         className="w-8 h-8 flex items-center justify-center hover:bg-white/20 rounded-full transition-all duration-200 hover:scale-105"
@@ -894,6 +936,8 @@ const PostModal = () => {
             );
           })}
         </div>
+
+        {/* Side action buttons */}
         <div className={`fixed top-1/2 transform -translate-y-1/2 flex flex-col items-center gap-6 text-white z-30 ${
           currentPost?.tag === 'reel' || currentPost?.postType === 'reel' ? 'right-6' : 'left-1/2 ml-[calc(192px+60px)]'
         }`}>
@@ -958,6 +1002,7 @@ const PostModal = () => {
           </div>
         </div>
 
+        {/* Comments Panel */}
         <div className={`
           fixed top-0 right-0 h-full w-[375px] z-50 bg-white/95 backdrop-blur-xl border-l border-gray-200
           transform transition-all duration-500 ease-out
