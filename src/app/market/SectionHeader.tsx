@@ -46,7 +46,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
                   type="button"
                   aria-label={`Scroll ${title} left`}
                   onClick={onPrev}
-                  className="h-9 w-9 rounded-full flex items-center justify-center shadow-sm bg-white text-gray-500 hover:text-[#60A5FA] hover:shadow-md transition-all"
+                  className="h-9 w-9 rounded-xl flex items-center justify-center shadow-sm bg-white text-gray-500 hover:text-[#60A5FA] hover:shadow-md transition-all"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
@@ -57,7 +57,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
                   type="button"
                   aria-label={`Scroll ${title} right`}
                   onClick={onNext}
-                  className="h-9 w-9 rounded-full flex items-center justify-center shadow-sm bg-white text-gray-500 hover:text-[#60A5FA] hover:shadow-md transition-all"
+                  className="h-9 w-9 rounded-xl flex items-center justify-center shadow-sm bg-white text-gray-500 hover:text-[#60A5FA] hover:shadow-md transition-all"
                 >
                   <ChevronRight className="w-5 h-5" />
                 </button>
