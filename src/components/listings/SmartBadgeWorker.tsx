@@ -5,86 +5,95 @@ import { SafeEmployee } from '@/app/types';
 
 interface SmartBadgeWorkerProps {
   employee: SafeEmployee;
-  listingTitle: string;
-  rating?: number;          // falls back to employee.rating if present
-  followerCount?: number;   // default 847 if absent
+  listingTitle: string;      // kept for parity (unused)
+  rating?: number;           // falls back to employee.rating if present
+  followerCount?: number;    // default 847 if absent
   onRatingClick?: () => void;
   onFollowerClick?: () => void;
 }
 
 /**
- * This is a 1:1 visual clone of your SmartBadgeRating:
- * two compact gradient pills (dot + text), tiny fonts, hover scale,
- * no icons, same spacing and classes. Left = rating, Right = followers.
+ * Updated with dark backgrounds and white text for better contrast on light WorkerCard backgrounds
  */
 const SmartBadgeWorker: React.FC<SmartBadgeWorkerProps> = ({
   employee,
-  listingTitle, // unused; kept for parity
+  listingTitle, // unused
   rating = (employee as any)?.rating ?? 4.7,
   followerCount = (employee as any)?.followerCount ?? 847,
   onRatingClick,
   onFollowerClick,
 }) => {
-  /** ----- Rating visual (exact same branching + colors) ----- */
   const isTrending = (employee as any)?.isTrending ?? false;
 
-  const getRatingVisual = () => {
+  // Rating pill theme (glassmorphism style)
+  const getRatingTheme = () => {
     if (isTrending) {
       return {
-        bg: 'bg-gradient-to-r from-purple-500/20 to-violet-500/20',
-        border: 'border-purple-400/40',
-        shadow: 'shadow-purple-500/20',
-        text: 'text-purple-200',
-        dot: 'bg-purple-300',
-      };
-    } else if (rating >= 4.5) {
-      return {
-        bg: 'bg-gradient-to-r from-yellow-500/20 to-amber-500/20',
-        border: 'border-yellow-400/40',
-        shadow: 'shadow-yellow-500/20',
-        text: 'text-yellow-200',
-        dot: 'bg-amber-300',
-      };
-    } else {
-      return {
-        bg: 'bg-gradient-to-r from-blue-500/20 to-cyan-500/20',
-        border: 'border-blue-400/40',
-        shadow: 'shadow-blue-500/20',
-        text: 'text-blue-200',
-        dot: 'bg-cyan-300',
+        bg: 'bg-violet-100/60 backdrop-blur-sm',
+        border: 'border-white/40',
+        text: 'text-violet-700',
+        dot: 'bg-violet-500',
+        hover: 'hover:bg-violet-100/80',
+        ring: 'focus-visible:ring-violet-300/60',
       };
     }
+    if (rating >= 4.5) {
+      return {
+        bg: 'bg-amber-100/60 backdrop-blur-sm',
+        border: 'border-white/40',
+        text: 'text-amber-700',
+        dot: 'bg-amber-500',
+        hover: 'hover:bg-amber-100/80',
+        ring: 'focus-visible:ring-amber-300/60',
+      };
+    }
+    return {
+      bg: 'bg-blue-100/60 backdrop-blur-sm',
+      border: 'border-white/40',
+      text: 'text-blue-700',
+      dot: 'bg-blue-500',
+      hover: 'hover:bg-blue-100/80',
+      ring: 'focus-visible:ring-blue-300/60',
+    };
   };
-  const ratingV = getRatingVisual();
+  const ratingTheme = getRatingTheme();
 
-  /** ----- Followers visual (mirrors the "time pill" style) ----- */
-  // Popularity tiers just to vary the color like your time status
-  const popTier =
-    followerCount >= 5000 ? 'green' : followerCount >= 1000 ? 'orange' : 'red';
+  // Followers pill theme by tier (glassmorphism style)
+  const tier = followerCount >= 5000 ? 'green' : followerCount >= 1000 ? 'orange' : 'red';
+  const followersTheme =
+    tier === 'green'
+      ? {
+          bg: 'bg-emerald-100/60 backdrop-blur-sm',
+          border: 'border-white/40',
+          text: 'text-emerald-700',
+          dot: 'bg-emerald-500',
+          hover: 'hover:bg-emerald-100/80',
+          ring: 'focus-visible:ring-emerald-300/60',
+        }
+      : tier === 'orange'
+      ? {
+          bg: 'bg-orange-100/60 backdrop-blur-sm',
+          border: 'border-white/40',
+          text: 'text-orange-700',
+          dot: 'bg-orange-500',
+          hover: 'hover:bg-orange-100/80',
+          ring: 'focus-visible:ring-orange-300/60',
+        }
+      : {
+          bg: 'bg-rose-100/60 backdrop-blur-sm',
+          border: 'border-white/40',
+          text: 'text-rose-700',
+          dot: 'bg-rose-500',
+          hover: 'hover:bg-rose-100/80',
+          ring: 'focus-visible:ring-rose-300/60',
+        };
 
-  const followersWrap =
-    popTier === 'green'
-      ? 'bg-gradient-to-r from-lime-500/20 to-green-600/20 border-lime-400/40 shadow-lime-500/20'
-      : popTier === 'orange'
-      ? 'bg-gradient-to-r from-orange-500/20 to-amber-500/20 border-orange-400/40 shadow-orange-500/20'
-      : 'bg-gradient-to-r from-red-500/20 to-rose-500/20 border-red-400/40 shadow-red-500/20';
-
-  const followersText =
-    popTier === 'green'
-      ? 'text-lime-200'
-      : popTier === 'orange'
-      ? 'text-orange-200'
-      : 'text-rose-200';
-
-  const followersDot =
-    popTier === 'green'
-      ? 'bg-lime-300'
-      : popTier === 'orange'
-      ? 'bg-amber-300'
-      : 'bg-rose-300';
-
+  // Updated: glassmorphism styling
   const pillBase =
-    'border rounded-md px-2 py-1 group-hover:scale-105 transition-all duration-300 shadow-sm inline-flex items-center justify-center gap-1 w-20';
+    'inline-flex items-center justify-center gap-1.5 rounded-lg border w-20 px-3 py-2 ' +
+    'text-xs font-medium leading-none shadow-sm transition-all duration-200 ' +
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ' +
+    'focus-visible:ring-offset-white hover:shadow-md hover:scale-105';
 
   const fmtFollowers = (n: number) =>
     n >= 1_000_000 ? `${(n / 1_000_000).toFixed(1)}M`
@@ -92,30 +101,48 @@ const SmartBadgeWorker: React.FC<SmartBadgeWorkerProps> = ({
     : String(n);
 
   return (
-    <div className="flex items-center gap-2">
-      {/* Rating pill — identical structure to SmartBadgeRating */}
+    <div className="flex items-center gap-3">
+      {/* Rating pill */}
       <button
-        onClick={(e) => { e.stopPropagation(); onRatingClick?.(); }}
-        className="inline-flex rounded-xl hover:bg-white/10 transition-all duration-300 group p-0"
         type="button"
         aria-label="Rating"
+        onClick={(e) => { e.stopPropagation(); onRatingClick?.(); }}
+        className="group p-0 rounded-lg"
       >
-        <div className={`${pillBase} ${ratingV.bg} ${ratingV.border} ${ratingV.shadow}`}>
-          <span className={`w-1.5 h-1.5 rounded-full ${ratingV.dot}`} />
-          <span className={`text-xs ${ratingV.text}`}>{Number(rating).toFixed(1)}</span>
+        <div
+          className={[
+            pillBase,
+            ratingTheme.bg,
+            ratingTheme.text,
+            ratingTheme.hover,
+            ratingTheme.ring,
+          ].join(' ')}
+          title={`Rating ${Number(rating).toFixed(1)}`}
+        >
+          <span className={`w-1.5 h-1.5 rounded-full ${ratingTheme.dot}`} />
+          <span className="tabular-nums font-semibold">{Number(rating).toFixed(1)}</span>
         </div>
       </button>
 
-      {/* Followers pill — same look/spacing as the time pill */}
+      {/* Followers pill */}
       <button
-        onClick={(e) => { e.stopPropagation(); onFollowerClick?.(); }}
-        className="inline-flex rounded-xl hover:bg-white/10 transition-all duration-300 group p-0"
         type="button"
         aria-label="Followers"
+        onClick={(e) => { e.stopPropagation(); onFollowerClick?.(); }}
+        className="group p-0 rounded-lg"
       >
-        <div className={`${pillBase} ${followersWrap}`}>
-          <span className={`w-1.5 h-1.5 rounded-full ${followersDot}`} />
-          <span className={`text-xs ${followersText}`}>{fmtFollowers(followerCount)}</span>
+        <div
+          className={[
+            pillBase,
+            followersTheme.bg,
+            followersTheme.text,
+            followersTheme.hover,
+            followersTheme.ring,
+          ].join(' ')}
+          title={`${fmtFollowers(followerCount)} followers`}
+        >
+          <span className={`w-1.5 h-1.5 rounded-full ${followersTheme.dot}`} />
+          <span className="tabular-nums font-semibold">{fmtFollowers(followerCount)}</span>
         </div>
       </button>
     </div>

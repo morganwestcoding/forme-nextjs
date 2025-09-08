@@ -1,7 +1,7 @@
-// components/market/MarketContent.tsx
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Container from '@/components/Container';
 import { SafeListing, SafeUser, SafeEmployee } from '@/app/types';
 import PropagateLoaderWrapper from '@/components/loaders/PropagateLoaderWrapper';
@@ -9,6 +9,7 @@ import ListingCard from '@/components/listings/ListingCard';
 import MarketExplorer from './MarketExplorer';
 import RentModal from '@/components/modals/RentModal';
 import WorkerCard from '@/components/listings/WorkerCard';
+import SectionHeader from './SectionHeader';
 
 interface MarketContentProps {
   searchParams: {
@@ -50,6 +51,8 @@ const MarketContent: React.FC<MarketContentProps> = ({
   currentUser,
   trendingEmployees = [],
 }) => {
+  const router = useRouter();
+
   // View state (for MarketExplorer controls)
   const [viewState, setViewState] = useState<ViewState>({
     mode: 'grid',
@@ -65,12 +68,53 @@ const MarketContent: React.FC<MarketContentProps> = ({
     return () => clearTimeout(t);
   }, [listings]);
 
+  // Filtering logic to determine when to show section headers
+  const filterInfo = useMemo(() => {
+    // Get the current category from URL params (this is the source of truth)
+    const currentCategory = searchParams?.category || '';
+    const categoryIsActive = currentCategory !== '' && currentCategory !== 'featured' && currentCategory !== 'all';
+
+    // Check for price filters
+    const hasPriceFilter = 
+      viewState?.filters?.minPrice !== undefined ||
+      viewState?.filters?.maxPrice !== undefined ||
+      searchParams.minPrice !== undefined ||
+      searchParams.maxPrice !== undefined;
+
+    // Check for location filters
+    const hasLocationFilter = !!(
+      viewState?.filters?.city?.trim() ||
+      viewState?.filters?.state?.trim() ||
+      (searchParams.city as any)?.toString()?.trim() ||
+      (searchParams.state as any)?.toString()?.trim()
+    );
+
+    const isFiltered = categoryIsActive || hasPriceFilter || hasLocationFilter;
+
+    // Determine results header text
+    let resultsHeaderText = '';
+    if (categoryIsActive && currentCategory) {
+      // Capitalize first letter of category
+      const categoryName = currentCategory.charAt(0).toUpperCase() + currentCategory.slice(1);
+      resultsHeaderText = `${categoryName} Listings`;
+    } else if (hasPriceFilter || hasLocationFilter) {
+      resultsHeaderText = 'Search Results';
+    }
+
+    return {
+      isFiltered,
+      categoryIsActive,
+      resultsHeaderText,
+      currentCategory
+    };
+  }, [viewState, searchParams]);
+
   const hasListings = useMemo(
     () => Array.isArray(listings) && listings.length > 0,
     [listings]
   );
 
-  // Derive a “trending” pool if no external list is supplied.
+  // Derive a "trending" pool if no external list is supplied.
   const derivedTrending = useMemo(() => {
     const pairs: { employee: SafeEmployee; listing: SafeListing }[] = [];
 
@@ -107,6 +151,17 @@ const MarketContent: React.FC<MarketContentProps> = ({
     }));
   }, [trendingEmployees, derivedTrending, listings]);
 
+  // Scroll functions for section headers (these will now just change which 4 items to show)
+  const scrollFeaturedRail = (dir: 'left' | 'right') => {
+    // This would need to be implemented to change which 4 listings are shown
+    console.log('Scroll featured', dir);
+  };
+
+  const scrollTrendingRail = (dir: 'left' | 'right') => {
+    // This would need to be implemented to change which 4 trending items are shown
+    console.log('Scroll trending', dir);
+  };
+
   const renderListView = () => (
     <div className="text-sm text-gray-500">List view goes here.</div>
   );
@@ -116,22 +171,22 @@ const MarketContent: React.FC<MarketContentProps> = ({
       {/* Mount edit modal so updates from here trigger router.refresh in the modal */}
       <RentModal />
 
-      <div className="">
-        <div className="pt-2 mb-4">
-          <div>
-            <h1 className="text-3xl md:text-3xl font-bold text-black leading-tight tracking-wide">
-              Market
-            </h1>
-            <p className="text-gray-600">Discover unique places from our vendors</p>
-          </div>
+      {/* Main Market Title - Always Visible */}
+      <div className="pt-2 mb-4">
+        <div>
+          <h1 className="text-3xl md:text-3xl font-bold text-black leading-tight tracking-wide">
+            Market
+          </h1>
+          <p className="text-gray-600">Discover unique places from our vendors</p>
         </div>
-
-        <MarketExplorer
-          searchParams={searchParams}
-          viewState={viewState}
-          setViewState={setViewState}
-        />
       </div>
+
+      {/* Search and Category Controls */}
+      <MarketExplorer
+        searchParams={searchParams}
+        viewState={viewState}
+        setViewState={setViewState}
+      />
 
       {/* Content + loader overlay */}
       <div className="relative">
@@ -151,24 +206,34 @@ const MarketContent: React.FC<MarketContentProps> = ({
           {viewState.mode === 'grid' ? (
             hasListings ? (
               <>
-                {/* ===== Listings Row (4 visible, horizontal scroll for more) ===== */}
-                <div className="overflow-x-auto overflow-y-hidden">
-                  <div
-                    className="
-                      grid grid-flow-col auto-cols-[calc((100%-48px)/4)]
-                      gap-4 pr-4
-                      snap-x snap-mandatory
-                    "
-                    // 48px = 3 gaps * 16px (gap-4) between 4 visible cols
-                  >
-                    {listings.map((listing, idx) => (
+                {/* ===== Featured Storefronts Section ===== */}
+                {!filterInfo.isFiltered && (
+                  <SectionHeader
+                    title="Featured Storefronts"
+                    onPrev={() => scrollFeaturedRail('left')}
+                    onNext={() => scrollFeaturedRail('right')}
+                    onViewAll={() => router.push('/market?category=featured')}
+                  />
+                )}
+
+                {/* ===== Results Section Header (when filtered) ===== */}
+                {filterInfo.isFiltered && filterInfo.resultsHeaderText && (
+                  <SectionHeader
+                    title={filterInfo.resultsHeaderText}
+                    // No navigation controls for results section
+                  />
+                )}
+
+                {/* Listings Row (4 visible, no overflow scroll) */}
+                <div id="featured-rail">
+                  <div className="grid grid-cols-4 gap-4">
+                    {listings.slice(0, 4).map((listing, idx) => (
                       <div
                         key={listing.id}
-                        className="snap-start"
                         style={{
                           opacity: 0,
                           animation: `fadeInUp 520ms ease-out forwards`,
-                          animationDelay: `${140 + (idx % 12) * 30}ms`,
+                          animationDelay: `${140 + idx * 30}ms`,
                           willChange: 'transform, opacity',
                         }}
                       >
@@ -178,23 +243,19 @@ const MarketContent: React.FC<MarketContentProps> = ({
                   </div>
                 </div>
 
-                {/* ===== Trending Teammates (3 visible, horizontal scroll for more) ===== */}
-                {finalTrending.length > 0 && (
+                {/* ===== Trending Teammates Section ===== */}
+                {finalTrending.length > 0 && !filterInfo.isFiltered && (
                   <>
-                    <h2 className=" md:text-base text-black text-xs font-medium py-4 mt-4">
-                      Trending Teammates
-                    </h2>
+                    <SectionHeader
+                      title="Trending Teammates"
+                      onPrev={() => scrollTrendingRail('left')}
+                      onNext={() => scrollTrendingRail('right')}
+                      onViewAll={() => router.push('/market?category=trending-teammates')}
+                    />
 
-                    <div className="overflow-x-auto overflow-y-hidden">
-                      <div
-                        className="
-                          grid grid-flow-col auto-cols-[calc((100%-32px)/3)]
-                          gap-4 pr-4
-                          snap-x snap-mandatory
-                        "
-                        // 32px = 2 gaps * 16px between 3 visible cols
-                      >
-                        {finalTrending.map(({ employee, listing }, idx) => {
+                    <div id="trending-rail">
+                      <div className="grid grid-cols-4 gap-4">
+                        {finalTrending.slice(0, 4).map(({ employee, listing }, idx) => {
                           const li: any = listing as any;
                           const imageSrc =
                             li?.imageSrc ||
@@ -204,11 +265,10 @@ const MarketContent: React.FC<MarketContentProps> = ({
                           return (
                             <div
                               key={(employee as any).id ?? `${(employee as any).fullName}-${idx}`}
-                              className="snap-start"
                               style={{
                                 opacity: 0,
                                 animation: `fadeInUp 520ms ease-out forwards`,
-                                animationDelay: `${160 + (idx % 12) * 30}ms`,
+                                animationDelay: `${160 + idx * 30}ms`,
                                 willChange: 'transform, opacity',
                               }}
                             >
@@ -246,10 +306,3 @@ const MarketContent: React.FC<MarketContentProps> = ({
 };
 
 export default MarketContent;
-
-/* If you don't already have it in globals.css:
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translate3d(0, 8px, 0); }
-  to   { opacity: 1; transform: translate3d(0, 0, 0); }
-}
-*/

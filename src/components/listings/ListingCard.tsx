@@ -60,7 +60,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser }) => {
       </div>
 
       <div className="relative z-10">
-        <div className="relative h-[390px]">
+        <div className="relative h-[350px]">
           {/* Heart */}
           <div className="absolute top-4 right-6 z-20">
             <div

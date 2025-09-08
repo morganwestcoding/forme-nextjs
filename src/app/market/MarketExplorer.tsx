@@ -1,4 +1,5 @@
-// components/market/MarketExplorer.tsx
+'use client';
+
 import React from 'react';
 import { Grid, List } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -79,28 +80,6 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
     return { color: hexColor, bgColor: category.color };
   };
 
-  // Treat '', 'featured', and 'all' as NOT filtered
-  const stateCat = (viewState?.filters?.category ?? '').toString().toLowerCase().trim();
-  const urlCat = (searchParams?.category ?? '').toString().toLowerCase().trim();
-  const effectiveCat = (stateCat || urlCat);
-
-  const categoryIsActive =
-    effectiveCat !== '' && effectiveCat !== 'featured' && effectiveCat !== 'all';
-
-  const hasPriceFilter =
-    viewState?.filters?.minPrice !== undefined ||
-    viewState?.filters?.maxPrice !== undefined ||
-    searchParams.minPrice !== undefined ||
-    searchParams.maxPrice !== undefined;
-
-  const hasLocationFilter =
-    !!(viewState?.filters?.city?.trim() ||
-       viewState?.filters?.state?.trim() ||
-       (searchParams.city as any)?.toString()?.trim() ||
-       (searchParams.state as any)?.toString()?.trim());
-
-  const isFiltered = categoryIsActive || hasPriceFilter || hasLocationFilter;
-
   return (
     <div className="min-h-0">
       {/* Search and Controls */}
@@ -164,15 +143,15 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
         <div className="flex flex-wrap justify-center items-center gap-3">
           {categories.map((category) => {
             const isSelected = currentCategory === category.label;
-            const categoryStyle = getCategoryStyle(category.label);
             return (
               <button
                 key={category.label}
                 onClick={() => handleCategorySelect(category.label)}
-                className={`w-28 h-10 rounded-xl text-sm font-medium transition-all flex items-center justify-center ${
-                  isSelected ? 'text-white shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                className={`w-28 h-10 rounded-xl text-sm font-medium transition-all duration-300 flex items-center justify-center border ${
+                  isSelected 
+                    ? 'bg-blue-50 text-[#60A5FA] border-[#60A5FA]' 
+                    : 'bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100'
                 }`}
-                style={isSelected ? { backgroundColor: categoryStyle.color, color: 'white' } : {}}
                 type="button"
               >
                 <span className="px-2">{category.label}</span>
@@ -181,15 +160,6 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
           })}
         </div>
       </div>
-
-      {/* Featured Storefronts header — matches other headers, cleaner spacing */}
-      {!isFiltered && (
-        <h2 className=" md:text-base text-black text-xs font-medium py-4 mt-4">
-          Featured Storefronts
-        </h2>
-      )}
-
-      {/* Listing cards follow */}
     </div>
   );
 };
