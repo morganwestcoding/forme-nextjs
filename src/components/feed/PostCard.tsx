@@ -134,6 +134,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
             src={post.mediaUrl || post.imageSrc || ''}
             alt={`Reel by ${post.user.name}`}
             fill
+            sizes="250px"
             className={`object-cover transition-transform duration-300 group-hover:scale-105 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
             onLoad={() => setImageLoaded(true)}
           />
@@ -146,6 +147,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
             src={post.imageSrc}
             alt={`Post by ${post.user.name}`}
             fill
+            sizes="250px"
             className={`object-cover transition-transform duration-300 group-hover:scale-105 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
             onLoad={() => setImageLoaded(true)}
           />
@@ -154,7 +156,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
       );
     } else {
       return (
-        <div className="absolute inset-0 -mt-6 flex items-center justify-center p-6">
+        <div className="absolute inset-0 flex items-center justify-center p-6">
           <p className="text-gray-800 text-sm font-medium text-center leading-relaxed">
             {post.content.length > 350 ? post.content.substring(0, 350) + '...' : post.content}
           </p>
@@ -171,13 +173,13 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      {/* Match ListingCard height */}
-      <div className="relative h-[350px]">
+      {/* Full height container - removed any padding/margin that might interfere */}
+      <div className="relative h-[350px] w-full">
         {renderMedia()}
 
-        {/* More button */}
+        {/* More button - positioned absolutely over the media */}
         <button
-          className={`absolute right-4 top-4 rounded-full p-2 backdrop-blur-sm transition-colors ${
+          className={`absolute right-4 top-4 z-10 rounded-full p-2 backdrop-blur-sm transition-colors ${
             isTextPost 
               ? 'bg-gray-200/80 hover:bg-gray-300/80' 
               : 'bg-white/20 hover:bg-white/30'
@@ -187,8 +189,8 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
           <MoreHorizontal className={`h-4 w-4 ${isTextPost ? 'text-gray-600' : 'text-white'}`} />
         </button>
 
-        {/* User bar at bottom */}
-        <div className="absolute bottom-4 left-4 right-4">
+        {/* User bar at bottom - positioned absolutely over the media */}
+        <div className="absolute bottom-4 left-4 right-4 z-10">
           <div className={`backdrop-blur-md rounded-xl p-3 shadow-sm ${
             isTextPost 
               ? 'bg-gray-50 border border-gray-200' 
@@ -203,6 +205,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
                   src={post.user.image || '/images/placeholder.jpg'}
                   alt={post.user.name || 'User'}
                   fill
+                  sizes="36px"
                   className="object-cover"
                 />
               </div>
@@ -249,7 +252,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
         </div>
       </div>
 
-      <div className="pb-2" />
+      {/* Removed the bottom padding div as it was creating extra space */}
     </div>
   );
 };

@@ -110,14 +110,13 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
       onClick={handleCardClick}
       className="cursor-pointer bg-white rounded-2xl shadow-lg hover:shadow-xl border border-gray-100 overflow-hidden relative transition-all duration-300 hover:scale-[1.02] max-w-[250px]"
     >
-      <div className="relative z-10 p-6">
-        {/* Vertical Stacked Layout */}
-        <div className="flex flex-col items-center text-center space-y-4">
-          
-          {/* Avatar */}
+      {/* Match ListingCard height structure */}
+      <div className="relative h-[350px]">
+        {/* Avatar - Centered towards middle-top */}
+        <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
           <div className="relative">
             <div
-              className="w-20 h-20 rounded-full flex items-center justify-center text-white font-semibold shadow-lg ring-4 ring-white/50"
+              className="w-24 h-24 rounded-full flex items-center justify-center text-white font-semibold shadow-lg ring-4 ring-white/50"
               style={{ backgroundColor: avatarBg }}
               aria-label="Employee initials"
               title={employee.fullName}
@@ -150,19 +149,22 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
               </svg>
             </div>
           </div>
+        </div>
 
+        {/* Bottom info - positioned like ListingCard */}
+        <div className="absolute bottom-5 left-5 right-5 z-20">
           {/* Name and Title */}
-          <div className="space-y-1">
-            <h3 className="text-lg font-semibold text-gray-900">
+          <div className="mb-2">
+            <h3 className="text-lg font-semibold text-gray-900 mb-1">
               {employee.fullName}
             </h3>
-            <p className="text-sm text-gray-600 max-w-[180px] leading-relaxed">
+            <p className="text-sm text-gray-600 leading-relaxed">
               {jobLabel}
             </p>
           </div>
 
-          {/* SmartBadge - positioned at bottom */}
-          <div className="pt-2">
+          {/* SmartBadge */}
+          <div className="flex items-center">
             <SmartBadgeWorker
               employee={employee}
               listingTitle={listingTitle}
@@ -171,6 +173,9 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Match ListingCard bottom padding */}
+      <div className="pb-2" />
     </div>
   );
 };

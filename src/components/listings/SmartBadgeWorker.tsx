@@ -12,9 +12,6 @@ interface SmartBadgeWorkerProps {
   onFollowerClick?: () => void;
 }
 
-/**
- * Updated with dark backgrounds and white text for better contrast on light WorkerCard backgrounds
- */
 const SmartBadgeWorker: React.FC<SmartBadgeWorkerProps> = ({
   employee,
   listingTitle, // unused
@@ -25,75 +22,67 @@ const SmartBadgeWorker: React.FC<SmartBadgeWorkerProps> = ({
 }) => {
   const isTrending = (employee as any)?.isTrending ?? false;
 
-  // Rating pill theme (glassmorphism style)
+  // Rating pill theme
   const getRatingTheme = () => {
     if (isTrending) {
       return {
-        bg: 'bg-violet-100/60 backdrop-blur-sm',
-        border: 'border-white/40',
+        bg: 'bg-violet-100/60',
+        border: 'border-violet-200/40',
         text: 'text-violet-700',
         dot: 'bg-violet-500',
         hover: 'hover:bg-violet-100/80',
-        ring: 'focus-visible:ring-violet-300/60',
       };
     }
     if (rating >= 4.5) {
       return {
-        bg: 'bg-amber-100/60 backdrop-blur-sm',
-        border: 'border-white/40',
+        bg: 'bg-amber-100/60',
+        border: 'border-amber-200/40',
         text: 'text-amber-700',
         dot: 'bg-amber-500',
         hover: 'hover:bg-amber-100/80',
-        ring: 'focus-visible:ring-amber-300/60',
       };
     }
     return {
-      bg: 'bg-blue-100/60 backdrop-blur-sm',
-      border: 'border-white/40',
+      bg: 'bg-blue-100/60',
+      border: 'border-blue-200/40',
       text: 'text-blue-700',
       dot: 'bg-blue-500',
       hover: 'hover:bg-blue-100/80',
-      ring: 'focus-visible:ring-blue-300/60',
     };
   };
   const ratingTheme = getRatingTheme();
 
-  // Followers pill theme by tier (glassmorphism style)
+  // Followers pill theme by tier
   const tier = followerCount >= 5000 ? 'green' : followerCount >= 1000 ? 'orange' : 'red';
   const followersTheme =
     tier === 'green'
       ? {
-          bg: 'bg-emerald-100/60 backdrop-blur-sm',
-          border: 'border-white/40',
+          bg: 'bg-emerald-100/60',
+          border: 'border-emerald-200/40',
           text: 'text-emerald-700',
           dot: 'bg-emerald-500',
           hover: 'hover:bg-emerald-100/80',
-          ring: 'focus-visible:ring-emerald-300/60',
         }
       : tier === 'orange'
       ? {
-          bg: 'bg-orange-100/60 backdrop-blur-sm',
-          border: 'border-white/40',
+          bg: 'bg-orange-100/60',
+          border: 'border-orange-200/40',
           text: 'text-orange-700',
           dot: 'bg-orange-500',
           hover: 'hover:bg-orange-100/80',
-          ring: 'focus-visible:ring-orange-300/60',
         }
       : {
-          bg: 'bg-rose-100/60 backdrop-blur-sm',
-          border: 'border-white/40',
+          bg: 'bg-rose-100/60',
+          border: 'border-rose-200/40',
           text: 'text-rose-700',
           dot: 'bg-rose-500',
           hover: 'hover:bg-rose-100/80',
-          ring: 'focus-visible:ring-rose-300/60',
         };
 
-  // Updated: glassmorphism styling
+  // Updated pill styling to match your request
   const pillBase =
-    'inline-flex items-center justify-center gap-1.5 rounded-lg border w-20 px-3 py-2 ' +
-    'text-xs font-medium leading-none shadow-sm transition-all duration-200 ' +
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ' +
-    'focus-visible:ring-offset-white hover:shadow-md hover:scale-105';
+    'backdrop-blur-sm rounded-lg px-3 py-1.5 text-xs font-medium w-20 text-center ' +
+    'transition-all duration-200 cursor-pointer hover:scale-105';
 
   const fmtFollowers = (n: number) =>
     n >= 1_000_000 ? `${(n / 1_000_000).toFixed(1)}M`
@@ -107,20 +96,22 @@ const SmartBadgeWorker: React.FC<SmartBadgeWorkerProps> = ({
         type="button"
         aria-label="Rating"
         onClick={(e) => { e.stopPropagation(); onRatingClick?.(); }}
-        className="group p-0 rounded-lg"
+        className="group p-0"
       >
         <div
           className={[
             pillBase,
             ratingTheme.bg,
+            `border ${ratingTheme.border}`,
             ratingTheme.text,
             ratingTheme.hover,
-            ratingTheme.ring,
           ].join(' ')}
           title={`Rating ${Number(rating).toFixed(1)}`}
         >
-          <span className={`w-1.5 h-1.5 rounded-full ${ratingTheme.dot}`} />
-          <span className="tabular-nums font-semibold">{Number(rating).toFixed(1)}</span>
+          <div className="flex items-center justify-center gap-1">
+            <span className={`w-1.5 h-1.5 rounded-full ${ratingTheme.dot}`} />
+            <span className="tabular-nums font-semibold">{Number(rating).toFixed(1)}</span>
+          </div>
         </div>
       </button>
 
@@ -129,20 +120,22 @@ const SmartBadgeWorker: React.FC<SmartBadgeWorkerProps> = ({
         type="button"
         aria-label="Followers"
         onClick={(e) => { e.stopPropagation(); onFollowerClick?.(); }}
-        className="group p-0 rounded-lg"
+        className="group p-0"
       >
         <div
           className={[
             pillBase,
             followersTheme.bg,
+            `border ${followersTheme.border}`,
             followersTheme.text,
             followersTheme.hover,
-            followersTheme.ring,
           ].join(' ')}
           title={`${fmtFollowers(followerCount)} followers`}
         >
-          <span className={`w-1.5 h-1.5 rounded-full ${followersTheme.dot}`} />
-          <span className="tabular-nums font-semibold">{fmtFollowers(followerCount)}</span>
+          <div className="flex items-center justify-center gap-1">
+            <span className={`w-1.5 h-1.5 rounded-full ${followersTheme.dot}`} />
+            <span className="tabular-nums font-semibold">{fmtFollowers(followerCount)}</span>
+          </div>
         </div>
       </button>
     </div>
