@@ -18,11 +18,12 @@ type OverlayPos =
   | 'center-left' | 'center' | 'center-right'
   | 'bottom-left' | 'bottom-center' | 'bottom-right';
 
-const OVERLAY_MARGIN_PX = 16;   // matches preview padding
-const WRAP_PERCENT = 0.9;       // matches preview maxWidth: 90%
+const OVERLAY_MARGIN_PX = 20;   // Increased margin for better visibility
+const WRAP_PERCENT = 0.85;      // Reduced for better text wrapping
 
 function encodeTextForOverlay(text: string) {
   return encodeURIComponent(text)
+    .replace(/%20/g, '%2520')  // Double-encode spaces
     .replace(/%2C/g, '%252C')
     .replace(/%2F/g, '%252F');
 }
@@ -41,31 +42,18 @@ function posToGravity(pos: OverlayPos) {
   }
 }
 
-function posToAlign(pos: OverlayPos) {
-  if (pos.endsWith('left')) return 'left';
-  if (pos.endsWith('right')) return 'right';
-  return 'center';
-}
-
-function posToOffsets(pos: OverlayPos) {
-  const x = (pos.endsWith('left') || pos.endsWith('right')) ? OVERLAY_MARGIN_PX : 0;
-  let y = (pos.startsWith('top') || pos.startsWith('bottom')) ? OVERLAY_MARGIN_PX : 0;
-  if (pos.startsWith('bottom')) y = -y;
-  return { x, y };
-}
-
 function buildCloudinaryOverlayUrl(
   originalUrl: string,
   {
     text,
-    sizePx,             // already scaled to asset px
+    sizePx,
     color = 'ffffff',
     pos = 'bottom-center' as OverlayPos,
     font = 'Arial',
     weight = 'bold',
   }: {
     text: string;
-    sizePx: number;      // IMPORTANT: this is in asset pixels
+    sizePx: number;
     color?: string;
     pos?: OverlayPos;
     font?: string;
@@ -80,23 +68,27 @@ function buildCloudinaryOverlayUrl(
 
   const encodedText = encodeTextForOverlay(text);
   const gravity = posToGravity(pos);
-  const align = posToAlign(pos);
-  const { x, y } = posToOffsets(pos);
+  
+  // Calculate proper offsets based on position
+  let xOffset = '';
+  let yOffset = '';
+  
+  if (pos.includes('left')) xOffset = `,x_${OVERLAY_MARGIN_PX}`;
+  if (pos.includes('right')) xOffset = `,x_-${OVERLAY_MARGIN_PX}`;
+  if (pos.includes('top')) yOffset = `,y_${OVERLAY_MARGIN_PX}`;
+  if (pos.includes('bottom')) yOffset = `,y_-${OVERLAY_MARGIN_PX}`;
 
-  const clamped = Math.max(12, Math.floor(sizePx));
-  const styleChunk = `${font}_${clamped}_${weight}_${align}`;
+  const clampedSize = Math.max(16, Math.min(200, Math.floor(sizePx)));
+  
+  // Build the text layer with proper encoding
+  const textLayer = `l_text:${font}_${clampedSize}_${weight}:${encodedText}`;
+  const colorLayer = `co_rgb:${color}`;
+  const wrapLayer = `c_fit,w_${WRAP_PERCENT},fl_relative`;
+  
+  // Apply positioning
+  const positionLayer = `fl_layer_apply,g_${gravity}${xOffset}${yOffset}`;
 
-  const layer =
-    `l_text:${styleChunk}:${encodedText},` +
-    `co_rgb:${color},` +
-    `c_fit,fl_relative,w_${WRAP_PERCENT}`;
-
-  const apply =
-    `fl_layer_apply,g_${gravity}` +
-    (x ? `,x_${x}` : '') +
-    (y ? `,y_${y}` : '');
-
-  return `${prefix}${layer}/${apply}/${suffix}`;
+  return `${prefix}${textLayer},${colorLayer},${wrapLayer}/${positionLayer}/${suffix}`;
 }
 
 /** ================== Steps & Post Types ================== */
@@ -162,30 +154,32 @@ const CreatePostModal = () => {
 
   /** Overlay state for Reels */
   const [overlayText, setOverlayText] = useState('');
-  const [overlaySize, setOverlaySize] = useState(48); // CSS px (slider)
+  const [overlaySize, setOverlaySize] = useState(36); // Reduced default size
   const [overlayColor, setOverlayColor] = useState<'ffffff' | '000000'>('ffffff');
   const [overlayPos, setOverlayPos] = useState<OverlayPos>('bottom-center');
 
-  /** Measure preview width so we can scale CSS px -> Cloudinary px */
+  /** Measure preview for better scaling */
   const previewRef = useRef<HTMLDivElement>(null);
-  const [previewWidth, setPreviewWidth] = useState<number>(0);
+  const [previewDimensions, setPreviewDimensions] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
     if (!previewRef.current) return;
     const ro = new ResizeObserver((entries) => {
-      const w = entries[0]?.contentRect?.width ?? 0;
-      setPreviewWidth(Math.round(w));
+      const rect = entries[0]?.contentRect;
+      if (rect) {
+        setPreviewDimensions({ width: Math.round(rect.width), height: Math.round(rect.height) });
+      }
     });
     ro.observe(previewRef.current);
     return () => ro.disconnect();
-  }, [previewRef]);
+  }, []);
 
   const handleClose = useCallback(() => {
     setPostType('');
     setContent('');
     setMediaData(null);
     setOverlayText('');
-    setOverlaySize(48);
+    setOverlaySize(36);
     setOverlayColor('ffffff');
     setOverlayPos('bottom-center');
     setStep(STEPS.TYPE);
@@ -202,13 +196,13 @@ const CreatePostModal = () => {
 
     setIsLoading(true);
 
-    // Convert CSS font-size to Cloudinary font-size (asset px)
-    const assetW = mediaData?.width; // from MediaUpload
-    const cssPx = overlayText.trim() ? overlaySize : 0;
-    const sizePx =
-      overlayText.trim() && assetW && previewWidth
-        ? Math.max(12, Math.round(cssPx * (assetW / previewWidth)))
-        : Math.max(12, Math.round(cssPx)); // fallback if we miss a width
+    // Better scaling calculation for Cloudinary
+    const assetW = mediaData?.width || 1080; // Default width if not available
+    const previewW = previewDimensions.width || 400; // Default preview width
+    
+    // Calculate scaled font size with better ratio
+    const scaleFactor = assetW / previewW;
+    const sizePx = Math.round(overlaySize * scaleFactor * 0.8); // Slight reduction for better appearance
 
     let finalMediaUrl = mediaData?.url || null;
     let overlayMeta: any = null;
@@ -217,23 +211,23 @@ const CreatePostModal = () => {
       overlayMeta = {
         text: overlayText.trim(),
         sizeCssPx: overlaySize,
-        sizePx,               // baked pixel size
+        sizePx,
         color: overlayColor,
         pos: overlayPos,
         font: 'Arial',
         weight: 'bold',
-        margin: OVERLAY_MARGIN_PX,
-        wrapPercent: WRAP_PERCENT,
-        assetWidth: assetW ?? null,
-        previewWidth,
+        assetWidth: assetW,
+        previewWidth: previewW,
+        scaleFactor,
       };
+      
       finalMediaUrl = buildCloudinaryOverlayUrl(mediaData.url, {
         text: overlayMeta.text,
         sizePx,
         color: overlayMeta.color,
         pos: overlayMeta.pos,
-        font: overlayMeta.font,
-        weight: overlayMeta.weight,
+        font: 'Arial',
+        weight: 'bold',
       });
     }
 
@@ -328,11 +322,17 @@ const CreatePostModal = () => {
 
           {/* Preview with overlay */}
           <div ref={previewRef} className="w-full max-w-md mx-auto relative">
-            <MediaUpload onMediaUpload={setMediaData} currentMedia={mediaData} />
+            <MediaUpload 
+              onMediaUpload={setMediaData} 
+              currentMedia={mediaData}
+              ratio="landscape"
+              heightClass="h-80"
+            />
 
+            {/* Improved overlay preview */}
             {mediaData && overlayText.trim().length > 0 && (
               <div
-                className="pointer-events-none absolute inset-0 flex"
+                className="pointer-events-none absolute inset-0 flex items-center justify-center p-5"
                 style={{
                   justifyContent:
                     overlayPos.endsWith('left') ? 'flex-start' :
@@ -342,18 +342,17 @@ const CreatePostModal = () => {
                     overlayPos.startsWith('top') ? 'flex-start' :
                     overlayPos.startsWith('bottom') ? 'flex-end' :
                     'center',
-                  padding: `${OVERLAY_MARGIN_PX}px`,
                 }}
               >
-                <span
-                  className="px-1"
+                <div
+                  className="relative"
                   style={{
-                    fontSize: `${overlaySize}px`, // CSS px in preview
+                    fontSize: `${overlaySize}px`,
                     color: overlayColor === 'ffffff' ? '#fff' : '#000',
                     textShadow: overlayColor === 'ffffff'
-                      ? '0 1px 2px rgba(0,0,0,0.45)'
-                      : '0 1px 2px rgba(255,255,255,0.45)',
-                    lineHeight: 1.1,
+                      ? '2px 2px 4px rgba(0,0,0,0.7), 0 0 8px rgba(0,0,0,0.3)'
+                      : '2px 2px 4px rgba(255,255,255,0.7), 0 0 8px rgba(255,255,255,0.3)',
+                    lineHeight: 1.2,
                     fontWeight: 700,
                     maxWidth: `${WRAP_PERCENT * 100}%`,
                     wordBreak: 'break-word',
@@ -361,17 +360,18 @@ const CreatePostModal = () => {
                       overlayPos.endsWith('left') ? 'left' :
                       overlayPos.endsWith('right') ? 'right' :
                       'center',
+                    padding: '4px 8px',
                   }}
                 >
                   {overlayText}
-                </span>
+                </div>
               </div>
             )}
           </div>
 
           {/* Overlay controls */}
           {showOverlayControls && (
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-4">
               <div className="grid grid-cols-1 gap-2">
                 <label className="text-sm font-medium text-neutral-800">Text on media</label>
                 <input
@@ -388,11 +388,12 @@ const CreatePostModal = () => {
                   <label className="text-sm font-medium text-neutral-800">Size</label>
                   <input
                     type="range"
-                    min={16}
-                    max={96}
-                    step={1}
+                    min={20}
+                    max={80}
+                    step={2}
                     value={overlaySize}
                     onChange={(e) => setOverlaySize(Number(e.target.value))}
+                    className="mt-1"
                   />
                   <div className="text-xs text-neutral-500 mt-1">{overlaySize}px</div>
                 </div>
@@ -402,7 +403,7 @@ const CreatePostModal = () => {
                   <select
                     value={overlayColor}
                     onChange={(e) => setOverlayColor(e.target.value as 'ffffff' | '000000')}
-                    className="rounded-xl border border-neutral-200 bg-white px-2 py-2 text-sm shadow-sm"
+                    className="rounded-xl border border-neutral-200 bg-white px-2 py-2 text-sm shadow-sm mt-1"
                   >
                     <option value="ffffff">White</option>
                     <option value="000000">Black</option>
@@ -414,7 +415,7 @@ const CreatePostModal = () => {
                   <select
                     value={overlayPos}
                     onChange={(e) => setOverlayPos(e.target.value as OverlayPos)}
-                    className="rounded-xl border border-neutral-200 bg-white px-2 py-2 text-sm shadow-sm"
+                    className="rounded-xl border border-neutral-200 bg-white px-2 py-2 text-sm shadow-sm mt-1"
                   >
                     <option value="top-left">Top Left</option>
                     <option value="top-center">Top Center</option>
@@ -429,8 +430,11 @@ const CreatePostModal = () => {
                 </div>
               </div>
 
-              <div className="text-xs text-neutral-500">
-                The baked text size is scaled to match your preview width.
+              <div className="text-xs text-neutral-500 bg-blue-50 p-2 rounded-lg">
+                Preview dimensions: {previewDimensions.width}×{previewDimensions.height}px
+                {mediaData && (
+                  <> | Asset: {mediaData.width}×{mediaData.height}px</>
+                )}
               </div>
             </div>
           )}
@@ -463,7 +467,7 @@ const CreatePostModal = () => {
         </div>
       </div>
     );
-  }, [step, postType, content, mediaData, isLoading, overlayText, overlaySize, overlayColor, overlayPos, previewWidth]);
+  }, [step, postType, content, mediaData, isLoading, overlayText, overlaySize, overlayColor, overlayPos, previewDimensions]);
 
   return (
     <>

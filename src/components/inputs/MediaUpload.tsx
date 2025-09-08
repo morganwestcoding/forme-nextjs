@@ -56,27 +56,62 @@ const MediaUpload: React.FC<MediaUploadProps> = ({
       ? 'rounded-xl'
       : 'rounded-2xl';
 
+  // Fixed cropping options with correct Cloudinary parameters
   const cropOptions = useMemo(() => {
+    const baseOptions = {
+      cropping: true,
+      croppingShowBackButton: true,
+      croppingShowDimensions: true,
+      croppingValidateDimensions: true,
+      showSkipCropButton: false,
+      croppingCoordinatesMode: 'custom' as const,
+    };
+
     switch (ratio) {
       case 'square':
-        return { cropping: true, croppingAspectRatio: 1 };
+        return {
+          ...baseOptions,
+          croppingAspectRatio: 1.0,
+          croppingDefaultSelectionRatio: 1.0,
+        };
       case 'portrait':
-        return { cropping: true, croppingAspectRatio: 3 / 4 };
+        return {
+          ...baseOptions,
+          croppingAspectRatio: 0.75, // 3:4
+          croppingDefaultSelectionRatio: 0.75,
+        };
       case 'tall':
-        return { cropping: true, croppingAspectRatio: 2 / 3 };
+        return {
+          ...baseOptions,
+          croppingAspectRatio: 0.67, // 2:3
+          croppingDefaultSelectionRatio: 0.67,
+        };
       case 'wide':
-        return { cropping: true, croppingAspectRatio: 21 / 9 };
+        return {
+          ...baseOptions,
+          croppingAspectRatio: 2.33, // 21:9
+          croppingDefaultSelectionRatio: 2.33,
+        };
       case 'landscape':
-        return { cropping: true, croppingAspectRatio: 4 / 3 };
+        return {
+          ...baseOptions,
+          croppingAspectRatio: 1.33, // 4:3
+          croppingDefaultSelectionRatio: 1.33,
+        };
       case 'free':
       default:
-        return { cropping: true };
+        return {
+          cropping: true,
+          croppingShowBackButton: true,
+          croppingShowDimensions: true,
+          croppingValidateDimensions: false,
+          showSkipCropButton: true,
+        };
     }
   }, [ratio]);
 
   const handleUpload = useCallback(
     (result: CldUploadWidgetResults) => {
-
       const info = result?.info;
       // @ts-expect-error
       const secureUrl: string | undefined = info?.secure_url;
@@ -106,7 +141,8 @@ const MediaUpload: React.FC<MediaUploadProps> = ({
     [onMediaUpload]
   );
 
-  const handleError = useCallback(() => {
+  const handleError = useCallback((error: any) => {
+    console.error('Upload error:', error);
     setIsUploading(false);
   }, []);
 
@@ -125,6 +161,7 @@ const MediaUpload: React.FC<MediaUploadProps> = ({
           className="w-full h-full object-cover"
           controls={!!videoControls}
           playsInline
+          preload="metadata"
         />
       );
     }
@@ -160,10 +197,29 @@ const MediaUpload: React.FC<MediaUploadProps> = ({
           clientAllowedFormats: ['image', 'video', 'gif'],
           maxImageFileSize: 10_000_000,
           maxVideoFileSize: 50_000_000,
-          croppingValidateDimensions: true,
-          croppingShowDimensions: true,
-          ...cropOptions,
           folder: 'uploads',
+          // Apply the cropping options
+          ...cropOptions,
+          // Additional options for better upload experience
+          showPoweredBy: false,
+          theme: 'minimal',
+          styles: {
+            palette: {
+              window: '#FFFFFF',
+              sourceBg: '#F8FAFC',
+              windowBorder: '#E2E8F0',
+              tabIcon: '#64748B',
+              inactiveTabIcon: '#94A3B8',
+              menuIcons: '#64748B',
+              link: '#3B82F6',
+              action: '#3B82F6',
+              inProgress: '#3B82F6',
+              complete: '#10B981',
+              error: '#EF4444',
+              textDark: '#1E293B',
+              textLight: '#64748B'
+            }
+          }
         }}
       >
         {({ open }) => (
@@ -193,14 +249,16 @@ const MediaUpload: React.FC<MediaUploadProps> = ({
             {!mediaPreview && (
               <div className="grid place-items-center w-full h-full p-6">
                 <div className="flex flex-col items-center gap-3">
-                  {/* Your custom camera/check icon */}
+                  {/* Upload icon */}
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="40" height="40" color="#141B34" fill="none">
                     <path d="M14 3.5H10C6.22876 3.5 4.34315 3.5 3.17157 4.67157C2 5.84315 2 7.72876 2 11.5V13.5C2 17.2712 2 19.1569 3.17157 20.3284C4.34315 21.5 6.22876 21.5 10 21.5H14C17.7712 21.5 19.6569 21.5 20.8284 20.3284C22 19.1569 22 17.2712 22 13.5V11.5C22 7.72876 22 5.84315 20.8284 4.67157C19.6569 3.5 17.7712 3.5 14 3.5Z" stroke="#141B34" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     <circle cx="8.5" cy="9" r="1.5" stroke="#141B34" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     <path d="M21.5 17.5L16.348 11.8797C16.1263 11.6377 15.8131 11.5 15.485 11.5C15.1744 11.5 14.8766 11.6234 14.6571 11.8429L10 16.5L7.83928 14.3393C7.62204 14.122 7.32741 14 7.02019 14C6.68931 14 6.37423 14.1415 6.15441 14.3888L2.5 18.5" stroke="#141B34" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                   <div className="text-sm font-medium text-neutral-800 dark:text-neutral-200">Upload media</div>
-                  <div className="text-xs text-neutral-500 dark:text-neutral-400">Drag & drop or click</div>
+                  <div className="text-xs text-neutral-500 dark:text-neutral-400">
+                    {ratio !== 'free' ? `Will be cropped to ${ratio} ratio` : 'Drag & drop or click'}
+                  </div>
                 </div>
               </div>
             )}
@@ -220,6 +278,11 @@ const MediaUpload: React.FC<MediaUploadProps> = ({
                       <ImageIcon className="h-3.5 w-3.5" />
                       {mediaPreview.type === 'gif' ? 'GIF' : 'Image'}
                     </>
+                  )}
+                  {mediaPreview.width && mediaPreview.height && (
+                    <span className="ml-1">
+                      {mediaPreview.width}×{mediaPreview.height}
+                    </span>
                   )}
                 </div>
 

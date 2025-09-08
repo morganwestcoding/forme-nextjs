@@ -1,6 +1,5 @@
 'use client';
 
-// Add this CSS for line-clamp support
 const styles = `
   .line-clamp-1 {
     display: -webkit-box;
@@ -8,9 +7,22 @@ const styles = `
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
+  
+  .ultra-smooth {
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+  }
+  
+  .video-controls {
+    backdrop-filter: blur(20px);
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
 `;
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import Image from 'next/image';
 import { format } from 'date-fns';
 import axios from 'axios';
@@ -27,19 +39,23 @@ const PostModal = () => {
   const postModal = usePostModal();
   const post = postModal.post;
   const currentUser = postModal.currentUser;
-  const posts = postModal.posts || []; // Array of all posts
-  const initialIndex = postModal.initialIndex || 0; // Starting index
+  const posts = postModal.posts || [];
+  const initialIndex = postModal.initialIndex || 0;
   
-  // Add store access for updating posts
   const { updatePost } = usePostStore();
 
-  // Current post index state with GLOBAL LOCK
   const [currentPostIndex, setCurrentPostIndex] = useState(initialIndex);
   const [isScrolling, setIsScrolling] = useState(false);
-  const [scrollOffset, setScrollOffset] = useState(0); // For smooth transitions
-  const [globalLock, setGlobalLock] = useState(false); // GLOBAL lock to prevent ANY navigation
+  const [touchStartY, setTouchStartY] = useState(0);
+  const [touchStartTime, setTouchStartTime] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState(0);
 
-  // Get current post from the posts array
+  const containerRef = useRef<HTMLDivElement>(null);
+  const touchVelocityRef = useRef(0);
+  const lastTouchY = useRef(0);
+  const lastTouchTime = useRef(0);
+
   const currentPost = posts[currentPostIndex] || post;
 
   const [likes, setLikes] = useState<string[]>([]);
@@ -53,170 +69,271 @@ const PostModal = () => {
   const [showShareSuccess, setShowShareSuccess] = useState(false);
   const [showFullCaption, setShowFullCaption] = useState(false);
 
-  // Video control states
-  const [videoRef, setVideoRef] = useState<HTMLVideoElement | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [isMuted, setIsMuted] = useState(true);
-
-  // Touch handling states
-  const [touchStart, setTouchStart] = useState(0);
-  const [touchEnd, setTouchEnd] = useState(0);
+  // Simplified video state management
+  const videoRefs = useRef<Map<string, HTMLVideoElement>>(new Map());
+  const [videoStates, setVideoStates] = useState<Map<string, {
+    isPlaying: boolean;
+    currentTime: number;
+    duration: number;
+    isMuted: boolean;
+  }>>(new Map());
 
   const userId = useMemo(() => currentUser?.id, [currentUser]);
 
-  // Navigation functions with GLOBAL LOCK - absolutely no skipping possible
-  const goToNextPost = () => {
-    // ABSOLUTE BARRIER: Multiple conditions must be met
-    if (currentPostIndex >= posts.length - 1 || isScrolling || globalLock) {
-      return; // Exit immediately if any condition fails
+  // Ultra-smooth navigation
+  const navigateToPost = useCallback((targetIndex: number) => {
+    if (targetIndex < 0 || targetIndex >= posts.length || targetIndex === currentPostIndex) {
+      return;
     }
 
-    // Set ALL locks immediately
     setIsScrolling(true);
-    setGlobalLock(true);
-    setScrollOffset(-100);
+    setCurrentPostIndex(targetIndex);
 
-    setTimeout(() => {
-      setCurrentPostIndex((prev: number) => {
-        const newIndex = Math.min(prev + 1, posts.length - 1);
-        console.log(`Moving to post ${newIndex + 1} of ${posts.length}`); // Debug log
-        return newIndex;
-      });
-      setScrollOffset(0);
-      
-      // Keep locks for much longer
-      setTimeout(() => {
-        setIsScrolling(false);
-        setTimeout(() => {
-          setGlobalLock(false); // Release global lock last
-        }, 300);
-      }, 700);
-    }, 500);
-  };
-
-  const goToPrevPost = () => {
-    // ABSOLUTE BARRIER: Multiple conditions must be met
-    if (currentPostIndex <= 0 || isScrolling || globalLock) {
-      return; // Exit immediately if any condition fails
+    if (posts[targetIndex]) {
+      postModal.setPost?.(posts[targetIndex]);
     }
 
-    // Set ALL locks immediately
-    setIsScrolling(true);
-    setGlobalLock(true);
-    setScrollOffset(100);
-
     setTimeout(() => {
-      setCurrentPostIndex((prev: number) => {
-        const newIndex = Math.max(prev - 1, 0);
-        console.log(`Moving to post ${newIndex + 1} of ${posts.length}`); // Debug log
-        return newIndex;
-      });
-      setScrollOffset(0);
-      
-      // Keep locks for much longer
-      setTimeout(() => {
-        setIsScrolling(false);
-        setTimeout(() => {
-          setGlobalLock(false); // Release global lock last
-        }, 300);
-      }, 700);
-    }, 500);
-  };
+      setIsScrolling(false);
+    }, 250);
+  }, [currentPostIndex, posts, postModal]);
 
-  // Keyboard navigation with ABSOLUTE control
+  // Enhanced wheel handling
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // ABSOLUTE BARRIER: Check ALL possible blocking conditions
-      if (isScrolling || globalLock) {
-        return;
-      }
+    if (!containerRef.current || posts.length <= 1) return;
 
-      if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        e.stopPropagation();
-        goToPrevPost();
-      } else if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        e.stopPropagation();
-        goToNextPost();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown, { capture: true });
-    return () => window.removeEventListener('keydown', handleKeyDown, { capture: true });
-  }, [currentPostIndex, isScrolling, globalLock]);
-
-  // Add wheel event listener with high sensitivity
-  useEffect(() => {
-    if (!currentPost) return;
+    let wheelAccumulator = 0;
+    let wheelTimeout: NodeJS.Timeout;
 
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
-      e.stopPropagation();
       e.stopImmediatePropagation();
-      
-      // ABSOLUTE BARRIER: Check ALL possible blocking conditions
-      if (isScrolling || globalLock || posts.length <= 1) {
-        return;
-      }
 
-      // Very low threshold - highly sensitive
-      if (e.deltaY > 20) { // Reduced from 35 to 20
-        goToNextPost();
-      } else if (e.deltaY < -20) {
-        goToPrevPost();
-      }
+      if (isScrolling) return;
+
+      wheelAccumulator += e.deltaY;
+      clearTimeout(wheelTimeout);
+
+      wheelTimeout = setTimeout(() => {
+        if (Math.abs(wheelAccumulator) > 15) {
+          if (wheelAccumulator > 0) {
+            navigateToPost(currentPostIndex + 1);
+          } else {
+            navigateToPost(currentPostIndex - 1);
+          }
+        }
+        wheelAccumulator = 0;
+      }, 30);
     };
 
-    window.addEventListener('wheel', handleWheel, { passive: false, capture: true });
-    
+    const container = containerRef.current;
+    container.addEventListener('wheel', handleWheel, { passive: false });
+
     return () => {
-      window.removeEventListener('wheel', handleWheel, { capture: true });
+      container.removeEventListener('wheel', handleWheel);
+      clearTimeout(wheelTimeout);
     };
-  }, [currentPostIndex, isScrolling, globalLock, posts.length]);
+  }, [currentPostIndex, isScrolling, navigateToPost, posts.length]);
 
-  // Touch handlers
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStart(e.targetTouches[0].clientY);
-  };
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (isScrolling) return;
 
-  const handleTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientY);
-  };
+      switch (e.key) {
+        case 'ArrowUp':
+          e.preventDefault();
+          navigateToPost(currentPostIndex - 1);
+          break;
+        case 'ArrowDown':
+          e.preventDefault();
+          navigateToPost(currentPostIndex + 1);
+          break;
+        case ' ':
+          e.preventDefault();
+          const currentPostId = currentPost?.id;
+          if (currentPostId) {
+            handlePlayPause(currentPostId);
+          }
+          break;
+      }
+    };
 
-  const handleTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentPostIndex, isScrolling, navigateToPost, currentPost?.id]);
+
+  // Touch handling
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if (posts.length <= 1) return;
+
+    const touch = e.touches[0];
+    setTouchStartY(touch.clientY);
+    setTouchStartTime(Date.now());
+    setIsDragging(true);
+    setDragOffset(0);
     
-    // ABSOLUTE BARRIER: Check ALL possible blocking conditions
-    if (isScrolling || globalLock) {
-      return;
+    lastTouchY.current = touch.clientY;
+    lastTouchTime.current = Date.now();
+    touchVelocityRef.current = 0;
+  }, [posts.length]);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!isDragging || posts.length <= 1) return;
+
+    const touch = e.touches[0];
+    const currentTime = Date.now();
+    const deltaY = touch.clientY - lastTouchY.current;
+    const deltaTime = currentTime - lastTouchTime.current;
+
+    if (deltaTime > 0) {
+      touchVelocityRef.current = deltaY / deltaTime;
     }
+
+    const rawOffset = touch.clientY - touchStartY;
+    let offset = rawOffset;
+
+    if ((currentPostIndex === 0 && offset > 0) || 
+        (currentPostIndex === posts.length - 1 && offset < 0)) {
+      offset = rawOffset * 0.25;
+    }
+
+    setDragOffset(offset);
     
-    const distance = touchStart - touchEnd;
-    const minSwipeDistance = 30; // Reduced from 45px to 30px - very sensitive
+    lastTouchY.current = touch.clientY;
+    lastTouchTime.current = currentTime;
+  }, [isDragging, touchStartY, currentPostIndex, posts.length]);
 
-    if (Math.abs(distance) < minSwipeDistance) return;
+  const handleTouchEnd = useCallback(() => {
+    if (!isDragging) return;
 
-    if (distance > 0) {
-      goToNextPost(); // Swipe up
-    } else {
-      goToPrevPost(); // Swipe down
+    setIsDragging(false);
+
+    const velocity = touchVelocityRef.current;
+    const offset = dragOffset;
+    const duration = Date.now() - touchStartTime;
+
+    const velocityThreshold = 0.5;
+    const distanceThreshold = window.innerHeight * 0.15;
+    const quickSwipeTime = 150;
+
+    let shouldNavigate = false;
+    let direction = 0;
+
+    if (Math.abs(velocity) > velocityThreshold) {
+      shouldNavigate = true;
+      direction = velocity < 0 ? 1 : -1;
+    }
+    else if (Math.abs(offset) > distanceThreshold) {
+      shouldNavigate = true;
+      direction = offset < 0 ? 1 : -1;
+    }
+    else if (duration < quickSwipeTime && Math.abs(offset) > 30) {
+      shouldNavigate = true;
+      direction = offset < 0 ? 1 : -1;
+    }
+
+    if (shouldNavigate && !isScrolling) {
+      const targetIndex = currentPostIndex + direction;
+      navigateToPost(targetIndex);
+    }
+
+    setDragOffset(0);
+  }, [isDragging, dragOffset, touchStartTime, currentPostIndex, isScrolling, navigateToPost]);
+
+  // Simplified video functions
+  const getVideoState = (postId: string) => {
+    return videoStates.get(postId) || {
+      isPlaying: false,
+      currentTime: 0,
+      duration: 0,
+      isMuted: true
+    };
+  };
+
+  const updateVideoState = (postId: string, updates: Partial<typeof getVideoState>) => {
+    setVideoStates(prev => new Map(prev.set(postId, { ...getVideoState(postId), ...updates })));
+  };
+
+  // Fixed video ref callback - no infinite loop
+  const createVideoRefCallback = (postId: string) => {
+    return (video: HTMLVideoElement | null) => {
+      if (video && !videoRefs.current.has(postId)) {
+        videoRefs.current.set(postId, video);
+        
+        const handleTimeUpdate = () => updateVideoState(postId, { currentTime: video.currentTime });
+        const handleLoadedMetadata = () => updateVideoState(postId, { duration: video.duration });
+        const handlePlay = () => updateVideoState(postId, { isPlaying: true });
+        const handlePause = () => updateVideoState(postId, { isPlaying: false });
+
+        video.addEventListener('timeupdate', handleTimeUpdate);
+        video.addEventListener('loadedmetadata', handleLoadedMetadata);
+        video.addEventListener('play', handlePlay);
+        video.addEventListener('pause', handlePause);
+
+        // Cleanup function stored on the element
+        (video as any)._cleanup = () => {
+          video.removeEventListener('timeupdate', handleTimeUpdate);
+          video.removeEventListener('loadedmetadata', handleLoadedMetadata);
+          video.removeEventListener('play', handlePlay);
+          video.removeEventListener('pause', handlePause);
+        };
+      } else if (!video && videoRefs.current.has(postId)) {
+        const oldVideo = videoRefs.current.get(postId);
+        if (oldVideo && (oldVideo as any)._cleanup) {
+          (oldVideo as any)._cleanup();
+        }
+        videoRefs.current.delete(postId);
+      }
+    };
+  };
+
+  const handlePlayPause = (postId: string) => {
+    const video = videoRefs.current.get(postId);
+    if (video) {
+      if (video.paused) {
+        video.play();
+      } else {
+        video.pause();
+      }
     }
   };
 
-  // Update post modal when current post changes
+  const handleProgressClick = (postId: string, e: React.MouseEvent<HTMLDivElement>) => {
+    const video = videoRefs.current.get(postId);
+    const state = getVideoState(postId);
+    
+    if (video && state.duration) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const newTime = (clickX / rect.width) * state.duration;
+      video.currentTime = newTime;
+    }
+  };
+
+  const handleMuteToggle = (postId: string) => {
+    const video = videoRefs.current.get(postId);
+    if (video) {
+      video.muted = !video.muted;
+      updateVideoState(postId, { isMuted: video.muted });
+    }
+  };
+
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  // Update post when index changes
   useEffect(() => {
     if (posts[currentPostIndex]) {
       postModal.setPost?.(posts[currentPostIndex]);
     }
-  }, [currentPostIndex, posts]); // Removed postModal from dependencies to prevent infinite loop
+  }, [currentPostIndex, posts]);
 
-  // Determine post type
   const isReel = currentPost?.tag === 'reel' || currentPost?.postType === 'reel';
   const isAd = currentPost?.postType === 'ad';
-  const isText = currentPost?.postType === 'text';
 
   useEffect(() => {
     if (currentPost && userId) {
@@ -227,13 +344,9 @@ const PostModal = () => {
       setComments(currentPost.comments || []);
     }
 
-    // Reset video states when post changes
     setShowComments(false);
     setShowFullCaption(false);
-    setCurrentTime(0);
-    setIsPlaying(false);
 
-    // Prevent body scrolling when modal is open
     if (currentPost) {
       document.body.style.overflow = 'hidden';
     } else {
@@ -244,92 +357,6 @@ const PostModal = () => {
       document.body.style.overflow = '';
     };
   }, [currentPost?.id, userId, currentPost?.likes, currentPost?.bookmarks, currentPost?.comments, currentPost]);
-
-  // Video event handlers
-  const handleVideoTimeUpdate = () => {
-    if (videoRef) {
-      setCurrentTime(videoRef.currentTime);
-    }
-  };
-
-  const handleVideoLoadedMetadata = () => {
-    if (videoRef) {
-      setDuration(videoRef.duration);
-    }
-  };
-
-  const handlePlayPause = () => {
-    if (videoRef) {
-      if (isPlaying) {
-        videoRef.pause();
-      } else {
-        videoRef.play();
-      }
-      setIsPlaying(!isPlaying);
-    }
-  };
-
-  const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (videoRef && duration) {
-      const rect = e.currentTarget.getBoundingClientRect();
-      const clickX = e.clientX - rect.left;
-      const newTime = (clickX / rect.width) * duration;
-      videoRef.currentTime = newTime;
-      setCurrentTime(newTime);
-    }
-  };
-
-  const handleMuteToggle = () => {
-    if (videoRef) {
-      videoRef.muted = !videoRef.muted;
-      setIsMuted(videoRef.muted);
-    }
-  };
-
-  const formatTime = (time: number) => {
-    const minutes = Math.floor(time / 60);
-    const seconds = Math.floor(time % 60);
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  };
-
-  // Add wheel event listener
-  useEffect(() => {
-    if (!currentPost) return;
-
-    const handleWheel = (e: WheelEvent) => {
-      e.preventDefault();
-      if (isScrolling || posts.length <= 1) return;
-
-      if (e.deltaY > 0) {
-        goToNextPost();
-      } else {
-        goToPrevPost();
-      }
-    };
-
-    // Attach to window instead of modal element for better reliability
-    window.addEventListener('wheel', handleWheel, { passive: false });
-    
-    return () => {
-      window.removeEventListener('wheel', handleWheel);
-    };
-  }, [currentPostIndex, isScrolling, posts.length]);
-
-  // Keyboard navigation
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        goToPrevPost();
-      } else if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        goToNextPost();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentPostIndex, isScrolling]);
 
   const handleClose = () => {
     postModal.onClose();
@@ -500,313 +527,11 @@ const PostModal = () => {
     return text.substring(0, maxLength).trim() + '...';
   };
 
-  // Render a single post
-  const renderSinglePost = (postData: SafePost, index: number) => {
-    const formattedDate = format(new Date(postData.createdAt), 'PPP');
-    const isReel = postData?.tag === 'reel' || postData?.postType === 'reel';
-    const isAd = postData?.postType === 'ad';
-    const isText = postData?.postType === 'text';
-
-    if (isReel) {
-      return (
-        <div key={postData.id} className="w-full h-full relative">
-          {/* Reel: Full screen media with overlay content */}
-          {postData.mediaUrl ? (
-            postData.mediaType === 'video' ? (
-              <>
-                <video
-                  src={postData.mediaUrl}
-                  autoPlay
-                  muted={isMuted}
-                  loop
-                  className="w-full h-full object-cover"
-                  controls={false}
-                />
-              </>
-            ) : (
-              <Image
-                src={postData.mediaUrl}
-                alt="Reel media"
-                fill
-                className="object-cover"
-              />
-            )
-          ) : (
-            <div className="w-full h-full bg-gradient-to-br from-purple-900 to-blue-900 flex items-center justify-center">
-              <p className="text-white text-2xl text-center px-8 max-w-2xl leading-relaxed">{postData.content}</p>
-            </div>
-          )}
-
-          {/* Bottom overlay with structured layout */}
-          <div className="absolute bottom-0 left-0 right-0 p-6 z-20">
-            <div className="bg-black/70 backdrop-blur-md p-6 rounded-2xl max-w-lg shadow-2xl">
-              {/* Row 1: Avatar + Username + Verification Badge */}
-              <div className="flex items-center gap-3 mb-4">
-                <div className="relative w-12 h-12 flex-shrink-0">
-                  <Image
-                    src={postData.user.image || '/images/placeholder.jpg'}
-                    alt={postData.user.name || 'User'}
-                    fill
-                    className="rounded-full object-cover border-2 border-white/30"
-                  />
-                </div>
-                <div className="flex items-center gap-2 flex-1">
-                  <h3 className="font-semibold text-white text-base drop-shadow-lg">
-                    {postData.user.name || 'Anonymous'}
-                  </h3>
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="#60A5FA" className="flex-shrink-0">
-                    <path d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z" stroke="#ffffff" strokeWidth="1.5" />
-                    <path d="M9 12.8929L10.8 14.5L15 9.5" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </div>
-              </div>
-
-              {/* Row 2: Date */}
-              <div className="mb-4">
-                <p className="text-white/80 text-sm drop-shadow-lg font-medium">{formattedDate}</p>
-              </div>
-
-              {/* Row 3: Caption with more/less functionality */}
-              {postData.content && (
-                <div className="mb-4">
-                  <div className="flex items-start gap-2">
-                    <p className={`text-white text-sm leading-relaxed flex-1 drop-shadow-lg ${showFullCaption ? '' : 'line-clamp-1'}`}>
-                      {showFullCaption ? postData.content : getTruncatedCaption(postData.content)}
-                    </p>
-                    {postData.content.length > 100 && (
-                      <button
-                        onClick={() => setShowFullCaption(!showFullCaption)}
-                        className="text-white/70 text-xs font-semibold hover:text-white transition-colors flex-shrink-0 drop-shadow-lg px-2 py-1 rounded-full hover:bg-white/10"
-                      >
-                        {showFullCaption ? 'less' : 'more'}
-                      </button>
-                    )}
-                  </div>
-                </div>
-              )}
-              
-              {/* Row 4: Progress Bar (videos only) */}
-              {postData.mediaType === 'video' && (
-                <div className="mb-4">
-                  <div 
-                    className="w-full h-1.5 bg-white/20 rounded-full cursor-pointer hover:bg-white/30 transition-colors"
-                    onClick={handleProgressClick}
-                  >
-                    <div 
-                      className="h-full bg-white rounded-full transition-all duration-150 shadow-sm"
-                      style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }}
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      );
-    } else {
-      /* Regular post or text post: centered container */
-      return (
-        <div key={postData.id} className="w-full h-full flex items-center justify-center">
-          <div className="relative overflow-hidden w-full max-w-md mx-auto h-[700px] flex flex-col rounded-2xl">
-            {postData.mediaUrl ? (
-              postData.mediaType === 'video' ? (
-                <>
-                  <video 
-                    src={postData.mediaUrl} 
-                    className="w-full flex-1 object-cover"
-                    controls={false}
-                  />
-                  
-                  {/* Combined User Info and Video Controls */}
-                  <div className="absolute bottom-4 left-0 right-0 px-4 z-30">
-                    <div className="bg-black/70 backdrop-blur-md rounded-2xl p-6 text-white shadow-2xl">
-                      {/* User Info Section */}
-                      <div className="flex items-center gap-3 mb-4">
-                        <div className="relative w-10 h-10">
-                          <Image
-                            src={postData.user.image || '/images/placeholder.jpg'}
-                            alt={postData.user.name || 'User'}
-                            fill
-                            className="rounded-full object-cover border-2 border-white/20"
-                          />
-                        </div>
-                        <div className="flex-1">
-                          <p className="font-semibold text-sm">{postData.user.name || 'Anonymous'}</p>
-                          <p className="text-xs text-white/70">{formattedDate}</p>
-                        </div>
-                      </div>
-                      
-                      {/* Caption with more/less functionality */}
-                      <div className="mb-4">
-                        <div className="flex items-start gap-2">
-                          <p className={`text-sm leading-relaxed text-white/90 flex-1 ${showFullCaption ? '' : 'line-clamp-1'}`}>
-                            {postData.content}
-                          </p>
-                          {postData.content && postData.content.length > 80 && (
-                            <button
-                              onClick={() => setShowFullCaption(!showFullCaption)}
-                              className="text-white/70 text-xs font-semibold hover:text-white transition-colors flex-shrink-0 drop-shadow-lg px-2 py-1 rounded-full hover:bg-white/10"
-                            >
-                              {showFullCaption ? 'less' : 'more'}
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                      
-                      {/* Modern Progress Bar */}
-                      <div 
-                        className="w-full h-1.5 bg-white/20 rounded-full cursor-pointer mb-3 hover:h-2 transition-all duration-200 shadow-inner"
-                        onClick={handleProgressClick}
-                      >
-                        <div 
-                          className="h-full bg-gradient-to-r from-blue-400 to-purple-500 rounded-full transition-all duration-300 shadow-lg relative overflow-hidden"
-                          style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }}
-                        >
-                          <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
-                        </div>
-                      </div>
-                      
-                      {/* Controls Row */}
-                      <div className="flex items-center justify-between text-white text-xs">
-                        <div className="flex items-center gap-3">
-                          <button 
-                            onClick={handlePlayPause}
-                            className="w-8 h-8 flex items-center justify-center hover:bg-white/20 rounded-full transition-all duration-200 hover:scale-105"
-                          >
-                            {isPlaying ? (
-                              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                                <rect x="6" y="4" width="4" height="16" rx="1" />
-                                <rect x="14" y="4" width="4" height="16" rx="1" />
-                              </svg>
-                            ) : (
-                              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                                <polygon points="5,3 19,12 5,21" />
-                              </svg>
-                            )}
-                          </button>
-                          
-                          <span className="font-mono text-white/80 font-medium">
-                            {formatTime(currentTime)} / {formatTime(duration)}
-                          </span>
-                        </div>
-                        
-                        <button 
-                          onClick={handleMuteToggle}
-                          className="w-8 h-8 flex items-center justify-center hover:bg-white/20 rounded-full transition-all duration-200 hover:scale-105"
-                        >
-                          {isMuted ? (
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" />
-                              <line x1="23" y1="9" x2="17" y2="15" />
-                              <line x1="17" y1="9" x2="23" y2="15" />
-                            </svg>
-                          ) : (
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" />
-                              <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
-                            </svg>
-                          )}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <div className="relative flex-1">
-                  <Image src={postData.mediaUrl} alt="Post media" fill className="object-cover" />
-                  
-                  {/* User Info Overlay for Images */}
-                  <div className="absolute bottom-4 left-0 right-0 px-4 z-30">
-                    <div className="bg-black/70 backdrop-blur-md rounded-2xl p-6 text-white shadow-2xl">
-                      {/* User Info Section */}
-                      <div className="flex items-center gap-3 mb-4">
-                        <div className="relative w-10 h-10">
-                          <Image
-                            src={postData.user.image || '/images/placeholder.jpg'}
-                            alt={postData.user.name || 'User'}
-                            fill
-                            className="rounded-full object-cover border-2 border-white/20"
-                          />
-                        </div>
-                        <div className="flex-1">
-                          <p className="font-semibold text-sm">{postData.user.name || 'Anonymous'}</p>
-                          <p className="text-xs text-white/70">{formattedDate}</p>
-                        </div>
-                      </div>
-                      
-                      {/* Caption with more/less functionality */}
-                      <div className="flex items-start gap-2">
-                        <p className={`text-sm leading-relaxed text-white/90 flex-1 ${showFullCaption ? '' : 'line-clamp-1'}`}>
-                          {postData.content}
-                        </p>
-                        {postData.content && postData.content.length > 80 && (
-                          <button
-                            onClick={() => setShowFullCaption(!showFullCaption)}
-                            className="text-white/70 text-xs font-semibold hover:text-white transition-colors flex-shrink-0 drop-shadow-lg px-2 py-1 rounded-full hover:bg-white/10"
-                          >
-                            {showFullCaption ? 'less' : 'more'}
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )
-            ) : (
-              /* Text only post */
-              <div className="flex-1 bg-white flex items-center justify-center p-8 relative">
-                <p className="text-gray-900 text-lg text-center leading-relaxed">{postData.content}</p>
-                
-                {/* User Info Overlay for Text Posts */}
-                <div className="absolute bottom-4 left-0 right-0 px-4 z-30">
-                  <div className="bg-black/70 backdrop-blur-md rounded-2xl p-6 text-white shadow-2xl">
-                    {/* User Info Section */}
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="relative w-10 h-10">
-                        <Image
-                          src={postData.user.image || '/images/placeholder.jpg'}
-                          alt={postData.user.name || 'User'}
-                          fill
-                          className="rounded-full object-cover border-2 border-white/20"
-                        />
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-semibold text-sm">{postData.user.name || 'Anonymous'}</p>
-                        <p className="text-xs text-white/70">{formattedDate}</p>
-                      </div>
-                    </div>
-                    
-                    {/* Caption with more/less functionality */}
-                    <div className="flex items-start gap-2">
-                      <p className={`text-sm leading-relaxed text-white/90 flex-1 ${showFullCaption ? '' : 'line-clamp-1'}`}>
-                        {postData.content}
-                      </p>
-                      {postData.content && postData.content.length > 80 && (
-                        <button
-                          onClick={() => setShowFullCaption(!showFullCaption)}
-                          className="text-white/70 text-xs font-semibold hover:text-white transition-colors flex-shrink-0 drop-shadow-lg px-2 py-1 rounded-full hover:bg-white/10"
-                        >
-                          {showFullCaption ? 'less' : 'more'}
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      );
-    }
-  };
-
   if (!currentPost) return null;
 
-  const formattedDate = format(new Date(currentPost.createdAt), 'PPP');
   const listingAd = currentPost.listing as SafeListing | undefined;
   const shopAd = currentPost.shop as SafeShop | undefined;
 
-  // For ads, render the existing card components in a centered modal
   if (isAd) {
     return (
       <>
@@ -831,79 +556,373 @@ const PostModal = () => {
     );
   }
 
-  // For reels and regular posts, render full viewport
   return (
     <>
       <style jsx>{styles}</style>
       
-      {/* Full viewport backdrop */}
       <div className="fixed inset-0 z-40 bg-black" onClick={handleClose} />
       
-      {/* Main content area - full screen with no gaps */}
       <div 
-        className="fixed inset-0 z-50 flex post-modal-container overflow-hidden"
+        ref={containerRef}
+        className="fixed inset-0 z-50 overflow-hidden ultra-smooth"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
+        style={{ 
+          touchAction: 'pan-y pinch-zoom',
+          overscrollBehavior: 'none'
+        }}
       >
-        {/* Post content area - perfect full screen fit */}
-        <div className="flex-1 relative w-full h-full">
-          {/* Full screen scrolling container - no extra space */}
-          <div 
-            className="w-full transition-transform duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)]"
-            style={{ 
-              height: `${posts.length * 100}vh`, // Back to 100vh for perfect screen fit
-              transform: `translateY(${(-currentPostIndex * 100) + scrollOffset}vh)` // Back to 100vh spacing
-            }}
-          >
-            {posts.map((postData, index) => (
+        <div 
+          className="relative w-full ultra-smooth"
+          style={{ 
+            height: `${posts.length * 100}vh`,
+            transform: `translate3d(0, ${(-currentPostIndex * 100) + (isDragging ? (dragOffset / window.innerHeight) * 100 : 0)}vh, 0)`,
+            transition: isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.23, 1, 0.32, 1)',
+            willChange: 'transform'
+          }}
+        >
+          {posts.map((postData, index) => {
+            const formattedDate = format(new Date(postData.createdAt), 'PPP');
+            const isReelPost = postData?.tag === 'reel' || postData?.postType === 'reel';
+            const videoState = getVideoState(postData.id);
+
+            return (
               <div 
                 key={postData.id}
-                className="w-full h-screen absolute top-0 left-0" // Full screen height, no extra space
+                className="absolute top-0 left-0 w-full h-screen ultra-smooth"
                 style={{ 
-                  transform: `translateY(${index * 100}vh)` // Back to 100vh spacing for perfect fit
+                  transform: `translate3d(0, ${index * 100}vh, 0)`,
+                  willChange: 'transform'
                 }}
               >
-                {renderSinglePost(postData, index)}
-              </div>
-            ))}
-          </div>
-        </div>
+                {isReelPost ? (
+                  <div className="w-full h-full relative">
+                    {postData.mediaUrl ? (
+                      postData.mediaType === 'video' ? (
+                        <video
+                          ref={createVideoRefCallback(postData.id)}
+                          src={postData.mediaUrl}
+                          autoPlay={index === currentPostIndex}
+                          muted={videoState.isMuted}
+                          loop
+                          className="w-full h-full object-cover"
+                          controls={false}
+                          playsInline
+                        />
+                      ) : (
+                        <Image
+                          src={postData.mediaUrl}
+                          alt="Reel media"
+                          fill
+                          className="object-cover"
+                          priority={index === currentPostIndex}
+                        />
+                      )
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-purple-900 to-blue-900 flex items-center justify-center">
+                        <p className="text-white text-2xl text-center px-8 max-w-2xl leading-relaxed">{postData.content}</p>
+                      </div>
+                    )}
 
-        {/* Action buttons sidebar - positioned based on post type */}
+                    <div className="absolute bottom-0 left-0 right-0 p-6 z-20">
+                      <div className="video-controls p-6 rounded-2xl max-w-lg shadow-2xl">
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="relative w-12 h-12 flex-shrink-0">
+                            <Image
+                              src={postData.user.image || '/images/placeholder.jpg'}
+                              alt={postData.user.name || 'User'}
+                              fill
+                              className="rounded-full object-cover border-2 border-white/30"
+                            />
+                          </div>
+                          <div className="flex items-center gap-2 flex-1">
+                            <h3 className="font-semibold text-white text-base drop-shadow-lg">
+                              {postData.user.name || 'Anonymous'}
+                            </h3>
+                          </div>
+                        </div>
+
+                        <div className="mb-3">
+                          <p className="text-white/80 text-sm drop-shadow-lg font-medium">{formattedDate}</p>
+                        </div>
+
+                        {postData.content && (
+                          <div className="mb-4">
+                            <p className="text-white text-sm leading-relaxed drop-shadow-lg">
+                              {postData.content}
+                            </p>
+                          </div>
+                        )}
+                        
+                        {postData.mediaType === 'video' && (
+                          <div className="space-y-3">
+                            <div 
+                              className="w-full h-1.5 bg-white/20 rounded-full cursor-pointer hover:bg-white/30 transition-colors"
+                              onClick={(e) => handleProgressClick(postData.id, e)}
+                            >
+                              <div 
+                                className="h-full bg-white rounded-full transition-all duration-150 shadow-sm"
+                                style={{ width: `${videoState.duration ? (videoState.currentTime / videoState.duration) * 100 : 0}%` }}
+                              />
+                            </div>
+                            
+                            <div className="flex items-center justify-between text-white text-sm">
+                              <div className="flex items-center gap-3">
+                                <button 
+                                  onClick={() => handlePlayPause(postData.id)}
+                                  className="w-10 h-10 flex items-center justify-center hover:bg-white/20 rounded-full transition-all duration-200 hover:scale-105"
+                                >
+                                  {videoState.isPlaying ? (
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                      <rect x="6" y="4" width="4" height="16" rx="1" />
+                                      <rect x="14" y="4" width="4" height="16" rx="1" />
+                                    </svg>
+                                  ) : (
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                      <polygon points="5,3 19,12 5,21" />
+                                    </svg>
+                                  )}
+                                </button>
+                                
+                                <span className="font-mono text-white/80 font-medium">
+                                  {formatTime(videoState.currentTime)} / {formatTime(videoState.duration)}
+                                </span>
+                              </div>
+                              
+                              <button 
+                                onClick={() => handleMuteToggle(postData.id)}
+                                className="w-10 h-10 flex items-center justify-center hover:bg-white/20 rounded-full transition-all duration-200 hover:scale-105"
+                              >
+                                {videoState.isMuted ? (
+                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" />
+                                    <line x1="23" y1="9" x2="17" y2="15" />
+                                    <line x1="17" y1="9" x2="23" y2="15" />
+                                  </svg>
+                                ) : (
+                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" />
+                                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                                  </svg>
+                                )}
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <div className="relative overflow-hidden w-full max-w-md mx-auto h-[700px] flex flex-col rounded-2xl">
+                      {postData.mediaUrl ? (
+                        postData.mediaType === 'video' ? (
+                          <>
+                            <video 
+                              ref={createVideoRefCallback(postData.id)}
+                              src={postData.mediaUrl} 
+                              className="w-full flex-1 object-cover"
+                              controls={false}
+                              autoPlay={index === currentPostIndex}
+                              muted={videoState.isMuted}
+                              loop
+                              playsInline
+                            />
+                            
+                            <div className="absolute bottom-4 left-0 right-0 px-4 z-30">
+                              <div className="video-controls rounded-2xl p-6 text-white shadow-2xl">
+                                <div className="flex items-center gap-3 mb-4">
+                                  <div className="relative w-10 h-10">
+                                    <Image
+                                      src={postData.user.image || '/images/placeholder.jpg'}
+                                      alt={postData.user.name || 'User'}
+                                      fill
+                                      className="rounded-full object-cover border-2 border-white/20"
+                                    />
+                                  </div>
+                                  <div className="flex-1">
+                                    <p className="font-semibold text-sm">{postData.user.name || 'Anonymous'}</p>
+                                    <p className="text-xs text-white/70">{formattedDate}</p>
+                                  </div>
+                                </div>
+                                
+                                {postData.content && (
+                                  <div className="mb-4">
+                                    <p className="text-sm leading-relaxed text-white/90">
+                                      {postData.content}
+                                    </p>
+                                  </div>
+                                )}
+                                
+                                <div className="space-y-3">
+                                  <div 
+                                    className="w-full h-1.5 bg-white/20 rounded-full cursor-pointer hover:h-2 transition-all duration-200"
+                                    onClick={(e) => handleProgressClick(postData.id, e)}
+                                  >
+                                    <div 
+                                      className="h-full bg-gradient-to-r from-blue-400 to-purple-500 rounded-full transition-all duration-300 shadow-lg"
+                                      style={{ width: `${videoState.duration ? (videoState.currentTime / videoState.duration) * 100 : 0}%` }}
+                                    />
+                                  </div>
+                                  
+                                  <div className="flex items-center justify-between text-white text-sm">
+<div className="flex items-center gap-3">
+                                      <button 
+                                        onClick={() => handlePlayPause(postData.id)}
+                                        className="w-8 h-8 flex items-center justify-center hover:bg-white/20 rounded-full transition-all duration-200 hover:scale-105"
+                                      >
+                                        {videoState.isPlaying ? (
+                                          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                            <rect x="6" y="4" width="4" height="16" rx="1" />
+                                            <rect x="14" y="4" width="4" height="16" rx="1" />
+                                          </svg>
+                                        ) : (
+                                          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                            <polygon points="5,3 19,12 5,21" />
+                                          </svg>
+                                        )}
+                                      </button>
+                                      
+                                      <span className="font-mono text-white/80 font-medium">
+                                        {formatTime(videoState.currentTime)} / {formatTime(videoState.duration)}
+                                      </span>
+                                    </div>
+                                    
+                                    <button 
+                                      onClick={() => handleMuteToggle(postData.id)}
+                                      className="w-8 h-8 flex items-center justify-center hover:bg-white/20 rounded-full transition-all duration-200 hover:scale-105"
+                                    >
+                                      {videoState.isMuted ? (
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                          <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" />
+                                          <line x1="23" y1="9" x2="17" y2="15" />
+                                          <line x1="17" y1="9" x2="23" y2="15" />
+                                        </svg>
+                                      ) : (
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                          <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" />
+                                          <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                                        </svg>
+                                      )}
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </>
+                        ) : (
+                          <div className="relative flex-1">
+                            <Image src={postData.mediaUrl} alt="Post media" fill className="object-cover" />
+                            
+                            <div className="absolute bottom-4 left-0 right-0 px-4 z-30">
+                              <div className="video-controls rounded-2xl p-6 text-white shadow-2xl">
+                                <div className="flex items-center gap-3 mb-4">
+                                  <div className="relative w-10 h-10">
+                                    <Image
+                                      src={postData.user.image || '/images/placeholder.jpg'}
+                                      alt={postData.user.name || 'User'}
+                                      fill
+                                      className="rounded-full object-cover border-2 border-white/20"
+                                    />
+                                  </div>
+                                  <div className="flex-1">
+                                    <p className="font-semibold text-sm">{postData.user.name || 'Anonymous'}</p>
+                                    <p className="text-xs text-white/70">{formattedDate}</p>
+                                  </div>
+                                </div>
+                                
+                                <div className="flex items-start gap-2">
+                                  <p className={`text-sm leading-relaxed text-white/90 flex-1 ${showFullCaption ? '' : 'line-clamp-1'}`}>
+                                    {postData.content}
+                                  </p>
+                                  {postData.content && postData.content.length > 80 && (
+                                    <button
+                                      onClick={() => setShowFullCaption(!showFullCaption)}
+                                      className="text-white/70 text-xs font-semibold hover:text-white transition-colors flex-shrink-0 drop-shadow-lg px-2 py-1 rounded-full hover:bg-white/10"
+                                    >
+                                      {showFullCaption ? 'less' : 'more'}
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      ) : (
+                        <div className="flex-1 bg-white flex items-center justify-center p-8 relative">
+                          <p className="text-gray-900 text-lg text-center leading-relaxed">{postData.content}</p>
+                          
+                          <div className="absolute bottom-4 left-0 right-0 px-4 z-30">
+                            <div className="video-controls rounded-2xl p-6 text-white shadow-2xl">
+                              <div className="flex items-center gap-3 mb-4">
+                                <div className="relative w-10 h-10">
+                                  <Image
+                                    src={postData.user.image || '/images/placeholder.jpg'}
+                                    alt={postData.user.name || 'User'}
+                                    fill
+                                    className="rounded-full object-cover border-2 border-white/20"
+                                  />
+                                </div>
+                                <div className="flex-1">
+                                  <p className="font-semibold text-sm">{postData.user.name || 'Anonymous'}</p>
+                                  <p className="text-xs text-white/70">{formattedDate}</p>
+                                </div>
+                              </div>
+                              
+                              <div className="flex items-start gap-2">
+                                <p className={`text-sm leading-relaxed text-white/90 flex-1 ${showFullCaption ? '' : 'line-clamp-1'}`}>
+                                  {postData.content}
+                                </p>
+                                {postData.content && postData.content.length > 80 && (
+                                  <button
+                                    onClick={() => setShowFullCaption(!showFullCaption)}
+                                    className="text-white/70 text-xs font-semibold hover:text-white transition-colors flex-shrink-0 drop-shadow-lg px-2 py-1 rounded-full hover:bg-white/10"
+                                  >
+                                    {showFullCaption ? 'less' : 'more'}
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
         <div className={`fixed top-1/2 transform -translate-y-1/2 flex flex-col items-center gap-6 text-white z-30 ${
           currentPost?.tag === 'reel' || currentPost?.postType === 'reel' ? 'right-6' : 'left-1/2 ml-[calc(192px+60px)]'
         }`}>
-          {/* Close button */}
           <div className="flex flex-col items-center gap-2">
-            <button onClick={handleClose} className="hover:scale-110 transition-transform">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="transition-all duration-200">
+            <button onClick={handleClose} className="hover:scale-110 transition-transform duration-200">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M18 6L6.00081 17.9992M17.9992 18L6 6.00085" />
               </svg>
             </button>
             <span className="text-xs">Close</span>
           </div>
 
-          {/* User avatar */}
           <div className="border border-white rounded-full">
             <Avatar src={currentPost.user.image ?? undefined} />
           </div>
 
-          {/* Like button */}
           <div className="flex flex-col items-center gap-2">
-            <button onClick={handleLike} className="hover:scale-110 transition-transform">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill={liked ? '#f87171' : 'none'} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="transition-all duration-200">
+            <button onClick={handleLike} className="hover:scale-110 transition-transform duration-200">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill={liked ? '#f87171' : 'none'} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z" />
               </svg>
             </button>
             <span className="text-xs">{likes.length}</span>
           </div>
 
-          {/* Comment toggle */}
           <div className="flex flex-col items-center gap-2">
             <button 
               onClick={() => setShowComments(!showComments)} 
-              className="hover:scale-110 transition-transform"
+              className="hover:scale-110 transition-transform duration-200"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                 <path d="M8 13.5H16M8 8.5H12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -913,20 +932,18 @@ const PostModal = () => {
             <span className="text-xs">{comments.length}</span>
           </div>
 
-          {/* Bookmark button */}
           <div className="flex flex-col items-center gap-2">
-            <button onClick={handleBookmark} className="hover:scale-110 transition-transform">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill={bookmarked ? '#fbbf24' : 'none'} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="transition-all duration-200">
+            <button onClick={handleBookmark} className="hover:scale-110 transition-transform duration-200">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill={bookmarked ? '#fbbf24' : 'none'} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z" />
               </svg>
             </button>
             <span className="text-xs">{bookmarks.length}</span>
           </div>
 
-          {/* Share button */}
           <div className="flex flex-col items-center gap-2 relative">
-            <button onClick={handleShare} className="hover:scale-110 transition-transform">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="transition-all duration-200">
+            <button onClick={handleShare} className="hover:scale-110 transition-transform duration-200">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M10.0017 3C7.05534 3.03208 5.41096 3.21929 4.31838 4.31188C2.99988 5.63037 2.99988 7.75248 2.99988 11.9966C2.99988 16.2409 2.99988 18.363 4.31838 19.6815C5.63688 21 7.75899 21 12.0032 21C16.2474 21 18.3695 21 19.688 19.6815C20.7808 18.5887 20.9678 16.9438 20.9999 13.9963" />
                 <path d="M14 3H18C19.4142 3 20.1213 3 20.5607 3.43934C21 3.87868 21 4.58579 21 6V10M20 4L11 13" />
               </svg>
@@ -941,13 +958,11 @@ const PostModal = () => {
           </div>
         </div>
 
-        {/* Comments slide-out panel */}
         <div className={`
           fixed top-0 right-0 h-full w-[375px] z-50 bg-white/95 backdrop-blur-xl border-l border-gray-200
           transform transition-all duration-500 ease-out
           ${showComments ? 'translate-x-0' : 'translate-x-full'}
         `}>
-          {/* Comments header */}
           <div className="flex items-center justify-between p-6 border-b border-gray-100">
             <div className="flex items-center gap-3">
               <h3 className="text-xl font-medium text-gray-900">Comments</h3>
@@ -961,7 +976,6 @@ const PostModal = () => {
             </button>
           </div>
           
-          {/* Comments list */}
           <div className="flex-1 overflow-y-auto px-6 py-6 pb-32">
             {comments.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-64 text-center">
@@ -1012,7 +1026,6 @@ const PostModal = () => {
             )}
           </div>
           
-          {/* Comment input */}
           <div className="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-t border-gray-100 p-6">
             <div className="flex gap-4 items-start">
               <div className="flex-1">

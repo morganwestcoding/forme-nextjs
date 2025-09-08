@@ -32,6 +32,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const isReel = post.tag === 'Reel' || post.postType === 'reel';
+  const isTextPost = !post.imageSrc && !post.mediaUrl;
 
   /** ---------- Helpers ---------- */
   const formatViews = (n: number | undefined | null) => {
@@ -176,18 +177,28 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
 
         {/* More button */}
         <button
-          className="absolute right-4 top-4 rounded-full bg-white/20 p-2 backdrop-blur-sm transition-colors hover:bg-white/30"
+          className={`absolute right-4 top-4 rounded-full p-2 backdrop-blur-sm transition-colors ${
+            isTextPost 
+              ? 'bg-gray-200/80 hover:bg-gray-300/80' 
+              : 'bg-white/20 hover:bg-white/30'
+          }`}
           onClick={handleMore}
         >
-          <MoreHorizontal className="h-4 w-4 text-white" />
+          <MoreHorizontal className={`h-4 w-4 ${isTextPost ? 'text-gray-600' : 'text-white'}`} />
         </button>
 
-        {/* User bar at bottom (time + views rules applied) */}
+        {/* User bar at bottom */}
         <div className="absolute bottom-4 left-4 right-4">
-          <div className="bg-white/10 backdrop-blur-md rounded-xl p-3 border border-white/30 shadow">
+          <div className={`backdrop-blur-md rounded-xl p-3 shadow-sm ${
+            isTextPost 
+              ? 'bg-gray-50 border border-gray-200' 
+              : 'bg-white/10 border border-white/30'
+          }`}>
             <div className="flex items-center gap-3">
               {/* Avatar */}
-              <div className="relative border border-white/50 h-9 w-9 overflow-hidden rounded-full">
+              <div className={`relative h-9 w-9 overflow-hidden rounded-full ${
+                isTextPost ? 'border border-gray-300' : 'border border-white/50'
+              }`}>
                 <Image
                   src={post.user.image || '/images/placeholder.jpg'}
                   alt={post.user.name || 'User'}
@@ -198,8 +209,10 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
 
               {/* Name + time */}
               <div onClick={handleUserClick} className="cursor-pointer flex flex-col">
-                <div className="flex items-center text-white gap-1">
-                  <p className="text-xs text-white">
+                <div className={`flex items-center gap-1 ${
+                  isTextPost ? 'text-gray-700' : 'text-white'
+                }`}>
+                  <p className="text-xs">
                     {post.user.name || 'Anonymous'}
                   </p>
                   {/* Verified Badge SVG */}
@@ -225,7 +238,9 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
                     />
                   </svg>
                 </div>
-                <p className="text-xs text-white/80 leading-tight">
+                <p className={`text-xs leading-tight ${
+                  isTextPost ? 'text-gray-500' : 'text-white/80'
+                }`}>
                   {prettyTime} • {viewsLabel}
                 </p>
               </div>

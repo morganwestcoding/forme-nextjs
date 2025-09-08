@@ -53,18 +53,13 @@ const ShopCard: React.FC<ShopCardProps> = ({
     }
   };
 
-  const handleVisitShop = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    router.push(`/shops/${data.id}`);
-  };
-
   return (
     <div
       onClick={handleCardClick}
       className="
         group cursor-pointer relative overflow-hidden
-        rounded-2xl bg-white shadow-lg transition-all duration-300
-        hover:shadow-2xl"
+        rounded-xl bg-white shadow-lg transition-all duration-300
+        hover:shadow-xl max-w-[250px]"
     >
       {/* Background image + layered scrim (matches ListingCard) */}
       <div className="absolute inset-0 z-0">
@@ -76,62 +71,62 @@ const ShopCard: React.FC<ShopCardProps> = ({
           sizes="(max-width:768px) 100vw, 33vw"
           priority={false}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              'linear-gradient(to top,' +
+              'rgba(0,0,0,0.98) 0%,' +
+              'rgba(0,0,0,0.96) 12%,' +
+              'rgba(0,0,0,0.90) 26%,' +
+              'rgba(0,0,0,0.70) 42%,' +
+              'rgba(0,0,0,0.45) 56%,' +
+              'rgba(0,0,0,0.20) 70%,' +
+              'rgba(0,0,0,0.06) 82%,' +
+              'rgba(0,0,0,0.00) 90%,' +
+              'rgba(0,0,0,0.00) 100%)',
+          }}
+        />
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors" />
       </div>
 
       <div className="relative z-10">
-        {/* Keep same image area height for consistent card size */}
-        <div className="relative h-[345px]">
-          {/* Category chip (identical styling) */}
-          <div className="absolute top-4 left-4 z-20">
-            <div className="bg-white/90 backdrop-blur-md border border-white/30 rounded-xl w-24 py-2 shadow-lg hover:bg-white/80 transition">
-              <div className="flex items-center justify-center gap-1.5">
-                <span className="text-xs font-normal text-black tracking-wide">
-                  {data.category || 'Shop'}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Single glassy Heart (no circle/container) */}
+        {/* Match ListingCard height exactly */}
+        <div className="relative h-[350px]">
+          {/* Heart */}
           <div className="absolute top-4 right-4 z-20">
-            <button
+            <div
+              role="button"
               aria-label="Follow"
-              title={isFollowing ? 'Unfollow' : 'Follow'}
               onClick={handleHeartClick}
-              className="p-1.5 hover:scale-[1.06] transition-transform"
+              className="hover:scale-[1.06] transition-transform"
+              title={isFollowing ? 'Unfollow' : 'Follow'}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
-                width="28"
-                height="28"
-                style={{ filter: 'drop-shadow(0 6px 20px rgba(0,0,0,0.30))' }}
+                width="30"
+                height="30"
+                style={{ filter: 'drop-shadow(0 6px 20px rgba(0,0,0,0.30)) backdrop-blur-sm ' }}
               >
                 <defs>
-         
-                    <stop offset="0" stopColor="rgba(255,255,255,0.75)" />
-                    <stop offset="0.55" stopColor="rgba(255,255,255,0.18)" />
-                    <stop offset="1" stopColor="rgba(255,255,255,0.00)" />
-      
+                  <stop offset="0" stopColor="rgba(255,255,255,0.75)" />
+                  <stop offset="0.55" stopColor="rgba(255,255,255,0.18)" />
+                  <stop offset="1" stopColor="rgba(255,255,255,0.00)" />
                 </defs>
-                {/* Base glass body */}
                 <path
                   d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z"
                   fill={isFollowing ? 'rgba(255,255,255,0.32)' : 'rgba(255,255,255,0.22)'}
                   stroke="rgba(255,255,255,0.55)"
-                  strokeWidth="1.4"
+                  strokeWidth="1"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
-                {/* Highlight sheen */}
                 <path
                   d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z"
-                  fill="url(#heartGlassGradShop)"
+                  fill="url(#heartGlassGrad)"
                   opacity="0.9"
                 />
-                {/* Subtle inner edge pop */}
                 <path
                   d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z"
                   fill="none"
@@ -140,86 +135,67 @@ const ShopCard: React.FC<ShopCardProps> = ({
                   opacity="0.35"
                 />
               </svg>
-            </button>
+            </div>
           </div>
 
-          {/* Bottom glass dock (title, meta, badges) */}
+          {/* Bottom info */}
           <div className="absolute bottom-5 left-5 right-5 z-20">
-            <div
-              className="
-                rounded-2xl px-4 py-3
-                bg-white/10 backdrop-blur-md border border-white/20
-                shadow-[0_6px_20px_rgba(0,0,0,0.25)]"
-            >
-              <div className="flex items-center gap-2 mb-1">
-                <h1 className="text-white text-[20px] leading-6 font-semibold drop-shadow">
-                  {data.name}
-                </h1>
-
-                {/* Verified icon (same as ListingCard) */}
+            {/* Title + inline badge (stays with last word) */}
+            <div className="mb-1">
+              <h1 className="text-white text-md leading-6 font-semibold drop-shadow inline">
+                <span className="align-middle">{data.name}</span>
                 {data.isVerified && (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    width="18"
-                    height="18"
-                    className="text-white/90"
-                    aria-label="Verified"
-                  >
-                    <path
-                      d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      fill="#60A5FA"
-                    />
-                    <path
-                      d="M9 12.8929L10.8 14.5L15 9.5"
-                      stroke="white"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+                  <span className="inline-flex items-center align-middle ml-1 translate-y-[1px]">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      width="18"
+                      height="18"
+                      className="text-white/90 shrink-0"
+                      aria-label="Verified"
+                    >
+                      <path
+                        d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        fill="#60A5FA"
+                      />
+                      <path
+                        d="M9 12.8929L10.8 14.5L15 9.5"
+                        stroke="white"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </span>
                 )}
-              </div>
+              </h1>
+            </div>
 
-              <div className="flex items-center gap-1 text-white/90 text-[11px] leading-4 mb-2">
-                <span className="truncate">
+            {/* Location (one line) + products below */}
+            <div className="text-white/90 text-[11px] leading-4 mb-2">
+              <div className="flex items-center gap-1">
+                <span>
                   {city}
                   {state ? `, ${state}` : ''}
                 </span>
-                <span className="opacity-70">•</span>
-                <span className="opacity-90">{productCount} products</span>
               </div>
+              <div className="opacity-90 mt-0.5">{productCount} products</div>
+            </div>
 
-              {/* Compact row: rating + followers handled inside SmartBadgeShop */}
-              <div className="flex items-center" onClick={(e) => e.stopPropagation()}>
-  <SmartBadgeShop
-  rating={shopRating}
-  isTrending={data.isVerified || false}
-  followerCount={data.followerCount || data.followers?.length || 0}
-/>
-
-              </div>
+            {/* Rating + followers */}
+            <div className="flex items-center">
+              <SmartBadgeShop
+                rating={shopRating}
+                isTrending={data.isVerified || false}
+                followerCount={data.followerCount || data.followers?.length || 0}
+              />
             </div>
           </div>
         </div>
 
-        {/* Visit button (identical style to ListingCard Reserve) */}
-        <div className="px-5 pb-4 pt-2 -mt-3">
-          <button
-            onClick={handleVisitShop}
-            className="w-full bg-[#60A5FA]/50 backdrop-blur-md text-white p-3 rounded-xl
-            flex items-center justify-center hover:bg-white/10 transition-all
-            shadow-lg border border-white/10"
-          >
-            <div className="flex items-center text-center gap-3">
-              <div className="flex flex-col items-center text-center">
-                <span className="font-medium text-sm">Visit Shop</span>
-              </div>
-            </div>
-          </button>
-        </div>
+        <div className="pb-2" />
       </div>
     </div>
   );
