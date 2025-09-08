@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import ClientProviders from '@/components/ClientProviders';
 import { categories } from '@/components/Categories';
-import { SafePost, SafeUser, SafeListing } from '@/app/types';
+import { SafePost, SafeUser, SafeListing, SafeEmployee, SafeShop } from '@/app/types';
 import { usePostStore } from '@/app/hooks/usePostStore';
 import { useCategory } from '@/CategoryContext';
 import { useFilter } from '@/FilterContext';
@@ -14,6 +14,8 @@ import Container from './Container';
 import NewsfeedHeader from './feed/NewsfeedHeader';
 import PostCard from './feed/PostCard';
 import ListingCard from '@/components/listings/ListingCard';
+import WorkerCard from '@/components/listings/WorkerCard';
+import ShopCard from '@/components/shop/ShopCard';
 import PropagateLoaderWrapper from '@/components/loaders/PropagateLoaderWrapper';
 import SectionHeader from '@/app/market/SectionHeader';
 
@@ -35,9 +37,11 @@ interface NewsfeedClientProps {
   currentUser: SafeUser | null;
   categoryToUse?: string;
   listings: SafeListing[];
+  employees?: SafeEmployee[];
+  shops?: SafeShop[];
 }
 
-/** Animation timing (aligned with MarketContent/ShopClient) */
+/** Animation timing */
 const MIN_LOADER_MS = 1800;
 const FADE_DURATION_MS = 520;
 const FADE_STAGGER_BASE_MS = 140;
@@ -49,6 +53,8 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
   currentUser,
   categoryToUse,
   listings,
+  employees = [],
+  shops = [],
 }) => {
   const setPosts = usePostStore((state) => state.setPosts);
   const storePosts = usePostStore((state) => state.posts);
@@ -85,20 +91,17 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
     page: searchParams?.get('page') || undefined,
   };
 
-  // Filtering logic to determine when to show section headers (like MarketContent)
+  // Filtering logic
   const filterInfo = useMemo(() => {
-    // Get the current category from URL params (this is the source of truth)
     const currentCategory = headerSearchParams?.category || '';
     const categoryIsActive = currentCategory !== '' && currentCategory !== 'featured' && currentCategory !== 'all';
 
-    // Check for price filters
     const hasPriceFilter = 
       viewState?.filters?.minPrice !== undefined ||
       viewState?.filters?.maxPrice !== undefined ||
       headerSearchParams.minPrice !== undefined ||
       headerSearchParams.maxPrice !== undefined;
 
-    // Check for location filters
     const hasLocationFilter = !!(
       viewState?.filters?.city?.trim() ||
       viewState?.filters?.state?.trim() ||
@@ -108,10 +111,8 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
 
     const isFiltered = categoryIsActive || hasPriceFilter || hasLocationFilter;
 
-    // Determine results header text
     let resultsHeaderText = '';
     if (categoryIsActive && currentCategory) {
-      // Capitalize first letter of category
       const categoryName = currentCategory.charAt(0).toUpperCase() + currentCategory.slice(1);
       resultsHeaderText = `${categoryName} Feed`;
     } else if (hasPriceFilter || hasLocationFilter) {
@@ -143,13 +144,10 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
         }
 
         if (filterParam) params.filter = filterParam;
-
         if (filters.location?.state) params.state = filters.location.state;
         if (filters.location?.city) params.city = filters.location.city;
-
         if (filters.sort?.order) params.order = filters.sort.order;
 
-        // Correct endpoint (singular)
         const { data } = await axios.get('/api/post', { params });
         setPosts(data);
       } catch (error) {
@@ -163,7 +161,18 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
     fetchPosts();
   }, [selectedCategory, filterParam, filters, setPosts, searchParams]);
 
-  // Build interleaved feed (posts + listings)
+  // Get random 4 items for each section
+  const getRandomItems = <T,>(array: T[], count: number = 4): T[] => {
+    const shuffled = [...array].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, count);
+  };
+
+  const trendingPosts = useMemo(() => getRandomItems(storePosts || [], 4), [storePosts]);
+  const trendingListings = useMemo(() => getRandomItems(listings, 4), [listings]);
+  const trendingEmployees = useMemo(() => getRandomItems(employees, 4), [employees]);
+  const trendingShops = useMemo(() => getRandomItems(shops, 4), [shops]);
+
+  // Build main feed items (posts + listings interleaved)
   const flatFeedItems = useMemo(() => {
     if (!storePosts || storePosts.length === 0) return [];
 
@@ -179,7 +188,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
         </div>
       );
 
-      // Inject a ListingCard after every 3 posts (if provided)
+      // Inject a ListingCard after every 3 posts
       if ((index + 1) % 3 === 0 && listings.length > 0) {
         const listingIndex = Math.floor((index + 1) / 3) - 1;
         const listing = listings[listingIndex % listings.length];
@@ -198,7 +207,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
     return out;
   }, [storePosts, listings, currentUser]);
 
-  // Wrap in staggered fade-in containers (runs after uiLoading completes)
+  // Wrap in staggered fade-in containers
   const buildAnimatedItems = () =>
     flatFeedItems.map((el, idx) => {
       const delay = FADE_STAGGER_BASE_MS + (idx % 12) * FADE_STAGGER_STEP_MS;
@@ -223,15 +232,6 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
     }
   }, [uiLoading, flatFeedItems]);
 
-  // Scroll functions for section headers (placeholder implementation)
-  const scrollFeaturedFeed = (dir: 'left' | 'right') => {
-    console.log('Scroll featured feed', dir);
-  };
-
-  const scrollTrendingFeed = (dir: 'left' | 'right') => {
-    console.log('Scroll trending feed', dir);
-  };
-
   const hasContent = useMemo(
     () => Array.isArray(storePosts) && storePosts.length > 0,
     [storePosts]
@@ -240,9 +240,9 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
   return (
     <ClientProviders>
       <Container>
-        {/* Main Discover Title - Always Visible */}
+        {/* Main Discover Title */}
         <div className="pt-2 mb-4">
-     <h1 className="text-3xl md:text-3xl font-bold text-black leading-tight tracking-wide">Discover</h1>
+          <h1 className="text-3xl md:text-3xl font-bold text-black leading-tight tracking-wide">Discover</h1>
           <p className="text-gray-600">Share whats new with you and your business</p>
         </div>
 
@@ -270,40 +270,90 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
             {viewState.mode === 'horizontal' ? (
               hasContent ? (
                 <>
-                  {/* ===== Featured Feed Section ===== */}
+                  {/* Trending Sections - Only show when not filtered */}
                   {!filterInfo.isFiltered && (
-                    <SectionHeader
-                      title="Trending Post"
-                      onPrev={() => scrollFeaturedFeed('left')}
-                      onNext={() => scrollFeaturedFeed('right')}
-                      onViewAll={() => router.push('/newsfeed?category=featured')}
-                    />
-                  )}
+                    <>
+                      {/* Trending Posts */}
+                      {trendingPosts.length > 0 && (
+                        <div className="mb-8">
+                          <SectionHeader
+                            title="Trending Posts"
+                            onViewAll={() => router.push('/newsfeed?category=trending')}
+                          />
+                          <div className="grid grid-cols-4 gap-4">
+                            {trendingPosts.map((post, idx) => (
+                              <div key={`trending-post-${post.id}`} className="group/card relative">
+                                <PostCard post={post} currentUser={currentUser} categories={categories} />
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
 
-                  {/* ===== Results Section Header (when filtered) ===== */}
-                  {filterInfo.isFiltered && filterInfo.resultsHeaderText && (
-                    <SectionHeader
-                      title={filterInfo.resultsHeaderText}
-                      // No navigation controls for results section
-                    />
-                  )}
+                      {/* Trending Listings */}
+                      {trendingListings.length > 0 && (
+                        <div className="mb-8">
+                          <SectionHeader
+                            title="Trending Listings"
+                            onViewAll={() => router.push('/listings')}
+                          />
+                          <div className="grid grid-cols-4 gap-4">
+                            {trendingListings.map((listing, idx) => (
+                              <div key={`trending-listing-${listing.id}`} className="group/card relative">
+                                <ListingCard currentUser={currentUser} data={listing} categories={categories} />
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
 
-                  {/* Feed Grid */}
-                  <div className="group/grid grid grid-cols-4 gap-4">
-                    {animatedItems}
-                  </div>
+                      {/* Trending Teammates */}
+                      {trendingEmployees.length > 0 && (
+                        <div className="mb-8">
+                          <SectionHeader
+                            title="Trending Teammates"
+                            onViewAll={() => router.push('/teammates')}
+                          />
+                          <div className="grid grid-cols-4 gap-4">
+                            {trendingEmployees.map((employee, idx) => {
+                              const listing = listings[idx % listings.length] || listings[0];
+                              return (
+                                <div key={`trending-employee-${employee.id}`} className="group/card relative">
+                                  <WorkerCard
+                                    employee={employee}
+                                    listingTitle={listing?.title || 'Professional'}
+                                    data={{
+                                      title: listing?.title || '',
+                                      imageSrc: listing?.imageSrc || '',
+                                      category: listing?.category || ''
+                                    }}
+                                    listing={listing}
+                                    currentUser={currentUser}
+                                  />
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
 
-                  {/* ===== Trending Posts Section (when not filtered) ===== */}
-                  {!filterInfo.isFiltered && animatedItems.length > 0 && (
-                    <div className="mt-8">
-                      <SectionHeader
-                        title="Trending Posts"
-                        onPrev={() => scrollTrendingFeed('left')}
-                        onNext={() => scrollTrendingFeed('right')}
-                        onViewAll={() => router.push('/newsfeed?category=trending')}
-                      />
-                      {/* You could add a separate trending posts grid here */}
-                    </div>
+                      {/* Trending Vendors */}
+                      {trendingShops.length > 0 && (
+                        <div className="mb-8">
+                          <SectionHeader
+                            title="Trending Vendors"
+                            onViewAll={() => router.push('/shops')}
+                          />
+                          <div className="grid grid-cols-4 gap-4">
+                            {trendingShops.map((shop, idx) => (
+                              <div key={`trending-shop-${shop.id}`} className="group/card relative">
+                                <ShopCard data={shop} currentUser={currentUser} />
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </>
                   )}
                 </>
               ) : (
@@ -312,7 +362,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                 </div>
               )
             ) : (
-              // Vertical mode - could be implemented later
+              // Vertical mode
               <div className="group/grid grid grid-cols-1 gap-4">
                 {animatedItems}
               </div>
