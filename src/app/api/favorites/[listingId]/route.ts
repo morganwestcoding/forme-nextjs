@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/app/libs/prismadb";
 
@@ -25,7 +24,9 @@ export async function POST(
 
   let favoriteIds = [...(currentUser.favoriteIds || [])];
 
-  favoriteIds.push(listingId);
+  if (!favoriteIds.includes(listingId)) {
+    favoriteIds.push(listingId);
+  }
 
   const user = await prisma.user.update({
     where: {
@@ -56,7 +57,6 @@ export async function DELETE(
   }
 
   let favoriteIds = [...(currentUser.favoriteIds || [])];
-
   favoriteIds = favoriteIds.filter((id) => id !== listingId);
 
   const user = await prisma.user.update({

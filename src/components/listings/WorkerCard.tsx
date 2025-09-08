@@ -5,16 +5,7 @@ import React, { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { SafeListing, SafeUser, SafeEmployee } from '@/app/types';
 import SmartBadgeWorker from './SmartBadgeWorker';
-import {
-  Star,
-  Scissors,
-  Droplet,
-  SprayCan,
-  Waves,
-  Palette,
-  Flower,
-  Dumbbell,
-} from 'lucide-react';
+import HeartButton from '../HeartButton';
 
 interface WorkerCardProps {
   employee: SafeEmployee & {
@@ -73,22 +64,10 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
   listingTitle,
   data,
   listing,
+  currentUser,
 }) => {
   const [/*isFollowing*/, setIsFollowing] = useState(false);
   const router = useRouter();
-
-  const getCategoryConfig = (category: string) => {
-    const configs: { [key: string]: { icon: React.ReactElement } } = {
-      Spa: { icon: <Waves className="w-3 h-3" /> },
-      Beauty: { icon: <Palette className="w-3 h-3" /> },
-      Barber: { icon: <Scissors className="w-3 h-3" /> },
-      Fitness: { icon: <Dumbbell className="w-3 h-3" /> },
-      Salon: { icon: <SprayCan className="w-3 h-3" /> },
-      Wellness: { icon: <Flower className="w-3 h-3" /> },
-      Skincare: { icon: <Droplet className="w-3 h-3" /> },
-    };
-    return configs[category] || { icon: <Star className="w-3 h-3" /> };
-  };
 
   const handleCardClick = () => {
     router.push(`/listings/${listing.id}`);
@@ -108,10 +87,19 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
   return (
     <div
       onClick={handleCardClick}
-      className="cursor-pointer bg-white rounded-2xl shadow-lg hover:shadow-xl border border-gray-100 overflow-hidden relative transition-all duration-300 hover:scale-[1.02] max-w-[250px]"
+      className="cursor-pointer bg-white rounded-2xl shadow hover:shadow-xl border border-gray-100 overflow-hidden relative transition-all duration-300 hover:scale-[1.02] max-w-[250px]"
     >
       {/* Match ListingCard height structure */}
       <div className="relative h-[350px]">
+        {/* Heart - Using HeartButton component */}
+        <div className="absolute top-4 right-4 z-20">
+          <HeartButton
+            listingId={employee.id}
+            currentUser={currentUser}
+            variant="worker"
+          />
+        </div>
+
         {/* Avatar - Centered towards middle-top */}
         <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
           <div className="relative">

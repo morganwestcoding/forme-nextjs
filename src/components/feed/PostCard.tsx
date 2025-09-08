@@ -10,6 +10,7 @@ import { MoreHorizontal } from 'lucide-react';
 import { SafePost, SafeUser } from '@/app/types';
 import usePostModal from '@/app/hooks/usePostModal';
 import { usePostStore } from '@/app/hooks/usePostStore';
+import HeartButton from '../HeartButton';
 
 interface PostCardProps {
   post: SafePost;
@@ -168,7 +169,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
   return (
     <div
       ref={cardRef}
-      className="group cursor-pointer relative overflow-hidden rounded-xl bg-white shadow-lg transition-all duration-300 hover:shadow-xl max-w-[250px]"
+      className="group cursor-pointer relative overflow-hidden rounded-xl bg-white shadow transition-all duration-300 hover:shadow-xl max-w-[250px]"
       onClick={handleCardClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -177,17 +178,15 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
       <div className="relative h-[350px] w-full">
         {renderMedia()}
 
-        {/* More button - positioned absolutely over the media */}
-        <button
-          className={`absolute right-4 top-4 z-10 rounded-full p-2 backdrop-blur-sm transition-colors ${
-            isTextPost 
-              ? 'bg-gray-200/80 hover:bg-gray-300/80' 
-              : 'bg-white/20 hover:bg-white/30'
-          }`}
-          onClick={handleMore}
-        >
-          <MoreHorizontal className={`h-4 w-4 ${isTextPost ? 'text-gray-600' : 'text-white'}`} />
-        </button>
+        {/* Heart button - positioned in top right */}
+        <div className="absolute top-4 right-4 z-20">
+          <HeartButton
+            listingId={post.id}
+            currentUser={currentUser}
+            variant={isTextPost ? "worker" : "default"}
+          />
+        </div>
+
 
         {/* User bar at bottom - positioned absolutely over the media */}
         <div className="absolute bottom-4 left-4 right-4 z-10">

@@ -1,28 +1,105 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { SafeEmployee } from '@/app/types';
 
+interface SafeStoreHours {
+  dayOfWeek: string;
+  openTime: string;
+  closeTime: string;
+  isClosed: boolean;
+}
+
 interface SmartBadgeWorkerProps {
-  employee: SafeEmployee;
-  listingTitle: string;      // kept for parity (unused)
-  rating?: number;           // falls back to employee.rating if present
-  followerCount?: number;    // default 847 if absent
+  employee: SafeEmployee & {
+    rating?: number;
+    isTrending?: boolean;
+    followerCount?: number;
+    storeHours?: SafeStoreHours[];
+  };
+  listingTitle: string;
+  rating?: number;
+  followerCount?: number;
   onRatingClick?: () => void;
-  onFollowerClick?: () => void;
+  onTimeClick?: () => void;
+  storeHours?: SafeStoreHours[];
 }
 
 const SmartBadgeWorker: React.FC<SmartBadgeWorkerProps> = ({
   employee,
-  listingTitle, // unused
+  listingTitle,
   rating = (employee as any)?.rating ?? 4.7,
   followerCount = (employee as any)?.followerCount ?? 847,
   onRatingClick,
-  onFollowerClick,
+  onTimeClick,
+  storeHours = (employee as any)?.storeHours ?? [
+    { dayOfWeek: 'Monday', openTime: '09:00', closeTime: '21:00', isClosed: false },
+    { dayOfWeek: 'Tuesday', openTime: '09:00', closeTime: '21:00', isClosed: false },
+    { dayOfWeek: 'Wednesday', openTime: '09:00', closeTime: '21:00', isClosed: false },
+    { dayOfWeek: 'Thursday', openTime: '09:00', closeTime: '21:00', isClosed: false },
+    { dayOfWeek: 'Friday', openTime: '09:00', closeTime: '22:00', isClosed: false },
+    { dayOfWeek: 'Saturday', openTime: '08:00', closeTime: '22:00', isClosed: false },
+    { dayOfWeek: 'Sunday', openTime: '10:00', closeTime: '20:00', isClosed: false }
+  ]
 }) => {
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setTick((v) => v + 1), 60_000);
+    return () => clearInterval(t);
+  }, []);
+
   const isTrending = (employee as any)?.isTrending ?? false;
 
-  // Rating pill theme
+  /** ----- Time status logic (copied from SmartBadgeRating) ----- */
+  const getTimeStatus = () => {
+    const now = new Date();
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const dayOfWeek = dayNames[now.getDay()];
+    const hhmm = now.toTimeString().slice(0, 5); // HH:MM
+
+    const today = storeHours.find((h: SafeStoreHours) => h.dayOfWeek.toLowerCase() === dayOfWeek.toLowerCase());
+
+    const to24 = (timeStr: string) => {
+      if (/[ap]m/i.test(timeStr)) {
+        const [timePart] = timeStr.split(/\s+/);
+        const [hh, mm] = timePart.split(':');
+        const h = parseInt(hh, 10);
+        const isPM = /pm/i.test(timeStr);
+        const h24 = isPM ? (h === 12 ? 12 : h + 12) : (h === 12 ? 0 : h);
+        return `${String(h24).padStart(2, '0')}:${mm}`;
+      }
+      return timeStr;
+    };
+
+    const inRange = (curr: string, open: string, close: string) => {
+      const c = to24(curr), o = to24(open), cl = to24(close);
+      return c >= o && c < cl;
+    };
+
+    if (!today || today.isClosed) return { message: 'Closed', color: 'red' as const };
+
+    const { openTime, closeTime } = today;
+    const open = openTime, close = closeTime;
+
+    const toMin = (t: string) => {
+      const [H, M] = to24(t).split(':');
+      return parseInt(H, 10) * 60 + parseInt(M, 10);
+    };
+
+    const currMin = toMin(hhmm);
+    if (inRange(hhmm, open, close)) {
+      const minsLeft = toMin(close) - currMin;
+      if (minsLeft <= 30) return { message: 'Closing', color: 'orange' as const };
+      if (minsLeft <= 120) return { message: 'Closing', color: 'green' as const };
+      return { message: 'Open', color: 'green' as const };
+    }
+    if (currMin < toMin(open)) return { message: 'Soon', color: 'orange' as const };
+    return { message: 'Closed', color: 'red' as const };
+  };
+
+  const timeStatus = getTimeStatus();
+
+  /** ----- Visual props (white background optimized) ----- */
   const getRatingTheme = () => {
     if (isTrending) {
       return {
@@ -50,47 +127,45 @@ const SmartBadgeWorker: React.FC<SmartBadgeWorkerProps> = ({
       hover: 'hover:bg-blue-100/80',
     };
   };
+
   const ratingTheme = getRatingTheme();
 
-  // Followers pill theme by tier
-  const tier = followerCount >= 5000 ? 'green' : followerCount >= 1000 ? 'orange' : 'red';
-  const followersTheme =
-    tier === 'green'
-      ? {
-          bg: 'bg-emerald-100/60',
-          border: 'border-emerald-200/40',
-          text: 'text-emerald-700',
-          dot: 'bg-emerald-500',
-          hover: 'hover:bg-emerald-100/80',
-        }
-      : tier === 'orange'
-      ? {
-          bg: 'bg-orange-100/60',
-          border: 'border-orange-200/40',
-          text: 'text-orange-700',
-          dot: 'bg-orange-500',
-          hover: 'hover:bg-orange-100/80',
-        }
-      : {
-          bg: 'bg-rose-100/60',
-          border: 'border-rose-200/40',
-          text: 'text-rose-700',
-          dot: 'bg-rose-500',
-          hover: 'hover:bg-rose-100/80',
-        };
+  const getTimeTheme = () => {
+    if (timeStatus.color === 'green') {
+      return {
+        bg: 'bg-emerald-100/60',
+        border: 'border-emerald-200/40',
+        text: 'text-emerald-700',
+        dot: 'bg-emerald-500',
+        hover: 'hover:bg-emerald-100/80',
+      };
+    }
+    if (timeStatus.color === 'orange') {
+      return {
+        bg: 'bg-orange-100/60',
+        border: 'border-orange-200/40',
+        text: 'text-orange-700',
+        dot: 'bg-orange-500',
+        hover: 'hover:bg-orange-100/80',
+      };
+    }
+    return {
+      bg: 'bg-rose-100/60',
+      border: 'border-rose-200/40',
+      text: 'text-rose-700',
+      dot: 'bg-rose-500',
+      hover: 'hover:bg-rose-100/80',
+    };
+  };
 
-  // Updated pill styling to match your request
+  const timeTheme = getTimeTheme();
+
   const pillBase =
-    'backdrop-blur-sm rounded-lg px-3 py-1.5 text-xs font-medium w-20 text-center ' +
+    'backdrop-blur-sm rounded-lg py-1.5 text-xs font-medium w-20 px-3.5 text-center ' +
     'transition-all duration-200 cursor-pointer hover:scale-105';
 
-  const fmtFollowers = (n: number) =>
-    n >= 1_000_000 ? `${(n / 1_000_000).toFixed(1)}M`
-    : n >= 1_000 ? `${(n / 1_000).toFixed(1)}k`
-    : String(n);
-
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-2">
       {/* Rating pill */}
       <button
         type="button"
@@ -109,33 +184,30 @@ const SmartBadgeWorker: React.FC<SmartBadgeWorkerProps> = ({
           title={`Rating ${Number(rating).toFixed(1)}`}
         >
           <div className="flex items-center justify-center gap-1">
-            <span className={`w-1.5 h-1.5 rounded-full ${ratingTheme.dot}`} />
+   
             <span className="tabular-nums font-semibold">{Number(rating).toFixed(1)}</span>
           </div>
         </div>
       </button>
 
-      {/* Followers pill */}
+      {/* Time status pill */}
       <button
         type="button"
-        aria-label="Followers"
-        onClick={(e) => { e.stopPropagation(); onFollowerClick?.(); }}
+        aria-label="Time status"
+        onClick={(e) => { e.stopPropagation(); onTimeClick?.(); }}
         className="group p-0"
       >
         <div
           className={[
             pillBase,
-            followersTheme.bg,
-            `border ${followersTheme.border}`,
-            followersTheme.text,
-            followersTheme.hover,
+            timeTheme.bg,
+            `border ${timeTheme.border}`,
+            timeTheme.text,
+            timeTheme.hover,
           ].join(' ')}
-          title={`${fmtFollowers(followerCount)} followers`}
+          title={`Status: ${timeStatus.message}`}
         >
-          <div className="flex items-center justify-center gap-1">
-            <span className={`w-1.5 h-1.5 rounded-full ${followersTheme.dot}`} />
-            <span className="tabular-nums font-semibold">{fmtFollowers(followerCount)}</span>
-          </div>
+          <span className="tabular-nums font-semibold">{timeStatus.message}</span>
         </div>
       </button>
     </div>

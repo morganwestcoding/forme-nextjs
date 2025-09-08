@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import axios from 'axios';
 import SmartBadgeShop from './SmartBadgeShop';
+import HeartButton from '../HeartButton';
 import { SafeShop, SafeUser } from '@/app/types';
 
 interface ShopCardProps {
@@ -22,10 +23,6 @@ const ShopCard: React.FC<ShopCardProps> = ({
 }) => {
   const router = useRouter();
 
-  const [isFollowing, setIsFollowing] = useState(
-    currentUser ? !!data.followers?.includes(currentUser.id) : false
-  );
-
   const [city, state] = data.location?.split(',').map((s) => s.trim()) || [];
   const productCount = data.productCount || data.products?.length || 0;
   const shopRating = (data as any)?.rating ?? 4.8;
@@ -33,24 +30,6 @@ const ShopCard: React.FC<ShopCardProps> = ({
 
   const handleCardClick = () => {
     router.push(`/shops/${data.id}`);
-  };
-
-  // Heart (follow/unfollow) — same placement/feel as ListingCard heart
-  const handleHeartClick = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!currentUser) {
-      router.push('/login'); // or noop if you prefer
-      return;
-    }
-    try {
-      const endpoint = `/api/shops/${data.id}/follow`;
-      const method = isFollowing ? 'delete' : 'post';
-      await axios[method](endpoint);
-      setIsFollowing(!isFollowing);
-    } catch (err) {
-      // silent fail to match ListingCard minimalism
-      // console.error(err);
-    }
   };
 
   return (
@@ -93,49 +72,13 @@ const ShopCard: React.FC<ShopCardProps> = ({
       <div className="relative z-10">
         {/* Match ListingCard height exactly */}
         <div className="relative h-[350px]">
-          {/* Heart */}
+          {/* Heart - Using HeartButton component */}
           <div className="absolute top-4 right-4 z-20">
-            <div
-              role="button"
-              aria-label="Follow"
-              onClick={handleHeartClick}
-              className="hover:scale-[1.06] transition-transform"
-              title={isFollowing ? 'Unfollow' : 'Follow'}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                width="30"
-                height="30"
-                style={{ filter: 'drop-shadow(0 6px 20px rgba(0,0,0,0.30)) backdrop-blur-sm ' }}
-              >
-                <defs>
-                  <stop offset="0" stopColor="rgba(255,255,255,0.75)" />
-                  <stop offset="0.55" stopColor="rgba(255,255,255,0.18)" />
-                  <stop offset="1" stopColor="rgba(255,255,255,0.00)" />
-                </defs>
-                <path
-                  d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z"
-                  fill={isFollowing ? 'rgba(255,255,255,0.32)' : 'rgba(255,255,255,0.22)'}
-                  stroke="rgba(255,255,255,0.55)"
-                  strokeWidth="1"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z"
-                  fill="url(#heartGlassGrad)"
-                  opacity="0.9"
-                />
-                <path
-                  d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z"
-                  fill="none"
-                  stroke="rgba(255,255,255,0.9)"
-                  strokeWidth="0.6"
-                  opacity="0.35"
-                />
-              </svg>
-            </div>
+            <HeartButton
+              listingId={data.id}
+              currentUser={currentUser}
+              variant="default"
+            />
           </div>
 
           {/* Bottom info */}

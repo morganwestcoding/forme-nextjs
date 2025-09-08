@@ -87,7 +87,7 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
 
   const timeStatus = getTimeStatus();
 
-  /** ----- Visual props (same gradients, just no icons) ----- */
+  /** ----- Visual props (same gradients, just no dots) ----- */
   const getRatingVisual = () => {
     if (isTrending) {
       return {
@@ -95,7 +95,6 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
         border: 'border-purple-400/40',
         shadow: 'shadow-purple-500/20',
         text: 'text-purple-200',
-        dot: 'bg-purple-300',
       };
     } else if (rating >= 4.5) {
       return {
@@ -103,7 +102,6 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
         border: 'border-yellow-400/40',
         shadow: 'shadow-yellow-500/20',
         text: 'text-yellow-200',
-        dot: 'bg-amber-300',
       };
     } else {
       return {
@@ -111,7 +109,6 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
         border: 'border-blue-400/40',
         shadow: 'shadow-blue-500/20',
         text: 'text-blue-200',
-        dot: 'bg-cyan-300',
       };
     }
   };
@@ -132,20 +129,13 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
       ? 'text-orange-200'
       : 'text-red-200';
 
-  const timeDot =
-    timeStatus.color === 'green'
-      ? 'bg-lime-300'
-      : timeStatus.color === 'orange'
-      ? 'bg-amber-300'
-      : 'bg-rose-300';
-
   const pillBase =
     'border rounded-md px-2 py-1 group-hover:scale-105 transition-all duration-300 shadow-sm ' +
-    'inline-flex items-center justify-center gap-1 w-20';
+    'inline-flex items-center justify-center w-20 text-center text-xs font-semibold';
 
   return (
     <div className="flex items-center gap-2">
-      {/* Rating pill — circle + number (no icon) */}
+      {/* Rating pill — text only (no dot) */}
       <button
         onClick={(e) => { e.stopPropagation(); onRatingClick?.(); }}
         className="inline-flex rounded-xl hover:bg-white/10 transition-all duration-300 group p-0"
@@ -153,12 +143,11 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
         aria-label="Rating"
       >
         <div className={`${pillBase} ${ratingV.bg} ${ratingV.border} ${ratingV.shadow}`}>
-          <span className={`w-1.5 h-1.5 rounded-full ${ratingV.dot}`} />
-          <span className={`text-xs ${ratingV.text}`}>{rating}</span>
+          <span className={`${ratingV.text}`}>{rating}</span>
         </div>
       </button>
 
-      {/* Time pill — circle + status (no icon) */}
+      {/* Time pill — text only (no dot) */}
       <button
         onClick={(e) => { e.stopPropagation(); onTimeClick?.(); }}
         className="inline-flex rounded-xl hover:bg-white/10 transition-all duration-300 group p-0"
@@ -166,8 +155,7 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
         aria-label="Time status"
       >
         <div className={`${pillBase} ${timeWrap}`}>
-          <span className={`w-1.5 h-1.5 rounded-full ${timeDot}`} />
-          <span className={`text-xs ${timeText}`}>{timeStatus.message}</span>
+          <span className={`${timeText}`}>{timeStatus.message}</span>
         </div>
       </button>
     </div>

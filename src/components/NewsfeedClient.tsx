@@ -65,6 +65,12 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
   const [uiLoading, setUiLoading] = useState(true);
   const [animatedItems, setAnimatedItems] = useState<JSX.Element[]>([]);
 
+  // State for section offsets
+  const [postsOffset, setPostsOffset] = useState(0);
+  const [listingsOffset, setListingsOffset] = useState(0);
+  const [employeesOffset, setEmployeesOffset] = useState(0);
+  const [shopsOffset, setShopsOffset] = useState(0);
+
   const [viewState, setViewState] = useState<ViewState>({
     mode: 'horizontal',
     filters: {
@@ -161,16 +167,65 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
     fetchPosts();
   }, [selectedCategory, filterParam, filters, setPosts, searchParams]);
 
-  // Get random 4 items for each section
-  const getRandomItems = <T,>(array: T[], count: number = 4): T[] => {
-    const shuffled = [...array].sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, count);
+  // Get paginated items for each section
+  const getPaginatedItems = <T,>(array: T[], offset: number, count: number = 4): T[] => {
+    const start = offset * count;
+    const end = start + count;
+    return array.slice(start, end);
   };
 
-  const trendingPosts = useMemo(() => getRandomItems(storePosts || [], 4), [storePosts]);
-  const trendingListings = useMemo(() => getRandomItems(listings, 4), [listings]);
-  const trendingEmployees = useMemo(() => getRandomItems(employees, 4), [employees]);
-  const trendingShops = useMemo(() => getRandomItems(shops, 4), [shops]);
+  // Scroll functions for each section
+  const scrollTrendingPosts = (dir: 'left' | 'right') => {
+    setPostsOffset(prev => {
+      const maxOffset = Math.max(0, Math.ceil((storePosts?.length || 0) / 4) - 1);
+      if (dir === 'left') return Math.max(0, prev - 1);
+      return Math.min(maxOffset, prev + 1);
+    });
+  };
+
+  const scrollTrendingListings = (dir: 'left' | 'right') => {
+    setListingsOffset(prev => {
+      const maxOffset = Math.max(0, Math.ceil(listings.length / 4) - 1);
+      if (dir === 'left') return Math.max(0, prev - 1);
+      return Math.min(maxOffset, prev + 1);
+    });
+  };
+
+  const scrollTrendingEmployees = (dir: 'left' | 'right') => {
+    setEmployeesOffset(prev => {
+      const maxOffset = Math.max(0, Math.ceil(employees.length / 4) - 1);
+      if (dir === 'left') return Math.max(0, prev - 1);
+      return Math.min(maxOffset, prev + 1);
+    });
+  };
+
+  const scrollTrendingShops = (dir: 'left' | 'right') => {
+    setShopsOffset(prev => {
+      const maxOffset = Math.max(0, Math.ceil(shops.length / 4) - 1);
+      if (dir === 'left') return Math.max(0, prev - 1);
+      return Math.min(maxOffset, prev + 1);
+    });
+  };
+
+  const trendingPosts = useMemo(() => 
+    getPaginatedItems(storePosts || [], postsOffset, 4), 
+    [storePosts, postsOffset]
+  );
+  
+  const trendingListings = useMemo(() => 
+    getPaginatedItems(listings, listingsOffset, 4), 
+    [listings, listingsOffset]
+  );
+  
+  const trendingEmployees = useMemo(() => 
+    getPaginatedItems(employees, employeesOffset, 4), 
+    [employees, employeesOffset]
+  );
+  
+  const trendingShops = useMemo(() => 
+    getPaginatedItems(shops, shopsOffset, 4), 
+    [shops, shopsOffset]
+  );
 
   // Build main feed items (posts + listings interleaved)
   const flatFeedItems = useMemo(() => {
@@ -277,7 +332,9 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                       {trendingPosts.length > 0 && (
                         <div className="mb-8">
                           <SectionHeader
-                            title="Trending Posts"
+                            title="Curated for You"
+                            onPrev={() => scrollTrendingPosts('left')}
+                            onNext={() => scrollTrendingPosts('right')}
                             onViewAll={() => router.push('/newsfeed?category=trending')}
                           />
                           <div className="grid grid-cols-4 gap-4">
@@ -294,7 +351,9 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                       {trendingListings.length > 0 && (
                         <div className="mb-8">
                           <SectionHeader
-                            title="Trending Listings"
+                            title="Handpicked Experiences"
+                            onPrev={() => scrollTrendingListings('left')}
+                            onNext={() => scrollTrendingListings('right')}
                             onViewAll={() => router.push('/listings')}
                           />
                           <div className="grid grid-cols-4 gap-4">
@@ -311,7 +370,9 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                       {trendingEmployees.length > 0 && (
                         <div className="mb-8">
                           <SectionHeader
-                            title="Trending Teammates"
+                            title="Your Perfect Match"
+                            onPrev={() => scrollTrendingEmployees('left')}
+                            onNext={() => scrollTrendingEmployees('right')}
                             onViewAll={() => router.push('/teammates')}
                           />
                           <div className="grid grid-cols-4 gap-4">
@@ -341,7 +402,9 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                       {trendingShops.length > 0 && (
                         <div className="mb-8">
                           <SectionHeader
-                            title="Trending Vendors"
+                            title="Recommended Vendors"
+                            onPrev={() => scrollTrendingShops('left')}
+                            onNext={() => scrollTrendingShops('right')}
                             onViewAll={() => router.push('/shops')}
                           />
                           <div className="grid grid-cols-4 gap-4">

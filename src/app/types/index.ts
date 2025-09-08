@@ -92,6 +92,7 @@ export type SafeUser = Omit<
   following: string[];
   followers: string[];
   conversationIds?: string[]; 
+    workerFavoriteIds?: string[];  // Add this line
   isSubscribed: boolean;
   resetToken?: string | null;
   resetTokenExpiry: Date | null;

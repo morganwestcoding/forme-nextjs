@@ -38,7 +38,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
         </div>
 
         {/* RIGHT: controls (always render container for consistent spacing) */}
-        <div className="flex items-center gap-1.5 ml-4" style={{ minHeight: '36px' }}>
+        <div className="flex items-center gap-2 ml-4" style={{ minHeight: '36px' }}>
           {hasControls && (
             <>
               {onPrev && (
