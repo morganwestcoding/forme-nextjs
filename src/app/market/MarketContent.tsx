@@ -169,6 +169,7 @@ const MarketContent: React.FC<MarketContentProps> = ({
   return (
     <Container>
 
+
       {/* Main Market Title - Always Visible */}
       <div className="pt-2 mb-4">
         <div>
@@ -207,7 +208,7 @@ const MarketContent: React.FC<MarketContentProps> = ({
                 {/* ===== Featured Storefronts Section ===== */}
                 {!filterInfo.isFiltered && (
                   <SectionHeader
-                    title="Featured Storefronts"
+                    title="Trending Storefronts"
                     onPrev={() => scrollFeaturedRail('left')}
                     onNext={() => scrollFeaturedRail('right')}
                     onViewAll={() => router.push('/market?category=featured')}

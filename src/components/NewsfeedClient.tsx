@@ -273,7 +273,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                   {/* ===== Featured Feed Section ===== */}
                   {!filterInfo.isFiltered && (
                     <SectionHeader
-                      title="Featured Feed"
+                      title="Trending Post"
                       onPrev={() => scrollFeaturedFeed('left')}
                       onNext={() => scrollFeaturedFeed('right')}
                       onViewAll={() => router.push('/newsfeed?category=featured')}
