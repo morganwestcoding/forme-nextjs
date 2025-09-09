@@ -163,45 +163,57 @@ const PostModal = () => {
     };
   }, [currentPostIndex, navigateToPost, posts.length]);
 
-  // Keyboard navigation with debouncing
-  useEffect(() => {
-    let keyDebounceTimeout: NodeJS.Timeout | null = null;
+// Replace your keyboard navigation useEffect with this fixed version:
 
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (isNavigatingRef.current) return;
+useEffect(() => {
+  let keyDebounceTimeout: NodeJS.Timeout | null = null;
 
-      // Clear existing timeout
-      if (keyDebounceTimeout) {
-        clearTimeout(keyDebounceTimeout);
-      }
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (isNavigatingRef.current) return;
 
-      switch (e.key) {
-        case 'ArrowUp':
-          e.preventDefault();
-          keyDebounceTimeout = setTimeout(() => navigateToPost(-1), 50);
-          break;
-        case 'ArrowDown':
-          e.preventDefault();
-          keyDebounceTimeout = setTimeout(() => navigateToPost(1), 50);
-          break;
-        case ' ':
+    // ✅ CHECK if user is typing in an input field
+    const target = e.target as HTMLElement;
+    const isInputField = target.tagName === 'INPUT' || 
+                        target.tagName === 'TEXTAREA' || 
+                        target.contentEditable === 'true' ||
+                        target.isContentEditable;
+
+    // Clear existing timeout
+    if (keyDebounceTimeout) {
+      clearTimeout(keyDebounceTimeout);
+    }
+
+    switch (e.key) {
+      case 'ArrowUp':
+        e.preventDefault();
+        keyDebounceTimeout = setTimeout(() => navigateToPost(-1), 50);
+        break;
+      case 'ArrowDown':
+        e.preventDefault();
+        keyDebounceTimeout = setTimeout(() => navigateToPost(1), 50);
+        break;
+      case ' ':
+        // ✅ ONLY prevent default if NOT typing in an input field
+        if (!isInputField) {
           e.preventDefault();
           const currentPostId = currentPost?.id;
           if (currentPostId) {
             handlePlayPause(currentPostId);
           }
-          break;
-      }
-    };
+        }
+        // ✅ If user IS typing in an input, let the space go through normally
+        break;
+    }
+  };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      if (keyDebounceTimeout) {
-        clearTimeout(keyDebounceTimeout);
-      }
-    };
-  }, [navigateToPost, currentPost?.id]);
+  window.addEventListener('keydown', handleKeyDown);
+  return () => {
+    window.removeEventListener('keydown', handleKeyDown);
+    if (keyDebounceTimeout) {
+      clearTimeout(keyDebounceTimeout);
+    }
+  };
+}, [navigateToPost, currentPost?.id]);
 
   // Touch handling for continuous scroll
   const handleTouchStart = useCallback((e: React.TouchEvent) => {

@@ -114,8 +114,14 @@ const MessageModal: React.FC = () => {
     }
   }, [newMessage, messageModal.conversationId]);
 
+  // FIXED: Only handle Enter key, don't interfere with other keys
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') sendMessage();
+    // Only handle Enter key and only if this input is the actual target
+    if (e.key === 'Enter' && e.target === e.currentTarget) {
+      e.preventDefault();
+      sendMessage();
+    }
+    // Let all other keys (including space) pass through normally
   };
 
   const handleBackToInbox = () => {
@@ -167,7 +173,7 @@ const MessageModal: React.FC = () => {
   const avatarColor = getAvatarColor(otherUser?.name);
 
   const bodyContent = (
-    <div className="flex flex-col h-[500px]  relative">
+    <div className="flex flex-col h-[500px] relative">
       {/* Back button positioned outside the content flow */}
       <button
         onClick={handleBackToInbox}
@@ -178,7 +184,7 @@ const MessageModal: React.FC = () => {
       </button>
 
       {/* Custom Header with user info */}
-      <div className="flex items-center justify-center p-4  border-b border-gray-200">
+      <div className="flex items-center justify-center p-4 border-b border-gray-200">
         {/* User Avatar and Name - Centered */}
         <div className="flex items-center gap-3">
           <div className="relative">
@@ -235,7 +241,6 @@ const MessageModal: React.FC = () => {
                 {dateMessages.map((message, idx) => {
                   const isOther = message.senderId === messageModal.otherUserId;
                   const showTime = isEndOfSenderRun(dateMessages, idx);
-
                   return (
                     <div key={message.id} className="w-full">
                       <div className={`w-full flex ${isOther ? 'justify-start' : 'justify-end'}`}>
@@ -291,7 +296,6 @@ const MessageModal: React.FC = () => {
             ))}
             <div ref={messagesEndRef} />
           </div>
-
           {/* Message Input */}
           <div className="p-4 border-t border-gray-200">
             <div className="flex items-center gap-3">

@@ -313,9 +313,11 @@ const InboxModal = () => {
     return () => document.removeEventListener('mousedown', handleClick);
   }, [open]);
 
-  // keyboard nav
+  // FIXED: keyboard nav - only handle when dropdown is open AND this input is focused
   const onKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (e) => {
-    if (!open) return;
+    // Only handle keyboard nav if dropdown is open AND this is the focused element
+    if (!open || e.target !== e.currentTarget) return;
+    
     if (e.key === 'ArrowDown') {
       e.preventDefault();
       setActiveIdx((idx) => Math.min(idx + 1, results.length - 1));
@@ -329,6 +331,7 @@ const InboxModal = () => {
       e.preventDefault();
       setOpen(false);
     }
+    // Let all other keys (including space) pass through normally
   };
 
   // keep active in view
