@@ -1,7 +1,7 @@
-// app/reservations/page.tsx
+// ReservationsPage.tsx
 import ClientOnly from "@/components/ClientOnly";
-import EmptyState from "@/components/EmptyState";
 import ReservationsClient from "./ReservationsClient";
+import Container from "@/components/Container";
 
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import getReservations from "@/app/actions/getReservations";
@@ -12,40 +12,17 @@ interface ReservationsPageProps {
 
 const ReservationsPage = async ({ searchParams }: ReservationsPageProps) => {
   const currentUser = await getCurrentUser();
-
-  if (!currentUser) {
-    return (
-      <ClientOnly>
-        <EmptyState
-          title="Unauthorized"
-          subtitle="Please login"
-        />
-      </ClientOnly>
-    );
-  }
-
-
-  const reservations = await getReservations({ authorId: currentUser.id });
-  
-  
-
-  if (reservations.length === 0) {
-    return (
-      <ClientOnly>
-        <EmptyState
-          title="No reservations found"
-          subtitle="Looks like you have no reservations on your properties."
-        />
-      </ClientOnly>
-    );
-  }
+  const reservations = await getReservations({ authorId: currentUser?.id });
 
   return (
     <ClientOnly>
-      <ReservationsClient
-   reservations={reservations}
-        currentUser={currentUser}
-      />
+      <Container>
+        
+        <ReservationsClient
+          reservations={reservations || []}
+          currentUser={currentUser}
+        />
+      </Container>
     </ClientOnly>
   );
 }

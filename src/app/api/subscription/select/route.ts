@@ -14,8 +14,8 @@ export async function POST(req: Request) {
     const { plan, interval } = await req.json() as { plan: string; interval?: "monthly" | "yearly" };
 
     const normalized = (plan || "").toLowerCase();
-    const isFree = normalized.includes("quartz") || normalized.includes("basic") || normalized.includes("bronze");
-    if (!isFree) {
+    const isBronze = normalized.includes("bronze") || normalized.includes("basic") || normalized.includes("free");
+    if (!isBronze) {
       return new NextResponse("Paid plan requires Stripe checkout", { status: 400 });
     }
 
@@ -23,7 +23,7 @@ export async function POST(req: Request) {
       where: { email: session.user.email as string },
       data: {
         isSubscribed: false,
-        subscriptionTier: "Quartz",
+        subscriptionTier: "Bronze",
         subscriptionStartDate: null,
         subscriptionEndDate: null,
         subscriptionStatus: null,

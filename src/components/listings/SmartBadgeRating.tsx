@@ -130,7 +130,7 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
       : 'text-red-200';
 
   const pillBase =
-    'border rounded-md px-2 py-1 group-hover:scale-105 transition-all duration-300 shadow-sm ' +
+    'border rounded-md px-2 py-1.5 group-hover:scale-105 transition-all duration-300 shadow-sm ' +
     'inline-flex items-center justify-center w-20 text-center text-xs font-semibold';
 
   return (

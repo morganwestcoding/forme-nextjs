@@ -420,7 +420,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                   )}
                 </>
               ) : (
-                <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center text-gray-500 shadow-sm">
+                <div className="px-8 pt-32 text-center text-gray-500 ">
                   No posts found. Try adjusting your filters.
                 </div>
               )

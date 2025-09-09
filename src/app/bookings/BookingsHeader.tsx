@@ -152,8 +152,8 @@ const BookingsHeader: React.FC<BookingsHeaderProps> = ({
 
   return (
     <div className="w-full">
-      <div className="pt-4 mb-4">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">{title}</h1>
+      <div className="pt-2 mb-4">
+        <h1 className="text-3xl md:text-3xl font-bold text-black leading-tight tracking-wide">{title}</h1>
         <p className="text-gray-600">{getCurrentSubheader()}</p>
       </div>
 

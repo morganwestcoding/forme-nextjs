@@ -11,14 +11,12 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-02-24.acacia",
 });
 
-type PlanId = "pearl" | "sapphire" | "ruby" | "emerald";
+type PlanId = "gold" | "platinum";
 type Interval = "monthly" | "yearly";
 
-const PLAN_PRICING: Record<PlanId, { monthly: number; yearly?: number }> = {
-  pearl: { monthly: 14.99 },
-  sapphire: { monthly: 29.99 },
-  ruby: { monthly: 59.99 },
-  emerald: { monthly: 99.99 },
+const PLAN_PRICING: Record<PlanId, { monthly: number; yearly: number }> = {
+  gold: { monthly: 29, yearly: 290 },
+  platinum: { monthly: 99, yearly: 990 },
 };
 
 async function ensureProduct(client: Stripe, apiId: PlanId): Promise<Stripe.Product> {
@@ -31,14 +29,7 @@ async function ensureProduct(client: Stripe, apiId: PlanId): Promise<Stripe.Prod
     starting_after = page.data[page.data.length - 1].id;
   }
 
-  const name =
-    apiId === "pearl"
-      ? "Pearl (Civilians)"
-      : apiId === "sapphire"
-      ? "Sapphire (Pro Tier 1)"
-      : apiId === "ruby"
-      ? "Ruby (Pro Tier 2)"
-      : "Emerald (Pro Tier 3)";
+  const name = apiId === "gold" ? "Gold Plan" : "Platinum Plan";
 
   return client.products.create({ name, metadata: { apiId } });
 }
@@ -60,9 +51,7 @@ async function ensureRecurringPrice(
   }
 
   const product = await ensureProduct(client, planId);
-  const monthly = PLAN_PRICING[planId].monthly;
-  const yearly = PLAN_PRICING[planId].yearly ?? Math.round(monthly * 12 * 0.8 * 100) / 100;
-  const amount = interval === "monthly" ? monthly : yearly;
+  const amount = PLAN_PRICING[planId][interval];
 
   return client.prices.create({
     product: product.id,

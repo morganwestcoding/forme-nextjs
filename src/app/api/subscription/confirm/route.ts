@@ -62,12 +62,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: true }); // already confirmed
     }
 
-    // Map planId -> label
+    // Map planId -> tier label (updated for metal system)
     const tierLabel =
-      planId === "pearl"   ? "Pearl"   :
-      planId === "sapphire"? "Sapphire":
-      planId === "ruby"    ? "Ruby"    :
-      planId === "emerald" ? "Emerald" : user.subscriptionTier || "Quartz";
+      planId === "gold"     ? "Gold"     :
+      planId === "platinum" ? "Platinum" : 
+      user.subscriptionTier || "Bronze";
 
     const currentPeriodEnd = new Date(subscription.current_period_end * 1000);
     const priceId = subscription.items.data[0]?.price?.id || null;

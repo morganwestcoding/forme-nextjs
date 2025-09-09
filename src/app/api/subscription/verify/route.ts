@@ -53,6 +53,14 @@ export async function GET(request: Request) {
       const planNickname = item?.price?.nickname || item?.price?.lookup_key || item?.price?.id;
       const interval = item?.price?.recurring?.interval;
 
+      // Extract plan name for display (updated for metal system)
+      let planDisplayName = "Unknown Plan";
+      if (planNickname?.includes("gold")) {
+        planDisplayName = "Gold Plan";
+      } else if (planNickname?.includes("platinum")) {
+        planDisplayName = "Platinum Plan";
+      }
+
       return NextResponse.json({
         success: true,
         subscription: {
@@ -62,6 +70,7 @@ export async function GET(request: Request) {
           interval,
           currentPeriodEnd: sub.current_period_end ? new Date(sub.current_period_end * 1000) : null,
           planNickname,
+          planDisplayName, // Add friendly display name
         },
       });
     }

@@ -142,7 +142,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
         {/* Bottom info - positioned like ListingCard */}
         <div className="absolute bottom-5 left-5 right-5 z-20">
           {/* Name and Title */}
-          <div className="mb-2">
+          <div className="mb-4">
             <h3 className="text-lg font-semibold text-gray-900 mb-1">
               {employee.fullName}
             </h3>

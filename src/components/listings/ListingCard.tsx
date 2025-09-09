@@ -81,8 +81,8 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser }) => {
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
-                    width="18"
-                    height="18"
+                    width="22"
+                    height="22"
                     className="text-white/90 shrink-0"
                     aria-label="Verified"
                   >
@@ -105,7 +105,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser }) => {
             </div>
 
             {/* Location (one line) + miles away below */}
-            <div className="text-white/90 text-[11px] leading-4 mb-2">
+            <div className="text-white/90 text-[11px] leading-4 mb-4">
               <div className="flex items-center gap-1">
                 <span>
                   {city}
