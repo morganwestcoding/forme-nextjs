@@ -41,7 +41,7 @@ const UserButton: React.FC<UserButtonProps> = ({
 
   const formatTier = (tier?: string | null) => {
     const cleaned = String(tier || "")
-      .replace(/\s*\(.*\)\s*$/, "") // strip " (customer)" etc.
+      .replace(/\s*\(.*\)\s*$/, "")
       .trim()
       .toLowerCase();
 
@@ -106,7 +106,7 @@ const UserButton: React.FC<UserButtonProps> = ({
               </span>
               <div className="h-1" />
               <span className="text-[#60A5FA] text-xs leading-none">
-                {formatTier(undefined)}{/* shows "Bronze" */}
+                {formatTier(undefined)}
               </span>
             </>
           )}

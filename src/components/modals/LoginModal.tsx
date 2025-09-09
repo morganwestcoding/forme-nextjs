@@ -19,7 +19,7 @@ const ANIM_MS = 300;
 
 const LoginModal = () => {
   const router = useRouter();
-  const { status } = useSession(); // "loading" | "authenticated" | "unauthenticated"
+  const { status } = useSession();
 
   const loginModal = useLoginModal();
   const registerModal = useRegisterModal();
@@ -32,14 +32,11 @@ const LoginModal = () => {
     defaultValues: { email: "", password: "" },
   });
 
-  // 1) Auto-close on auth success (covers SSR/client race & external logins)
+  // Auto-close on auth success
   useEffect(() => {
     if (status === "authenticated" && loginModal.isOpen) {
-      // play the slide-out animation
       modalRef.current?.close?.();
-      // refresh after animation for UI that depends on session
       const t = setTimeout(() => {
-        // Ensure store is closed even if some effect tries to reopen
         if (loginModal.isOpen) loginModal.onClose();
         router.refresh();
       }, ANIM_MS + 20);
@@ -47,7 +44,6 @@ const LoginModal = () => {
     }
   }, [status, loginModal, router]);
 
-  // 2) Submit -> await signIn -> close with animation -> refresh
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     setIsLoading(true);
     try {
@@ -56,7 +52,6 @@ const LoginModal = () => {
         toast.success("Logged in");
         modalRef.current?.close?.();
         setTimeout(() => {
-          // extra guard: if anything tried to reopen during the tick, force close
           loginModal.onClose();
           router.refresh();
         }, ANIM_MS + 20);
@@ -139,15 +134,13 @@ const LoginModal = () => {
     <Modal
       ref={modalRef}
       disabled={isLoading}
-      // HARD GUARD: never render open if already authenticated
-      isOpen={loginModal.isOpen && status !== "authenticated"}
+      isOpen={loginModal.isOpen}
       title="Login"
       actionLabel="Continue"
       onClose={loginModal.onClose}
       onSubmit={handleSubmit(onSubmit)}
       body={bodyContent}
       footer={footerContent}
-      // optional: backdropVideo can be passed from parent if you use it
     />
   );
 };
