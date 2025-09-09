@@ -5,6 +5,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import { ArrowLeft, Send } from 'lucide-react';
 import useMessageModal from '@/app/hooks/useMessageModal';
 import useInboxModal from '@/app/hooks/useInboxModal';
 import Modal from './Modal';
@@ -21,13 +22,43 @@ interface Message {
   };
 }
 
+// Generate avatar colors based on name
+const getAvatarColor = (name?: string | null) => {
+  if (!name) return 'bg-gray-500';
+  
+  const colors = [
+    'bg-blue-500',
+    'bg-green-500', 
+    'bg-yellow-500',
+    'bg-purple-500',
+    'bg-pink-500',
+    'bg-indigo-500',
+    'bg-teal-500',
+    'bg-orange-500',
+    'bg-red-500',
+    'bg-cyan-500'
+  ];
+  
+  const index = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return colors[index % colors.length];
+};
+
+const initials = (name?: string | null) => {
+  if (!name) return 'U';
+  const parts = name.trim().split(/\s+/);
+  const a = parts[0]?.[0] || '';
+  const b = parts[1]?.[0] || '';
+  return (a + b || a).toUpperCase();
+};
+
 const MessageModal: React.FC = () => {
   const messageModal = useMessageModal();
-  const inboxModal = useInboxModal(); // ✅ no argument
+  const inboxModal = useInboxModal();
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [otherUser, setOtherUser] = useState<{ name: string | null; image: string | null } | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -45,7 +76,17 @@ const MessageModal: React.FC = () => {
     setIsLoading(true);
     try {
       const response = await axios.get(`/api/messages/${messageModal.conversationId}`);
-      setMessages(response.data);
+      const messagesData = response.data;
+      setMessages(messagesData);
+      
+      // Find the other user's info from the messages
+      const otherUserMessage = messagesData.find((msg: Message) => msg.senderId === messageModal.otherUserId);
+      if (otherUserMessage) {
+        setOtherUser({
+          name: otherUserMessage.sender.name,
+          image: otherUserMessage.sender.image
+        });
+      }
     } catch {
       toast.error('Failed to load messages');
     } finally {
@@ -61,6 +102,12 @@ const MessageModal: React.FC = () => {
       });
       setMessages((prev) => [...prev, response.data]);
       setNewMessage('');
+      
+      // Mark as read in inbox
+      if (typeof window !== 'undefined' && (window as any).markInboxConversationAsRead) {
+        (window as any).markInboxConversationAsRead(messageModal.conversationId);
+      }
+      
       setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 0);
     } catch {
       toast.error('Failed to send message');
@@ -71,9 +118,13 @@ const MessageModal: React.FC = () => {
     if (e.key === 'Enter') sendMessage();
   };
 
-  // ✅ Back to Inbox using the preserved user
   const handleBackToInbox = () => {
-    const user = inboxModal.currentUser; // may be null if never set
+    // Mark conversation as read when going back
+    if (typeof window !== 'undefined' && (window as any).markInboxConversationAsRead) {
+      (window as any).markInboxConversationAsRead(messageModal.conversationId);
+    }
+    
+    const user = inboxModal.currentUser;
     messageModal.onClose();
     inboxModal.onOpen(user);
   };
@@ -104,112 +155,172 @@ const MessageModal: React.FC = () => {
 
     return (
       <div className="relative flex items-center my-6">
-        <div className="flex-grow border-t border-neutral-300/40" />
-        <span className="mx-4 bg-white/90 text-neutral-700 font-medium text-xs px-3 py-1 rounded-full shadow-sm backdrop-blur-sm">
+        <div className="flex-grow border-t border-gray-200" />
+        <span className="mx-4 bg-gray-50 text-gray-600 font-medium text-xs px-3 py-1 rounded-full">
           {formatted}
         </span>
-        <div className="flex-grow border-t border-neutral-300/40" />
+        <div className="flex-grow border-t border-gray-200" />
       </div>
     );
   };
 
+  const avatarColor = getAvatarColor(otherUser?.name);
+
   const bodyContent = (
-    <div className="flex flex-col h-[450px] relative">
-      {/* Back to Inbox button next to the X (your X is right-4; this is right-12) */}
+    <div className="flex flex-col h-[500px]  relative">
+      {/* Back button positioned outside the content flow */}
       <button
         onClick={handleBackToInbox}
-        onMouseDown={(e) => e.stopPropagation()}
+        className="absolute -left-3 -top-2.5 p-1 rounded-full hover:bg-gray-200/50 transition-colors z-20"
         aria-label="Back to Inbox"
-        title="Back to Inbox"
-        className="absolute top-4 right-12 p-1 rounded-full hover:bg-neutral-100 transition z-20"
       >
-        {/* Your SVG */}
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none">
-          <path d="M11 6H15.5C17.9853 6 20 8.01472 20 10.5C20 12.9853 17.9853 15 15.5 15H4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          <path d="M6.99998 12C6.99998 12 4.00001 14.2095 4 15C3.99999 15.7906 7 18 7 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
+        <ArrowLeft className="w-5 h-5 text-gray-700" />
       </button>
+
+      {/* Custom Header with user info */}
+      <div className="flex items-center justify-center p-4  border-b border-gray-200">
+        {/* User Avatar and Name - Centered */}
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <div
+              className={`w-10 h-10 rounded-full overflow-hidden flex items-center justify-center text-white font-medium text-sm
+                         ${!otherUser?.image ? avatarColor : 'bg-gray-100'}`}
+            >
+              {otherUser?.image ? (
+                <Image
+                  src={otherUser.image}
+                  alt={otherUser.name || 'User'}
+                  width={40}
+                  height={40}
+                  className="object-cover w-full h-full"
+                  onError={(e) => {
+                    const target = e.currentTarget.parentElement;
+                    if (target) {
+                      target.className = `w-10 h-10 rounded-full overflow-hidden flex items-center justify-center text-white font-medium text-sm ${avatarColor}`;
+                      target.innerHTML = `<span>${initials(otherUser?.name)}</span>`;
+                    }
+                  }}
+                />
+              ) : (
+                <span>{initials(otherUser?.name)}</span>
+              )}
+            </div>
+            {/* Online status */}
+            <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
+          </div>
+          
+          <div>
+            <h3 className="font-semibold text-gray-900 text-sm">
+              {otherUser?.name || 'Loading...'}
+            </h3>
+            <p className="text-xs text-green-600 font-medium">Online</p>
+          </div>
+        </div>
+      </div>
 
       {isLoading ? (
         <div className="flex-grow flex items-center justify-center">
-          <p className="text-neutral-400">Loading messages...</p>
+          <div className="flex items-center gap-3">
+            <div className="animate-spin w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+            <p className="text-gray-500">Loading messages...</p>
+          </div>
         </div>
       ) : (
         <>
-          <div className="flex-grow overflow-y-auto mb-4 px-4 custom-scrollbar">
-            <div className="space-y-4 flex flex-col">
-              {Object.entries(groupMessagesByDate(messages)).map(([dateKey, dateMessages]) => (
-                <React.Fragment key={dateKey}>
-                  {renderDateSeparator(dateKey)}
-                  {dateMessages.map((message, idx) => {
-                    const isOther = message.senderId === messageModal.otherUserId;
-                    const showTime = isEndOfSenderRun(dateMessages, idx);
+          {/* Messages Area */}
+          <div className="flex-grow overflow-y-auto px-4 py-4 space-y-4">
+            {Object.entries(groupMessagesByDate(messages)).map(([dateKey, dateMessages]) => (
+              <React.Fragment key={dateKey}>
+                {renderDateSeparator(dateKey)}
+                {dateMessages.map((message, idx) => {
+                  const isOther = message.senderId === messageModal.otherUserId;
+                  const showTime = isEndOfSenderRun(dateMessages, idx);
 
-                    return (
-                      <div key={message.id} className="w-full">
-                        <div className={`w-full flex ${isOther ? 'justify-start' : 'justify-end'}`}>
-                          <div className={`relative w-full flex ${isOther ? 'flex-row' : 'flex-row-reverse'} items-start gap-2`}>
-                            {/* Avatar */}
-                            <div className="w-9 h-9 rounded-full overflow-hidden shrink-0">
-                              <Image
-                                src={message.sender.image || '/placeholder-avatar.png'}
-                                alt={message.sender.name || 'User'}
-                                width={36}
-                                height={36}
-                                className="h-full w-full object-cover"
-                              />
+                  return (
+                    <div key={message.id} className="w-full">
+                      <div className={`w-full flex ${isOther ? 'justify-start' : 'justify-end'}`}>
+                        <div className={`relative w-full flex ${isOther ? 'flex-row' : 'flex-row-reverse'} items-end gap-2 max-w-[80%]`}>
+                          {/* Avatar - only show for other user and at end of message runs */}
+                          {isOther && showTime && (
+                            <div className="w-8 h-8 rounded-full overflow-hidden shrink-0 mb-1">
+                              <div
+                                className={`w-full h-full flex items-center justify-center text-white font-medium text-xs
+                                           ${!message.sender.image ? getAvatarColor(message.sender.name) : 'bg-gray-100'}`}
+                              >
+                                {message.sender.image ? (
+                                  <Image
+                                    src={message.sender.image}
+                                    alt={message.sender.name || 'User'}
+                                    width={32}
+                                    height={32}
+                                    className="object-cover w-full h-full"
+                                  />
+                                ) : (
+                                  <span>{initials(message.sender.name)}</span>
+                                )}
+                              </div>
                             </div>
+                          )}
 
-                            {/* Bubble */}
-                            <div
-                              className={`inline-block w-auto max-w-[70%] rounded-2xl px-4 py-3 shadow-sm border ${
-                                isOther
-                                  ? 'bg-white text-neutral-800 border-neutral-200'
-                                  : 'bg-[#3B82F6] text-white border-transparent'
-                              }`}
-                            >
-                              <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">
-                                {message.content}
-                              </p>
-                            </div>
+                          {/* Message Bubble */}
+                          <div
+                            className={`inline-block w-auto max-w-full rounded-2xl px-4 py-3 shadow-sm ${
+                              isOther
+                                ? 'bg-white text-gray-800 border border-gray-200'
+                                : 'bg-blue-500 text-white'
+                            } ${!isOther && showTime ? 'rounded-br-md' : ''} ${isOther && showTime ? 'rounded-bl-md' : ''}`}
+                          >
+                            <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">
+                              {message.content}
+                            </p>
                           </div>
                         </div>
-
-                        {showTime && (
-                          <div className={`mt-1 px-12 flex ${isOther ? 'justify-start' : 'justify-end'}`}>
-                            <span className="text-[11px] text-neutral-500">
-                              {new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                            </span>
-                          </div>
-                        )}
                       </div>
-                    );
-                  })}
-                </React.Fragment>
-              ))}
-            </div>
+
+                      {showTime && (
+                        <div className={`mt-1 flex ${isOther ? 'justify-start' : 'justify-end'} ${isOther ? 'ml-10' : 'mr-2'}`}>
+                          <span className="text-[11px] text-gray-500">
+                            {new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </React.Fragment>
+            ))}
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Composer */}
-          <div className="flex items-center p-3 border-t border-white/10">
-            <input
-              type="text"
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Type a message..."
-              className="flex-grow px-3 py-3.5 text-sm text-neutral-600 placeholder-neutral-400 bg-white rounded-xl focus:outline-none border border-white/20"
-            />
-            <button
-              onClick={sendMessage}
-              className="ml-2 bg-blue-500 hover:bg-blue-600 transition w-10 h-10 flex items-center justify-center rounded-full shadow-md"
-              aria-label="Send message"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="white" strokeWidth="1.5">
-                <path d="M11.9 4.8c4.8-1.6 7.2-2.4 8.5-1.1s.6 3.6-1.1 8.5l-1.1 3.3c-1.2 3.7-1.8 5.6-2.8 5.7-.3.1-.6.1-.9 0-1-.3-1.6-2.3-2.7-6.2-.2-.9-.3-1.3-.6-1.6-.1-.1-.2-.2-.3-.3-.3-.3-.7-.4-1.6-.6-3.9-1.1-5.8-1.6-6.2-2.7-.1-.3-.1-.6 0-.9.2-1 2.1-1.6 5.7-2.8l3.2-1.1z" />
-              </svg>
-            </button>
+          {/* Message Input */}
+          <div className="p-4 border-t border-gray-200">
+            <div className="flex items-center gap-3">
+              <div className="flex-1 relative">
+                <input
+                  type="text"
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  placeholder="Type a message..."
+                  className="w-full px-4 py-3 pr-12 text-sm text-gray-700 placeholder-gray-400 bg-white 
+                           border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 
+                           focus:border-transparent transition-all duration-200"
+                />
+                <button
+                  onClick={sendMessage}
+                  disabled={!newMessage.trim()}
+                  className={`absolute right-2 top-1/2 transform -translate-y-1/2 w-8 h-8 rounded-full
+                            flex items-center justify-center transition-all duration-200 ${
+                            newMessage.trim() 
+                              ? 'bg-[#60A5FA] hover:bg-blue-500 text-white shadow-md hover:shadow-lg' 
+                              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                          }`}
+                  aria-label="Send message"
+                >
+                  <Send className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
           </div>
         </>
       )}
@@ -220,9 +331,10 @@ const MessageModal: React.FC = () => {
     <Modal
       isOpen={messageModal.isOpen}
       onClose={messageModal.onClose}
-      onSubmit={sendMessage}
-      title="Messages"
+      onSubmit={() => {}}
+      title=""
       body={bodyContent}
+      className="md:w-[480px]"
     />
   );
 };
