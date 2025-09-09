@@ -78,18 +78,17 @@ const Input: React.FC<InputProps> = ({
     return `Please check your ${label || id}`;
   };
 
-  // Better change handler that doesn't interfere with spaces
+  // FIXED: Better change handler that properly handles maxLength
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const value = e.target.value;
 
-    // Handle character count for maxLength
-    if (maxLength) {
+    // Handle maxLength by truncating if necessary
+    if (maxLength && value.length > maxLength) {
+      const truncatedValue = value.slice(0, maxLength);
+      e.target.value = truncatedValue;
+      setCharCount(maxLength);
+    } else {
       setCharCount(value.length);
-      if (value.length > maxLength) {
-        e.target.value = value.slice(0, maxLength);
-        setCharCount(maxLength);
-        return; // Don't continue if we truncated
-      }
     }
 
     // Password validation
@@ -211,17 +210,7 @@ const Input: React.FC<InputProps> = ({
               ${inputClassName ?? ''}
             `}
             onChange={handleChange}
-            // Remove any key restrictions for name input
-            onKeyDown={(e) => {
-              // Allow all keys for name input
-              if (id === "name") return;
-              
-              // Handle maxLength on keyDown for better UX
-              if (maxLength && e.currentTarget.value.length >= maxLength && 
-                  !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
-                e.preventDefault();
-              }
-            }}
+            // REMOVED: onKeyDown handler - let onChange handle maxLength instead
           />
         )}
 
@@ -262,7 +251,7 @@ const Input: React.FC<InputProps> = ({
         </span>
       )}
 
-      {/* FIXED: Error display with proper string handling */}
+      {/* Error display with proper string handling */}
       {errors[id] && (
         <span className="text-rose-500 text-xs mt-1 block">
           {getErrorMessage()}
