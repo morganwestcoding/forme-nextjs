@@ -78,14 +78,11 @@ export default async function RootLayout({
                   </div>
                 </div>
 
-                {/* Keep the auth auto-open controller mounted always; it only opens when unauthenticated */}
-                <ClientOnly>
-                  <AuthModalController />
-                </ClientOnly>
+       
 
-                {/* Global modals/providers */}
                 <ShopModal/>
                 <ToasterProvider/>
+           
                 <ReservationModal/>
                 <RentModal/>
                 <CreatePostModal />

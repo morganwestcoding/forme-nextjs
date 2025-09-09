@@ -39,10 +39,6 @@ const UserButton: React.FC<UserButtonProps> = ({
   const subscribeModal = useSubscribeModal();
   const [isOpen, setIsOpen] = useState(false);
 
-  // Format a tier string:
-  // - remove anything in parentheses
-  // - capitalize the first letter
-  // - default to "Bronze" if empty/missing
   const formatTier = (tier?: string | null) => {
     const cleaned = String(tier || "")
       .replace(/\s*\(.*\)\s*$/, "") // strip " (customer)" etc.
