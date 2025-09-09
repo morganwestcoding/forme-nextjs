@@ -146,7 +146,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
             <h3 className="text-lg font-semibold text-gray-900 mb-1">
               {employee.fullName}
             </h3>
-            <p className="text-sm text-gray-600 leading-relaxed">
+            <p className="text-xs text-gray-600 leading-relaxed">
               {jobLabel}
             </p>
           </div>

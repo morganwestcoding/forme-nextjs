@@ -112,7 +112,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser }) => {
                   {state ? `, ${state}` : ''}
                 </span>
               </div>
-              <div className="opacity-90 mt-0.5">2.3 miles away</div>
+              <div className="opacity-90 mt-0.5 font-light">2.3 miles away</div>
             </div>
 
             {/* Rating + open status */}

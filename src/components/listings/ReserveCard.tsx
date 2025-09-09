@@ -135,7 +135,7 @@ const ReserveCard: React.FC<ReserveCardProps> = ({
   return (
     <div
       onClick={onCardClick}
-      className="cursor-pointer bg-white rounded-2xl shadow hover:shadow-xl border border-gray-100 overflow-hidden transition-all duration-300 hover:scale-[1.02] max-w-[250px]"
+      className="cursor-pointer bg-white rounded-2xl shadow hover:shadow-xl overflow-hidden transition-all duration-300 hover:scale-[1.02] max-w-[250px]"
     >
       {/* Match your existing card height structure */}
       <div className="relative h-[350px]">
