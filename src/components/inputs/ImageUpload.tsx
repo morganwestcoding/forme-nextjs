@@ -18,15 +18,21 @@ interface ImageUploadProps {
   value?: string;
   onChange: (url: string) => void;
   onRemove?: () => void;
-  className?: string;     // applied to the frame
+  className?: string;
   label?: string;
   hint?: string;
   disabled?: boolean;
   accept?: Array<'png' | 'jpg' | 'jpeg' | 'webp' | 'svg'>;
   maxFileSizeMB?: number;
-  ratio?: Ratio;          // used only if you don't supply explicit h-/aspect- classes
+  ratio?: Ratio;
   rounded?: 'lg' | 'xl' | '2xl' | 'full';
   showRemove?: boolean;
+  // Enhanced cropping props
+  enableCrop?: boolean;
+  cropMode?: 'free' | 'fixed';
+  customAspectRatio?: number;
+  // Add unique identifier for debugging
+  uploadId?: string;
 }
 
 export default function ImageUpload({
@@ -42,12 +48,11 @@ export default function ImageUpload({
   ratio = 'landscape',
   rounded = '2xl',
   showRemove = true,
+  enableCrop = true,
+  cropMode = 'fixed',
+  customAspectRatio,
+  uploadId = 'default',
 }: ImageUploadProps) {
-  const acceptText = useMemo(() => {
-    const uniq = Array.from(new Set(accept)).map((t) => t.toUpperCase());
-    return `${uniq.join(', ')} • Max ~${maxFileSizeMB}MB`;
-  }, [accept, maxFileSizeMB]);
-
   const roundedClass =
     rounded === 'full'
       ? 'rounded-full'
@@ -57,8 +62,8 @@ export default function ImageUpload({
       ? 'rounded-lg'
       : 'rounded-xl';
 
-  // Only add aspect-* if the caller didn't set a fixed height/aspect
   const hasExplicitSize = !!className && /\b(h-|min-h-|max-h-|aspect-)/.test(className);
+  
   const aspectClasses = useMemo(() => {
     if (hasExplicitSize) return '';
     switch (ratio) {
@@ -76,50 +81,189 @@ export default function ImageUpload({
     }
   }, [ratio, hasExplicitSize]);
 
+  // Calculate aspect ratio for cropping
+  const getCropAspectRatio = useCallback(() => {
+    if (customAspectRatio) return customAspectRatio;
+    
+    switch (ratio) {
+      case 'square':
+        return 1;
+      case 'portrait':
+        return 3 / 4;
+      case 'tall':
+        return 2 / 3;
+      case 'wide':
+        return 21 / 9;
+      case 'landscape':
+      default:
+        return 4 / 3;
+    }
+  }, [ratio, customAspectRatio]);
+
+  // Enhanced function to build Cloudinary URL with transformations
+  const buildCloudinaryUrl = useCallback((publicId: string, cloudName: string) => {
+    console.log(`[${uploadId}] Building Cloudinary URL:`, { publicId, cloudName, enableCrop, ratio });
+
+    if (!enableCrop) {
+      const url = `https://res.cloudinary.com/${cloudName}/image/upload/${publicId}`;
+      console.log(`[${uploadId}] Crop disabled, returning original:`, url);
+      return url;
+    }
+
+    const aspectRatio = getCropAspectRatio();
+    console.log(`[${uploadId}] Aspect ratio calculated:`, aspectRatio);
+
+    // Determine optimal dimensions based on ratio
+    let width: number;
+    let height: number;
+
+    if (ratio === 'square') {
+      width = 400;
+      height = 400;
+    } else if (ratio === 'landscape') {
+      width = 800;
+      height = Math.round(800 / aspectRatio); // Should be ~600 for 4:3
+    } else if (ratio === 'wide') {
+      width = 1200;
+      height = Math.round(1200 / aspectRatio);
+    } else {
+      width = 600;
+      height = Math.round(width / aspectRatio);
+    }
+
+    console.log(`[${uploadId}] Calculated dimensions:`, { width, height });
+
+    // Choose crop strategy based on image type and ratio
+    let cropTransform: string;
+    let gravity: string;
+
+    if (ratio === 'square') {
+      // For profile pictures, use thumb mode with auto gravity for face detection
+      cropTransform = 'c_thumb';
+      gravity = 'g_auto';
+    } else {
+      // For landscape/banner images, use fill with auto gravity for content-aware cropping
+      cropTransform = 'c_fill';
+      gravity = 'g_auto';
+    }
+
+    console.log(`[${uploadId}] Crop strategy:`, { cropTransform, gravity });
+
+    // Build transformation string with additional quality settings
+    const transformations = [
+      'q_auto:good',     // Auto quality
+      'f_auto',          // Auto format
+      `w_${width}`,      // Width
+      `h_${height}`,     // Height
+      cropTransform,     // Crop mode
+      gravity,           // Gravity
+    ].join(',');
+
+    const finalUrl = `https://res.cloudinary.com/${cloudName}/image/upload/${transformations}/${publicId}`;
+    
+    console.log(`[${uploadId}] Final transformed URL:`, finalUrl);
+    console.log(`[${uploadId}] Transformation string:`, transformations);
+    
+    return finalUrl;
+  }, [enableCrop, getCropAspectRatio, ratio, uploadId]);
+
   const handleUpload = useCallback(
     (result: CldUploadWidgetResults) => {
-      // @ts-expect-error Cloudinary result is loosely typed
-      const secureUrl: string | undefined = result?.info?.secure_url;
-      if (secureUrl) onChange(secureUrl);
+      console.log(`[${uploadId}] Upload result received:`, result);
+      
+      const info = result?.info;
+      
+      if (info && typeof info === 'object') {
+        const publicId = info.public_id;
+        console.log(`[${uploadId}] Extracted publicId:`, publicId);
+        
+        // Extract cloud name from secure_url if not directly available
+        let cloudName: string | null = null;
+        
+        // Try to get cloud name directly
+        if (typeof info.cloud_name === 'string') {
+          cloudName = info.cloud_name;
+          console.log(`[${uploadId}] Cloud name from info:`, cloudName);
+        }
+        
+        // If not available, extract from secure_url
+        if (!cloudName && typeof info.secure_url === 'string') {
+          const urlMatch = info.secure_url.match(/res\.cloudinary\.com\/([^\/]+)/);
+          cloudName = urlMatch ? urlMatch[1] : null;
+          console.log(`[${uploadId}] Cloud name extracted from URL:`, cloudName);
+        }
+        
+        if (publicId && cloudName) {
+          let finalUrl: string;
+          
+          if (enableCrop) {
+            // Build URL with crop transformations
+            finalUrl = buildCloudinaryUrl(publicId, cloudName);
+            console.log(`[${uploadId}] Using cropped URL:`, finalUrl);
+          } else {
+            // Use original URL
+            finalUrl = info.secure_url;
+            console.log(`[${uploadId}] Using original URL:`, finalUrl);
+          }
+          
+          onChange(finalUrl);
+        } else {
+          console.warn(`[${uploadId}] Missing publicId or cloudName:`, { publicId, cloudName });
+          // Fallback to original URL if we can't build transformed URL
+          if (typeof info.secure_url === 'string') {
+            console.log(`[${uploadId}] Falling back to secure_url:`, info.secure_url);
+            onChange(info.secure_url);
+          }
+        }
+      } else {
+        console.error(`[${uploadId}] Invalid upload result info:`, info);
+      }
     },
-    [onChange]
+    [onChange, enableCrop, buildCloudinaryUrl, uploadId]
   );
+
+  // Enhanced Cloudinary options with better cropping settings
+  const cloudinaryOptions = useMemo(() => {
+    const aspectRatio = getCropAspectRatio();
+    
+    const options = {
+      multiple: false,
+      maxFiles: 1,
+      sources: ['local', 'url', 'camera'] as ('local' | 'url' | 'camera')[],
+      resourceType: 'image' as const,
+      clientAllowedFormats: accept,
+      maxImageFileSize: maxFileSizeMB * 1_000_000,
+      folder: `uploads/${uploadId}`, // Separate folders for different upload types
+      // Enable cropping in widget if available
+      cropping: enableCrop,
+      croppingAspectRatio: enableCrop && cropMode === 'fixed' ? aspectRatio : undefined,
+      croppingShowBackButton: true,
+      croppingValidateDimensions: true,
+      // Show cropping interface - make it required for fixed mode
+      showSkipCropButton: cropMode === 'free',
+      croppingShowDimensions: true,
+      // Quality settings
+      quality: 'auto:good' as const,
+      // Add unique public_id prefix
+      publicId: `${uploadId}_${Date.now()}`,
+    };
+
+    console.log(`[${uploadId}] Cloudinary options:`, options);
+    return options;
+  }, [accept, maxFileSizeMB, enableCrop, cropMode, getCropAspectRatio, uploadId]);
 
   return (
     <div className="w-full">
-      <div className="mb-2 flex items-center justify-between">
-  
-      </div>
+      {hint && (
+        <div className="mb-2 text-xs text-neutral-500 dark:text-neutral-400">
+          {hint}
+        </div>
+      )}
 
       <CldUploadWidget
-        uploadPreset={UPLOAD_PRESET}           // unsigned preset to avoid spinner hang
+        uploadPreset={UPLOAD_PRESET}
         onUpload={handleUpload}
-        options={{
-          multiple: false,
-          maxFiles: 1,
-          sources: ['local', 'url', 'camera'],
-          resourceType: 'image',
-          clientAllowedFormats: accept,
-          maxImageFileSize: maxFileSizeMB * 1_000_000,
-          folder: 'uploads',
-          ...(hasExplicitSize
-            ? {}
-            : {
-                cropping: true,
-                croppingValidateDimensions: true,
-                croppingShowDimensions: true,
-                croppingAspectRatio:
-                  ratio === 'square'
-                    ? 1
-                    : ratio === 'portrait'
-                    ? 3 / 4
-                    : ratio === 'tall'
-                    ? 2 / 3
-                    : ratio === 'wide'
-                    ? 21 / 9
-                    : 4 / 3,
-              }),
-        }}
+        options={cloudinaryOptions}
       >
         {({ open }) => (
           <div
@@ -147,7 +291,7 @@ export default function ImageUpload({
               className
             )}
           >
-            {/* Empty state (uses your SVG) */}
+            {/* Empty state */}
             {!value && (
               <div className="grid place-items-center w-full h-full p-6">
                 <div className="flex flex-col items-center gap-3">
@@ -175,8 +319,17 @@ export default function ImageUpload({
                       strokeLinejoin="round"
                     />
                   </svg>
-                  <div className="text-sm font-medium text-neutral-800 dark:text-neutral-200">Upload image</div>
-                  <div className="text-xs text-neutral-500 dark:text-neutral-400">Drag & drop or click</div>
+                  <div className="text-sm font-medium text-neutral-800 dark:text-neutral-200">
+                    {enableCrop ? 'Upload & auto-crop' : 'Upload image'}
+                  </div>
+                  <div className="text-xs text-neutral-500 dark:text-neutral-400">
+                    Drag & drop or click
+                  </div>
+                  {enableCrop && (
+                    <div className="text-xs text-neutral-400 dark:text-neutral-500">
+                      Will be cropped to {ratio} ratio ({Math.round(getCropAspectRatio() * 100)/100}:1)
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -195,7 +348,6 @@ export default function ImageUpload({
 
                 {/* Badge */}
                 <div className="absolute top-2 left-2 inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-medium bg-neutral-900/70 text-white">
-                  {/* small camera/check mark look with same SVG color */}
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
@@ -204,11 +356,19 @@ export default function ImageUpload({
                     color="#ffffff"
                     fill="none"
                   >
-                    <path d="M14 3.5H10C6.2288 3.5 4.3431 3.5 3.1716 4.6716C2 5.8431 2 7.7288 2 11.5V13.5C2 17.2712 2 19.1569 3.1716 20.3284C4.3431 21.5 6.2288 21.5 10 21.5H14C17.7712 21.5 19.6569 21.5 20.8284 20.3284C22 19.1569 22 17.2712 22 13.5V11.5C22 7.7288 22 5.8431 20.8284 4.6716C19.6569 3.5 17.7712 3.5 14 3.5Z" stroke="currentColor" strokeWidth="1.5" />
-                    <circle cx="8.5" cy="9" r="1.5" stroke="currentColor" strokeWidth="1.5" />
-                    <path d="M21.5 17.5L16.348 11.88C16.1263 11.6377 15.8131 11.5 15.485 11.5C15.1744 11.5 14.8766 11.6234 14.6571 11.8429L10 16.5L7.8393 14.3393C7.622 14.122 7.3274 14 7.0202 14C6.6893 14 6.3742 14.1415 6.1544 14.3888L2.5 18.5" stroke="currentColor" strokeWidth="1.5" />
+                    {enableCrop ? (
+                      // Crop icon
+                      <path d="M6 2v3M18 6v12M6 8h12M6 22v-3M2 6h3M22 18h-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    ) : (
+                      // Regular image icon
+                      <>
+                        <path d="M14 3.5H10C6.2288 3.5 4.3431 3.5 3.1716 4.6716C2 5.8431 2 7.7288 2 11.5V13.5C2 17.2712 2 19.1569 3.1716 20.3284C4.3431 21.5 6.2288 21.5 10 21.5H14C17.7712 21.5 19.6569 21.5 20.8284 20.3284C22 19.1569 22 17.2712 22 13.5V11.5C22 7.7288 22 5.8431 20.8284 4.6716C19.6569 3.5 17.7712 3.5 14 3.5Z" stroke="currentColor" strokeWidth="1.5" />
+                        <circle cx="8.5" cy="9" r="1.5" stroke="currentColor" strokeWidth="1.5" />
+                        <path d="M21.5 17.5L16.348 11.88C16.1263 11.6377 15.8131 11.5 15.485 11.5C15.1744 11.5 14.8766 11.6234 14.6571 11.8429L10 16.5L7.8393 14.3393C7.622 14.122 7.3274 14 7.0202 14C6.6893 14 6.3742 14.1415 6.1544 14.3888L2.5 18.5" stroke="currentColor" strokeWidth="1.5" />
+                      </>
+                    )}
                   </svg>
-                  Image
+                  {enableCrop ? 'Auto-cropped' : 'Image'}
                 </div>
 
                 {/* Actions */}
@@ -217,19 +377,14 @@ export default function ImageUpload({
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      // open widget to replace
                       (document.activeElement as HTMLElement)?.blur();
-                      (open as any)?.();
+                      open?.();
                     }}
                     className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium
                                bg-white/90 text-neutral-900 ring-1 ring-neutral-200 hover:bg-white"
                   >
-                    {/* small refresh icon as SVG to avoid lucide dependency here */}
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <polyline points="23 4 23 10 17 10"></polyline>
-                      <polyline points="1 20 1 14 7 14"></polyline>
-                      <path d="M3.51 9A9 9 0 0 1 20.49 7"></path>
-                      <path d="M20.49 15A9 9 0 0 1 3.51 17"></path>
+                      <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707"/>
                     </svg>
                     Replace
                   </button>

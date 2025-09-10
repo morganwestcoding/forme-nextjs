@@ -29,6 +29,7 @@ model User {
   location       String?
   galleryImages  String[]
 
+
   isSubscribed    Boolean @default(false)
   subscriptionStartDate DateTime?
   subscriptionEndDate DateTime?
@@ -51,7 +52,13 @@ model User {
   conversations   Conversation[] @relation(fields: [conversationIds], references: [id])
   messages       Message[]       // Add this line
   shops           Shop[]
+
+  employees       Employee[]    // Link to employee records
+  managedListings String[]      @db.ObjectId  // Listings they can manage as owner/manager
 }
+
+
+
 
 model Account {
   id                String  @id @default(auto()) @map("_id") @db.ObjectId
@@ -211,11 +218,19 @@ model StoreHours {
 model Employee {
   id           String        @id @default(auto()) @map("_id") @db.ObjectId
   fullName     String
-  jobTitle     String?       // Add this
-  profileImage String?       // Add this
+  jobTitle     String?
+  profileImage String?
   listingId    String        @db.ObjectId
+  userId       String?       @db.ObjectId  // NEW: Link back to User account
+  serviceIds   String[]      @db.ObjectId  // NEW: Services this employee provides
+  isActive     Boolean       @default(true) // NEW: For managing employee status
+  createdAt    DateTime      @default(now()) // NEW: Track when they joined
+  
   listing      Listing       @relation(fields: [listingId], references: [id], onDelete: Cascade)
-  reservations Reservation[] 
+  user         User?         @relation(fields: [userId], references: [id], onDelete: SetNull) // NEW
+  reservations Reservation[]
+  
+  @@unique([userId, listingId]) // Prevent duplicate employee records for same user/listing
 }
 
 

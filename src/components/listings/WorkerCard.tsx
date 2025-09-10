@@ -2,6 +2,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { SafeListing, SafeUser, SafeEmployee } from '@/app/types';
 import SmartBadgeWorker from './SmartBadgeWorker';
@@ -22,6 +23,14 @@ interface WorkerCardProps {
       closeTime: string;
       isClosed: boolean;
     }>;
+    // Add user relationship to get their profile image
+    user?: {
+      id: string;
+      name: string | null;
+      image: string | null;
+      imageSrc?: string | null;
+      updatedAt?: string; // Track when user was last updated
+    } | null;
   };
   listingTitle: string;
   data: {
@@ -67,6 +76,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
   currentUser,
 }) => {
   const [/*isFollowing*/, setIsFollowing] = useState(false);
+  const [imageError, setImageError] = useState(false);
   const router = useRouter();
 
   const handleCardClick = () => {
@@ -80,14 +90,48 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
     [employee.id, employee.fullName]
   );
 
+  // UPDATED: Get the best available profile image with cache busting
+  const profileImage = useMemo(() => {
+    // CHANGED PRIORITY: Check user images FIRST, then fallback to employee profileImage
+    const baseImage = employee.user?.image || 
+                     employee.user?.imageSrc || 
+                     employee.profileImage;
+    
+    if (!baseImage) return null;
+    
+    // Use user's updatedAt if available, otherwise current timestamp
+    const cacheBuster = employee.user?.updatedAt 
+      ? new Date(employee.user.updatedAt).getTime()
+      : Date.now();
+    
+    // Only add cache buster if URL doesn't already have query parameters
+    const separator = baseImage.includes('?') ? '&' : '?';
+    return `${baseImage}${separator}cb=${cacheBuster}`;
+  }, [
+    employee.user?.image,      // Moved to first priority
+    employee.user?.imageSrc,   // Moved to second priority  
+    employee.profileImage,     // Now fallback
+    employee.user?.updatedAt
+  ]);
+
+  const handleImageError = () => {
+    setImageError(true);
+  };
+
+  const handleImageLoad = () => {
+    setImageError(false);
+  };
+
   const jobLabel = employee.jobTitle
     ? `${employee.jobTitle} at ${listingTitle}`
     : `Specialist at ${listingTitle}`;
 
+  const shouldShowImage = profileImage && !imageError;
+
   return (
     <div
       onClick={handleCardClick}
-      className="cursor-pointer bg-white rounded-2xl shadow hover:shadow-xl  overflow-hidden relative transition-all duration-300 hover:scale-[1.02] max-w-[250px]"
+      className="cursor-pointer bg-white rounded-2xl shadow hover:shadow-xl overflow-hidden relative transition-all duration-300 hover:scale-[1.02] max-w-[250px]"
     >
       {/* Match ListingCard height structure */}
       <div className="relative h-[350px]">
@@ -103,22 +147,36 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
         {/* Avatar - Centered towards middle-top */}
         <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
           <div className="relative">
-            <div
-              className="w-24 h-24 rounded-full flex items-center justify-center text-white font-semibold shadow-lg ring-4 ring-white/50"
-              style={{ backgroundColor: avatarBg }}
-              aria-label="Employee initials"
-              title={employee.fullName}
-            >
-              {initials}
-            </div>
+            {/* Profile Image or Initials Circle */}
+            {shouldShowImage ? (
+              <div className="w-24 h-24 rounded-full overflow-hidden shadow-lg ring-4 ring-white/50 relative">
+                <Image
+                  src={profileImage}
+                  alt={employee.fullName}
+                  fill
+                  className="object-cover"
+                  onError={handleImageError}
+                  onLoad={handleImageLoad}
+                />
+              </div>
+            ) : (
+              <div
+                className="w-24 h-24 rounded-full flex items-center justify-center text-white font-semibold shadow-lg ring-4 ring-white/50"
+                style={{ backgroundColor: avatarBg }}
+                aria-label="Employee initials"
+                title={employee.fullName}
+              >
+                {initials}
+              </div>
+            )}
             
             {/* Verified badge */}
             <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-1 shadow-sm">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
-                width="24"
-                height="24"
+                width="22"
+                height="22"
                 fill="#60A5FA"
                 className="shrink-0 text-white drop-shadow-sm"
               >

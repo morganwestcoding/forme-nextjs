@@ -13,7 +13,11 @@ export default async function getListingById(params: IParams) {
       include: {
         user: true,
         services: true,
-        employees: true, 
+        employees: {
+          include: {
+            user: true  // Add user relationship for employees
+          }
+        }, 
         storeHours: true
       }
     });
@@ -35,7 +39,14 @@ export default async function getListingById(params: IParams) {
         id: employee.id,
         fullName: employee.fullName,
         jobTitle: employee.jobTitle || null,
-        profileImage: employee.profileImage || null
+        profileImage: employee.profileImage || null,
+        user: employee.user ? {
+          id: employee.user.id,
+          name: employee.user.name,
+          image: employee.user.image,
+          imageSrc: employee.user.imageSrc,
+          updatedAt: employee.user.updatedAt.toISOString()
+        } : null
       })),
       storeHours: listing.storeHours.map(hour => ({
         dayOfWeek: hour.dayOfWeek,

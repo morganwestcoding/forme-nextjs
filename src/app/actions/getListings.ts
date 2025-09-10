@@ -38,7 +38,11 @@ export default async function getListings(params: IListingsParams) {
       include: {
         user: true,
         services: true,
-        employees: true,
+        employees: {
+          include: {
+            user: true  // Include user data for each employee
+          }
+        },
         storeHours: true
       },
       orderBy: { createdAt: order === 'asc' ? 'asc' : 'desc' },
@@ -72,7 +76,14 @@ export default async function getListings(params: IListingsParams) {
         id: employee.id,
         fullName: employee.fullName,
         jobTitle: employee.jobTitle || null,
-        profileImage: employee.profileImage || null
+        profileImage: employee.profileImage || null,
+        user: employee.user ? {
+          id: employee.user.id,
+          name: employee.user.name,
+          image: employee.user.image,
+          imageSrc: employee.user.imageSrc,
+          updatedAt: employee.user.updatedAt.toISOString()
+        } : null
       })),
       storeHours: listing.storeHours.map(hour => ({
         dayOfWeek: hour.dayOfWeek,

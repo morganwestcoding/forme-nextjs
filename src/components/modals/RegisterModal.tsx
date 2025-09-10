@@ -16,6 +16,10 @@ import ProfileLocationInput from "../inputs/ProfileLocationInput";
 import ImageUpload from "../inputs/ImageUpload";
 import Logo from "../header/Logo";
 import EditOverview from "./EditOverview";
+import UserTypeStep from "../inputs/UserTypeStep";
+import JobTitleStep from "../inputs/JobTitleStep";
+import BusinessSelectStep from "../inputs/BusinessSelectStep";
+import ServiceSelectStep from "../inputs/ServiceSelectStep";
 
 /** ---------------------------------------------
  * Utilities
@@ -36,9 +40,13 @@ function safeToastError(err: any, fallback = "Something went wrong!") {
 
 enum STEPS {
   ACCOUNT = 0,
-  LOCATION = 1,
-  BIOGRAPHY = 2,
-  IMAGES = 3,
+  USER_TYPE = 1,
+  JOB_TITLE = 2,        // Only for team members
+  BUSINESS_SELECT = 3,  // Only for team members
+  SERVICE_SELECT = 4,   // Only for team members
+  LOCATION = 5,
+  BIOGRAPHY = 6,
+  IMAGES = 7,
 }
 
 /** A virtual step used only in edit mode for the hub */
@@ -70,7 +78,11 @@ const RegisterModal = () => {
       location: '',
       bio: '',
       image: '',
-      imageSrc: '',
+      userType: '',
+      selectedListing: '',
+      jobTitle: '',
+      isOwnerManager: false,
+      selectedServices: [],
     },
   });
 
@@ -80,7 +92,11 @@ const RegisterModal = () => {
   const locationVal = watch('location');
   const bioVal = watch('bio');
   const image = watch('image');
-  const imageSrc = watch('imageSrc');
+  const userType = watch('userType') as UserType;
+  const selectedListing = watch('selectedListing');
+  const jobTitle = watch('jobTitle');
+  const isOwnerManager = watch('isOwnerManager');
+  const selectedServices = watch('selectedServices') || [];
 
   // Step state: start at overview hub when editing
   const [step, setStep] = useState<number>(isEdit ? EDIT_HUB_STEP : STEPS.ACCOUNT);
@@ -98,7 +114,11 @@ const RegisterModal = () => {
         location: p.location ?? '',
         bio: p.bio ?? '',
         image: p.image ?? '',
-        imageSrc: p.imageSrc ?? '',
+        userType: '',
+        selectedListing: '',
+        jobTitle: '',
+        isOwnerManager: false,
+        selectedServices: [],
       });
       setStep(isEdit ? EDIT_HUB_STEP : STEPS.ACCOUNT);
     }
@@ -125,7 +145,31 @@ const RegisterModal = () => {
     });
   };
 
-  const onNext = () => setStep((s) => s + 1);
+  // Smart step navigation based on user type
+  const getNextStep = (currentStep: number, userType: UserType) => {
+    if (currentStep === STEPS.USER_TYPE) {
+      if (userType === 'team') {
+        return STEPS.JOB_TITLE;
+      } else {
+        return STEPS.LOCATION;
+      }
+    }
+    if (currentStep === STEPS.JOB_TITLE && userType === 'team') {
+      return STEPS.BUSINESS_SELECT;
+    }
+    if (currentStep === STEPS.BUSINESS_SELECT && userType === 'team') {
+      return STEPS.SERVICE_SELECT;
+    }
+    if (currentStep === STEPS.SERVICE_SELECT) {
+      return STEPS.LOCATION;
+    }
+    return currentStep + 1;
+  };
+
+  const onNext = () => {
+    const nextStep = getNextStep(step, userType);
+    setStep(nextStep);
+  };
 
   // In edit mode, Back ALWAYS returns to the Edit Overview (hub)
   const onBack = () => {
@@ -151,6 +195,14 @@ const RegisterModal = () => {
     setStep(isEdit ? EDIT_HUB_STEP : STEPS.ACCOUNT);
   }, [registerModal, isEdit]);
 
+  const onToggle = useCallback(() => {
+    if (isEdit) return; // no toggle in edit mode
+    modalRef.current?.close();
+    setTimeout(() => {
+      loginModal.onOpen();
+    }, 400);
+  }, [loginModal, isEdit]);
+
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     // No primary action on the Edit Overview
     if (step === EDIT_HUB_STEP) return;
@@ -174,6 +226,39 @@ const RegisterModal = () => {
           return;
         }
       }
+      
+      // Validate user type step
+      if (step === STEPS.USER_TYPE) {
+        if (!data.userType) {
+          toast.error('Please select your user type');
+          return;
+        }
+      }
+
+      // Validate job title step (only for team members)
+      if (step === STEPS.JOB_TITLE) {
+        if (data.userType === 'team' && !data.isOwnerManager && !data.jobTitle?.trim()) {
+          toast.error('Please enter your job title or select owner/manager');
+          return;
+        }
+      }
+
+      // Validate business selection step (only for team members)
+      if (step === STEPS.BUSINESS_SELECT) {
+        if (data.userType === 'team' && !data.selectedListing) {
+          toast.error('Please select a business to join');
+          return;
+        }
+      }
+
+      // Validate service selection step (only for team members)
+      if (step === STEPS.SERVICE_SELECT) {
+        if (data.userType === 'team' && (!data.selectedServices || data.selectedServices.length === 0)) {
+          toast.error('Please select at least one service you provide');
+          return;
+        }
+      }
+      
       onNext();
       return;
     }
@@ -194,7 +279,6 @@ const RegisterModal = () => {
           location: data.location,
           bio: data.bio,
           image: data.image,
-          imageSrc: data.imageSrc,
         };
 
         await axios.put(`/api/users/${userId}`, payload);
@@ -214,7 +298,11 @@ const RegisterModal = () => {
         location: data.location,
         bio: data.bio,
         image: data.image,
-        imageSrc: data.imageSrc,
+        userType: data.userType,
+        selectedListing: data.selectedListing,
+        jobTitle: data.jobTitle,
+        isOwnerManager: data.isOwnerManager,
+        selectedServices: data.selectedServices,
       });
       toast.success('Registered! Logging you in…');
 
@@ -247,15 +335,7 @@ const RegisterModal = () => {
     }
   };
 
-  const onToggle = useCallback(() => {
-    if (isEdit) return; // no toggle in edit mode
-    modalRef.current?.close();
-    setTimeout(() => {
-      loginModal.onOpen();
-    }, 400);
-  }, [loginModal, isEdit]);
-
-  /** ---------- BODY ---------- */
+/** ---------- BODY ---------- */
   let bodyContent = (
     <div className="flex flex-col gap-4">
       {!isEdit && (
@@ -312,6 +392,32 @@ const RegisterModal = () => {
               complete: Boolean(name && email),
             },
             {
+              key: STEPS.USER_TYPE,
+              title: 'User Type',
+              description: 'Customer, individual, or team member',
+              complete: Boolean(userType),
+            },
+            ...(userType === 'team' ? [
+              {
+                key: STEPS.JOB_TITLE,
+                title: 'Job Title',
+                description: 'Your role or position',
+                complete: Boolean(jobTitle || isOwnerManager),
+              },
+              {
+                key: STEPS.BUSINESS_SELECT,
+                title: 'Business',
+                description: 'Select your business',
+                complete: Boolean(selectedListing),
+              },
+              {
+                key: STEPS.SERVICE_SELECT,
+                title: 'Services',
+                description: 'Services you provide',
+                complete: Boolean(selectedServices && selectedServices.length > 0),
+              }
+            ] : []),
+            {
               key: STEPS.LOCATION,
               title: 'Location',
               description: 'Where you are',
@@ -325,14 +431,67 @@ const RegisterModal = () => {
             },
             {
               key: STEPS.IMAGES,
-              title: 'Images',
-              description: 'Profile & background',
-              complete: Boolean(image || imageSrc),
+              title: 'Profile Picture',
+              description: 'Your profile photo',
+              complete: Boolean(image),
             },
           ]}
           onSelect={(k) => setStep(k)}
         />
       </div>
+    );
+  }
+
+  // User Type Selection Step
+  if (step === STEPS.USER_TYPE) {
+    bodyContent = (
+      <UserTypeStep
+        userType={userType}
+        onUserTypeChange={(type) => setCustomValue('userType', type)}
+        isLoading={isLoading}
+      />
+    );
+  }
+
+  // Job Title Step (only for team members)
+  if (step === STEPS.JOB_TITLE) {
+    bodyContent = (
+      <JobTitleStep
+        jobTitle={jobTitle}
+        isOwnerManager={isOwnerManager}
+        onOwnerManagerChange={(value) => {
+          setCustomValue('isOwnerManager', value);
+          if (value) {
+            setCustomValue('jobTitle', ''); // Clear job title if selecting owner/manager
+          }
+        }}
+        register={register}
+        errors={errors}
+        isLoading={isLoading}
+      />
+    );
+  }
+
+  // Business Selection Step (only for team members)
+  if (step === STEPS.BUSINESS_SELECT) {
+    bodyContent = (
+      <BusinessSelectStep
+        selectedListing={selectedListing}
+        onListingChange={(listingId) => setCustomValue('selectedListing', listingId)}
+        isLoading={isLoading}
+      />
+    );
+  }
+
+  // Service Selection Step (only for team members)
+  if (step === STEPS.SERVICE_SELECT) {
+    bodyContent = (
+      <ServiceSelectStep
+        selectedListingId={selectedListing}
+        selectedServices={selectedServices}
+        onServicesChange={(serviceIds) => setCustomValue('selectedServices', serviceIds)}
+        isLoading={isLoading}
+      />
     );
   }
 
@@ -375,40 +534,43 @@ const RegisterModal = () => {
 
   if (step === STEPS.IMAGES) {
     bodyContent = (
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-6">
         <Heading
-          title={isEdit ? "Update your profile images" : "Add your profile images"}
-          subtitle={isEdit ? "Freshen up your look." : "Make your profile stand out!"}
+          title={isEdit ? "Update your profile picture" : "Add your profile picture"}
+          subtitle={isEdit ? "Freshen up your look with a cropped image." : "Upload and crop your profile photo to make your profile stand out!"}
         />
 
-        <div className="grid grid-cols-2 gap-4">
-          {/* Profile picture — true circle */}
-          <div className="flex flex-col items-center gap-3">
-            <div className="w-full flex flex-col items-center">
-              <ImageUpload
-                onChange={(v) => setCustomValue('image', v)}
-                value={image}
-                className="w-64 h-40 rounded-2xl overflow-hidden"
-              />
-              <label className="mt-4 text-neutral-500 text-sm ">
-                Profile Picture
-              </label>
-            </div>
+        <div className="flex justify-center">
+          <div className="flex flex-col items-center space-y-3">
+            <h3 className="text-sm font-medium text-neutral-700 mb-3">Profile Picture</h3>
+            <ImageUpload
+              uploadId="profile-picture"
+              onChange={(v) => setCustomValue('image', v)}
+              value={image}
+              className="w-48 h-48"
+              ratio="square"
+              rounded="2xl"
+              enableCrop={true}
+              cropMode="fixed"
+              label="Profile Picture"
+              maxFileSizeMB={5}
+              onRemove={() => setCustomValue('image', '')}
+            />
+            <p className="mt-2 text-xs text-neutral-500 text-center max-w-[200px]">
+              Upload and crop your profile photo. This will be displayed as a circle on your profile.
+            </p>
           </div>
+        </div>
 
-          {/* Background image */}
-          <div className="flex flex-col items-center gap-3">
-            <div className="w-full flex flex-col items-center">
-              <ImageUpload
-                onChange={(v) => setCustomValue('imageSrc', v)}
-                value={imageSrc}
-                className="w-64 h-40 rounded-2xl overflow-hidden"
-              />
-              <label className="mt-4 text-neutral-500 text-sm">
-                Profile Background
-              </label>
-            </div>
-          </div>
+        {/* Image Guidelines */}
+        <div className="bg-neutral-50 rounded-lg p-4 mt-4">
+          <h4 className="text-sm font-medium text-neutral-800 mb-2">Image Guidelines</h4>
+          <ul className="text-xs text-neutral-600 space-y-1">
+            <li>• Profile pictures work best with faces or logos</li>
+            <li>• Use high-quality images for the best results</li>
+            <li>• Images will be automatically cropped to a square format</li>
+            <li>• Maximum file size is 5MB</li>
+          </ul>
         </div>
       </div>
     );
