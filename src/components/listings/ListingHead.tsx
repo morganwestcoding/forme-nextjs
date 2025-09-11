@@ -120,7 +120,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
   ];
 
   return (
-    <div className="w-full">
+    <div className="w-full space-y-6">
       {/* Header */}
       <div className="w-full relative">
         <div>
@@ -128,7 +128,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
             className="rounded-2xl p-6 border border-gray-100/50 backdrop-blur-sm shadow-sm"
             style={{ background: 'linear-gradient(145deg, #ffffff 0%, #fafbfc 100%)' }}
           >
-            <div className="flex items-start gap-6 mb-8">
+            <div className="flex items-start gap-6 mb-6">
               {/* Left: Image */}
               <div className="relative flex-shrink-0">
                 <div className="w-[130px] h-[130px] rounded-xl overflow-hidden relative shadow-sm">
@@ -199,79 +199,74 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   <span className="text-gray-500"> followers</span>
                 </div>
                 
-                <div className="text-gray-700 text-sm leading-relaxed">
+                <div className="text-gray-700 text-sm leading-relaxed mb-4">
                   {truncatedDescription}
+                </div>
+
+                {/* Action Buttons - with fixed width and no icons */}
+                <div className="flex items-center gap-3">
+                  {isOwner ? (
+                    <button
+                      onClick={() => rentModal.onOpen(listing)}
+                      className="flex items-center justify-center py-3 space-x-2 px-4 shadow-sm rounded-xl transition-all bg-white text-gray-500 hover:bg-neutral-200"
+                      type="button"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" color="currentColor" fill="none">
+                        <path d="M16.4249 4.60509L17.4149 3.6151C18.2351 2.79497 19.5648 2.79497 20.3849 3.6151C21.205 4.43524 21.205 5.76493 20.3849 6.58507L19.3949 7.57506M16.4249 4.60509L9.76558 11.2644C9.25807 11.772 8.89804 12.4078 8.72397 13.1041L8 16L10.8959 15.276C11.5922 15.102 12.228 14.7419 12.7356 14.2344L19.3949 7.57506M16.4249 4.60509L19.3949 7.57506" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"></path>
+                        <path d="M18.9999 13.5C18.9999 16.7875 18.9999 18.4312 18.092 19.5376C17.9258 19.7401 17.7401 19.9258 17.5375 20.092C16.4312 21 14.7874 21 11.4999 21H11C7.22876 21 5.34316 21 4.17159 19.8284C3.00003 18.6569 3 16.7712 3 13V12.5C3 9.21252 3 7.56879 3.90794 6.46244C4.07417 6.2599 4.2599 6.07417 4.46244 5.90794C5.56879 5 7.21252 5 10.5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+                      </svg>
+                      <span className="text-sm">Edit Profile</span>
+                    </button>
+                  ) : (
+                    <>
+                      <button
+                        onClick={handleToggleFollow}
+                        className="w-24 flex items-center justify-center py-3 px-4 shadow-sm rounded-xl transition-all bg-white text-gray-500 hover:bg-neutral-200"
+                        type="button"
+                      >
+                        <span className="text-sm">{isFollowing ? 'Following' : 'Follow'}</span>
+                      </button>
+
+                      <button 
+                        onClick={handleReserveClick}
+                        className="w-24 flex items-center justify-center py-3 px-4 shadow-sm rounded-xl transition-all bg-[#60A5FA] text-white hover:bg-blue-600"
+                        type="button"
+                      >
+                        <span className="text-sm">Reserve</span>
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
-
-            {/* Actions */}
-            <div className="flex items-center justify-center pt-6 border-t border-gray-100">
-              <div className="flex gap-4">
-                {isOwner ? (
-                  <button
-                    onClick={() => rentModal.onOpen(listing)}
-                    className="group inline-flex items-center justify-center px-24 py-3 rounded-xl text-sm font-medium bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 stransition-all duration-200"
-                  >
-                    Edit Profile
-                  </button>
-                ) : (
-                  <>
-                    <button
-                      onClick={handleToggleFollow}
-                      className="group inline-flex items-center justify-center px-24 py-3 rounded-xl text-sm font-medium bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 shadow-sm transition-all duration-200"
-                    >
-                      <span>{isFollowing ? 'Following' : 'Follow'}</span>
-                    </button>
-
-                    <button 
-                      onClick={handleReserveClick}
-                      className="group inline-flex items-center justify-center px-24 py-3 rounded-xl text-sm font-medium text-white shadow-sm hover:shadow-md transition-all duration-200 border border-[#60A5FA] hover:bg-blue-600" 
-                      style={{ backgroundColor: '#60A5FA' }}
-                    >
-                      <span>Reserve</span>
-                    </button>
-                  </>
-                )}
-              </div>
-            </div>
-
           </div>
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="mt-6">
-        <div className="flex border-b border-gray-200 relative justify-center">
-          <div className="flex gap-8">
-            {tabs.map(({ key, label }) => (
-              <button
-                key={key}
-                onClick={() => setActiveTab(key)}
-                className={`pb-4 pt-3 px-6 flex items-center justify-center text-sm transition-all duration-200 relative ${
-                  activeTab === key ? 'font-semibold' : 'text-gray-500 hover:text-gray-700'
-                }`}
-                style={activeTab === key ? { color: '#60A5FA' } : {}}
-              >
-                <span className={`transition-transform duration-200 ${activeTab === key ? '-translate-y-px' : ''}`}>
-                  {label}
-                </span>
-                {activeTab === key && (
-                  <div
-                    className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full"
-                    style={{ backgroundColor: '#60A5FA' }}
-                  />
-                )}
-              </button>
-            ))}
-          </div>
+      {/* Navigation Tabs - Market Explorer Style */}
+      <div className="py-5 border-y border-gray-200">
+        <div className="flex flex-wrap justify-center items-center gap-3">
+          {tabs.map(({ key, label }) => (
+            <button
+              key={key}
+              onClick={() => setActiveTab(key)}
+              className={`w-28 h-10 rounded-xl text-sm font-medium transition-all duration-300 flex items-center justify-center border ${
+                activeTab === key
+                  ? 'bg-blue-50 text-[#60A5FA] border-[#60A5FA]'
+                  : 'bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100'
+              }`}
+              type="button"
+            >
+              <span className="px-2">{label}</span>
+            </button>
+          ))}
         </div>
       </div>
 
       {/* Tab Content */}
-      <div className="px-4 sm:px-0 mt-6">
+      <div className="mt-6">
         {activeTab === 'Services' && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {validServices.map(service => (
               <ServiceCard
                 key={service.id}
@@ -282,36 +277,60 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               />
             ))}
 
-            {/* Add Service tile — matches the new ServiceCard style */}
-            <button
-              onClick={handleAddService}
-              type="button"
-              className={[
-                'group relative w-full',
-                'rounded-2xl border-2 border-gray-200 border-dashed bg-white/20 p-4',
-                'flex flex-col items-center justify-center text-center gap-2.5',
-                'hover:border-[#60A5FA] hover:shadow-md transition-all duration-200',
-                'h-[130px]',
-              ].join(' ')}
-            >
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center  text-gray-500 bg-gray-50 border border-dashed group-hover:bg-blue-50 group-hover:text-[#60A5FA]">
-                {/* Plus icon */}
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
-                        <path d="M16.4249 4.60509L17.4149 3.6151C18.2351 2.79497 19.5648 2.79497 20.3849 3.6151C21.205 4.43524 21.205 5.76493 20.3849 6.58507L19.3949 7.57506M16.4249 4.60509L9.76558 11.2644C9.25807 11.772 8.89804 12.4078 8.72397 13.1041L8 16L10.8959 15.276C11.5922 15.102 12.228 14.7419 12.7356 14.2344L19.3949 7.57506M16.4249 4.60509L19.3949 7.57506" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"></path>
-            <path d="M18.9999 13.5C18.9999 16.7875 18.9999 18.4312 18.092 19.5376C17.9258 19.7401 17.7401 19.9258 17.5375 20.092C16.4312 21 14.7874 21 11.4999 21H11C7.22876 21 5.34316 21 4.17159 19.8284C3.00003 18.6569 3 16.7712 3 13V12.5C3 9.21252 3 7.56879 3.90794 6.46244C4.07417 6.2599 4.2599 6.07417 4.46244 5.90794C5.56879 5 7.21252 5 10.5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-                </svg>
-              </div>
+            {/* Add Service tile — matches the ServiceCard structure exactly */}
+            {isOwner && (
+              <button
+                onClick={handleAddService}
+                type="button"
+                className="cursor-pointer bg-white rounded-2xl shadow hover:shadow-xl overflow-hidden relative transition-all duration-300 hover:scale-[1.02] max-w-[250px] border-2 border-gray-200 border-dashed hover:border-blue-500"
+              >
+                {/* Match ServiceCard height structure */}
+                <div className="relative h-[350px]">
+                  {/* Icon - Centered towards middle-top like ServiceCard */}
+                  <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                    <div className="relative">
+                      {/* Dashed circular background with plus icon */}
+                      <div className="w-24 h-24 rounded-full flex items-center justify-center text-gray-500 bg-gray-50 border-2 border-gray-300 border-dashed shadow-md ring-4 ring-white/50 transition-all duration-300 group-hover:border-blue-500 group-hover:bg-blue-50 group-hover:text-blue-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M12 5v14M5 12h14"/>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
 
-              <div className="min-w-0">
-                <span className="block text-sm font-medium text-gray-500">Add Service</span>
-             
-              </div>
-            </button>
+                  {/* Bottom info - positioned like ServiceCard */}
+                  <div className="absolute bottom-5 left-5 right-5 z-20">
+                    {/* Service Name and Details */}
+                    <div className="mb-4">
+                      <h3 className="text-lg font-semibold text-gray-500 mb-1 text-center">
+                        Add Service
+                      </h3>
+                      <p className="text-xs text-gray-400 leading-relaxed text-center">
+                        Create a new service offering
+                      </p>
+                      <div className="opacity-90 mt-0.5 text-xs text-gray-400 font-light text-center">
+                        Click to get started
+                      </div>
+                    </div>
+
+                    {/* Action Badge */}
+                    <div className="flex items-center justify-center">
+                      <div className="bg-gray-100 text-gray-500 px-3 py-1.5 rounded-lg text-xs font-medium border border-dashed group-hover:bg-blue-100 group-hover:text-blue-500 group-hover:border-blue-500 transition-all duration-200">
+                        Get Started
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Match ServiceCard bottom padding */}
+                <div className="pb-2" />
+              </button>
+            )}
           </div>
         )}
 
         {activeTab === 'Team' && employees.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {employees.map((employee: any, index: number) => (
               <WorkerCard
                 key={employee.id || index}
@@ -330,39 +349,54 @@ const ListingHead: React.FC<ListingHeadProps> = ({
         {activeTab === 'Reviews' && (
           <div className="text-center text-gray-500 py-12">
             <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm">
-              <p className="font-medium">Reviews will be displayed here</p>
+              <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+              </div>
+              <p className="font-medium text-lg mb-2">No reviews yet</p>
+              <p className="text-gray-400">Reviews from customers will appear here</p>
             </div>
           </div>
         )}
 
-{activeTab === 'Images' && (
-  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-    {galleryImages && galleryImages.length > 0 ? (
-      galleryImages.map((image, index) => (
-        <div
-          key={index}
-          className="relative rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 group"
-          style={{ aspectRatio: '1 / 1' }} // force perfect square
-        >
-          <img
-            src={image}
-            alt={`${title} - Image ${index + 1}`}
-            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          />
-        </div>
-      ))
-    ) : (
-      <div className="col-span-full text-center text-gray-500 py-12">
-        <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm">
-          <p className="font-medium">No images available</p>
-        </div>
-      </div>
-    )}
-  </div>
-)}
+        {activeTab === 'Images' && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {galleryImages && galleryImages.length > 0 ? (
+              galleryImages.map((image, index) => (
+                <div
+                  key={index}
+                  className="relative rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 group"
+                  style={{ aspectRatio: '1 / 1' }}
+                >
+                  <img
+                    src={image}
+                    alt={`${title} - Image ${index + 1}`}
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                </div>
+              ))
+            ) : (
+              <div className="col-span-full text-center text-gray-500 py-12">
+                <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm">
+                  <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                      <circle cx="9" cy="9" r="2"/>
+                      <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+                    </svg>
+                  </div>
+                  <p className="font-medium text-lg mb-2">No images yet</p>
+                  <p className="text-gray-400">Photos will be displayed here</p>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {activeTab === 'Reels' && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {posts && posts.length > 0 ? (
               posts.map(post => (
                 <PostCard
@@ -375,7 +409,14 @@ const ListingHead: React.FC<ListingHeadProps> = ({
             ) : (
               <div className="col-span-full text-center text-gray-500 py-12">
                 <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm">
-                  <p className="font-medium">No reels available</p>
+                  <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
+                      <polygon points="23 7 16 12 23 17 23 7"/>
+                      <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                    </svg>
+                  </div>
+                  <p className="font-medium text-lg mb-2">No reels yet</p>
+                  <p className="text-gray-400">Video content will appear here</p>
                 </div>
               </div>
             )}

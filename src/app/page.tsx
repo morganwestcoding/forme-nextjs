@@ -1,10 +1,11 @@
 import React from 'react';
 import getCurrentUser from './actions/getCurrentUser';
 import getPosts, { IPostsParams } from './actions/getPost';
-import getListings, { IListingsParams } from './actions/getListings';
+import getListings from './actions/getListings';
 import getShops, { IShopsParams } from './actions/getShops';
 import { useCategoryStore } from './hooks/useCategoryStore';
 import NewsfeedClient from '@/components/NewsfeedClient';
+import { SafeListing } from '@/app/types';
 
 interface PostProps {
   searchParams: IPostsParams & {
@@ -21,9 +22,9 @@ const Newsfeed = async ({ searchParams }: PostProps) => {
   // Get filter from searchParams or default to 'for-you'
   const filter = searchParams.filter || 'for-you';
   
-  // Create params objects
-  const listingParams: IListingsParams = {
-    order: 'desc' // Default to newest listings
+  // Create params objects with proper typing
+  const listingParams = {
+    order: 'desc' as const // Default to newest listings
   };
 
   const shopsParams: IShopsParams = {
@@ -44,15 +45,16 @@ const Newsfeed = async ({ searchParams }: PostProps) => {
     getShops(shopsParams)
   ]);
 
-  // Extract employees from listings - they already have all SafeEmployee fields including listing context
-  const employees = listings.flatMap(listing => listing.employees);
+  // Ensure listings is an array and extract employees safely
+  const safeListings: SafeListing[] = Array.isArray(listings) ? listings : [];
+  const employees = safeListings.flatMap((listing: SafeListing) => listing.employees);
 
   return (
     <NewsfeedClient 
       initialPosts={posts}
       currentUser={currentUser}
       categoryToUse={categoryToUse}
-      listings={listings}
+      listings={safeListings}
       employees={employees}
       shops={shops}
     />

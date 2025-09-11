@@ -1,23 +1,132 @@
-// app/actions/getListing.ts
 import prisma from "@/app/libs/prismadb";
 import { SafeListing } from "@/app/types";
 
-interface IParams {
-  listingId?: string;
+export interface IListingsParams {
+  userId?: string;
+  guestCount?: number;
+  roomCount?: number;
+  bathroomCount?: number;
+  startDate?: string;
+  endDate?: string;
+  locationValue?: string;
+  category?: string;
+  state?: string;
+  city?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  order?: 'asc' | 'desc';
+  limit?: number;
+  page?: number;
 }
 
-export default async function getListing(params: IParams): Promise<SafeListing | null> {
+export default async function getListings(params: IListingsParams = {}): Promise<SafeListing[]> {
   try {
-    const { listingId } = params;
+    const {
+      userId,
+      locationValue,
+      startDate,
+      endDate,
+      guestCount,
+      roomCount,
+      bathroomCount,
+      category,
+      state,
+      city,
+      minPrice,
+      maxPrice,
+      order = 'desc',
+      limit,
+      page
+    } = params;
 
-    if (!listingId) {
-      return null;
+    let query: any = {};
+
+    if (userId) {
+      query.userId = userId;
     }
 
-    const listing = await prisma.listing.findUnique({
-      where: {
-        id: listingId,
-      },
+    if (category && category !== 'all' && category !== 'featured') {
+      query.category = category;
+    }
+
+    if (locationValue) {
+      query.location = {
+        contains: locationValue,
+        mode: 'insensitive'
+      };
+    }
+
+    if (state) {
+      query.location = {
+        ...query.location,
+        contains: state,
+        mode: 'insensitive'
+      };
+    }
+
+    if (city) {
+      query.location = {
+        ...query.location,
+        contains: city,
+        mode: 'insensitive'
+      };
+    }
+
+    if (roomCount) {
+      query.roomCount = {
+        gte: +roomCount
+      };
+    }
+
+    if (guestCount) {
+      query.guestCount = {
+        gte: +guestCount
+      };
+    }
+
+    if (bathroomCount) {
+      query.bathroomCount = {
+        gte: +bathroomCount
+      };
+    }
+
+    if (startDate && endDate) {
+      query.NOT = {
+        reservations: {
+          some: {
+            OR: [
+              {
+                endDate: { gte: startDate },
+                startDate: { lte: startDate }
+              },
+              {
+                startDate: { lte: endDate },
+                endDate: { gte: endDate }
+              }
+            ]
+          }
+        }
+      };
+    }
+
+    // Price filtering through services
+    if (minPrice !== undefined || maxPrice !== undefined) {
+      query.services = {
+        some: {
+          price: {
+            ...(minPrice !== undefined && { gte: minPrice }),
+            ...(maxPrice !== undefined && { lte: maxPrice })
+          }
+        }
+      };
+    }
+
+    // Pagination
+    const skip = page && limit ? (page - 1) * limit : undefined;
+    const take = limit;
+
+    const listings = await prisma.listing.findMany({
+      where: query,
       include: {
         services: {
           select: {
@@ -30,7 +139,7 @@ export default async function getListing(params: IParams): Promise<SafeListing |
         },
         employees: {
           where: {
-            isActive: true // Only get active employees
+            isActive: true
           },
           include: {
             user: {
@@ -51,14 +160,15 @@ export default async function getListing(params: IParams): Promise<SafeListing |
             isClosed: true
           }
         }
-      }
+      },
+      orderBy: {
+        createdAt: order
+      },
+      ...(skip !== undefined && { skip }),
+      ...(take !== undefined && { take })
     });
 
-    if (!listing) {
-      return null;
-    }
-
-    return {
+    const safeListings: SafeListing[] = listings.map((listing) => ({
       id: listing.id,
       title: listing.title,
       description: listing.description,
@@ -74,7 +184,7 @@ export default async function getListing(params: IParams): Promise<SafeListing |
       galleryImages: listing.galleryImages || [],
       followers: listing.followers || [],
       followerCount: listing.followers?.length || 0,
-      favoriteIds: [], // Populate this based on your logic
+      favoriteIds: [], // This might need to be populated based on your logic
       services: listing.services.map(service => ({
         id: service.id,
         serviceName: service.serviceName,
@@ -89,7 +199,7 @@ export default async function getListing(params: IParams): Promise<SafeListing |
           fullName: employee.fullName,
           jobTitle: employee.jobTitle || null,
           listingId: employee.listingId,
-          userId: employee.userId!,
+          userId: employee.userId,
           serviceIds: employee.serviceIds || [],
           isActive: employee.isActive,
           createdAt: employee.createdAt.toISOString(),
@@ -108,9 +218,11 @@ export default async function getListing(params: IParams): Promise<SafeListing |
         closeTime: hour.closeTime,
         isClosed: hour.isClosed
       }))
-    };
+    }));
+
+    return safeListings;
   } catch (error: any) {
-    console.error('Error fetching listing:', error);
-    return null;
+    console.error('Error fetching listings:', error);
+    return [];
   }
 }
