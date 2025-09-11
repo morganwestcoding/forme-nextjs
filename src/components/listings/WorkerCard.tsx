@@ -12,8 +12,6 @@ interface WorkerCardProps {
   employee: SafeEmployee & {
     followerCount?: number;
     followingCount?: number;
-    profileImage?: string | null;
-    jobTitle?: string | null;
     rating?: number;
     isTrending?: boolean;
     availabilityStatus?: 'free' | 'busy' | 'booked';
@@ -23,14 +21,6 @@ interface WorkerCardProps {
       closeTime: string;
       isClosed: boolean;
     }>;
-    // Add user relationship to get their profile image
-    user?: {
-      id: string;
-      name: string | null;
-      image: string | null;
-      imageSrc?: string | null;
-      updatedAt?: string; // Track when user was last updated
-    } | null;
   };
   listingTitle: string;
   data: {
@@ -68,6 +58,12 @@ const stringToColor = (seed: string, s = 70, l = 45) => {
   return `hsl(${hue}, ${s}%, ${l}%)`;
 };
 
+// Helper function to get the most up-to-date profile image
+const getProfileImage = (employee: SafeEmployee): string | null => {
+  // Priority: user.imageSrc > user.image > null
+  return employee.user.imageSrc || employee.user.image || null;
+};
+
 const WorkerCard: React.FC<WorkerCardProps> = ({
   employee,
   listingTitle,
@@ -90,28 +86,21 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
     [employee.id, employee.fullName]
   );
 
-  // UPDATED: Get the best available profile image with cache busting
+  // Get the most up-to-date profile image with cache busting
   const profileImage = useMemo(() => {
-    // CHANGED PRIORITY: Check user images FIRST, then fallback to employee profileImage
-    const baseImage = employee.user?.image || 
-                     employee.user?.imageSrc || 
-                     employee.profileImage;
+    const baseImage = getProfileImage(employee);
     
     if (!baseImage) return null;
     
-    // Use user's updatedAt if available, otherwise current timestamp
-    const cacheBuster = employee.user?.updatedAt 
-      ? new Date(employee.user.updatedAt).getTime()
-      : Date.now();
-    
-    // Only add cache buster if URL doesn't already have query parameters
+    // Add cache buster to ensure we get the latest image
+    const cacheBuster = Date.now();
     const separator = baseImage.includes('?') ? '&' : '?';
     return `${baseImage}${separator}cb=${cacheBuster}`;
   }, [
-    employee.user?.image,      // Moved to first priority
-    employee.user?.imageSrc,   // Moved to second priority  
-    employee.profileImage,     // Now fallback
-    employee.user?.updatedAt
+    employee.user.imageSrc,
+    employee.user.image,
+    // Re-compute when user data changes
+    employee.user.id
   ]);
 
   const handleImageError = () => {
@@ -157,6 +146,8 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
                   className="object-cover"
                   onError={handleImageError}
                   onLoad={handleImageLoad}
+                  priority={false}
+                  sizes="96px"
                 />
               </div>
             ) : (

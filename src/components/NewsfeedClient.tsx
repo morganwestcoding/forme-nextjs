@@ -37,7 +37,7 @@ interface NewsfeedClientProps {
   currentUser: SafeUser | null;
   categoryToUse?: string;
   listings: SafeListing[];
-  employees?: SafeEmployee[];
+  employees?: SafeEmployee[]; // Back to SafeEmployee[] since it now includes listing context
   shops?: SafeShop[];
 }
 

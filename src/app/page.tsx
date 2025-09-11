@@ -44,15 +44,8 @@ const Newsfeed = async ({ searchParams }: PostProps) => {
     getShops(shopsParams)
   ]);
 
-  // Extract employees from listings
-  const employees = listings.flatMap(listing => 
-    listing.employees.map(employee => ({
-      ...employee,
-      listingId: listing.id,
-      listingTitle: listing.title,
-      listingCategory: listing.category
-    }))
-  );
+  // Extract employees from listings - they already have all SafeEmployee fields including listing context
+  const employees = listings.flatMap(listing => listing.employees);
 
   return (
     <NewsfeedClient 
@@ -60,8 +53,8 @@ const Newsfeed = async ({ searchParams }: PostProps) => {
       currentUser={currentUser}
       categoryToUse={categoryToUse}
       listings={listings}
-      employees={employees} // Pass extracted employees
-      shops={shops} // Pass shops
+      employees={employees}
+      shops={shops}
     />
   );
 };

@@ -219,18 +219,17 @@ model Employee {
   id           String        @id @default(auto()) @map("_id") @db.ObjectId
   fullName     String
   jobTitle     String?
-  profileImage String?
   listingId    String        @db.ObjectId
-  userId       String?       @db.ObjectId  // NEW: Link back to User account
-  serviceIds   String[]      @db.ObjectId  // NEW: Services this employee provides
-  isActive     Boolean       @default(true) // NEW: For managing employee status
-  createdAt    DateTime      @default(now()) // NEW: Track when they joined
+  userId       String        @db.ObjectId  // Required - no ? 
+  serviceIds   String[]      @db.ObjectId
+  isActive     Boolean       @default(true)
+  createdAt    DateTime      @default(now())
   
   listing      Listing       @relation(fields: [listingId], references: [id], onDelete: Cascade)
-  user         User?         @relation(fields: [userId], references: [id], onDelete: SetNull) // NEW
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade) // Cascade instead of SetNull
   reservations Reservation[]
   
-  @@unique([userId, listingId]) // Prevent duplicate employee records for same user/listing
+  @@unique([userId, listingId])
 }
 
 

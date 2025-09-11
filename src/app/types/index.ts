@@ -34,10 +34,7 @@ export type SafeListing = Omit<Listing, "createdAt"> & {
   favoriteIds: string[];
   website?: string | null;
   address?: string | null; 
-  employees: {
-    id: string;
-    fullName: string;
-  }[];
+ employees: SafeEmployee[]; // Changed from minimal structure to full SafeEmployee[]
   zipCode: string | null;
   storeHours: SafeStoreHours[];
   city?: string | null;  // Add this
@@ -92,7 +89,6 @@ export type SafeUser = Omit<
   following: string[];
   followers: string[];
   conversationIds?: string[]; 
-    workerFavoriteIds?: string[];  // Add this line
      managedListings: string[];  // Add this field from Prisma schema
   isSubscribed: boolean;
   resetToken?: string | null;
@@ -176,12 +172,22 @@ export type SafeEmployee = {
   id: string;
   fullName: string;
   jobTitle?: string | null;
-  profileImage?: string | null;
+  // profileImage removed - use user.image or user.imageSrc instead
   listingId: string;
-  userId?: string | null;  // NEW: Link back to User account
-  serviceIds: string[];    // NEW: Services this employee provides
-  isActive: boolean;       // NEW: For managing employee status
-  createdAt: string;       // NEW: Track when they joined (converted to string)
+  userId: string; // Required, not optional
+  serviceIds: string[];
+  isActive: boolean;
+  createdAt: string;
+  // Listing context fields
+  listingTitle: string;
+  listingCategory: string;
+  // User data for profile image resolution
+  user: {
+    id: string;
+    name: string | null;
+    image: string | null;
+    imageSrc: string | null; // Use this as primary, fallback to image
+  };
 };
 
 

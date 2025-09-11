@@ -47,14 +47,25 @@ export default async function getReservations(params: IParams) {
       query.userId = userId;
     }
 
-    // Step 3: Fetch reservations with the safe query
+    // Step 3: Fetch reservations with the safe query - FIXED: Include user data for employees
     const reservations = await prisma.reservation.findMany({
       where: query,
       include: {
         listing: {
           include: {
             services: true,
-            employees: true, // This will include all employee fields
+            employees: {
+              include: {
+                user: {
+                  select: {
+                    id: true,
+                    name: true,
+                    image: true,
+                    imageSrc: true,
+                  }
+                }
+              }
+            },
             storeHours: true
           },
         },
@@ -94,25 +105,34 @@ export default async function getReservations(params: IParams) {
           serviceName: service.serviceName,
           price: service.price,
           category: service.category,
-          imageSrc: service.imageSrc || null // Add this field that was missing
+          imageSrc: service.imageSrc || null
         })),
         phoneNumber: reservation.listing.phoneNumber || null,
         website: reservation.listing.website || null,
         address: reservation.listing.address || null,
         zipCode: reservation.listing.zipCode || null,
         galleryImages: reservation.listing.galleryImages || [],
-        // Fix the employees mapping to include all required SafeEmployee fields
-        employees: reservation.listing.employees.map(employee => ({
-          id: employee.id,
-          fullName: employee.fullName,
-          jobTitle: employee.jobTitle || null,
-          profileImage: employee.profileImage || null,
-          listingId: employee.listingId,
-          userId: employee.userId || null,
-          serviceIds: employee.serviceIds || [],
-          isActive: employee.isActive,
-          createdAt: employee.createdAt.toISOString()
-        })),
+        // FIXED: Now properly includes user data since we fetch it in the query
+        employees: reservation.listing.employees
+          .filter(employee => employee.user) // Only include employees with user accounts
+          .map(employee => ({
+            id: employee.id,
+            fullName: employee.fullName,
+            jobTitle: employee.jobTitle || null,
+            listingId: employee.listingId,
+            userId: employee.userId,
+            serviceIds: employee.serviceIds || [],
+            isActive: employee.isActive,
+            createdAt: employee.createdAt.toISOString(),
+            listingTitle: reservation.listing.title,
+            listingCategory: reservation.listing.category,
+            user: {
+              id: employee.user!.id,
+              name: employee.user!.name,
+              image: employee.user!.image,
+              imageSrc: employee.user!.imageSrc,
+            }
+          })),
         storeHours: reservation.listing.storeHours.map(hour => ({
           dayOfWeek: hour.dayOfWeek,
           openTime: hour.openTime,

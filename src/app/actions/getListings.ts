@@ -1,110 +1,116 @@
+// app/actions/getListing.ts
 import prisma from "@/app/libs/prismadb";
+import { SafeListing } from "@/app/types";
 
-export interface IListingsParams {
-  userId?: string;
-  locationValue?: string;
-  category?: string;
-  state?: string;
-  city?: string;
-  minPrice?: number;
-  maxPrice?: number;
-  order?: 'asc' | 'desc';
+interface IParams {
+  listingId?: string;
 }
 
-export default async function getListings(params: IListingsParams) {
+export default async function getListing(params: IParams): Promise<SafeListing | null> {
   try {
-    const {
-      userId,
-      locationValue,
-      category,
-      state,
-      city,
-      minPrice,
-      maxPrice,
-      order
-    } = params;
+    const { listingId } = params;
 
-    let query: any = {};
-    if (userId) query.userId = userId;
-    if (category) query.category = category;
-    if (locationValue) query.location = locationValue;
-
-    if (state || city) {
-      query.location = { contains: state || city, mode: 'insensitive' };
+    if (!listingId) {
+      return null;
     }
 
-    let listings = await prisma.listing.findMany({
-      where: query,
+    const listing = await prisma.listing.findUnique({
+      where: {
+        id: listingId,
+      },
       include: {
-        user: true,
-        services: true,
-        employees: {
-          include: {
-            user: true  // Include user data for each employee
+        services: {
+          select: {
+            id: true,
+            serviceName: true,
+            price: true,
+            category: true,
+            imageSrc: true
           }
         },
-        storeHours: true
-      },
-      orderBy: { createdAt: order === 'asc' ? 'asc' : 'desc' },
+        employees: {
+          where: {
+            isActive: true // Only get active employees
+          },
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                image: true,
+                imageSrc: true,
+              }
+            }
+          }
+        },
+        storeHours: {
+          select: {
+            dayOfWeek: true,
+            openTime: true,
+            closeTime: true,
+            isClosed: true
+          }
+        }
+      }
     });
 
-    if (minPrice || maxPrice) {
-      listings = listings.filter(listing => {
-        const listingPrices = listing.services.map(service => service.price);
-        const minListingPrice = listingPrices.length ? Math.min(...listingPrices) : 0;
-        const maxListingPrice = listingPrices.length ? Math.max(...listingPrices) : 0;
-
-        const aboveMin = !minPrice || maxListingPrice >= minPrice;
-        const belowMax = !maxPrice || minListingPrice <= maxPrice;
-
-        return aboveMin && belowMax;
-      });
+    if (!listing) {
+      return null;
     }
 
-    const safeListings = listings.map((listing) => ({
-      ...listing,
+    return {
+      id: listing.id,
+      title: listing.title,
+      description: listing.description,
+      imageSrc: listing.imageSrc,
+      category: listing.category,
+      location: listing.location || null,
+      userId: listing.userId,
       createdAt: listing.createdAt.toISOString(),
-      favoriteIds: [],
+      phoneNumber: listing.phoneNumber || null,
+      website: listing.website || null,
+      address: listing.address || null,
+      zipCode: listing.zipCode || null,
+      galleryImages: listing.galleryImages || [],
+      followers: listing.followers || [],
+      followerCount: listing.followers?.length || 0,
+      favoriteIds: [], // Populate this based on your logic
       services: listing.services.map(service => ({
         id: service.id,
         serviceName: service.serviceName,
         price: service.price,
         category: service.category,
-        imageSrc: service.imageSrc ?? null,
+        imageSrc: service.imageSrc || null
       })),
-      employees: listing.employees.map(employee => ({
-        id: employee.id,
-        fullName: employee.fullName,
-        jobTitle: employee.jobTitle || null,
-        profileImage: employee.profileImage || null,
-        user: employee.user ? {
-          id: employee.user.id,
-          name: employee.user.name,
-          image: employee.user.image,
-          imageSrc: employee.user.imageSrc,
-          updatedAt: employee.user.updatedAt.toISOString()
-        } : null
-      })),
+      employees: listing.employees
+        .filter(employee => employee.user) // Ensure user exists
+        .map(employee => ({
+          id: employee.id,
+          fullName: employee.fullName,
+          jobTitle: employee.jobTitle || null,
+          listingId: employee.listingId,
+          userId: employee.userId!,
+          serviceIds: employee.serviceIds || [],
+          isActive: employee.isActive,
+          createdAt: employee.createdAt.toISOString(),
+          listingTitle: listing.title,
+          listingCategory: listing.category,
+          user: {
+            id: employee.user!.id,
+            name: employee.user!.name,
+            image: employee.user!.image,
+            imageSrc: employee.user!.imageSrc,
+          }
+        })),
       storeHours: listing.storeHours.map(hour => ({
         dayOfWeek: hour.dayOfWeek,
         openTime: hour.openTime,
         closeTime: hour.closeTime,
         isClosed: hour.isClosed
-      })),
-      galleryImages: listing.galleryImages || [],
-      phoneNumber: listing.phoneNumber || null,
-      website: listing.website || null,
-      address: listing.address || null,
-      zipCode: listing.zipCode || null,
-      city: listing.location?.split(',')[0]?.trim() || null,
-      state: listing.location?.split(',')[1]?.trim() || null
-    }));
-
-    console.log('Fetched listings count:', safeListings.length);
-    return safeListings;
-
+      }))
+    };
   } catch (error: any) {
-    console.error("Error in getListings:", error);
-    throw new Error(`Failed to fetch listings: ${error.message}`);
+    console.error('Error fetching listing:', error);
+    return null;
   }
 }
