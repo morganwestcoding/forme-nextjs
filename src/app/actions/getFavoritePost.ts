@@ -43,7 +43,7 @@ export default async function getFavoritePosts(): Promise<SafePost[]> {
       tag: post.tag || null,
       postType: (post.postType as 'ad' | 'text' | 'reel') || undefined,
       photo: post.photo || null,
-      category: post.category || 'General', // Provide default value for required string
+      category: post.category || 'General',
       userId: post.userId,
       createdAt: post.createdAt.toISOString(),
       mediaUrl: post.mediaUrl || null,
@@ -51,12 +51,14 @@ export default async function getFavoritePosts(): Promise<SafePost[]> {
       likes: post.likes || [],
       bookmarks: post.bookmarks || [],
       hiddenBy: post.hiddenBy || [],
-      // Transform user to SafeUser with ALL required fields
+      // Transform user to SafeUser with ALL required fields matching Prisma schema
       user: {
         id: post.user.id,
         name: post.user.name,
         email: post.user.email,
         image: post.user.image,
+        resetToken: post.user.resetToken,
+        resetTokenExpiry: post.user.resetTokenExpiry,
         createdAt: post.user.createdAt.toISOString(),
         updatedAt: post.user.updatedAt.toISOString(),
         emailVerified: post.user.emailVerified?.toISOString() || null,
@@ -64,24 +66,21 @@ export default async function getFavoritePosts(): Promise<SafePost[]> {
         imageSrc: post.user.imageSrc || null,
         location: post.user.location || null,
         galleryImages: post.user.galleryImages || [],
-        following: post.user.following || [],
-        followers: post.user.followers || [],
-        conversationIds: post.user.conversationIds || [],
-        favoriteIds: post.user.favoriteIds || [],
-        workerFavoriteIds: post.user.favoriteIds || [], // Add this missing field
         isSubscribed: post.user.isSubscribed || false,
-        resetToken: post.user.resetToken || null,
-        resetTokenExpiry: post.user.resetTokenExpiry || null,
         subscriptionStartDate: post.user.subscriptionStartDate || null,
         subscriptionEndDate: post.user.subscriptionEndDate || null,
         subscriptionTier: post.user.subscriptionTier || null,
-        // Add missing Stripe fields
         stripeCustomerId: post.user.stripeCustomerId || null,
         stripeSubscriptionId: post.user.stripeSubscriptionId || null,
         subscriptionPriceId: post.user.subscriptionPriceId || null,
         subscriptionStatus: post.user.subscriptionStatus || null,
         subscriptionBillingInterval: post.user.subscriptionBillingInterval || null,
         currentPeriodEnd: post.user.currentPeriodEnd || null,
+        following: post.user.following || [],
+        followers: post.user.followers || [],
+        conversationIds: post.user.conversationIds || [],
+        favoriteIds: post.user.favoriteIds || [],
+        managedListings: post.user.managedListings || [], // Add this field from Prisma schema
       },
       // Transform comments to SafeComment
       comments: post.comments.map(comment => ({

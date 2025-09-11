@@ -93,12 +93,20 @@ export type SafeUser = Omit<
   followers: string[];
   conversationIds?: string[]; 
     workerFavoriteIds?: string[];  // Add this line
+     managedListings: string[];  // Add this field from Prisma schema
   isSubscribed: boolean;
   resetToken?: string | null;
   resetTokenExpiry: Date | null;
   subscriptionStartDate: Date | null;
   subscriptionEndDate: Date | null;
   subscriptionTier?: string | null;  // Add this
+   // Add missing Stripe fields from Prisma schema
+  stripeCustomerId?: string | null;
+  stripeSubscriptionId?: string | null;
+  subscriptionPriceId?: string | null;
+  subscriptionStatus?: string | null;
+  subscriptionBillingInterval?: string | null;
+  currentPeriodEnd?: Date | null;
   
 };
 
@@ -169,6 +177,11 @@ export type SafeEmployee = {
   fullName: string;
   jobTitle?: string | null;
   profileImage?: string | null;
+  listingId: string;
+  userId?: string | null;  // NEW: Link back to User account
+  serviceIds: string[];    // NEW: Services this employee provides
+  isActive: boolean;       // NEW: For managing employee status
+  createdAt: string;       // NEW: Track when they joined (converted to string)
 };
 
 
