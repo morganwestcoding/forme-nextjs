@@ -151,17 +151,17 @@ const UserTypeStep: React.FC<UserTypeStepProps> = ({
         <div className="mt-4 p-4 bg-blue-50 rounded-lg">
           {userType === 'customer' && (
             <p className="text-sm text-blue-700">
-              You'll be able to browse businesses, book appointments, and discover new services in your area.
+              You&apos;ll be able to browse businesses, book appointments, and discover new services in your area.
             </p>
           )}
           {userType === 'individual' && (
             <p className="text-sm text-blue-700">
-              We'll help you create your own business listing and manage your services independently.
+              We&apos;ll help you create your own business listing and manage your services independently.
             </p>
           )}
           {userType === 'team' && (
             <p className="text-sm text-blue-700">
-              Next, we'll help you find your business and set up your employee profile with the services you provide.
+              Next, we&apos;ll help you find your business and set up your employee profile with the services you provide.
             </p>
           )}
         </div>
