@@ -21,6 +21,9 @@ import JobTitleStep from "../inputs/JobTitleStep";
 import BusinessSelectStep from "../inputs/BusinessSelectStep";
 import ServiceSelectStep from "../inputs/ServiceSelectStep";
 
+// ADD THIS: Define the UserType
+type UserType = 'customer' | 'individual' | 'team';
+
 /** ---------------------------------------------
  * Utilities
  * --------------------------------------------- */
