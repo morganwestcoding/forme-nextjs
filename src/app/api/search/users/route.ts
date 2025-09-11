@@ -1,21 +1,34 @@
 // app/api/search/users/route.ts
 import { NextResponse } from 'next/server';
+import getCurrentUser from '@/app/actions/getCurrentUser';
 import prisma from '@/app/libs/prismadb';
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const term = searchParams.get('term');
+  // Add authentication for employee selection
+  const currentUser = await getCurrentUser();
+  if (!currentUser) {
+    return new NextResponse("Unauthorized", { status: 401 });
+  }
 
-  if (!term) {
-    return NextResponse.json({ error: 'Invalid search term' }, { status: 400 });
+  const { searchParams } = new URL(request.url);
+  // Support both 'term' and 'q' for compatibility
+  const term = searchParams.get('term') || searchParams.get('q');
+
+  if (!term || term.length < 2) {
+    return NextResponse.json({ users: [] });
   }
 
   try {
     const users = await prisma.user.findMany({
       where: {
-        OR: [
-          { name: { contains: term, mode: 'insensitive' } },
-          { email: { contains: term, mode: 'insensitive' } },
+        AND: [
+          { id: { not: currentUser.id } }, // Exclude current user
+          {
+            OR: [
+              { name: { contains: term, mode: 'insensitive' } },
+              { email: { contains: term, mode: 'insensitive' } },
+            ],
+          },
         ],
       },
       select: {
@@ -23,10 +36,13 @@ export async function GET(request: Request) {
         name: true,
         email: true,
         image: true,
+        imageSrc: true, // Add this for profile images
       },
+      take: 10, // Limit results for performance
     });
 
-    return NextResponse.json(users);
+    // Return in wrapped format for consistency
+    return NextResponse.json({ users });
   } catch (error) {
     console.error('Error searching users:', error);
     return NextResponse.json({ error: 'Failed to search users' }, { status: 500 });

@@ -6,6 +6,12 @@ interface IParams {
   listingId?: string;
 }
 
+interface EmployeeInput {
+  userId: string;
+  jobTitle?: string;
+  serviceIds?: string[];
+}
+
 export async function PUT(request: Request, { params }: { params: IParams }) {
   const currentUser = await getCurrentUser();
   if (!currentUser) return new NextResponse("Unauthorized", { status: 401 });
@@ -28,9 +34,7 @@ export async function PUT(request: Request, { params }: { params: IParams }) {
     }
 
     const incomingServices = Array.isArray(body.services) ? body.services : [];
-    const incomingEmployees: string[] = (Array.isArray(body.employees) ? body.employees : [])
-      .map((n: string) => (n || "").trim())
-      .filter(Boolean);
+    const incomingEmployees: EmployeeInput[] = Array.isArray(body.employees) ? body.employees : [];
     const incomingHours = Array.isArray(body.storeHours) ? body.storeHours : [];
 
     const fresh = await prisma.$transaction(async (tx) => {
@@ -80,7 +84,24 @@ export async function PUT(request: Request, { params }: { params: IParams }) {
         }
       }
 
-      // 3) Employees: upsert by normalized name; delete only if unused (avoid P2014)
+      // 3) Employees: Validate users exist, then upsert
+      if (incomingEmployees.length > 0) {
+        const userIds = incomingEmployees.map(emp => emp.userId);
+        
+        // Validate all users exist
+        const existingUsers = await tx.user.findMany({
+          where: { id: { in: userIds } },
+          select: { id: true, name: true }
+        });
+        
+        const existingUserIds = new Set(existingUsers.map(u => u.id));
+        const missingUserIds = userIds.filter(id => !existingUserIds.has(id));
+        
+        if (missingUserIds.length > 0) {
+          throw new Error(`Users not found: ${missingUserIds.join(', ')}`);
+        }
+      }
+
       const existingEmployees = await tx.employee.findMany({
         where: { listingId },
         include: {
@@ -88,32 +109,42 @@ export async function PUT(request: Request, { params }: { params: IParams }) {
         },
       });
 
-      const norm = (s: string) => s.trim().toLowerCase();
-      const existingByName = new Map(existingEmployees.map((e) => [norm(e.fullName), e]));
+      const existingByUserId = new Map(existingEmployees.map((e) => [e.userId, e]));
+      const incomingUserIds = new Set(incomingEmployees.map(emp => emp.userId));
 
-      // create / update names
-      for (const name of incomingEmployees) {
-        const key = norm(name);
-        const existing = existingByName.get(key);
+      // Create or update employees
+      for (const empInput of incomingEmployees) {
+        const existing = existingByUserId.get(empInput.userId);
+        
         if (existing) {
-          // normalize case-only changes
-          if (existing.fullName !== name) {
-            await tx.employee.update({
-              where: { id: existing.id },
-              data: { fullName: name },
-            });
-          }
+          // Update existing employee
+          await tx.employee.update({
+            where: { id: existing.id },
+            data: {
+              jobTitle: empInput.jobTitle || null,
+              serviceIds: empInput.serviceIds || [],
+              isActive: true,
+            },
+          });
         } else {
+          // Create new employee
           await tx.employee.create({
-            data: { fullName: name, listingId },
+            data: {
+              fullName: "", // Will be populated from user data on read
+              jobTitle: empInput.jobTitle || null,
+              listingId,
+              userId: empInput.userId,
+              serviceIds: empInput.serviceIds || [],
+              isActive: true,
+            },
           });
         }
       }
 
-      // delete employees not present anymore AND not referenced by reservations
+      // Delete employees not in incoming list AND not referenced by reservations
       const deletableIds = existingEmployees
         .filter(
-          (e) => !incomingEmployees.some((n) => norm(n) === norm(e.fullName)) && e.reservations.length === 0
+          (e) => !incomingUserIds.has(e.userId) && e.reservations.length === 0
         )
         .map((e) => e.id);
 
@@ -135,16 +166,27 @@ export async function PUT(request: Request, { params }: { params: IParams }) {
         });
       }
 
-      // 5) Return fresh snapshot
+      // 5) Return fresh snapshot with user data for employees
       return tx.listing.findUnique({
         where: { id: listingId },
-        include: { services: true, employees: true, storeHours: true },
+        include: { 
+          services: true, 
+          employees: {
+            include: {
+              user: true, // Include user data for SafeEmployee mapping
+            },
+          }, 
+          storeHours: true 
+        },
       });
     });
 
     return NextResponse.json(fresh);
   } catch (error) {
     console.error("[LISTING_UPDATE]", error);
+    if (error instanceof Error && error.message.includes("Users not found")) {
+      return new NextResponse(error.message, { status: 400 });
+    }
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
