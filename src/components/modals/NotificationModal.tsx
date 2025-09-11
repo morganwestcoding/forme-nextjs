@@ -219,7 +219,7 @@ const NotificationsModal = () => {
               <div>
                 <h3 className="text-lg font-semibold text-gray-800 mb-2">No notifications yet</h3>
                 <p className="text-gray-600 text-sm max-w-xs mx-auto">
-                  When you get notifications, they'll show up here
+                  When you get notifications, they&apos;ll show up here
                 </p>
               </div>
             </div>
