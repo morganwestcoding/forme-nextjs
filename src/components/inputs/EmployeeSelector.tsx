@@ -256,7 +256,7 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
 
       {employees.length === 0 && (
         <div className="text-center py-8 text-gray-500 bg-neutral-50 rounded-lg border border-neutral-300">
-          No employees added yet. Click "Add Employee" to get started.
+          No employees added yet. Click &ldquo;Add Employee&ldquo; to get started.
         </div>
       )}
     </div>
