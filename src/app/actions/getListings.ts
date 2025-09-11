@@ -128,6 +128,7 @@ export default async function getListings(params: IListingsParams = {}): Promise
     const listings = await prisma.listing.findMany({
       where: query,
       include: {
+        user: true, // ADD THIS: Include the listing owner
         services: {
           select: {
             id: true,
@@ -217,7 +218,37 @@ export default async function getListings(params: IListingsParams = {}): Promise
         openTime: hour.openTime,
         closeTime: hour.closeTime,
         isClosed: hour.isClosed
-      }))
+      })),
+      // Additional computed fields
+      city: listing.location?.split(',')[0]?.trim() || null,
+      state: listing.location?.split(',')[1]?.trim() || null,
+      // ADD THIS: Map the listing owner/user
+      user: {
+        ...listing.user,
+        createdAt: listing.user.createdAt.toISOString(),
+        updatedAt: listing.user.updatedAt.toISOString(),
+        emailVerified: listing.user.emailVerified?.toISOString() || null,
+        favoriteIds: listing.user.favoriteIds || [],
+        imageSrc: listing.user.imageSrc || null,
+        bio: listing.user.bio || '',
+        location: listing.user.location || null,
+        galleryImages: listing.user.galleryImages || [],
+        following: listing.user.following || [],
+        followers: listing.user.followers || [],
+        managedListings: listing.user.managedListings || [],
+        isSubscribed: listing.user.isSubscribed,
+        resetToken: listing.user.resetToken || null,
+        resetTokenExpiry: listing.user.resetTokenExpiry || null,
+        subscriptionStartDate: listing.user.subscriptionStartDate || null,
+        subscriptionEndDate: listing.user.subscriptionEndDate || null,
+        subscriptionTier: listing.user.subscriptionTier || null,
+        stripeCustomerId: listing.user.stripeCustomerId || null,
+        stripeSubscriptionId: listing.user.stripeSubscriptionId || null,
+        subscriptionPriceId: listing.user.subscriptionPriceId || null,
+        subscriptionStatus: listing.user.subscriptionStatus || null,
+        subscriptionBillingInterval: listing.user.subscriptionBillingInterval || null,
+        currentPeriodEnd: listing.user.currentPeriodEnd || null,
+      }
     }));
 
     return safeListings;

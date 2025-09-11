@@ -1,11 +1,12 @@
 import prisma from "@/app/libs/prismadb";
-import { SafeListing } from "@/app/types";
+import { SafeListing, SafeUser } from "@/app/types";
 
 interface IParams {
   listingId?: string;
 }
 
-export default async function getListingById(params: IParams): Promise<SafeListing | null> {
+// Update return type to match what ListingClient expects
+export default async function getListingById(params: IParams): Promise<(SafeListing & { user: SafeUser }) | null> {
   try {
     const { listingId } = params;
 
@@ -16,7 +17,7 @@ export default async function getListingById(params: IParams): Promise<SafeListi
     const listing = await prisma.listing.findUnique({
       where: { id: listingId },
       include: {
-        user: true,
+        user: true, // Include the listing owner
         services: {
           select: {
             id: true,
@@ -54,7 +55,8 @@ export default async function getListingById(params: IParams): Promise<SafeListi
 
     if (!listing) return null;
 
-    return {
+    // Create the SafeListing part
+    const safeListing: SafeListing = {
       id: listing.id,
       title: listing.title,
       description: listing.description,
@@ -78,7 +80,6 @@ export default async function getListingById(params: IParams): Promise<SafeListi
         category: service.category,
         imageSrc: service.imageSrc || null
       })),
-      // Updated employees mapping to match SafeEmployee structure
       employees: listing.employees
         .filter(employee => employee.user) // Ensure user exists
         .map(employee => ({
@@ -108,6 +109,40 @@ export default async function getListingById(params: IParams): Promise<SafeListi
       // Additional computed fields
       city: listing.location?.split(',')[0]?.trim() || null,
       state: listing.location?.split(',')[1]?.trim() || null,
+    };
+
+    // Create the SafeUser part
+    const safeUser: SafeUser = {
+      ...listing.user,
+      createdAt: listing.user.createdAt.toISOString(),
+      updatedAt: listing.user.updatedAt.toISOString(),
+      emailVerified: listing.user.emailVerified?.toISOString() || null,
+      favoriteIds: listing.user.favoriteIds || [],
+      imageSrc: listing.user.imageSrc || null,
+      bio: listing.user.bio || '',
+      location: listing.user.location || null,
+      galleryImages: listing.user.galleryImages || [],
+      following: listing.user.following || [],
+      followers: listing.user.followers || [],
+      managedListings: listing.user.managedListings || [],
+      isSubscribed: listing.user.isSubscribed,
+      resetToken: listing.user.resetToken || null,
+      resetTokenExpiry: listing.user.resetTokenExpiry || null,
+      subscriptionStartDate: listing.user.subscriptionStartDate || null,
+      subscriptionEndDate: listing.user.subscriptionEndDate || null,
+      subscriptionTier: listing.user.subscriptionTier || null,
+      stripeCustomerId: listing.user.stripeCustomerId || null,
+      stripeSubscriptionId: listing.user.stripeSubscriptionId || null,
+      subscriptionPriceId: listing.user.subscriptionPriceId || null,
+      subscriptionStatus: listing.user.subscriptionStatus || null,
+      subscriptionBillingInterval: listing.user.subscriptionBillingInterval || null,
+      currentPeriodEnd: listing.user.currentPeriodEnd || null,
+    };
+
+    // Return the intersection type that ListingClient expects
+    return {
+      ...safeListing,
+      user: safeUser
     };
   } catch (error: any) {
     console.error('Error fetching listing by ID:', error);
