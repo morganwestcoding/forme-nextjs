@@ -122,12 +122,12 @@ export async function POST(request: Request) {
           return new NextResponse('You are already registered at this business', { status: 409 });
         }
 
-        // Create employee record
+        // Create employee record - removed profileImage field
         const employee = await prisma.employee.create({
           data: {
             fullName: name,
             jobTitle: isOwnerManager ? 'Owner/Manager' : (jobTitle || ''),
-            profileImage: image || '',
+            // profileImage removed - use user.image/imageSrc instead
             listingId: selectedListing,
             userId: user.id,
             serviceIds: selectedServices || [],
