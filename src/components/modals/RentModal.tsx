@@ -18,6 +18,20 @@ import StoreHours, { StoreHourType } from '../inputs/StoreHours';
 import ImageUploadGrid from '../inputs/ImageUploadGrid';
 import EditOverview from './EditOverview';
 
+// Add the EmployeeInput interface
+interface EmployeeInput {
+  userId: string;
+  jobTitle?: string;
+  serviceIds?: string[];
+  user?: {
+    id: string;
+    name: string | null;
+    email: string | null;
+    image: string | null;
+    imageSrc: string | null;
+  };
+}
+
 /** ---------------- Helpers ---------------- */
 function splitLocation(loc?: string | null): { city: string; state: string } {
   if (!loc) return { city: '', state: '' };
@@ -46,7 +60,8 @@ const initialServices: Service[] = [
   { serviceName: '', price: 0, category: '' },
 ];
 
-const initialEmployees: string[] = ['', '', ''];
+// Updated initial employees to empty array - will be populated by EmployeeSelector
+const initialEmployees: EmployeeInput[] = [];
 
 const initialStoreHours: StoreHourType[] = [
   { dayOfWeek: 'Monday', openTime: '8:00 AM', closeTime: '8:00 PM', isClosed: false },
@@ -72,9 +87,25 @@ const RentModal = () => {
   const [resetKey, setResetKey] = useState(0);
 
   const [services, setServices] = useState<Service[]>(listing?.services || initialServices);
-  const [employees, setEmployees] = useState<string[]>(
-    (listing?.employees || []).map((emp: any) => emp.fullName) || initialEmployees
-  );
+  // Updated to use EmployeeInput[] instead of string[]
+  const [employees, setEmployees] = useState<EmployeeInput[]>(() => {
+    if (listing?.employees) {
+      // Convert SafeEmployee[] to EmployeeInput[]
+      return listing.employees.map((emp: any) => ({
+        userId: emp.userId,
+        jobTitle: emp.jobTitle,
+        serviceIds: emp.serviceIds || [],
+        user: emp.user ? {
+          id: emp.user.id,
+          name: emp.user.name,
+          email: null, // SafeEmployee doesn't include email
+          image: emp.user.image,
+          imageSrc: emp.user.imageSrc,
+        } : undefined
+      }));
+    }
+    return initialEmployees;
+  });
   const [storeHours, setStoreHours] = useState<StoreHourType[]>(listing?.storeHours || initialStoreHours);
   const [editingServiceIndex, setEditingServiceIndex] = useState<number | null>(null);
 
@@ -150,7 +181,26 @@ const RentModal = () => {
       galleryImages: listing.galleryImages || [],
     });
     setServices(listing.services || initialServices);
-    setEmployees((listing.employees || []).map((emp: any) => emp.fullName));
+    
+    // Convert SafeEmployee[] to EmployeeInput[]
+    if (listing.employees) {
+      const convertedEmployees = listing.employees.map((emp: any) => ({
+        userId: emp.userId,
+        jobTitle: emp.jobTitle,
+        serviceIds: emp.serviceIds || [],
+        user: emp.user ? {
+          id: emp.user.id,
+          name: emp.user.name,
+          email: null,
+          image: emp.user.image,
+          imageSrc: emp.user.imageSrc,
+        } : undefined
+      }));
+      setEmployees(convertedEmployees);
+    } else {
+      setEmployees(initialEmployees);
+    }
+    
     setStoreHours(listing.storeHours || initialStoreHours);
     setEditingServiceIndex(null);
     setResetKey((k) => k + 1);
@@ -291,7 +341,7 @@ const RentModal = () => {
           city,
           state,
           services,
-          employees,
+          employees, // Now sends EmployeeInput[] format
           storeHours,
         };
 
@@ -327,7 +377,7 @@ const RentModal = () => {
       city,
       state,
       services,
-      employees,
+      employees, // Now sends EmployeeInput[] format
       storeHours,
     };
 
@@ -363,10 +413,13 @@ const RentModal = () => {
     () => (services || []).filter(s => (s.serviceName?.trim() || '') && (Number(s.price) > 0)).length,
     [services]
   );
+  
+  // Updated to count EmployeeInput[] instead of string[]
   const employeesCount = useMemo(
-    () => employees.filter(e => (e || '').trim().length > 0).length,
+    () => employees.filter(e => e.userId && e.userId.trim().length > 0).length,
     [employees]
   );
+  
   const imagesCount = (imageSrc ? 1 : 0) + (Array.isArray(galleryImages) ? galleryImages.length : 0);
 
   const overviewItems = useMemo(() => ([
@@ -626,13 +679,24 @@ const RentModal = () => {
   }
 
   if (step === STEPS.EMPLOYEE) {
+    // Filter services to only include those with IDs (saved services)
+    const validServices = services
+      .filter(s => s.id && s.serviceName?.trim()) // Only services with IDs and names
+      .map(s => ({
+        id: s.id!, // Non-null assertion since we filtered for it
+        serviceName: s.serviceName!,
+        price: s.price || 0,
+        category: s.category || '',
+      }));
+
     bodyContent = (
       <div className="flex flex-col gap-8">
         <Heading title={isEditMode ? "Update your employees" : "Add your employees"} subtitle="Let us know who is available for work!" />
         <EmployeeSelector
           key={`emp-${resetKey}`}
-          onEmployeesChange={setEmployees}
-          existingEmployees={employees}
+          onEmployeesChange={setEmployees} // Now correctly typed for EmployeeInput[]
+          existingEmployees={employees}    // Now correctly typed for EmployeeInput[]
+          services={validServices}         // Pass only services with IDs
         />
       </div>
     );
