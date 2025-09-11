@@ -213,7 +213,7 @@ const BusinessSelectStep: React.FC<BusinessSelectStepProps> = ({
       {/* Helper Text */}
       <div className="bg-neutral-50 rounded-lg p-4">
         <p className="text-sm text-neutral-600">
-          Can't find your business? Contact your manager to make sure they've set up their ForMe listing, 
+          Can&apos;t find your business? Contact your manager to make sure they&apos;ve set up their ForMe listing, 
           or ask them to add you manually through their business dashboard.
         </p>
       </div>

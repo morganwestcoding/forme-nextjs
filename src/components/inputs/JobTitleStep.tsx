@@ -67,7 +67,7 @@ const JobTitleStep: React.FC<JobTitleStepProps> = ({
                 transform-gpu
               `}
             >
-              I'm the owner/manager
+              I&apos;m the owner/manager
             </h3>
           </div>
         </button>
@@ -92,7 +92,7 @@ const JobTitleStep: React.FC<JobTitleStepProps> = ({
         {isOwnerManager && (
           <div className="bg-blue-50 rounded-lg p-4">
             <p className="text-sm text-blue-700">
-              <strong>Owner/Manager selected.</strong> You'll have full access to manage this business account, 
+              <strong>Owner/Manager selected.</strong> You&apos;ll have full access to manage this business account, 
               including services, employees, and bookings.
             </p>
           </div>

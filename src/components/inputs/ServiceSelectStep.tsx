@@ -167,7 +167,7 @@ const ServiceSelectStep: React.FC<ServiceSelectStepProps> = ({
               </svg>
             </div>
             <p className="text-neutral-600 mb-2">
-              The business owner hasn't finished setting up their services yet.
+              The business owner hasn&apos;t finished setting up their services yet.
             </p>
             <p className="text-sm text-neutral-500">
               You can complete your registration and services can be assigned to you later by the business owner.
@@ -289,7 +289,7 @@ const ServiceSelectStep: React.FC<ServiceSelectStepProps> = ({
       {/* Helper Text */}
       <div className="bg-blue-50 rounded-lg p-4">
         <p className="text-sm text-blue-700">
-          <strong>Important:</strong> Only select services you're professionally trained and qualified to perform. 
+          <strong>Important:</strong> Only select services you&apos;re professionally trained and qualified to perform. 
           You can update your service assignments later through your profile settings or by contacting your manager.
         </p>
       </div>
@@ -298,8 +298,8 @@ const ServiceSelectStep: React.FC<ServiceSelectStepProps> = ({
       {selectedServices.length === 0 && (
         <div className="bg-amber-50 rounded-lg p-4">
           <p className="text-sm text-amber-700">
-            <strong>Note:</strong> You haven't selected any services yet. You can complete registration without 
-            selecting services, but you'll need to have services assigned before you can receive bookings.
+            <strong>Note:</strong> You haven&apos;t selected any services yet. You can complete registration without 
+            selecting services, but you&apos;ll need to have services assigned before you can receive bookings.
           </p>
         </div>
       )}
