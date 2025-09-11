@@ -54,7 +54,7 @@ export default async function getReservations(params: IParams) {
         listing: {
           include: {
             services: true,
-            employees: true,
+            employees: true, // This will include all employee fields
             storeHours: true
           },
         },
@@ -93,16 +93,25 @@ export default async function getReservations(params: IParams) {
           id: service.id,
           serviceName: service.serviceName,
           price: service.price,
-          category: service.category
+          category: service.category,
+          imageSrc: service.imageSrc || null // Add this field that was missing
         })),
         phoneNumber: reservation.listing.phoneNumber || null,
         website: reservation.listing.website || null,
         address: reservation.listing.address || null,
         zipCode: reservation.listing.zipCode || null,
         galleryImages: reservation.listing.galleryImages || [],
+        // Fix the employees mapping to include all required SafeEmployee fields
         employees: reservation.listing.employees.map(employee => ({
           id: employee.id,
-          fullName: employee.fullName
+          fullName: employee.fullName,
+          jobTitle: employee.jobTitle || null,
+          profileImage: employee.profileImage || null,
+          listingId: employee.listingId,
+          userId: employee.userId || null,
+          serviceIds: employee.serviceIds || [],
+          isActive: employee.isActive,
+          createdAt: employee.createdAt.toISOString()
         })),
         storeHours: reservation.listing.storeHours.map(hour => ({
           dayOfWeek: hour.dayOfWeek,
@@ -112,15 +121,34 @@ export default async function getReservations(params: IParams) {
         }))
       },
       user: {
-        ...reservation.user,
+        id: reservation.user.id,
+        name: reservation.user.name,
+        email: reservation.user.email,
+        image: reservation.user.image,
+        resetToken: reservation.user.resetToken || null,
+        resetTokenExpiry: reservation.user.resetTokenExpiry || null,
         createdAt: reservation.user.createdAt.toISOString(),
         updatedAt: reservation.user.updatedAt.toISOString(),
         emailVerified: reservation.user.emailVerified?.toISOString() || null,
-        resetToken: reservation.user.resetToken || null,
-        resetTokenExpiry: reservation.user.resetTokenExpiry || null,
+        bio: reservation.user.bio || "No Bio Provided Yet..",
+        imageSrc: reservation.user.imageSrc || null,
+        location: reservation.user.location || null,
+        galleryImages: reservation.user.galleryImages || [],
+        isSubscribed: reservation.user.isSubscribed || false,
         subscriptionStartDate: reservation.user.subscriptionStartDate || null,
         subscriptionEndDate: reservation.user.subscriptionEndDate || null,
         subscriptionTier: reservation.user.subscriptionTier || null,
+        stripeCustomerId: reservation.user.stripeCustomerId || null,
+        stripeSubscriptionId: reservation.user.stripeSubscriptionId || null,
+        subscriptionPriceId: reservation.user.subscriptionPriceId || null,
+        subscriptionStatus: reservation.user.subscriptionStatus || null,
+        subscriptionBillingInterval: reservation.user.subscriptionBillingInterval || null,
+        currentPeriodEnd: reservation.user.currentPeriodEnd || null,
+        following: reservation.user.following || [],
+        followers: reservation.user.followers || [],
+        conversationIds: reservation.user.conversationIds || [],
+        favoriteIds: reservation.user.favoriteIds || [],
+        managedListings: reservation.user.managedListings || []
       }
     }));
 
