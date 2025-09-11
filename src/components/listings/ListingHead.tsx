@@ -176,13 +176,47 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                     </div>
                   </div>
 
-                  <button className="p-1 rounded-full hover:bg-gray-100 transition text-neutral-500" aria-label="More">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="stroke-current fill-current">
-                      <path d="M13.5 4.5C13.5 3.67157 12.8284 3 12 3C11.1716 3 10.5 3.67157 10.5 4.5C10.5 5.32843 11.1716 6 12 6C12.8284 6 13.5 5.32843 13.5 4.5Z" strokeWidth="1" />
-                      <path d="M13.5 12C13.5 11.1716 12.8284 10.5 12 10.5C11.1716 10.5 10.5 11.1716 10.5 12C10.5 12.8284 11.1716 13.5 12 13.5C12.8284 13.5 13.5 12.8284 13.5 12Z" strokeWidth="1" />
-                      <path d="M13.5 19.5C13.5 18.6716 12.8284 18 12 18C11.1716 18 10.5 18.6716 10.5 19.5C10.5 20.3284 11.1716 21 12 21C12.8284 21 13.5 20.3284 13.5 19.5Z" strokeWidth="1" />
-                    </svg>
-                  </button>
+                  <div className="flex items-center gap-2">
+                    {/* Styled Action Buttons - matching Create/Filter style */}
+                    {isOwner ? (
+                      <button
+                        onClick={() => rentModal.onOpen(listing)}
+                        className="flex items-center justify-center py-3 space-x-2 px-4 shadow-sm rounded-xl transition-all bg-white text-gray-500 hover:bg-neutral-200"
+                        type="button"
+                      >
+                        <span className="text-sm">Edit</span>
+                      </button>
+                    ) : (
+                      <>
+                        <button
+                          onClick={handleToggleFollow}
+                          className="flex items-center justify-center py-3 space-x-2 px-4 shadow-sm rounded-xl transition-all bg-white text-gray-500 hover:bg-neutral-200"
+                          type="button"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" color="currentColor" fill="none">
+                            <path d="M15 5C15 6.65685 13.2418 8.5 12 8.5C10.7582 8.5 9 6.65685 9 5C9 3.34315 10.3431 2 12 2C13.6569 2 15 3.34315 15 5Z" stroke="currentColor" strokeWidth="1.5"></path>
+                            <path d="M16.0415 9C17.5645 10.3353 18.5514 12.5969 17.6652 14.7052C17.4742 15.1594 17.0361 15.4539 16.5514 15.4539C16.0585 15.4539 15.249 15.296 15.0917 15.9374L13.9945 20.4123C13.7657 21.3454 12.9434 22 12.0001 22C11.0567 22 10.2344 21.3454 10.0056 20.4123L8.90839 15.9374C8.7511 15.296 7.94155 15.4539 7.44868 15.4539C6.96396 15.4539 6.52588 15.1594 6.33494 14.7052C5.44873 12.5969 6.43564 10.3353 7.95863 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"></path>
+                          </svg>
+                          <span className="text-sm">{isFollowing ? 'Following' : 'Follow'}</span>
+                        </button>
+                        <button 
+                          onClick={handleReserveClick}
+                          className="flex items-center justify-center py-3 space-x-2 px-4 shadow-sm rounded-xl transition-all bg-white text-gray-500 hover:bg-neutral-200"
+                          type="button"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" color="currentColor" fill="none">
+
+    <path d="M16 2V6M8 2V6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+    <path d="M13 4H11C7.22876 4 5.34315 4 4.17157 5.17157C3 6.34315 3 8.22876 3 12V14C3 17.7712 3 19.6569 4.17157 20.8284C5.34315 22 7.22876 22 11 22H13C16.7712 22 18.6569 22 19.8284 20.8284C21 19.6569 21 17.7712 21 14V12C21 8.22876 21 6.34315 19.8284 5.17157C18.6569 4 16.7712 4 13 4Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+    <path d="M3 10H21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+    <path d="M11 14H16M8 14H8.00898M13 18H8M16 18H15.991" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+
+                          </svg>
+                          <span className="text-sm">Reserve</span>
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </div>
 
                 <div className="mb-3">
@@ -199,43 +233,8 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   <span className="text-gray-500"> followers</span>
                 </div>
                 
-                <div className="text-gray-700 text-sm leading-relaxed mb-4">
+                <div className="text-gray-700 text-sm leading-relaxed">
                   {truncatedDescription}
-                </div>
-
-                {/* Action Buttons - with fixed width and no icons */}
-                <div className="flex items-center gap-3">
-                  {isOwner ? (
-                    <button
-                      onClick={() => rentModal.onOpen(listing)}
-                      className="flex items-center justify-center py-3 space-x-2 px-4 shadow-sm rounded-xl transition-all bg-white text-gray-500 hover:bg-neutral-200"
-                      type="button"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" color="currentColor" fill="none">
-                        <path d="M16.4249 4.60509L17.4149 3.6151C18.2351 2.79497 19.5648 2.79497 20.3849 3.6151C21.205 4.43524 21.205 5.76493 20.3849 6.58507L19.3949 7.57506M16.4249 4.60509L9.76558 11.2644C9.25807 11.772 8.89804 12.4078 8.72397 13.1041L8 16L10.8959 15.276C11.5922 15.102 12.228 14.7419 12.7356 14.2344L19.3949 7.57506M16.4249 4.60509L19.3949 7.57506" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"></path>
-                        <path d="M18.9999 13.5C18.9999 16.7875 18.9999 18.4312 18.092 19.5376C17.9258 19.7401 17.7401 19.9258 17.5375 20.092C16.4312 21 14.7874 21 11.4999 21H11C7.22876 21 5.34316 21 4.17159 19.8284C3.00003 18.6569 3 16.7712 3 13V12.5C3 9.21252 3 7.56879 3.90794 6.46244C4.07417 6.2599 4.2599 6.07417 4.46244 5.90794C5.56879 5 7.21252 5 10.5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-                      </svg>
-                      <span className="text-sm">Edit Profile</span>
-                    </button>
-                  ) : (
-                    <>
-                      <button
-                        onClick={handleToggleFollow}
-                        className="w-24 flex items-center justify-center py-3 px-4 shadow-sm rounded-xl transition-all bg-white text-gray-500 hover:bg-neutral-200"
-                        type="button"
-                      >
-                        <span className="text-sm">{isFollowing ? 'Following' : 'Follow'}</span>
-                      </button>
-
-                      <button 
-                        onClick={handleReserveClick}
-                        className="w-24 flex items-center justify-center py-3 px-4 shadow-sm rounded-xl transition-all bg-[#60A5FA] text-white hover:bg-blue-600"
-                        type="button"
-                      >
-                        <span className="text-sm">Reserve</span>
-                      </button>
-                    </>
-                  )}
                 </div>
               </div>
             </div>
