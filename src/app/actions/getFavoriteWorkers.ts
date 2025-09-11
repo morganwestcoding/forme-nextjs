@@ -26,17 +26,46 @@ export default async function getFavoriteWorkers(): Promise<SafeEmployee[]> {
           in: employeeIds,
         },
       },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+            imageSrc: true,
+          },
+        },
+        listing: {
+          select: {
+            id: true,
+            title: true,
+            category: true,
+          },
+        },
+      },
       orderBy: {
         fullName: 'asc'
       }
     });
 
-    const safeWorkers = workers.map((worker) => ({
+    const safeWorkers: SafeEmployee[] = workers.map((worker) => ({
       id: worker.id,
       fullName: worker.fullName,
-      jobTitle: worker.jobTitle || null,
-      profileImage: worker.profileImage || null,
-    }) as SafeEmployee);
+      jobTitle: worker.jobTitle,
+      listingId: worker.listingId,
+      userId: worker.userId,
+      serviceIds: worker.serviceIds,
+      isActive: worker.isActive,
+      createdAt: worker.createdAt.toISOString(),
+      listingTitle: worker.listing.title,
+      listingCategory: worker.listing.category,
+      user: {
+        id: worker.user.id,
+        name: worker.user.name,
+        image: worker.user.image,
+        imageSrc: worker.user.imageSrc,
+      },
+    }));
 
     return safeWorkers;
   } catch (error: any) {

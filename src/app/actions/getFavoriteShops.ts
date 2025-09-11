@@ -24,7 +24,21 @@ export default async function getFavoriteShops(): Promise<SafeShop[]> {
             name: true, 
             image: true 
           } 
-        }
+        },
+        products: {
+          select: {
+            id: true,
+            name: true,
+            mainImage: true,
+            price: true,
+          },
+          take: 3, // Get first 3 products for preview
+        },
+        _count: {
+          select: {
+            products: true,
+          },
+        },
       },
       orderBy: {
         createdAt: 'desc'
@@ -57,9 +71,20 @@ export default async function getFavoriteShops(): Promise<SafeShop[]> {
         name: shop.user.name,
         image: shop.user.image,
       },
-      // Add computed fields
-      productCount: 0, // You might want to calculate this properly
+      // Add computed fields with actual data
+      products: shop.products.map(product => ({
+        name: product.name,
+        image: product.mainImage,
+        price: product.price,
+      })),
+      productCount: shop._count.products,
       followerCount: shop.followers?.length || 0,
+      featuredProductItems: shop.products.slice(0, 3).map(product => ({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.mainImage,
+      })),
     }) as SafeShop);
 
     return safeShops;
