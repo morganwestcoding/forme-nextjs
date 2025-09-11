@@ -1,15 +1,14 @@
 // app/api/notifications/route.ts
-import { NextResponse } from "next/server";
-import getCurrentUser from "@/app/actions/getCurrentUser";
-import prisma from "@/app/libs/prismadb";
+import { NextResponse } from 'next/server';
+import getCurrentUser from '@/app/actions/getCurrentUser';
+import prisma from '@/app/libs/prismadb';
 
-// GET notifications
-export async function GET(request: Request) {
+export async function GET() {
   try {
     const currentUser = await getCurrentUser();
 
     if (!currentUser) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const notifications = await prisma.notification.findMany({
@@ -17,44 +16,20 @@ export async function GET(request: Request) {
         userId: currentUser.id,
       },
       orderBy: {
-        createdAt: 'desc'
+        createdAt: 'desc',
       },
-      take: 20
+      take: 50, // Limit to 50 most recent notifications
     });
 
-    return NextResponse.json(notifications);
+    // Format dates as strings
+    const formattedNotifications = notifications.map(notification => ({
+      ...notification,
+      createdAt: notification.createdAt.toISOString(),
+    }));
+
+    return NextResponse.json(formattedNotifications);
   } catch (error) {
-    console.error("Error fetching notifications:", error);
-    return new NextResponse("Internal Server Error", { status: 500 });
-  }
-}
-
-// POST new notification
-export async function POST(request: Request) {
-  try {
-    const currentUser = await getCurrentUser();
-    if (!currentUser) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
-
-    const body = await request.json();
-    const { userId, type, content } = body;
-
-    if (!userId || !type || !content) {
-      return new NextResponse("Missing required fields", { status: 400 });
-    }
-
-    const notification = await prisma.notification.create({
-      data: {
-        userId,
-        type,
-        content
-      }
-    });
-
-    return NextResponse.json(notification);
-  } catch (error) {
-    console.error("Error creating notification:", error);
-    return new NextResponse("Internal Server Error", { status: 500 });
+    console.error('[NOTIFICATIONS_GET]', error);
+    return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
   }
 }

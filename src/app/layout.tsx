@@ -2,6 +2,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import NotificationsModal from '@/components/modals/NotificationModal';
 
 import RegisterModal from '@/components/modals/RegisterModal';
 import ToasterProvider from './providers/ToasterProvider';
@@ -95,6 +96,7 @@ export default async function RootLayout({
                 <ResetPasswordModal/>
                 <MessageModal />
                 <SubscribeModal/>
+                <NotificationsModal />
                 <PostModal/>
                 <FilterModal/>
                 <LoginModal />
