@@ -2,6 +2,12 @@ import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 
+interface EmployeeInput {
+  userId: string;
+  jobTitle?: string;
+  serviceIds?: string[];
+}
+
 export async function POST(request: Request) {
   const currentUser = await getCurrentUser();
   if (!currentUser) return new Response("Unauthorized", { status: 401 });
@@ -30,8 +36,15 @@ export async function POST(request: Request) {
     return new Response(`Missing required fields: ${missing.join(", ")}`, { status: 400 });
   }
 
-  if (!Array.isArray(employees) || employees.some((emp: any) => typeof emp !== 'string' || !emp.trim())) {
-    return new Response("Invalid employees data", { status: 400 });
+  // Validate employees format - now expects EmployeeInput[] instead of string[]
+  if (!Array.isArray(employees)) {
+    return new Response("Employees must be an array", { status: 400 });
+  }
+
+  // Validate each employee has required userId
+  const invalidEmployees = employees.filter((emp: any) => !emp.userId || typeof emp.userId !== 'string');
+  if (invalidEmployees.length > 0) {
+    return new Response("Invalid employee data - missing userId", { status: 400 });
   }
 
   let parsedServices = services;
@@ -45,6 +58,22 @@ export async function POST(request: Request) {
   }
 
   try {
+    // Validate all employee users exist before creating listing
+    if (employees.length > 0) {
+      const userIds = employees.map((emp: EmployeeInput) => emp.userId);
+      const existingUsers = await prisma.user.findMany({
+        where: { id: { in: userIds } },
+        select: { id: true, name: true }
+      });
+      
+      const existingUserIds = new Set(existingUsers.map(u => u.id));
+      const missingUserIds = userIds.filter(id => !existingUserIds.has(id));
+      
+      if (missingUserIds.length > 0) {
+        return new Response(`Users not found: ${missingUserIds.join(', ')}`, { status: 400 });
+      }
+    }
+
     const listing = await prisma.listing.create({
       data: {
         title,
@@ -70,9 +99,13 @@ export async function POST(request: Request) {
         zipCode,
 
         employees: {
-          create: (employees || [])
-            .filter((emp: string) => (emp || '').trim())
-            .map((employee: string) => ({ fullName: employee.trim() })),
+          create: (employees || []).map((employee: EmployeeInput) => ({
+            fullName: "", // Will be populated from user data on read
+            jobTitle: employee.jobTitle || null,
+            userId: employee.userId,
+            serviceIds: employee.serviceIds || [],
+            isActive: true,
+          })),
         },
 
         storeHours: {
@@ -86,7 +119,11 @@ export async function POST(request: Request) {
       },
       include: {
         services: true,
-        employees: true,
+        employees: {
+          include: {
+            user: true, // Include user data for proper response
+          },
+        },
         storeHours: true
       }
     });
@@ -94,6 +131,9 @@ export async function POST(request: Request) {
     return NextResponse.json(listing);
   } catch (error) {
     console.error("Error creating listing:", error);
+    if (error instanceof Error && error.message.includes("Users not found")) {
+      return new Response(error.message, { status: 400 });
+    }
     return new Response("Internal Server Error", { status: 500 });
   }
 }
