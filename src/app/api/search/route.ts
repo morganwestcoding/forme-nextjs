@@ -61,7 +61,7 @@ export async function GET(req: Request) {
             { location: { contains: q, mode: "insensitive" } },
           ],
         },
-        select: { id: true, name: true, email: true, image: true, location: true },
+        select: { id: true, name: true, email: true, image: true, imageSrc: true, location: true },
         take: LIMIT,
         orderBy: { createdAt: "desc" },
       }),
@@ -132,9 +132,15 @@ export async function GET(req: Request) {
           id: true,
           fullName: true,
           jobTitle: true,
-          profileImage: true,
+          // profileImage removed - use user.imageSrc instead
           listingId: true,
           listing: { select: { title: true } },
+          user: { 
+            select: { 
+              imageSrc: true, 
+              image: true 
+            } 
+          }, // Include user for profile image
         },
         take: LIMIT,
       }),
@@ -165,7 +171,7 @@ export async function GET(req: Request) {
         type: "user" as const,
         title: u.name || u.email || "User",
         subtitle: u.location || u.email || "",
-        image: u.image || null,
+        image: u.imageSrc || u.image || null,
         href: "",
       })),
       ...listings.map((l) => ({
@@ -205,7 +211,7 @@ export async function GET(req: Request) {
         type: "employee" as const,
         title: e.fullName,
         subtitle: [e.jobTitle, e.listing?.title].filter(Boolean).join(" • "),
-        image: e.profileImage || null,
+        image: e.user?.imageSrc || e.user?.image || null, // Use user's profile image
         href: "",
       })),
       ...services.map((s) => ({
