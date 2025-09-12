@@ -115,7 +115,7 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
           type="button"
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" color="currentColor" fill="none">
-            <path d="M14.5405 2V4.48622C14.5405 6.23417 14.5405 7.10814 14.7545 7.94715C14.9685 8.78616 15.3879 9.55654 16.2267 11.0973L17.3633 13.1852C19.5008 17.1115 20.5696 19.0747 19.6928 20.53L19.6792 20.5522C18.7896 22 16.5264 22 12 22C7.47357 22 5.21036 22 4.3208 20.5522L4.30725 20.53C3.43045 19.0747 4.49918 17.1115 6.63666 13.1852L7.7733 11.0973C8.61209 9.55654 9.03149 8.78616 9.24548 7.94715C9.45947 7.10814 9.45947 6.23417 9.45947 4.48622V2" stroke="currentColor" strokeWidth="1.5"></path>
+            <path d="M14.5405 2V4.48622C14.5405 6.23417 14.5405 7.10814 14.7545 7.94715C14.9685 8.78616 15.3879 9.55654 16.2267 11.0973L17.3633 13.1852C19.5008 17.1115 20.5696 19.0747 19.6928 20.53L19.6792 20.5522C18.7896 22 16.5264 22 4.3208 20.5522L4.30725 20.53C3.43045 19.0747 4.49918 17.1115 6.63666 13.1852L7.7733 11.0973C8.61209 9.55654 9.03149 8.78616 9.24548 7.94715C9.45947 7.10814 9.45947 6.23417 9.45947 4.48622V2" stroke="currentColor" strokeWidth="1.5"></path>
             <path d="M9 16.002L9.00868 15.9996" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
             <path d="M15 18.002L15.0087 17.9996" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
             <path d="M8 2L16 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
@@ -138,24 +138,35 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
         </button>
       </div>
 
-      {/* Category Pills — centered, bordered top & bottom */}
+      {/* Category Navigation - Clean with Vertical Dividers */}
       <div className="py-5 border-y border-gray-200">
-        <div className="flex flex-wrap justify-center items-center gap-3">
-          {categories.map((category) => {
+        <div className="flex items-center justify-center">
+          {categories.map((category, index) => {
             const isSelected = currentCategory === category.label;
+            const isLast = index === categories.length - 1;
+            
             return (
-              <button
-                key={category.label}
-                onClick={() => handleCategorySelect(category.label)}
-                className={`w-28 h-10 rounded-xl text-sm font-medium transition-all duration-300 flex items-center justify-center border ${
-                  isSelected 
-                    ? 'bg-blue-50 text-[#60A5FA] border-[#60A5FA]' 
-                    : 'bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100'
-                }`}
-                type="button"
-              >
-                <span className="px-2">{category.label}</span>
-              </button>
+              <div key={category.label} className="relative flex items-center">
+                {/* Category Button */}
+                <button
+                  onClick={() => handleCategorySelect(category.label)}
+                  className={`
+                    px-6 py-3 text-sm font-medium transition-colors duration-200
+                    ${isSelected 
+                      ? 'text-[#60A5FA]' 
+                      : 'text-gray-600'
+                    }
+                  `}
+                  type="button"
+                >
+                  {category.label}
+                </button>
+                
+                {/* Vertical Divider */}
+                {!isLast && (
+                  <div className="h-6 w-px bg-gray-300 mx-3" />
+                )}
+              </div>
             );
           })}
         </div>
