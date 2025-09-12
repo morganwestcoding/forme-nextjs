@@ -1,11 +1,11 @@
 'use client';
 
 import React from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface SectionHeaderProps {
-  title: string;                  // e.g., "Featured Storefronts", "Trending Teammates"
-  accent?: string;                // brand color hex
+  title: string;
+  accent?: string;
   onPrev?: () => void;
   onNext?: () => void;
   onViewAll?: () => void;
@@ -20,13 +20,12 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
   onViewAll,
   className = '',
 }) => {
-  const hasControls = onPrev || onNext || onViewAll;
+  const hasNavigation = onPrev || onNext;
 
   return (
     <div className={`mt-6 mb-4 ${className}`}>
-      {/* header row */}
       <div className="flex items-end justify-between">
-        {/* LEFT: title with underline */}
+        {/* LEFT: title with underline (unchanged as requested) */}
         <div>
           <h2 className="text-xl font-semibold tracking-tight text-gray-900">
             {title}
@@ -37,42 +36,36 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
           />
         </div>
 
-        {/* RIGHT: controls (always render container for consistent spacing) */}
-        <div className="flex items-center gap-2 ml-4" style={{ minHeight: '36px' }}>
-          {hasControls && (
+        {/* RIGHT: ghost arrows + view all */}
+        <div className="flex items-center gap-1 ml-4">
+          {hasNavigation && (
             <>
-              {onPrev && (
-                <button
-                  type="button"
-                  aria-label={`Scroll ${title} left`}
-                  onClick={onPrev}
-                  className="h-9 w-9 rounded-xl flex items-center justify-center shadow-sm bg-white text-gray-500 hover:text-[#60A5FA] hover:shadow-md transition-all"
-                >
-                  <ChevronLeft className="w-5 h-5" />
-                </button>
-              )}
-              
-              {onNext && (
-                <button
-                  type="button"
-                  aria-label={`Scroll ${title} right`}
-                  onClick={onNext}
-                  className="h-9 w-9 rounded-xl flex items-center justify-center shadow-sm bg-white text-gray-500 hover:text-[#60A5FA] hover:shadow-md transition-all"
-                >
-                  <ChevronRight className="w-5 h-5" />
-                </button>
-              )}
-              
-              {onViewAll && (
-                <button
-                  type="button"
-                  onClick={onViewAll}
-                  className="hidden md:inline-flex items-center text-sm text-gray-500 hover:text-[#60A5FA] px-2 py-1 rounded-md hover:bg-gray-50 transition-colors"
-                >
-                  View all
-                </button>
-              )}
+              <button
+                onClick={onPrev}
+                disabled={!onPrev}
+                className="p-2 text-gray-400 hover:text-gray-700 disabled:text-gray-200 disabled:cursor-not-allowed transition-colors"
+                aria-label="Previous"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                onClick={onNext}
+                disabled={!onNext}
+                className="p-2 text-gray-400 hover:text-gray-700 disabled:text-gray-200 disabled:cursor-not-allowed transition-colors"
+                aria-label="Next"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
             </>
+          )}
+          {onViewAll && (
+            <button
+              onClick={onViewAll}
+              className="ml-2 text-sm text-gray-500 hover:text-gray-700 transition-colors flex items-center gap-1 group"
+            >
+              View all
+
+            </button>
           )}
         </div>
       </div>
