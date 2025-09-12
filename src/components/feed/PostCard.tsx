@@ -145,23 +145,18 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
       <div className="absolute inset-0 z-0">
         {renderBackground()}
         
-        {/* Gradient overlay - same as ListingCard */}
+        {/* Subtle gradient overlay - only at the bottom for text readability */}
         <div
-          className="absolute inset-0 pointer-events-none"
+          className="absolute inset-x-0 bottom-0 h-24 pointer-events-none"
           style={{
             background:
               'linear-gradient(to top,' +
-              'rgba(0,0,0,0.98) 0%,' +
-              'rgba(0,0,0,0.96) 12%,' +
-              'rgba(0,0,0,0.90) 26%,' +
-              'rgba(0,0,0,0.70) 42%,' +
-              'rgba(0,0,0,0.45) 56%,' +
-              'rgba(0,0,0,0.20) 70%,' +
-              'rgba(0,0,0,0.06) 82%,' +
-              'rgba(0,0,0,0.00) 90%,' +
-              'rgba(0,0,0,0.00) 100%)',
+              'rgba(0,0,0,0.4) 0%,' +
+              'rgba(0,0,0,0.2) 50%,' +
+              'rgba(0,0,0,0.0) 100%)',
           }}
         />
+        
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors" />
       </div>
 
@@ -176,7 +171,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
             />
           </div>
 
-          {/* Bottom info - user details only */}
+          {/* Bottom info - user details with text shadow for better readability */}
           <div className="absolute bottom-5 left-5 right-5 z-20">
             {/* User info with improved layout - avatar spans both name and time rows */}
             <div className="flex items-start gap-2.5">
@@ -194,8 +189,8 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
               </div>
               
               <div className="flex flex-col justify-center min-h-[40px]">
-                {/* Name with verification badge */}
-                <h1 className="text-white text-sm leading-5 font-semibold drop-shadow flex items-center">
+                {/* Name with verification badge - enhanced text shadow */}
+                <h1 className="text-white text-sm leading-5 font-semibold flex items-center drop-shadow-sm">
                   <span 
                     className="cursor-pointer hover:text-white/80"
                     onClick={handleUserClick}
@@ -228,8 +223,8 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
                   </span>
                 </h1>
 
-                {/* Time and views */}
-                <div className="text-white/90 text-[11px] leading-4 opacity-90 font-light">
+                {/* Time and views - enhanced text shadow */}
+                <div className="text-white/90 text-[11px] drop-shadow-sm leading-4 opacity-90 font-light">
                   {prettyTime} • {viewsLabel}
                 </div>
               </div>

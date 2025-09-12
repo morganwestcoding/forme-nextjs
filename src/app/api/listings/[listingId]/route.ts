@@ -1,3 +1,4 @@
+// app/api/listings/[listingId]/route.ts - PUT route fix
 import { NextResponse } from "next/server";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/app/libs/prismadb";
@@ -84,11 +85,13 @@ export async function PUT(request: Request, { params }: { params: IParams }) {
         }
       }
 
-      // 3) Employees: Validate users exist, then upsert
+      // 3) Employees: Validate users exist, fetch names, then upsert
+      let employeesWithNames: Array<EmployeeInput & { fullName: string }> = [];
+      
       if (incomingEmployees.length > 0) {
         const userIds = incomingEmployees.map(emp => emp.userId);
         
-        // Validate all users exist
+        // Validate all users exist AND get their names
         const existingUsers = await tx.user.findMany({
           where: { id: { in: userIds } },
           select: { id: true, name: true }
@@ -100,6 +103,15 @@ export async function PUT(request: Request, { params }: { params: IParams }) {
         if (missingUserIds.length > 0) {
           throw new Error(`Users not found: ${missingUserIds.join(', ')}`);
         }
+
+        // Create lookup map for user names
+        const userNameMap = new Map(existingUsers.map(u => [u.id, u.name || 'Unnamed User']));
+        
+        // Add fullName to each employee
+        employeesWithNames = incomingEmployees.map((emp: EmployeeInput) => ({
+          ...emp,
+          fullName: userNameMap.get(emp.userId) || 'Unnamed User'
+        }));
       }
 
       const existingEmployees = await tx.employee.findMany({
@@ -110,31 +122,32 @@ export async function PUT(request: Request, { params }: { params: IParams }) {
       });
 
       const existingByUserId = new Map(existingEmployees.map((e) => [e.userId, e]));
-      const incomingUserIds = new Set(incomingEmployees.map(emp => emp.userId));
+      const incomingUserIds = new Set(employeesWithNames.map(emp => emp.userId));
 
       // Create or update employees
-      for (const empInput of incomingEmployees) {
-        const existing = existingByUserId.get(empInput.userId);
+      for (const empWithName of employeesWithNames) {
+        const existing = existingByUserId.get(empWithName.userId);
         
         if (existing) {
-          // Update existing employee
+          // Update existing employee (including fullName in case user changed their name)
           await tx.employee.update({
             where: { id: existing.id },
             data: {
-              jobTitle: empInput.jobTitle || null,
-              serviceIds: empInput.serviceIds || [],
+              fullName: empWithName.fullName, // Update name in case it changed
+              jobTitle: empWithName.jobTitle || null,
+              serviceIds: empWithName.serviceIds || [],
               isActive: true,
             },
           });
         } else {
-          // Create new employee
+          // Create new employee with proper fullName
           await tx.employee.create({
             data: {
-              fullName: "", // Will be populated from user data on read
-              jobTitle: empInput.jobTitle || null,
+              fullName: empWithName.fullName, // Now properly populated!
+              jobTitle: empWithName.jobTitle || null,
               listingId,
-              userId: empInput.userId,
-              serviceIds: empInput.serviceIds || [],
+              userId: empWithName.userId,
+              serviceIds: empWithName.serviceIds || [],
               isActive: true,
             },
           });

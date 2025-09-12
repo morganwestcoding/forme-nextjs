@@ -151,9 +151,9 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
                     className="w-full p-3 text-left hover:bg-neutral-50 flex items-center gap-3 border-b last:border-b-0 transition-colors"
                   >
                     <div className="w-8 h-8 rounded-full bg-neutral-200 overflow-hidden flex items-center justify-center">
-                      {user.imageSrc || user.image ? (
+                      {user.image ? (
                         <img
-                          src={user.imageSrc || user.image || ''}
+                          src={user.image}
                           alt={user.name || 'User'}
                           className="w-full h-full object-cover"
                         />
@@ -182,9 +182,9 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-neutral-200 overflow-hidden flex items-center justify-center">
-                  {employee.user?.imageSrc || employee.user?.image ? (
+                  {employee.user?.image ? (
                     <img
-                      src={employee.user.imageSrc || employee.user.image || ''}
+                      src={employee.user.image}
                       alt={employee.user.name || 'Employee'}
                       className="w-full h-full object-cover"
                     />

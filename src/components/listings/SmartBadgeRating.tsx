@@ -131,30 +131,30 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
 
   const pillBase =
     'border rounded-md px-2 py-1.5 group-hover:scale-105 transition-all duration-300 shadow-sm ' +
-    'inline-flex items-center justify-center w-20 text-center text-xs font-semibold';
+    'inline-flex items-center justify-center text-center text-xs font-semibold';
 
   return (
     <div className="flex items-center gap-2">
-      {/* Rating pill — text only (no dot) */}
+      {/* Rating pill — smaller width */}
       <button
         onClick={(e) => { e.stopPropagation(); onRatingClick?.(); }}
-        className="inline-flex rounded-xl hover:bg-white/10 transition-all duration-300 group p-0"
+        className="inline-flex rounded-md hover:bg-white/10 transition-all duration-300 group p-0"
         type="button"
         aria-label="Rating"
       >
-        <div className={`${pillBase} ${ratingV.bg} ${ratingV.border} ${ratingV.shadow}`}>
+        <div className={`${pillBase} w-14 ${ratingV.bg} ${ratingV.border} ${ratingV.shadow}`}>
           <span className={`${ratingV.text}`}>{rating}</span>
         </div>
       </button>
 
-      {/* Time pill — text only (no dot) */}
+      {/* Time pill — larger width */}
       <button
         onClick={(e) => { e.stopPropagation(); onTimeClick?.(); }}
-        className="inline-flex rounded-xl hover:bg-white/10 transition-all duration-300 group p-0"
+        className="inline-flex rounded-md hover:bg-white/10 transition-all duration-300 group p-0"
         type="button"
         aria-label="Time status"
       >
-        <div className={`${pillBase} ${timeWrap}`}>
+        <div className={`${pillBase} w-20 ${timeWrap}`}>
           <span className={`${timeText}`}>{timeStatus.message}</span>
         </div>
       </button>

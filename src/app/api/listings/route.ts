@@ -1,3 +1,4 @@
+// app/api/listings/route.ts - POST route fix
 import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
@@ -58,7 +59,9 @@ export async function POST(request: Request) {
   }
 
   try {
-    // Validate all employee users exist before creating listing
+    // Validate all employee users exist before creating listing AND fetch their names
+    let employeesWithNames: Array<EmployeeInput & { fullName: string }> = [];
+    
     if (employees.length > 0) {
       const userIds = employees.map((emp: EmployeeInput) => emp.userId);
       const existingUsers = await prisma.user.findMany({
@@ -72,6 +75,15 @@ export async function POST(request: Request) {
       if (missingUserIds.length > 0) {
         return new Response(`Users not found: ${missingUserIds.join(', ')}`, { status: 400 });
       }
+
+      // Create lookup map for user names
+      const userNameMap = new Map(existingUsers.map(u => [u.id, u.name || 'Unnamed User']));
+      
+      // Add fullName to each employee
+      employeesWithNames = employees.map((emp: EmployeeInput) => ({
+        ...emp,
+        fullName: userNameMap.get(emp.userId) || 'Unnamed User'
+      }));
     }
 
     const listing = await prisma.listing.create({
@@ -99,8 +111,8 @@ export async function POST(request: Request) {
         zipCode,
 
         employees: {
-          create: (employees || []).map((employee: EmployeeInput) => ({
-            fullName: "", // Will be populated from user data on read
+          create: employeesWithNames.map((employee) => ({
+            fullName: employee.fullName, // Now properly populated!
             jobTitle: employee.jobTitle || null,
             userId: employee.userId,
             serviceIds: employee.serviceIds || [],

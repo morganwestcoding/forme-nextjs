@@ -161,12 +161,12 @@ const SmartBadgeWorker: React.FC<SmartBadgeWorkerProps> = ({
   const timeTheme = getTimeTheme();
 
   const pillBase =
-    'backdrop-blur-sm rounded-lg py-1.5 text-xs font-medium w-20 px-3.5 text-center ' +
+    'backdrop-blur-sm rounded-md py-1.5 text-xs font-medium px-3.5 text-center ' +
     'transition-all duration-200 cursor-pointer hover:scale-105';
 
   return (
     <div className="flex items-center gap-2">
-      {/* Rating pill */}
+      {/* Rating pill - smaller width */}
       <button
         type="button"
         aria-label="Rating"
@@ -176,6 +176,7 @@ const SmartBadgeWorker: React.FC<SmartBadgeWorkerProps> = ({
         <div
           className={[
             pillBase,
+            'w-14',
             ratingTheme.bg,
             `border ${ratingTheme.border}`,
             ratingTheme.text,
@@ -184,13 +185,12 @@ const SmartBadgeWorker: React.FC<SmartBadgeWorkerProps> = ({
           title={`Rating ${Number(rating).toFixed(1)}`}
         >
           <div className="flex items-center justify-center gap-1">
-   
             <span className="tabular-nums font-semibold">{Number(rating).toFixed(1)}</span>
           </div>
         </div>
       </button>
 
-      {/* Time status pill */}
+      {/* Time status pill - larger width */}
       <button
         type="button"
         aria-label="Time status"
@@ -200,6 +200,7 @@ const SmartBadgeWorker: React.FC<SmartBadgeWorkerProps> = ({
         <div
           className={[
             pillBase,
+            'w-20',
             timeTheme.bg,
             `border ${timeTheme.border}`,
             timeTheme.text,
