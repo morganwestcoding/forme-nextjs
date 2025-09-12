@@ -139,24 +139,35 @@ const NewsfeedHeader: React.FC<NewsfeedHeaderProps> = ({
         </button>
       </div>
 
-      {/* Category Pills — centered, bordered top & bottom */}
+      {/* Category Navigation - Clean with Vertical Dividers */}
       <div className="py-5 border-y border-gray-200">
-        <div className="flex flex-wrap justify-center items-center gap-3">
-          {categories.map((category) => {
+        <div className="flex items-center justify-center">
+          {categories.map((category, index) => {
             const isSelected = currentCategory === category.label;
+            const isLast = index === categories.length - 1;
+            
             return (
-              <button
-                key={category.label}
-                onClick={() => handleCategorySelect(category.label)}
-                className={`w-28 h-10 rounded-xl text-sm font-medium transition-all duration-300 flex items-center justify-center border ${
-                  isSelected 
-                    ? 'bg-blue-50 text-[#60A5FA] border-[#60A5FA]' 
-                    : 'bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100'
-                }`}
-                type="button"
-              >
-                <span className="px-2">{category.label}</span>
-              </button>
+              <div key={category.label} className="relative flex items-center">
+                {/* Category Button */}
+                <button
+                  onClick={() => handleCategorySelect(category.label)}
+                  className={`
+                    px-6 py-2.5 text-sm transition-colors duration-200 rounded-lg
+                    ${isSelected 
+                      ? 'text-[#60A5FA] hover:text-[#4F94E5]' 
+                      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                    }
+                  `}
+                  type="button"
+                >
+                  {category.label}
+                </button>
+                
+                {/* Vertical Divider */}
+                {!isLast && (
+                  <div className="h-6 w-px bg-gray-300 mx-3" />
+                )}
+              </div>
             );
           })}
         </div>

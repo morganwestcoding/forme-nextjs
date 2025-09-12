@@ -151,10 +151,10 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
                 <button
                   onClick={() => handleCategorySelect(category.label)}
                   className={`
-                    px-6 py-3 text-sm font-medium transition-colors duration-200
+                    px-6 py-2.5 text-sm transition-colors duration-200 rounded-lg
                     ${isSelected 
-                      ? 'text-[#60A5FA]' 
-                      : 'text-gray-600'
+                      ? 'text-[#60A5FA] hover:text-[#4F94E5]' 
+                      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
                     }
                   `}
                   type="button"

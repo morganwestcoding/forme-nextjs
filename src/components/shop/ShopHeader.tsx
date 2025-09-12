@@ -116,7 +116,7 @@ const ShopHeader: React.FC<ShopHeaderProps> = ({
         
         {/* Create Button with Dropdown */}
         {currentUser && (
-          <div className="relative">
+          <div className="relative flex">
             <button 
               ref={buttonRef}
               onClick={toggleDropdown}
@@ -126,7 +126,7 @@ const ShopHeader: React.FC<ShopHeaderProps> = ({
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" color="currentColor" fill="none">
                 <path d="M16.4249 4.60509L17.4149 3.6151C18.2351 2.79497 19.5648 2.79497 20.3849 3.6151C21.205 4.43524 21.205 5.76493 20.3849 6.58507L19.3949 7.57506M16.4249 4.60509L9.76558 11.2644C9.25807 11.772 8.89804 12.4078 8.72397 13.1041L8 16L10.8959 15.276C11.5922 15.102 12.228 14.7419 12.7356 14.2344L19.3949 7.57506M16.4249 4.60509L19.3949 7.57506" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"></path>
                 <path d="M18.9999 13.5C18.9999 16.7875 18.9999 18.4312 18.092 19.5376C17.9258 19.7401 17.7401 19.9258 17.5375 20.092C16.4312 21 14.7874 21 11.4999 21H11C7.22876 21 5.34316 21 4.17159 19.8284C3.00003 18.6569 3 16.7712 3 13V12.5C3 9.21252 3 7.56879 3.90794 6.46244C4.07417 6.2599 4.2599 6.07417 4.46244 5.90794C5.56879 5 7.21252 5 10.5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-              </svg> 
+              </svg>
               <span className="text-sm">Create</span>
             </button>
           
@@ -162,24 +162,35 @@ const ShopHeader: React.FC<ShopHeaderProps> = ({
         )}
       </div>
 
-      {/* Category Pills — centered, bordered top & bottom */}
+      {/* Category Navigation - Clean with Vertical Dividers */}
       <div className="py-5 border-y border-gray-200">
-        <div className="flex flex-wrap justify-center items-center gap-3">
-          {shopCategories.map((category) => {
+        <div className="flex items-center justify-center">
+          {shopCategories.map((category, index) => {
             const isSelected = filters.category === category.label;
+            const isLast = index === shopCategories.length - 1;
+            
             return (
-              <button
-                key={category.label}
-                onClick={() => handleCategorySelect(category.label)}
-                className={`w-28 h-10 rounded-xl text-sm font-medium transition-all duration-300 flex items-center justify-center border ${
-                  isSelected 
-                    ? 'bg-blue-50 text-[#60A5FA] border-[#60A5FA]' 
-                    : 'bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100'
-                }`}
-                type="button"
-              >
-                <span className="px-2">{category.label}</span>
-              </button>
+              <div key={category.label} className="relative flex items-center">
+                {/* Category Button */}
+                <button
+                  onClick={() => handleCategorySelect(category.label)}
+                  className={`
+                    px-6 py-2.5 text-sm transition-colors duration-200 rounded-lg
+                    ${isSelected 
+                      ? 'text-[#60A5FA] hover:text-[#4F94E5]' 
+                      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                    }
+                  `}
+                  type="button"
+                >
+                  {category.label}
+                </button>
+                
+                {/* Vertical Divider */}
+                {!isLast && (
+                  <div className="h-6 w-px bg-gray-300 mx-3" />
+                )}
+              </div>
             );
           })}
         </div>

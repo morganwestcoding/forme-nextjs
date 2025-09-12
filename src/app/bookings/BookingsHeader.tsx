@@ -13,27 +13,32 @@ const statusCategories = [
   { 
     label: 'Pending', 
     value: 'pending',
-    subheader: 'Reservations awaiting your response'
+    subheader: 'Reservations awaiting your response',
+    isDirection: false
   },
   { 
     label: 'Confirmed', 
     value: 'confirmed',
-    subheader: 'Approved bookings ready to go'
+    subheader: 'Approved bookings ready to go',
+    isDirection: false
   },
   { 
     label: 'Completed', 
     value: 'completed',
-    subheader: 'Successfully finished appointments'
+    subheader: 'Successfully finished appointments',
+    isDirection: false
   },
   { 
     label: 'Cancelled', 
     value: 'cancelled',
-    subheader: 'Bookings that were cancelled'
+    subheader: 'Bookings that were cancelled',
+    isDirection: false
   },
   { 
     label: 'Overdue', 
     value: 'overdue',
-    subheader: 'Past appointments that need attention'
+    subheader: 'Past appointments that need attention',
+    isDirection: false
   },
 ];
 
@@ -150,6 +155,9 @@ const BookingsHeader: React.FC<BookingsHeaderProps> = ({
     return `${activeCategories.join(' & ')} appointments`;
   };
 
+  // Combine all categories for unified rendering
+  const allCategories = [...directionalCategories, ...statusCategories];
+
   return (
     <div className="w-full">
       <div className="pt-2 mb-4">
@@ -200,60 +208,41 @@ const BookingsHeader: React.FC<BookingsHeaderProps> = ({
         </button>
       </div>
 
+      {/* Category Navigation - Clean with Vertical Dividers */}
       <div className="py-5 border-y border-gray-200">
-        <div className="flex flex-wrap justify-center items-center gap-3">
-          
-          {directionalCategories.map((category) => {
+        <div className="flex items-center justify-center">
+          {allCategories.map((category, index) => {
             const isSelected = activeCategories.includes(category.value);
+            const isLast = index === allCategories.length - 1;
+            const isDirectional = category.isDirection;
             const isIncoming = category.value === 'incoming';
             
             return (
-              <button
-                key={category.value}
-                onClick={() => handleCategorySelect(category.value)}
-                className={`h-10 rounded-xl text-sm font-medium transition-all duration-300 flex items-center justify-center border px-4 shadow-sm ${
-                  isIncoming 
-                    ? isSelected
-                      ? 'bg-emerald-600 text-white border-emerald-500'
-                      : 'bg-emerald-500 text-white border-emerald-400 hover:bg-emerald-400'
-                    : isSelected
-                      ? 'bg-blue-600 text-white border-blue-500'
-                      : 'bg-blue-500 text-white border-blue-400 hover:bg-blue-400'
-                }`}
-                type="button"
-              >
-                <div className="mr-2">
-                  {isIncoming ? (
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="text-current">
-                      <path d="M7 17L17 7M17 7H8M17 7V16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  ) : (
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="text-current">
-                      <path d="M17 7L7 17M7 17H16M7 17V8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  )}
-                </div>
-                <span>{category.label}</span>
-              </button>
-            );
-          })}
-
-          {statusCategories.map((category) => {
-            const isSelected = activeCategories.includes(category.value);
-            
-            return (
-              <button
-                key={category.value}
-                onClick={() => handleCategorySelect(category.value)}
-                className={`w-28 h-10 rounded-xl text-sm font-medium transition-all duration-300 flex items-center justify-center border ${
-                  isSelected 
-                    ? 'bg-blue-50 text-[#60A5FA] border-[#60A5FA]' 
-                    : 'bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100'
-                }`}
-                type="button"
-              >
-                <span className="px-2">{category.label}</span>
-              </button>
+              <div key={category.value} className="relative flex items-center">
+                {/* Category Button */}
+                <button
+                  onClick={() => handleCategorySelect(category.value)}
+                  className={`
+                    px-6 py-2.5 text-sm transition-colors duration-200 rounded-lg
+                    ${isSelected 
+                      ? isDirectional
+                        ? isIncoming
+                          ? 'text-emerald-600 hover:text-emerald-700'
+                          : 'text-blue-600 hover:text-blue-700'
+                        : 'text-[#60A5FA] hover:text-[#4F94E5]'
+                      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                    }
+                  `}
+                  type="button"
+                >
+                  {category.label}
+                </button>
+                
+                {/* Vertical Divider */}
+                {!isLast && (
+                  <div className="h-6 w-px bg-gray-300 mx-3" />
+                )}
+              </div>
             );
           })}
         </div>
