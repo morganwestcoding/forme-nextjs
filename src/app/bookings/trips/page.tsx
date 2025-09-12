@@ -4,7 +4,7 @@ import getCurrentUser from "@/app/actions/getCurrentUser";
 import getReservations from "@/app/actions/getReservations";
 import TripsClient from "./TripsClient";
 import ClientOnly from "@/components/ClientOnly";
-import Container from "@/components/Container";
+
 
 interface TripsPageProps {
   searchParams: {
@@ -20,13 +20,12 @@ const TripsPage = async ({ searchParams }: TripsPageProps) => {
 
   return (
     <ClientOnly>
-      <Container>
-        
+
         <TripsClient
           reservations={reservations || []}
           currentUser={currentUser}
         />
-      </Container>
+
     </ClientOnly>
   );
 }

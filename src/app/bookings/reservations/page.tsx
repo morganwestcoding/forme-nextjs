@@ -1,7 +1,7 @@
 // ReservationsPage.tsx
 import ClientOnly from "@/components/ClientOnly";
 import ReservationsClient from "./ReservationsClient";
-import Container from "@/components/Container";
+
 
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import getReservations from "@/app/actions/getReservations";
@@ -16,13 +16,13 @@ const ReservationsPage = async ({ searchParams }: ReservationsPageProps) => {
 
   return (
     <ClientOnly>
-      <Container>
+  
         
         <ReservationsClient
           reservations={reservations || []}
           currentUser={currentUser}
         />
-      </Container>
+  
     </ClientOnly>
   );
 }

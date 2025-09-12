@@ -100,70 +100,70 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
     return hasIncoming ? "Incoming Reservations" : "Filtered Reservations";
   };
 
+  // Show loader
+  if (isLoading) {
+    return (
+      <div className="pt-2 flex-1">
+        <div className="flex items-start justify-center">
+          <div className="mt-32 md:mt-32">
+            <PropagateLoaderWrapper size={12} speedMultiplier={1.15} />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // No results
+  if (filteredReservations.length === 0) {
+    return (
+      <div className="pt-2 flex-1">
+        <div className="px-8 pt-24 text-center text-gray-500">
+          No reservations found. Try adjusting your filters.
+        </div>
+      </div>
+    );
+  }
+
+  // Main content
   return (
     <div className="pt-2 flex-1">
-      {/* Content + loader overlay */}
-      <div className="relative">
-        {isLoading && (
-          <div className="pointer-events-none absolute inset-0 z-10 flex items-start justify-center">
-            <div className="mt-32 md:mt-32">
-              <PropagateLoaderWrapper size={12} speedMultiplier={1.15} />
-            </div>
+      <div
+        style={{
+          opacity: 0,
+          animation: `fadeInUp 520ms ease-out forwards`,
+          animationDelay: `100ms`,
+        }}
+      >
+        <SectionHeader 
+          title={getSectionHeader()}
+          accent="#60A5FA"
+          className="px-4"
+        />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 px-4 pb-8">
+        {filteredReservations.map((reservation, idx) => (
+          <div
+            key={reservation.id}
+            style={{
+              opacity: 0,
+              animation: `fadeInUp 520ms ease-out forwards`,
+              animationDelay: `${140 + (idx % 12) * 30}ms`,
+            }}
+          >
+            <ReserveCard
+              reservation={reservation}
+              listing={reservation.listing}
+              currentUser={currentUser}
+              disabled={processingId === reservation.id}
+              onAccept={() => onAccept(reservation.id)}
+              onDecline={() => onDecline(reservation.id)}
+              onCancel={() => onCancel(reservation.id)}
+              showAcceptDecline={true}
+              onCardClick={() => router.push(`/listings/${reservation.listing.id}`)}
+            />
           </div>
-        )}
-
-        <div
-          className={`transition-opacity duration-700 ease-out ${
-            isLoading ? 'opacity-0' : 'opacity-100'
-          }`}
-        >
-          {filteredReservations.length > 0 ? (
-            <>
-              <div
-                style={{
-                  opacity: 0,
-                  animation: `fadeInUp 520ms ease-out forwards`,
-                  animationDelay: `100ms`,
-                }}
-              >
-                <SectionHeader 
-                  title={getSectionHeader()}
-                  accent="#60A5FA"
-                  className="px-4"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 px-4 pb-8">
-                {filteredReservations.map((reservation, idx) => (
-                  <div
-                    key={reservation.id}
-                    style={{
-                      opacity: 0,
-                      animation: `fadeInUp 520ms ease-out forwards`,
-                      animationDelay: `${140 + (idx % 12) * 30}ms`,
-                    }}
-                  >
-                    <ReserveCard
-                      reservation={reservation}
-                      listing={reservation.listing}
-                      currentUser={currentUser}
-                      disabled={processingId === reservation.id}
-                      onAccept={() => onAccept(reservation.id)}
-                      onDecline={() => onDecline(reservation.id)}
-                      onCancel={() => onCancel(reservation.id)}
-                      showAcceptDecline={true}
-                      onCardClick={() => router.push(`/listings/${reservation.listing.id}`)}
-                    />
-                  </div>
-                ))}
-              </div>
-            </>
-          ) : (
-            <div className="px-8 pt-24 text-center text-gray-500">
-              No reservations found. Try adjusting your filters.
-            </div>
-          )}
-        </div>
+        ))}
       </div>
 
       <style jsx global>{`
