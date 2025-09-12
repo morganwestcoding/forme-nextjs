@@ -128,7 +128,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
             className="rounded-2xl p-6 border border-gray-100/50 backdrop-blur-sm shadow-sm"
             style={{ background: 'linear-gradient(145deg, #ffffff 0%, #fafbfc 100%)' }}
           >
-            <div className="flex items-start gap-6 mb-6">
+            <div className="flex items-start gap-6 mb-4">
               {/* Left: Image */}
               <div className="relative flex-shrink-0">
                 <div className="w-[130px] h-[130px] rounded-xl overflow-hidden relative shadow-sm">
