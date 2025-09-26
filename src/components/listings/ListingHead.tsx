@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import ServiceCard from './ServiceCard';
 import WorkerCard from './WorkerCard';
 import PostCard from '../feed/PostCard';
+import SmartBadgeListing from './SmartBadgeListing';
 import { SafePost, SafeUser, SafeListing } from '@/app/types';
 import useReservationModal from '@/app/hooks/useReservationModal';
 import useRentModal from '@/app/hooks/useRentModal';
@@ -138,6 +139,22 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                     className="w-full h-full object-cover"
                   />
                 </div>
+                
+                {/* SmartBadgeListing under the image */}
+                <div className="mt-3 flex justify-center">
+                  <SmartBadgeListing
+                    rating={4.8} // You can make this dynamic from your listing data
+                    followerCount={followers.length}
+                    onRatingClick={() => {
+                      // Handle rating click - scroll to reviews tab
+                      setActiveTab('Reviews');
+                    }}
+                    onFollowerClick={() => {
+                      // Handle follower click - maybe show followers list or analytics
+                      console.log('Show followers list');
+                    }}
+                  />
+                </div>
               </div>
 
               {/* Right */}
@@ -194,11 +211,9 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                           type="button"
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" color="currentColor" fill="none">
-
-    <path d="M15 9C15 7.34315 13.6569 6 12 6C10.3431 6 9 7.34315 9 9C9 10.6569 10.3431 12 12 12C13.6569 12 15 10.6569 15 9Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-    <path d="M22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-    <path d="M17 17C17 14.2386 14.7614 12 12 12C9.23858 12 7 14.2386 7 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-
+                            <path d="M15 9C15 7.34315 13.6569 6 12 6C10.3431 6 9 7.34315 9 9C9 10.6569 10.3431 12 12 12C13.6569 12 15 10.6569 15 9Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+                            <path d="M22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+                            <path d="M17 17C17 14.2386 14.7614 12 12 12C9.23858 12 7 14.2386 7 17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
                           </svg>
                           <span className="text-sm">{isFollowing ? 'Following' : 'Follow'}</span>
                         </button>
@@ -208,12 +223,10 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                           type="button"
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" color="currentColor" fill="none">
-
-    <path d="M16 2V6M8 2V6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-    <path d="M13 4H11C7.22876 4 5.34315 4 4.17157 5.17157C3 6.34315 3 8.22876 3 12V14C3 17.7712 3 19.6569 4.17157 20.8284C5.34315 22 7.22876 22 11 22H13C16.7712 22 18.6569 22 19.8284 20.8284C21 19.6569 21 17.7712 21 14V12C21 8.22876 21 6.34315 19.8284 5.17157C18.6569 4 16.7712 4 13 4Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-    <path d="M3 10H21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-    <path d="M11 14H16M8 14H8.00898M13 18H8M16 18H15.991" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-
+                            <path d="M16 2V6M8 2V6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+                            <path d="M13 4H11C7.22876 4 5.34315 4 4.17157 5.17157C3 6.34315 3 8.22876 3 12V14C3 17.7712 3 19.6569 4.17157 20.8284C5.34315 22 7.22876 22 11 22H13C16.7712 22 18.6569 22 19.8284 20.8284C21 19.6569 21 17.7712 21 14V12C21 8.22876 21 6.34315 19.8284 5.17157C18.6569 4 16.7712 4 13 4Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+                            <path d="M3 10H21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+                            <path d="M11 14H16M8 14H8.00898M13 18H8M16 18H15.991" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
                           </svg>
                           <span className="text-sm">Reserve</span>
                         </button>
@@ -228,14 +241,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   </span>
                 </div>
                 
-                <div className="mb-3 text-sm text-gray-600">
-                  <span className="font-semibold text-gray-900">4.8</span>
-                  <span className="text-gray-500">(156 reviews)</span>
-                  <span className="mx-2">•</span>
-                  <span className="font-semibold text-gray-900">{followers.length}</span>
-                  <span className="text-gray-500"> followers</span>
-                </div>
-                
+   
                 <div className="text-gray-700 text-sm leading-relaxed">
                   {truncatedDescription}
                 </div>
