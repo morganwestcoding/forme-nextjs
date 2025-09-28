@@ -6,9 +6,10 @@ import Heading from '@/components/Heading';
 import { toast } from 'react-hot-toast';
 import useCreatePostModal from '@/app/hooks/useCreatePostModal';
 import axios from 'axios';
-import PostCategoryModal from '@/components/modals/PostCategoryModal';
 import { useRouter } from 'next/navigation';
 import MediaUpload from '@/components/inputs/MediaUpload';
+import CategoryInput from '@/components/inputs/CategoryInput';
+import { categories } from '@/components/Categories';
 import { MediaData } from '@/app/types';
 
 /** ================== Cloudinary text overlay helpers ================== */
@@ -97,6 +98,7 @@ enum STEPS {
   TYPE = 0,
   MEDIA = 1,
   CONTENT = 2,
+  CATEGORY = 3,
 }
 
 const postTypes = [
@@ -148,8 +150,8 @@ const CreatePostModal = () => {
   const [step, setStep] = useState(STEPS.TYPE);
   const [postType, setPostType] = useState('');
   const [content, setContent] = useState('');
+  const [category, setCategory] = useState('');
   const [mediaData, setMediaData] = useState<MediaData | null>(null);
-  const [categoryModalOpen, setCategoryModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   /** Overlay state for Reels */
@@ -177,6 +179,7 @@ const CreatePostModal = () => {
   const handleClose = useCallback(() => {
     setPostType('');
     setContent('');
+    setCategory('');
     setMediaData(null);
     setOverlayText('');
     setOverlaySize(36);
@@ -186,12 +189,15 @@ const CreatePostModal = () => {
     modal.onClose();
   }, [modal]);
 
-  const handlePost = async (selectedCategory: string | null) => {
+  const handlePost = async () => {
     if (!content.trim() && postType !== 'Reel') {
       return toast.error('Please write something');
     }
     if (postType === 'Reel' && !mediaData) {
       return toast.error('Please upload media for your reel');
+    }
+    if (!category) {
+      return toast.error('Please select a category');
     }
 
     setIsLoading(true);
@@ -233,7 +239,7 @@ const CreatePostModal = () => {
 
     const postData = {
       content: content || '',
-      category: selectedCategory,
+      category,
       mediaUrl: finalMediaUrl,
       mediaType: mediaData?.type || null,
       imageSrc: mediaData?.type === 'image' ? finalMediaUrl : null,
@@ -270,21 +276,29 @@ const CreatePostModal = () => {
       if (!mediaData) return toast.error('Please upload media for your reel');
       return setStep(STEPS.CONTENT);
     }
-    if (postType !== 'Reel' && !content.trim()) {
-      return toast.error('Please write something');
+    if (step === STEPS.CONTENT) {
+      if (postType !== 'Reel' && !content.trim()) {
+        return toast.error('Please write something');
+      }
+      return setStep(STEPS.CATEGORY);
     }
-    setCategoryModalOpen(true);
+    if (step === STEPS.CATEGORY) {
+      if (!category) return toast.error('Please select a category');
+      return handlePost();
+    }
   };
 
   const handleSecondaryAction = () => {
-    if (step === STEPS.CONTENT) {
+    if (step === STEPS.CATEGORY) {
+      setStep(STEPS.CONTENT);
+    } else if (step === STEPS.CONTENT) {
       setStep(postType === 'Reel' ? STEPS.MEDIA : STEPS.TYPE);
     } else if (step === STEPS.MEDIA) {
       setStep(STEPS.TYPE);
     }
   };
 
-  const actionLabel = useMemo(() => (step === STEPS.CONTENT ? 'Submit' : 'Next'), [step]);
+  const actionLabel = useMemo(() => (step === STEPS.CATEGORY ? 'Post' : 'Next'), [step]);
   const secondaryActionLabel = useMemo(() => (step === STEPS.TYPE ? undefined : 'Back'), [step]);
 
   const bodyContent = useMemo(() => {
@@ -449,48 +463,59 @@ const CreatePostModal = () => {
       );
     }
 
-    // CONTENT step
+    if (step === STEPS.CONTENT) {
+      return (
+        <div className="flex flex-col gap-4">
+          <Heading
+            title={postType === 'Reel' ? 'Add a caption' : 'Write your post'}
+            subtitle={postType === 'Reel' ? 'Tell people about your reel (optional)' : 'Share your thoughts'}
+          />
+          <div className="relative w-full">
+            <textarea
+              className="w-full rounded-2xl p-4 shadow-sm text-sm resize-none min-h-[100px] bg-white border border-neutral-200"
+              placeholder={postType === 'Reel' ? 'Write a caption...' : "What's on your mind?"}
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              disabled={isLoading}
+            />
+          </div>
+        </div>
+      );
+    }
+
+    // CATEGORY step
     return (
       <div className="flex flex-col gap-4">
         <Heading
-          title={postType === 'Reel' ? 'Add a caption' : 'Write your post'}
-          subtitle={postType === 'Reel' ? 'Tell people about your reel (optional)' : 'Share your thoughts'}
+          title="Choose a category"
+          subtitle="Help people discover your post"
         />
-        <div className="relative w-full">
-          <textarea
-            className="w-full rounded-2xl p-4 shadow-sm text-sm resize-none min-h-[100px] bg-white border border-neutral-200"
-            placeholder={postType === 'Reel' ? 'Write a caption...' : "What's on your mind?"}
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            disabled={isLoading}
-          />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {categories.map((item) => (
+            <CategoryInput
+              key={item.label}
+              onClick={(category) => setCategory(category)}
+              selected={category === item.label}
+              label={item.label}
+            />
+          ))}
         </div>
       </div>
     );
-  }, [step, postType, content, mediaData, isLoading, overlayText, overlaySize, overlayColor, overlayPos, previewDimensions]);
+  }, [step, postType, content, category, mediaData, isLoading, overlayText, overlaySize, overlayColor, overlayPos, previewDimensions]);
 
   return (
-    <>
-      <Modal
-        isOpen={modal.isOpen}
-        onClose={handleClose}
-        title="Create a Post"
-        actionLabel={actionLabel}
-        onSubmit={onSubmit}
-        secondaryAction={step === STEPS.TYPE ? undefined : handleSecondaryAction}
-        secondaryActionLabel={secondaryActionLabel}
-        body={bodyContent}
-        disabled={isLoading}
-      />
-      <PostCategoryModal
-        isOpen={categoryModalOpen}
-        onClose={() => setCategoryModalOpen(false)}
-        onSubmit={(category) => {
-          handlePost(category);
-          setCategoryModalOpen(false);
-        }}
-      />
-    </>
+    <Modal
+      isOpen={modal.isOpen}
+      onClose={handleClose}
+      title="Create a Post"
+      actionLabel={actionLabel}
+      onSubmit={onSubmit}
+      secondaryAction={step === STEPS.TYPE ? undefined : handleSecondaryAction}
+      secondaryActionLabel={secondaryActionLabel}
+      body={bodyContent}
+      disabled={isLoading}
+    />
   );
 };
 

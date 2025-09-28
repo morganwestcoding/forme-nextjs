@@ -112,6 +112,18 @@ const ListingHead: React.FC<ListingHeadProps> = ({
     rentModal.onOpen(listing);
   };
 
+  /** 🔗 Handle adding new worker */
+  const handleAddWorker = () => {
+    if (!isOwner) return;
+    // You can customize this to open a worker modal or navigate to add worker page
+    const url = new URL(window.location.href);
+    url.searchParams.set('addWorker', '1');
+    router.push(`${url.pathname}?${url.searchParams.toString()}`, { scroll: false });
+    // If you have a worker modal, you can call it here instead
+    // workerModal.onOpen(listing);
+    console.log('Add worker functionality - customize as needed');
+  };
+
   const tabs: Array<{ key: TabKey; label: string }> = [
     { key: 'Services', label: 'Services' },
     { key: 'Team',     label: 'Team' },
@@ -159,7 +171,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
 
               {/* Right */}
               <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <h1
                       className="text-xl font-bold tracking-tight text-gray-900 leading-tight"
@@ -236,12 +248,11 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 </div>
 
                 <div className="mb-3">
-                  <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-50 text-[#60A5FA] border border-[#60A5FA]">
+                  <span className="inline-flex items-center -mt-1 text-sm font-light text-black">
                     {city}{state ? `, ${state}` : ''}
                   </span>
                 </div>
                 
-   
                 <div className="text-gray-700 text-sm leading-relaxed">
                   {truncatedDescription}
                 </div>
@@ -337,7 +348,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
           </div>
         )}
 
-        {activeTab === 'Team' && employees.length > 0 && (
+        {activeTab === 'Team' && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {employees.map((employee: any, index: number) => (
               <WorkerCard
@@ -351,6 +362,59 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 onBook={() => {}}
               />
             ))}
+
+            {/* Add Worker tile — matches the WorkerCard structure */}
+            {isOwner && (
+              <button
+                onClick={handleAddWorker}
+                type="button"
+                className="cursor-pointer bg-white rounded-2xl shadow hover:shadow-xl overflow-hidden relative transition-all duration-300 hover:scale-[1.02] max-w-[250px] border-2 border-gray-200 border-dashed hover:border-blue-500"
+              >
+                {/* Match WorkerCard height structure */}
+                <div className="relative h-[350px]">
+                  {/* Icon - Centered towards middle-top like WorkerCard */}
+                  <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                    <div className="relative">
+                      {/* Dashed circular background with user plus icon */}
+                      <div className="w-24 h-24 rounded-full flex items-center justify-center text-gray-500 bg-gray-50 border-2 border-gray-300 border-dashed shadow-md ring-4 ring-white/50 transition-all duration-300 group-hover:border-blue-500 group-hover:bg-blue-50 group-hover:text-blue-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                          <circle cx="9" cy="7" r="4"/>
+                          <line x1="19" y1="8" x2="19" y2="14"/>
+                          <line x1="22" y1="11" x2="16" y2="11"/>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Bottom info - positioned like WorkerCard */}
+                  <div className="absolute bottom-5 left-5 right-5 z-20">
+                    {/* Worker Name and Details */}
+                    <div className="mb-4">
+                      <h3 className="text-lg font-semibold text-gray-500 mb-1 text-center">
+                        Add Team Member
+                      </h3>
+                      <p className="text-xs text-gray-400 leading-relaxed text-center">
+                        Invite a new team member
+                      </p>
+                      <div className="opacity-90 mt-0.5 text-xs text-gray-400 font-light text-center">
+                        Click to get started
+                      </div>
+                    </div>
+
+                    {/* Action Badge */}
+                    <div className="flex items-center justify-center">
+                      <div className="bg-gray-100 text-gray-500 px-3 py-1.5 rounded-lg text-xs font-medium border border-dashed group-hover:bg-blue-100 group-hover:text-blue-500 group-hover:border-blue-500 transition-all duration-200">
+                        Add Member
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Match WorkerCard bottom padding */}
+                <div className="pb-2" />
+              </button>
+            )}
           </div>
         )}
 

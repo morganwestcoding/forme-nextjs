@@ -125,6 +125,7 @@ const UserButton: React.FC<UserButtonProps> = ({
             <DropdownMenuItem onClick={handleListings}>My Listings</DropdownMenuItem>
             <DropdownMenuItem onClick={handleAnalytics}>My Analytics</DropdownMenuItem>
             <DropdownMenuItem onClick={handleSubscribe}>Subscription</DropdownMenuItem>
+            <DropdownMenuItem >Licensing</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleSignOut}>Sign Out</DropdownMenuItem>
           </>

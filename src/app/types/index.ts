@@ -20,25 +20,24 @@ export type SafeService = {
   serviceName: string;
   price: number;
   category: string;
-   imageSrc?: string | null; // <- add this
-  // listingId is omitted as it's a relational field to the Listing model
+   imageSrc?: string | null; 
 };
 
 export type SafeListing = Omit<Listing, "createdAt"> & {
   createdAt: string;
   services: SafeService[];
   galleryImages: string[]; 
-    followers?: string[];     // <—
-  followerCount?: number;   // convenience
+    followers?: string[]; 
+  followerCount?: number;   
   phoneNumber?: string | null;
   favoriteIds: string[];
   website?: string | null;
   address?: string | null; 
- employees: SafeEmployee[]; // Changed from minimal structure to full SafeEmployee[]
+ employees: SafeEmployee[]; 
   zipCode: string | null;
   storeHours: SafeStoreHours[];
-  city?: string | null;  // Add this
-  state?: string | null; // Add this
+  city?: string | null;  
+  state?: string | null;
     rating?: number;
   isTrending?: boolean;
   
@@ -89,14 +88,13 @@ export type SafeUser = Omit<
   following: string[];
   followers: string[];
   conversationIds?: string[]; 
-     managedListings: string[];  // Add this field from Prisma schema
+     managedListings: string[]; 
   isSubscribed: boolean;
   resetToken?: string | null;
   resetTokenExpiry: Date | null;
   subscriptionStartDate: Date | null;
   subscriptionEndDate: Date | null;
-  subscriptionTier?: string | null;  // Add this
-   // Add missing Stripe fields from Prisma schema
+  subscriptionTier?: string | null;
   stripeCustomerId?: string | null;
   stripeSubscriptionId?: string | null;
   subscriptionPriceId?: string | null;
@@ -122,7 +120,7 @@ export type SafePost = Omit<
   shop?: SafeShop;
   bookmarks: string[]; 
   hiddenBy: string[];
-  comments: SafeComment[]; // ✅ ADD THIS
+  comments: SafeComment[];
 };
 
 export interface SafeComment {
@@ -133,7 +131,7 @@ export interface SafeComment {
   postId: string;
   user: {
     id: string;
-    name: string | null; // Changed from string to string | null
+    name: string | null;
     image: string | null;
   };
 }
@@ -165,28 +163,26 @@ export type SafeConversation = {
     createdAt: string;
     isRead: boolean;
   };
-  lastMessageAt: string;  // Add this line
+  lastMessageAt: string;  
 };
 
 export type SafeEmployee = {
   id: string;
   fullName: string;
   jobTitle?: string | null;
-  // profileImage removed - use user.image or user.imageSrc instead
+
   listingId: string;
-  userId: string; // Required, not optional
+  userId: string; 
   serviceIds: string[];
   isActive: boolean;
   createdAt: string;
-  // Listing context fields
   listingTitle: string;
   listingCategory: string;
-  // User data for profile image resolution
   user: {
     id: string;
     name: string | null;
     image: string | null;
-    imageSrc: string | null; // Use this as primary, fallback to image
+    imageSrc: string | null;
   };
 };
 
@@ -211,7 +207,6 @@ export type SafeShop = {
   isOnlineOnly?: boolean;
   userId: string;
   storeUrl?: string | null;
-  // socials field removed
   galleryImages: string[];
   createdAt: string;
   updatedAt: string;
@@ -237,7 +232,6 @@ export type SafeShop = {
   }[];
 };
 
-// Product review type for the JSON structure
 export interface ProductReview {
   userId: string;
   userName?: string;
@@ -247,7 +241,6 @@ export interface ProductReview {
   date: string;
 }
 
-// Product variant type for the JSON structure
 export interface ProductVariant {
   id?: string;
   sku?: string;
@@ -259,7 +252,6 @@ export interface ProductVariant {
   };
 }
 
-// Product option type for the JSON structure
 export interface ProductOption {
   name: string;
   values: string[];

@@ -33,14 +33,13 @@ model User {
   isSubscribed    Boolean @default(false)
   subscriptionStartDate DateTime?
   subscriptionEndDate DateTime?
-  subscriptionTier String? // Add this field
+  subscriptionTier String? 
 
-  // --- Stripe subscription fields ---
   stripeCustomerId             String?
   stripeSubscriptionId         String?
   subscriptionPriceId          String?
-  subscriptionStatus           String?   // trialing | active | past_due | canceled | unpaid | etc.
-  subscriptionBillingInterval  String?   // monthly | yearly
+  subscriptionStatus           String?
+  subscriptionBillingInterval  String? 
   currentPeriodEnd             DateTime?
 
 
@@ -50,11 +49,11 @@ model User {
   notifications Notification[]
   conversationIds String[]       @db.ObjectId
   conversations   Conversation[] @relation(fields: [conversationIds], references: [id])
-  messages       Message[]       // Add this line
+  messages       Message[]  
   shops           Shop[]
 
-  employees       Employee[]    // Link to employee records
-  managedListings String[]      @db.ObjectId  // Listings they can manage as owner/manager
+  employees       Employee[]   
+  managedListings String[]      @db.ObjectId 
 }
 
 
@@ -95,7 +94,7 @@ model Listing {
   website       String?
   address       String?
   zipCode       String?
-  followers    String[] @default([]) // <— userIds of followers
+  followers    String[] @default([])
   galleryImages  String[]
   employees Employee[]
   storeHours     StoreHours[]
@@ -106,21 +105,21 @@ model Reservation {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
   userId     String   @db.ObjectId
   listingId  String   @db.ObjectId
-  employeeId   String  @db.ObjectId  // Add this field
+  employeeId   String  @db.ObjectId
   date       DateTime
   time       String
   note       String?
   totalPrice Int
-  status     String   @default("pending") // Add this line - can be "pending", "accepted", "declined"
+  status     String   @default("pending")
   createdAt  DateTime @default(now())
   serviceId   String   @db.ObjectId 
   serviceName String
   paymentIntentId String?
-  paymentStatus   String?  @default("pending") // "pending", "completed", "failed", "refunded"             
+  paymentStatus   String?  @default("pending")          
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
-  service     Service @relation(fields: [serviceId], references: [id])  // Add this
-  employee  Employee  @relation(fields: [employeeId], references: [id])  // Add this relation
+  service     Service @relation(fields: [serviceId], references: [id])
+  employee  Employee  @relation(fields: [employeeId], references: [id]) 
 
 }
 
@@ -129,10 +128,9 @@ model Service {
   serviceName String
   price       Int
   category    String
-  imageSrc     String?   
   listingId   String  @db.ObjectId
   listing     Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
-  reservations Reservation[] // Add this line for the opposite relation
+  reservations Reservation[] 
 }
 
 model Post {
@@ -141,16 +139,16 @@ model Post {
   imageSrc  String?
   location  String?
   tag       String?
-  postType String? // Add this line
+  postType String?
   photo     String?
   category  String
   userId    String   @db.ObjectId
   createdAt DateTime @default(now())
   mediaUrl    String?
-  mediaType   String?  // 'image' | 'video' | 'gif'
-  likes     String[] @db.ObjectId // Add this line
-  bookmarks String[] @db.ObjectId  // Add this line
-  hiddenBy  String[] @db.ObjectId  // Add this line
+  mediaType   String? 
+  likes     String[] @db.ObjectId 
+  bookmarks String[] @db.ObjectId 
+  hiddenBy  String[] @db.ObjectId  
   comments Comment[]
 
   user User @relation(fields: [userId], references: [id])
@@ -176,7 +174,7 @@ model Comment {
 
 model Notification {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  type      String   // e.g., "follow", "favorite_post", "favorite_listing"
+  type      String  
   content   String
   userId    String   @db.ObjectId
   createdAt DateTime @default(now())
@@ -188,7 +186,7 @@ model Notification {
 model Conversation {
   id            String    @id @default(auto()) @map("_id") @db.ObjectId
   createdAt     DateTime  @default(now())
-  lastMessageAt DateTime  @default(now())  // Add default value
+  lastMessageAt DateTime  @default(now()) 
   users         User[]    @relation(fields: [userIds], references: [id])
   userIds       String[]  @db.ObjectId
   messages      Message[]
@@ -202,7 +200,7 @@ model Message {
   senderId       String       @db.ObjectId
   conversation   Conversation @relation(fields: [conversationId], references: [id])
   conversationId String       @db.ObjectId
-  isRead         Boolean      @default(false)  // Add this line
+  isRead         Boolean      @default(false) 
 }
 
 model StoreHours {
@@ -220,13 +218,13 @@ model Employee {
   fullName     String
   jobTitle     String?
   listingId    String        @db.ObjectId
-  userId       String        @db.ObjectId  // Required - no ? 
+  userId       String        @db.ObjectId
   serviceIds   String[]      @db.ObjectId
   isActive     Boolean       @default(true)
   createdAt    DateTime      @default(now())
   
   listing      Listing       @relation(fields: [listingId], references: [id], onDelete: Cascade)
-  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade) // Cascade instead of SetNull
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   reservations Reservation[]
   
   @@unique([userId, listingId])
@@ -237,13 +235,13 @@ model Shop {
   id             String     @id @default(auto()) @map("_id") @db.ObjectId
   name           String
   description    String
-  category       String?    // Add this for the category
+  category       String?    
   logo           String
   coverImage     String?
   location       String?
-  address        String?    // Add this for address
-  zipCode        String?    // Add this for zipCode
-  isOnlineOnly   Boolean    @default(false)  // Add this for isOnlineOnly
+  address        String?    
+  zipCode        String?  
+  isOnlineOnly   Boolean    @default(false) 
   userId         String     @db.ObjectId
   storeUrl       String?    
   galleryImages  String[]
@@ -267,37 +265,29 @@ model Product {
   name           String
   description    String
   price          Float
-  compareAtPrice Float?     // Original price for showing discounts
+  compareAtPrice Float?   
   mainImage      String
   galleryImages  String[]
   shopId         String     @db.ObjectId
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
   sku            String?
-  barcode        String?    // UPC, EAN, etc.
+  barcode        String?    
   
-  // Product details
+
   categoryId     String     @db.ObjectId
   category       ProductCategory @relation(fields: [categoryId], references: [id])
   tags           String[]
   isPublished    Boolean    @default(true)
   isFeatured     Boolean    @default(false)
-  
-  // Inventory
   inventory      Int        @default(0)
   lowStockThreshold Int     @default(5)
-  
-  // Shipping info
   weight         Float?
-  
-  // Relationships
   shop           Shop       @relation(fields: [shopId], references: [id], onDelete: Cascade)
-  favoritedBy    String[]   @db.ObjectId // User IDs who favorited this product
-  reviews        Json?      // Store reviews as JSON [{userId, rating, comment, date}]
-  
-  // Product options (like size, color) stored as JSON
-  options        Json?      // [{name: "Size", values: ["S", "M", "L"]}]
-  variants       Json?      // [{sku, price, inventory, optionValues: {Size: "M", Color: "Blue"}}]
+  favoritedBy    String[]   @db.ObjectId
+  reviews        Json?     
+  options        Json? 
+  variants       Json?    
 }
 
 model ProductCategory {
