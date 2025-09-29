@@ -100,8 +100,7 @@ export async function POST(request: Request) {
           create: (parsedServices || []).map((s: any) => ({
             serviceName: s.serviceName,
             price: Math.round(Number(s.price) || 0),
-            category: s.category,
-            imageSrc: s.imageSrc ?? null,
+            category: s.category
           })),
         },
 

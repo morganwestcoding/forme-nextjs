@@ -4,7 +4,7 @@ import React from 'react';
 import { Grid, List } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { categories } from '@/components/Categories';
-import useRentModal from '@/app/hooks/useRentModal';
+import useRentModal from '@/app/hooks/useListingModal';
 import GlobalSearch from '@/components/search/GlobalSearch';
 
 interface ViewState {

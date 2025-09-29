@@ -105,7 +105,6 @@ export default async function getReservations(params: IParams) {
           serviceName: service.serviceName,
           price: service.price,
           category: service.category,
-          imageSrc: service.imageSrc || null
         })),
         phoneNumber: reservation.listing.phoneNumber || null,
         website: reservation.listing.website || null,

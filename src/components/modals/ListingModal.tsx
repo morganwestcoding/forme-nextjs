@@ -5,7 +5,7 @@ import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useMemo, useState, useCallback, useEffect } from "react";
 import ServiceCard from '../listings/ServiceCard';
-import useRentModal from '@/app/hooks/useRentModal';
+import useListingModal from '@/app/hooks/useListingModal';
 import Modal from "./Modal";
 import CategoryInput from '../inputs/CategoryInput';
 import { categories } from '../Categories';
@@ -18,7 +18,6 @@ import StoreHours, { StoreHourType } from '../inputs/StoreHours';
 import ImageUploadGrid from '../inputs/ImageUploadGrid';
 import EditOverview from './EditOverview';
 
-// Add the EmployeeInput interface
 interface EmployeeInput {
   userId: string;
   jobTitle?: string;
@@ -32,7 +31,6 @@ interface EmployeeInput {
   };
 }
 
-/** ---------------- Helpers ---------------- */
 function splitLocation(loc?: string | null): { city: string; state: string } {
   if (!loc) return { city: '', state: '' };
   const parts = loc.split(',').map(p => p.trim()).filter(Boolean);
@@ -40,7 +38,6 @@ function splitLocation(loc?: string | null): { city: string; state: string } {
   return { city: parts[0] ?? '', state: '' };
 }
 
-/** ---------------- Steps ------------------ */
 enum STEPS {
   CATEGORY = 0,
   LOCATION = 1,
@@ -60,7 +57,6 @@ const initialServices: Service[] = [
   { serviceName: '', price: 0, category: '' },
 ];
 
-// Updated initial employees to empty array - will be populated by EmployeeSelector
 const initialEmployees: EmployeeInput[] = [];
 
 const initialStoreHours: StoreHourType[] = [
@@ -73,24 +69,23 @@ const initialStoreHours: StoreHourType[] = [
   { dayOfWeek: 'Sunday', openTime: '10:00 AM', closeTime: '6:00 PM', isClosed: false },
 ];
 
-const RentModal = () => {
+const ListingModal = () => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const rentModal = useRentModal();
-  const listing = rentModal.listing;
+  const listingModal = useListingModal();
+  const listing = listingModal.listing;
   const isEditMode = !!listing;
 
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState<number>(isEditMode ? EDIT_HUB_STEP : STEPS.CATEGORY);
   const [resetKey, setResetKey] = useState(0);
-
   const [services, setServices] = useState<Service[]>(listing?.services || initialServices);
-  // Updated to use EmployeeInput[] instead of string[]
   const [employees, setEmployees] = useState<EmployeeInput[]>(() => {
+
     if (listing?.employees) {
-      // Convert SafeEmployee[] to EmployeeInput[]
+
       return listing.employees.map((emp: any) => ({
         userId: emp.userId,
         jobTitle: emp.jobTitle,
@@ -106,10 +101,9 @@ const RentModal = () => {
     }
     return initialEmployees;
   });
+
   const [storeHours, setStoreHours] = useState<StoreHourType[]>(listing?.storeHours || initialStoreHours);
   const [editingServiceIndex, setEditingServiceIndex] = useState<number | null>(null);
-
-  /** Inline status (no toasts) */
   const [saveStatus, setSaveStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [lastUpdatedKey, setLastUpdatedKey] = useState<number | null>(null);
 
@@ -137,9 +131,8 @@ const RentModal = () => {
     }
   });
 
-  // Reset step & fields when modal opens/closes
   useEffect(() => {
-    if (!rentModal.isOpen) return;
+    if (!listingModal.isOpen) return;
     setStep(isEditMode ? EDIT_HUB_STEP : STEPS.CATEGORY);
     setEditingServiceIndex(null);
     setSaveStatus(null);
@@ -163,9 +156,8 @@ const RentModal = () => {
       setStoreHours(initialStoreHours);
       setResetKey((k) => k + 1);
     }
-  }, [rentModal.isOpen, isEditMode, reset]);
+  }, [listingModal.isOpen, isEditMode, reset]);
 
-  // Prefill when editing
   useEffect(() => {
     if (!listing) return;
     reset({
@@ -182,7 +174,6 @@ const RentModal = () => {
     });
     setServices(listing.services || initialServices);
     
-    // Convert SafeEmployee[] to EmployeeInput[]
     if (listing.employees) {
       const convertedEmployees = listing.employees.map((emp: any) => ({
         userId: emp.userId,
@@ -206,21 +197,18 @@ const RentModal = () => {
     setResetKey((k) => k + 1);
   }, [listing, reset]);
 
-  // Auto-hide success status after a short time
   useEffect(() => {
     if (saveStatus?.type !== 'success') return;
     const t = setTimeout(() => setSaveStatus(null), 2500);
     return () => clearTimeout(t);
   }, [saveStatus]);
 
-  // Auto-clear highlight after a short time
   useEffect(() => {
     if (lastUpdatedKey == null) return;
     const t = setTimeout(() => setLastUpdatedKey(null), 3000);
     return () => clearTimeout(t);
   }, [lastUpdatedKey]);
 
-  // Watches
   const category = watch('category');
   const locationVal = watch('location');
   const address = watch('address');
@@ -233,7 +221,6 @@ const RentModal = () => {
     setValue(id, value, { shouldDirty: true, shouldTouch: true, shouldValidate: true });
   };
 
-  // Clear helpers when going back (create mode)
   const clearLocation = () => {
     setValue('location', '', { shouldDirty: true, shouldValidate: true, shouldTouch: true });
     setValue('address', '',  { shouldDirty: true, shouldValidate: true, shouldTouch: true });
@@ -274,16 +261,16 @@ const RentModal = () => {
     setResetKey((k) => k + 1);
     setSaveStatus(null);
     setLastUpdatedKey(null);
-    rentModal.onClose();
-  }, [reset, rentModal]);
+    listingModal.onClose();
+  }, [reset, listingModal]);
 
   const onBack = () => {
-    // In edit mode, Back always returns to the Quick Edit hub
+
     if (isEditMode) {
       setStep(EDIT_HUB_STEP);
       return;
     }
-    // Create mode: go to previous logical step
+
     if (step === STEPS.CATEGORY) return;
     if (step === STEPS.IMAGES) {
       setStep(STEPS.SERVICES_LIST);
@@ -300,10 +287,9 @@ const RentModal = () => {
     setStep(goingTo);
   };
 
-  /** VALIDATION for create flow (no toasts; rely on field errors/flow) */
   const onNext = () => {
     if (step === STEPS.CATEGORY && !category) {
-      // keep simple—require category but no toast; user sees step doesn't advance
+
       return;
     }
 
@@ -325,11 +311,10 @@ const RentModal = () => {
     setStep((value) => value + 1);
   };
 
-  /** SUBMIT — section-wise Update in edit mode (no toasts) */
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     if (step === EDIT_HUB_STEP) return;
 
-    // EDIT MODE: Update immediately for any step, then return to hub
+
     if (isEditMode && listing) {
       try {
         setIsLoading(true);
@@ -465,18 +450,17 @@ const RentModal = () => {
     setStep(STEPS.SERVICES_FORM);
   };
 
-  // Always create a brand-new service and go to Services Form from Services List view
-  const addNewService = () => {
-    const next = [...(services || []), { serviceName: '', price: 0, category: '', imageSrc: '' }];
-    setServices(next);
-    const newIndex = next.length - 1;
-    setEditingServiceIndex(newIndex);
-    setStep(STEPS.SERVICES_FORM);
-  };
+const addNewService = () => {
+  const next = [...(services || []), { serviceName: '', price: 0, category: '' }]; 
+  setServices(next);
+  const newIndex = next.length - 1;
+  setEditingServiceIndex(newIndex);
+  setStep(STEPS.SERVICES_FORM);
+};
 
   /** 🔗 URL-trigger: when opened with ?addService=1, append a fresh service and jump to ServiceSelector */
   useEffect(() => {
-    if (!rentModal.isOpen) return;
+    if (!listingModal.isOpen) return;
 
     const spStr =
       searchParams?.toString() ??
@@ -499,7 +483,7 @@ const RentModal = () => {
     const href = nextParams.toString() ? `${basePath}?${nextParams}` : basePath;
     router.replace(href, { scroll: false });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rentModal.isOpen]);
+  }, [listingModal.isOpen]);
 
   // ----- BODY
   let bodyContent = (
@@ -636,7 +620,6 @@ const RentModal = () => {
           id="service-selector"
           onServicesChange={setServices}
           existingServices={services}
-          listingImageSrc={imageSrc || ''}
           singleIndex={editingServiceIndex ?? undefined}
         />
       </div>
@@ -704,10 +687,10 @@ const RentModal = () => {
 
   return (
     <Modal
-      id="rent-modal"
+      id="listing-modal"
       modalContentId="modal-content-with-actions"
       disabled={isLoading}
-      isOpen={rentModal.isOpen}
+      isOpen={listingModal.isOpen}
       title={isEditMode ? "Edit your listing" : "Join the fun!"}
       actionLabel={actionLabel}
       actionId="submit-button"
@@ -721,4 +704,4 @@ const RentModal = () => {
   );
 };
 
-export default RentModal;
+export default ListingModal;

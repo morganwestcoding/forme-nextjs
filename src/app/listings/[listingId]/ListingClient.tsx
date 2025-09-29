@@ -6,7 +6,7 @@ import { SafeListing, SafeReservation, SafeUser, SafeService } from "@/app/types
 import Container from "@/components/Container";
 import ListingHead from "@/components/listings/ListingHead";
 import ReservationModal from "@/components/modals/ReservationModal";
-import RentModal from "@/components/modals/RentModal"; // mount so Edit works on this page too
+import RentModal from "@/components/modals/ListingModal"; // mount so Edit works on this page too
 
 interface ListingClientProps {
   listing: SafeListing & {

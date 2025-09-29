@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { categories } from '@/components/Categories';
 import { SafeListing, SafeUser } from "@/app/types";
 import ClientProviders from "@/components/ClientProviders";
-import useRentModal from "@/app/hooks/useRentModal";
+import useRentModal from "@/app/hooks/useListingModal";
 
 import Heading from "@/components/Heading";
 import ListingCard from "@/components/listings/ListingCard";

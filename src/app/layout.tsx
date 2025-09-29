@@ -9,7 +9,7 @@ import ToasterProvider from './providers/ToasterProvider';
 import LoginModal from '@/components/modals/LoginModal';
 import getCurrentUser from './actions/getCurrentUser';
 import Sidebar from '@/components/sidebar/Sidebar';
-import RentModal from '@/components/modals/RentModal';
+import RentModal from '@/components/modals/ListingModal';
 import ProfileModal from '@/components/modals/ProfileModal';
 import ProfileGalleryModal from '@/components/modals/profileGalleryModal';
 import ClientOnly from '@/components/ClientOnly';

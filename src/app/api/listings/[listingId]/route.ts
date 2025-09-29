@@ -69,7 +69,6 @@ export async function PUT(request: Request, { params }: { params: IParams }) {
               serviceName: s.serviceName,
               price: priceInt,
               category: s.category,
-              imageSrc: s.imageSrc ?? null,
             },
           });
         } else {
@@ -78,7 +77,6 @@ export async function PUT(request: Request, { params }: { params: IParams }) {
               serviceName: s.serviceName,
               price: priceInt,
               category: s.category,
-              imageSrc: s.imageSrc ?? null,
               listingId,
             },
           });

@@ -7,7 +7,7 @@ import { SafeListing, SafeUser, SafeEmployee } from '@/app/types';
 import PropagateLoaderWrapper from '@/components/loaders/PropagateLoaderWrapper';
 import ListingCard from '@/components/listings/ListingCard';
 import MarketExplorer from './MarketExplorer';
-import RentModal from '@/components/modals/RentModal';
+import RentModal from '@/components/modals/ListingModal';
 import WorkerCard from '@/components/listings/WorkerCard';
 import SectionHeader from './SectionHeader';
 
@@ -44,6 +44,9 @@ interface ViewState {
 }
 
 const MIN_LOADER_MS = 1200;
+const ITEMS_PER_PAGE = 4;
+const FADE_OUT_DURATION = 200;
+const FADE_IN_DELAY = 250;
 
 const MarketContent: React.FC<MarketContentProps> = ({
   searchParams,
@@ -60,6 +63,15 @@ const MarketContent: React.FC<MarketContentProps> = ({
       category: searchParams.category ?? 'featured',
     },
   });
+
+  // Pagination state
+  const [featuredIndex, setFeaturedIndex] = useState(0);
+  const [trendingIndex, setTrendingIndex] = useState(0);
+  
+  // Animation state
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [featuredVisible, setFeaturedVisible] = useState(true);
+  const [trendingVisible, setTrendingVisible] = useState(true);
 
   // Loader (nice UX delay)
   const [isLoading, setIsLoading] = useState(true);
@@ -151,15 +163,108 @@ const MarketContent: React.FC<MarketContentProps> = ({
     }));
   }, [trendingEmployees, derivedTrending, listings]);
 
-  // Scroll functions for section headers (these will now just change which 4 items to show)
+  // Get current items for display
+  const currentFeaturedListings = useMemo(() => {
+    if (listings.length <= ITEMS_PER_PAGE) {
+      // If we have 4 or fewer listings, just return them all
+      return listings;
+    }
+    const start = featuredIndex * ITEMS_PER_PAGE;
+    const end = start + ITEMS_PER_PAGE;
+    const result = listings.slice(start, end);
+    
+    // Debug logging
+    console.log('Featured listings debug:', {
+      totalListings: listings.length,
+      featuredIndex,
+      start,
+      end,
+      resultLength: result.length,
+      resultTitles: result.map(l => l.title)
+    });
+    
+    return result;
+  }, [listings, featuredIndex]);
+
+  const currentTrendingItems = useMemo(() => {
+    if (finalTrending.length <= ITEMS_PER_PAGE) {
+      // If we have 4 or fewer trending items, just return them all
+      return finalTrending;
+    }
+    const start = trendingIndex * ITEMS_PER_PAGE;
+    const end = start + ITEMS_PER_PAGE;
+    const result = finalTrending.slice(start, end);
+    
+    // Debug logging
+    console.log('Trending items debug:', {
+      totalTrending: finalTrending.length,
+      trendingIndex,
+      start,
+      end,
+      resultLength: result.length,
+      resultNames: result.map(item => item.employee.fullName)
+    });
+    
+    return result;
+  }, [finalTrending, trendingIndex]);
+
+  // Calculate total pages (minimum 1 page)
+  const totalFeaturedPages = Math.max(1, Math.ceil(listings.length / ITEMS_PER_PAGE));
+  const totalTrendingPages = Math.max(1, Math.ceil(finalTrending.length / ITEMS_PER_PAGE));
+
+  // Animation helper function
+  const animateTransition = (
+    setVisible: (visible: boolean) => void,
+    setIndex: (index: number) => void,
+    currentIndex: number,
+    totalPages: number,
+    direction: 'left' | 'right'
+  ) => {
+    if (isAnimating) return;
+    
+    setIsAnimating(true);
+    
+    // Fade out current items
+    setVisible(false);
+    
+    setTimeout(() => {
+      // Calculate new index with looping
+      let newIndex;
+      if (direction === 'right') {
+        newIndex = (currentIndex + 1) % totalPages;
+      } else {
+        newIndex = currentIndex === 0 ? totalPages - 1 : currentIndex - 1;
+      }
+      
+      setIndex(newIndex);
+      
+      // Fade in new items after a brief delay
+      setTimeout(() => {
+        setVisible(true);
+        setIsAnimating(false);
+      }, 50);
+    }, FADE_OUT_DURATION);
+  };
+
+  // Scroll functions for section headers
   const scrollFeaturedRail = (dir: 'left' | 'right') => {
-    // This would need to be implemented to change which 4 listings are shown
-    console.log('Scroll featured', dir);
+    animateTransition(
+      setFeaturedVisible,
+      setFeaturedIndex,
+      featuredIndex,
+      totalFeaturedPages,
+      dir
+    );
   };
 
   const scrollTrendingRail = (dir: 'left' | 'right') => {
-    // This would need to be implemented to change which 4 trending items are shown
-    console.log('Scroll trending', dir);
+    animateTransition(
+      setTrendingVisible,
+      setTrendingIndex,
+      trendingIndex,
+      totalTrendingPages,
+      dir
+    );
   };
 
   const renderListView = () => (
@@ -168,8 +273,6 @@ const MarketContent: React.FC<MarketContentProps> = ({
 
   return (
     <Container>
-
-
       {/* Main Market Title - Always Visible */}
       <div className="pt-2 mb-4">
         <div>
@@ -226,15 +329,23 @@ const MarketContent: React.FC<MarketContentProps> = ({
                 {/* Listings Row (4 visible, no overflow scroll) */}
                 <div id="featured-rail">
                   <div className="grid grid-cols-4 gap-4">
-                    {listings.slice(0, 4).map((listing, idx) => (
+                    {currentFeaturedListings.map((listing, idx) => (
                       <div
-                        key={listing.id}
+                        key={`${listing.id}-${featuredIndex}`}
                         style={{
-                          opacity: 0,
-                          animation: `fadeInUp 520ms ease-out forwards`,
-                          animationDelay: `${140 + idx * 30}ms`,
+                          opacity: featuredVisible ? 0 : 0,
+                          animation: featuredVisible 
+                            ? `fadeInUp 520ms ease-out forwards`
+                            : 'none',
+                          animationDelay: featuredVisible 
+                            ? `${140 + idx * 30}ms`
+                            : '0ms',
                           willChange: 'transform, opacity',
+                          transition: !featuredVisible 
+                            ? `opacity ${FADE_OUT_DURATION}ms ease-out`
+                            : 'none',
                         }}
+                        className={!featuredVisible ? 'opacity-0' : ''}
                       >
                         <ListingCard currentUser={currentUser} data={listing} />
                       </div>
@@ -254,7 +365,7 @@ const MarketContent: React.FC<MarketContentProps> = ({
 
                     <div id="trending-rail">
                       <div className="grid grid-cols-4 gap-4">
-                        {finalTrending.slice(0, 4).map(({ employee, listing }, idx) => {
+                        {currentTrendingItems.map(({ employee, listing }, idx) => {
                           const li: any = listing as any;
                           const imageSrc =
                             li?.imageSrc ||
@@ -263,13 +374,21 @@ const MarketContent: React.FC<MarketContentProps> = ({
 
                           return (
                             <div
-                              key={(employee as any).id ?? `${(employee as any).fullName}-${idx}`}
+                              key={`${(employee as any).id ?? `${(employee as any).fullName}-${idx}`}-${trendingIndex}`}
                               style={{
-                                opacity: 0,
-                                animation: `fadeInUp 520ms ease-out forwards`,
-                                animationDelay: `${160 + idx * 30}ms`,
+                                opacity: trendingVisible ? 0 : 0,
+                                animation: trendingVisible 
+                                  ? `fadeInUp 520ms ease-out forwards`
+                                  : 'none',
+                                animationDelay: trendingVisible 
+                                  ? `${160 + idx * 30}ms`
+                                  : '0ms',
                                 willChange: 'transform, opacity',
+                                transition: !trendingVisible 
+                                  ? `opacity ${FADE_OUT_DURATION}ms ease-out`
+                                  : 'none',
                               }}
+                              className={!trendingVisible ? 'opacity-0' : ''}
                             >
                               <WorkerCard
                                 employee={employee}
@@ -300,6 +419,19 @@ const MarketContent: React.FC<MarketContentProps> = ({
           )}
         </div>
       </div>
+
+      <style jsx>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
     </Container>
   );
 };

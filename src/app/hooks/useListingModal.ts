@@ -1,21 +1,21 @@
-// app/hooks/useRentModal.ts
+// app/hooks/useListingModal.ts
 import { create } from 'zustand';
 import { SafeListing, SafeUser } from '@/app/types';
 
-type RentListing = (SafeListing & { user?: SafeUser }) | null;
+type ListingType = (SafeListing & { user?: SafeUser }) | null;
 
-type RentModalStore = {
+type ListingModalStore = {
   isOpen: boolean;
-  listing: RentListing;
-  onOpen: (listing?: RentListing) => void;
+  listing: ListingType;
+  onOpen: (listing?: ListingType) => void;
   onClose: () => void;
 };
 
-const useRentModal = create<RentModalStore>((set) => ({
+const useListingModal = create<ListingModalStore>((set) => ({
   isOpen: false,
   listing: null,
   onOpen: (listing = null) => set({ isOpen: true, listing }),
   onClose: () => set({ isOpen: false, listing: null }),
 }));
 
-export default useRentModal;
+export default useListingModal;

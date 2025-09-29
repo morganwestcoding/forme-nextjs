@@ -35,7 +35,6 @@ export default async function getFavoriteListings() {
         serviceName: service.serviceName,
         price: service.price,
         category: service.category,
-        imageSrc: service.imageSrc || null, // Include imageSrc from SafeService
       })),
       employees: favorite.employees.map(employee => ({
         id: employee.id,

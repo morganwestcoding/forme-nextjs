@@ -1,6 +1,5 @@
 import {Listing , User, Reservation, Post} from '@prisma/client'
 
-// Add the new media types
 export type MediaType = 'image' | 'video' | 'gif';
 
 export interface MediaData {
@@ -20,7 +19,6 @@ export type SafeService = {
   serviceName: string;
   price: number;
   category: string;
-   imageSrc?: string | null; 
 };
 
 export type SafeListing = Omit<Listing, "createdAt"> & {
@@ -101,7 +99,6 @@ export type SafeUser = Omit<
   subscriptionStatus?: string | null;
   subscriptionBillingInterval?: string | null;
   currentPeriodEnd?: Date | null;
-  
 };
 
 
@@ -170,7 +167,6 @@ export type SafeEmployee = {
   id: string;
   fullName: string;
   jobTitle?: string | null;
-
   listingId: string;
   userId: string; 
   serviceIds: string[];
@@ -185,8 +181,6 @@ export type SafeEmployee = {
     imageSrc: string | null;
   };
 };
-
-
 
 export type SafeStoreHours = {
   dayOfWeek: string;

@@ -10,7 +10,7 @@ import PostCard from '../feed/PostCard';
 import SmartBadgeListing from './SmartBadgeListing';
 import { SafePost, SafeUser, SafeListing } from '@/app/types';
 import useReservationModal from '@/app/hooks/useReservationModal';
-import useRentModal from '@/app/hooks/useRentModal';
+import useRentModal from '@/app/hooks/useListingModal';
 
 interface ServiceItem {
   id: string;

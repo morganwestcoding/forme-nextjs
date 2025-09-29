@@ -36,7 +36,6 @@ export async function GET(
         serviceName: true,
         price: true,
         category: true,
-        imageSrc: true,
       },
       orderBy: {
         serviceName: 'asc'

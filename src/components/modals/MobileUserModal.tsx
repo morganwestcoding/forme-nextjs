@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import useLoginModal from "@/app/hooks/useLoginModal";
 import useRegisterModal from "@/app/hooks/useRegisterModal";
-import useRentModal from "@/app/hooks/useRentModal";
+import useRentModal from "@/app/hooks/useListingModal";
 import useSubscribeModal from "@/app/hooks/useSubscribeModal";
 
 interface MobileUserModalProps {

@@ -3,20 +3,17 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { categories } from '../Categories';
 import FloatingLabelSelect, { FLSelectOption } from './FloatingLabelSelect';
-import ImageUpload from './ImageUpload';
 
 export type Service = {
   id?: string;           // carry DB id so PUT can upsert, not delete
   serviceName: string;
   price: number;
   category: string;
-  imageSrc?: string | null;
 };
 
 type ServiceSelectorProps = {
   onServicesChange: (services: Service[]) => void;
   existingServices: Service[];
-  listingImageSrc?: string;
   id?: string;
   /** when provided, only render this one row for focused, single-item editing */
   singleIndex?: number;
@@ -28,7 +25,6 @@ const MAX_ROWS = Number.POSITIVE_INFINITY;
 const ServiceSelector: React.FC<ServiceSelectorProps> = ({
   onServicesChange,
   existingServices,
-  listingImageSrc,
   id,
   singleIndex,
 }) => {
@@ -40,9 +36,8 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
         serviceName: s.serviceName ?? '',
         price: typeof s.price === 'number' ? s.price : 0,
         category: s.category ?? '',
-        imageSrc: s.imageSrc ?? '',
       }))
-    : [{ serviceName: '', price: 0, category: '', imageSrc: '' }];
+    : [{ serviceName: '', price: 0, category: '' }];
 
   const [services, setServices] = useState<Service[]>(initialRows);
 
@@ -100,7 +95,7 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
 
   const addService = () => {
     // ⬇️ no ceiling; always add a fresh row
-    setServices((prev) => [...prev, { serviceName: '', price: 0, category: '', imageSrc: '' }]);
+    setServices((prev) => [...prev, { serviceName: '', price: 0, category: '' }]);
     setPriceInputs((prev) => [...prev, '']);
     setFocusedName((prev) => [...prev, false]);
     setFocusedPrice((prev) => [...prev, false]);
@@ -136,23 +131,6 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
 
           return (
             <div key={`svc-row-${i}`} className="space-y-4">
-              {/* IMAGE UPLOAD ON TOP */}
-              <div>
-                <ImageUpload
-                  value={svc.imageSrc || ''}
-                  onChange={(url) => setRow(i, { imageSrc: url })}
-                  onRemove={() => setRow(i, { imageSrc: '' })}
-                  className="w-full h-40 md:h-48 overflow-hidden"
-                  ratio="landscape"
-                  rounded="xl"
-                />
-                {listingImageSrc && (
-                  <p className="mt-2 text-[11px] text-neutral-400">
-                    Fallback: listing image will be used if this is left empty.
-                  </p>
-                )}
-              </div>
-
               {/* SERVICE NAME */}
               <div className="relative">
                 <input
@@ -187,7 +165,7 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
                 </label>
               </div>
 
-              {/* PRICE + CATEGORY UNDER */}
+              {/* PRICE + CATEGORY */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* PRICE */}
                 <div className="relative">

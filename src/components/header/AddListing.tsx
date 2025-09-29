@@ -2,7 +2,7 @@
 'use client'
 import { useCallback, useState } from "react";
 import { SafeUser } from "@/app/types";
-import useRentModal from "@/app/hooks/useRentModal";
+import useRentModal from "@/app/hooks/useListingModal";
 
 interface AddListingProps {
   currentUser?: SafeUser | null 

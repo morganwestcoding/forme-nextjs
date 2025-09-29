@@ -13,7 +13,7 @@ import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import useRegisterModal from "@/app/hooks/useRegisterModal";
 import useLoginModal from "@/app/hooks/useLoginModal";
-import useRentModal from "@/app/hooks/useRentModal";
+import useRentModal from "@/app/hooks/useListingModal";
 import useProfileModal from "@/app/hooks/useProfileModal";
 import useSubscribeModal from "@/app/hooks/useSubscribeModal";
 import { SafePost, SafeUser } from "@/app/types";
