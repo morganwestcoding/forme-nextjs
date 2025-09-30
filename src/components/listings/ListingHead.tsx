@@ -248,7 +248,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 </div>
 
                 <div className="mb-3">
-                  <span className="inline-flex items-center -mt-1 text-sm font-light text-black">
+                  <span className="inline-flex items-center -mt text-sm font-light text-black">
                     {city}{state ? `, ${state}` : ''}
                   </span>
                 </div>

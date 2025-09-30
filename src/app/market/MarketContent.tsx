@@ -282,14 +282,20 @@ const MarketContent: React.FC<MarketContentProps> = ({
   // Handle view all clicks
   const handleViewAllStorefronts = () => {
     setViewAllMode('storefronts');
+    // Smooth scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
   
   const handleViewAllWorkers = () => {
     setViewAllMode('workers');
+    // Smooth scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
   
   const handleBackToMain = () => {
     setViewAllMode(null);
+    // Smooth scroll to top when going back
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const renderListView = () => (
