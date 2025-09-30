@@ -9,6 +9,7 @@ interface SectionHeaderProps {
   onPrev?: () => void;
   onNext?: () => void;
   onViewAll?: () => void;
+  viewAllLabel?: string;  // Custom label for view all button
   className?: string;
 }
 
@@ -18,6 +19,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
   onPrev,
   onNext,
   onViewAll,
+  viewAllLabel = 'View all',  // Default to "View all"
   className = '',
 }) => {
   const hasNavigation = onPrev || onNext;
@@ -61,10 +63,10 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
           {onViewAll && (
             <button
               onClick={onViewAll}
-              className="ml-2 text-sm text-gray-500 hover:text-gray-700 transition-colors flex items-center gap-1 group"
+              className="p-2 text-sm text-gray-500 hover:text-gray-700 transition-colors inline-flex items-center gap-1"
+              aria-label={viewAllLabel}
             >
-              View all
-
+              {viewAllLabel}
             </button>
           )}
         </div>

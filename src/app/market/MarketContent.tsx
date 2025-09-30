@@ -72,6 +72,9 @@ const MarketContent: React.FC<MarketContentProps> = ({
   const [isAnimating, setIsAnimating] = useState(false);
   const [featuredVisible, setFeaturedVisible] = useState(true);
   const [trendingVisible, setTrendingVisible] = useState(true);
+  
+  // View all state
+  const [viewAllMode, setViewAllMode] = useState<'storefronts' | 'workers' | null>(null);
 
   // Loader (nice UX delay)
   const [isLoading, setIsLoading] = useState(true);
@@ -220,7 +223,15 @@ const MarketContent: React.FC<MarketContentProps> = ({
     totalPages: number,
     direction: 'left' | 'right'
   ) => {
+    // Don't animate if we don't have multiple pages
+    if (totalPages <= 1) {
+      console.log('Not enough pages to navigate:', totalPages);
+      return;
+    }
+    
     if (isAnimating) return;
+    
+    console.log('Starting animation:', { currentIndex, totalPages, direction });
     
     setIsAnimating(true);
     
@@ -236,6 +247,7 @@ const MarketContent: React.FC<MarketContentProps> = ({
         newIndex = currentIndex === 0 ? totalPages - 1 : currentIndex - 1;
       }
       
+      console.log('Setting new index:', newIndex);
       setIndex(newIndex);
       
       // Fade in new items after a brief delay
@@ -265,6 +277,19 @@ const MarketContent: React.FC<MarketContentProps> = ({
       totalTrendingPages,
       dir
     );
+  };
+  
+  // Handle view all clicks
+  const handleViewAllStorefronts = () => {
+    setViewAllMode('storefronts');
+  };
+  
+  const handleViewAllWorkers = () => {
+    setViewAllMode('workers');
+  };
+  
+  const handleBackToMain = () => {
+    setViewAllMode(null);
   };
 
   const renderListView = () => (
@@ -308,104 +333,185 @@ const MarketContent: React.FC<MarketContentProps> = ({
           {viewState.mode === 'grid' ? (
             hasListings ? (
               <>
-                {/* ===== Featured Storefronts Section ===== */}
-                {!filterInfo.isFiltered && (
-                  <SectionHeader
-                    title="Trending Storefronts"
-                    onPrev={() => scrollFeaturedRail('left')}
-                    onNext={() => scrollFeaturedRail('right')}
-                    onViewAll={() => router.push('/market?category=featured')}
-                  />
-                )}
-
-                {/* ===== Results Section Header (when filtered) ===== */}
-                {filterInfo.isFiltered && filterInfo.resultsHeaderText && (
-                  <SectionHeader
-                    title={filterInfo.resultsHeaderText}
-                    // No navigation controls for results section
-                  />
-                )}
-
-                {/* Listings Row (4 visible, no overflow scroll) */}
-                <div id="featured-rail">
-                  <div className="grid grid-cols-4 gap-4">
-                    {currentFeaturedListings.map((listing, idx) => (
-                      <div
-                        key={`${listing.id}-${featuredIndex}`}
-                        style={{
-                          opacity: featuredVisible ? 0 : 0,
-                          animation: featuredVisible 
-                            ? `fadeInUp 520ms ease-out forwards`
-                            : 'none',
-                          animationDelay: featuredVisible 
-                            ? `${140 + idx * 30}ms`
-                            : '0ms',
-                          willChange: 'transform, opacity',
-                          transition: !featuredVisible 
-                            ? `opacity ${FADE_OUT_DURATION}ms ease-out`
-                            : 'none',
-                        }}
-                        className={!featuredVisible ? 'opacity-0' : ''}
-                      >
-                        <ListingCard currentUser={currentUser} data={listing} />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* ===== Trending Teammates Section ===== */}
-                {finalTrending.length > 0 && !filterInfo.isFiltered && (
+                {/* View All Storefronts Mode */}
+                {viewAllMode === 'storefronts' && (
                   <>
                     <SectionHeader
-                      title="Trending Teammates"
-                      onPrev={() => scrollTrendingRail('left')}
-                      onNext={() => scrollTrendingRail('right')}
-                      onViewAll={() => router.push('/market?category=trending-teammates')}
+                      title="All Storefronts"
+                      className="mb-6"
+                      onViewAll={handleBackToMain}
+                      viewAllLabel="← Back to Market"
                     />
+                    
+                    <div className="grid grid-cols-4 gap-4">
+                      {listings.map((listing, idx) => (
+                        <div
+                          key={listing.id}
+                          style={{
+                            opacity: 0,
+                            animation: `fadeInUp 520ms ease-out forwards`,
+                            animationDelay: `${Math.min(idx * 30, 300)}ms`,
+                            willChange: 'transform, opacity',
+                          }}
+                        >
+                          <ListingCard currentUser={currentUser} data={listing} />
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
 
-                    <div id="trending-rail">
-                      <div className="grid grid-cols-4 gap-4">
-                        {currentTrendingItems.map(({ employee, listing }, idx) => {
-                          const li: any = listing as any;
-                          const imageSrc =
-                            li?.imageSrc ||
-                            (Array.isArray(li?.galleryImages) ? li.galleryImages[0] : undefined) ||
-                            '/placeholder.jpg';
+                {/* View All Workers Mode */}
+                {viewAllMode === 'workers' && (
+                  <>
+                    <SectionHeader
+                      title="All Teammates"
+                      className="mb-6"
+                      onViewAll={handleBackToMain}
+                      viewAllLabel="← Back to Market"
+                    />
+                    
+                    <div className="grid grid-cols-4 gap-4">
+                      {finalTrending.map(({ employee, listing }, idx) => {
+                        const li: any = listing as any;
+                        const imageSrc =
+                          li?.imageSrc ||
+                          (Array.isArray(li?.galleryImages) ? li.galleryImages[0] : undefined) ||
+                          '/placeholder.jpg';
 
-                          return (
+                        return (
+                          <div
+                            key={(employee as any).id ?? `${(employee as any).fullName}-${idx}`}
+                            style={{
+                              opacity: 0,
+                              animation: `fadeInUp 520ms ease-out forwards`,
+                              animationDelay: `${Math.min(idx * 30, 300)}ms`,
+                              willChange: 'transform, opacity',
+                            }}
+                          >
+                            <WorkerCard
+                              employee={employee}
+                              listingTitle={listing.title}
+                              data={{
+                                title: listing.title,
+                                imageSrc,
+                                category: (listing as any).category ?? 'General',
+                              }}
+                              listing={listing}
+                              currentUser={currentUser ?? undefined}
+                            />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
+
+                {/* Normal View - Show sections with pagination */}
+                {!viewAllMode && (
+                  <>
+                    {/* ===== Featured Storefronts Section ===== */}
+                    {!filterInfo.isFiltered && (
+                      <SectionHeader
+                        title="Trending Storefronts"
+                        onPrev={() => scrollFeaturedRail('left')}
+                        onNext={() => scrollFeaturedRail('right')}
+                        onViewAll={handleViewAllStorefronts}
+                      />
+                    )}
+
+                    {/* ===== Results Section Header (when filtered) ===== */}
+                    {filterInfo.isFiltered && filterInfo.resultsHeaderText && (
+                      <SectionHeader
+                        title={filterInfo.resultsHeaderText}
+                        // No navigation controls for results section
+                      />
+                    )}
+
+                    {/* Listings Row (4 visible, no overflow scroll) */}
+                    {!viewAllMode && (
+                      <div id="featured-rail">
+                        <div className="grid grid-cols-4 gap-4">
+                          {currentFeaturedListings.map((listing, idx) => (
                             <div
-                              key={`${(employee as any).id ?? `${(employee as any).fullName}-${idx}`}-${trendingIndex}`}
+                              key={`${listing.id}-${featuredIndex}`}
                               style={{
-                                opacity: trendingVisible ? 0 : 0,
-                                animation: trendingVisible 
+                                opacity: featuredVisible ? 0 : 0,
+                                animation: featuredVisible 
                                   ? `fadeInUp 520ms ease-out forwards`
                                   : 'none',
-                                animationDelay: trendingVisible 
-                                  ? `${160 + idx * 30}ms`
+                                animationDelay: featuredVisible 
+                                  ? `${140 + idx * 30}ms`
                                   : '0ms',
                                 willChange: 'transform, opacity',
-                                transition: !trendingVisible 
+                                transition: !featuredVisible 
                                   ? `opacity ${FADE_OUT_DURATION}ms ease-out`
                                   : 'none',
                               }}
-                              className={!trendingVisible ? 'opacity-0' : ''}
+                              className={!featuredVisible ? 'opacity-0' : ''}
                             >
-                              <WorkerCard
-                                employee={employee}
-                                listingTitle={listing.title}
-                                data={{
-                                  title: listing.title,
-                                  imageSrc,
-                                  category: (listing as any).category ?? 'General',
-                                }}
-                                listing={listing}
-                                currentUser={currentUser ?? undefined}
-                              />
+                              <ListingCard currentUser={currentUser} data={listing} />
                             </div>
-                          );
-                        })}
+                          ))}
+                        </div>
                       </div>
-                    </div>
+                    )}
+
+                    {/* ===== Trending Teammates Section ===== */}
+                    {finalTrending.length > 0 && !filterInfo.isFiltered && (
+                      <>
+                        <SectionHeader
+                          title="Trending Teammates"
+                          onPrev={() => scrollTrendingRail('left')}
+                          onNext={() => scrollTrendingRail('right')}
+                          onViewAll={handleViewAllWorkers}
+                        />
+
+                        <div id="trending-rail">
+                          <div className="grid grid-cols-4 gap-4">
+                            {currentTrendingItems.map(({ employee, listing }, idx) => {
+                              const li: any = listing as any;
+                              const imageSrc =
+                                li?.imageSrc ||
+                                (Array.isArray(li?.galleryImages) ? li.galleryImages[0] : undefined) ||
+                                '/placeholder.jpg';
+
+                              return (
+                                <div
+                                  key={`${(employee as any).id ?? `${(employee as any).fullName}-${idx}`}-${trendingIndex}`}
+                                  style={{
+                                    opacity: trendingVisible ? 0 : 0,
+                                    animation: trendingVisible 
+                                      ? `fadeInUp 520ms ease-out forwards`
+                                      : 'none',
+                                    animationDelay: trendingVisible 
+                                      ? `${160 + idx * 30}ms`
+                                      : '0ms',
+                                    willChange: 'transform, opacity',
+                                    transition: !trendingVisible 
+                                      ? `opacity ${FADE_OUT_DURATION}ms ease-out`
+                                      : 'none',
+                                  }}
+                                  className={!trendingVisible ? 'opacity-0' : ''}
+                                >
+                                  <WorkerCard
+                                    employee={employee}
+                                    listingTitle={listing.title}
+                                    data={{
+                                      title: listing.title,
+                                      imageSrc,
+                                      category: (listing as any).category ?? 'General',
+                                    }}
+                                    listing={listing}
+                                    currentUser={currentUser ?? undefined}
+                                  />
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </>
+                    )}
                   </>
                 )}
               </>
