@@ -20,6 +20,7 @@ import UserTypeStep from "../inputs/UserTypeStep";
 import JobTitleStep from "../inputs/JobTitleStep";
 import BusinessSelectStep from "../inputs/BusinessSelectStep";
 import ServiceSelectStep from "../inputs/ServiceSelectStep";
+import InterestsStep from "../inputs/InterestStep";
 
 type UserType = 'customer' | 'individual' | 'team';
 
@@ -42,13 +43,14 @@ function safeToastError(err: any, fallback = "Something went wrong!") {
 
 enum STEPS {
   ACCOUNT = 0,
-  USER_TYPE = 1,
-  JOB_TITLE = 2,        // For individual AND team members
-  BUSINESS_SELECT = 3,  // Only for team members
-  SERVICE_SELECT = 4,   // Only for team members
-  LOCATION = 5,
-  BIOGRAPHY = 6,
-  IMAGES = 7,
+  INTERESTS = 1,
+  USER_TYPE = 2,
+  JOB_TITLE = 3,
+  BUSINESS_SELECT = 4,
+  SERVICE_SELECT = 5,
+  LOCATION = 6,
+  BIOGRAPHY = 7,
+  IMAGES = 8,
 }
 
 /** A virtual step used only in edit mode for the hub */
@@ -77,6 +79,7 @@ const RegisterModal = () => {
       name: '',
       email: '',
       password: '',
+      interests: [],
       location: '',
       bio: '',
       image: '',
@@ -99,6 +102,7 @@ const RegisterModal = () => {
   const jobTitle = watch('jobTitle');
   const isOwnerManager = watch('isOwnerManager');
   const selectedServices = watch('selectedServices') || [];
+  const interests = watch('interests') || [];
 
   // Step state: start at overview hub when editing
   const [step, setStep] = useState<number>(isEdit ? EDIT_HUB_STEP : STEPS.ACCOUNT);
@@ -113,6 +117,7 @@ const RegisterModal = () => {
         name: p.name ?? '',
         email: p.email ?? '',
         password: '',
+        interests: [],
         location: p.location ?? '',
         bio: p.bio ?? '',
         image: p.image ?? '',
@@ -149,6 +154,9 @@ const RegisterModal = () => {
 
   // UPDATED: Smart step navigation based on user type
   const getNextStep = (currentStep: number, userType: UserType) => {
+    if (currentStep === STEPS.INTERESTS) {
+      return STEPS.USER_TYPE;
+    }
     if (currentStep === STEPS.USER_TYPE) {
       // Both individual and team go to job title
       if (userType === 'team' || userType === 'individual') {
@@ -177,6 +185,9 @@ const RegisterModal = () => {
 
   // NEW: Smart back navigation based on user type
   const getPreviousStep = (currentStep: number, userType: UserType) => {
+    if (currentStep === STEPS.USER_TYPE) {
+      return STEPS.INTERESTS;
+    }
     if (currentStep === STEPS.LOCATION) {
       // From location, go back based on user type
       if (userType === 'team') {
@@ -342,6 +353,7 @@ const RegisterModal = () => {
         name: data.name,
         email: data.email,
         password: data.password,
+        interests: data.interests,
         location: data.location,
         bio: data.bio,
         image: data.image,
@@ -439,12 +451,18 @@ const RegisterModal = () => {
               complete: Boolean(name && email),
             },
             {
+              key: STEPS.INTERESTS,
+              title: 'Interests',
+              description: 'Categories you follow',
+              complete: Boolean(interests && interests.length > 0),
+            },
+            {
               key: STEPS.USER_TYPE,
               title: 'User Type',
               description: 'Customer, individual, or team member',
               complete: Boolean(userType),
             },
-            // UPDATED: Show job title for both individual and team
+            // Show job title for both individual and team
             ...(userType === 'team' || userType === 'individual' ? [
               {
                 key: STEPS.JOB_TITLE,
@@ -493,6 +511,17 @@ const RegisterModal = () => {
     );
   }
 
+  // Interests Step
+  if (step === STEPS.INTERESTS) {
+    bodyContent = (
+      <InterestsStep
+        selectedInterests={interests}
+        onInterestsChange={(selected) => setCustomValue('interests', selected)}
+        isLoading={isLoading}
+      />
+    );
+  }
+
   // User Type Selection Step
   if (step === STEPS.USER_TYPE) {
     bodyContent = (
@@ -504,13 +533,13 @@ const RegisterModal = () => {
     );
   }
 
-  // UPDATED: Job Title Step (for both individual and team members)
+  // Job Title Step (for both individual and team members)
   if (step === STEPS.JOB_TITLE) {
     bodyContent = (
       <JobTitleStep
         jobTitle={jobTitle}
         isOwnerManager={isOwnerManager}
-        userType={userType}  // ADDED: Pass userType prop
+        userType={userType}
         onOwnerManagerChange={(value) => {
           setCustomValue('isOwnerManager', value);
           if (value) {
@@ -576,7 +605,7 @@ const RegisterModal = () => {
           register={register}
           errors={errors}
           required
-          maxLength={200}
+          maxLength={300}
           type="textarea"
           inputClassName="pt-8"
         />
@@ -586,44 +615,31 @@ const RegisterModal = () => {
 
   if (step === STEPS.IMAGES) {
     bodyContent = (
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-8 py-6">
         <Heading
-          title={isEdit ? "Update your profile picture" : "Add your profile picture"}
-          subtitle={isEdit ? "Freshen up your look with a cropped image." : "Upload and crop your profile photo to make your profile stand out!"}
+          title={isEdit ? "Update your photo" : "Add your photo"}
+          subtitle={isEdit ? "Show the world your best self" : "Make a great first impression"}
         />
 
-        <div className="flex justify-center">
-          <div className="flex flex-col items-center space-y-3">
-            <h3 className="text-sm font-medium text-neutral-700 mb-3">Profile Picture</h3>
-            <ImageUpload
-              uploadId="profile-picture"
-              onChange={(v) => setCustomValue('image', v)}
-              value={image}
-              className="w-48 h-48"
-              ratio="square"
-              rounded="2xl"
-              enableCrop={true}
-              cropMode="fixed"
-              label="Profile Picture"
-              maxFileSizeMB={5}
-              onRemove={() => setCustomValue('image', '')}
-            />
-            <p className="mt-2 text-xs text-neutral-500 text-center max-w-[200px]">
-              Upload and crop your profile photo. This will be displayed as a circle on your profile.
-            </p>
-          </div>
+        <div className="flex justify-center py-8">
+          <ImageUpload
+            uploadId="profile-picture"
+            onChange={(v) => setCustomValue('image', v)}
+            value={image}
+            className="w-48 h-48"
+            ratio="square"
+            rounded="full"
+            enableCrop={true}
+            cropMode="fixed"
+            label="Profile Picture"
+            maxFileSizeMB={5}
+            onRemove={() => setCustomValue('image', '')}
+          />
         </div>
 
-        {/* Image Guidelines */}
-        <div className="bg-neutral-50 rounded-lg p-4 mt-4">
-          <h4 className="text-sm font-medium text-neutral-800 mb-2">Image Guidelines</h4>
-          <ul className="text-xs text-neutral-600 space-y-1">
-            <li>• Profile pictures work best with faces or logos</li>
-            <li>• Use high-quality images for the best results</li>
-            <li>• Images will be automatically cropped to a square format</li>
-            <li>• Maximum file size is 5MB</li>
-          </ul>
-        </div>
+        <p className="text-sm text-neutral-500 text-center max-w-sm mx-auto">
+          Upload a photo that represents you. It'll be shown as a circle throughout the app.
+        </p>
       </div>
     );
   }

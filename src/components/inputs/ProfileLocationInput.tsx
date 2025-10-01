@@ -148,7 +148,8 @@ function FloatingLabelSelect(props: {
         }
       }}
       onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
+        // ✅ Only handle Enter key, not space (allows typing spaces in city names)
+        if (e.key === 'Enter') {
           e.preventDefault();
           // @ts-expect-error internal method
           selectRef.current?.openMenu?.();

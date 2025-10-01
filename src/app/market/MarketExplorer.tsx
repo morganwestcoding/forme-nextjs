@@ -131,7 +131,7 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
 {/* Filters Button */}
 <button
   onClick={handleOpenFilters}
-  className="bg-gradient-to-br from-white via-white to-blue-50/40 text-gray-500 py-3 px-4 border border-gray-200 rounded-xl hover:from-blue-50/30 hover:via-white hover:to-purple-50/30 hover:border-blue-200/50 transition-all duration-300 flex items-center space-x-2 text-sm relative shadow-sm hover:shadow-md"
+  className="bg-gradient-to-br from-blue-50/30 via-white to-blue-50/30 text-gray-500 py-3 px-4 border border-gray-200 rounded-xl hover:from-blue-50/30 hover:via-white hover:to-purple-50/30 hover:border-blue-200/50 transition-all duration-300 flex items-center space-x-2 text-sm relative hover:shadow-sm"
   type="button"
 >
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" color="currentColor" fill="none">
@@ -152,7 +152,7 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
 {/* Create Button */}
 <button
   onClick={handleCreateListing}
-  className="flex items-center justify-center py-3 border border-gray-200 space-x-2 px-4 rounded-xl transition-all duration-300 bg-gradient-to-br from-white via-white to-blue-50/40 text-gray-500 hover:from-blue-50/30 hover:via-white hover:to-purple-50/30 hover:border-blue-200/50 shadow-sm hover:shadow-md"
+  className="flex items-center justify-center py-3 border border-gray-200 space-x-2 px-4 rounded-xl transition-all duration-300 bg-gradient-to-br from-blue-50/30 via-white to-blue-50/30 text-gray-500 hover:from-blue-50/20 hover:via-white hover:to-purple-50/30 hover:border-blue-200/50 hover:shadow-sm"
   type="button"
 >
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" color="currentColor" fill="none">

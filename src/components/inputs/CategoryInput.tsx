@@ -32,10 +32,10 @@ const CategoryInputBase: React.FC<CategoryInputProps> = ({ label, selected, onCl
       type="button"
       onClick={() => onClick(label)}
       className={`
-        rounded-xl shadow flex flex-col items-center justify-center p-4 space-y-2
+        rounded-xl flex flex-col items-center justify-center p-4 space-y-2
         cursor-pointer select-none
         transition-[transform,background-color,color] duration-200 ease-out
-        ${selected ? 'bg-[#60A5FA] text-white' : 'bg-neutral-100 text-neutral-700 hover:bg-blue-50'}
+        ${selected ? 'bg-[#60A5FA] text-white' : 'bg-gradient-to-br from-blue-50/30 via-white to-blue-50/30 border-gray-200 border text-neutral-700 hover:shadow-sm hover:bg-blue-50'}
         will-change-transform transform-gpu
         focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#60A5FA]
       `}

@@ -51,11 +51,8 @@ enum STEPS {
 
 const EDIT_HUB_STEP = -1;
 
-const initialServices: Service[] = [
-  { serviceName: '', price: 0, category: '' },
-  { serviceName: '', price: 0, category: '' },
-  { serviceName: '', price: 0, category: '' },
-];
+// ✅ Fixed: Start with empty array instead of 3 empty services
+const initialServices: Service[] = [];
 
 const initialEmployees: EmployeeInput[] = [];
 
@@ -83,9 +80,7 @@ const ListingModal = () => {
   const [resetKey, setResetKey] = useState(0);
   const [services, setServices] = useState<Service[]>(listing?.services || initialServices);
   const [employees, setEmployees] = useState<EmployeeInput[]>(() => {
-
     if (listing?.employees) {
-
       return listing.employees.map((emp: any) => ({
         userId: emp.userId,
         jobTitle: emp.jobTitle,
@@ -93,7 +88,7 @@ const ListingModal = () => {
         user: emp.user ? {
           id: emp.user.id,
           name: emp.user.name,
-          email: null, // SafeEmployee doesn't include email
+          email: null,
           image: emp.user.image,
           imageSrc: emp.user.imageSrc,
         } : undefined
@@ -265,7 +260,6 @@ const ListingModal = () => {
   }, [reset, listingModal]);
 
   const onBack = () => {
-
     if (isEditMode) {
       setStep(EDIT_HUB_STEP);
       return;
@@ -289,17 +283,14 @@ const ListingModal = () => {
 
   const onNext = () => {
     if (step === STEPS.CATEGORY && !category) {
-
       return;
     }
 
     if (step === STEPS.LOCATION) {
       let invalid = false;
-
       if (!locationVal) { setError('location', { type: 'required', message: 'Location is required' }); invalid = true; } else { clearErrors('location'); }
       if (!address)     { setError('address',  { type: 'required', message: 'Address is required'  }); invalid = true; } else { clearErrors('address'); }
       if (!zipCode)     { setError('zipCode',  { type: 'required', message: 'ZIP is required'      }); invalid = true; } else { clearErrors('zipCode'); }
-
       if (invalid) return;
     }
 
@@ -314,6 +305,12 @@ const ListingModal = () => {
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     if (step === EDIT_HUB_STEP) return;
 
+    // ✅ Filter out incomplete services before submission
+    const validServices = services.filter(s => 
+      s.serviceName?.trim() && 
+      s.category?.trim() && 
+      Number(s.price) > 0
+    );
 
     if (isEditMode && listing) {
       try {
@@ -325,12 +322,12 @@ const ListingModal = () => {
           ...data,
           city,
           state,
-          services,
-          employees, // Now sends EmployeeInput[] format
+          services: validServices, // ✅ Use filtered services
+          employees,
           storeHours,
         };
 
-        const justUpdatedKey = step; // capture before we change steps
+        const justUpdatedKey = step;
 
         await axios.put(`/api/listings/${listing.id}`, payload);
 
@@ -348,7 +345,7 @@ const ListingModal = () => {
       }
     }
 
-    // CREATE MODE: keep wizard behavior (no toasts)
+    // CREATE MODE: keep wizard behavior
     if (step !== STEPS.EMPLOYEE) {
       return onNext();
     }
@@ -361,8 +358,8 @@ const ListingModal = () => {
       ...data,
       city,
       state,
-      services,
-      employees, // Now sends EmployeeInput[] format
+      services: validServices, // ✅ Use filtered services
+      employees,
       storeHours,
     };
 
@@ -372,7 +369,6 @@ const ListingModal = () => {
       handleClose();
     } catch (e) {
       console.error('[LISTING_SAVE]', e);
-      // optional: setSaveStatus({ type: 'error', message: 'Failed to create listing.' });
     } finally {
       setIsLoading(false);
     }
@@ -380,7 +376,6 @@ const ListingModal = () => {
 
   const modalWidthClasses = useMemo(() => 'w-full md:w-4/6 lg:w-3/6 xl:w-2/5', [step]);
 
-  /** BUTTON LABELS — edit mode shows Update/Back only */
   const actionLabel = useMemo(() => {
     if (step === EDIT_HUB_STEP) return undefined;
     if (isEditMode) return 'Update';
@@ -399,7 +394,6 @@ const ListingModal = () => {
     [services]
   );
   
-  // Updated to count EmployeeInput[] instead of string[]
   const employeesCount = useMemo(
     () => employees.filter(e => e.userId && e.userId.trim().length > 0).length,
     [employees]
@@ -450,15 +444,14 @@ const ListingModal = () => {
     setStep(STEPS.SERVICES_FORM);
   };
 
-const addNewService = () => {
-  const next = [...(services || []), { serviceName: '', price: 0, category: '' }]; 
-  setServices(next);
-  const newIndex = next.length - 1;
-  setEditingServiceIndex(newIndex);
-  setStep(STEPS.SERVICES_FORM);
-};
+  const addNewService = () => {
+    const next = [...(services || []), { serviceName: '', price: 0, category: '' }]; 
+    setServices(next);
+    const newIndex = next.length - 1;
+    setEditingServiceIndex(newIndex);
+    setStep(STEPS.SERVICES_FORM);
+  };
 
-  /** 🔗 URL-trigger: when opened with ?addService=1, append a fresh service and jump to ServiceSelector */
   useEffect(() => {
     if (!listingModal.isOpen) return;
 
@@ -482,7 +475,6 @@ const addNewService = () => {
     const basePath = pathname ?? (typeof window !== 'undefined' ? window.location.pathname : '/');
     const href = nextParams.toString() ? `${basePath}?${nextParams}` : basePath;
     router.replace(href, { scroll: false });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [listingModal.isOpen]);
 
   // ----- BODY
@@ -509,7 +501,6 @@ const addNewService = () => {
   if (isEditMode && step === EDIT_HUB_STEP) {
     bodyContent = (
       <div className="flex flex-col gap-4">
-        {/* Inline status banners */}
         {saveStatus?.type === 'success' && (
           <div className="rounded-xl border border-green-200 bg-green-50 text-green-700 px-4 py-2 text-sm">
             {saveStatus.message}
@@ -525,7 +516,7 @@ const addNewService = () => {
         <EditOverview
           items={overviewItems}
           onSelect={(k) => { setSaveStatus(null); setLastUpdatedKey(null); setStep(k); }}
-          updatedKey={lastUpdatedKey ?? undefined}   // 👈 highlight the just-saved section
+          updatedKey={lastUpdatedKey ?? undefined}
         />
       </div>
     );
@@ -662,11 +653,10 @@ const addNewService = () => {
   }
 
   if (step === STEPS.EMPLOYEE) {
-    // Filter services to only include those with IDs (saved services)
     const validServices = services
-      .filter(s => s.id && s.serviceName?.trim()) // Only services with IDs and names
+      .filter(s => s.id && s.serviceName?.trim())
       .map(s => ({
-        id: s.id!, // Non-null assertion since we filtered for it
+        id: s.id!,
         serviceName: s.serviceName!,
         price: s.price || 0,
         category: s.category || '',
@@ -677,9 +667,9 @@ const addNewService = () => {
         <Heading title={isEditMode ? "Update your employees" : "Add your employees"} subtitle="Let us know who is available for work!" />
         <EmployeeSelector
           key={`emp-${resetKey}`}
-          onEmployeesChange={setEmployees} // Now correctly typed for EmployeeInput[]
-          existingEmployees={employees}    // Now correctly typed for EmployeeInput[]
-          services={validServices}         // Pass only services with IDs
+          onEmployeesChange={setEmployees}
+          existingEmployees={employees}
+          services={validServices}
         />
       </div>
     );
