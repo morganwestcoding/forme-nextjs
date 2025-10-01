@@ -119,11 +119,11 @@ const ConversationCard: React.FC<{
         className={`w-full flex items-center gap-3 cursor-pointer
                    bg-white border rounded-xl p-3 transition-all duration-300 ease-out
                    ${hasUnread ? 'border-blue-500 bg-blue-50/30' : 'border-gray-200'}
-                   ${isHovered ? 'shadow-xl border-gray-400 transform -translate-y-1 scale-[1.01]' : 'shadow-sm'}`}
+                   ${isHovered ? 'shadow-lg border-gray-400' : 'shadow-sm'}`}
         onClick={onClick}
       >
         {/* Avatar */}
-        <div className={`transition-transform duration-300 ${isHovered ? 'scale-110' : ''}`}>
+        <div className={`transition-transform duration-300 ${isHovered ? 'scale-105' : ''}`}>
           <Avatar 
             src={conversation.otherUser.image} 
             name={conversation.otherUser.name} 
@@ -356,7 +356,7 @@ const InboxModal = () => {
   `;
 
   const bodyContent = (
-    <div className="flex flex-col h-[580px] pb-2 pt-4 md:pt-6">
+    <div className="flex flex-col h-[580px] pb-2 pt-4 md:pt-6 px-3">
       <style>{styles}</style>
       
       <div className="mx-auto w-full max-w-[520px]">
@@ -441,7 +441,7 @@ const InboxModal = () => {
         </div>
 
         {/* Conversations */}
-        <div className="h-[400px] overflow-y-auto custom-scrollbar">
+        <div className="h-[400px] overflow-y-auto overflow-x-visible custom-scrollbar">
           <div className="space-y-3">
             {conversations.map((conversation) => (
               <ConversationCard

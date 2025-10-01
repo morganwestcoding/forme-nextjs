@@ -1,10 +1,11 @@
 'use client';
 
 import React from 'react';
-import { Grid, List } from 'lucide-react';
+import { Grid, List, Filter } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { categories } from '@/components/Categories';
 import useRentModal from '@/app/hooks/useListingModal';
+import useFilterModal from '@/app/hooks/useFilterModal';
 import GlobalSearch from '@/components/search/GlobalSearch';
 
 interface ViewState {
@@ -44,6 +45,7 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
   const router = useRouter();
   const params = useSearchParams();
   const rentModal = useRentModal();
+  const filterModal = useFilterModal();
 
   const currentCategory = searchParams.category || '';
 
@@ -72,13 +74,30 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
     rentModal.onOpen();
   };
 
-  const getCategoryStyle = (categoryLabel: string) => {
-    const category = categories.find(cat => cat.label === categoryLabel);
-    if (!category) return { color: '#60A5FA', bgColor: 'bg-[#60A5FA]' };
-    const hexMatch = category.color.match(/#[A-Fa-f0-9]{6}/);
-    const hexColor = hexMatch ? hexMatch[0] : '#60A5FA';
-    return { color: hexColor, bgColor: category.color };
+  const handleOpenFilters = () => {
+    filterModal.onOpen();
   };
+
+  // Count active filters for badge
+  const getActiveFilterCount = () => {
+    const current = new URLSearchParams(Array.from(params?.entries() || []));
+    let count = 0;
+    
+    if (current.get('q')) count++;
+    if (current.get('category')) count++;
+    if (current.get('type')) count++;
+    if (current.get('location')) count++;
+    if (current.get('radius') && current.get('radius') !== '25') count++;
+    if (current.get('minPrice')) count++;
+    if (current.get('maxPrice')) count++;
+    if (current.get('openNow')) count++;
+    if (current.get('verified')) count++;
+    if (current.get('featured')) count++;
+    
+    return count;
+  };
+
+  const activeFilterCount = getActiveFilterCount();
 
   return (
     <div className="min-h-0">
@@ -111,17 +130,22 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
 
         {/* Filters Button */}
         <button
-          className="shadow-sm bg-white text-gray-500 py-3 px-4 rounded-xl hover:bg-neutral-100 transition-colors flex items-center space-x-2 text-sm"
+          onClick={handleOpenFilters}
+          className="shadow-sm bg-white text-gray-500 py-3 px-4 rounded-xl hover:bg-neutral-100 transition-colors flex items-center space-x-2 text-sm relative"
           type="button"
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" color="currentColor" fill="none">
-            <path d="M14.5405 2V4.48622C14.5405 6.23417 14.5405 7.10814 14.7545 7.94715C14.9685 8.78616 15.3879 9.55654 16.2267 11.0973L17.3633 13.1852C19.5008 17.1115 20.5696 19.0747 19.6928 20.53L19.6792 20.5522C18.7896 22 16.5264 22 4.3208 20.5522L4.30725 20.53C3.43045 19.0747 4.49918 17.1115 6.63666 13.1852L7.7733 11.0973C8.61209 9.55654 9.03149 8.78616 9.24548 7.94715C9.45947 7.10814 9.45947 6.23417 9.45947 4.48622V2" stroke="currentColor" strokeWidth="1.5"></path>
-            <path d="M9 16.002L9.00868 15.9996" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-            <path d="M15 18.002L15.0087 17.9996" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-            <path d="M8 2L16 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-            <path d="M7.5 11.5563C8.5 10.4029 10.0994 11.2343 12 12.3182C14.5 13.7439 16 12.65 16.5 11.6152" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" fill="#F5F5F5"></path>
+            <path d="M14.9999 22H6.40749C5.0778 22 3.99988 20.9221 3.99988 19.5924C3.99988 19.2033 4.09419 18.8199 4.27475 18.4752L9.49988 8.5V2H14.4999V8.5L16.4999 12.3181" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M7.99994 2H15.9999" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M7.99994 11.5H15.9999" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M18.4999 15L18.242 15.697C17.9038 16.611 17.7347 17.068 17.4013 17.4014C17.068 17.7348 16.611 17.9039 15.697 18.2421L14.9999 18.5L15.697 18.7579C16.611 19.0961 17.068 19.2652 17.4013 19.5986C17.7347 19.932 17.9038 20.389 18.242 21.303L18.4999 22L18.7579 21.303C19.0961 20.389 19.2652 19.932 19.5985 19.5986C19.9319 19.2652 20.3889 19.0961 21.3029 18.7579L21.9999 18.5L21.3029 18.2421C20.3889 17.9039 19.9319 17.7348 19.5985 17.4014C19.2652 17.068 19.0961 16.611 18.7579 15.697L18.4999 15Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
           </svg>
           <span>Filters</span>
+          {activeFilterCount > 0 && (
+            <span className="absolute -top-1 -right-1 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center" style={{ backgroundColor: '#60A5FA' }}>
+              {activeFilterCount}
+            </span>
+          )}
         </button>
 
         {/* Create Button */}
