@@ -42,7 +42,7 @@ const UserTypeStep: React.FC<UserTypeStepProps> = ({
         >
           <User
             className={`
-              w-8 h-8
+              w-6 h-6
               transition-transform duration-200 ease-out
               ${userType === 'customer' ? 'scale-110' : 'scale-100'}
               transform-gpu
@@ -82,7 +82,7 @@ const UserTypeStep: React.FC<UserTypeStepProps> = ({
         >
           <User
             className={`
-              w-8 h-8
+              w-6 h-6
               transition-transform duration-200 ease-out
               ${userType === 'individual' ? 'scale-110' : 'scale-100'}
               transform-gpu
@@ -122,7 +122,7 @@ const UserTypeStep: React.FC<UserTypeStepProps> = ({
         >
           <Users
             className={`
-              w-8 h-8
+              w-6 h-6
               transition-transform duration-200 ease-out
               ${userType === 'team' ? 'scale-110' : 'scale-100'}
               transform-gpu

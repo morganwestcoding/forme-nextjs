@@ -35,7 +35,7 @@ const Input: React.FC<InputProps> = ({
   id,
   label,
   type = "text",
-  placeholder = " ", // Changed from "" to " " for floating labels
+  placeholder = " ",
   disabled, 
   formatPrice,
   register,
@@ -49,9 +49,10 @@ const Input: React.FC<InputProps> = ({
 }) => {
   const [charCount, setCharCount] = useState(0);
   const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordHelp, setShowPasswordHelp] = useState(false); // NEW: Controls help visibility
   const [passwordValidation, setPasswordValidation] = useState<PasswordValidation>({
     hasMinLength: false,
-    hasMaxLength: true,
+    hasMaxLength: false, // FIXED: Start as false, not true
     hasUpperCase: false,
     hasLowerCase: false,
     hasNumber: false,
@@ -62,27 +63,22 @@ const Input: React.FC<InputProps> = ({
     if (maxLength) setCharCount(0);
   }, [maxLength]);
 
-  // Helper function to safely extract error message as string
   const getErrorMessage = (): string => {
     const error = errors[id];
     if (!error) return '';
     
-    // Handle different error types from React Hook Form
     if (typeof error === 'string') return error;
     if (error && typeof error === 'object' && 'message' in error) {
       const message = error.message;
       if (typeof message === 'string') return message;
     }
     
-    // Fallback message
     return `Please check your ${label || id}`;
   };
 
-  // FIXED: Better change handler that properly handles maxLength
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const value = e.target.value;
 
-    // Handle maxLength by truncating if necessary
     if (maxLength && value.length > maxLength) {
       const truncatedValue = value.slice(0, maxLength);
       e.target.value = truncatedValue;
@@ -91,11 +87,11 @@ const Input: React.FC<InputProps> = ({
       setCharCount(value.length);
     }
 
-    // Password validation
+    // FIXED: Password validation logic
     if (type === "password") {
       setPasswordValidation({
         hasMinLength: value.length >= 6,
-        hasMaxLength: value.length <= 18,
+        hasMaxLength: value.length > 0 && value.length <= 18, // Only true if there's input AND it's <= 18
         hasUpperCase: /[A-Z]/.test(value),
         hasLowerCase: /[a-z]/.test(value),
         hasNumber: /[0-9]/.test(value),
@@ -103,11 +99,9 @@ const Input: React.FC<InputProps> = ({
       });
     }
 
-    // Call external onChange if provided
     onChange?.(e);
   };
 
-  // Better validation rules
   const getValidationRules = () => {
     const rules: any = {};
 
@@ -122,7 +116,6 @@ const Input: React.FC<InputProps> = ({
       };
     }
 
-    // Type-specific validations
     if (type === "email") {
       rules.pattern = {
         value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
@@ -135,7 +128,7 @@ const Input: React.FC<InputProps> = ({
         hasRequirements: (value: string) => {
           const validation = {
             hasMinLength: value.length >= 6,
-            hasMaxLength: value.length <= 18,
+            hasMaxLength: value.length > 0 && value.length <= 18,
             hasUpperCase: /[A-Z]/.test(value),
             hasLowerCase: /[a-z]/.test(value),
             hasNumber: /[0-9]/.test(value),
@@ -146,10 +139,9 @@ const Input: React.FC<InputProps> = ({
       };
     }
 
-    // Allow spaces in name field
     if (id === "name") {
       rules.pattern = {
-        value: /^[a-zA-Z\s'.-]+$/, // Allow letters, spaces, apostrophes, periods, hyphens
+        value: /^[a-zA-Z\s'.-]+$/,
         message: "Name can only contain letters, spaces, and common punctuation"
       };
       rules.minLength = {
@@ -192,7 +184,6 @@ const Input: React.FC<InputProps> = ({
             {...register(id, getValidationRules())}
             placeholder={placeholder} 
             type={type === "password" ? (showPassword ? "text" : "password") : type}
-            // Add proper autocomplete attributes
             autoComplete={
               id === "name" ? "name" :
               id === "email" ? "email" :
@@ -204,16 +195,16 @@ const Input: React.FC<InputProps> = ({
               peer w-full p-3 pt-6 bg-neutral-50 border-neutral-300 border rounded-lg
               outline-none transition disabled:opacity-70 disabled:cursor-not-allowed
               ${formatPrice ? 'pl-9' : 'pl-4'}
-              ${type === "password" ? 'pr-12' : 'pr-4'}
+              ${type === "password" && showPasswordValidation ? 'pr-24' : type === "password" ? 'pr-12' : 'pr-4'}
               ${errors[id] ? 'border-rose-500' : 'border-neutral-300'}
               ${errors[id] ? 'focus:border-rose-500' : 'focus:border-black'}
               ${inputClassName ?? ''}
             `}
             onChange={handleChange}
-            // REMOVED: onKeyDown handler - let onChange handle maxLength instead
           />
         )}
 
+        {/* Password visibility toggle */}
         {type === "password" && (
           <button
             type="button"
@@ -222,10 +213,33 @@ const Input: React.FC<InputProps> = ({
               e.stopPropagation();
               setShowPassword(!showPassword);
             }}
-            className="absolute right-6 top-[20px] text-neutral-500 hover:text-neutral-800 transition-colors z-10"
-            tabIndex={-1} // Prevent tab focus on this button
+            className="absolute right-4 top-[20px] text-neutral-500 hover:text-neutral-800 transition-colors z-10"
+            tabIndex={-1}
+            aria-label={showPassword ? "Hide password" : "Show password"}
           >
             {showPassword ? <FiEyeOff size={19} /> : <FiEye size={19} />}
+          </button>
+        )}
+
+        {/* Help icon - NEW */}
+        {type === "password" && showPasswordValidation && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setShowPasswordHelp(!showPasswordHelp);
+            }}
+            className="absolute right-12 top-[20px] text-neutral-400 hover:text-neutral-600 transition-colors z-10"
+            tabIndex={-1}
+            aria-label="Password requirements"
+            title="Show password requirements"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="19" height="19" fill="none">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></circle>
+              <path d="M9.5 9.5C9.5 8.11929 10.6193 7 12 7C13.3807 7 14.5 8.11929 14.5 9.5C14.5 10.3569 14.0689 11.1131 13.4117 11.5636C12.7283 12.0319 12 12.6716 12 13.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+              <path d="M12.0001 17H12.009" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+            </svg>
           </button>
         )}
 
@@ -251,14 +265,14 @@ const Input: React.FC<InputProps> = ({
         </span>
       )}
 
-      {/* Error display with proper string handling */}
       {errors[id] && (
         <span className="text-rose-500 text-xs mt-1 block">
           {getErrorMessage()}
         </span>
       )}
 
-      {type === "password" && showPasswordValidation && (
+      {/* Password help - Only shows when showPasswordHelp is true */}
+      {type === "password" && showPasswordValidation && showPasswordHelp && (
         <div className="mt-4 -mb-6 p-3 py-6 bg-slate-50 rounded-lg">
           <div className="grid grid-cols-2 gap-2 text-xs">
             <div className={`flex items-center gap-2 ${passwordValidation.hasMinLength ? 'text-green-600' : 'text-gray-400'}`}>

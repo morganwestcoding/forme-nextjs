@@ -21,7 +21,6 @@ import JobTitleStep from "../inputs/JobTitleStep";
 import BusinessSelectStep from "../inputs/BusinessSelectStep";
 import ServiceSelectStep from "../inputs/ServiceSelectStep";
 
-// ADD THIS: Define the UserType
 type UserType = 'customer' | 'individual' | 'team';
 
 /** ---------------------------------------------
@@ -44,7 +43,7 @@ function safeToastError(err: any, fallback = "Something went wrong!") {
 enum STEPS {
   ACCOUNT = 0,
   USER_TYPE = 1,
-  JOB_TITLE = 2,        // Only for team members
+  JOB_TITLE = 2,        // For individual AND team members
   BUSINESS_SELECT = 3,  // Only for team members
   SERVICE_SELECT = 4,   // Only for team members
   LOCATION = 5,
@@ -148,17 +147,24 @@ const RegisterModal = () => {
     });
   };
 
-  // Smart step navigation based on user type
+  // UPDATED: Smart step navigation based on user type
   const getNextStep = (currentStep: number, userType: UserType) => {
     if (currentStep === STEPS.USER_TYPE) {
-      if (userType === 'team') {
+      // Both individual and team go to job title
+      if (userType === 'team' || userType === 'individual') {
         return STEPS.JOB_TITLE;
       } else {
+        // Customers skip to location
         return STEPS.LOCATION;
       }
     }
-    if (currentStep === STEPS.JOB_TITLE && userType === 'team') {
-      return STEPS.BUSINESS_SELECT;
+    if (currentStep === STEPS.JOB_TITLE) {
+      // After job title, teams go to business select, individuals go to location
+      if (userType === 'team') {
+        return STEPS.BUSINESS_SELECT;
+      } else {
+        return STEPS.LOCATION;
+      }
     }
     if (currentStep === STEPS.BUSINESS_SELECT && userType === 'team') {
       return STEPS.SERVICE_SELECT;
@@ -169,18 +175,47 @@ const RegisterModal = () => {
     return currentStep + 1;
   };
 
+  // NEW: Smart back navigation based on user type
+  const getPreviousStep = (currentStep: number, userType: UserType) => {
+    if (currentStep === STEPS.LOCATION) {
+      // From location, go back based on user type
+      if (userType === 'team') {
+        return STEPS.SERVICE_SELECT;
+      } else if (userType === 'individual') {
+        return STEPS.JOB_TITLE;
+      } else {
+        // Customer
+        return STEPS.USER_TYPE;
+      }
+    }
+    if (currentStep === STEPS.SERVICE_SELECT && userType === 'team') {
+      return STEPS.BUSINESS_SELECT;
+    }
+    if (currentStep === STEPS.BUSINESS_SELECT && userType === 'team') {
+      return STEPS.JOB_TITLE;
+    }
+    if (currentStep === STEPS.JOB_TITLE) {
+      return STEPS.USER_TYPE;
+    }
+    // Default: just go back one step
+    return currentStep - 1;
+  };
+
   const onNext = () => {
     const nextStep = getNextStep(step, userType);
     setStep(nextStep);
   };
 
-  // In edit mode, Back ALWAYS returns to the Edit Overview (hub)
+  // UPDATED: In edit mode, Back ALWAYS returns to the Edit Overview (hub)
+  // In registration mode, use smart navigation based on user type
   const onBack = () => {
     if (isEdit && step !== EDIT_HUB_STEP) {
       setStep(EDIT_HUB_STEP);
       return;
     }
-    setStep((s) => s - 1);
+    // Use smart back navigation that respects user type flow
+    const previousStep = getPreviousStep(step, userType);
+    setStep(previousStep);
   };
 
   const validatePassword = (password: string) => ({
@@ -238,11 +273,20 @@ const RegisterModal = () => {
         }
       }
 
-      // Validate job title step (only for team members)
+      // UPDATED: Validate job title step (for both individual and team members)
       if (step === STEPS.JOB_TITLE) {
-        if (data.userType === 'team' && !data.isOwnerManager && !data.jobTitle?.trim()) {
-          toast.error('Please enter your job title or select owner/manager');
-          return;
+        if (data.userType === 'individual') {
+          // For individuals, job title is required
+          if (!data.jobTitle?.trim()) {
+            toast.error('Please enter your job title');
+            return;
+          }
+        } else if (data.userType === 'team') {
+          // For team members, either job title OR owner/manager checkbox
+          if (!data.isOwnerManager && !data.jobTitle?.trim()) {
+            toast.error('Please enter your job title or select owner/manager');
+            return;
+          }
         }
       }
 
@@ -400,13 +444,17 @@ const RegisterModal = () => {
               description: 'Customer, individual, or team member',
               complete: Boolean(userType),
             },
-            ...(userType === 'team' ? [
+            // UPDATED: Show job title for both individual and team
+            ...(userType === 'team' || userType === 'individual' ? [
               {
                 key: STEPS.JOB_TITLE,
                 title: 'Job Title',
-                description: 'Your role or position',
-                complete: Boolean(jobTitle || isOwnerManager),
+                description: userType === 'team' ? 'Your role or position' : 'Your professional title',
+                complete: Boolean(jobTitle || (userType === 'team' && isOwnerManager)),
               },
+            ] : []),
+            // Only show these for team members
+            ...(userType === 'team' ? [
               {
                 key: STEPS.BUSINESS_SELECT,
                 title: 'Business',
@@ -456,12 +504,13 @@ const RegisterModal = () => {
     );
   }
 
-  // Job Title Step (only for team members)
+  // UPDATED: Job Title Step (for both individual and team members)
   if (step === STEPS.JOB_TITLE) {
     bodyContent = (
       <JobTitleStep
         jobTitle={jobTitle}
         isOwnerManager={isOwnerManager}
+        userType={userType}  // ADDED: Pass userType prop
         onOwnerManagerChange={(value) => {
           setCustomValue('isOwnerManager', value);
           if (value) {
@@ -579,9 +628,7 @@ const RegisterModal = () => {
     );
   }
 
-  /** ---------- FOOTER ---------- 
-   * Modal.footer expects ReactElement | undefined (NOT null)
-   */
+  /** ---------- FOOTER ---------- */
   const footerContent = useMemo<React.ReactElement | undefined>(() => {
     if (isEdit) return undefined; // hide in edit mode
     return (

@@ -219,7 +219,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                       <>
                         <button
                           onClick={handleToggleFollow}
-                          className="flex items-center justify-center py-3 space-x-2 px-4 shadow-sm rounded-xl transition-all bg-white text-gray-500 hover:bg-neutral-200"
+                          className="flex items-center justify-center border py-3 space-x-2 px-4 rounded-xl transition-all bg-white text-gray-500 hover:bg-neutral-200"
                           type="button"
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" color="currentColor" fill="none">
@@ -231,7 +231,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                         </button>
                         <button 
                           onClick={handleReserveClick}
-                          className="flex items-center justify-center py-3 space-x-2 px-4 shadow-sm rounded-xl transition-all bg-white text-gray-500 hover:bg-neutral-200"
+                          className="flex items-center justify-center border py-3 space-x-2 px-4 rounded-xl transition-all bg-white text-gray-500 hover:bg-neutral-200"
                           type="button"
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" color="currentColor" fill="none">
