@@ -613,7 +613,7 @@ const RegisterModal = () => {
         </div>
 
         <p className="text-sm text-neutral-500 text-center max-w-sm mx-auto">
-          Upload a photo that represents you. It'll be shown as a circle throughout the app.
+          Upload a photo that represents you. It&apos;ll be shown as a circle throughout the app.
         </p>
       </div>
     );
