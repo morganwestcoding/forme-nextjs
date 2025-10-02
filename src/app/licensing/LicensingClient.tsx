@@ -145,7 +145,7 @@ const LicensingClient: React.FC<LicensingClientProps> = ({ currentUser }) => {
               Your documents are being reviewed
             </h3>
             <p className="text-sm text-yellow-800">
-              Our verification team is reviewing your credentials. You'll receive an email 
+              Our verification team is reviewing your credentials. You&apos;ll receive an email 
               notification within 24-48 hours. You can upload new documents below if needed.
             </p>
           </div>
@@ -157,7 +157,7 @@ const LicensingClient: React.FC<LicensingClientProps> = ({ currentUser }) => {
           <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
           <div>
             <h3 className="font-semibold text-green-900 mb-1">
-              You're verified!
+              You&apos;re verified!
             </h3>
             <p className="text-sm text-green-800 mb-1">
               Your credentials have been verified. The verified badge now appears on your profile.
@@ -234,7 +234,7 @@ const LicensingClient: React.FC<LicensingClientProps> = ({ currentUser }) => {
                 Verification Timeline
               </h3>
               <p className="text-sm text-amber-800">
-                Most verifications are completed within 24-48 hours. You'll receive 
+                Most verifications are completed within 24-48 hours. You&apos;ll receive 
                 an email notification once your credentials are verified.
               </p>
             </div>
