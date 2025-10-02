@@ -31,7 +31,7 @@ const LicensingStep: React.FC<LicensingStepProps> = ({
           <Shield className="w-8 h-8 text-blue-600 mb-2" />
           <h3 className="font-semibold text-sm text-blue-900">Build Trust</h3>
           <p className="text-xs text-blue-700 text-center mt-1">
-            Show clients you're qualified
+            Show clients you&apos;re qualified
           </p>
         </div>
         
@@ -101,7 +101,7 @@ const LicensingStep: React.FC<LicensingStepProps> = ({
             disabled={isLoading}
             className="text-sm text-blue-600 hover:text-blue-700 underline"
           >
-            I'll add this later
+            I&apos;ll add this later
           </button>
         )}
       </div>
