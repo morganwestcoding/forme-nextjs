@@ -131,19 +131,33 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
 
   const pillBase =
     'border rounded-md px-2 py-1.5 group-hover:scale-105 transition-all duration-300 shadow-sm ' +
-    'inline-flex items-center justify-center text-center text-xs font-semibold';
+    'inline-flex items-center justify-center text-center text-xs font-semibold gap-1';
 
   return (
     <div className="flex items-center gap-2">
-      {/* Rating pill — smaller width */}
+      {/* Rating pill with star icon */}
       <button
         onClick={(e) => { e.stopPropagation(); onRatingClick?.(); }}
         className="inline-flex rounded-md hover:bg-white/10 transition-all duration-300 group p-0"
         type="button"
         aria-label="Rating"
       >
-        <div className={`${pillBase} w-14 ${ratingV.bg} ${ratingV.border} ${ratingV.shadow}`}>
-          <span className={`${ratingV.text}`}>{rating}</span>
+        <div className={`${pillBase} w-16 ${ratingV.bg} ${ratingV.border} ${ratingV.shadow}`}>
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            viewBox="0 0 24 24" 
+            width="14" 
+            height="14" 
+            fill="none"
+            className={ratingV.text}
+          >
+
+    <path d="M3 12C7.5 12 12 7.5 12 3C12 7.5 16.5 12 21 12C16.5 12 12 16.5 12 21C12 16.5 7.5 12 3 12Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path>
+    <path d="M2 19.5C2.83333 19.5 4.5 17.8333 4.5 17C4.5 17.8333 6.16667 19.5 7 19.5C6.16667 19.5 4.5 21.1667 4.5 22C4.5 21.1667 2.83333 19.5 2 19.5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path>
+    <path d="M16 5C17 5 19 3 19 2C19 3 21 5 22 5C21 5 19 7 19 8C19 7 17 5 16 5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path>
+
+          </svg>
+          <span className={ratingV.text}>{rating}</span>
         </div>
       </button>
 
@@ -155,7 +169,7 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
         aria-label="Time status"
       >
         <div className={`${pillBase} w-20 ${timeWrap}`}>
-          <span className={`${timeText}`}>{timeStatus.message}</span>
+          <span className={timeText}>{timeStatus.message}</span>
         </div>
       </button>
     </div>

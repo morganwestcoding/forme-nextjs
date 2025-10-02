@@ -28,13 +28,21 @@ model User {
   imageSrc       String?      
   location       String?
   galleryImages  String[]
+  
+  // Licensing/Verification fields
+  licensingImage String?
+  verificationStatus    String?   @default("none") // "none" | "pending" | "verified" | "rejected"
+  verifiedAt            DateTime? // When verification was approved
+  verificationRejectedAt DateTime? // When verification was rejected
+  rejectionReason       String?   // Admin feedback for rejection
 
-
+  // Subscription fields
   isSubscribed    Boolean @default(false)
   subscriptionStartDate DateTime?
   subscriptionEndDate DateTime?
   subscriptionTier String? 
 
+  // Stripe subscription fields
   stripeCustomerId             String?
   stripeSubscriptionId         String?
   subscriptionPriceId          String?
@@ -42,7 +50,7 @@ model User {
   subscriptionBillingInterval  String? 
   currentPeriodEnd             DateTime?
 
-
+  // Social/Network fields
   following    String[]      @db.ObjectId
   followers    String[]      @db.ObjectId
   comments Comment[]
@@ -52,6 +60,7 @@ model User {
   messages       Message[]  
   shops           Shop[]
 
+  // Professional/Business fields
   employees       Employee[]   
   managedListings String[]      @db.ObjectId 
 }

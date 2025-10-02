@@ -24,9 +24,6 @@ import InterestsStep from "../inputs/InterestStep";
 
 type UserType = 'customer' | 'individual' | 'team';
 
-/** ---------------------------------------------
- * Utilities
- * --------------------------------------------- */
 function safeToastError(err: any, fallback = "Something went wrong!") {
   const data = err?.response?.data;
   const msg =
@@ -53,7 +50,6 @@ enum STEPS {
   IMAGES = 8,
 }
 
-/** A virtual step used only in edit mode for the hub */
 const EDIT_HUB_STEP = -1;
 
 const RegisterModal = () => {
@@ -91,7 +87,6 @@ const RegisterModal = () => {
     },
   });
 
-  // Watches for completion badges + image convenience
   const name = watch('name');
   const email = watch('email');
   const locationVal = watch('location');
@@ -104,7 +99,6 @@ const RegisterModal = () => {
   const selectedServices = watch('selectedServices') || [];
   const interests = watch('interests') || [];
 
-  // Step state: start at overview hub when editing
   const [step, setStep] = useState<number>(isEdit ? EDIT_HUB_STEP : STEPS.ACCOUNT);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -131,7 +125,6 @@ const RegisterModal = () => {
     }
   }, [registerModal.isOpen, registerModal.prefill, reset, isEdit]);
 
-  // Close this modal if session flips to authenticated during registration flow
   useEffect(() => {
     if (!isEdit && status === 'authenticated' && registerModal.isOpen) {
       if (modalRef.current?.close) {
@@ -152,22 +145,18 @@ const RegisterModal = () => {
     });
   };
 
-  // UPDATED: Smart step navigation based on user type
   const getNextStep = (currentStep: number, userType: UserType) => {
     if (currentStep === STEPS.INTERESTS) {
       return STEPS.USER_TYPE;
     }
     if (currentStep === STEPS.USER_TYPE) {
-      // Both individual and team go to job title
       if (userType === 'team' || userType === 'individual') {
         return STEPS.JOB_TITLE;
       } else {
-        // Customers skip to location
         return STEPS.LOCATION;
       }
     }
     if (currentStep === STEPS.JOB_TITLE) {
-      // After job title, teams go to business select, individuals go to location
       if (userType === 'team') {
         return STEPS.BUSINESS_SELECT;
       } else {
@@ -183,19 +172,16 @@ const RegisterModal = () => {
     return currentStep + 1;
   };
 
-  // NEW: Smart back navigation based on user type
   const getPreviousStep = (currentStep: number, userType: UserType) => {
     if (currentStep === STEPS.USER_TYPE) {
       return STEPS.INTERESTS;
     }
     if (currentStep === STEPS.LOCATION) {
-      // From location, go back based on user type
       if (userType === 'team') {
         return STEPS.SERVICE_SELECT;
       } else if (userType === 'individual') {
         return STEPS.JOB_TITLE;
       } else {
-        // Customer
         return STEPS.USER_TYPE;
       }
     }
@@ -208,7 +194,6 @@ const RegisterModal = () => {
     if (currentStep === STEPS.JOB_TITLE) {
       return STEPS.USER_TYPE;
     }
-    // Default: just go back one step
     return currentStep - 1;
   };
 
@@ -217,14 +202,11 @@ const RegisterModal = () => {
     setStep(nextStep);
   };
 
-  // UPDATED: In edit mode, Back ALWAYS returns to the Edit Overview (hub)
-  // In registration mode, use smart navigation based on user type
   const onBack = () => {
     if (isEdit && step !== EDIT_HUB_STEP) {
       setStep(EDIT_HUB_STEP);
       return;
     }
-    // Use smart back navigation that respects user type flow
     const previousStep = getPreviousStep(step, userType);
     setStep(previousStep);
   };
@@ -245,7 +227,7 @@ const RegisterModal = () => {
   }, [registerModal, isEdit]);
 
   const onToggle = useCallback(() => {
-    if (isEdit) return; // no toggle in edit mode
+    if (isEdit) return;
     modalRef.current?.close();
     setTimeout(() => {
       loginModal.onOpen();
@@ -253,7 +235,6 @@ const RegisterModal = () => {
   }, [loginModal, isEdit]);
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-    // No primary action on the Edit Overview
     if (step === EDIT_HUB_STEP) return;
 
     // Stepper handling (non-final)
@@ -276,7 +257,6 @@ const RegisterModal = () => {
         }
       }
       
-      // Validate user type step
       if (step === STEPS.USER_TYPE) {
         if (!data.userType) {
           toast.error('Please select your user type');
@@ -284,16 +264,13 @@ const RegisterModal = () => {
         }
       }
 
-      // UPDATED: Validate job title step (for both individual and team members)
       if (step === STEPS.JOB_TITLE) {
         if (data.userType === 'individual') {
-          // For individuals, job title is required
           if (!data.jobTitle?.trim()) {
             toast.error('Please enter your job title');
             return;
           }
         } else if (data.userType === 'team') {
-          // For team members, either job title OR owner/manager checkbox
           if (!data.isOwnerManager && !data.jobTitle?.trim()) {
             toast.error('Please enter your job title or select owner/manager');
             return;
@@ -301,7 +278,6 @@ const RegisterModal = () => {
         }
       }
 
-      // Validate business selection step (only for team members)
       if (step === STEPS.BUSINESS_SELECT) {
         if (data.userType === 'team' && !data.selectedListing) {
           toast.error('Please select a business to join');
@@ -309,7 +285,6 @@ const RegisterModal = () => {
         }
       }
 
-      // Validate service selection step (only for team members)
       if (step === STEPS.SERVICE_SELECT) {
         if (data.userType === 'team' && (!data.selectedServices || data.selectedServices.length === 0)) {
           toast.error('Please select at least one service you provide');
@@ -321,11 +296,10 @@ const RegisterModal = () => {
       return;
     }
 
-    // Final step:
+    // Final step (IMAGES):
     setIsLoading(true);
     try {
       if (isEdit) {
-        // EDIT PROFILE: use dedicated update endpoint
         const userId = String(data.userId || '').trim();
         if (!userId) {
           toast.error("Missing user id for update.");
@@ -348,7 +322,7 @@ const RegisterModal = () => {
         return;
       }
 
-      // REGISTER FLOW (create)
+      // REGISTER FLOW
       await axios.post('/api/register', {
         name: data.name,
         email: data.email,
@@ -375,8 +349,16 @@ const RegisterModal = () => {
         setStep(STEPS.ACCOUNT);
         if (modalRef.current?.close) modalRef.current.close();
         registerModal.onClose();
+        
+        // UPDATED: Route based on user type
         setTimeout(() => {
-          router.push('/subscription');
+          if (data.userType === 'individual' || data.userType === 'team') {
+            // Professionals go to licensing first
+            router.push('/licensing?onboarding=true');
+          } else {
+            // Customers go straight to subscription
+            router.push('/subscription');
+          }
         }, 250);
         return;
       }
@@ -394,7 +376,7 @@ const RegisterModal = () => {
     }
   };
 
-/** ---------- BODY ---------- */
+  // Body content (same as before but without LICENSING step)
   let bodyContent = (
     <div className="flex flex-col gap-4">
       {!isEdit && (
@@ -462,7 +444,6 @@ const RegisterModal = () => {
               description: 'Customer, individual, or team member',
               complete: Boolean(userType),
             },
-            // Show job title for both individual and team
             ...(userType === 'team' || userType === 'individual' ? [
               {
                 key: STEPS.JOB_TITLE,
@@ -471,7 +452,6 @@ const RegisterModal = () => {
                 complete: Boolean(jobTitle || (userType === 'team' && isOwnerManager)),
               },
             ] : []),
-            // Only show these for team members
             ...(userType === 'team' ? [
               {
                 key: STEPS.BUSINESS_SELECT,
@@ -511,7 +491,6 @@ const RegisterModal = () => {
     );
   }
 
-  // Interests Step
   if (step === STEPS.INTERESTS) {
     bodyContent = (
       <InterestsStep
@@ -522,7 +501,6 @@ const RegisterModal = () => {
     );
   }
 
-  // User Type Selection Step
   if (step === STEPS.USER_TYPE) {
     bodyContent = (
       <UserTypeStep
@@ -533,7 +511,6 @@ const RegisterModal = () => {
     );
   }
 
-  // Job Title Step (for both individual and team members)
   if (step === STEPS.JOB_TITLE) {
     bodyContent = (
       <JobTitleStep
@@ -543,7 +520,7 @@ const RegisterModal = () => {
         onOwnerManagerChange={(value) => {
           setCustomValue('isOwnerManager', value);
           if (value) {
-            setCustomValue('jobTitle', ''); // Clear job title if selecting owner/manager
+            setCustomValue('jobTitle', '');
           }
         }}
         register={register}
@@ -553,7 +530,6 @@ const RegisterModal = () => {
     );
   }
 
-  // Business Selection Step (only for team members)
   if (step === STEPS.BUSINESS_SELECT) {
     bodyContent = (
       <BusinessSelectStep
@@ -564,7 +540,6 @@ const RegisterModal = () => {
     );
   }
 
-  // Service Selection Step (only for team members)
   if (step === STEPS.SERVICE_SELECT) {
     bodyContent = (
       <ServiceSelectStep
@@ -644,9 +619,8 @@ const RegisterModal = () => {
     );
   }
 
-  /** ---------- FOOTER ---------- */
   const footerContent = useMemo<React.ReactElement | undefined>(() => {
-    if (isEdit) return undefined; // hide in edit mode
+    if (isEdit) return undefined;
     return (
       <div className="flex flex-col gap-4 mt-3">
         <hr />
@@ -665,13 +639,11 @@ const RegisterModal = () => {
     );
   }, [isEdit, onToggle]);
 
-  // Primary button label — hidden on the Edit Overview
   const actionLabel: string | undefined =
     step === EDIT_HUB_STEP ? undefined
     : step === STEPS.IMAGES ? (isEdit ? "Save" : "Create")
     : "Continue";
 
-  // Secondary/back button shows in edit mode for any step except the hub
   const showBack = isEdit ? step !== EDIT_HUB_STEP : step !== STEPS.ACCOUNT;
 
   return (

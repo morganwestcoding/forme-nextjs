@@ -58,8 +58,8 @@ const ListingHead: React.FC<ListingHeadProps> = ({
 
   const mainImage = imageSrc || galleryImages?.[0] || '/placeholder.jpg';
 
-  const truncatedDescription = description && description.length > 230
-    ? description.substring(0, 230) 
+  const truncatedDescription = description && description.length > 300
+    ? description.substring(0, 300) 
     : description;
 
   const handleReserveClick = () => {
@@ -115,12 +115,9 @@ const ListingHead: React.FC<ListingHeadProps> = ({
   /** 🔗 Handle adding new worker */
   const handleAddWorker = () => {
     if (!isOwner) return;
-    // You can customize this to open a worker modal or navigate to add worker page
     const url = new URL(window.location.href);
     url.searchParams.set('addWorker', '1');
     router.push(`${url.pathname}?${url.searchParams.toString()}`, { scroll: false });
-    // If you have a worker modal, you can call it here instead
-    // workerModal.onOpen(listing);
     console.log('Add worker functionality - customize as needed');
   };
 
@@ -144,7 +141,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
             <div className="flex items-start gap-6 mb-4">
               {/* Left: Image */}
               <div className="relative flex-shrink-0">
-                <div className="w-[130px] h-[130px] rounded-xl overflow-hidden relative shadow-sm">
+                <div className="w-[140px] h-[140px] rounded-xl overflow-hidden relative shadow-sm">
                   <img
                     src={mainImage}
                     alt={title}
@@ -155,14 +152,12 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 {/* SmartBadgeListing under the image */}
                 <div className="mt-3 flex justify-center">
                   <SmartBadgeListing
-                    rating={4.8} // You can make this dynamic from your listing data
+                    rating={4.8}
                     followerCount={followers.length}
                     onRatingClick={() => {
-                      // Handle rating click - scroll to reviews tab
                       setActiveTab('Reviews');
                     }}
                     onFollowerClick={() => {
-                      // Handle follower click - maybe show followers list or analytics
                       console.log('Show followers list');
                     }}
                   />
@@ -185,8 +180,8 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
-                        width="26"
-                        height="26"
+                        width="24"
+                        height="24"
                         fill="#60A5FA"
                       >
                         <path
@@ -210,35 +205,35 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                     {isOwner ? (
                       <button
                         onClick={() => rentModal.onOpen(listing)}
-                        className="flex items-center justify-center py-3 space-x-2 px-4 shadow-sm rounded-xl transition-all bg-white text-gray-500 hover:bg-neutral-200"
-                        type="button"
-                      >
-                        <span className="text-sm">Edit</span>
+                  className="flex items-center justify-center w-30 py-3 border border-gray-200 space-x-2 px-4 rounded-xl transition-all duration-300 bg-gradient-to-br from-blue-50/20 via-white to-blue-50/20 text-gray-500 hover:from-blue-50/20 hover:via-white hover:to-purple-50/30 hover:border-blue-200/50 hover:shadow-sm"
+  type="button"
+>
+                        <span className="text-sm">Edit Listing</span>
                       </button>
                     ) : (
                       <>
                         <button
                           onClick={handleToggleFollow}
-                          className="flex items-center justify-center border py-3 space-x-2 px-4 rounded-xl transition-all bg-white text-gray-500 hover:bg-neutral-200"
-                          type="button"
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" color="currentColor" fill="none">
-                            <path d="M15 9C15 7.34315 13.6569 6 12 6C10.3431 6 9 7.34315 9 9C9 10.6569 10.3431 12 12 12C13.6569 12 15 10.6569 15 9Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-                            <path d="M22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-                            <path d="M17 17C17 14.2386 14.7614 12 12 12C9.23858 12 7 14.2386 7 17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+                     className="flex items-center justify-center py-3 border border-gray-200 space-x-2 px-4 rounded-xl transition-all duration-300 bg-gradient-to-br from-blue-50/20 via-white to-blue-50/20 text-gray-500 hover:from-blue-50/20 hover:via-white hover:to-purple-50/30 hover:border-blue-200/50 hover:shadow-sm"
+  type="button"
+>
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" color="currentColor" fill="none">
+                            <path d="M15 8C15 5.23858 12.7614 3 10 3C7.23858 3 5 5.23858 5 8C5 10.7614 7.23858 13 10 13C12.7614 13 15 10.7614 15 8Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+                            <path d="M17.5 21L17.5 14M14 17.5H21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+                            <path d="M3 20C3 16.134 6.13401 13 10 13C11.4872 13 12.8662 13.4638 14 14.2547" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
                           </svg>
                           <span className="text-sm">{isFollowing ? 'Following' : 'Follow'}</span>
                         </button>
                         <button 
                           onClick={handleReserveClick}
-                          className="flex items-center justify-center border py-3 space-x-2 px-4 rounded-xl transition-all bg-white text-gray-500 hover:bg-neutral-200"
-                          type="button"
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" color="currentColor" fill="none">
+                        className="flex items-center justify-center py-3 border border-gray-200 space-x-2 px-4 rounded-xl transition-all duration-300 bg-gradient-to-br from-blue-50/20 via-white to-blue-50/20 text-gray-500 hover:from-blue-50/20 hover:via-white hover:to-purple-50/30 hover:border-blue-200/50 hover:shadow-sm"
+  type="button"
+>
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" color="currentColor" fill="none">
                             <path d="M16 2V6M8 2V6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-                            <path d="M13 4H11C7.22876 4 5.34315 4 4.17157 5.17157C3 6.34315 3 8.22876 3 12V14C3 17.7712 3 19.6569 4.17157 20.8284C5.34315 22 7.22876 22 11 22H13C16.7712 22 18.6569 22 19.8284 20.8284C21 19.6569 21 17.7712 21 14V12C21 8.22876 21 6.34315 19.8284 5.17157C18.6569 4 16.7712 4 13 4Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+                            <path d="M21 14V12C21 8.22876 21 6.34315 19.8284 5.17157C18.6569 4 16.7712 4 13 4H11C7.22876 4 5.34315 4 4.17157 5.17157C3 6.34315 3 8.22876 3 12V14C3 17.7712 3 19.6569 4.17157 20.8284C5.34315 22 7.22876 22 11 22H13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
                             <path d="M3 10H21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-                            <path d="M11 14H16M8 14H8.00898M13 18H8M16 18H15.991" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+                            <path d="M17.5 15V22M21 18.5L14 18.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
                           </svg>
                           <span className="text-sm">Reserve</span>
                         </button>
@@ -262,23 +257,37 @@ const ListingHead: React.FC<ListingHeadProps> = ({
         </div>
       </div>
 
-      {/* Navigation Tabs - Market Explorer Style */}
+      {/* Navigation Tabs - MarketExplorer Style */}
       <div className="py-5 border-y border-gray-200">
-        <div className="flex flex-wrap justify-center items-center gap-3">
-          {tabs.map(({ key, label }) => (
-            <button
-              key={key}
-              onClick={() => setActiveTab(key)}
-              className={`w-28 h-10 rounded-xl text-sm font-medium transition-all duration-300 flex items-center justify-center border ${
-                activeTab === key
-                  ? 'bg-blue-50 text-[#60A5FA] border-[#60A5FA]'
-                  : 'bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100'
-              }`}
-              type="button"
-            >
-              <span className="px-2">{label}</span>
-            </button>
-          ))}
+        <div className="flex items-center justify-center">
+          {tabs.map(({ key, label }, index) => {
+            const isSelected = activeTab === key;
+            const isLast = index === tabs.length - 1;
+            
+            return (
+              <div key={key} className="relative flex items-center">
+                {/* Tab Button */}
+                <button
+                  onClick={() => setActiveTab(key)}
+                  className={`
+                    px-6 py-2.5 text-sm transition-colors duration-200 rounded-lg
+                    ${isSelected 
+                      ? 'text-[#60A5FA] hover:text-[#4F94E5]' 
+                      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                    }
+                  `}
+                  type="button"
+                >
+                  {label}
+                </button>
+                
+                {/* Vertical Divider */}
+                {!isLast && (
+                  <div className="h-6 w-px bg-gray-300 mx-3" />
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -296,19 +305,16 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               />
             ))}
 
-            {/* Add Service tile — matches the ServiceCard structure exactly */}
+            {/* Add Service tile */}
             {isOwner && (
               <button
                 onClick={handleAddService}
                 type="button"
                 className="cursor-pointer bg-white rounded-2xl shadow hover:shadow-xl overflow-hidden relative transition-all duration-300 hover:scale-[1.02] max-w-[250px] border-2 border-gray-200 border-dashed hover:border-blue-500"
               >
-                {/* Match ServiceCard height structure */}
                 <div className="relative h-[350px]">
-                  {/* Icon - Centered towards middle-top like ServiceCard */}
                   <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                     <div className="relative">
-                      {/* Dashed circular background with plus icon */}
                       <div className="w-24 h-24 rounded-full flex items-center justify-center text-gray-500 bg-gray-50 border-2 border-gray-300 border-dashed shadow-md ring-4 ring-white/50 transition-all duration-300 group-hover:border-blue-500 group-hover:bg-blue-50 group-hover:text-blue-500">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M12 5v14M5 12h14"/>
@@ -317,9 +323,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                     </div>
                   </div>
 
-                  {/* Bottom info - positioned like ServiceCard */}
                   <div className="absolute bottom-5 left-5 right-5 z-20">
-                    {/* Service Name and Details */}
                     <div className="mb-4">
                       <h3 className="text-lg font-semibold text-gray-500 mb-1 text-center">
                         Add Service
@@ -332,7 +336,6 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                       </div>
                     </div>
 
-                    {/* Action Badge */}
                     <div className="flex items-center justify-center">
                       <div className="bg-gray-100 text-gray-500 px-3 py-1.5 rounded-lg text-xs font-medium border border-dashed group-hover:bg-blue-100 group-hover:text-blue-500 group-hover:border-blue-500 transition-all duration-200">
                         Get Started
@@ -341,7 +344,6 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   </div>
                 </div>
 
-                {/* Match ServiceCard bottom padding */}
                 <div className="pb-2" />
               </button>
             )}
@@ -363,33 +365,28 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               />
             ))}
 
-            {/* Add Worker tile — matches the WorkerCard structure */}
+            {/* Add Worker tile */}
             {isOwner && (
               <button
                 onClick={handleAddWorker}
                 type="button"
                 className="cursor-pointer bg-white rounded-2xl shadow hover:shadow-xl overflow-hidden relative transition-all duration-300 hover:scale-[1.02] max-w-[250px] border-2 border-gray-200 border-dashed hover:border-blue-500"
               >
-                {/* Match WorkerCard height structure */}
                 <div className="relative h-[350px]">
-                  {/* Icon - Centered towards middle-top like WorkerCard */}
                   <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                     <div className="relative">
-                      {/* Dashed circular background with user plus icon */}
                       <div className="w-24 h-24 rounded-full flex items-center justify-center text-gray-500 bg-gray-50 border-2 border-gray-300 border-dashed shadow-md ring-4 ring-white/50 transition-all duration-300 group-hover:border-blue-500 group-hover:bg-blue-50 group-hover:text-blue-500">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
                           <circle cx="9" cy="7" r="4"/>
                           <line x1="19" y1="8" x2="19" y2="14"/>
-                          <line x1="22" y1="11" x2="16" y2="11"/>
+                          <line x1="20" y1="11" x2="16" y2="11"/>
                         </svg>
                       </div>
                     </div>
                   </div>
 
-                  {/* Bottom info - positioned like WorkerCard */}
                   <div className="absolute bottom-5 left-5 right-5 z-20">
-                    {/* Worker Name and Details */}
                     <div className="mb-4">
                       <h3 className="text-lg font-semibold text-gray-500 mb-1 text-center">
                         Add Team Member
@@ -402,7 +399,6 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                       </div>
                     </div>
 
-                    {/* Action Badge */}
                     <div className="flex items-center justify-center">
                       <div className="bg-gray-100 text-gray-500 px-3 py-1.5 rounded-lg text-xs font-medium border border-dashed group-hover:bg-blue-100 group-hover:text-blue-500 group-hover:border-blue-500 transition-all duration-200">
                         Add Member
@@ -411,7 +407,6 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   </div>
                 </div>
 
-                {/* Match WorkerCard bottom padding */}
                 <div className="pb-2" />
               </button>
             )}

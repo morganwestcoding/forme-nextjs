@@ -51,7 +51,6 @@ export default async function getFavoritePosts(): Promise<SafePost[]> {
       likes: post.likes || [],
       bookmarks: post.bookmarks || [],
       hiddenBy: post.hiddenBy || [],
-      // Transform user to SafeUser with ALL required fields matching Prisma schema
       user: {
         id: post.user.id,
         name: post.user.name,
@@ -64,6 +63,11 @@ export default async function getFavoritePosts(): Promise<SafePost[]> {
         emailVerified: post.user.emailVerified?.toISOString() || null,
         bio: post.user.bio || "No Bio Provided Yet..",
         imageSrc: post.user.imageSrc || null,
+        licensingImage: post.user.licensingImage || null,
+        verificationStatus: post.user.verificationStatus || null,
+        verifiedAt: post.user.verifiedAt || null,
+        verificationRejectedAt: post.user.verificationRejectedAt || null,
+        rejectionReason: post.user.rejectionReason || null,
         location: post.user.location || null,
         galleryImages: post.user.galleryImages || [],
         isSubscribed: post.user.isSubscribed || false,
@@ -80,9 +84,8 @@ export default async function getFavoritePosts(): Promise<SafePost[]> {
         followers: post.user.followers || [],
         conversationIds: post.user.conversationIds || [],
         favoriteIds: post.user.favoriteIds || [],
-        managedListings: post.user.managedListings || [], // Add this field from Prisma schema
+        managedListings: post.user.managedListings || [],
       },
-      // Transform comments to SafeComment
       comments: post.comments.map(comment => ({
         id: comment.id,
         content: comment.content,

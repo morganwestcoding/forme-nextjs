@@ -5,7 +5,6 @@ interface IParams {
   listingId?: string;
 }
 
-// Update return type to match what ListingClient expects
 export default async function getListingById(params: IParams): Promise<(SafeListing & { user: SafeUser }) | null> {
   try {
     const { listingId } = params;
@@ -17,7 +16,7 @@ export default async function getListingById(params: IParams): Promise<(SafeList
     const listing = await prisma.listing.findUnique({
       where: { id: listingId },
       include: {
-        user: true, // Include the listing owner
+        user: true,
         services: {
           select: {
             id: true,
@@ -54,7 +53,6 @@ export default async function getListingById(params: IParams): Promise<(SafeList
 
     if (!listing) return null;
 
-    // Create the SafeListing part
     const safeListing: SafeListing = {
       id: listing.id,
       title: listing.title,
@@ -71,7 +69,7 @@ export default async function getListingById(params: IParams): Promise<(SafeList
       galleryImages: listing.galleryImages || [],
       followers: listing.followers || [],
       followerCount: listing.followers?.length || 0,
-      favoriteIds: [], // Populate this based on your logic
+      favoriteIds: [],
       services: listing.services.map(service => ({
         id: service.id,
         serviceName: service.serviceName,
@@ -79,7 +77,7 @@ export default async function getListingById(params: IParams): Promise<(SafeList
         category: service.category,
       })),
       employees: listing.employees
-        .filter(employee => employee.user) // Ensure user exists
+        .filter(employee => employee.user)
         .map(employee => ({
           id: employee.id,
           fullName: employee.fullName,
@@ -104,28 +102,28 @@ export default async function getListingById(params: IParams): Promise<(SafeList
         closeTime: hour.closeTime,
         isClosed: hour.isClosed
       })),
-      // Additional computed fields
       city: listing.location?.split(',')[0]?.trim() || null,
       state: listing.location?.split(',')[1]?.trim() || null,
     };
 
-    // Create the SafeUser part
     const safeUser: SafeUser = {
-      ...listing.user,
-      createdAt: listing.user.createdAt.toISOString(),
-      updatedAt: listing.user.updatedAt.toISOString(),
-      emailVerified: listing.user.emailVerified?.toISOString() || null,
-      favoriteIds: listing.user.favoriteIds || [],
+      id: listing.user.id,
+      name: listing.user.name,
+      email: listing.user.email,
+      image: listing.user.image,
       imageSrc: listing.user.imageSrc || null,
       bio: listing.user.bio || '',
       location: listing.user.location || null,
       galleryImages: listing.user.galleryImages || [],
-      following: listing.user.following || [],
-      followers: listing.user.followers || [],
-      managedListings: listing.user.managedListings || [],
+      licensingImage: listing.user.licensingImage || null,
+      verificationStatus: listing.user.verificationStatus || null,
+      verifiedAt: listing.user.verifiedAt || null,
+      verificationRejectedAt: listing.user.verificationRejectedAt || null,
+      rejectionReason: listing.user.rejectionReason || null,
+      createdAt: listing.user.createdAt.toISOString(),
+      updatedAt: listing.user.updatedAt.toISOString(),
+      emailVerified: listing.user.emailVerified?.toISOString() || null,
       isSubscribed: listing.user.isSubscribed,
-      resetToken: listing.user.resetToken || null,
-      resetTokenExpiry: listing.user.resetTokenExpiry || null,
       subscriptionStartDate: listing.user.subscriptionStartDate || null,
       subscriptionEndDate: listing.user.subscriptionEndDate || null,
       subscriptionTier: listing.user.subscriptionTier || null,
@@ -135,9 +133,15 @@ export default async function getListingById(params: IParams): Promise<(SafeList
       subscriptionStatus: listing.user.subscriptionStatus || null,
       subscriptionBillingInterval: listing.user.subscriptionBillingInterval || null,
       currentPeriodEnd: listing.user.currentPeriodEnd || null,
+      following: listing.user.following || [],
+      followers: listing.user.followers || [],
+      conversationIds: listing.user.conversationIds || [],
+      favoriteIds: listing.user.favoriteIds || [],
+      managedListings: listing.user.managedListings || [],
+      resetToken: listing.user.resetToken || null,
+      resetTokenExpiry: listing.user.resetTokenExpiry || null,
     };
 
-    // Return the intersection type that ListingClient expects
     return {
       ...safeListing,
       user: safeUser

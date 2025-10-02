@@ -28,12 +28,12 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser }) => {
     if (words.length === 0) return null;
 
     const VerificationBadge = () => (
-      <span className="inline-flex items-center align-middle ml-1 translate-y-[1px]">
+      <span className="inline-flex items-center align-middle ml-0.5 translate-y-[1px]">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
-          width="22"
-          height="22"
+          width="28"
+          height="18"
           className="text-white/90 shrink-0"
           aria-label="Verified"
         >

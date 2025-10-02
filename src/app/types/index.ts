@@ -2,6 +2,8 @@ import {Listing , User, Reservation, Post} from '@prisma/client'
 
 export type MediaType = 'image' | 'video' | 'gif';
 
+export type VerificationStatus = 'none' | 'pending' | 'verified' | 'rejected';
+
 export interface MediaData {
   url: string;
   type: MediaType;
@@ -78,27 +80,50 @@ export type SafeUser = Omit<
   createdAt: string;
   updatedAt: string;
   emailVerified: string | null;
-  favoriteIds?: string[]; 
+
+  // Basic profile
+  name: string | null;
+   email: string | null; 
+  image: string | null;
   imageSrc?: string | null;
   bio: string;
   location?: string | null;
   galleryImages?: string[]; 
-  following: string[];
-  followers: string[];
-  conversationIds?: string[]; 
-     managedListings: string[]; 
+  favoriteIds?: string[]; 
+
+  // Licensing/Verification fields
+  licensingImage?: string | null;
+  verificationStatus?: string | null; // "none" | "pending" | "verified" | "rejected"
+  verifiedAt?: Date | null;
+  verificationRejectedAt?: Date | null;
+  rejectionReason?: string | null;
+
+  // Subscription fields
   isSubscribed: boolean;
-  resetToken?: string | null;
-  resetTokenExpiry: Date | null;
   subscriptionStartDate: Date | null;
   subscriptionEndDate: Date | null;
   subscriptionTier?: string | null;
+
+  // Stripe fields
   stripeCustomerId?: string | null;
   stripeSubscriptionId?: string | null;
   subscriptionPriceId?: string | null;
   subscriptionStatus?: string | null;
   subscriptionBillingInterval?: string | null;
   currentPeriodEnd?: Date | null;
+
+  // Social/Network fields
+  following: string[];
+  followers: string[];
+  conversationIds?: string[];
+
+  // Professional/Business fields
+  managedListings: string[]; 
+
+  // Reset password fields
+  resetToken?: string | null;
+  resetTokenExpiry: Date | null;
+
 };
 
 

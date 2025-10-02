@@ -68,6 +68,7 @@ const UserButton: React.FC<UserButtonProps> = ({
     if (currentUser?.id) router.push(`/profile/${currentUser.id}`);
   });
   const handleListings = handleClick(() => router.push("/properties"));
+    const handleLicensing = handleClick(() => router.push("/licensing"));
   const handleAnalytics = handleClick(() => router.push("/analytics"));
 
   const buttonClass = noBg
@@ -125,7 +126,7 @@ const UserButton: React.FC<UserButtonProps> = ({
             <DropdownMenuItem onClick={handleListings}>My Listings</DropdownMenuItem>
             <DropdownMenuItem onClick={handleAnalytics}>My Analytics</DropdownMenuItem>
             <DropdownMenuItem onClick={handleSubscribe}>Subscription</DropdownMenuItem>
-            <DropdownMenuItem >Licensing</DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLicensing}>Licensing</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleSignOut}>Sign Out</DropdownMenuItem>
           </>
