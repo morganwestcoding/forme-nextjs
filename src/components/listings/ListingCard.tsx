@@ -84,8 +84,8 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser }) => {
       onClick={() => router.push(`/listings/${data.id}`)}
       className="
         group cursor-pointer relative overflow-hidden
-        rounded-xl bg-white shadow-lg transition-all duration-300
-        hover:shadow-xl
+        rounded-xl bg-white transition-all duration-300
+        hover:shadow-md
         max-w-[250px]"
     >
       {/* Background image + lighter-at-top, bottom-heavy gradient */}

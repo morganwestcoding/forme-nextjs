@@ -58,10 +58,6 @@ const ListingHead: React.FC<ListingHeadProps> = ({
 
   const mainImage = imageSrc || galleryImages?.[0] || '/placeholder.jpg';
 
-  const truncatedDescription = description && description.length > 300
-    ? description.substring(0, 300) 
-    : description;
-
   const handleReserveClick = () => {
     if (!currentUser) return;
     reservationModal.onOpen(listing, currentUser);
@@ -94,7 +90,6 @@ const ListingHead: React.FC<ListingHeadProps> = ({
     }
   };
 
-  // Filter out empty services (no name or price <= 0)
   const validServices = useMemo(
     () =>
       (Services || []).filter(
@@ -103,7 +98,6 @@ const ListingHead: React.FC<ListingHeadProps> = ({
     [Services]
   );
 
-  /** 🔗 Always trigger the RentModal -> ServiceSelector (new row) */
   const handleAddService = () => {
     if (!isOwner) return;
     const url = new URL(window.location.href);
@@ -112,13 +106,11 @@ const ListingHead: React.FC<ListingHeadProps> = ({
     rentModal.onOpen(listing);
   };
 
-  /** 🔗 Handle adding new worker */
   const handleAddWorker = () => {
     if (!isOwner) return;
     const url = new URL(window.location.href);
     url.searchParams.set('addWorker', '1');
     router.push(`${url.pathname}?${url.searchParams.toString()}`, { scroll: false });
-    console.log('Add worker functionality - customize as needed');
   };
 
   const tabs: Array<{ key: TabKey; label: string }> = [
@@ -133,123 +125,163 @@ const ListingHead: React.FC<ListingHeadProps> = ({
     <div className="w-full space-y-6">
       {/* Header */}
       <div className="w-full relative">
-        <div>
+        <div className="max-w-6xl mx-auto">
           <div 
-            className="rounded-2xl p-6 border border-gray-100/50 backdrop-blur-sm shadow-sm"
+            className="rounded-xl p-6 border border-gray-200"
             style={{ background: 'linear-gradient(145deg, #ffffff 0%, #fafbfc 100%)' }}
           >
-            <div className="flex items-start gap-6 mb-4">
+            <div className="flex items-start gap-6 mb-4 justify-center">
               {/* Left: Image */}
               <div className="relative flex-shrink-0">
-                <div className="w-[140px] h-[140px] rounded-xl overflow-hidden relative shadow-sm">
+                <div className="w-[150px] h-[150px] rounded-lg overflow-hidden relative shadow-sm">
                   <img
                     src={mainImage}
                     alt={title}
                     className="w-full h-full object-cover"
                   />
                 </div>
-                
-                {/* SmartBadgeListing under the image */}
-                <div className="mt-3 flex justify-center">
-                  <SmartBadgeListing
-                    rating={4.8}
-                    followerCount={followers.length}
-                    onRatingClick={() => {
-                      setActiveTab('Reviews');
-                    }}
-                    onFollowerClick={() => {
-                      console.log('Show followers list');
-                    }}
-                  />
-                </div>
               </div>
 
               {/* Right */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <h1
-                      className="text-xl font-bold tracking-tight text-gray-900 leading-tight"
-                      style={{ letterSpacing: '-0.025em' }}
+              <div className="flex-1 min-w-0 max-w-3xl">
+                {/* Title Row */}
+                <div className="flex items-center gap-2 mb-3">
+                  <h1
+                    className="text-2xl font-bold tracking-tight text-gray-900 leading-tight"
+                    style={{ letterSpacing: '-0.025em' }}
+                  >
+                    {title}
+                  </h1>
+
+                  {/* Verified SVG next to the title */}
+                  <div className="drop-shadow-sm text-white inline-flex -mr-1">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      height="24"
+                      fill="#60A5FA"
                     >
-                      {title}
-                    </h1>
-
-                    {/* Verified SVG next to the title */}
-                    <div className="drop-shadow-sm text-white inline-flex -mr-1">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        height="24"
-                        fill="#60A5FA"
-                      >
-                        <path
-                          d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                        />
-                        <path
-                          d="M9 12.8929L10.8 14.5L15 9.5"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </div>
+                      <path
+                        d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                      />
+                      <path
+                        d="M9 12.8929L10.8 14.5L15 9.5"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
                   </div>
+                </div>
 
-                  <div className="flex items-center gap-2">
-                    {/* Styled Action Buttons - matching Create/Filter style */}
-                    {isOwner ? (
-                      <button
-                        onClick={() => rentModal.onOpen(listing)}
-                  className="flex items-center justify-center w-30 py-3 border border-gray-200 space-x-2 px-4 rounded-xl transition-all duration-300 bg-gradient-to-br from-blue-50/20 via-white to-blue-50/20 text-gray-500 hover:from-blue-50/20 hover:via-white hover:to-purple-50/30 hover:border-blue-200/50 hover:shadow-sm"
-  type="button"
->
-                        <span className="text-sm">Edit Listing</span>
-                      </button>
-                    ) : (
+                {/* Location & Rating & Status */}
+                <div className="mb-3">
+                  <span className="inline-flex items-center gap-1 text-sm font-light text-black">
+                    {city}{state ? `, ${state}` : ''} 
+                    <span className="mx-2">|</span>
+                    <button
+                      onClick={() => setActiveTab('Reviews')}
+                      className="hover:underline transition-colors inline-flex items-center gap-1"
+                      type="button"
+                    >
+                      4.8
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="none" className="text-gray-900">
+                        <path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </button>
+                    <span className="mx-2">|</span>
+                    <button
+                      onClick={() => console.log('Show store hours')}
+                      className="hover:underline transition-colors"
+                      type="button"
+                    >
+                      Open
+                    </button>
+                  </span>
+                </div>
+
+                {/* Stats Counters with Button on Right */}
+                <div className="flex items-center justify-between mt-2">
+                  <div className="flex items-center gap-6">
+                    {/* Likes Counter */}
+                    <div className="flex flex-col">
+                      <span className="text-xl font-bold text-gray-900">2.4K</span>
+                      <span className="text-xs text-gray-500 font-medium">Likes</span>
+                    </div>
+
+                    {/* Divider */}
+                    <div className="h-10 w-px bg-gray-200" />
+
+                    {/* Posts Counter */}
+                    <div className="flex flex-col">
+                      <span className="text-xl font-bold text-gray-900">{posts?.length || 0}</span>
+                      <span className="text-xs text-gray-500 font-medium">Posts</span>
+                    </div>
+
+                    {/* Divider */}
+                    <div className="h-10 w-px bg-gray-200" />
+
+                    {/* Followers Counter */}
+                    <div className="flex flex-col">
+                      <span className="text-xl font-bold text-gray-900">{followers.length}</span>
+                      <span className="text-xs text-gray-500 font-medium">Followers</span>
+                    </div>
+
+                    {/* Follow Button - Only for non-owners */}
+                    {!isOwner && (
                       <>
+                        <div className="h-10 w-px bg-gray-200" />
                         <button
                           onClick={handleToggleFollow}
-                     className="flex items-center justify-center py-3 border border-gray-200 space-x-2 px-4 rounded-xl transition-all duration-300 bg-gradient-to-br from-blue-50/20 via-white to-blue-50/20 text-gray-500 hover:from-blue-50/20 hover:via-white hover:to-purple-50/30 hover:border-blue-200/50 hover:shadow-sm"
-  type="button"
->
-                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" color="currentColor" fill="none">
-                            <path d="M15 8C15 5.23858 12.7614 3 10 3C7.23858 3 5 5.23858 5 8C5 10.7614 7.23858 13 10 13C12.7614 13 15 10.7614 15 8Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-                            <path d="M17.5 21L17.5 14M14 17.5H21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-                            <path d="M3 20C3 16.134 6.13401 13 10 13C11.4872 13 12.8662 13.4638 14 14.2547" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-                          </svg>
-                          <span className="text-sm">{isFollowing ? 'Following' : 'Follow'}</span>
-                        </button>
-                        <button 
-                          onClick={handleReserveClick}
-                        className="flex items-center justify-center py-3 border border-gray-200 space-x-2 px-4 rounded-xl transition-all duration-300 bg-gradient-to-br from-blue-50/20 via-white to-blue-50/20 text-gray-500 hover:from-blue-50/20 hover:via-white hover:to-purple-50/30 hover:border-blue-200/50 hover:shadow-sm"
-  type="button"
->
-                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" color="currentColor" fill="none">
-                            <path d="M16 2V6M8 2V6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-                            <path d="M21 14V12C21 8.22876 21 6.34315 19.8284 5.17157C18.6569 4 16.7712 4 13 4H11C7.22876 4 5.34315 4 4.17157 5.17157C3 6.34315 3 8.22876 3 12V14C3 17.7712 3 19.6569 4.17157 20.8284C5.34315 22 7.22876 22 11 22H13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-                            <path d="M3 10H21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-                            <path d="M17.5 15V22M21 18.5L14 18.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-                          </svg>
-                          <span className="text-sm">Reserve</span>
+                          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+                            isFollowing
+                              ? 'bg-blue-50 text-blue-600 hover:bg-blue-100'
+                              : 'bg-gray-900 text-white hover:bg-gray-800'
+                          }`}
+                          type="button"
+                        >
+                          {isFollowing ? 'Following' : 'Follow'}
                         </button>
                       </>
                     )}
                   </div>
-                </div>
 
-                <div className="mb-3">
-                  <span className="inline-flex items-center -mt text-sm font-light text-black">
-                    {city}{state ? `, ${state}` : ''}
-                  </span>
-                </div>
-                
-                <div className="text-gray-700 text-sm leading-relaxed">
-                  {truncatedDescription}
+                  {/* Reserve/Edit Button - Bottom Right */}
+                  <div className="flex items-center gap-2">
+                    {isOwner ? (
+                      <button
+                        onClick={() => rentModal.onOpen(listing)}
+                        className="flex items-center justify-center py-2.5 border border-gray-200 space-x-2 px-4 rounded-xl transition-all duration-300 bg-gradient-to-br from-blue-50/20 via-white to-blue-50/20 text-gray-500 hover:from-blue-50/20 hover:via-white hover:to-purple-50/30 hover:border-blue-200/50 hover:shadow-sm"
+                        type="button"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5">
+                          <path d="M13.5 2H8.5C7.67157 2 7 2.67157 7 3.5C7 4.32843 7.67157 5 8.5 5H13.5C14.3284 5 15 4.32843 15 3.5C15 2.67157 14.3284 2 13.5 2Z" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M7 15H10.4286M7 11H15" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M19 11.9995L19 9.48263C19 6.65424 19 5.24004 18.1213 4.36137C17.48 3.72007 16.5535 3.54681 15 3.5M11 21.9995L9 21.9995C6.17158 21.9995 4.75737 21.9995 3.87869 21.1208C3.00001 20.2421 3.00001 18.8279 3 15.9995L3.00001 9.48269C3.00001 6.65425 3 5.24004 3.87868 4.36136C4.51997 3.72007 5.44651 3.54681 6.9999 3.5" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M15.7367 21.6527L14 22L14.3473 20.2633C14.4179 19.9106 14.5913 19.5866 14.8456 19.3323L18.9111 15.2668C19.2668 14.9111 19.8437 14.9111 20.1995 15.2668L20.7332 15.8005C21.0889 16.1563 21.0889 16.7332 20.7332 17.0889L16.6677 21.1544C16.4134 21.4087 16.0894 21.5821 15.7367 21.6527Z" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                        <span className="text-sm">Edit Listing</span>
+                      </button>
+                    ) : (
+                      <button 
+                        onClick={handleReserveClick}
+                        className="flex items-center justify-center py-2.5 border border-gray-200 space-x-2 px-4 rounded-xl transition-all duration-300 bg-gradient-to-br from-blue-50/20 via-white to-blue-50/20 text-gray-500 hover:from-blue-50/20 hover:via-white hover:to-purple-50/30 hover:border-blue-200/50 hover:shadow-sm"
+                        type="button"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" color="currentColor" fill="none">
+                          <path d="M16 2V6M8 2V6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+                          <path d="M21 14V12C21 8.22876 21 6.34315 19.8284 5.17157C18.6569 4 16.7712 4 13 4H11C7.22876 4 5.34315 4 4.17157 5.17157C3 6.34315 3 8.22876 3 12V14C3 17.7712 3 19.6569 4.17157 20.8284C5.34315 22 7.22876 22 11 22H13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+                          <path d="M3 10H21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+                          <path d="M17.5 15V22M21 18.5L14 18.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+                        </svg>
+                        <span className="text-sm">Reserve</span>
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -266,7 +298,6 @@ const ListingHead: React.FC<ListingHeadProps> = ({
             
             return (
               <div key={key} className="relative flex items-center">
-                {/* Tab Button */}
                 <button
                   onClick={() => setActiveTab(key)}
                   className={`
@@ -281,7 +312,6 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   {label}
                 </button>
                 
-                {/* Vertical Divider */}
                 {!isLast && (
                   <div className="h-6 w-px bg-gray-300 mx-3" />
                 )}
@@ -305,17 +335,16 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               />
             ))}
 
-            {/* Add Service tile */}
             {isOwner && (
               <button
                 onClick={handleAddService}
                 type="button"
-                className="cursor-pointer bg-white rounded-2xl shadow hover:shadow-xl overflow-hidden relative transition-all duration-300 hover:scale-[1.02] max-w-[250px] border-2 border-gray-200 border-dashed hover:border-blue-500"
+                className="cursor-pointer bg-white rounded-xl hover:shadow-md overflow-hidden relative transition-all duration-300 hover:scale-[1.02] max-w-[250px] border-2 border-gray-200 border-dashed hover:border-blue-500"
               >
                 <div className="relative h-[350px]">
                   <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                     <div className="relative">
-                      <div className="w-24 h-24 rounded-full flex items-center justify-center text-gray-500 bg-gray-50 border-2 border-gray-300 border-dashed shadow-md ring-4 ring-white/50 transition-all duration-300 group-hover:border-blue-500 group-hover:bg-blue-50 group-hover:text-blue-500">
+                      <div className="w-24 h-24 rounded-full flex items-center justify-center text-gray-500 bg-gray-50 border-2 border-gray-300 border-dashed shadow-sm ring-4 ring-white/50 transition-all duration-300 group-hover:border-blue-500 group-hover:bg-blue-50 group-hover:text-blue-500">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M12 5v14M5 12h14"/>
                         </svg>
@@ -365,22 +394,21 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               />
             ))}
 
-            {/* Add Worker tile */}
             {isOwner && (
               <button
                 onClick={handleAddWorker}
                 type="button"
-                className="cursor-pointer bg-white rounded-2xl shadow hover:shadow-xl overflow-hidden relative transition-all duration-300 hover:scale-[1.02] max-w-[250px] border-2 border-gray-200 border-dashed hover:border-blue-500"
+                className="cursor-pointer bg-white rounded-xl hover:shadow-md overflow-hidden relative transition-all duration-300 hover:scale-[1.02] max-w-[250px] border-2 border-gray-200 border-dashed hover:border-blue-500"
               >
                 <div className="relative h-[350px]">
                   <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                     <div className="relative">
-                      <div className="w-24 h-24 rounded-full flex items-center justify-center text-gray-500 bg-gray-50 border-2 border-gray-300 border-dashed shadow-md ring-4 ring-white/50 transition-all duration-300 group-hover:border-blue-500 group-hover:bg-blue-50 group-hover:text-blue-500">
+                      <div className="w-24 h-24 rounded-full flex items-center justify-center text-gray-500 bg-gray-50 border-2 border-gray-300 border-dashed shadow-sm ring-4 ring-white/50 transition-all duration-300 group-hover:border-blue-500 group-hover:bg-blue-50 group-hover:text-blue-500">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
                           <circle cx="9" cy="7" r="4"/>
                           <line x1="19" y1="8" x2="19" y2="14"/>
-                          <line x1="20" y1="11" x2="16" y2="11"/>
+                          <line x1="22" y1="11" x2="16" y2="11"/>
                         </svg>
                       </div>
                     </div>
