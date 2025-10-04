@@ -124,6 +124,8 @@ export type SafeUser = Omit<
   resetToken?: string | null;
   resetTokenExpiry: Date | null;
 
+  
+
 };
 
 

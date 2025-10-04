@@ -3,14 +3,8 @@ import { useState } from "react";
 import { Shield, Award, FileCheck, Clock, CheckCircle, X, ArrowRight, AlertCircle, GraduationCap, ChevronDown, ExternalLink, BookOpen, Star } from "lucide-react";
 import { SafeUser } from "@/app/types";
 
-// Extend SafeUser to include licensing-specific fields
-interface LicensingUser extends Partial<SafeUser> {
-  licensingImage?: string;
-  verificationStatus?: 'none' | 'pending' | 'verified' | 'rejected';
-}
-
 interface LicensingClientProps {
-  currentUser: LicensingUser | null;
+  currentUser: SafeUser | null;
 }
 
 // Mock data for partner academies
