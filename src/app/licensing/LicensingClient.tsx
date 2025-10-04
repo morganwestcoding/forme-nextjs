@@ -183,7 +183,7 @@ const LicensingClient = ({ currentUser }) => {
                     Your documents are being reviewed
                   </h3>
                   <p className="text-sm text-yellow-800">
-                    Our verification team is reviewing your credentials. You'll receive an email 
+                    Our verification team is reviewing your credentials. You&apos;ll receive an email 
                     notification within 24-48 hours.
                   </p>
                 </div>
@@ -195,7 +195,7 @@ const LicensingClient = ({ currentUser }) => {
                 <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
                 <div>
                   <h3 className="font-semibold text-green-900 mb-1">
-                    You're verified!
+                    You&apos;re verified!
                   </h3>
                   <p className="text-sm text-green-800">
                     Your credentials have been verified. The verified badge now appears on your profile.
@@ -362,7 +362,7 @@ const LicensingClient = ({ currentUser }) => {
                 <div className="flex-1">
                   <h2 className="text-2xl font-bold mb-2">Get Verified Through Our Trusted Partners</h2>
                   <p className="text-white/90 mb-4">
-                    Don't have a license? No problem! Partner with accredited institutions to get certified and verified on our platform.
+                    Don&apos;t have a license? No problem! Partner with accredited institutions to get certified and verified on our platform.
                   </p>
                   <div className="flex flex-wrap gap-3 text-sm">
                     <div className="flex items-center gap-2 bg-white/20 px-3 py-1.5 rounded-full">
@@ -495,7 +495,7 @@ const LicensingClient = ({ currentUser }) => {
                         <div>
                           <p className="font-semibold mb-1 text-sm">Automatic Verification</p>
                           <p className="text-sm text-blue-100">
-                            Upon completion, you'll be automatically verified on our platform with no additional paperwork needed!
+                            Upon completion, you&apos;ll be automatically verified on our platform with no additional paperwork needed!
                           </p>
                         </div>
                       </div>
