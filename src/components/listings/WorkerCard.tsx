@@ -121,8 +121,8 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
-          width="24"
-          height="24"
+          width="22"
+          height="22"
           fill="#EFF6FF" 
           className="shrink-0 text-[#60A5FA] drop-shadow-sm"
           aria-label="Verified"

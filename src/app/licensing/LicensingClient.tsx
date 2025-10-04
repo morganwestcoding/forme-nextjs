@@ -1,6 +1,17 @@
 "use client";
 import { useState } from "react";
 import { Shield, Award, FileCheck, Clock, CheckCircle, X, ArrowRight, AlertCircle, GraduationCap, ChevronDown, ExternalLink, BookOpen, Star } from "lucide-react";
+import { SafeUser } from "@/app/types";
+
+// Extend SafeUser to include licensing-specific fields
+interface LicensingUser extends Partial<SafeUser> {
+  licensingImage?: string;
+  verificationStatus?: 'none' | 'pending' | 'verified' | 'rejected';
+}
+
+interface LicensingClientProps {
+  currentUser: LicensingUser | null;
+}
 
 // Mock data for partner academies
 const partnerAcademies = [
@@ -46,7 +57,7 @@ const partnerAcademies = [
   }
 ];
 
-const LicensingClient = ({ currentUser }) => {
+const LicensingClient = ({ currentUser }: LicensingClientProps) => {
   const [activeTab, setActiveTab] = useState('upload');
   const [licensingImage, setLicensingImage] = useState(currentUser?.licensingImage || '');
   const [isLoading, setIsLoading] = useState(false);
@@ -442,6 +453,10 @@ const LicensingClient = ({ currentUser }) => {
               {/* Selected Academy Details */}
               {selectedAcademy && (() => {
                 const academy = partnerAcademies.find(a => a.id === selectedAcademy);
+                
+                // Add null check for academy
+                if (!academy) return null;
+                
                 return (
                   <div className="bg-blue-50 rounded-lg p-6 border border-blue-200">
                     <div className="flex items-start justify-between mb-4">
