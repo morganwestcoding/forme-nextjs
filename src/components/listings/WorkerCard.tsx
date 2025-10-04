@@ -117,14 +117,14 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
     if (words.length === 0) return null;
 
     const VerificationBadge = () => (
-      <span className="inline-flex items-center align-middle ml-0.5 translate-y-[1px]">
+      <span className="inline-flex items-center align-middle ml-1.5 translate-y-[1px]">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
-          width="20"
-          height="20"
-          fill="#60A5FA"
-          className="shrink-0 text-white drop-shadow-sm"
+          width="24"
+          height="24"
+          fill="#EFF6FF" 
+          className="shrink-0 text-[#60A5FA] drop-shadow-sm"
           aria-label="Verified"
         >
           <path
@@ -134,7 +134,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
           />
           <path
             d="M9 12.8929L10.8 14.5L15 9.5"
-            stroke="white"
+            stroke="currentColor"
             strokeWidth="1.5"
             strokeLinecap="round"
             strokeLinejoin="round"
