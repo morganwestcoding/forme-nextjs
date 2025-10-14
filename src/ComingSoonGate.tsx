@@ -116,7 +116,7 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
           <img 
             src="/logos/logo-white.png" 
             alt="ForMe Logo" 
-            className="h-11 w-auto"
+            className="h-10 w-auto"
           />
         </div>
 

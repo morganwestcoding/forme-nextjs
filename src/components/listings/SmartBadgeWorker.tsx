@@ -23,6 +23,7 @@ interface SmartBadgeWorkerProps {
   onRatingClick?: () => void;
   onTimeClick?: () => void;
   storeHours?: SafeStoreHours[];
+  isVerified?: boolean; // Add this to determine when to show blue shadow
 }
 
 const SmartBadgeWorker: React.FC<SmartBadgeWorkerProps> = ({
@@ -40,7 +41,8 @@ const SmartBadgeWorker: React.FC<SmartBadgeWorkerProps> = ({
     { dayOfWeek: 'Friday', openTime: '09:00', closeTime: '22:00', isClosed: false },
     { dayOfWeek: 'Saturday', openTime: '08:00', closeTime: '22:00', isClosed: false },
     { dayOfWeek: 'Sunday', openTime: '10:00', closeTime: '20:00', isClosed: false }
-  ]
+  ],
+  isVerified = true // Default to true for demo - you'd pass this from your data
 }) => {
   const [, setTick] = useState(0);
   useEffect(() => {
@@ -50,7 +52,7 @@ const SmartBadgeWorker: React.FC<SmartBadgeWorkerProps> = ({
 
   const isTrending = (employee as any)?.isTrending ?? false;
 
-  /** ----- Time status logic (copied from SmartBadgeRating) ----- */
+  /** ----- Time status logic (unchanged) ----- */
   const getTimeStatus = () => {
     const now = new Date();
     const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -99,119 +101,55 @@ const SmartBadgeWorker: React.FC<SmartBadgeWorkerProps> = ({
 
   const timeStatus = getTimeStatus();
 
-  /** ----- Visual props (white background optimized) ----- */
-  const getRatingTheme = () => {
-    if (isTrending) {
-      return {
-        bg: 'bg-violet-100/60',
-        border: 'border-violet-200/40',
-        text: 'text-violet-700',
-        dot: 'bg-violet-500',
-        hover: 'hover:bg-violet-100/80',
-      };
+  // Get status text color (optimized for white background)
+  const getStatusColor = (color: string) => {
+    switch (color) {
+      case 'green': return 'text-green-600';
+      case 'orange': return 'text-orange-600'; 
+      case 'red': return 'text-red-600';
+      default: return 'text-gray-600';
     }
-    if (rating >= 4.5) {
-      return {
-        bg: 'bg-amber-100/60',
-        border: 'border-amber-200/40',
-        text: 'text-amber-700',
-        dot: 'bg-amber-500',
-        hover: 'hover:bg-amber-100/80',
-      };
-    }
-    return {
-      bg: 'bg-blue-100/60',
-      border: 'border-blue-200/40',
-      text: 'text-blue-700',
-      dot: 'bg-blue-500',
-      hover: 'hover:bg-blue-100/80',
-    };
   };
 
-  const ratingTheme = getRatingTheme();
-
-  const getTimeTheme = () => {
-    if (timeStatus.color === 'green') {
-      return {
-        bg: 'bg-emerald-100/60',
-        border: 'border-emerald-200/40',
-        text: 'text-emerald-700',
-        dot: 'bg-emerald-500',
-        hover: 'hover:bg-emerald-100/80',
-      };
-    }
-    if (timeStatus.color === 'orange') {
-      return {
-        bg: 'bg-orange-100/60',
-        border: 'border-orange-200/40',
-        text: 'text-orange-700',
-        dot: 'bg-orange-500',
-        hover: 'hover:bg-orange-100/80',
-      };
-    }
-    return {
-      bg: 'bg-rose-100/60',
-      border: 'border-rose-200/40',
-      text: 'text-rose-700',
-      dot: 'bg-rose-500',
-      hover: 'hover:bg-rose-100/80',
-    };
+  // Handle clicks
+  const handleRatingClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onRatingClick?.();
   };
 
-  const timeTheme = getTimeTheme();
-
-  const pillBase =
-    'backdrop-blur-sm rounded-md py-1.5 text-xs font-medium px-3.5 text-center ' +
-    'transition-all duration-200 cursor-pointer hover:scale-105';
+  const handleTimeClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onTimeClick?.();
+  };
 
   return (
-    <div className="flex items-center gap-2">
-      {/* Rating pill with sparkle icon */}
-      <button
-        type="button"
-        aria-label="Rating"
-        onClick={(e) => { e.stopPropagation(); onRatingClick?.(); }}
-        className="group p-0"
+    <div className="border border-gray-200 rounded-lg px-3 py-2 bg-gray-50/30">
+      <div 
+        className="flex items-center text-gray-700 text-xs"
+        style={{ 
+          // Verified businesses get subtle blue text shadow (works well on white too)
+          textShadow: isVerified ? `0 0 6px rgba(96, 165, 250, 0.2)` : 'none'
+        }}
       >
-        <div
-          className={[
-            pillBase,
-            'w-16',
-            ratingTheme.bg,
-            `border ${ratingTheme.border}`,
-            ratingTheme.text,
-            ratingTheme.hover,
-          ].join(' ')}
-          title={`Rating ${Number(rating).toFixed(1)}`}
+        <button 
+          onClick={handleRatingClick}
+          className="hover:text-gray-900 transition-colors duration-200 flex items-center gap-1" 
+          type="button"
         >
-          <div className="flex items-center justify-center gap-1">
-
-            <span className="tabular-nums font-semibold">{Number(rating).toFixed(1)}</span>
-          </div>
-        </div>
-      </button>
-
-      {/* Time status pill - larger width */}
-      <button
-        type="button"
-        aria-label="Time status"
-        onClick={(e) => { e.stopPropagation(); onTimeClick?.(); }}
-        className="group p-0"
-      >
-        <div
-          className={[
-            pillBase,
-            'w-20',
-            timeTheme.bg,
-            `border ${timeTheme.border}`,
-            timeTheme.text,
-            timeTheme.hover,
-          ].join(' ')}
-          title={`Status: ${timeStatus.message}`}
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="12" height="12" color="currentColor" fill="none">
+            <path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          {Number(rating).toFixed(1)}
+        </button>
+        <span className="mx-2 text-gray-400">•</span>
+        <button 
+          onClick={handleTimeClick}
+          className={`${getStatusColor(timeStatus.color)} hover:opacity-80 transition-all duration-200`}
+          type="button"
         >
-          <span className="tabular-nums font-semibold">{timeStatus.message}</span>
-        </div>
-      </button>
+          {timeStatus.message}
+        </button>
+      </div>
     </div>
   );
 };

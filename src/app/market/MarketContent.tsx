@@ -44,7 +44,6 @@ interface ViewState {
 }
 
 const MIN_LOADER_MS = 1200;
-const ITEMS_PER_PAGE = 4;
 const FADE_OUT_DURATION = 200;
 const FADE_IN_DELAY = 250;
 
@@ -55,6 +54,12 @@ const MarketContent: React.FC<MarketContentProps> = ({
   trendingEmployees = [],
 }) => {
   const router = useRouter();
+
+  // 🆕 NEW: Track sidebar state
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  
+  // 🆕 NEW: Dynamic items per page based on sidebar state
+  const ITEMS_PER_PAGE = isSidebarCollapsed ? 5 : 4;
 
   // View state (for MarketExplorer controls)
   const [viewState, setViewState] = useState<ViewState>({
@@ -82,6 +87,30 @@ const MarketContent: React.FC<MarketContentProps> = ({
     const t = setTimeout(() => setIsLoading(false), MIN_LOADER_MS);
     return () => clearTimeout(t);
   }, [listings]);
+
+  // 🆕 NEW: Listen for sidebar state changes and reset pagination
+  useEffect(() => {
+    const checkSidebarState = () => {
+      const collapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+      setIsSidebarCollapsed(collapsed);
+    };
+
+    checkSidebarState();
+    window.addEventListener('sidebarToggle', checkSidebarState);
+    
+    return () => {
+      window.removeEventListener('sidebarToggle', checkSidebarState);
+    };
+  }, []);
+
+  // Reset pagination indices when sidebar state changes
+  useEffect(() => {
+    setFeaturedIndex(0);
+    setTrendingIndex(0);
+  }, [isSidebarCollapsed]);
+
+  // 🆕 NEW: Dynamic grid columns based on sidebar state
+  const gridColsClass = isSidebarCollapsed ? 'grid-cols-5' : 'grid-cols-4';
 
   // Filtering logic to determine when to show section headers
   const filterInfo = useMemo(() => {
@@ -168,48 +197,24 @@ const MarketContent: React.FC<MarketContentProps> = ({
 
   // Get current items for display
   const currentFeaturedListings = useMemo(() => {
-    if (listings.length <= ITEMS_PER_PAGE) {
-      // If we have 4 or fewer listings, just return them all
+    const itemsPerPage = ITEMS_PER_PAGE;
+    if (listings.length <= itemsPerPage) {
       return listings;
     }
-    const start = featuredIndex * ITEMS_PER_PAGE;
-    const end = start + ITEMS_PER_PAGE;
-    const result = listings.slice(start, end);
-    
-    // Debug logging
-    console.log('Featured listings debug:', {
-      totalListings: listings.length,
-      featuredIndex,
-      start,
-      end,
-      resultLength: result.length,
-      resultTitles: result.map(l => l.title)
-    });
-    
-    return result;
-  }, [listings, featuredIndex]);
+    const start = featuredIndex * itemsPerPage;
+    const end = start + itemsPerPage;
+    return listings.slice(start, end);
+  }, [listings, featuredIndex, ITEMS_PER_PAGE]);
 
   const currentTrendingItems = useMemo(() => {
-    if (finalTrending.length <= ITEMS_PER_PAGE) {
-      // If we have 4 or fewer trending items, just return them all
+    const itemsPerPage = ITEMS_PER_PAGE;
+    if (finalTrending.length <= itemsPerPage) {
       return finalTrending;
     }
-    const start = trendingIndex * ITEMS_PER_PAGE;
-    const end = start + ITEMS_PER_PAGE;
-    const result = finalTrending.slice(start, end);
-    
-    // Debug logging
-    console.log('Trending items debug:', {
-      totalTrending: finalTrending.length,
-      trendingIndex,
-      start,
-      end,
-      resultLength: result.length,
-      resultNames: result.map(item => item.employee.fullName)
-    });
-    
-    return result;
-  }, [finalTrending, trendingIndex]);
+    const start = trendingIndex * itemsPerPage;
+    const end = start + itemsPerPage;
+    return finalTrending.slice(start, end);
+  }, [finalTrending, trendingIndex, ITEMS_PER_PAGE]);
 
   // Calculate total pages (minimum 1 page)
   const totalFeaturedPages = Math.max(1, Math.ceil(listings.length / ITEMS_PER_PAGE));
@@ -225,13 +230,10 @@ const MarketContent: React.FC<MarketContentProps> = ({
   ) => {
     // Don't animate if we don't have multiple pages
     if (totalPages <= 1) {
-      console.log('Not enough pages to navigate:', totalPages);
       return;
     }
     
     if (isAnimating) return;
-    
-    console.log('Starting animation:', { currentIndex, totalPages, direction });
     
     setIsAnimating(true);
     
@@ -247,7 +249,6 @@ const MarketContent: React.FC<MarketContentProps> = ({
         newIndex = currentIndex === 0 ? totalPages - 1 : currentIndex - 1;
       }
       
-      console.log('Setting new index:', newIndex);
       setIndex(newIndex);
       
       // Fade in new items after a brief delay
@@ -282,19 +283,16 @@ const MarketContent: React.FC<MarketContentProps> = ({
   // Handle view all clicks
   const handleViewAllStorefronts = () => {
     setViewAllMode('storefronts');
-    // Smooth scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
   
   const handleViewAllWorkers = () => {
     setViewAllMode('workers');
-    // Smooth scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
   
   const handleBackToMain = () => {
     setViewAllMode(null);
-    // Smooth scroll to top when going back
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -349,7 +347,7 @@ const MarketContent: React.FC<MarketContentProps> = ({
                       viewAllLabel="← Back to Market"
                     />
                     
-                    <div className="grid grid-cols-4 gap-4">
+                    <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
                       {listings.map((listing, idx) => (
                         <div
                           key={listing.id}
@@ -377,7 +375,7 @@ const MarketContent: React.FC<MarketContentProps> = ({
                       viewAllLabel="← Back to Market"
                     />
                     
-                    <div className="grid grid-cols-4 gap-4">
+                    <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
                       {finalTrending.map(({ employee, listing }, idx) => {
                         const li: any = listing as any;
                         const imageSrc =
@@ -430,14 +428,13 @@ const MarketContent: React.FC<MarketContentProps> = ({
                     {filterInfo.isFiltered && filterInfo.resultsHeaderText && (
                       <SectionHeader
                         title={filterInfo.resultsHeaderText}
-                        // No navigation controls for results section
                       />
                     )}
 
-                    {/* Listings Row (4 visible, no overflow scroll) */}
+                    {/* Listings Row - Dynamic columns based on sidebar */}
                     {!viewAllMode && (
                       <div id="featured-rail">
-                        <div className="grid grid-cols-4 gap-4">
+                        <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
                           {currentFeaturedListings.map((listing, idx) => (
                             <div
                               key={`${listing.id}-${featuredIndex}`}
@@ -463,18 +460,18 @@ const MarketContent: React.FC<MarketContentProps> = ({
                       </div>
                     )}
 
-                    {/* ===== Trending Teammates Section ===== */}
+     
                     {finalTrending.length > 0 && !filterInfo.isFiltered && (
                       <>
                         <SectionHeader
-                          title="Trending Teammates"
+                          title="Trending Professionals"
                           onPrev={() => scrollTrendingRail('left')}
                           onNext={() => scrollTrendingRail('right')}
                           onViewAll={handleViewAllWorkers}
                         />
 
                         <div id="trending-rail">
-                          <div className="grid grid-cols-4 gap-4">
+                          <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
                             {currentTrendingItems.map(({ employee, listing }, idx) => {
                               const li: any = listing as any;
                               const imageSrc =

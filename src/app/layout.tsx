@@ -7,7 +7,6 @@ import RegisterModal from '@/components/modals/RegisterModal';
 import ToasterProvider from './providers/ToasterProvider';
 import LoginModal from '@/components/modals/LoginModal';
 import getCurrentUser from './actions/getCurrentUser';
-import Sidebar from '@/components/sidebar/Sidebar';
 import RentModal from '@/components/modals/ListingModal';
 import ProfileModal from '@/components/modals/ProfileModal';
 import ProfileGalleryModal from '@/components/modals/profileGalleryModal';
@@ -30,6 +29,8 @@ import CreatePostModal from '@/components/modals/CreatePostModal';
 import ReservationModal from '@/components/modals/ReservationModal';
 import AuthModalController from '@/components/AuthModalController';
 import ComingSoonGate from '@/ComingSoonGate';
+import LayoutContent from '@/LayoutContent';
+import Sidebar from '@/components/sidebar/Sidebar';
 
 export const metadata: Metadata = {
   title: 'ForMe App',
@@ -62,18 +63,15 @@ export default async function RootLayout({
           <ColorProvider>
             <html lang="en">
               <body className={inter.className}>
-                {/* WRAP EVERYTHING IN ComingSoonGate */}
                 <ComingSoonGate>
                   <div className="min-h-screen flex">
-                    <div className="hidden md:block fixed top-0 left-0 bottom-0 bg-white z-50">
+                    <div className="hidden md:block">
                       <Sidebar currentUser={currentUser ?? null} />
                     </div>
 
-                    <div className="flex-1 md:pl-52">
-                      <main className="md:pt-0 pb-16 md:pb-0">
-                        {children}
-                      </main>
-                    </div>
+                    <LayoutContent>
+                      {children}
+                    </LayoutContent>
                   </div>
 
                   <ShopModal/>
