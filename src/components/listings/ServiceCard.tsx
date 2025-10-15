@@ -5,6 +5,7 @@ import React, { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { SafeListing, SafeUser } from '@/app/types';
 import HeartButton from '../HeartButton';
+import SmartBadgePrice from './SmartBadgePrice'; // Import the SmartBadgePrice component
 
 interface ServiceItem {
   id: string;
@@ -280,16 +281,21 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
             </div>
           </div>
 
-          {/* Service Badge - similar to SmartBadge */}
+          {/* SmartBadgePrice component */}
           <div className="flex items-center">
-            <div className="flex items-center gap-2">
-              <div className="bg-blue-100 text-blue-700 px-3 py-1.5 rounded-lg text-xs font-medium">
-                {priceLabel}
-              </div>
-              <div className="bg-green-100 text-green-700 px-3 py-1.5 rounded-lg text-xs font-medium">
-                Book Now
-              </div>
-            </div>
+            <SmartBadgePrice
+              price={priceNum}
+              showPrice={true}
+              onPriceClick={() => {
+                // Handle price click (e.g., show pricing details)
+                console.log('Price clicked for service:', service.serviceName);
+              }}
+              onBookNowClick={() => {
+                // Handle book now click (e.g., open booking modal)
+                console.log('Book now clicked for service:', service.serviceName);
+              }}
+              isVerified={true} // You can control this based on your business logic
+            />
           </div>
         </div>
       </div>

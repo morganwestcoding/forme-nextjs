@@ -10,6 +10,7 @@ import SmartBadgeListing from './SmartBadgeListing';
 import { SafePost, SafeUser, SafeListing } from '@/app/types';
 import useReservationModal from '@/app/hooks/useReservationModal';
 import useRentModal from '@/app/hooks/useListingModal';
+import OpenStatus from './OpenStatus';
 
 interface ServiceItem {
   id: string;
@@ -122,9 +123,9 @@ const ListingHead: React.FC<ListingHeadProps> = ({
 
   return (
     <div className="w-full space-y-6">
-      {/* Header */}
-      <div className="w-full relative flex justify-center">
-        <div className="flex gap-6 items-center justify-center mx-auto">
+      {/* Header - Full Width */}
+      <div className="w-full relative">
+        <div className="flex gap-6 items-center">
           {/* Left: Image with Gallery Icon */}
           <div className="flex-shrink-0">
             <div className="w-[192px] h-[192px] rounded-xl overflow-hidden relative hover:shadow-md transition-shadow group">
@@ -135,53 +136,49 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               />
 
               {/* Gallery icon overlay - bottom right */}
-              <button
-                onClick={() => setActiveTab('Images')}
-                className="absolute bottom-3 right-3 hover:scale-105 transition-transform cursor-pointer"
-                type="button"
-                aria-label="View gallery"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  width="28"
-                  height="28"
-                  className="drop-shadow-lg"
-                >
-                  <path
-                    d="M8.64298 3.14559L6.93816 3.93362C4.31272 5.14719 3 5.75397 3 6.75C3 7.74603 4.31272 8.35281 6.93817 9.56638L8.64298 10.3544C10.2952 11.1181 11.1214 11.5 12 11.5C12.8786 11.5 13.7048 11.1181 15.357 10.3544L17.0618 9.56638C19.6873 8.35281 21 7.74603 21 6.75C21 5.75397 19.6873 5.14719 17.0618 3.93362L15.357 3.14559C13.7048 2.38186 12.8786 2 12 2C11.1214 2 10.2952 2.38186 8.64298 3.14559Z"
-                    stroke="rgba(255,255,255,0.6)"
-                    strokeWidth="1.2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    fill="rgba(255,255,255,0.25)"
-                  />
-                  <path
-                    d="M20.788 11.0972C20.9293 11.2959 21 11.5031 21 11.7309C21 12.7127 19.6873 13.3109 17.0618 14.5072L15.357 15.284C13.7048 16.0368 12.8786 16.4133 12 16.4133C11.1214 16.4133 10.2952 16.0368 8.64298 15.284L6.93817 14.5072C4.31272 13.3109 3 12.7127 3 11.7309C3 11.5031 3.07067 11.2959 3.212 11.0972"
-                    stroke="rgba(255,255,255,0.6)"
-                    strokeWidth="1.2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    fill="none"
-                  />
-                  <path
-                    d="M20.3767 16.2661C20.7922 16.5971 21 16.927 21 17.3176C21 18.2995 19.6873 18.8976 17.0618 20.0939L15.357 20.8707C13.7048 21.6236 12.8786 22 12 22C11.1214 22 10.2952 21.6236 8.64298 20.8707L6.93817 20.0939C4.31272 18.8976 3 18.2995 3 17.3176C3 16.927 3.20778 16.5971 3.62334 16.2661"
-                    stroke="rgba(255,255,255,0.6)"
-                    strokeWidth="1.2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    fill="none"
-                  />
-                </svg>
-              </button>
+{/* Gallery icon overlay - bottom right */}
+<button
+  onClick={() => setActiveTab('Images')}
+  className="absolute bottom-3 right-3 hover:scale-105 transition-transform cursor-pointer"
+  type="button"
+  aria-label="View gallery"
+>
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    viewBox="0 0 24 24" 
+    width="28" 
+    height="28" 
+    className="drop-shadow-lg"
+    fill="none"
+  >
+    <path 
+      d="M3 16L7.46967 11.5303C7.80923 11.1908 8.26978 11 8.75 11C9.23022 11 9.69077 11.1908 10.0303 11.5303L14 15.5M15.5 17L14 15.5M21 16L18.5303 13.5303C18.1908 13.1908 17.7302 13 17.25 13C16.7698 13 16.3092 13.1908 15.9697 13.5303L14 15.5" 
+      stroke="rgba(255,255,255,0.6)" 
+      strokeWidth="1.5" 
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+    />
+    <path 
+      d="M15.5 8C15.7761 8 16 7.77614 16 7.5C16 7.22386 15.7761 7 15.5 7M15.5 8C15.2239 8 15 7.77614 15 7.5C15 7.22386 15.2239 7 15.5 7M15.5 8V7" 
+      stroke="rgba(255,255,255,0.6)" 
+      strokeWidth="1.5" 
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+    />
+    <path 
+      d="M3.69797 19.7472C2.5 18.3446 2.5 16.2297 2.5 12C2.5 7.77027 2.5 5.6554 3.69797 4.25276C3.86808 4.05358 4.05358 3.86808 4.25276 3.69797C5.6554 2.5 7.77027 2.5 12 2.5C16.2297 2.5 18.3446 2.5 19.7472 3.69797C19.9464 3.86808 20.1319 4.05358 20.302 4.25276C21.5 5.6554 21.5 7.77027 21.5 12C21.5 16.2297 21.5 18.3446 20.302 19.7472C20.1319 19.9464 19.9464 20.1319 19.7472 20.302C18.3446 21.5 16.2297 21.5 12 21.5C7.77027 21.5 5.6554 21.5 4.25276 20.302C4.05358 20.1319 3.86808 19.9464 3.69797 19.7472Z" 
+      stroke="rgba(255,255,255,0.6)" 
+      strokeWidth="1.5" 
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+    />
+  </svg>
+</button>
             </div>
           </div>
 
-          {/* Right: Content */}
-          <div
-            className="w-[650px] rounded-xl p-8 border border-gray-200 relative"
-            style={{ background: 'linear-gradient(145deg, #ffffff 0%, #fafbfc 100%)' }}
-          >
+          {/* Right: Content - Flex to fill remaining space */}
+          <div className="flex-1 rounded-xl p-8 border border-gray-200 bg-white relative">
             {/* Three-dot menu - top right */}
             <button
               onClick={() => console.log('Menu clicked')}
@@ -233,40 +230,16 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 </div>
 
                 {/* Location & Status */}
-                <div className="mb-4">
-                  <span className="inline-flex items-center gap-6 text-sm font-light text-black">
-                    {city}{state ? `, ${state}` : ''}
-                    <span className="text-gray-400">\</span>
-                    <button
-                      onClick={() => console.log('Show store hours')}
-                      className="hover:underline transition-colors text-emerald-500 font-medium inline-flex items-center gap-1.5"
-                      type="button"
-                    >
-                      Open Now
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        height="24"
-                        fill="#F0FDF4"
-                        className="flex-shrink-0 text-emerald-500"
-                      >
-                        <path
-                          d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                        />
-                        <path
-                          d="M12.0078 10.5082C11.1794 10.5082 10.5078 11.1798 10.5078 12.0082C10.5078 12.8366 11.1794 13.5082 12.0078 13.5082C12.8362 13.5082 13.5078 12.8366 13.5078 12.0082C13.5078 11.1798 12.8362 10.5082 12.0078 10.5082ZM12.0078 10.5082V6.99902M15.0147 15.0198L13.0661 13.0712"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </button>
-                  </span>
-                </div>
+{/* Location & Status */}
+<div className="mb-4">
+  <span className="inline-flex items-center gap-6 text-sm font-light text-black">
+    {city}{state ? `, ${state}` : ''}
+    <OpenStatus 
+      storeHours={storeHours}
+      className="text-emerald-500 font-medium"
+    />
+  </span>
+</div>
               </div>
 
               {/* Stats Counters with Buttons */}
@@ -306,19 +279,37 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 {/* Follow & Reserve Buttons - Right Side - Only for non-owners */}
                 {!isOwner && (
                   <div className="flex items-center gap-2">
-                    <button
-                      onClick={handleToggleFollow}
-                      className={`w-28 px-4 py-3 rounded-xl transition-all duration-500 flex items-center justify-center text-sm  ${isFollowing
-                          ? 'bg-gradient-to-br from-blue-100/90 via-blue-50 to-blue-100/90 border border-[#60A5FA] text-blue-600 shadow-sm hover:shadow-md hover:from-blue-100/80 hover:via-blue-50 hover:to-blue-100'
-                          : 'bg-gradient-to-br from-blue-50/20 via-white to-blue-50/20 border border-gray-200 text-gray-500 hover:from-blue-50/30 hover:via-white hover:to-purple-50/30 hover:border-blue-200/50 hover:shadow-sm'
-                        }`}
-                      type="button"
-                    >
-                      {isFollowing ? 'Following' : 'Follow'}
+<button
+  onClick={handleToggleFollow}
+  className={`h-12 px-4 rounded-xl transition-all duration-500 flex items-center justify-center ${
+    isFollowing
+      ? 'bg-gradient-to-br from-blue-100/90 via-blue-50 to-blue-100/90 border border-[#60A5FA] shadow-sm hover:shadow-md hover:from-blue-100/80 hover:via-blue-50 hover:to-blue-100'
+      : 'bg-gradient-to-br from-blue-50/20 via-white to-blue-50/20 border border-gray-200 hover:from-blue-50/30 hover:via-white hover:to-purple-50/30 hover:border-blue-200/50 hover:shadow-sm'
+  }`}
+  type="button"
+  aria-label={isFollowing ? 'Unfollow' : 'Follow'}
+>
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        width="20" 
+                        height="20" 
+                        viewBox="0 0 24 24" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        strokeWidth="1.75" 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round"
+                        className={isFollowing ? 'text-blue-600' : 'text-gray-500'}
+                      >
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <line x1="19" x2="19" y1="8" y2="14"/>
+                        <line x1="22" x2="16" y1="11" y2="11"/>
+                      </svg>
                     </button>
                     <button
                       onClick={handleReserveClick}
-                      className="w-28 px-4 py-3 border border-gray-200 rounded-xl transition-all duration-300 bg-gradient-to-br from-blue-50/20 via-white to-blue-50/20 text-gray-500 hover:from-blue-50/30 hover:via-white hover:to-purple-50/30 hover:border-blue-200/50 flex items-center justify-center text-sm  hover:shadow-sm"
+                      className="w-28 px-4 py-3 border border-gray-200 rounded-xl transition-all duration-300 bg-gradient-to-br from-blue-50/20 via-white to-blue-50/20 text-gray-500 hover:from-blue-50/30 hover:via-white hover:to-purple-50/30 hover:border-blue-200/50 flex items-center justify-center text-sm hover:shadow-sm"
                       type="button"
                     >
                       Reserve
@@ -330,7 +321,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 {isOwner && (
                   <button
                     onClick={() => rentModal.onOpen(listing)}
-                    className="w-28 px-4 py-3 rounded-xl transition-all duration-500 bg-gradient-to-br from-blue-100/90 via-blue-50 to-blue-100/90 border border-[#60A5FA] text-[#60A5FA] hover:shadow-md hover:from-blue-100/80 hover:via-blue-50 hover:to-blue-100 flex items-center justify-center text-sm "
+                    className="w-28 px-4 py-3 rounded-xl transition-all duration-500 bg-gradient-to-br from-blue-100/90 via-blue-50 to-blue-100/90 border border-[#60A5FA] text-[#60A5FA] hover:shadow-md hover:from-blue-100/80 hover:via-blue-50 hover:to-blue-100 flex items-center justify-center text-sm"
                     type="button"
                   >
                     Edit Listing

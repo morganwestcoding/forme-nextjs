@@ -32,8 +32,8 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser }) => {
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
-          width="22"
-          height="22"
+          width="20"
+          height="20"
           fill="#EFF6FF"
           fillOpacity={0.20}
           className="shrink-0 text-[#60A5FA] drop-shadow-sm"

@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from 'react';
 import { format } from 'date-fns';
 import { SafeStoreHours } from '@/app/types';
-import { Clock } from 'lucide-react';
 
 interface OpenStatusProps {
   storeHours: SafeStoreHours[];
@@ -12,81 +11,53 @@ interface OpenStatusProps {
 
 const OpenStatus: React.FC<OpenStatusProps> = ({ storeHours, className = '' }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [currentHours, setCurrentHours] = useState<string>('');
-  const [nextOpenHours, setNextOpenHours] = useState<string>('');
-  const [currentDay, setCurrentDay] = useState<string>('');
+  const [displayText, setDisplayText] = useState<string>('');
 
   useEffect(() => {
     const checkOpenStatus = () => {
-      // Get current date and time
       const now = new Date();
-      const dayOfWeek = format(now, 'EEEE'); // e.g., 'Monday', 'Tuesday', etc.
-      const currentTime = format(now, 'HH:mm'); // 24-hour format
+      const dayOfWeek = format(now, 'EEEE');
+      const currentTime = format(now, 'HH:mm');
 
-      // Find today's store hours
       const todayHours = storeHours.find(hours => hours.dayOfWeek.toLowerCase() === dayOfWeek.toLowerCase());
-      setCurrentDay(dayOfWeek);
 
-      if (!todayHours) {
+      if (!todayHours || todayHours.isClosed) {
         setIsOpen(false);
-        findNextOpenDay(dayOfWeek);
+        setDisplayText(findNextOpenTime(dayOfWeek));
         return;
       }
 
-      if (todayHours.isClosed) {
-        setIsOpen(false);
-        findNextOpenDay(dayOfWeek);
-        return;
-      }
-
-      // Format hours for display - avoid adding AM/PM if it's already in the string
-      const formattedOpenTime = formatTime(todayHours.openTime);
-      const formattedCloseTime = formatTime(todayHours.closeTime);
-      setCurrentHours(`${formattedOpenTime} - ${formattedCloseTime}`);
-
-      // Check if current time is within open hours
+      const openTime = formatTime(todayHours.openTime);
+      const closeTime = formatTime(todayHours.closeTime);
       const isCurrentlyOpen = isTimeInRange(currentTime, todayHours.openTime, todayHours.closeTime);
+      
       setIsOpen(isCurrentlyOpen);
-
-      if (!isCurrentlyOpen) {
-        findNextOpenDay(dayOfWeek);
-      }
+      setDisplayText(isCurrentlyOpen ? `${openTime} - ${closeTime}` : findNextOpenTime(dayOfWeek));
     };
 
-    const findNextOpenDay = (currentDayOfWeek: string) => {
+    const findNextOpenTime = (currentDayOfWeek: string): string => {
       const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
       let currentIndex = daysOfWeek.findIndex(day => day.toLowerCase() === currentDayOfWeek.toLowerCase());
       
-      // Check the next 7 days (including today if we're before opening time)
       for (let i = 0; i < 7; i++) {
         const nextIndex = (currentIndex + i) % 7;
         const nextDay = daysOfWeek[nextIndex];
         const nextDayHours = storeHours.find(hours => hours.dayOfWeek.toLowerCase() === nextDay.toLowerCase());
         
         if (nextDayHours && !nextDayHours.isClosed) {
-          const formattedOpenTime = formatTime(nextDayHours.openTime);
-          
-          if (i === 0) {
-            // Today, but we're after closing or before opening
-            setNextOpenHours(`Opens today at ${formattedOpenTime}`);
-          } else if (i === 1) {
-            // Tomorrow
-            setNextOpenHours(`Opens tomorrow at ${formattedOpenTime}`);
-          } else {
-            // Another day
-            setNextOpenHours(`Opens ${nextDay} at ${formattedOpenTime}`);
-          }
-          break;
+          const openTime = formatTime(nextDayHours.openTime);
+          if (i === 0) return `Opens today at ${openTime}`;
+          if (i === 1) return `Opens tomorrow at ${openTime}`;
+          return `Opens ${nextDay} at ${openTime}`;
         }
       }
+      return 'Hours not available';
     };
 
-    // Format time - check if AM/PM already exists
     const formatTime = (time: string): string => {
       if (time.includes('AM') || time.includes('PM') || time.includes('am') || time.includes('pm')) {
-        return time; // Time already has AM/PM formatting
+        return time;
       }
-      
       const [hours, minutes] = time.split(':');
       const hour = parseInt(hours, 10);
       const period = hour >= 12 ? 'PM' : 'AM';
@@ -94,27 +65,20 @@ const OpenStatus: React.FC<OpenStatusProps> = ({ storeHours, className = '' }) =
       return `${hour12}:${minutes} ${period}`;
     };
 
-    // Check if current time is within open and close times
     const isTimeInRange = (currentTime: string, openTime: string, closeTime: string): boolean => {
-      // Extract hours and minutes as numbers for comparison
       const extractTime = (timeStr: string) => {
-        // Handle cases where the time already includes AM/PM
         if (timeStr.includes('AM') || timeStr.includes('PM') || timeStr.includes('am') || timeStr.includes('pm')) {
-          const [timePart] = timeStr.split(/\s+/); // Split by whitespace to get just the time part
+          const [timePart] = timeStr.split(/\s+/);
           const [hours, minutes] = timePart.split(':');
-          const hour = parseInt(hours, 10);
-          let hour24 = hour;
+          let hour24 = parseInt(hours, 10);
           
-          // Convert to 24-hour format if needed
           if (timeStr.includes('PM') || timeStr.includes('pm')) {
-            if (hour !== 12) hour24 = hour + 12;
-          } else if (hour === 12) {
+            if (hour24 !== 12) hour24 += 12;
+          } else if (hour24 === 12) {
             hour24 = 0;
           }
-          
           return `${hour24.toString().padStart(2, '0')}:${minutes}`;
         }
- 
         return timeStr;
       };
       
@@ -126,31 +90,17 @@ const OpenStatus: React.FC<OpenStatusProps> = ({ storeHours, className = '' }) =
     };
 
     checkOpenStatus();
-    
-    // Update every minute
     const interval = setInterval(checkOpenStatus, 60000);
     return () => clearInterval(interval);
   }, [storeHours]);
 
-  if (!storeHours || storeHours.length === 0) {
-    return (
-      <div className={`inline-flex items-center ${className}`}>
-        <div className="w-2 h-2 rounded-full bg-gray-400 mr-2"></div>
-        <span className="text-gray-500 text-sm">Hours not available</span>
-      </div>
-    );
-  }
+  if (!storeHours || storeHours.length === 0) return null;
 
   return (
-    <div className={`flex items-center gap-2 ${className}`}>
-    <Clock className="w-5 h-5 text-green-600" />
-      {/* Hours Display */}
-      <div className="flex items-center">
-        <span className={`text-xs ${isOpen ? 'text-white' : 'text-white'}`}>
-          {isOpen ? currentHours : nextOpenHours}
-        </span>
-      </div>
-    </div>
+    <span className={`inline-flex items-center gap-2 ${className}`}>
+      <div className={`w-2 h-2 rounded-full ${isOpen ? 'bg-emerald-500' : 'bg-gray-400'}`} />
+      <span className="text-gray-600 font-medium">{displayText}</span>
+    </span>
   );
 };
 
