@@ -125,59 +125,20 @@ const ListingHead: React.FC<ListingHeadProps> = ({
     <div className="w-full space-y-6">
       {/* Header - Full Width */}
       <div className="w-full relative">
-        <div className="flex gap-6 items-center">
+        <div className="flex gap-4 items-center">
           {/* Left: Image with Gallery Icon */}
           <div className="flex-shrink-0">
-            <div className="w-[192px] h-[192px] rounded-xl overflow-hidden relative hover:shadow-md transition-shadow group">
+            <div className="w-[180px] h-[180px] rounded-xl overflow-hidden relative hover:shadow-md transition-shadow group">
               <img
                 src={mainImage}
                 alt={title}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
               />
-
-              {/* Gallery icon overlay - bottom right */}
-              <button
-                onClick={() => setActiveTab('Images')}
-                className="absolute bottom-3 right-3 hover:scale-105 transition-transform cursor-pointer"
-                type="button"
-                aria-label="View gallery"
-              >
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  viewBox="0 0 24 24" 
-                  width="28" 
-                  height="28" 
-                  className="drop-shadow-lg"
-                  fill="none"
-                >
-                  <path 
-                    d="M3 16L7.46967 11.5303C7.80923 11.1908 8.26978 11 8.75 11C9.23022 11 9.69077 11.1908 10.0303 11.5303L14 15.5M15.5 17L14 15.5M21 16L18.5303 13.5303C18.1908 13.1908 17.7302 13 17.25 13C16.7698 13 16.3092 13.1908 15.9697 13.5303L14 15.5" 
-                    stroke="rgba(255,255,255,0.6)" 
-                    strokeWidth="1.5" 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round"
-                  />
-                  <path 
-                    d="M15.5 8C15.7761 8 16 7.77614 16 7.5C16 7.22386 15.7761 7 15.5 7M15.5 8C15.2239 8 15 7.77614 15 7.5C15 7.22386 15.2239 7 15.5 7M15.5 8V7" 
-                    stroke="rgba(255,255,255,0.6)" 
-                    strokeWidth="1.5" 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round"
-                  />
-                  <path 
-                    d="M3.69797 19.7472C2.5 18.3446 2.5 16.2297 2.5 12C2.5 7.77027 2.5 5.6554 3.69797 4.25276C3.86808 4.05358 4.05358 3.86808 4.25276 3.69797C5.6554 2.5 7.77027 2.5 12 2.5C16.2297 2.5 18.3446 2.5 19.7472 3.69797C19.9464 3.86808 20.1319 4.05358 20.302 4.25276C21.5 5.6554 21.5 7.77027 21.5 12C21.5 16.2297 21.5 18.3446 20.302 19.7472C20.1319 19.9464 19.9464 20.1319 19.7472 20.302C18.3446 21.5 16.2297 21.5 12 21.5C7.77027 21.5 5.6554 21.5 4.25276 20.302C4.05358 20.1319 3.86808 19.9464 3.69797 19.7472Z" 
-                    stroke="rgba(255,255,255,0.6)" 
-                    strokeWidth="1.5" 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </button>
             </div>
           </div>
 
           {/* Right: Content - Flex to fill remaining space */}
-          <div className="flex-1 rounded-xl p-8 border border-gray-200 bg-white relative">
+          <div className="flex-1 rounded-xl p-6 border border-gray-200 bg-white relative">
             {/* Three-dot menu - top right */}
             <button
               onClick={() => console.log('Menu clicked')}
@@ -228,13 +189,13 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   </div>
                 </div>
 
-                {/* Location & Status */}
+                {/* Location & Status with separator */}
                 <div className="mb-4">
-                  <span className="inline-flex items-center gap-6 text-sm font-light text-black">
-                    {city}{state ? `, ${state}` : ''}
+                  <span className="inline-flex items-center text-sm font-light text-black">
+                    <span>{city}{state ? `, ${state}` : ''}</span>
+                    <span className="mx-2 text-gray-400">•</span>
                     <OpenStatus 
                       storeHours={storeHours}
-                      className="text-emerald-500 font-medium"
                     />
                   </span>
                 </div>
@@ -243,27 +204,27 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               {/* Stats Counters with Buttons */}
               <div className="flex items-center justify-between">
                 {/* Stats - All Under One Gray Background */}
-                <div className="flex items-center gap-6 px-5 py-3 rounded-lg bg-gray-50">
+                <div className="flex items-center gap-6 px-5 py-3 rounded-lg border bg-gray-50">
                   {/* Rating Counter */}
                   <button
                     onClick={() => setActiveTab('Reviews')}
                     className="flex items-center gap-2 hover:opacity-70 transition-opacity"
                     type="button"
                   >
-                    <span className="text-lg font-bold text-gray-900">4.8</span>
-                    <span className="text-sm text-gray-600 font-medium">Rating</span>
+                    <span className="text-md font-bold text-gray-900">4.8</span>
+                    <span className="text-sm text-gray-600 ">Rating</span>
                   </button>
 
                   {/* Posts Counter */}
                   <div className="flex items-center gap-2">
-                    <span className="text-lg font-bold text-gray-900">{posts?.length || 0}</span>
-                    <span className="text-sm text-gray-600 font-medium">Posts</span>
+                    <span className="text-md font-bold text-gray-900">{posts?.length || 0}</span>
+                    <span className="text-sm text-gray-600 ">Posts</span>
                   </div>
 
                   {/* Followers Counter */}
                   <div className="flex items-center gap-2">
-                    <span className="text-lg font-bold text-gray-900">{followers.length}</span>
-                    <span className="text-sm text-gray-600 font-medium">Followers</span>
+                    <span className="text-md font-bold text-gray-900">{followers.length}</span>
+                    <span className="text-sm text-gray-600 ">Followers</span>
                   </div>
                 </div>
 
@@ -282,8 +243,8 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                     >
                       <svg 
                         xmlns="http://www.w3.org/2000/svg" 
-                        width="20" 
-                        height="20" 
+                        width="18" 
+                        height="18" 
                         viewBox="0 0 24 24" 
                         fill="none" 
                         stroke="currentColor" 
@@ -401,7 +362,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                     </div>
 
                     <div className="flex items-center justify-center">
-                      <div className="bg-gray-100 text-gray-500 px-3 py-1.5 rounded-lg text-xs font-medium group-hover:bg-blue-100 group-hover:text-blue-500 group-hover:border-blue-500 transition-all duration-200">
+                      <div className="bg-gray-100 text-gray-500 px-3 py-2 border rounded-lg text-xs font-medium group-hover:bg-blue-100 group-hover:text-blue-500 group-hover:border-blue-500 transition-all duration-200">
                         Get Started
                       </div>
                     </div>
@@ -463,7 +424,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                     </div>
 
                     <div className="flex items-center justify-center">
-                      <div className="bg-gray-100 text-gray-500 px-3 py-1.5 rounded-lg text-xs font-medium group-hover:bg-blue-100 group-hover:text-blue-500 group-hover:border-blue-500 transition-all duration-200">
+                      <div className="bg-gray-100 text-gray-500 px-3 py-2 border rounded-lg text-xs font-medium group-hover:bg-blue-100 group-hover:text-blue-500 group-hover:border-blue-500 transition-all duration-200">
                         Add Member
                       </div>
                     </div>

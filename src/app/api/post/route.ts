@@ -19,7 +19,8 @@ export async function POST(request: Request) {
         location, 
         tag, 
         category,
-        postType
+        postType,
+        mentions = [] // NEW: Handle mentions/tags
     } = body;
 
     console.log("Received fields in POST request:", { 
@@ -30,7 +31,8 @@ export async function POST(request: Request) {
         location, 
         tag, 
         category,
-        postType
+        postType,
+        mentions
     });
 
     // Check if content exists
@@ -51,7 +53,22 @@ export async function POST(request: Request) {
         );
     }
 
+    // Validate mentions if provided
+    if (mentions && Array.isArray(mentions) && mentions.length > 0) {
+        const isValidMentions = mentions.every((mention: any) => 
+            mention && 
+            typeof mention.id === 'string' && 
+            ['user', 'listing', 'shop'].includes(mention.type) &&
+            typeof mention.title === 'string'
+        );
+        
+        if (!isValidMentions) {
+            return new Response("Invalid mentions format", { status: 400 });
+        }
+    }
+
     try {
+        // Create the post first
         const post = await prisma.post.create({
             data: {
                 content,
@@ -61,38 +78,60 @@ export async function POST(request: Request) {
                 location,
                 tag,
                 category: finalCategory,
+                postType,
                 userId: currentUser.id,
                 likes: [],
                 bookmarks: [],
                 hiddenBy: []
-            },
-            include: {
-                user: true
             }
         });
 
-        return NextResponse.json(post);
+        // Create PostMention records if mentions exist
+        if (mentions && Array.isArray(mentions) && mentions.length > 0) {
+            const mentionData = mentions.map((mention: any) => ({
+                postId: post.id,
+                entityId: mention.id,
+                entityType: mention.type,
+                entityTitle: mention.title,
+                entitySubtitle: mention.subtitle || null,
+                entityImage: mention.image || null
+            }));
+
+            await prisma.postMention.createMany({
+                data: mentionData
+            });
+        }
+
+        // Fetch the complete post with relations
+        const completePost = await prisma.post.findUnique({
+            where: { id: post.id },
+            include: {
+                user: true,
+                mentions: true,
+                comments: {
+                    include: {
+                        user: true
+                    }
+                }
+            }
+        });
+
+        return NextResponse.json(completePost);
     } catch (error) {
         console.error("Error creating post:", error);
-        console.error("Detailed error information:", error);
         return new Response("Internal Server Error", { status: 500 });
     } 
 }
 
-// Rest of your GET function and other exports remain unchanged
 export async function GET(request: Request) {
-    // Your existing GET implementation
     try {
         const { searchParams } = new URL(request.url);
         const userId = searchParams.get('userId');
         const category = searchParams.get('category');
-        // Add filter parameter
         const filter = searchParams.get('filter');
         
-        // Get current user for personalized filters
         const currentUser = await getCurrentUser();
 
-        // If filter requires current user but none exists, return empty array
         if ((filter === 'following' || filter === 'likes' || filter === 'bookmarks') && !currentUser) {
             return NextResponse.json([]);
         }
@@ -107,14 +146,11 @@ export async function GET(request: Request) {
             query.category = category;
         }
 
-        // Apply specific filter types
         if (filter === 'likes' && currentUser) {
-            // Posts that the current user has liked
             query.likes = {
                 has: currentUser.id
             };
         } else if (filter === 'bookmarks' && currentUser) {
-            // Posts that the current user has bookmarked
             query.bookmarks = {
                 has: currentUser.id
             };
@@ -123,7 +159,13 @@ export async function GET(request: Request) {
         const posts = await prisma.post.findMany({
             where: query,
             include: {
-                user: true
+                user: true,
+                mentions: true, // NEW: Include PostMention relations
+                comments: {
+                    include: {
+                        user: true
+                    }
+                }
             },
             orderBy: {
                 createdAt: 'desc'
@@ -132,18 +174,12 @@ export async function GET(request: Request) {
 
         let filteredPosts = posts;
         
-        // Apply post-query filters
         if (currentUser) {
-            // First filter out hidden posts for all views
             filteredPosts = filteredPosts.filter(post => !post.hiddenBy?.includes(currentUser.id));
             
-            // Then apply the following filter if selected
             if (filter === 'following') {
-                // Only show posts from users the current user is following
                 filteredPosts = filteredPosts.filter(post => 
-                    // Include posts from users the current user follows
                     currentUser.following.includes(post.userId) ||
-                    // Also include the current user's own posts
                     post.userId === currentUser.id
                 );
             }

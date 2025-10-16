@@ -159,9 +159,25 @@ model Post {
   bookmarks String[] @db.ObjectId 
   hiddenBy  String[] @db.ObjectId  
   comments Comment[]
+  mentions PostMention[] // NEW: Proper relational mentions
 
   user User @relation(fields: [userId], references: [id])
 
+}
+
+model PostMention {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  postId     String   @db.ObjectId
+  entityId   String   @db.ObjectId
+  entityType String   // "user" | "listing" | "shop"
+  entityTitle String  // Cached for performance
+  entitySubtitle String? // Cached subtitle
+  entityImage String? // Cached image URL
+  createdAt  DateTime @default(now())
+  
+  post       Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  
+  @@unique([postId, entityId, entityType]) // Prevent duplicates
 }
 
 model Category {

@@ -11,6 +11,7 @@ import MediaUpload from '@/components/inputs/MediaUpload';
 import CategoryInput from '@/components/inputs/CategoryInput';
 import { categories } from '@/components/Categories';
 import { MediaData } from '@/app/types';
+import { Search, X, User, Building2, Store } from 'lucide-react';
 
 /** ================== Cloudinary text overlay helpers ================== */
 
@@ -92,13 +93,27 @@ function buildCloudinaryOverlayUrl(
   return `${prefix}${textLayer},${colorLayer},${wrapLayer}/${positionLayer}/${suffix}`;
 }
 
+/** ================== Tag Types & Interfaces ================== */
+
+type TagType = 'user' | 'listing' | 'shop';
+
+interface TagItem {
+  id: string;
+  type: TagType;
+  title: string;
+  subtitle?: string;
+  image?: string | null;
+  href: string;
+}
+
 /** ================== Steps & Post Types ================== */
 
 enum STEPS {
   TYPE = 0,
   MEDIA = 1,
   CONTENT = 2,
-  CATEGORY = 3,
+  TAGS = 3,
+  CATEGORY = 4,
 }
 
 const postTypes = [
@@ -160,6 +175,12 @@ const CreatePostModal = () => {
   const [overlayColor, setOverlayColor] = useState<'ffffff' | '000000'>('ffffff');
   const [overlayPos, setOverlayPos] = useState<OverlayPos>('bottom-center');
 
+  /** Tags state */
+  const [selectedTags, setSelectedTags] = useState<TagItem[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<TagItem[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+
   /** Measure preview for better scaling */
   const previewRef = useRef<HTMLDivElement>(null);
   const [previewDimensions, setPreviewDimensions] = useState({ width: 0, height: 0 });
@@ -176,6 +197,58 @@ const CreatePostModal = () => {
     return () => ro.disconnect();
   }, []);
 
+  // Search for tags using the global search API
+  const searchTags = useCallback(async (query: string) => {
+    setIsSearching(true);
+    
+    try {
+      const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+      if (!response.ok) throw new Error('Search failed');
+      
+      const data = await response.json();
+      // Filter for taggable types: users, listings, shops
+      const taggableResults = (data.results || []).filter((item: any) => 
+        ['user', 'listing', 'shop'].includes(item.type)
+      );
+      setSearchResults(taggableResults);
+    } catch (error) {
+      console.error('Tag search error:', error);
+      setSearchResults([]);
+      toast.error('Failed to search');
+    } finally {
+      setIsSearching(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (searchQuery.trim().length > 0) {
+      searchTags(searchQuery);
+    } else {
+      setSearchResults([]);
+    }
+  }, [searchQuery, searchTags]);
+
+  const handleTagSelect = (tag: TagItem) => {
+    // Prevent duplicate tags
+    if (!selectedTags.find(t => t.id === tag.id && t.type === tag.type)) {
+      setSelectedTags(prev => [...prev, tag]);
+    }
+    setSearchQuery('');
+    setSearchResults([]);
+  };
+
+  const handleTagRemove = (tagId: string, tagType: TagType) => {
+    setSelectedTags(prev => prev.filter(t => !(t.id === tagId && t.type === tagType)));
+  };
+
+  const getTagIcon = (type: TagType) => {
+    switch (type) {
+      case 'user': return <User className="w-4 h-4" />;
+      case 'listing': return <Building2 className="w-4 h-4" />;
+      case 'shop': return <Store className="w-4 h-4" />;
+    }
+  };
+
   const handleClose = useCallback(() => {
     setPostType('');
     setContent('');
@@ -185,6 +258,9 @@ const CreatePostModal = () => {
     setOverlaySize(36);
     setOverlayColor('ffffff');
     setOverlayPos('bottom-center');
+    setSelectedTags([]);
+    setSearchQuery('');
+    setSearchResults([]);
     setStep(STEPS.TYPE);
     modal.onClose();
   }, [modal]);
@@ -247,6 +323,11 @@ const CreatePostModal = () => {
       tag: postType,
       postType,
       mediaOverlay: overlayMeta,
+      tags: selectedTags.map(tag => ({
+        id: tag.id,
+        type: tag.type,
+        title: tag.title
+      }))
     };
 
     try {
@@ -280,6 +361,9 @@ const CreatePostModal = () => {
       if (postType !== 'Reel' && !content.trim()) {
         return toast.error('Please write something');
       }
+      return setStep(STEPS.TAGS);
+    }
+    if (step === STEPS.TAGS) {
       return setStep(STEPS.CATEGORY);
     }
     if (step === STEPS.CATEGORY) {
@@ -290,6 +374,8 @@ const CreatePostModal = () => {
 
   const handleSecondaryAction = () => {
     if (step === STEPS.CATEGORY) {
+      setStep(STEPS.TAGS);
+    } else if (step === STEPS.TAGS) {
       setStep(STEPS.CONTENT);
     } else if (step === STEPS.CONTENT) {
       setStep(postType === 'Reel' ? STEPS.MEDIA : STEPS.TYPE);
@@ -483,6 +569,137 @@ const CreatePostModal = () => {
       );
     }
 
+    if (step === STEPS.TAGS) {
+      return (
+        <div className="flex flex-col gap-4">
+          <Heading
+            title="Tag people & businesses"
+            subtitle="Help others discover your post by tagging users and businesses (optional)"
+          />
+
+          {/* Search Input */}
+          <div className="relative">
+            <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+              <Search className="w-5 h-5 text-gray-400" />
+            </div>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search users, businesses, or shops..."
+              disabled={isLoading}
+              className={`
+                w-full h-12 pl-12 pr-4 border text-sm border-gray-200 rounded-xl 
+                outline-none focus:ring-2 focus:ring-[#60A5FA] bg-white
+                ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}
+              `}
+            />
+
+            {/* Search Results Dropdown */}
+            {searchQuery && (
+              <div className="absolute z-50 mt-2 w-full max-h-64 overflow-auto rounded-xl border border-gray-200 bg-white shadow-lg">
+                {/* Loading */}
+                {isSearching && (
+                  <div className="px-4 py-3 text-sm text-gray-500">Searching...</div>
+                )}
+
+                {/* Empty */}
+                {!isSearching && searchQuery.length >= 2 && searchResults.length === 0 && (
+                  <div className="px-4 py-3 text-sm text-gray-500">No results found</div>
+                )}
+
+                {/* Results */}
+                {!isSearching && searchResults.length > 0 && (
+                  <div className="py-2">
+                    {searchResults.map((item) => {
+                      const isSelected = selectedTags.find(t => t.id === item.id && t.type === item.type);
+                      return (
+                        <div
+                          key={`${item.type}-${item.id}`}
+                          className={`px-3 py-2 cursor-pointer flex items-center gap-3 ${
+                            isSelected ? "bg-green-50 opacity-50" : "hover:bg-gray-50"
+                          }`}
+                          onClick={() => !isSelected && handleTagSelect(item)}
+                        >
+                          {/* Thumbnail */}
+                          <div className="w-8 h-8 rounded-md bg-gray-100 overflow-hidden shrink-0">
+                            {item.image ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img
+                                src={item.image}
+                                alt=""
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-gray-400">
+                                {getTagIcon(item.type)}
+                              </div>
+                            )}
+                          </div>
+                          {/* Text */}
+                          <div className="min-w-0 flex-1">
+                            <div className="text-sm text-gray-900 truncate">
+                              {item.title}
+                            </div>
+                            {item.subtitle && (
+                              <div className="text-xs text-gray-500 truncate">
+                                {item.subtitle}
+                              </div>
+                            )}
+                          </div>
+                          <div className="ml-auto text-[10px] uppercase tracking-wide text-gray-400">
+                            {item.type}
+                          </div>
+                          {isSelected && (
+                            <div className="ml-2 text-green-600">
+                              ✓
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Selected Tags */}
+          {selectedTags.length > 0 && (
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-neutral-800">Tagged:</label>
+              <div className="flex flex-wrap gap-2">
+                {selectedTags.map((tag) => (
+                  <div
+                    key={`${tag.type}-${tag.id}`}
+                    className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-lg text-sm"
+                  >
+                    <div className="text-blue-600">
+                      {getTagIcon(tag.type)}
+                    </div>
+                    <span className="text-blue-900">{tag.title}</span>
+                    <button
+                      onClick={() => handleTagRemove(tag.id, tag.type)}
+                      className="text-blue-600 hover:text-blue-800"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Helper Text */}
+          <div className="bg-neutral-50 rounded-lg p-4">
+            <p className="text-sm text-neutral-600">
+              Tagging helps people discover your post and shows it to followers of the tagged users and businesses.
+            </p>
+          </div>
+        </div>
+      );
+    }
+
     // CATEGORY step
     return (
       <div className="flex flex-col gap-4">
@@ -502,7 +719,7 @@ const CreatePostModal = () => {
         </div>
       </div>
     );
-  }, [step, postType, content, category, mediaData, isLoading, overlayText, overlaySize, overlayColor, overlayPos, previewDimensions]);
+  }, [step, postType, content, category, mediaData, isLoading, overlayText, overlaySize, overlayColor, overlayPos, previewDimensions, selectedTags, searchQuery, searchResults, isSearching]);
 
   return (
     <Modal

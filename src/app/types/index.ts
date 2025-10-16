@@ -145,7 +145,19 @@ export type SafePost = Omit<
   bookmarks: string[]; 
   hiddenBy: string[];
   comments: SafeComment[];
+  mentions?: PostMention[] | null;
 };
+
+export interface PostMention {
+  id: string;
+  postId: string;
+  entityId: string;
+  entityType: 'user' | 'listing' | 'shop';
+  entityTitle: string;
+  entitySubtitle?: string | null;
+  entityImage?: string | null;
+  createdAt: string;
+}
 
 export interface SafeComment {
   id: string;

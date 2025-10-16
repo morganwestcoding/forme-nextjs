@@ -1,5 +1,5 @@
 import prisma from "@/app/libs/prismadb";
-import { SafePost, SafeUser, MediaType } from '@/app/types';
+import { SafePost, SafeUser, MediaType, PostMention } from '@/app/types';
 import getCurrentUser from "./getCurrentUser";
 
 export interface IPostsParams {
@@ -30,7 +30,6 @@ export default async function getPosts(params: IPostsParams) {
     
     const currentUser = await getCurrentUser();
 
-    // If filter mode requires current user but none exists, return empty array
     if ((filter === 'following' || filter === 'likes' || filter === 'bookmarks') && !currentUser) {
       return [];
     }
@@ -44,7 +43,6 @@ export default async function getPosts(params: IPostsParams) {
       query.createdAt = { gte: new Date(startDate), lte: new Date(endDate) };
     }
 
-    // Location filtering
     if (state || city) {
       const locationFilters = [];
       
@@ -71,52 +69,43 @@ export default async function getPosts(params: IPostsParams) {
       }
     }
 
-    // Apply specific filter types
     if (filter === 'likes' && currentUser) {
-      // Posts that the current user has liked
       query.likes = {
         has: currentUser.id
       };
     } else if (filter === 'bookmarks' && currentUser) {
-      // Posts that the current user has bookmarked
       query.bookmarks = {
         has: currentUser.id
       };
     }
 
-const allPosts = await prisma.post.findMany({
-  where: query,
-  include: {
-    user: true,
-    comments: {
+    const allPosts = await prisma.post.findMany({
+      where: query,
       include: {
-        user: true
+        user: true,
+        mentions: true, // NEW: Include PostMention relations
+        comments: {
+          include: {
+            user: true
+          },
+          orderBy: {
+            createdAt: 'desc'
+          }
+        }
       },
       orderBy: {
-        createdAt: 'desc'
-      }
-    }
-  },
-  orderBy: {
-    createdAt: order === 'asc' ? 'asc' : 'desc'
-  },
-});
-
+        createdAt: order === 'asc' ? 'asc' : 'desc'
+      },
+    });
 
     let filteredPosts = allPosts;
 
-    // Apply post-query filters
     if (currentUser) {
-      // First filter out hidden posts for all views
       filteredPosts = filteredPosts.filter(post => !post.hiddenBy?.includes(currentUser.id));
       
-      // Then apply the following filter if selected
       if (filter === 'following') {
-        // Only show posts from users the current user is following
         filteredPosts = filteredPosts.filter(post => 
-          // Include posts from users the current user follows
           currentUser.following.includes(post.userId) ||
-          // Also include the current user's own posts
           post.userId === currentUser.id
         );
       }
@@ -124,13 +113,26 @@ const allPosts = await prisma.post.findMany({
 
     const safePosts = filteredPosts.map((post) => {
       const user = post.user;
+      
+      // Process mentions from PostMention relations
+      const mentions: PostMention[] = post.mentions.map((mention) => ({
+        id: mention.id,
+        postId: mention.postId,
+        entityId: mention.entityId,
+        entityType: mention.entityType as 'user' | 'listing' | 'shop',
+        entityTitle: mention.entityTitle,
+        entitySubtitle: mention.entitySubtitle,
+        entityImage: mention.entityImage,
+        createdAt: mention.createdAt.toISOString()
+      }));
+
       return {
         id: post.id,
         content: post.content,
         imageSrc: post.imageSrc,
         mediaUrl: post.mediaUrl || null,
         mediaType: (post.mediaType as MediaType) || null,
-        postType: (post as any).postType || 'text', // Added postType field
+        postType: (post as any).postType || 'text',
         location: post.location,
         tag: post.tag,
         photo: post.photo,
@@ -139,6 +141,7 @@ const allPosts = await prisma.post.findMany({
         likes: post.likes || [],
         bookmarks: post.bookmarks || [],
         hiddenBy: post.hiddenBy || [],
+        mentions: mentions.length > 0 ? mentions : null, // NEW: Include processed mentions
         comments: post.comments.map((comment) => ({
           id: comment.id,
           content: comment.content,
@@ -150,7 +153,7 @@ const allPosts = await prisma.post.findMany({
             name: comment.user.name,
             image: comment.user.image,
           },
-        })), // Added comments mapping
+        })),
         user: {
           ...user,
           createdAt: user.createdAt.toISOString(),

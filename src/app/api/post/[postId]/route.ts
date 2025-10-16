@@ -1,8 +1,8 @@
-// app/api/post/[postId]/route.ts
 
 import { NextResponse } from "next/server";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/app/libs/prismadb";
+import { PostMention } from "@/app/types";
 
 export async function GET(
   request: Request,
@@ -18,6 +18,7 @@ export async function GET(
     where: { id: postId },
     include: {
       user: true,
+      mentions: true, // NEW: Include PostMention relations
       comments: {
         include: { user: true }
       }
@@ -25,6 +26,18 @@ export async function GET(
   });
 
   if (!post) return new NextResponse("Not found", { status: 404 });
+
+  // Process mentions from PostMention relations
+  const mentions: PostMention[] = post.mentions.map((mention) => ({
+    id: mention.id,
+    postId: mention.postId,
+    entityId: mention.entityId,
+    entityType: mention.entityType as 'user' | 'listing' | 'shop',
+    entityTitle: mention.entityTitle,
+    entitySubtitle: mention.entitySubtitle,
+    entityImage: mention.entityImage,
+    createdAt: mention.createdAt.toISOString()
+  }));
 
   return NextResponse.json({
     id: post.id,
@@ -36,10 +49,12 @@ export async function GET(
     tag: post.tag,
     photo: post.photo,
     category: post.category,
+    postType: (post as any).postType,
     createdAt: post.createdAt.toISOString(),
     likes: post.likes || [],
     bookmarks: post.bookmarks || [],
     hiddenBy: post.hiddenBy || [],
+    mentions: mentions.length > 0 ? mentions : null, // NEW: Include processed mentions
     user: {
       id: post.user.id,
       name: post.user.name,
