@@ -167,7 +167,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
   return (
     <div className={`relative ${className || ""}`} ref={containerRef}>
       <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-        <Search className="w-5 h-5 text-gray-400" />
+        <Search className="w-5 h-5 text-gray-500" />
       </div>
       <input
         type="text"
@@ -176,14 +176,14 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
         onFocus={() => results.length && setOpen(true)}
         onKeyDown={onKeyDown}
         placeholder={placeholder}
-        className="w-full h-12 pl-12 pr-4 border text-sm border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-[#60A5FA] bg-white"
+        className="w-full h-12 pl-12 pr-4 text-sm border border-gray-300 rounded-xl outline-none focus:ring-1 focus:ring-[#60A5FA] bg-white placeholder-gray-500"
       />
 
       {/* Dropdown */}
       {open && (
         <div
           ref={listRef}
-          className="absolute z-50 mt-2 w-full max-h-96 overflow-auto rounded-xl border border-gray-200 bg-white shadow-lg"
+          className="absolute z-50 mt-2 w-full max-h-96 overflow-auto rounded-xl  bg-white shadow-lg"
         >
           {/* Loading */}
           {loading && (

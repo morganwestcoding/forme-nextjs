@@ -60,10 +60,10 @@ export default async function RootLayout({
     <FilterProvider>
       <CategoryProvider>
         <ClientProviders>
-          <ColorProvider>
+  
             <html lang="en">
               <body className={inter.className}>
-                <ComingSoonGate>
+              
                   <div className="min-h-screen flex">
                     <div className="hidden md:block">
                       <Sidebar currentUser={currentUser ?? null} />
@@ -93,10 +93,10 @@ export default async function RootLayout({
                   <FilterModal/>
                   <LoginModal />
                   <RegisterModal />
-                </ComingSoonGate>
+            
               </body>
             </html>
-          </ColorProvider>
+
         </ClientProviders>
       </CategoryProvider>
     </FilterProvider>

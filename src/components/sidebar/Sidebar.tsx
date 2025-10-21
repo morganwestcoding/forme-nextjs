@@ -137,7 +137,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           <button
             onClick={toggleCollapse}
             className={`
-              ml-0 bg-white border border-gray-200 rounded-r-lg px-1.5 py-6 shadow-md
+              ml-0 bg-white border border-gray-200 rounded-r-lg px-1.5 py-6 shadow-sm
               hover:bg-gray-50 transition-all duration-200
               ${isHoveringEdge ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-full'}
             `}
@@ -149,7 +149,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               width="16" 
               height="16" 
               fill="none"
-              className="text-gray-600"
+              className="text-neutral-400"
             >
               <path d="M20.0001 11.9998L4.00012 11.9998" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               <path d="M15.0003 7C15.0003 7 20.0002 10.6824 20.0002 12C20.0002 13.3176 15.0002 17 15.0002 17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -161,7 +161,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       {/* Main Sidebar */}
       <div 
         className={`
-          h-screen overflow-y-auto shadow-sm bg-white w-56
+          h-screen overflow-y-auto bg-white w-56
           fixed top-0 left-0 bottom-0
           transition-transform duration-300 ease-in-out
           ${isCollapsed ? '-translate-x-full' : 'translate-x-0'}
@@ -189,7 +189,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 width="16" 
                 height="16" 
                 fill="none"
-                className="text-gray-600"
+                className="text-neutral-400"
               >
                 <path d="M3.99982 11.9998L19.9998 11.9998" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 <path d="M8.99963 17C8.99963 17 3.99968 13.3176 3.99966 12C3.99965 10.6824 8.99966 7 8.99966 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -224,7 +224,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           <div className="flex flex-col w-full px-6 pt-4">
             {/* Explore & Discover */}
             <div className="mb-6">
-              <div className="text-xs text-neutral-400 uppercase mb-2 font-medium pl-5">Explore & Discover</div>
+              <div className="text-xs uppercase text-neutral-400 mb-2 font-medium pl-5">Explore & Discover</div>
 
               <ul className="list-none m-0 p-0 flex flex-col items-center space-y-1">
                 {/* Discover */}
@@ -251,7 +251,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                         <path d="M15.8292 3.82152C18.5323 2.13939 20.7205 1.51937 21.6005 2.39789C23.1408 3.93544 20.0911 9.48081 14.7889 14.7838C9.48663 20.0868 3.93971 23.1394 2.39946 21.6018C1.52414 20.728 2.13121 18.5599 3.79165 15.8774" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
                       </svg>
                     </div>
-                    <span className={`ml-3 text-sm ${selectedButton === 'home' ? 'font-medium' : ''}`}>
+                    <span className={`ml-3 text-sm ${selectedButton === 'home' ? '' : ''}`}>
                       Discover
                     </span>
                   </div>
@@ -282,7 +282,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                         <path d="M17.7957 2.50294L6.14986 2.53202C4.41169 2.44248 3.96603 3.78259 3.96603 4.43768C3.96603 5.02359 3.89058 5.87774 2.82527 7.4831C1.75996 9.08846 1.84001 9.56536 2.44074 10.6767C2.93931 11.5991 4.20744 11.9594 4.86865 12.02C6.96886 12.0678 7.99068 10.2517 7.99068 8.97523C9.03254 12.1825 11.9956 12.1825 13.3158 11.8157C14.6386 11.4483 15.7717 10.1331 16.0391 8.97523C16.195 10.4142 16.6682 11.2538 18.0663 11.8308C19.5145 12.4284 20.7599 11.515 21.3848 10.9294C22.0097 10.3439 22.4107 9.04401 21.2968 7.6153C20.5286 6.63001 20.2084 5.7018 20.1033 4.73977C20.0423 4.18234 19.9888 3.58336 19.5972 3.20219C19.0248 2.64515 18.2036 2.47613 17.7957 2.50294Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
                       </svg>
                     </div>
-                    <span className={`ml-3 text-sm ${selectedButton === 'market' ? 'font-medium' : ''}`}>
+                    <span className={`ml-3 text-sm ${selectedButton === 'market' ? '' : ''}`}>
                       Market
                     </span>
                   </div>
@@ -314,7 +314,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                         <path d="M10 10.5H14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
                       </svg>
                     </div>
-                    <span className={`ml-3 text-sm ${selectedButton === 'shops' ? 'font-medium' : ''}`}>
+                    <span className={`ml-3 text-sm ${selectedButton === 'shops' ? '' : ''}`}>
                       Vendors
                     </span>
                   </div>
@@ -324,7 +324,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             
             {/* My Content */}
             <div className="mb-6">
-              <div className="text-xs text-neutral-400 uppercase mb-2 font-medium pl-5">My Content</div>
+              <div className="text-xs uppercase text-neutral-400 mb-2 font-medium pl-5">My Content</div>
 
               <ul className="list-none m-0 p-0 flex flex-col items-center space-y-1">
                 <li className="relative w-full">
@@ -349,7 +349,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                         <path d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </div>
-                    <span className={`ml-3 text-sm ${selectedButton === 'favorites' ? 'font-medium' : ''}`}>
+                    <span className={`ml-3 text-sm ${selectedButton === 'favorites' ? '' : ''}`}>
                       Favorites
                     </span>
                   </div>
@@ -380,7 +380,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                         <path d="M11.9955 14H12.0045M11.9955 18H12.0045M15.991 14H16M8 14H8.00897M8 18H8.00897" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
                       </svg>
                     </div>
-                    <span className={`ml-3 text-sm ${selectedButton === 'Appointments' ? 'font-medium' : ''}`}>
+                    <span className={`ml-3 text-sm ${selectedButton === 'Appointments' ? '' : ''}`}>
                       Appointments
                     </span>
                   </div>
@@ -390,7 +390,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
             {/* Connections */}
             <div className="mb-6">
-              <div className="text-xs text-neutral-400 uppercase mb-2 font-medium pl-5">Connections</div>
+              <div className="text-xs uppercase text-neutral-400 mb-2 font-medium pl-5">Connections</div>
 
               <ul className="list-none m-0 p-0 flex flex-col items-center space-y-1">
                 <li className="relative w-full">
@@ -416,7 +416,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                         <path d="M2.01577 13.4756C2.08114 16.5412 2.11383 18.0739 3.24496 19.2094C4.37608 20.3448 5.95033 20.3843 9.09883 20.4634C11.0393 20.5122 12.9607 20.5122 14.9012 20.4634C18.0497 20.3843 19.6239 20.3448 20.7551 19.2094C21.8862 18.0739 21.9189 16.5412 21.9842 13.4756C22.0053 12.4899 22.0053 11.5101 21.9842 10.5244C21.9189 7.45886 21.8862 5.92609 20.7551 4.79066C19.6239 3.65523 18.0497 3.61568 14.9012 3.53657C12.9607 3.48781 11.0393 3.48781 9.09882 3.53656C5.95033 3.61566 4.37608 3.65521 3.24495 4.79065C2.11382 5.92608 2.08114 7.45885 2.01576 10.5244C1.99474 11.5101 1.99475 12.4899 2.01577 13.4756Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
                       </svg>
                     </div>
-                    <span className={`ml-3 text-sm ${selectedButton === 'inbox' ? 'font-medium' : ''}`}>
+                    <span className={`ml-3 text-sm ${selectedButton === 'inbox' ? '' : ''}`}>
                       Inbox
                     </span>
                   </div>
@@ -445,7 +445,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                         <path d="M8 19C8.45849 20.7252 10.0755 22 12 22C13.9245 22 15.5415 20.7252 16 19" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </div>
-                    <span className={`ml-3 text-sm ${selectedButton === 'notifications' ? 'font-medium' : ''}`}>
+                    <span className={`ml-3 text-sm ${selectedButton === 'notifications' ? '' : ''}`}>
                       Notifications
                     </span>
                   </div>

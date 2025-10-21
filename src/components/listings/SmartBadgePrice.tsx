@@ -41,9 +41,9 @@ const SmartBadgePrice: React.FC<SmartBadgePriceProps> = ({
   return (
     <div className="flex items-center gap-2">
       {/* Left container - Price or Rating */}
-      <div className="border border-gray-200 rounded-lg px-3 py-2 bg-gray-50/30">
+      <div className="border border-gray-200 rounded-lg px-3 py-2 bg-gray-50">
         <div 
-          className="flex items-center text-gray-700 text-xs"
+          className="flex items-center text-gray-500 text-xs"
           style={{ 
             // Verified businesses get subtle blue text shadow (works well on white too)
             textShadow: isVerified ? `0 0 6px rgba(96, 165, 250, 0.2)` : 'none'
@@ -80,11 +80,7 @@ const SmartBadgePrice: React.FC<SmartBadgePriceProps> = ({
       {/* Book Now button - separate styled button */}
       <button 
         onClick={handleBookNowClick}
-        className="border rounded-lg px-3 py-2 bg-blue-50 hover:bg-blue-100 transition-colors duration-200 text-xs font-medium"
-        style={{ 
-          borderColor: '#60A5FA',
-          color: '#60A5FA'
-        }}
+        className="text-[#60A5FA] border border-[#60A5FA] rounded-lg px-3 py-2 bg-blue-50 hover:bg-blue-100 transition-colors duration-200 text-xs font-medium"
         type="button"
       >
         Reserve

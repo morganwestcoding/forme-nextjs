@@ -40,26 +40,6 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
 
         {/* RIGHT: ghost arrows + view all */}
         <div className="flex items-center gap-1 ml-4">
-          {hasNavigation && (
-            <>
-              <button
-                onClick={onPrev}
-                disabled={!onPrev}
-                className="p-2 text-gray-400 hover:text-gray-700 disabled:text-gray-200 disabled:cursor-not-allowed transition-colors"
-                aria-label="Previous"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <button
-                onClick={onNext}
-                disabled={!onNext}
-                className="p-2 text-gray-400 hover:text-gray-700 disabled:text-gray-200 disabled:cursor-not-allowed transition-colors"
-                aria-label="Next"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </>
-          )}
           {onViewAll && (
             <button
               onClick={onViewAll}

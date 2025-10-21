@@ -108,30 +108,11 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
           <GlobalSearch placeholder="Search posts, users, listings, shops, products…" />
         </div>
 
-        {/* View Toggle */}
-        <div className="bg-[#EBF4FE] rounded-xl flex items-center shadow-sm p-1 px-2">
-          <button
-            onClick={() => handleViewModeChange('grid')}
-            className={`p-2 rounded-lg ${viewState.mode === 'grid' ? 'bg-white shadow-sm text-[#60A5FA]' : 'text-gray-400'}`}
-            aria-label="Grid view"
-            type="button"
-          >
-            <Grid className="w-5 h-5" />
-          </button>
-          <button
-            onClick={() => handleViewModeChange('list')}
-            className={`p-2 rounded-lg ${viewState.mode === 'list' ? 'bg-white text-[#60A5FA]' : 'text-gray-400'}`}
-            aria-label="List view"
-            type="button"
-          >
-            <List className="w-5 h-5" />
-          </button>
-        </div>
 
 {/* Filters Button */}
 <button
   onClick={handleOpenFilters}
-  className="bg-gradient-to-br from-blue-50/20 via-white to-blue-50/20 text-gray-500 py-3 px-4 border border-gray-200 rounded-xl hover:from-blue-50/30 hover:via-white hover:to-purple-50/30 hover:border-blue-200/50 transition-all duration-300 flex items-center space-x-2 text-sm relative hover:shadow-sm"
+  className="text-gray-500 bg-white border border-gray-300 py-3 px-4 rounded-xl hover:from-blue-50/30 hover:via-white hover:to-purple-50/30 hover:border-blue-200/50 transition-all duration-300 flex items-center space-x-2 text-sm relative hover:shadow-sm"
   type="button"
 >
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" color="currentColor" fill="none">
@@ -152,7 +133,7 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
 {/* Create Button */}
 <button
   onClick={handleCreateListing}
-  className="flex items-center justify-center py-3 border border-gray-200 space-x-2 px-4 rounded-xl transition-all duration-300 bg-gradient-to-br from-blue-50/20 via-white to-blue-50/20 text-gray-500 hover:from-blue-50/20 hover:via-white hover:to-purple-50/30 hover:border-blue-200/50 hover:shadow-sm"
+  className="flex items-center justify-center py-3 space-x-2 px-4 rounded-xl border border-gray-300 text-gray-500 transition-all duration-300 bg-white hover:from-blue-50/20 hover:via-white hover:to-purple-50/30 hover:border-blue-200/50 hover:shadow-sm"
   type="button"
 >
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" color="currentColor" fill="none">
@@ -164,7 +145,7 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
       </div>
 
       {/* Category Navigation - Clean with Vertical Dividers */}
-      <div className="py-5 border-y border-gray-200">
+      <div className="py-5 border-y border-gray-300">
         <div className="flex items-center justify-center">
           {categories.map((category, index) => {
             const isSelected = currentCategory === category.label;
@@ -176,10 +157,10 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
                 <button
                   onClick={() => handleCategorySelect(category.label)}
                   className={`
-                    px-6 py-2.5 text-sm transition-colors duration-200 rounded-lg
+                    px-6 py-2.5 text-sm  transition-colors duration-200 rounded-lg
                     ${isSelected 
                       ? 'text-[#60A5FA] hover:text-[#4F94E5]' 
-                      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                      : 'text-gray-500 hover:text-gray-700 '
                     }
                   `}
                   type="button"

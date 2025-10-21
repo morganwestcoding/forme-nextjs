@@ -49,7 +49,22 @@ const UserButton: React.FC<UserButtonProps> = ({
     return base.charAt(0).toUpperCase() + base.slice(1);
   };
 
-  const planLabel = formatTier(currentUser?.subscriptionTier);
+  const formatUserName = (name?: string | null) => {
+    if (!name) return null;
+    
+    const nameParts = name.trim().split(/\s+/);
+    if (nameParts.length === 1) {
+      return nameParts[0];
+    }
+    
+    const firstName = nameParts[0];
+    const lastNameInitial = nameParts[nameParts.length - 1]?.[0]?.toUpperCase();
+    
+    return lastNameInitial ? `${firstName} ${lastNameInitial}.` : firstName;
+  };
+
+  const planLabel = `${formatTier(currentUser?.subscriptionTier)} Tier`;
+  const displayName = formatUserName(currentUser?.name);
 
   const handleClick = (callback: () => void) => (e: React.MouseEvent) => {
     e.preventDefault();
@@ -68,12 +83,12 @@ const UserButton: React.FC<UserButtonProps> = ({
     if (currentUser?.id) router.push(`/profile/${currentUser.id}`);
   });
   const handleListings = handleClick(() => router.push("/properties"));
-    const handleLicensing = handleClick(() => router.push("/licensing"));
+  const handleLicensing = handleClick(() => router.push("/licensing"));
   const handleAnalytics = handleClick(() => router.push("/analytics"));
 
   const buttonClass = noBg
     ? "flex items-center justify-start cursor-pointer outline-none touch-manipulation"
-    : "w-44 py-2.5 mt-1 px-4 bg-gradient-to-br from-blue-100/90 via-blue-50 to-blue-100/90 flex items-center justify-start mb-6 cursor-pointer rounded-xl border border-[#60A5FA] hover:from-blue-100/80 hover:via-blue-50 hover:to-blue-100 hover:border-[#60A5FA] [transition:background_400ms_ease-in-out,border-color_300ms_ease,box-shadow_300ms_ease] outline-none shadow-sm hover:shadow-md";
+    : "w-44 py-3 mt-1 px-4 bg-gray-50 border border-gray-300 flex items-center justify-start mb-6 cursor-pointer rounded-xl hover:from-blue-100/80 hover:via-blue-50 hover:to-blue-100 hover:border-[#60A5FA] [transition:background_400ms_ease-in-out,border-color_300ms_ease,box-shadow_300ms_ease] outline-none hover:shadow-md";
 
   const dropdownWidthClass = noBg ? "min-w-44" : "w-44";
 
@@ -92,11 +107,11 @@ const UserButton: React.FC<UserButtonProps> = ({
         <div className="ml-3 flex flex-col items-start text-left">
           {currentUser ? (
             <>
-              <span className="text-black text-sm font-medium leading-none">
-                {currentUser.name?.split(" ")[0]}
+              <span className="text-black  font-medium text-xs leading-none">
+                {displayName}
               </span>
               <div className="h-1" />
-              <span className="text-[#60A5FA] text-xs leading-none">
+              <span className="text-gray-500   text-xs leading-none">
                 {planLabel}
               </span>
             </>
@@ -106,8 +121,8 @@ const UserButton: React.FC<UserButtonProps> = ({
                 Login
               </span>
               <div className="h-1" />
-              <span className="text-[#60A5FA] text-xs leading-none">
-                {formatTier(undefined)}
+              <span className="text-gray-500 text-xs leading-none">
+                {`${formatTier(undefined)} Tier`}
               </span>
             </>
           )}
