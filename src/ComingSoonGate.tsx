@@ -35,20 +35,53 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
   const [password, setPassword] = useState('');
   const [emailSubmitted, setEmailSubmitted] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null); // null = loading
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Check if already authenticated on mount
+  // Check authentication status on mount
   useEffect(() => {
-    const auth = sessionStorage.getItem('forme_early_access');
-    if (auth === 'true') {
-      setIsAuthenticated(true);
-    }
+    const checkAuth = () => {
+      try {
+        // Use localStorage for persistence across browser sessions
+        const auth = localStorage.getItem('forme_early_access');
+        const authTimestamp = localStorage.getItem('forme_early_access_timestamp');
+        
+        if (auth === 'true' && authTimestamp) {
+          const timestamp = parseInt(authTimestamp);
+          const now = Date.now();
+          const oneWeek = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
+          
+          // Check if authentication is still valid (within 7 days)
+          if (now - timestamp < oneWeek) {
+            setIsAuthenticated(true);
+          } else {
+            // Clear expired authentication
+            localStorage.removeItem('forme_early_access');
+            localStorage.removeItem('forme_early_access_timestamp');
+            setIsAuthenticated(false);
+          }
+        } else {
+          setIsAuthenticated(false);
+        }
+      } catch (error) {
+        console.error('Error checking authentication:', error);
+        setIsAuthenticated(false);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkAuth();
   }, []);
 
   const handleEmailSubmit = () => {
     if (email) {
       setEmailSubmitted(true);
       console.log('Email submitted:', email);
+      
+      // Here you could send the email to your backend
+      // await fetch('/api/waitlist', { method: 'POST', body: JSON.stringify({ email }) });
+      
       setTimeout(() => {
         setEmailSubmitted(false);
         setEmail('');
@@ -58,13 +91,36 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
 
   const handlePasswordSubmit = () => {
     if (password.toLowerCase() === 'sushi') {
-      sessionStorage.setItem('forme_early_access', 'true');
-      setIsAuthenticated(true);
+      try {
+        // Store authentication with timestamp in localStorage for persistence
+        localStorage.setItem('forme_early_access', 'true');
+        localStorage.setItem('forme_early_access_timestamp', Date.now().toString());
+        setIsAuthenticated(true);
+      } catch (error) {
+        console.error('Error storing authentication:', error);
+        alert('Authentication failed. Please try again.');
+      }
     } else {
       alert('Incorrect password. Please try again.');
       setPassword('');
     }
   };
+
+  // Show loading state while checking authentication
+  if (isLoading || isAuthenticated === null) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-white">
+          <img 
+            src="/logos/logo-white.png" 
+            alt="ForMe Logo" 
+            className="h-10 w-auto mx-auto mb-4"
+          />
+          <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin mx-auto"></div>
+        </div>
+      </div>
+    );
+  }
 
   // If authenticated, show the app
   if (isAuthenticated) {
@@ -250,7 +306,7 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
         </div>
       </div>
 
-      <style>{`
+      <style jsx>{`
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(20px); }
           to { opacity: 1; transform: translateY(0); }

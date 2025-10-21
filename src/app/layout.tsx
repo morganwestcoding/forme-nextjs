@@ -1,4 +1,3 @@
-// app/layout.tsx
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
@@ -60,43 +59,42 @@ export default async function RootLayout({
     <FilterProvider>
       <CategoryProvider>
         <ClientProviders>
-  
-            <html lang="en">
-              <body className={inter.className}>
-              
-                  <div className="min-h-screen flex">
-                    <div className="hidden md:block">
-                      <Sidebar currentUser={currentUser ?? null} />
-                    </div>
-
-                    <LayoutContent>
-                      {children}
-                    </LayoutContent>
+          <html lang="en">
+            <body className={inter.className}>
+              <ComingSoonGate>
+                <div className="min-h-screen flex">
+                  <div className="hidden md:block">
+                    <Sidebar currentUser={currentUser ?? null} />
                   </div>
 
-                  <ShopModal/>
-                  <ToasterProvider/>
-                  <ReservationModal/>
-                  <RentModal/>
-                  <CreatePostModal />
-                  <InboxModal/>
-                  <ProfileModal/>
-                  <StripeCheckoutModal /> 
-                  <ProfileGalleryModal/> 
-                  <ListingGalleryModal/>
-                  <ForgotPasswordModal/> 
-                  <ResetPasswordModal/>
-                  <MessageModal />
-                  <SubscribeModal/>
-                  <NotificationsModal />
-                  <PostModal/>
-                  <FilterModal/>
-                  <LoginModal />
-                  <RegisterModal />
-            
-              </body>
-            </html>
+                  <LayoutContent>
+                    {children}
+                  </LayoutContent>
+                </div>
 
+                {/* Modals */}
+                <ShopModal/>
+                <ToasterProvider/>
+                <ReservationModal/>
+                <RentModal/>
+                <CreatePostModal />
+                <InboxModal/>
+                <ProfileModal/>
+                <StripeCheckoutModal /> 
+                <ProfileGalleryModal/> 
+                <ListingGalleryModal/>
+                <ForgotPasswordModal/> 
+                <ResetPasswordModal/>
+                <MessageModal />
+                <SubscribeModal/>
+                <NotificationsModal />
+                <PostModal/>
+                <FilterModal/>
+                <LoginModal />
+                <RegisterModal />
+              </ComingSoonGate>
+            </body>
+          </html>
         </ClientProviders>
       </CategoryProvider>
     </FilterProvider>
