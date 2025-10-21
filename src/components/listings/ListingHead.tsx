@@ -158,7 +158,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 <div className="w-48 h-48 mx-auto bg-white rounded-lg flex items-center justify-center border-2 border-gray-200">
                   <div className="text-gray-500 text-center">
                     <div className="w-12 h-12 mx-auto mb-2 bg-gray-200 rounded-lg flex items-center justify-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" className="text-gray-400">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" className="text-gray-300">
                         <path d="M3 6C3 4.58579 3 3.87868 3.43934 3.43934C3.87868 3 4.58579 3 6 3C7.41421 3 8.12132 3 8.56066 3.43934C9 3.87868 9 4.58579 9 6C9 7.41421 9 8.12132 8.56066 8.56066C8.12132 9 7.41421 9 6 9C4.58579 9 3.87868 9 3.43934 8.56066C3 8.12132 3 7.41421 3 6Z" stroke="currentColor" strokeWidth="1.5"></path>
                         <path d="M3 18C3 16.5858 3 15.8787 3.43934 15.4393C3.87868 15 4.58579 15 6 15C7.41421 15 8.12132 15 8.56066 15.4393C9 15.8787 9 16.5858 9 18C9 19.4142 9 20.1213 8.56066 20.5607C8.12132 21 7.41421 21 6 21C4.58579 21 3.87868 21 3.43934 20.5607C3 20.1213 3 19.4142 3 18Z" stroke="currentColor" strokeWidth="1.5"></path>
                         <path d="M3 12L9 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
@@ -194,10 +194,10 @@ const ListingHead: React.FC<ListingHeadProps> = ({
       {/* Header - Everything in ONE DIV */}
       <div className="w-full relative">
         {/* SINGLE CONTAINER: Image and content all in one div */}
-        <div className="w-full rounded-2xl p-6 border border-gray-200 bg-white relative min-h-[151px]">
+        <div className="w-full rounded-lg p-6 border border-gray-300 bg-white relative min-h-[151px]">
           {/* Image positioned on the left */}
           <div className="absolute left-6 top-6">
-            <div className="w-[140px] h-[140px] rounded-xl overflow-hidden relative hover:shadow-md transition-shadow group border-4 border-white/50">
+            <div className="w-[140px] h-[140px] shadow-sm rounded-lg overflow-hidden relative hover:shadow-md transition-shadow group border border-gray-300">
               <img
                 src={mainImage}
                 alt={title}
@@ -332,42 +332,46 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               <div>
                 <div className="flex items-center gap-2 mb-3">
                   <h1
-                    className="text-2xl font-bold tracking-tight text-gray-900 leading-tight"
-                    style={{ letterSpacing: '-0.025em' }}
+                    className="text-2xl font-bold tracking-tight text-black"
                   >
                     {title}
                   </h1>
 
                   {/* Verified SVG next to the title */}
-<div className=" drop-shadow-sm inline-flex -mr-1">
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    width="24"
-    height="24"
-    fill="#60A5FA"
-  >
-    <path
-      d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z"
-      fill="#60A5FA"
-    />
-    <path
-      d="M9 12.8929L10.8 14.5L15 9.5"
-      stroke="white"
-      strokeWidth="1.25"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      fill="none"
-    />
-  </svg>
+<div className="inline-flex">
+      <span className="inline-flex items-center align-middle translate-y-[-1px]">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          width="24"
+          height="24"
+          fill="#60A5FA"
+          className="shrink-0 text-white/20 drop-shadow-sm"
+          aria-label="Verified"
+        >
+          <path
+            d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z"
+            stroke="white"
+            strokeWidth="1"
+            fill="#60A5FA"
+          />
+          <path
+            d="M9 12.8929L10.8 14.5L15 9.5"
+            stroke="white"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </span>
 </div>
                 </div>
 
                 {/* Location & Status with separator */}
                 <div className="mb-4">
-                  <span className="inline-flex items-center text-sm font-light text-black">
+                  <span className="inline-flex items-center text-sm text-gray-500">
                     <span>{city}{state ? `, ${state}` : ''}</span>
-                    <span className="mx-2 text-gray-400">•</span>
+                    <span className="mx-2 text-gray-300">•</span>
                     <OpenStatus 
                       storeHours={storeHours}
                     />
@@ -376,28 +380,28 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               </div>
 
               {/* Stats Counters with Buttons */}
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between ">
                 {/* Stats - All Under One Gray Background */}
-                <div className="flex items-center shadow-sm shadow-gray-300 gap-6 px-5 py-3 rounded-lg  bg-gradient-to-br from-gray-100/90 via-gray-50 to-gray-100/90">
+                <div className="flex items-center  gap-6 px-5 py-3 border border-gray-300 rounded-lg  bg-gray-50">
                   {/* Rating Counter */}
                   <button
                     onClick={() => setActiveTab('Reviews')}
-                    className="flex items-center gap-2 hover:opacity-70 transition-opacity"
+                    className="flex items-center gap-2  hover:opacity-70 transition-opacity"
                     type="button"
                   >
-                    <span className="text-md font-bold text-gray-500">4.8</span>
+                    <span className="text-md font-bold text-black">4.8</span>
                     <span className="text-sm text-gray-500 ">Rating</span>
                   </button>
 
                   {/* Posts Counter */}
                   <div className="flex items-center gap-2">
-                    <span className="text-md font-bold text-gray-500">{posts?.length || 0}</span>
+                    <span className="text-md font-bold text-black">{posts?.length || 0}</span>
                     <span className="text-sm text-gray-500 ">Posts</span>
                   </div>
 
                   {/* Followers Counter */}
                   <div className="flex items-center gap-2">
-                    <span className="text-md font-bold text-gray-500">{followers.length}</span>
+                    <span className="text-md font-bold text-black">{followers.length}</span>
                     <span className="text-sm text-gray-500 ">Followers</span>
                   </div>
                 </div>
@@ -408,11 +412,11 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   {canShowQR ? (
                     <button
                       onClick={handleQRClick}
-                      className="h-12 px-4 rounded-xl shadow-sm shadow-gray-300 transition-all duration-500 flex items-center justify-center bg-[#60A5FA] hover:shadow-md hover:from-blue-100/80 hover:via-blue-50 hover:to-blue-100"
+                      className="h-12 px-4 rounded-lg  transition-all duration-500 flex items-center justify-center border-[#60A5FA] border shadow-sm bg-blue-50 hover:shadow-md hover:from-blue-100/80 hover:via-blue-50 hover:to-blue-100"
                       type="button"
                       aria-label="Show QR Code"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" className="text-white" fill="none">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" className="text-[#60A5FA]" fill="none">
                         <path d="M3 6C3 4.58579 3 3.87868 3.43934 3.43934C3.87868 3 4.58579 3 6 3C7.41421 3 8.12132 3 8.56066 3.43934C9 3.87868 9 4.58579 9 6C9 7.41421 9 8.12132 8.56066 8.56066C8.12132 9 7.41421 9 6 9C4.58579 9 3.87868 9 3.43934 8.56066C3 8.12132 3 7.41421 3 6Z" stroke="currentColor" strokeWidth="1.5"></path>
                         <path d="M3 18C3 16.5858 3 15.8787 3.43934 15.4393C3.87868 15 4.58579 15 6 15C7.41421 15 8.12132 15 8.56066 15.4393C9 15.8787 9 16.5858 9 18C9 19.4142 9 20.1213 8.56066 20.5607C8.12132 21 7.41421 21 6 21C4.58579 21 3.87868 21 3.43934 20.5607C3 20.1213 3 19.4142 3 18Z" stroke="currentColor" strokeWidth="1.5"></path>
                         <path d="M3 12L9 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
@@ -428,8 +432,8 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                         onClick={handleToggleFollow}
                         className={`py-3.5 px-4 rounded-lg transition-all duration-500 flex items-center justify-center ${
                           isFollowing
-                            ? 'bg-gray-50 shadow-sm shadow-gray-300 hover:shadow-md hover:from-blue-100/80 hover:via-blue-50 hover:to-blue-100'
-                            : 'bg-gradient-to-br from-blue-50/20 via-white to-blue-50/20  hover:from-blue-50/30 hover:via-white hover:to-purple-50/30 hover:border-blue-200/50 hover:shadow-sm'
+                            ? 'bg-gray-50 border border-gray-300 hover:shadow-md hover:from-blue-100/80 hover:via-blue-50 hover:to-blue-100'
+                            : 'bg-gray-50  hover:from-blue-50/30 hover:via-white hover:to-purple-50/30 hover:border-blue-200/50 hover:shadow-sm'
                         }`}
                         type="button"
                         aria-label={isFollowing ? 'Unfollow' : 'Follow'}
@@ -459,7 +463,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   {currentUser && (
 <button
   onClick={handleReserveClick}
-  className="w-28 px-4 py-3 rounded-lg transition-all duration-300  bg-slate-100 shadow-sm shadow-gray-300 text-gray-500 hover:shadow-md hover:from-blue-100/80 hover:via-blue-50 hover:to-blue-100 flex items-center justify-center text-sm"
+  className="w-28 px-4 py-3 rounded-lg border border-gray-300 transition-all duration-300  bg-gray-50 text-gray-500 hover:shadow-md hover:from-blue-100/80 hover:via-blue-50 hover:to-blue-100 flex items-center justify-center text-sm"
   type="button"
 >
                       Reserve
@@ -473,7 +477,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
       </div>
 
       {/* Navigation Tabs - MarketExplorer Style */}
-      <div className="py-5 border-y border-gray-200">
+      <div className="py-5 border-y border-gray-300">
         <div className="flex items-center justify-center">
           {tabs.map(({ key, label }, index) => {
             const isSelected = activeTab === key;
@@ -540,10 +544,10 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                       <h3 className="text-lg  text-gray-500 mb-1 text-center">
                         Add Service
                       </h3>
-                      <p className="text-xs text-gray-400 leading-relaxed text-center">
+                      <p className="text-xs text-gray-300 leading-relaxed text-center">
                         Create a new service offering
                       </p>
-                      <div className="opacity-90 mt-0.5 text-xs text-gray-400 font-light text-center">
+                      <div className="opacity-90 mt-0.5 text-xs text-gray-300 font-light text-center">
                         Click to get started
                       </div>
                     </div>
@@ -602,10 +606,10 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                       <h3 className="text-lg  text-gray-500 mb-1 text-center">
                         Add Team Member
                       </h3>
-                      <p className="text-xs text-gray-400 leading-relaxed text-center">
+                      <p className="text-xs text-gray-300 leading-relaxed text-center">
                         Invite a new team member
                       </p>
-                      <div className="opacity-90 mt-0.5 text-xs text-gray-400 font-light text-center">
+                      <div className="opacity-90 mt-0.5 text-xs text-gray-300 font-light text-center">
                         Click to get started
                       </div>
                     </div>
@@ -628,12 +632,12 @@ const ListingHead: React.FC<ListingHeadProps> = ({
           <div className="text-center text-gray-500 py-12">
             <div className="bg-white rounded-2xl p-8 border border-gray-100">
               <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300">
                   <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                 </svg>
               </div>
               <p className="font-medium text-lg mb-2">No reviews yet</p>
-              <p className="text-gray-400">Reviews from customers will appear here</p>
+              <p className="text-gray-300">Reviews from customers will appear here</p>
             </div>
           </div>
         )}
@@ -659,14 +663,14 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               <div className="col-span-full text-center text-gray-500 py-12">
                 <div className="bg-white rounded-2xl p-8 border border-gray-100">
                   <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300">
                       <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
                       <circle cx="9" cy="9" r="2" />
                       <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
                     </svg>
                   </div>
                   <p className="font-medium text-lg mb-2">No images yet</p>
-                  <p className="text-gray-400">Photos will be displayed here</p>
+                  <p className="text-gray-300">Photos will be displayed here</p>
                 </div>
               </div>
             )}
@@ -688,13 +692,13 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               <div className="col-span-full text-center text-gray-500 py-12">
                 <div className="bg-white rounded-2xl p-8 border border-gray-100">
                   <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300">
                       <polygon points="23 7 16 12 23 17 23 7" />
                       <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
                     </svg>
                   </div>
                   <p className="font-medium text-lg mb-2">No reels yet</p>
-                  <p className="text-gray-400">Video content will appear here</p>
+                  <p className="text-gray-300">Video content will appear here</p>
                 </div>
               </div>
             )}

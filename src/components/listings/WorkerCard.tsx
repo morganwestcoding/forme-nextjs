@@ -117,24 +117,25 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
     if (words.length === 0) return null;
 
     const VerificationBadge = () => (
-      <span className="inline-flex items-center align-middle ml-1.5 translate-y-[1px]">
+      <span className="inline-flex items-center align-middle ml-1.5 translate-y-[-1px]">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
-          width="20"
-          height="20"
-          fill="#EFF6FF" 
-          className="shrink-0 text-[#60A5FA] drop-shadow-sm"
+          width="24"
+          height="24"
+          fill="#60A5FA"
+          className="shrink-0 text-white/20 drop-shadow-sm"
           aria-label="Verified"
         >
           <path
             d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z"
-            stroke="currentColor"
-            strokeWidth="1.5"
+            stroke="white"
+            strokeWidth="1"
+            fill="#60A5FA"
           />
           <path
             d="M9 12.8929L10.8 14.5L15 9.5"
-            stroke="currentColor"
+            stroke="white"
             strokeWidth="1.5"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -142,6 +143,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
         </svg>
       </span>
     );
+
 
     if (words.length === 1) {
       // Single word - keep badge with it
@@ -193,7 +195,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
   return (
     <div
       onClick={handleCardClick}
-      className="cursor-pointer bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md overflow-hidden relative transition-all duration-300 hover:scale-[1.02] max-w-[250px]"
+      className="cursor-pointer bg-white rounded-lg border border-gray-300 hover:shadow-md overflow-hidden relative transition-all duration-300 hover:scale-[1.02] max-w-[250px]"
     >
       {/* Match ListingCard height structure */}
       <div className="relative h-[350px]">
@@ -211,7 +213,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
           <div className="relative">
             {/* Profile Image or Initials Circle */}
             {shouldShowImage ? (
-              <div className="w-24 h-24 rounded-full overflow-hidden shadow-lg ring-4 ring-white/50 relative">
+              <div className="w-24 h-24 rounded-full overflow-hidden shadow-lg border border-gray-300 relative">
                 <Image
                   src={profileImage}
                   alt={employee.fullName}
@@ -225,7 +227,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
               </div>
             ) : (
               <div
-                className="w-24 h-24 rounded-full flex items-center justify-center text-white font-semibold shadow-lg ring-4 ring-white/50"
+                className="w-24 h-24 rounded-full flex items-center justify-center text-white font-semibold shadow-lg border border-gray-300"
                 style={{ backgroundColor: avatarBg }}
                 aria-label="Employee initials"
                 title={employee.fullName}

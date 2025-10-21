@@ -50,7 +50,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ data, currentUser, disabled =
       onClick={handleCardClick}
       className="
         group cursor-pointer relative overflow-hidden
-        rounded-xl bg-white shadow-lg transition-all duration-300
+        rounded-lg bg-white shadow-lg transition-all duration-300
         hover:shadow-xl
         max-w-[250px]"
     >
