@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Lock, Mail, ArrowRight, Check, Zap, ChevronDown } from 'lucide-react';
+import { Lock, Mail, ArrowRight, Check, Zap, ChevronDown, AlertCircle } from 'lucide-react';
 
 function ExpandableSection({ title, children, defaultOpen = false }: { 
   title: string; 
@@ -34,28 +34,28 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailSubmitted, setEmailSubmitted] = useState(false);
+  const [emailError, setEmailError] = useState('');
+  const [emailLoading, setEmailLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null); // null = loading
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [waitlistCount, setWaitlistCount] = useState(15000); // Default fallback
 
   // Check authentication status on mount
   useEffect(() => {
     const checkAuth = () => {
       try {
-        // Use localStorage for persistence across browser sessions
         const auth = localStorage.getItem('forme_early_access');
         const authTimestamp = localStorage.getItem('forme_early_access_timestamp');
         
         if (auth === 'true' && authTimestamp) {
           const timestamp = parseInt(authTimestamp);
           const now = Date.now();
-          const oneWeek = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
+          const oneWeek = 7 * 24 * 60 * 60 * 1000;
           
-          // Check if authentication is still valid (within 7 days)
           if (now - timestamp < oneWeek) {
             setIsAuthenticated(true);
           } else {
-            // Clear expired authentication
             localStorage.removeItem('forme_early_access');
             localStorage.removeItem('forme_early_access_timestamp');
             setIsAuthenticated(false);
@@ -74,25 +74,83 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
     checkAuth();
   }, []);
 
-  const handleEmailSubmit = () => {
-    if (email) {
-      setEmailSubmitted(true);
-      console.log('Email submitted:', email);
-      
-      // Here you could send the email to your backend
-      // await fetch('/api/waitlist', { method: 'POST', body: JSON.stringify({ email }) });
-      
-      setTimeout(() => {
-        setEmailSubmitted(false);
+  // Fetch waitlist count
+  useEffect(() => {
+    const fetchWaitlistCount = async () => {
+      try {
+        const response = await fetch('/api/waitlist');
+        if (response.ok) {
+          const data = await response.json();
+          setWaitlistCount(data.count || 15000);
+        }
+      } catch (error) {
+        console.error('Error fetching waitlist count:', error);
+      }
+    };
+
+    fetchWaitlistCount();
+  }, []);
+
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const handleEmailSubmit = async () => {
+    if (!email.trim()) {
+      setEmailError('Email is required');
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      setEmailError('Please enter a valid email address');
+      return;
+    }
+
+    setEmailLoading(true);
+    setEmailError('');
+
+    try {
+      const response = await fetch('/api/waitlist', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email.trim().toLowerCase(),
+          source: 'coming_soon'
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setEmailSubmitted(true);
         setEmail('');
-      }, 2500);
+        // Update waitlist count
+        setWaitlistCount(prev => prev + 1);
+        
+        setTimeout(() => {
+          setEmailSubmitted(false);
+        }, 3000);
+      } else {
+        if (response.status === 409) {
+          setEmailError('Email already registered');
+        } else {
+          setEmailError(data.error || 'Failed to join waitlist');
+        }
+      }
+    } catch (error) {
+      console.error('Error submitting email:', error);
+      setEmailError('Network error. Please try again.');
+    } finally {
+      setEmailLoading(false);
     }
   };
 
   const handlePasswordSubmit = () => {
     if (password.toLowerCase() === 'sushi') {
       try {
-        // Store authentication with timestamp in localStorage for persistence
         localStorage.setItem('forme_early_access', 'true');
         localStorage.setItem('forme_early_access_timestamp', Date.now().toString());
         setIsAuthenticated(true);
@@ -185,10 +243,13 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
             defaultOpen={true}
           >
             <p className="text-sm text-gray-400 leading-relaxed mb-4">
-              The complete business ecosystem. Built for the future.
+             The complete business ecosystem. Built for the future.
+            </p>
+            <p className="text-sm text-gray-400 leading-relaxed mb-4">
+            Whether you're a solo entrepreneur or growing a team, ForMe gives you everything you need to run your business your way.
             </p>
             <p className="text-sm text-gray-400 leading-relaxed">
-              From team orchestration to payment processing. From storefront creation to community building. Everything your business needs, unified in one intelligent platform.
+            From client booking and payment processing to storefront creation, team coordination, and community building every tool is unified in one intelligent, all-in-one platform.
             </p>
           </ExpandableSection>
 
@@ -238,25 +299,53 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
                 <input
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleEmailSubmit()}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (emailError) setEmailError('');
+                  }}
+                  onKeyDown={(e) => e.key === 'Enter' && !emailLoading && handleEmailSubmit()}
                   placeholder="your@email.com"
-                  className="w-full bg-white/5 border border-white/10 rounded-lg pl-10 pr-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-all"
+                  disabled={emailLoading || emailSubmitted}
+                  className={`w-full bg-white/5 border rounded-lg pl-10 pr-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none transition-all disabled:opacity-50 ${
+                    emailError 
+                      ? 'border-red-500 focus:border-red-500' 
+                      : 'border-white/10 focus:border-blue-500'
+                  }`}
                 />
               </div>
               <button
                 onClick={handleEmailSubmit}
-                disabled={emailSubmitted}
+                disabled={emailLoading || emailSubmitted}
                 className="bg-white text-black font-medium px-4 py-2.5 rounded-lg hover:bg-blue-500 hover:text-white transition-all disabled:opacity-50 flex items-center"
               >
-                {emailSubmitted ? (
+                {emailLoading ? (
+                  <div className="w-4 h-4 border-2 border-gray-400 border-t-black rounded-full animate-spin" />
+                ) : emailSubmitted ? (
                   <Check className="w-4 h-4" />
                 ) : (
                   <ArrowRight className="w-4 h-4" />
                 )}
               </button>
             </div>
-            <p className="text-xs text-gray-500 mt-2">15,000+ already waiting</p>
+            
+            {/* Error message */}
+            {emailError && (
+              <div className="flex items-center gap-2 mt-2 text-red-400 text-xs">
+                <AlertCircle className="w-3 h-3" />
+                {emailError}
+              </div>
+            )}
+            
+            {/* Success message */}
+            {emailSubmitted && (
+              <p className="text-xs text-green-400 mt-2">
+                ✓ Successfully joined the waitlist!
+              </p>
+            )}
+            
+            <p className="text-xs text-gray-500 mt-2">
+              {waitlistCount.toLocaleString()}+ already waiting
+            </p>
           </div>
 
           {/* Password Section */}

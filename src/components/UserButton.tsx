@@ -17,6 +17,7 @@ import useRentModal from "@/app/hooks/useListingModal";
 import useProfileModal from "@/app/hooks/useProfileModal";
 import useSubscribeModal from "@/app/hooks/useSubscribeModal";
 import { SafePost, SafeUser } from "@/app/types";
+import { clearEarlyAccess } from "@/app/utils/earlyAccess";
 
 interface UserButtonProps {
   currentUser?: SafeUser | null;
@@ -85,6 +86,11 @@ const UserButton: React.FC<UserButtonProps> = ({
   const handleListings = handleClick(() => router.push("/properties"));
   const handleLicensing = handleClick(() => router.push("/licensing"));
   const handleAnalytics = handleClick(() => router.push("/analytics"));
+  const handleClearEarlyAccess = handleClick(() => {
+    if (window.confirm('Are you sure you want to clear early access? You will need the access code to re-enter the app.')) {
+      clearEarlyAccess();
+    }
+  });
 
   const buttonClass = noBg
     ? "flex items-center justify-start cursor-pointer outline-none touch-manipulation"
@@ -143,12 +149,25 @@ const UserButton: React.FC<UserButtonProps> = ({
             <DropdownMenuItem onClick={handleSubscribe}>Subscription</DropdownMenuItem>
             <DropdownMenuItem onClick={handleLicensing}>Licensing</DropdownMenuItem>
             <DropdownMenuSeparator />
+            <DropdownMenuItem 
+              onClick={handleClearEarlyAccess}
+              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+            >
+              Clear Early Access
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={handleSignOut}>Sign Out</DropdownMenuItem>
           </>
         ) : (
           <>
             <DropdownMenuItem onClick={handleLogin}>Login</DropdownMenuItem>
             <DropdownMenuItem onClick={handleRegister}>Signup</DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem 
+              onClick={handleClearEarlyAccess}
+              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+            >
+              Clear Early Access
+            </DropdownMenuItem>
           </>
         )}
       </DropdownMenuContent>
