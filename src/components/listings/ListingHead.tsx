@@ -111,6 +111,10 @@ const ListingHead: React.FC<ListingHeadProps> = ({
     rentModal.onOpen(listing);
   };
 
+  const handleGalleryClick = () => {
+    setActiveTab('Images');
+  };
+
   const validServices = useMemo(
     () =>
       (Services || []).filter(
@@ -194,7 +198,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
       {/* Header - Everything in ONE DIV */}
       <div className="w-full relative">
         {/* SINGLE CONTAINER: Image and content all in one div */}
-        <div className="w-full rounded-lg p-6 border border-gray-300 bg-white relative min-h-[151px]">
+        <div className="w-full rounded-xl p-6 border border-gray-300 bg-white relative min-h-[151px]">
           {/* Image positioned on the left */}
           <div className="absolute left-6 top-6">
             <div className="w-[140px] h-[140px] shadow-sm rounded-lg overflow-hidden relative hover:shadow-md transition-shadow group border border-gray-300">
@@ -203,6 +207,54 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 alt={title}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
               />
+              
+{/* Gallery Icon - Bottom Right Corner */}
+<div className="absolute bottom-3 right-2.5">
+  <div
+    onClick={handleGalleryClick}
+    className="hover:scale-105 transition-transform cursor-pointer"
+    aria-label="View gallery"
+    role="button"
+    title="View gallery"
+  >
+    <svg 
+      xmlns="http://www.w3.org/2000/svg" 
+      viewBox="0 0 24 24" 
+      width="28" 
+      height="28" 
+      className="drop-shadow-lg"
+    >
+      <path 
+        d="M3.88884 9.66294C4.39329 10 5.09552 10 6.49998 10C7.90445 10 8.60668 10 9.11113 9.66294C9.32951 9.51702 9.51701 9.32952 9.66292 9.11114C9.99998 8.60669 9.99998 7.90446 9.99998 6.5C9.99998 5.09554 9.99998 4.39331 9.66292 3.88886C9.51701 3.67048 9.32951 3.48298 9.11113 3.33706C8.60668 3 7.90445 3 6.49998 3C5.09552 3 4.39329 3 3.88884 3.33706C3.67046 3.48298 3.48296 3.67048 3.33705 3.88886C2.99998 4.39331 2.99998 5.09554 2.99998 6.5C2.99998 7.90446 2.99998 8.60669 3.33705 9.11114C3.48296 9.32952 3.67046 9.51702 3.88884 9.66294Z" 
+        fill="rgba(255,255,255,0.25)"
+        stroke="rgba(255,255,255,0.6)" 
+        strokeWidth="1"
+        strokeLinejoin="round"
+      />
+      <path 
+        d="M14.8888 9.66294C15.3933 10 16.0955 10 17.5 10C18.9044 10 19.6067 10 20.1111 9.66294C20.3295 9.51702 20.517 9.32952 20.6629 9.11114C21 8.60669 21 7.90446 21 6.5C21 5.09554 21 4.39331 20.6629 3.88886C20.517 3.67048 20.3295 3.48298 20.1111 3.33706C19.6067 3 18.9044 3 17.5 3C16.0955 3 15.3933 3 14.8888 3.33706C14.6705 3.48298 14.483 3.67048 14.337 3.88886C14 4.39331 14 5.09554 14 6.5C14 7.90446 14 8.60669 14.337 9.11114C14.483 9.32952 14.6705 9.51702 14.8888 9.66294Z" 
+        fill="rgba(255,255,255,0.25)"
+        stroke="rgba(255,255,255,0.6)" 
+        strokeWidth="1"
+        strokeLinejoin="round"
+      />
+      <path 
+        d="M3.88884 20.6629C4.39329 21 5.09552 21 6.49998 21C7.90445 21 8.60668 21 9.11113 20.6629C9.32951 20.517 9.51701 20.3295 9.66292 20.1111C9.99998 19.6067 9.99998 18.9045 9.99998 17.5C9.99998 16.0955 9.99998 15.3933 9.66292 14.8889C9.51701 14.6705 9.32951 14.483 9.11113 14.3371C8.60668 14 7.90445 14 6.49998 14C5.09552 14 4.39329 14 3.88884 14.3371C3.67046 14.483 3.48296 14.6705 3.33705 14.8889C2.99998 15.3933 2.99998 16.0955 2.99998 17.5C2.99998 18.9045 2.99998 19.6067 3.33705 20.1111C3.48296 20.3295 3.67046 20.517 3.88884 20.6629Z" 
+        fill="rgba(255,255,255,0.25)"
+        stroke="rgba(255,255,255,0.6)" 
+        strokeWidth="1"
+        strokeLinejoin="round"
+      />
+      <path 
+        d="M14.8888 20.6629C15.3933 21 16.0955 21 17.5 21C18.9044 21 19.6067 21 20.1111 20.6629C20.3295 20.517 20.517 20.3295 20.6629 20.1111C21 19.6067 21 18.9045 21 17.5C21 16.0955 21 15.3933 20.6629 14.8889C20.517 14.6705 20.3295 14.483 20.1111 14.3371C19.6067 14 18.9044 14 17.5 14C16.0955 14 15.3933 14 14.8888 14.3371C14.6705 14.483 14.483 14.6705 14.337 14.8889C14 15.3933 14 16.0955 14 17.5C14 18.9045 14 19.6067 14.337 20.1111C14.483 20.3295 14.6705 20.517 14.8888 20.6629Z" 
+        fill="rgba(255,255,255,0.25)"
+        stroke="rgba(255,255,255,0.6)" 
+        strokeWidth="1"
+        strokeLinejoin="round"
+      />
+    </svg>
+  </div>
+</div>
             </div>
           </div>
 
@@ -338,32 +390,32 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   </h1>
 
                   {/* Verified SVG next to the title */}
-<div className="inline-flex">
-      <span className="inline-flex items-center align-middle translate-y-[-1px]">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          width="24"
-          height="24"
-          fill="#60A5FA"
-          className="shrink-0 text-white/20 drop-shadow-sm"
-          aria-label="Verified"
-        >
-          <path
-            d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z"
-            stroke="white"
-            strokeWidth="1"
-            fill="#60A5FA"
-          />
-          <path
-            d="M9 12.8929L10.8 14.5L15 9.5"
-            stroke="white"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </span>
+                  <div className="inline-flex">
+                    <span className="inline-flex items-center align-middle translate-y-[-1px]">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        height="24"
+                        fill="#60A5FA"
+                        className="shrink-0 text-white/20 drop-shadow-sm"
+                        aria-label="Verified"
+                      >
+                        <path
+                          d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z"
+                          stroke="white"
+                          strokeWidth="1"
+                          fill="#60A5FA"
+                        />
+                        <path
+                          d="M9 12.8929L10.8 14.5L15 9.5"
+                          stroke="white"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </span>
 </div>
                 </div>
 
@@ -371,7 +423,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 <div className="mb-4">
                   <span className="inline-flex items-center text-sm text-gray-500">
                     <span>{city}{state ? `, ${state}` : ''}</span>
-                    <span className="mx-2 text-gray-300">•</span>
+                    <span className="mx-2 text-gray-500">•</span>
                     <OpenStatus 
                       storeHours={storeHours}
                     />
@@ -432,8 +484,8 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                         onClick={handleToggleFollow}
                         className={`py-3.5 px-4 rounded-lg transition-all duration-500 flex items-center justify-center ${
                           isFollowing
-                            ? 'bg-gray-50 border border-gray-300 hover:shadow-md hover:from-blue-100/80 hover:via-blue-50 hover:to-blue-100'
-                            : 'bg-gray-50  hover:from-blue-50/30 hover:via-white hover:to-purple-50/30 hover:border-blue-200/50 hover:shadow-sm'
+                            ? 'bg-blue-50 border border-[#60A5FA] hover:shadow-md hover:from-blue-100/80 hover:via-blue-50 hover:to-blue-100'
+                            : 'bg-gray-50 border border-gray-300 hover:from-blue-50/30 hover:via-white hover:to-purple-50/30 hover:border-blue-200/50 hover:shadow-sm'
                         }`}
                         type="button"
                         aria-label={isFollowing ? 'Unfollow' : 'Follow'}
@@ -448,7 +500,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                           strokeWidth="1.75" 
                           strokeLinecap="round" 
                           strokeLinejoin="round"
-                          className={isFollowing ? 'text-gray-500' : 'text-gray-500'}
+                          className={isFollowing ? 'text-[#60A5FA]' : 'text-gray-500'}
                         >
                           <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
                           <circle cx="9" cy="7" r="4"/>
