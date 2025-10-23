@@ -39,7 +39,7 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
   const [showPassword, setShowPassword] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [waitlistCount, setWaitlistCount] = useState(15000); // Default fallback
+  const [waitlistCount, setWaitlistCount] = useState<number | null>(null); // Start with null to prevent flash
 
   // Check authentication status on mount
   useEffect(() => {
@@ -81,7 +81,7 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
         const response = await fetch('/api/waitlist');
         if (response.ok) {
           const data = await response.json();
-          setWaitlistCount(data.count || 15000);
+          setWaitlistCount(data.count);
         }
       } catch (error) {
         console.error('Error fetching waitlist count:', error);
@@ -128,7 +128,7 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
         setEmailSubmitted(true);
         setEmail('');
         // Update waitlist count
-        setWaitlistCount(prev => prev + 1);
+        setWaitlistCount(prev => (prev || 0) + 1);
         
         setTimeout(() => {
           setEmailSubmitted(false);
@@ -343,9 +343,11 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
               </p>
             )}
             
-            <p className="text-xs text-gray-500 mt-2">
-              {waitlistCount.toLocaleString()}+ already waiting
-            </p>
+            {waitlistCount !== null && (
+              <p className="text-xs text-gray-500 mt-2">
+                {waitlistCount > 0 ? `${waitlistCount.toLocaleString()} already waiting` : 'Be the first to join!'}
+              </p>
+            )}
           </div>
 
           {/* Password Section */}
