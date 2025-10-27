@@ -113,7 +113,7 @@ const SmartBadgeWorker: React.FC<SmartBadgeWorkerProps> = ({
   return (
     <div className="flex items-center gap-2">
       {/* Rating container - keep existing styling */}
-      <div className="border border-gray-300 rounded-md px-3 py-2 bg-gray-50">
+      <div className="border border-gray-300 rounded-lg px-3 py-2 bg-gray-50">
         <div 
           className="flex items-center  text-xs"
         >
@@ -136,7 +136,7 @@ const SmartBadgeWorker: React.FC<SmartBadgeWorkerProps> = ({
       {/* Book Now button - separate styled button */}
       <button 
         onClick={handleBookNowClick}
-        className="border border-gray-300 text-gray-500 rounded-md px-3 py-2 bg-gray-50 hover:bg-[#60A5FA] transition-colors duration-200 text-xs"
+        className="border border-gray-300 text-gray-500 rounded-lg px-3 py-2 bg-gray-50 hover:bg-[#60A5FA] transition-colors duration-200 text-xs"
         type="button"
       >
         Reserve

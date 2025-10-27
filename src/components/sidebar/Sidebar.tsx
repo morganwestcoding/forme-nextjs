@@ -400,7 +400,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             {/* Settings Button at Bottom */}
             <div className="flex justify-center mb-5">
               <button 
-                className="px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg hover:bg-gray-100 text-gray-500 transition-all duration-200"
+                className="px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl hover:bg-gray-100 text-gray-500 transition-all duration-200"
                 onClick={() => {/* Add settings functionality */}}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"  fill="none">

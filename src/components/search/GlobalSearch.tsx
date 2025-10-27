@@ -176,7 +176,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
         onFocus={() => results.length && setOpen(true)}
         onKeyDown={onKeyDown}
         placeholder={placeholder}
-        className="w-full h-12 pl-12 pr-4 text-sm border border-gray-300 rounded-lg outline-none focus:ring-1 focus:ring-[#60A5FA] bg-white placeholder-gray-500"
+        className="w-full h-12 pl-12 pr-4 text-sm border border-gray-300 rounded-xl outline-none focus:ring-1 focus:ring-[#60A5FA] bg-white placeholder-gray-500"
       />
 
       {/* Dropdown */}

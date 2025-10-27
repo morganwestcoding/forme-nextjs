@@ -195,7 +195,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
   return (
     <div
       onClick={handleCardClick}
-      className="cursor-pointer bg-white rounded-lg border border-gray-300 hover:shadow-md overflow-hidden relative transition-all duration-300 hover:scale-[1.02] max-w-[250px]"
+      className="cursor-pointer bg-white rounded-xl border border-gray-300 overflow-hidden relative transition-all duration-300 hover:shadow-lg hover:shadow-blue-100/50 hover:border-blue-200 max-w-[250px]"
     >
       {/* Match ListingCard height structure */}
       <div className="relative h-[350px]">

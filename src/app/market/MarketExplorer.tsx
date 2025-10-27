@@ -112,7 +112,7 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
 {/* Filters Button */}
 <button
   onClick={handleOpenFilters}
-  className="text-gray-500 bg-white border border-gray-300 py-3 px-4 rounded-lg hover:from-blue-50/30 hover:via-white hover:border-[#60A5FA] hover:text-[#60A5FA] hover:bg-blue-50  transition-all duration-300 flex items-center space-x-2 text-sm relative hover:shadow-sm"
+  className="text-gray-500 bg-white border border-gray-300 py-3 px-4 rounded-xl hover:from-blue-50/30 hover:via-white hover:border-[#60A5FA] hover:text-[#60A5FA] hover:bg-blue-50  transition-all duration-300 flex items-center space-x-2 text-sm relative hover:shadow-sm"
   type="button"
 >
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" color="currentColor" fill="none">
@@ -133,7 +133,7 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
 {/* Create Button */}
 <button
   onClick={handleCreateListing}
-  className="flex items-center justify-center py-3 space-x-2 px-4 rounded-lg border border-gray-300 text-gray-500 transition-all duration-300 bg-white hover:border-[#60A5FA] hover:text-[#60A5FA] hover:bg-blue-50 hover:shadow-sm"
+  className="flex items-center justify-center py-3 space-x-2 px-4 rounded-xl border border-gray-300 text-gray-500 transition-all duration-300 bg-white hover:border-[#60A5FA] hover:text-[#60A5FA] hover:bg-blue-50 hover:shadow-sm"
   type="button"
 >
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" color="currentColor" fill="none">
@@ -157,7 +157,7 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
                 <button
                   onClick={() => handleCategorySelect(category.label)}
                   className={`
-                    px-6 py-2.5 text-sm  transition-colors duration-200 rounded-lg
+                    px-6 py-2.5 text-sm  transition-colors duration-200 rounded-xl
                     ${isSelected 
                       ? 'text-[#60A5FA] hover:text-[#4F94E5]' 
                       : 'text-gray-500 hover:text-gray-700 '

@@ -131,7 +131,7 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
       {/* Rating Button */}
       <button
         onClick={handleRatingClick}
-        className="rounded-md px-3 py-2 backdrop-blur-sm bg-gray-50/10 hover:bg-amber-400/30 border border-white/40 transition-all duration-200"
+        className="rounded-lg px-3 py-2 backdrop-blur-sm bg-gray-50/10 hover:bg-amber-400/30 border border-white/40 transition-all duration-200"
         type="button"
       >
         <div className="flex items-center text-white text-xs gap-1 hover:brightness-110 transition-all duration-200">
@@ -150,7 +150,7 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
       {/* Time Status Button */}
       <button
         onClick={handleTimeClick}
-        className={`rounded-md px-3 py-2 backdrop-blur-sm transition-all duration-200 ${getStatusBackground(timeStatus.color)} ${getStatusBorder(timeStatus.color)}`}
+        className={`rounded-lg px-3 py-2 backdrop-blur-sm transition-all duration-200 ${getStatusBackground(timeStatus.color)} ${getStatusBorder(timeStatus.color)}`}
         type="button"
       >
         <div 

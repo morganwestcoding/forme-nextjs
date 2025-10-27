@@ -471,7 +471,7 @@ const MarketContent: React.FC<MarketContentProps> = ({
                         />
 
                         <div id="trending-rail">
-                          <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
+                          <div className={`grid ${gridColsClass} gap-4 transition-all pb-8 duration-300`}>
                             {currentTrendingItems.map(({ employee, listing }, idx) => {
                               const li: any = listing as any;
                               const imageSrc =
