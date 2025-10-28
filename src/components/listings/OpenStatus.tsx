@@ -97,11 +97,12 @@ const OpenStatus: React.FC<OpenStatusProps> = ({ storeHours, className = '' }) =
   if (!storeHours || storeHours.length === 0) return null;
 
   return (
-    <span className={`inline-flex items-center ${
-      isOpen ? 'text-emerald-500' : 'text-rose-400'
-    } ${className}`}>
-      {displayText}
-    </span>
+    <div
+      className={`w-6 h-6 rounded-full border-2 border-white drop-shadow-sm ${
+        isOpen ? 'bg-emerald-500' : 'bg-rose-400'
+      } ${className}`}
+      title={displayText}
+    />
   );
 };
 

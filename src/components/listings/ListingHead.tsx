@@ -8,10 +8,10 @@ import WorkerCard from './WorkerCard';
 import PostCard from '../feed/PostCard';
 import QRModal from '../modals/QRModal';
 import HeartButton from '../HeartButton';
+import OpenStatus from './OpenStatus';
 import { SafePost, SafeUser, SafeListing } from '@/app/types';
 import useReservationModal from '@/app/hooks/useReservationModal';
 import useRentModal from '@/app/hooks/useListingModal';
-import OpenStatus from './OpenStatus';
 
 interface ServiceItem {
   id: string;
@@ -43,6 +43,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
   const router = useRouter();
 
   const { title, location, galleryImages, imageSrc, employees = [], user, storeHours = [] } = listing;
+  const address = (listing as any).address;
 
   const initialFollowers = useMemo<string[]>(
     () => (Array.isArray((listing as any).followers) ? (listing as any).followers : []),
@@ -226,7 +227,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
           </div>
 
           {/* Content area with left margin to account for image */}
-          <div className="ml-[163px] relative">
+          <div className="ml-[163px] relative flex items-center min-h-[140px]">
             {/* Three-dot menu - top right */}
             <div className="absolute top-0 right-0">
               <button
@@ -346,91 +347,96 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               )}
             </div>
 
-            <div className="flex flex-col h-[139px] justify-end py-1">
-              {/* Title Row */}
-              <div>
-                <div className="flex items-center gap-2 mb-3">
-                  <h1
-                    className="text-2xl font-bold tracking-tight text-black"
-                  >
+            <div className="flex-1">
+              <div className="space-y-3">
+                {/* Title with Badge and Heart */}
+                <div className="flex items-center gap-2.5">
+                  <h1 className="text-2xl font-bold tracking-tight text-black">
                     {title}
                   </h1>
 
-                  {/* Verified SVG next to the title */}
-                  <div className="inline-flex">
-                    <span className="inline-flex items-center align-middle translate-y-[-1px]">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        height="24"
+                  {/* Verified Badge */}
+                  <div className="flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      height="24"
+                      fill="#60A5FA"
+                      className="shrink-0 text-white drop-shadow-sm"
+                      aria-label="Verified"
+                    >
+                      <path
+                        d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z"
+                        stroke="white"
+                        strokeWidth="1"
                         fill="#60A5FA"
-                        className="shrink-0 text-white drop-shadow-sm"
-                        aria-label="Verified"
-                      >
-                        <path
-                          d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z"
-                          stroke="white"
-                          strokeWidth="1"
-                          fill="#60A5FA"
-                        />
-                        <path
-                          d="M9 12.8929L10.8 14.5L15 9.5"
-                          stroke="white"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </span>
-</div>
-                </div>
+                      />
+                      <path
+                        d="M9 12.8929L10.8 14.5L15 9.5"
+                        stroke="white"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </div>
 
-                {/* Location & Status with separator */}
-                <div>
-                  <span className="inline-flex items-center text-sm text-gray-500">
-                    <span>{location}</span>
-                    <span className="mx-2 text-gray-500">•</span>
-                    <OpenStatus
-                      storeHours={storeHours}
+                  {/* Open Status Indicator */}
+                  <div className="flex items-center">
+                    <OpenStatus storeHours={storeHours} />
+                  </div>
+
+                  {/* Heart Button */}
+                  <div className="flex items-center" style={{ width: '24px', height: '24px' }}>
+                    <HeartButton
+                      listingId={listing.id}
+                      currentUser={currentUser}
+                      variant="listingHead"
                     />
-                  </span>
+                  </div>
                 </div>
-              </div>
 
-              {/* Stats Counters with Buttons */}
-              <div className="flex items-center justify-between">
-                {/* Stats - Minimalist Text Style */}
-                <div className="flex items-center gap-4">
+                {/* Address, City, State */}
+                <div className="text-sm text-gray-500">
+                  {address && location ? `${address}, ${location}` : address || location}
+                </div>
+
+                {/* Counter */}
+                <div className="flex items-center gap-3">
                   {/* Rating Counter */}
                   <button
                     onClick={() => setActiveTab('Reviews')}
-                    className="flex items-center gap-1.5 hover:opacity-70 transition-opacity"
+                    className="flex items-center gap-1.5 hover:text-[#60A5FA] transition-colors group"
                     type="button"
                   >
-                    <span className="text-sm font-semibold text-black">4.8</span>
-                    <span className="text-sm text-gray-400">rating</span>
+                    <span className="text-base font-bold text-black group-hover:text-[#60A5FA] transition-colors">4.8</span>
+                    <span className="text-sm text-gray-500 group-hover:text-[#60A5FA] transition-colors">rating</span>
                   </button>
 
-                  <span className="text-gray-300">·</span>
+                  <span className="text-gray-300 text-sm">·</span>
 
                   {/* Posts Counter */}
                   <div className="flex items-center gap-1.5">
-                    <span className="text-sm font-semibold text-black">{posts?.length || 0}</span>
-                    <span className="text-sm text-gray-400">posts</span>
+                    <span className="text-base font-bold text-black">{posts?.length || 0}</span>
+                    <span className="text-sm text-gray-500">posts</span>
                   </div>
 
-                  <span className="text-gray-300">·</span>
+                  <span className="text-gray-300 text-sm">·</span>
 
                   {/* Followers Counter */}
                   <div className="flex items-center gap-1.5">
-                    <span className="text-sm font-semibold text-black">{followers.length}</span>
-                    <span className="text-sm text-gray-400">followers</span>
+                    <span className="text-base font-bold text-black">{followers.length}</span>
+                    <span className="text-sm text-gray-500">followers</span>
                   </div>
                 </div>
+              </div>
 
-                {/* Buttons - Right Side */}
-                <div className="flex items-center gap-1.5 ml-auto">
+            </div>
+
+            {/* Buttons - Right Side */}
+            <div className="absolute bottom-1 right-0">
+                <div className="flex items-center gap-1.5">
                   {/* QR Code Button - Show for owners and employees ONLY */}
                   {canShowQR ? (
                     <button
@@ -478,7 +484,6 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   )}
                 </div>
               </div>
-            </div>
           </div>
         </div>
       </div>
