@@ -16,9 +16,9 @@ const styles = `
   }
 
   .video-controls {
-    backdrop-filter: blur(20px);
-    background: rgba(0, 0, 0, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px) saturate(180%);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.18);
   }
 
   @keyframes avatarFade {
@@ -65,6 +65,11 @@ const PostModal = () => {
   const [touchStartTime, setTouchStartTime] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState(0);
+
+  // Update currentPostIndex when initialIndex changes (new post clicked)
+  useEffect(() => {
+    setCurrentPostIndex(initialIndex);
+  }, [initialIndex]);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const touchVelocityRef = useRef(0);
@@ -739,83 +744,65 @@ useEffect(() => {
                       </div>
                     )}
 
-                    <div className="absolute bottom-0 left-0 right-0 p-6 z-20">
-                      <div className="video-controls p-6 rounded-2xl max-w-lg shadow-2xl">
-                        <div className="flex items-center gap-3 mb-4">
-                          <div className="relative w-12 h-12 flex-shrink-0">
-                            <Image
-                              src={postData.user.image || '/images/placeholder.jpg'}
-                              alt={postData.user.name || 'User'}
-                              fill
-                              className="rounded-full object-cover border-2 border-white/30"
-                            />
-                          </div>
-                          <div className="flex items-center gap-2 flex-1">
-                            <h3 className="font-semibold text-white text-base drop-shadow-lg">
-                              {postData.user.name || 'Anonymous'}
-                            </h3>
-                          </div>
-                        </div>
-
-                        <div className="mb-3">
-                          <p className="text-white/80 text-sm drop-shadow-lg font-medium">{formattedDate}</p>
-                        </div>
-
+                    <div className="absolute bottom-0 left-0 right-0 px-6 pb-8 z-20">
+                      <div className="video-controls px-4 py-3 rounded-xl max-w-lg">
+                        {/* Caption with truncation */}
                         {postData.content && (
-                          <div className="mb-4">
-                            <p className="text-white text-sm leading-relaxed drop-shadow-lg">
-                              {postData.content}
-                            </p>
+                          <div className="mb-3">
+                            <p className="font-semibold text-white text-sm mb-1">{postData.user.name || 'Anonymous'}</p>
+                            <p className="text-white/90 text-sm leading-relaxed line-clamp-2">{postData.content}</p>
                           </div>
                         )}
-                        
+
                         {postData.mediaType === 'video' && (
-                          <div className="space-y-3">
-                            <div 
-                              className="w-full h-1.5 bg-white/20 rounded-full cursor-pointer hover:bg-white/30 transition-colors"
+                          <div className="space-y-2">
+                            {/* Progress bar */}
+                            <div
+                              className="w-full h-1 bg-white/20 rounded-full cursor-pointer hover:h-1.5 transition-all"
                               onClick={(e) => handleProgressClick(postData.id, e)}
                             >
-                              <div 
-                                className="h-full bg-white rounded-full transition-all duration-150 shadow-sm"
+                              <div
+                                className="h-full bg-white rounded-full transition-all duration-150"
                                 style={{ width: `${videoState.duration ? (videoState.currentTime / videoState.duration) * 100 : 0}%` }}
                               />
                             </div>
-                            
-                            <div className="flex items-center justify-between text-white text-sm">
-                              <div className="flex items-center gap-3">
-                                <button 
+
+                            {/* Controls row */}
+                            <div className="flex items-center justify-between text-white text-xs">
+                              <div className="flex items-center gap-2">
+                                <button
                                   onClick={() => handlePlayPause(postData.id)}
-                                  className="w-10 h-10 flex items-center justify-center hover:bg-white/20 rounded-full transition-all duration-200 hover:scale-105"
+                                  className="w-7 h-7 flex items-center justify-center hover:bg-white/20 rounded-full transition-all"
                                 >
                                   {videoState.isPlaying ? (
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                                       <rect x="6" y="4" width="4" height="16" rx="1" />
                                       <rect x="14" y="4" width="4" height="16" rx="1" />
                                     </svg>
                                   ) : (
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                                       <polygon points="5,3 19,12 5,21" />
                                     </svg>
                                   )}
                                 </button>
-                                
-                                <span className="font-mono text-white/80 font-medium">
+
+                                <span className="font-mono text-white/90 text-xs">
                                   {formatTime(videoState.currentTime)} / {formatTime(videoState.duration)}
                                 </span>
                               </div>
-                              
-                              <button 
+
+                              <button
                                 onClick={() => handleMuteToggle(postData.id)}
-                                className="w-10 h-10 flex items-center justify-center hover:bg-white/20 rounded-full transition-all duration-200 hover:scale-105"
+                                className="w-7 h-7 flex items-center justify-center hover:bg-white/20 rounded-full transition-all"
                               >
                                 {videoState.isMuted ? (
-                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                     <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" />
                                     <line x1="23" y1="9" x2="17" y2="15" />
                                     <line x1="17" y1="9" x2="23" y2="15" />
                                   </svg>
                                 ) : (
-                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                     <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" />
                                     <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
                                   </svg>
@@ -845,67 +832,54 @@ useEffect(() => {
                             />
                             
                             <div className="absolute bottom-4 left-0 right-0 px-4 z-30">
-                              <div className="video-controls rounded-2xl p-6 text-white shadow-2xl">
-                                <div className="flex items-center gap-3 mb-4">
-                                  <div className="relative w-10 h-10">
-                                    <Image
-                                      src={postData.user.image || '/images/placeholder.jpg'}
-                                      alt={postData.user.name || 'User'}
-                                      fill
-                                      className="rounded-full object-cover border-2 border-white/20"
-                                    />
-                                  </div>
-                                  <div className="flex-1">
-                                    <p className="font-semibold text-sm">{postData.user.name || 'Anonymous'}</p>
-                                    <p className="text-xs text-white/70">{formattedDate}</p>
-                                  </div>
-                                </div>
-                                
+                              <div className="video-controls rounded-xl px-4 py-3 text-white">
+                                {/* Caption with truncation */}
                                 {postData.content && (
-                                  <div className="mb-4">
-                                    <p className="text-sm leading-relaxed text-white/90">
-                                      {postData.content}
-                                    </p>
+                                  <div className="mb-3">
+                                    <p className="font-semibold text-white text-sm mb-1">{postData.user.name || 'Anonymous'}</p>
+                                    <p className="text-white/90 text-sm leading-relaxed line-clamp-2">{postData.content}</p>
                                   </div>
                                 )}
-                                
-                                <div className="space-y-3">
-                                  <div 
-                                    className="w-full h-1.5 bg-white/20 rounded-full cursor-pointer hover:h-2 transition-all duration-200"
+
+                                <div className="space-y-2">
+                                  {/* Progress bar */}
+                                  <div
+                                    className="w-full h-1 bg-white/20 rounded-full cursor-pointer hover:h-1.5 transition-all"
                                     onClick={(e) => handleProgressClick(postData.id, e)}
                                   >
-                                    <div 
-                                      className="h-full bg-gradient-to-r from-blue-400 to-purple-500 rounded-full transition-all duration-300 shadow-lg"
+                                    <div
+                                      className="h-full bg-white rounded-full transition-all duration-150"
                                       style={{ width: `${videoState.duration ? (videoState.currentTime / videoState.duration) * 100 : 0}%` }}
                                     />
                                   </div>
-                                  
-                                  <div className="flex items-center justify-between text-white text-sm">
-                                    <div className="flex items-center gap-3">
-                                      <button 
+
+                                  {/* Controls row */}
+                                  <div className="flex items-center justify-between text-white text-xs">
+                                    <div className="flex items-center gap-2">
+                                      <button
                                         onClick={() => handlePlayPause(postData.id)}
-                                        className="w-8 h-8 flex items-center justify-center hover:bg-white/20 rounded-full transition-all duration-200 hover:scale-105"
+                                        className="w-7 h-7 flex items-center justify-center hover:bg-white/20 rounded-full transition-all"
                                       >
                                         {videoState.isPlaying ? (
-                                          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                                             <rect x="6" y="4" width="4" height="16" rx="1" />
                                             <rect x="14" y="4" width="4" height="16" rx="1" />
                                           </svg>
                                         ) : (
-                                          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                                             <polygon points="5,3 19,12 5,21" />
                                           </svg>
                                         )}
                                       </button>
-                                      
-                                      <span className="font-mono text-white/80 font-medium">
+
+                                      <span className="font-mono text-white/90 text-xs">
                                         {formatTime(videoState.currentTime)} / {formatTime(videoState.duration)}
                                       </span>
                                     </div>
-                                    
-                                    <button 
+
+                                    <button
                                       onClick={() => handleMuteToggle(postData.id)}
-                                      className="w-8 h-8 flex items-center justify-center hover:bg-white/20 rounded-full transition-all duration-200 hover:scale-105"
+                                      className="w-7 h-7 flex items-center justify-center hover:bg-white/20 rounded-full transition-all"
                                     >
                                       {videoState.isMuted ? (
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
