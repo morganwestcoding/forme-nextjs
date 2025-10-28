@@ -83,7 +83,6 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
   const handleMouseLeave = () => {
     if (isVideo && videoRef.current) {
       videoRef.current.pause();
-      videoRef.current.currentTime = 0;
     }
   };
 
@@ -107,7 +106,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
         <video
           ref={videoRef}
           src={post.mediaUrl || post.imageSrc || ''}
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+          className="absolute inset-0 w-full h-full object-cover"
           muted
           loop
           playsInline
@@ -120,7 +119,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
         src={post.mediaUrl || post.imageSrc || ''}
         alt={`Post by ${post.user.name}`}
         fill
-        className={`object-cover transition-transform duration-500 group-hover:scale-[1.03] ${
+        className={`object-cover ${
           imageLoaded ? 'opacity-100' : 'opacity-0'
         }`}
         onLoad={() => setImageLoaded(true)}
@@ -136,13 +135,13 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       className="
-        group cursor-pointer relative overflow-hidden
-        rounded-xl bg-white shadow-lg transition-all duration-300
-        hover:shadow-xl
+        group cursor-pointer relative
+        rounded-xl border border-gray-300 bg-white transition-all duration-300
+        hover:-translate-y-1 hover:shadow-md
         max-w-[250px]"
     >
       {/* Background media/content */}
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0 overflow-hidden rounded-xl">
         {renderBackground()}
         
         {/* Subtle gradient overlay - only at the bottom for text readability */}

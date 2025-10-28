@@ -7,18 +7,33 @@ const styles = `
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-  
+
   .ultra-smooth {
     will-change: transform;
     transform: translateZ(0);
     backface-visibility: hidden;
     perspective: 1000px;
   }
-  
+
   .video-controls {
     backdrop-filter: blur(20px);
     background: rgba(0, 0, 0, 0.8);
     border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  @keyframes avatarFade {
+    0% {
+      opacity: 0;
+      filter: blur(10px);
+    }
+    100% {
+      opacity: 1;
+      filter: blur(0px);
+    }
+  }
+
+  .avatar-trippy {
+    animation: avatarFade 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   }
 `;
 
@@ -56,11 +71,10 @@ const PostModal = () => {
   const lastTouchY = useRef(0);
   const lastTouchTime = useRef(0);
   
-  // Enhanced scroll debouncing
-  const lastScrollTime = useRef(0);
-  const wheelTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  // Simple scroll handling - completely ignore scroll strength
+  const canScrollRef = useRef(true);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const accumulatedDelta = useRef(0);
-  const isNavigatingRef = useRef(false);
 
   const currentPost = posts[currentPostIndex] || post;
 
@@ -74,6 +88,8 @@ const PostModal = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showShareSuccess, setShowShareSuccess] = useState(false);
   const [showFullCaption, setShowFullCaption] = useState(false);
+  const [avatarKey, setAvatarKey] = useState(0);
+  const [showModal, setShowModal] = useState(false);
 
   const videoRefs = useRef<Map<string, HTMLVideoElement>>(new Map());
   const [videoStates, setVideoStates] = useState<Map<string, {
@@ -85,15 +101,18 @@ const PostModal = () => {
 
   const userId = useMemo(() => currentUser?.id, [currentUser]);
 
-  // TikTok-style continuous navigation with enhanced debouncing
+  // TikTok-style continuous navigation - simple and reliable
   const navigateToPost = useCallback((direction: 1 | -1) => {
     const targetIndex = currentPostIndex + direction;
-    
-    if (targetIndex < 0 || targetIndex >= posts.length || isNavigatingRef.current) {
+
+    // Check bounds and if scroll is allowed
+    if (targetIndex < 0 || targetIndex >= posts.length || !canScrollRef.current) {
       return;
     }
 
-    isNavigatingRef.current = true;
+    // Immediately block further scrolling
+    canScrollRef.current = false;
+
     setIsScrolling(true);
     setCurrentPostIndex(targetIndex);
 
@@ -101,14 +120,14 @@ const PostModal = () => {
       postModal.setPost?.(posts[targetIndex]);
     }
 
-    // Reset navigation flags after transition
+    // Re-enable scrolling after transition completes
     setTimeout(() => {
       setIsScrolling(false);
-      isNavigatingRef.current = false;
-    }, 400); // Slightly longer to ensure smooth transition
+      canScrollRef.current = true;
+    }, 600); // Match the 600ms transition exactly
   }, [currentPostIndex, posts.length, postModal]);
 
-  // Enhanced wheel handling with better debouncing
+  // TikTok-style wheel handling - each scroll gesture = one post
   useEffect(() => {
     if (!containerRef.current || posts.length <= 1) return;
 
@@ -116,52 +135,53 @@ const PostModal = () => {
       e.preventDefault();
       e.stopImmediatePropagation();
 
-      const now = Date.now();
-      
-      // If already navigating, ignore all wheel events
-      if (isNavigatingRef.current) return;
-
-      // Reset accumulated delta if too much time has passed
-      if (now - lastScrollTime.current > 150) {
-        accumulatedDelta.current = 0;
+      // During cooldown, completely ignore scroll but allow new gestures after cooldown
+      if (!canScrollRef.current) {
+        return;
       }
 
-      lastScrollTime.current = now;
+      // Accumulate scroll delta to detect intentional scroll
       accumulatedDelta.current += e.deltaY;
 
-      // Clear existing timeout
-      if (wheelTimeoutRef.current) {
-        clearTimeout(wheelTimeoutRef.current);
+      // Clear any pending scroll timeout
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
       }
 
-      // Set new timeout to process accumulated scroll
-      wheelTimeoutRef.current = setTimeout(() => {
-        const threshold = 50; // Minimum scroll amount needed
-        
-        if (Math.abs(accumulatedDelta.current) >= threshold && !isNavigatingRef.current) {
+      // Debounce: wait for user to stop scrolling this gesture
+      scrollTimeoutRef.current = setTimeout(() => {
+        const threshold = 25; // Lower threshold for quicker response
+
+        // Check if this scroll gesture was strong enough
+        if (Math.abs(accumulatedDelta.current) >= threshold) {
           const direction = accumulatedDelta.current > 0 ? 1 : -1;
+
+          // Reset for next gesture
+          accumulatedDelta.current = 0;
+
+          // Navigate one post
           navigateToPost(direction);
+        } else {
+          // Too weak, ignore this gesture
+          accumulatedDelta.current = 0;
         }
-        
-        accumulatedDelta.current = 0;
-      }, 30); // Small delay to accumulate rapid scroll events
+      }, 20); // Faster debounce for quicker response
     };
 
     const container = containerRef.current;
-    
-    // Use capture phase and set passive to false for better control
-    container.addEventListener('wheel', handleWheel, { 
-      passive: false, 
-      capture: true 
+
+    container.addEventListener('wheel', handleWheel, {
+      passive: false,
+      capture: true
     });
 
     return () => {
       container.removeEventListener('wheel', handleWheel, true);
-      if (wheelTimeoutRef.current) {
-        clearTimeout(wheelTimeoutRef.current);
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
       }
     };
-  }, [currentPostIndex, navigateToPost, posts.length]);
+  }, [navigateToPost, posts.length]);
 
 // Replace your keyboard navigation useEffect with this fixed version:
 
@@ -169,7 +189,7 @@ useEffect(() => {
   let keyDebounceTimeout: NodeJS.Timeout | null = null;
 
   const handleKeyDown = (e: KeyboardEvent) => {
-    if (isNavigatingRef.current) return;
+    if (!canScrollRef.current) return;
 
     // ✅ CHECK if user is typing in an input field
     const target = e.target as HTMLElement;
@@ -217,7 +237,7 @@ useEffect(() => {
 
   // Touch handling for continuous scroll
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    if (posts.length <= 1 || isNavigatingRef.current) return;
+    if (posts.length <= 1 || !canScrollRef.current) return;
 
     const touch = e.touches[0];
     setTouchStartY(touch.clientY);
@@ -231,7 +251,7 @@ useEffect(() => {
   }, [posts.length]);
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    if (!isDragging || posts.length <= 1 || isNavigatingRef.current) return;
+    if (!isDragging || posts.length <= 1 || !canScrollRef.current) return;
 
     const touch = e.touches[0];
     const currentTime = Date.now();
@@ -258,7 +278,7 @@ useEffect(() => {
   }, [isDragging, touchStartY, currentPostIndex, posts.length]);
 
   const handleTouchEnd = useCallback(() => {
-    if (!isDragging || isNavigatingRef.current) return;
+    if (!isDragging || !canScrollRef.current) return;
 
     setIsDragging(false);
 
@@ -266,31 +286,39 @@ useEffect(() => {
     const offset = dragOffset;
     const duration = Date.now() - touchStartTime;
 
-    const velocityThreshold = 0.3;
-    const distanceThreshold = window.innerHeight * 0.1;
-    const quickSwipeTime = 100;
+    // TikTok-like thresholds - more sensitive to swipes
+    const velocityThreshold = 0.5; // Higher velocity needed for quick swipes
+    const distanceThreshold = window.innerHeight * 0.15; // 15% of screen height
+    const quickSwipeTime = 150;
 
     let shouldNavigate = false;
     let direction: 1 | -1 = 1;
 
+    // Velocity-based navigation (quick flicks)
     if (Math.abs(velocity) > velocityThreshold) {
       shouldNavigate = true;
       direction = velocity < 0 ? 1 : -1;
     }
+    // Distance-based navigation (slow drags)
     else if (Math.abs(offset) > distanceThreshold) {
       shouldNavigate = true;
       direction = offset < 0 ? 1 : -1;
     }
-    else if (duration < quickSwipeTime && Math.abs(offset) > 20) {
+    // Quick swipe detection
+    else if (duration < quickSwipeTime && Math.abs(offset) > 30) {
       shouldNavigate = true;
       direction = offset < 0 ? 1 : -1;
     }
 
-    if (shouldNavigate && !isNavigatingRef.current) {
+    if (shouldNavigate && canScrollRef.current) {
       navigateToPost(direction);
+    } else {
+      // Snap back to current position with smooth animation
+      setDragOffset(0);
     }
 
-    setDragOffset(0);
+    // Clear drag offset after navigation starts
+    setTimeout(() => setDragOffset(0), 50);
   }, [isDragging, dragOffset, touchStartTime, navigateToPost]);
 
   // Video functions
@@ -385,6 +413,15 @@ useEffect(() => {
   const isReel = currentPost?.tag === 'reel' || currentPost?.postType === 'reel';
   const isAd = currentPost?.postType === 'ad';
 
+  // Trigger modal animation when opening
+  useEffect(() => {
+    if (currentPost) {
+      // Delay to allow for initial render before animation
+      const timer = setTimeout(() => setShowModal(true), 10);
+      return () => clearTimeout(timer);
+    }
+  }, [currentPost]);
+
   useEffect(() => {
     if (currentPost && userId) {
       setLikes(currentPost.likes || []);
@@ -396,11 +433,13 @@ useEffect(() => {
 
     setShowComments(false);
     setShowFullCaption(false);
+    setAvatarKey(prev => prev + 1); // Trigger avatar animation
 
     if (currentPost) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
+      setShowModal(false);
     }
 
     return () => {
@@ -409,7 +448,10 @@ useEffect(() => {
   }, [currentPost?.id, userId, currentPost?.likes, currentPost?.bookmarks, currentPost?.comments, currentPost]);
 
   const handleClose = () => {
-    postModal.onClose();
+    setShowModal(false);
+    setTimeout(() => {
+      postModal.onClose();
+    }, 300); // Match animation duration
   };
 
   const handleLike = async () => {
@@ -586,9 +628,18 @@ useEffect(() => {
     return (
       <>
         <style jsx>{styles}</style>
-        <div className="fixed inset-0 z-40 bg-black/90" onClick={handleClose} />
+        <div
+          className={`fixed inset-0 z-40 bg-neutral-900/70 transition-opacity duration-300 ${
+            showModal ? 'opacity-100' : 'opacity-0'
+          }`}
+          onClick={handleClose}
+        />
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="relative max-w-lg w-full">
+          <div
+            className={`relative max-w-lg w-full duration-300 transform transition-all ${
+              showModal ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
+            }`}
+          >
             <button
               onClick={handleClose}
               className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors"
@@ -609,29 +660,38 @@ useEffect(() => {
   return (
     <>
       <style jsx>{styles}</style>
-      
-      <div className="fixed inset-0 z-40 bg-black" onClick={handleClose} />
-      
-      <div 
+
+      {/* Backdrop with fade */}
+      <div
+        className={`fixed inset-0 z-40 bg-neutral-900/70 transition-opacity duration-300 ${
+          showModal ? 'opacity-100' : 'opacity-0'
+        }`}
+        onClick={handleClose}
+      />
+
+      {/* Modal content with slide-up animation */}
+      <div
         ref={containerRef}
-        className="fixed inset-0 z-50 overflow-hidden ultra-smooth"
+        className={`fixed inset-0 z-50 overflow-hidden ultra-smooth duration-300 transform transition-all ${
+          showModal ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
+        }`}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        style={{ 
+        style={{
           touchAction: 'pan-y pinch-zoom',
           overscrollBehavior: 'none'
         }}
       >
         {/* TikTok-style continuous scroll container */}
-        <div 
+        <div
           className="relative w-full ultra-smooth"
-          style={{ 
+          style={{
             height: `${posts.length * 100}vh`,
             // This creates the continuous scroll effect - you can see adjacent posts during transition
             transform: `translate3d(0, ${(-currentPostIndex * 100) + (isDragging ? (dragOffset / window.innerHeight) * 100 : 0)}vh, 0)`,
-            // Smooth transition that shows the sliding effect like TikTok
-            transition: isDragging ? 'none' : 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+            // Longer, smoother transition like TikTok - more time to see the scroll between posts
+            transition: isDragging ? 'none' : 'transform 0.6s cubic-bezier(0.25, 0.1, 0.25, 1)',
             willChange: 'transform'
           }}
         >
@@ -962,7 +1022,7 @@ useEffect(() => {
             <span className="text-xs">Close</span>
           </div>
 
-          <div className="border border-white rounded-full">
+          <div key={avatarKey} className="border border-white rounded-full avatar-trippy">
             <Avatar src={currentPost.user.image ?? undefined} />
           </div>
 
