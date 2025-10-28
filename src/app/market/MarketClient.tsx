@@ -11,7 +11,7 @@ import RentModal from '@/components/modals/ListingModal';
 import WorkerCard from '@/components/listings/WorkerCard';
 import SectionHeader from './SectionHeader';
 
-interface MarketContentProps {
+interface MarketClientProps {
   searchParams: {
     userId?: string;
     locationValue?: string;
@@ -30,24 +30,12 @@ interface MarketContentProps {
   trendingEmployees?: SafeEmployee[];
 }
 
-interface ViewState {
-  mode: 'grid' | 'list';
-  filters: {
-    category: string;
-    minPrice?: number;
-    maxPrice?: number;
-    sortBy?: 'price' | 'date' | 'name';
-    sortOrder?: 'asc' | 'desc';
-    city?: string;
-    state?: string;
-  };
-}
 
 const MIN_LOADER_MS = 1200;
 const FADE_OUT_DURATION = 200;
 const FADE_IN_DELAY = 250;
 
-const MarketContent: React.FC<MarketContentProps> = ({
+const MarketClient: React.FC<MarketClientProps> = ({
   searchParams,
   listings,
   currentUser,
@@ -57,17 +45,9 @@ const MarketContent: React.FC<MarketContentProps> = ({
 
   // 🆕 NEW: Track sidebar state
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  
+
   // 🆕 NEW: Dynamic items per page based on sidebar state
   const ITEMS_PER_PAGE = isSidebarCollapsed ? 5 : 4;
-
-  // View state (for MarketExplorer controls)
-  const [viewState, setViewState] = useState<ViewState>({
-    mode: 'grid',
-    filters: {
-      category: searchParams.category ?? 'featured',
-    },
-  });
 
   // Pagination state
   const [featuredIndex, setFeaturedIndex] = useState(0);
@@ -119,16 +99,12 @@ const MarketContent: React.FC<MarketContentProps> = ({
     const categoryIsActive = currentCategory !== '' && currentCategory !== 'featured' && currentCategory !== 'all';
 
     // Check for price filters
-    const hasPriceFilter = 
-      viewState?.filters?.minPrice !== undefined ||
-      viewState?.filters?.maxPrice !== undefined ||
+    const hasPriceFilter =
       searchParams.minPrice !== undefined ||
       searchParams.maxPrice !== undefined;
 
     // Check for location filters
     const hasLocationFilter = !!(
-      viewState?.filters?.city?.trim() ||
-      viewState?.filters?.state?.trim() ||
       (searchParams.city as any)?.toString()?.trim() ||
       (searchParams.state as any)?.toString()?.trim()
     );
@@ -151,7 +127,7 @@ const MarketContent: React.FC<MarketContentProps> = ({
       resultsHeaderText,
       currentCategory
     };
-  }, [viewState, searchParams]);
+  }, [searchParams]);
 
   const hasListings = useMemo(
     () => Array.isArray(listings) && listings.length > 0,
@@ -296,10 +272,6 @@ const MarketContent: React.FC<MarketContentProps> = ({
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const renderListView = () => (
-    <div className="text-sm text-gray-500">List view goes here.</div>
-  );
-
   return (
     <Container>
       {/* Main Market Title - Always Visible */}
@@ -315,8 +287,6 @@ const MarketContent: React.FC<MarketContentProps> = ({
       {/* Search and Category Controls */}
       <MarketExplorer
         searchParams={searchParams}
-        viewState={viewState}
-        setViewState={setViewState}
       />
 
       {/* Content + loader overlay */}
@@ -334,10 +304,9 @@ const MarketContent: React.FC<MarketContentProps> = ({
             isLoading ? 'opacity-0' : 'opacity-100'
           }`}
         >
-          {viewState.mode === 'grid' ? (
-            hasListings ? (
-              <>
-                {/* View All Storefronts Mode */}
+          {hasListings ? (
+            <>
+              {/* View All Storefronts Mode */}
                 {viewAllMode === 'storefronts' && (
                   <>
                     <SectionHeader
@@ -523,9 +492,7 @@ const MarketContent: React.FC<MarketContentProps> = ({
                 No listings found. Try adjusting your filters.
               </div>
             )
-          ) : (
-            renderListView()
-          )}
+          }
         </div>
       </div>
 
@@ -545,4 +512,4 @@ const MarketContent: React.FC<MarketContentProps> = ({
   );
 };
 
-export default MarketContent;
+export default MarketClient;

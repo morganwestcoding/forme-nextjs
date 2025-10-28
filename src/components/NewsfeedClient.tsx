@@ -19,19 +19,6 @@ import ShopCard from '@/components/shop/ShopCard';
 import PropagateLoaderWrapper from '@/components/loaders/PropagateLoaderWrapper';
 import SectionHeader from '@/app/market/SectionHeader';
 
-interface ViewState {
-  mode: 'horizontal' | 'vertical';
-  filters: {
-    category: string;
-    minPrice?: number;
-    maxPrice?: number;
-    sortBy?: 'price' | 'date' | 'name';
-    sortOrder?: 'asc' | 'desc';
-    city?: string;
-    state?: string;
-  };
-}
-
 interface NewsfeedClientProps {
   initialPosts: SafePost[];
   currentUser: SafeUser | null;
@@ -43,9 +30,6 @@ interface NewsfeedClientProps {
 
 /** Animation timing */
 const MIN_LOADER_MS = 1800;
-const FADE_DURATION_MS = 520;
-const FADE_STAGGER_BASE_MS = 140;
-const FADE_STAGGER_STEP_MS = 30;
 const CONTAINER_FADE_MS = 700;
 
 const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
@@ -63,22 +47,12 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
 
   const [loading, setLoading] = useState(false);
   const [uiLoading, setUiLoading] = useState(true);
-  const [animatedItems, setAnimatedItems] = useState<JSX.Element[]>([]);
 
   // State for section offsets
   const [postsOffset, setPostsOffset] = useState(0);
   const [listingsOffset, setListingsOffset] = useState(0);
   const [employeesOffset, setEmployeesOffset] = useState(0);
   const [shopsOffset, setShopsOffset] = useState(0);
-
-  const [viewState, setViewState] = useState<ViewState>({
-    mode: 'horizontal',
-    filters: {
-      category: 'featured',
-      sortBy: 'date',
-      sortOrder: 'desc',
-    },
-  });
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -102,15 +76,11 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
     const currentCategory = headerSearchParams?.category || '';
     const categoryIsActive = currentCategory !== '' && currentCategory !== 'featured' && currentCategory !== 'all';
 
-    const hasPriceFilter = 
-      viewState?.filters?.minPrice !== undefined ||
-      viewState?.filters?.maxPrice !== undefined ||
+    const hasPriceFilter =
       headerSearchParams.minPrice !== undefined ||
       headerSearchParams.maxPrice !== undefined;
 
     const hasLocationFilter = !!(
-      viewState?.filters?.city?.trim() ||
-      viewState?.filters?.state?.trim() ||
       headerSearchParams.city?.toString()?.trim() ||
       headerSearchParams.state?.toString()?.trim()
     );
@@ -131,7 +101,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
       resultsHeaderText,
       currentCategory
     };
-  }, [viewState, headerSearchParams]);
+  }, [headerSearchParams]);
 
   // Fetch posts on category/filter change
   useEffect(() => {
@@ -227,66 +197,6 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
     [shops, shopsOffset]
   );
 
-  // Build main feed items (posts + listings interleaved)
-  const flatFeedItems = useMemo(() => {
-    if (!storePosts || storePosts.length === 0) return [];
-
-    const out: JSX.Element[] = [];
-
-    storePosts.forEach((post, index) => {
-      out.push(
-        <div
-          key={`post-${post.id}`}
-          className="group/card relative transition-opacity duration-300 group-hover/grid:opacity-100 hover:z-10 hover:!opacity-100"
-        >
-          <PostCard post={post} currentUser={currentUser} categories={categories} />
-        </div>
-      );
-
-      // Inject a ListingCard after every 3 posts
-      if ((index + 1) % 3 === 0 && listings.length > 0) {
-        const listingIndex = Math.floor((index + 1) / 3) - 1;
-        const listing = listings[listingIndex % listings.length];
-
-        out.push(
-          <div
-            key={`listing-${listing.id}-${listingIndex}`}
-            className="group/card relative transition-opacity duration-300 group-hover/grid:opacity-100 hover:z-10 hover:!opacity-100"
-          >
-            <ListingCard currentUser={currentUser} data={listing} categories={categories} />
-          </div>
-        );
-      }
-    });
-
-    return out;
-  }, [storePosts, listings, currentUser]);
-
-  // Wrap in staggered fade-in containers
-  const buildAnimatedItems = () =>
-    flatFeedItems.map((el, idx) => {
-      const delay = FADE_STAGGER_BASE_MS + (idx % 12) * FADE_STAGGER_STEP_MS;
-      return (
-        <div
-          key={`feedwrap-${idx}`}
-          style={{
-            opacity: 0,
-            animation: `fadeInUp ${FADE_DURATION_MS}ms ease-out forwards`,
-            animationDelay: `${delay}ms`,
-            willChange: 'transform, opacity',
-          }}
-        >
-          {el}
-        </div>
-      );
-    });
-
-  useEffect(() => {
-    if (!uiLoading) {
-      setAnimatedItems(buildAnimatedItems());
-    }
-  }, [uiLoading, flatFeedItems]);
-
   const hasContent = useMemo(
     () => Array.isArray(storePosts) && storePosts.length > 0,
     [storePosts]
@@ -304,8 +214,6 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
         {/* Search and Category Controls */}
         <NewsfeedHeader
           searchParams={headerSearchParams}
-          viewState={viewState}
-          setViewState={setViewState}
         />
 
         {/* Content + loader overlay */}
@@ -322,114 +230,222 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
             className={`transition-opacity ease-out ${uiLoading ? 'opacity-0' : 'opacity-100'}`}
             style={{ transitionDuration: `${CONTAINER_FADE_MS}ms` }}
           >
-            {viewState.mode === 'horizontal' ? (
-              hasContent ? (
-                <>
-                  {/* Trending Sections - Only show when not filtered */}
-                  {!filterInfo.isFiltered && (
-                    <>
-                      {/* Trending Posts */}
-                      {trendingPosts.length > 0 && (
-                        <div className="mb-8">
-                          <SectionHeader
-                            title="Curated for You"
-                            onPrev={() => scrollTrendingPosts('left')}
-                            onNext={() => scrollTrendingPosts('right')}
-                            onViewAll={() => router.push('/newsfeed?category=trending')}
-                          />
-                          <div className="grid grid-cols-4 gap-4">
-                            {trendingPosts.map((post, idx) => (
-                              <div key={`trending-post-${post.id}`} className="group/card relative">
-                                <PostCard post={post} currentUser={currentUser} categories={categories} />
-                              </div>
-                            ))}
-                          </div>
+            {hasContent ? (
+              <>
+                {/* Trending Sections - Only show when not filtered */}
+                {!filterInfo.isFiltered && (
+                  <>
+                    {/* Trending Posts */}
+                    {trendingPosts.length > 0 && (
+                      <div className="mb-8">
+                        <SectionHeader
+                          title="Curated for You"
+                          onPrev={() => scrollTrendingPosts('left')}
+                          onNext={() => scrollTrendingPosts('right')}
+                          onViewAll={() => router.push('/newsfeed?category=trending')}
+                        />
+                        <div className="grid grid-cols-4 gap-4">
+                          {trendingPosts.map((post, idx) => (
+                            <div key={`trending-post-${post.id}`} className="group/card relative">
+                              <PostCard post={post} currentUser={currentUser} categories={categories} />
+                            </div>
+                          ))}
                         </div>
-                      )}
+                      </div>
+                    )}
 
-                      {/* Trending Listings */}
-                      {trendingListings.length > 0 && (
-                        <div className="mb-8">
-                          <SectionHeader
-                            title="Handpicked Experiences"
-                            onPrev={() => scrollTrendingListings('left')}
-                            onNext={() => scrollTrendingListings('right')}
-                            onViewAll={() => router.push('/listings')}
-                          />
-                          <div className="grid grid-cols-4 gap-4">
-                            {trendingListings.map((listing, idx) => (
-                              <div key={`trending-listing-${listing.id}`} className="group/card relative">
-                                <ListingCard currentUser={currentUser} data={listing} categories={categories} />
-                              </div>
-                            ))}
-                          </div>
+                    {/* Trending Listings */}
+                    {trendingListings.length > 0 && (
+                      <div className="mb-8">
+                        <SectionHeader
+                          title="Handpicked Experiences"
+                          onPrev={() => scrollTrendingListings('left')}
+                          onNext={() => scrollTrendingListings('right')}
+                          onViewAll={() => router.push('/listings')}
+                        />
+                        <div className="grid grid-cols-4 gap-4">
+                          {trendingListings.map((listing, idx) => (
+                            <div key={`trending-listing-${listing.id}`} className="group/card relative">
+                              <ListingCard currentUser={currentUser} data={listing} categories={categories} />
+                            </div>
+                          ))}
                         </div>
-                      )}
+                      </div>
+                    )}
 
-                      {/* Trending Teammates */}
-                      {trendingEmployees.length > 0 && (
-                        <div className="mb-8">
-                          <SectionHeader
-                            title="Your Perfect Match"
-                            onPrev={() => scrollTrendingEmployees('left')}
-                            onNext={() => scrollTrendingEmployees('right')}
-                            onViewAll={() => router.push('/teammates')}
-                          />
-                          <div className="grid grid-cols-4 gap-4">
-                            {trendingEmployees.map((employee, idx) => {
-                              const listing = listings[idx % listings.length] || listings[0];
-                              return (
-                                <div key={`trending-employee-${employee.id}`} className="group/card relative">
-                                  <WorkerCard
-                                    employee={employee}
-                                    listingTitle={listing?.title || 'Professional'}
-                                    data={{
-                                      title: listing?.title || '',
-                                      imageSrc: listing?.imageSrc || '',
-                                      category: listing?.category || ''
-                                    }}
-                                    listing={listing}
-                                    currentUser={currentUser}
-                                  />
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Trending Vendors */}
-                      {trendingShops.length > 0 && (
-                        <div className="mb-8">
-                          <SectionHeader
-                            title="Recommended Vendors"
-                            onPrev={() => scrollTrendingShops('left')}
-                            onNext={() => scrollTrendingShops('right')}
-                            onViewAll={() => router.push('/shops')}
-                          />
-                          <div className="grid grid-cols-4 gap-4">
-                            {trendingShops.map((shop, idx) => (
-                              <div key={`trending-shop-${shop.id}`} className="group/card relative">
-                                <ShopCard data={shop} currentUser={currentUser} />
+                    {/* Trending Teammates */}
+                    {trendingEmployees.length > 0 && (
+                      <div className="mb-8">
+                        <SectionHeader
+                          title="Your Perfect Match"
+                          onPrev={() => scrollTrendingEmployees('left')}
+                          onNext={() => scrollTrendingEmployees('right')}
+                          onViewAll={() => router.push('/teammates')}
+                        />
+                        <div className="grid grid-cols-4 gap-4">
+                          {trendingEmployees.map((employee, idx) => {
+                            const listing = listings[idx % listings.length] || listings[0];
+                            return (
+                              <div key={`trending-employee-${employee.id}`} className="group/card relative">
+                                <WorkerCard
+                                  employee={employee}
+                                  listingTitle={listing?.title || 'Professional'}
+                                  data={{
+                                    title: listing?.title || '',
+                                    imageSrc: listing?.imageSrc || '',
+                                    category: listing?.category || ''
+                                  }}
+                                  listing={listing}
+                                  currentUser={currentUser}
+                                />
                               </div>
-                            ))}
-                          </div>
+                            );
+                          })}
                         </div>
-                      )}
-                    </>
-                  )}
-                </>
-              ) : (
-                <div className="px-8 pt-32 text-center text-gray-500 ">
-                  No posts found. Try adjusting your filters.
-                </div>
-              )
+                      </div>
+                    )}
+
+                    {/* Trending Vendors */}
+                    {trendingShops.length > 0 && (
+                      <div className="mb-8">
+                        <SectionHeader
+                          title="Recommended Vendors"
+                          onPrev={() => scrollTrendingShops('left')}
+                          onNext={() => scrollTrendingShops('right')}
+                          onViewAll={() => router.push('/shops')}
+                        />
+                        <div className="grid grid-cols-4 gap-4">
+                          {trendingShops.map((shop, idx) => (
+                            <div key={`trending-shop-${shop.id}`} className="group/card relative">
+                              <ShopCard data={shop} currentUser={currentUser} />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {/* Filtered Results Section */}
+                {filterInfo.isFiltered && (
+                  <>
+                    {/* Results Section Header */}
+                    {filterInfo.resultsHeaderText && (
+                      <SectionHeader
+                        title={filterInfo.resultsHeaderText}
+                        className="mb-6"
+                      />
+                    )}
+
+                    {/* Filtered Posts */}
+                    {storePosts && storePosts.length > 0 && (
+                      <div className="mb-8">
+                        <div className="grid grid-cols-4 gap-4">
+                          {storePosts.map((post, idx) => (
+                            <div
+                              key={`filtered-post-${post.id}`}
+                              style={{
+                                opacity: 0,
+                                animation: `fadeInUp 520ms ease-out forwards`,
+                                animationDelay: `${Math.min(idx * 30, 300)}ms`,
+                                willChange: 'transform, opacity',
+                              }}
+                              className="group/card relative"
+                            >
+                              <PostCard post={post} currentUser={currentUser} categories={categories} />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Filtered Listings */}
+                    {listings && listings.length > 0 && (
+                      <div className="mb-8">
+                        <div className="grid grid-cols-4 gap-4">
+                          {listings.map((listing, idx) => (
+                            <div
+                              key={`filtered-listing-${listing.id}`}
+                              style={{
+                                opacity: 0,
+                                animation: `fadeInUp 520ms ease-out forwards`,
+                                animationDelay: `${Math.min(idx * 30, 300)}ms`,
+                                willChange: 'transform, opacity',
+                              }}
+                              className="group/card relative"
+                            >
+                              <ListingCard currentUser={currentUser} data={listing} categories={categories} />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Filtered Employees */}
+                    {employees && employees.length > 0 && (
+                      <div className="mb-8">
+                        <div className="grid grid-cols-4 gap-4">
+                          {employees.map((employee, idx) => {
+                            const listing = listings[idx % listings.length] || listings[0];
+                            return (
+                              <div
+                                key={`filtered-employee-${employee.id}`}
+                                style={{
+                                  opacity: 0,
+                                  animation: `fadeInUp 520ms ease-out forwards`,
+                                  animationDelay: `${Math.min(idx * 30, 300)}ms`,
+                                  willChange: 'transform, opacity',
+                                }}
+                                className="group/card relative"
+                              >
+                                <WorkerCard
+                                  employee={employee}
+                                  listingTitle={listing?.title || 'Professional'}
+                                  data={{
+                                    title: listing?.title || '',
+                                    imageSrc: listing?.imageSrc || '',
+                                    category: listing?.category || ''
+                                  }}
+                                  listing={listing}
+                                  currentUser={currentUser}
+                                />
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Filtered Shops */}
+                    {shops && shops.length > 0 && (
+                      <div className="mb-8">
+                        <div className="grid grid-cols-4 gap-4">
+                          {shops.map((shop, idx) => (
+                            <div
+                              key={`filtered-shop-${shop.id}`}
+                              style={{
+                                opacity: 0,
+                                animation: `fadeInUp 520ms ease-out forwards`,
+                                animationDelay: `${Math.min(idx * 30, 300)}ms`,
+                                willChange: 'transform, opacity',
+                              }}
+                              className="group/card relative"
+                            >
+                              <ShopCard data={shop} currentUser={currentUser} />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+              </>
             ) : (
-              // Vertical mode
-              <div className="group/grid grid grid-cols-1 gap-4">
-                {animatedItems}
+              <div className="px-8 pt-32 text-center text-gray-500 ">
+                No posts found. Try adjusting your filters.
               </div>
-            )}
+            )
+          }
           </div>
         </div>
       </Container>

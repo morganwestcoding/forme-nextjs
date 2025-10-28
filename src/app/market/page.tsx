@@ -1,5 +1,5 @@
 // app/market/page.tsx
-import MarketContent from './MarketContent';
+import MarketClient from './MarketClient';
 import MarketWrapper from './MarketWrapper';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import getListings from '@/app/actions/getListings';
@@ -14,11 +14,11 @@ async function MarketPage({ searchParams }: MarketPageProps) {
 
   return (
     <MarketWrapper>
-      <MarketContent 
-        searchParams={searchParams} 
+      <MarketClient
+        searchParams={searchParams}
         listings={listings}
         currentUser={currentUser}
-        
+
       />
     </MarketWrapper>
   );

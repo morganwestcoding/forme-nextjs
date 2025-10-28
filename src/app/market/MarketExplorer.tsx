@@ -1,25 +1,11 @@
 'use client';
 
 import React from 'react';
-import { Grid, List, Filter } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { categories } from '@/components/Categories';
 import useRentModal from '@/app/hooks/useListingModal';
 import useFilterModal from '@/app/hooks/useFilterModal';
 import GlobalSearch from '@/components/search/GlobalSearch';
-
-interface ViewState {
-  mode: 'grid' | 'list';
-  filters: {
-    category: string;
-    minPrice?: number;
-    maxPrice?: number;
-    sortBy?: 'price' | 'date' | 'name';
-    sortOrder?: 'asc' | 'desc';
-    city?: string;
-    state?: string;
-  };
-}
 
 interface MarketExplorerProps {
   searchParams: {
@@ -33,14 +19,10 @@ interface MarketExplorerProps {
     order?: 'asc' | 'desc';
     page?: string;
   };
-  viewState: ViewState;
-  setViewState: React.Dispatch<React.SetStateAction<ViewState>>;
 }
 
 const MarketExplorer: React.FC<MarketExplorerProps> = ({
-  searchParams,
-  viewState,
-  setViewState
+  searchParams
 }) => {
   const router = useRouter();
   const params = useSearchParams();
@@ -49,20 +31,14 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
 
   const currentCategory = searchParams.category || '';
 
-  const handleViewModeChange = (mode: 'grid' | 'list') => {
-    setViewState(prev => ({ ...prev, mode }));
-  };
-
   // Toggle: select to set; click again to clear (show all)
   const handleCategorySelect = (categoryLabel: string) => {
     const current = new URLSearchParams(Array.from(params?.entries() || []));
 
     if (currentCategory === categoryLabel) {
       current.delete('category');
-      setViewState(prev => ({ ...prev, filters: { ...prev.filters, category: '' } }));
     } else {
       current.set('category', categoryLabel);
-      setViewState(prev => ({ ...prev, filters: { ...prev.filters, category: categoryLabel } }));
     }
 
     const search = current.toString();
