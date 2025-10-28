@@ -250,21 +250,14 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
 
         {/* Service Icon - Centered towards middle-top */}
         <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-          <div className="relative">
-            {/* Colored circular background with icon */}
-            <div
-              className="w-24 h-24 rounded-full flex items-center justify-center text-white shadow-lg border border-gray-300"
-              style={{ backgroundColor: iconBg }}
-              aria-label="Service icon"
-              title={service.serviceName}
-            >
-              <CategoryIcon category={service.category} className="w-8 h-8" />
-            </div>
-            
-            {/* Price badge - positioned like verified badge in WorkerCard */}
-            <div className="absolute -bottom-1 -right-1 bg-green-500 text-white text-xs font-semibold px-2 py-1 rounded-full shadow-sm min-w-[50px] text-center">
-              {formatPrice(priceNum)}
-            </div>
+          {/* Colored circular background with icon */}
+          <div
+            className="w-24 h-24 rounded-full flex items-center justify-center text-white shadow-lg border border-gray-300"
+            style={{ backgroundColor: iconBg }}
+            aria-label="Service icon"
+            title={service.serviceName}
+          >
+            <CategoryIcon category={service.category} className="w-8 h-8" />
           </div>
         </div>
 

@@ -397,93 +397,92 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   </div>
                 </div>
 
-                {/* Address, City, State */}
+                {/* Address, City, State with Radius */}
                 <div className="text-sm text-gray-500">
                   {address && location ? `${address}, ${location}` : address || location}
+                  <span className="text-gray-400 ml-1">
+                    · {(listing as any).radius ? `${(listing as any).radius} miles` : '2.3 miles away'}
+                  </span>
                 </div>
 
-                {/* Counter */}
-                <div className="flex items-center gap-3">
-                  {/* Rating Counter */}
-                  <button
-                    onClick={() => setActiveTab('Reviews')}
-                    className="flex items-center gap-1.5 hover:text-[#60A5FA] transition-colors group"
-                    type="button"
-                  >
-                    <span className="text-base font-bold text-black group-hover:text-[#60A5FA] transition-colors">4.8</span>
-                    <span className="text-sm text-gray-500 group-hover:text-[#60A5FA] transition-colors">rating</span>
-                  </button>
-
-                  <span className="text-gray-300 text-sm">·</span>
-
-                  {/* Posts Counter */}
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-base font-bold text-black">{posts?.length || 0}</span>
-                    <span className="text-sm text-gray-500">posts</span>
-                  </div>
-
-                  <span className="text-gray-300 text-sm">·</span>
-
-                  {/* Followers Counter */}
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-base font-bold text-black">{followers.length}</span>
-                    <span className="text-sm text-gray-500">followers</span>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-
-            {/* Buttons - Right Side */}
-            <div className="absolute bottom-1 right-0">
-                <div className="flex items-center gap-1.5">
-                  {/* QR Code Button - Show for owners and employees ONLY */}
-                  {canShowQR ? (
+                {/* Counter and Buttons Row */}
+                <div className="flex items-center justify-between">
+                  {/* Counter */}
+                  <div className="flex items-center gap-8">
+                    {/* Rating Counter */}
                     <button
-                      onClick={handleQRClick}
-                      className="h-12 px-4 rounded-lg transition-all duration-300 flex items-center justify-center border-[#60A5FA] border bg-blue-50 hover:shadow-lg hover:shadow-blue-100/50 hover:border-[#60A5FA] hover:bg-blue-50 [transition:background_400ms_ease-in-out,border-color_300ms_ease,box-shadow_300ms_ease]"
+                      onClick={() => setActiveTab('Reviews')}
+                      className="flex flex-col items-center justify-center group cursor-pointer transition-all duration-200 hover:scale-105"
                       type="button"
-                      aria-label="Show QR Code"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" className="text-[#60A5FA]" fill="none">
-                        <path d="M3 6C3 4.58579 3 3.87868 3.43934 3.43934C3.87868 3 4.58579 3 6 3C7.41421 3 8.12132 3 8.56066 3.43934C9 3.87868 9 4.58579 9 6C9 7.41421 9 8.12132 8.56066 8.56066C8.12132 9 7.41421 9 6 9C4.58579 9 3.87868 9 3.43934 8.56066C3 8.12132 3 7.41421 3 6Z" stroke="currentColor" strokeWidth="1.5"></path>
-                        <path d="M3 18C3 16.5858 3 15.8787 3.43934 15.4393C3.87868 15 4.58579 15 6 15C7.41421 15 8.12132 15 8.56066 15.4393C9 15.8787 9 16.5858 9 18C9 19.4142 9 20.1213 8.56066 20.5607C8.12132 21 7.41421 21 6 21C4.58579 21 3.87868 21 3.43934 20.5607C3 20.1213 3 19.4142 3 18Z" stroke="currentColor" strokeWidth="1.5"></path>
-                        <path d="M3 12L9 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-                        <path d="M12 3V8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-                        <path d="M15 6C15 4.58579 15 3.87868 15.4393 3.43934C15.8787 3 16.5858 3 18 3C19.4142 3 20.1213 3 20.5607 3.43934C21 3.87868 21 4.58579 21 6C21 7.41421 21 8.12132 20.5607 8.56066C20.1213 9 19.4142 9 18 9C16.5858 9 15.8787 9 15.4393 8.56066C15 8.12132 15 7.41421 15 6Z" stroke="currentColor" strokeWidth="1.5"></path>
-                        <path d="M21 12H15C13.5858 12 12.8787 12 12.4393 12.4393C12 12.8787 12 13.5858 12 15M12 17.7692V20.5385M15 15V16.5C15 17.9464 15.7837 18 17 18C17.5523 18 18 18.4477 18 19M16 21H15M18 15C19.4142 15 20.1213 15 20.5607 15.44C21 15.8799 21 16.5881 21 18.0043C21 19.4206 21 20.1287 20.5607 20.5687C20.24 20.8898 19.7767 20.9766 19 21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"></path>
-                      </svg>
+                      <span className="text-xl font-bold text-black group-hover:text-[#60A5FA] transition-colors leading-none">4.8</span>
+                      <span className="text-xs text-gray-400 group-hover:text-[#60A5FA] transition-colors mt-0.5">rating</span>
                     </button>
-                  ) : (
-                    /* Follow Button - Show for everyone else who is logged in */
-                    currentUser && (
-                      <button
-                        onClick={handleToggleFollow}
-                        className={`group w-28 px-4 py-3 rounded-lg border transition-all duration-300 flex items-center justify-center text-sm [transition:background_400ms_ease-in-out,border-color_300ms_ease,box-shadow_300ms_ease] ${
-                          isFollowing
-                            ? 'bg-blue-50 border-[#60A5FA] text-[#60A5FA] hover:shadow-lg hover:shadow-blue-100/50 hover:bg-blue-50'
-                            : 'bg-gray-50 border-gray-300 text-gray-500 hover:shadow-lg hover:shadow-blue-100/50 hover:border-[#60A5FA] hover:text-[#60A5FA] hover:bg-blue-50'
-                        }`}
-                        type="button"
-                        aria-label={isFollowing ? 'Unfollow' : 'Follow'}
-                      >
-                        <span>{isFollowing ? 'Following' : 'Follow'}</span>
-                      </button>
-                    )
-                  )}
 
-                  {/* Reserve Button - Show for all current users */}
-                  {currentUser && (
-<button
-  onClick={handleReserveClick}
-  className="w-28 px-4 py-3 rounded-lg border border-gray-300 transition-all duration-300 bg-gray-50 text-gray-500 hover:shadow-lg hover:shadow-blue-100/50 hover:border-[#60A5FA] hover:text-[#60A5FA] hover:bg-blue-50 [transition:background_400ms_ease-in-out,border-color_300ms_ease,box-shadow_300ms_ease] flex items-center justify-center text-sm"
-  type="button"
->
-                      Reserve
-                    </button>
-                  )}
+                    {/* Posts Counter */}
+                    <div className="flex flex-col items-center justify-center">
+                      <span className="text-xl font-bold text-black leading-none">{posts?.length || 0}</span>
+                      <span className="text-xs text-gray-400 mt-0.5">posts</span>
+                    </div>
+
+                    {/* Followers Counter */}
+                    <div className="flex flex-col items-center justify-center">
+                      <span className="text-xl font-bold text-black leading-none">{followers.length}</span>
+                      <span className="text-xs text-gray-400 mt-0.5">followers</span>
+                    </div>
+                  </div>
+
+                  {/* Buttons - Right Side */}
+                  <div className="flex items-center gap-1.5">
+                    {/* QR Code Button - Show for owners and employees ONLY */}
+                    {canShowQR ? (
+                      <button
+                        onClick={handleQRClick}
+                        className="h-12 px-4 rounded-lg transition-all duration-300 flex items-center justify-center border-[#60A5FA] border bg-blue-50 hover:shadow-lg hover:shadow-blue-100/50 hover:border-[#60A5FA] hover:bg-blue-50 [transition:background_400ms_ease-in-out,border-color_300ms_ease,box-shadow_300ms_ease]"
+                        type="button"
+                        aria-label="Show QR Code"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" className="text-[#60A5FA]" fill="none">
+                          <path d="M3 6C3 4.58579 3 3.87868 3.43934 3.43934C3.87868 3 4.58579 3 6 3C7.41421 3 8.12132 3 8.56066 3.43934C9 3.87868 9 4.58579 9 6C9 7.41421 9 8.12132 8.56066 8.56066C8.12132 9 7.41421 9 6 9C4.58579 9 3.87868 9 3.43934 8.56066C3 8.12132 3 7.41421 3 6Z" stroke="currentColor" strokeWidth="1.5"></path>
+                          <path d="M3 18C3 16.5858 3 15.8787 3.43934 15.4393C3.87868 15 4.58579 15 6 15C7.41421 15 8.12132 15 8.56066 15.4393C9 15.8787 9 16.5858 9 18C9 19.4142 9 20.1213 8.56066 20.5607C8.12132 21 7.41421 21 6 21C4.58579 21 3.87868 21 3.43934 20.5607C3 20.1213 3 19.4142 3 18Z" stroke="currentColor" strokeWidth="1.5"></path>
+                          <path d="M3 12L9 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+                          <path d="M12 3V8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+                          <path d="M15 6C15 4.58579 15 3.87868 15.4393 3.43934C15.8787 3 16.5858 3 18 3C19.4142 3 20.1213 3 20.5607 3.43934C21 3.87868 21 4.58579 21 6C21 7.41421 21 8.12132 20.5607 8.56066C20.1213 9 19.4142 9 18 9C16.5858 9 15.8787 9 15.4393 8.56066C15 8.12132 15 7.41421 15 6Z" stroke="currentColor" strokeWidth="1.5"></path>
+                          <path d="M21 12H15C13.5858 12 12.8787 12 12.4393 12.4393C12 12.8787 12 13.5858 12 15M12 17.7692V20.5385M15 15V16.5C15 17.9464 15.7837 18 17 18C17.5523 18 18 18.4477 18 19M16 21H15M18 15C19.4142 15 20.1213 15 20.5607 15.44C21 15.8799 21 16.5881 21 18.0043C21 19.4206 21 20.1287 20.5607 20.5687C20.24 20.8898 19.7767 20.9766 19 21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"></path>
+                        </svg>
+                      </button>
+                    ) : (
+                      /* Follow Button - Show for everyone else who is logged in */
+                      currentUser && (
+                        <button
+                          onClick={handleToggleFollow}
+                          className={`group w-28 px-4 py-3 rounded-lg border transition-all duration-300 flex items-center justify-center text-sm [transition:background_400ms_ease-in-out,border-color_300ms_ease,box-shadow_300ms_ease] ${
+                            isFollowing
+                              ? 'bg-blue-50 border-[#60A5FA] text-[#60A5FA] hover:shadow-lg hover:shadow-blue-100/50 hover:bg-blue-50'
+                              : 'bg-gray-50 border-gray-300 text-gray-500 hover:shadow-lg hover:shadow-blue-100/50 hover:border-[#60A5FA] hover:text-[#60A5FA] hover:bg-blue-50'
+                          }`}
+                          type="button"
+                          aria-label={isFollowing ? 'Unfollow' : 'Follow'}
+                        >
+                          <span>{isFollowing ? 'Following' : 'Follow'}</span>
+                        </button>
+                      )
+                    )}
+
+                    {/* Reserve Button - Show for all current users */}
+                    {currentUser && (
+                      <button
+                        onClick={handleReserveClick}
+                        className="w-28 px-4 py-3 rounded-lg border border-gray-300 transition-all duration-300 bg-gray-50 text-gray-500 hover:shadow-lg hover:shadow-blue-100/50 hover:border-[#60A5FA] hover:text-[#60A5FA] hover:bg-blue-50 [transition:background_400ms_ease-in-out,border-color_300ms_ease,box-shadow_300ms_ease] flex items-center justify-center text-sm"
+                        type="button"
+                      >
+                        Reserve
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
+            </div>
           </div>
         </div>
       </div>
