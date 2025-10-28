@@ -24,10 +24,12 @@ const Discover = async ({ searchParams }: PostProps) => {
   
   // Create params objects with proper typing
   const listingParams = {
+    category: categoryToUse,
     order: 'desc' as const // Default to newest listings
   };
 
   const shopsParams: IShopsParams = {
+    category: categoryToUse,
     order: 'desc',
     isVerified: undefined, // Get all shops
     limit: 20 // Limit for performance

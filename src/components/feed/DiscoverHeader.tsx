@@ -46,7 +46,7 @@ const DiscoverHeader: React.FC<DiscoverHeaderProps> = ({
 
     const search = current.toString();
     const query = search ? `?${search}` : '';
-    router.push(`/${query}`);
+    router.push(`/${query}`, { scroll: false });
   };
 
   const getCategoryStyle = (categoryLabel: string) => {

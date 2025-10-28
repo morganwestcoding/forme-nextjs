@@ -107,8 +107,13 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        setLoading(true);
+        // Start fade-out immediately
         setUiLoading(true);
+
+        // Small delay to ensure fade-out completes before starting fetch
+        await new Promise(resolve => setTimeout(resolve, CONTAINER_FADE_MS));
+
+        setLoading(true);
 
         const params: Record<string, string | number> = {};
         const categoryParam = searchParams?.get('category');
@@ -124,13 +129,20 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
         if (filters.location?.city) params.city = filters.location.city;
         if (filters.sort?.order) params.order = filters.sort.order;
 
+        const startTime = Date.now();
         const { data } = await axios.get('/api/post', { params });
         setPosts(data);
+
+        // Ensure minimum loader time for smooth animation
+        const elapsed = Date.now() - startTime;
+        const remainingTime = Math.max(0, MIN_LOADER_MS - elapsed);
+
+        await new Promise(resolve => setTimeout(resolve, remainingTime));
       } catch (error) {
         console.error('Error fetching posts:', error);
       } finally {
         setLoading(false);
-        setTimeout(() => setUiLoading(false), MIN_LOADER_MS);
+        setUiLoading(false);
       }
     };
 
@@ -326,24 +338,37 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                   </>
                 )}
 
-                {/* Filtered Results Section */}
-                {filterInfo.isFiltered && (
-                  <>
-                    {/* Results Section Header */}
-                    {filterInfo.resultsHeaderText && (
-                      <SectionHeader
-                        title={filterInfo.resultsHeaderText}
-                        className="mb-6"
-                      />
-                    )}
+                {/* Filtered Results Section - Unified Grid */}
+                {filterInfo.isFiltered && (() => {
+                  // Combine all items into a single array with type information
+                  const allItems: Array<{type: 'post' | 'listing' | 'employee' | 'shop', data: any, listingContext?: any}> = [
+                    ...(storePosts || []).map(post => ({ type: 'post' as const, data: post })),
+                    ...(listings || []).map(listing => ({ type: 'listing' as const, data: listing })),
+                    ...(employees || []).map(employee => {
+                      const listing = listings.find(l => l.id === employee.listingId) || listings[0];
+                      return { type: 'employee' as const, data: employee, listingContext: listing };
+                    }),
+                    ...(shops || []).map(shop => ({ type: 'shop' as const, data: shop })),
+                  ];
 
-                    {/* Filtered Posts */}
-                    {storePosts && storePosts.length > 0 && (
+                  if (allItems.length === 0) return null;
+
+                  return (
+                    <div key={filterInfo.currentCategory}>
+                      {/* Results Section Header */}
+                      {filterInfo.resultsHeaderText && (
+                        <SectionHeader
+                          title={filterInfo.resultsHeaderText}
+                          className="mb-6"
+                        />
+                      )}
+
+                      {/* Unified Grid */}
                       <div className="mb-8">
                         <div className="grid grid-cols-4 gap-4">
-                          {storePosts.map((post, idx) => (
+                          {allItems.map((item, idx) => (
                             <div
-                              key={`filtered-post-${post.id}`}
+                              key={`${item.type}-${item.data.id}`}
                               style={{
                                 opacity: 0,
                                 animation: `fadeInUp 520ms ease-out forwards`,
@@ -352,93 +377,35 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                               }}
                               className="group/card relative"
                             >
-                              <PostCard post={post} currentUser={currentUser} categories={categories} />
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Filtered Listings */}
-                    {listings && listings.length > 0 && (
-                      <div className="mb-8">
-                        <div className="grid grid-cols-4 gap-4">
-                          {listings.map((listing, idx) => (
-                            <div
-                              key={`filtered-listing-${listing.id}`}
-                              style={{
-                                opacity: 0,
-                                animation: `fadeInUp 520ms ease-out forwards`,
-                                animationDelay: `${Math.min(idx * 30, 300)}ms`,
-                                willChange: 'transform, opacity',
-                              }}
-                              className="group/card relative"
-                            >
-                              <ListingCard currentUser={currentUser} data={listing} categories={categories} />
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Filtered Employees */}
-                    {employees && employees.length > 0 && (
-                      <div className="mb-8">
-                        <div className="grid grid-cols-4 gap-4">
-                          {employees.map((employee, idx) => {
-                            const listing = listings[idx % listings.length] || listings[0];
-                            return (
-                              <div
-                                key={`filtered-employee-${employee.id}`}
-                                style={{
-                                  opacity: 0,
-                                  animation: `fadeInUp 520ms ease-out forwards`,
-                                  animationDelay: `${Math.min(idx * 30, 300)}ms`,
-                                  willChange: 'transform, opacity',
-                                }}
-                                className="group/card relative"
-                              >
+                              {item.type === 'post' && (
+                                <PostCard post={item.data} currentUser={currentUser} categories={categories} />
+                              )}
+                              {item.type === 'listing' && (
+                                <ListingCard currentUser={currentUser} data={item.data} categories={categories} />
+                              )}
+                              {item.type === 'employee' && (
                                 <WorkerCard
-                                  employee={employee}
-                                  listingTitle={listing?.title || 'Professional'}
+                                  employee={item.data}
+                                  listingTitle={item.listingContext?.title || 'Professional'}
                                   data={{
-                                    title: listing?.title || '',
-                                    imageSrc: listing?.imageSrc || '',
-                                    category: listing?.category || ''
+                                    title: item.listingContext?.title || '',
+                                    imageSrc: item.listingContext?.imageSrc || '',
+                                    category: item.listingContext?.category || ''
                                   }}
-                                  listing={listing}
+                                  listing={item.listingContext}
                                   currentUser={currentUser}
                                 />
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Filtered Shops */}
-                    {shops && shops.length > 0 && (
-                      <div className="mb-8">
-                        <div className="grid grid-cols-4 gap-4">
-                          {shops.map((shop, idx) => (
-                            <div
-                              key={`filtered-shop-${shop.id}`}
-                              style={{
-                                opacity: 0,
-                                animation: `fadeInUp 520ms ease-out forwards`,
-                                animationDelay: `${Math.min(idx * 30, 300)}ms`,
-                                willChange: 'transform, opacity',
-                              }}
-                              className="group/card relative"
-                            >
-                              <ShopCard data={shop} currentUser={currentUser} />
+                              )}
+                              {item.type === 'shop' && (
+                                <ShopCard data={item.data} currentUser={currentUser} />
+                              )}
                             </div>
                           ))}
                         </div>
                       </div>
-                    )}
-                  </>
-                )}
+                    </div>
+                  );
+                })()}
               </>
             ) : (
               <div className="px-8 pt-32 text-center text-gray-500 ">
