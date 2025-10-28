@@ -79,8 +79,7 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
     const currMin = toMin(hhmm);
     if (inRange(hhmm, open, close)) {
       const minsLeft = toMin(close) - currMin;
-      if (minsLeft <= 30) return { message: 'Closing', color: 'orange' as const };
-      if (minsLeft <= 120) return { message: 'Closing', color: 'green' as const };
+      if (minsLeft <= 120) return { message: 'Closing', color: 'orange' as const };
       return { message: 'Open', color: 'green' as const };
     }
     if (currMin < toMin(open)) return { message: 'Soon', color: 'orange' as const };
@@ -109,9 +108,9 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
 
   const getStatusBorder = (color: string) => {
     switch (color) {
-      case 'green': return 'border border-white/40';
-      case 'orange': return 'border border-white/40'; 
-      case 'red': return 'border border-white/40';
+      case 'green': return 'border border-white/40 hover:border-green-400';
+      case 'orange': return 'border border-white/40 hover:border-orange-400';
+      case 'red': return 'border border-white/40 hover:border-red-500';
       default: return 'border border-white/40';
     }
   };
@@ -135,13 +134,8 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
         type="button"
       >
         <div className="flex items-center text-white text-xs gap-1 hover:brightness-110 transition-all duration-200">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" color="currentColor" fill="none">
-
-    <path d="M11.6686 5.21225C11.8066 4.92946 12.1934 4.92947 12.3314 5.21225L13.1449 6.87978C13.1989 6.99046 13.3003 7.06749 13.4178 7.08703L15.1862 7.38122C15.4859 7.43108 15.6054 7.81473 15.391 8.0392L14.125 9.36513C14.0412 9.45297 14.0025 9.57736 14.021 9.69991L14.3 11.5504C14.3473 11.8638 14.0345 12.101 13.7638 11.957L12.1688 11.1083C12.0628 11.0518 11.9372 11.0518 11.8312 11.1083L10.2362 11.957C9.96554 12.101 9.65271 11.8638 9.69996 11.5504L9.979 9.69991C9.99748 9.57736 9.95882 9.45297 9.87495 9.36513L8.60896 8.0392C8.39464 7.81473 8.51408 7.43108 8.8138 7.38122L10.5822 7.08703C10.6997 7.06749 10.8011 6.99046 10.8551 6.87978L11.6686 5.21225Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-    <path d="M19 9C19 12.866 15.866 16 12 16C8.13401 16 5 12.866 5 9C5 5.13401 8.13401 2 12 2C15.866 2 19 5.13401 19 9Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-    <path d="M13 16.3424L14.6264 20.6513C14.9541 21.5195 15.118 21.9536 15.403 22C15.6887 21.9578 16.0387 21.4804 16.3808 20.6172C16.6258 19.9991 16.7482 19.6901 17.0005 19.5235C17.0779 19.4724 17.1625 19.432 17.252 19.4035C17.5436 19.3108 17.879 19.4015 18.5497 19.5828C19.2669 19.7767 19.7651 19.7226 19.9618 19.5828C20.0197 19.5417 19.9618 19.5797 19.9618 19.5797C20.0776 19.3743 19.9213 19.0539 19.6088 18.4131L17.4561 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-    <path d="M11 16.3421L9.3736 20.6503C9.0459 21.5183 8.72171 21.9536 8.43671 22C8.15097 21.9578 7.97992 21.5263 7.63781 20.6632C7.39287 20.0453 7.25175 19.6893 6.99948 19.5226C6.92213 19.4715 6.83745 19.4312 6.74803 19.4027C6.45638 19.31 6.12101 19.4007 5.45027 19.582C4.73308 19.7758 4.2349 19.7186 4.03815 19.5788C3.92237 19.3735 4.07866 19.0531 4.39123 18.4124L6.54387 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="12" height="12" color="currentColor" fill="none" className="flex-shrink-0">
+            <path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
           <span>{rating}</span>
         </div>
@@ -150,14 +144,13 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
       {/* Time Status Button */}
       <button
         onClick={handleTimeClick}
-        className={`rounded-lg px-3 py-2 w-[4.5rem] backdrop-blur-sm transition-all duration-200 ${getStatusBackground(timeStatus.color)} ${getStatusBorder(timeStatus.color)}`}
+        className={`rounded-lg py-2 px-3 backdrop-blur-sm transition-all duration-200 ${getStatusBackground(timeStatus.color)} ${getStatusBorder(timeStatus.color)}`}
         type="button"
       >
-        <div
-          className={`text-xs ${getStatusColor(timeStatus.color)} hover:brightness-110 transition-all duration-200`}
-
-        >
-          {timeStatus.message}
+        <div className="flex items-center justify-center">
+          <span className={`text-xs ${getStatusColor(timeStatus.color)} hover:brightness-110 transition-all duration-200`}>
+            {timeStatus.message}
+          </span>
         </div>
       </button>
     </div>
