@@ -16,9 +16,7 @@ const styles = `
   }
 
   .video-controls {
-    backdrop-filter: blur(10px) saturate(180%);
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: transparent;
   }
 
   @keyframes avatarFade {
