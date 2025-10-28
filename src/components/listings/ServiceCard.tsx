@@ -188,7 +188,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   return (
     <div
       onClick={handleCardClick}
-      className="cursor-pointer bg-white rounded-lg border border-gray-300 hover:shadow-xl overflow-hidden relative transition-all duration-300 hover:scale-[1.02] max-w-[250px]"
+      className="group cursor-pointer bg-white rounded-xl border border-gray-300 overflow-hidden relative transition-all duration-300 hover:-translate-y-1 hover:scale-[1.01] hover:shadow-md max-w-[250px]"
     >
       {/* Match ListingCard and WorkerCard height structure */}
       <div className="relative h-[350px]">

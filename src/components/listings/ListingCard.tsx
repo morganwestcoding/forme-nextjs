@@ -83,11 +83,11 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser }) => {
   return (
     <div
       onClick={() => router.push(`/listings/${data.id}`)}
-      className="
-        group cursor-pointer relative overflow-hidden
-        rounded-xl bg-white transition-all duration-300
-        hover:shadow-md
-        max-w-[250px]"
+className="
+  group cursor-pointer relative overflow-hidden
+  rounded-xl border border-gray-300 bg-white transition-all duration-300
+  hover:-translate-y-1 hover:scale-[1.01] hover:shadow-md
+  max-w-[250px]"
     >
       {/* Background image + lighter-at-top, bottom-heavy gradient */}
       <div className="absolute inset-0 z-0">
@@ -95,7 +95,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser }) => {
           src={cardImage}
           alt={data.title}
           fill
-          className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+          className="object-cover"
           sizes="(max-width:768px) 100vw, 33vw"
           priority={false}
         />
@@ -115,7 +115,6 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser }) => {
               'rgba(0,0,0,0.00) 100%)',
           }}
         />
-        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors" />
       </div>
 
       <div className="relative z-10">

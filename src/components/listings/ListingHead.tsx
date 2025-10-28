@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import ServiceCard from './ServiceCard';
 import WorkerCard from './WorkerCard';
 import PostCard from '../feed/PostCard';
-import SmartBadgeListing from './SmartBadgeListing';
 import QRModal from '../modals/QRModal';
 import { SafePost, SafeUser, SafeListing } from '@/app/types';
 import useReservationModal from '@/app/hooks/useReservationModal';
@@ -23,7 +22,7 @@ interface ServiceItem {
   popular?: boolean;
 }
 
-type TabKey = 'Services' | 'Team' | 'Reviews' | 'Images' | 'Reels';
+type TabKey = 'Services' | 'Team' | 'Posts' | 'Reviews';
 
 interface ListingHeadProps {
   listing: SafeListing & { user: SafeUser };
@@ -42,7 +41,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
 }) => {
   const router = useRouter();
 
-  const { title, location, galleryImages, imageSrc, description, employees = [], user, storeHours = [] } = listing;
+  const { title, location, galleryImages, imageSrc, employees = [], user, storeHours = [] } = listing;
 
   const initialFollowers = useMemo<string[]>(
     () => (Array.isArray((listing as any).followers) ? (listing as any).followers : []),
@@ -113,7 +112,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
   };
 
   const handleGalleryClick = () => {
-    setActiveTab('Images');
+    setActiveTab('Posts');
   };
 
   const validServices = useMemo(
@@ -142,9 +141,8 @@ const ListingHead: React.FC<ListingHeadProps> = ({
   const tabs: Array<{ key: TabKey; label: string }> = [
     { key: 'Services', label: 'Services' },
     { key: 'Team', label: 'Team' },
+    { key: 'Posts', label: 'Posts' },
     { key: 'Reviews', label: 'Reviews' },
-    { key: 'Images', label: 'Images' },
-    { key: 'Reels', label: 'Reels' },
   ];
 
   return (
@@ -228,7 +226,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
           </div>
 
           {/* Content area with left margin to account for image */}
-          <div className="ml-[163px] pr-4 relative">
+          <div className="ml-[163px] relative">
             {/* Three-dot menu - top right */}
             <div className="absolute top-0 right-0">
               <button
@@ -367,7 +365,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                         width="24"
                         height="24"
                         fill="#60A5FA"
-                        className="shrink-0 text-white/20 drop-shadow-sm"
+                        className="shrink-0 text-white drop-shadow-sm"
                         aria-label="Verified"
                       >
                         <path
@@ -428,7 +426,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 </div>
 
                 {/* Buttons - Right Side */}
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 ml-auto">
                   {/* QR Code Button - Show for owners and employees ONLY */}
                   {canShowQR ? (
                     <button
@@ -451,31 +449,15 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                     currentUser && (
                       <button
                         onClick={handleToggleFollow}
-                        className={`py-3.5 px-4 rounded-lg transition-all duration-500 flex items-center justify-center ${
+                        className={`group w-28 px-4 py-3 rounded-lg border transition-all duration-300 flex items-center justify-center text-sm ${
                           isFollowing
-                            ? 'bg-blue-50 border border-[#60A5FA] hover:shadow-md hover:from-blue-100/80 hover:via-blue-50 hover:to-blue-100'
-                            : 'bg-gray-50 border border-gray-300 hover:from-blue-50/30 hover:via-white hover:to-purple-50/30 hover:border-blue-200/50 hover:shadow-sm'
+                            ? 'bg-blue-50 border-[#60A5FA] text-[#60A5FA] hover:bg-blue-100 hover:shadow-md'
+                            : 'bg-gray-50 border-gray-300 text-gray-500 hover:shadow-md hover:border-[#60A5FA] hover:text-[#60A5FA] hover:bg-blue-50'
                         }`}
                         type="button"
                         aria-label={isFollowing ? 'Unfollow' : 'Follow'}
                       >
-                        <svg 
-                          xmlns="http://www.w3.org/2000/svg" 
-                          width="18" 
-                          height="18" 
-                          viewBox="0 0 24 24" 
-                          fill="none" 
-                          stroke="currentColor" 
-                          strokeWidth="1.75" 
-                          strokeLinecap="round" 
-                          strokeLinejoin="round"
-                          className={isFollowing ? 'text-[#60A5FA]' : 'text-gray-500'}
-                        >
-                          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                          <circle cx="9" cy="7" r="4"/>
-                          <line x1="19" x2="19" y1="8" y2="14"/>
-                          <line x1="22" x2="16" y1="11" y2="11"/>
-                        </svg>
+                        <span>{isFollowing ? 'Following' : 'Follow'}</span>
                       </button>
                     )
                   )}
@@ -509,10 +491,10 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 <button
                   onClick={() => setActiveTab(key)}
                   className={`
-                    px-6 py-2.5 text-sm transition-colors duration-200 rounded-lg
+                    px-6 py-2.5 text-sm transition-colors duration-200 
                     ${isSelected
-                      ? 'text-[#60A5FA] hover:text-[#4F94E5]'
-                      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                      ? 'text-[#60A5FA] hover:text-[#60A5FA]'
+                      : 'text-gray-500 hover:text-gray-700'
                     }
                   `}
                   type="button"
@@ -552,7 +534,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 <div className="relative h-[350px]">
                   <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                     <div className="relative">
-                      <div className="w-24 h-24 rounded-full flex items-center justify-center text-gray-500 bg-gray-50 border-2 border-gray-300 ring-4 ring-white/50 transition-all duration-300 group-hover:border-blue-500 group-hover:bg-blue-50 group-hover:text-blue-500">
+                      <div className="w-24 h-24 rounded-full flex items-center justify-center text-gray-500 bg-gray-50 border-2 border-gray-300 ring-4 ring-white/50 transition-all duration-300 group-hover:border-[#60A5FA] group-hover:bg-blue-50 group-hover:text-[#60A5FA]">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M12 5v14M5 12h14" />
                         </svg>
@@ -574,7 +556,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                     </div>
 
                     <div className="flex items-center justify-center">
-                      <div className="bg-gray-100 text-gray-500 px-3 py-2 border rounded-lg text-xs font-medium group-hover:bg-blue-100 group-hover:text-blue-500 group-hover:border-blue-500 transition-all duration-200">
+                      <div className="bg-gray-100 text-gray-500 px-3 py-2 border rounded-lg text-xs font-medium group-hover:bg-blue-100 group-hover:text-[#60A5FA] group-hover:border-[#60A5FA] transition-all duration-200">
                         Get Started
                       </div>
                     </div>
@@ -611,7 +593,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 <div className="relative h-[350px]">
                   <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                     <div className="relative">
-                      <div className="w-24 h-24 rounded-full flex items-center justify-center text-gray-500 bg-gray-50 border-2 border-gray-300 ring-4 ring-white/50 transition-all duration-300 group-hover:border-blue-500 group-hover:bg-blue-50 group-hover:text-blue-500">
+                      <div className="w-24 h-24 rounded-full flex items-center justify-center text-gray-500 bg-gray-50 border-2 border-gray-300 ring-4 ring-white/50 transition-all duration-300 group-hover:border-[#60A5FA] group-hover:bg-blue-50 group-hover:text-[#60A5FA]">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
                           <circle cx="9" cy="7" r="4" />
@@ -636,7 +618,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                     </div>
 
                     <div className="flex items-center justify-center">
-                      <div className="bg-gray-100 text-gray-500 px-3 py-2 border rounded-lg text-xs font-medium group-hover:bg-blue-100 group-hover:text-blue-500 group-hover:border-blue-500 transition-all duration-200">
+                      <div className="bg-gray-100 text-gray-500 px-3 py-2 border rounded-lg text-xs font-medium group-hover:bg-blue-100 group-hover:text-[#60A5FA] group-hover:border-[#60A5FA] transition-all duration-200">
                         Add Member
                       </div>
                     </div>
@@ -663,66 +645,74 @@ const ListingHead: React.FC<ListingHeadProps> = ({
           </div>
         )}
 
-        {activeTab === 'Images' && (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {galleryImages && galleryImages.length > 0 ? (
-              galleryImages.map((image, index) => (
-                <div
-                  key={index}
-                  className="relative rounded-2xl overflow-hidden border border-gray-100 hover:shadow-md transition-all duration-200 group"
-                  style={{ aspectRatio: '1 / 1' }}
-                >
-                  <img
-                    src={image}
-                    alt={`${title} - Image ${index + 1}`}
-                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-                </div>
-              ))
-            ) : (
-              <div className="col-span-full text-center text-gray-500 py-12">
-                <div className="bg-white rounded-2xl p-8 border border-gray-100">
-                  <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300">
-                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                      <circle cx="9" cy="9" r="2" />
-                      <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
-                    </svg>
+        {activeTab === 'Posts' && (
+          <div className="space-y-6">
+            {/* Images Section */}
+            <div>
+              <h3 className="text-lg font-medium mb-4">Images</h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                {galleryImages && galleryImages.length > 0 ? (
+                  galleryImages.map((image, index) => (
+                    <div
+                      key={index}
+                      className="relative rounded-2xl overflow-hidden border border-gray-100 hover:shadow-md transition-all duration-200 group"
+                      style={{ aspectRatio: '1 / 1' }}
+                    >
+                      <img
+                        src={image}
+                        alt={`${title} - Image ${index + 1}`}
+                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                    </div>
+                  ))
+                ) : (
+                  <div className="col-span-full text-center text-gray-500 py-12">
+                    <div className="bg-white rounded-2xl p-8 border border-gray-100">
+                      <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300">
+                          <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                          <circle cx="9" cy="9" r="2" />
+                          <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+                        </svg>
+                      </div>
+                      <p className="font-medium text-lg mb-2">No images yet</p>
+                      <p className="text-gray-300">Photos will be displayed here</p>
+                    </div>
                   </div>
-                  <p className="font-medium text-lg mb-2">No images yet</p>
-                  <p className="text-gray-300">Photos will be displayed here</p>
-                </div>
+                )}
               </div>
-            )}
-          </div>
-        )}
+            </div>
 
-        {activeTab === 'Reels' && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {posts && posts.length > 0 ? (
-              posts.map(post => (
-                <PostCard
-                  key={post.id}
-                  post={post}
-                  currentUser={currentUser}
-                  categories={categories}
-                />
-              ))
-            ) : (
-              <div className="col-span-full text-center text-gray-500 py-12">
-                <div className="bg-white rounded-2xl p-8 border border-gray-100">
-                  <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300">
-                      <polygon points="23 7 16 12 23 17 23 7" />
-                      <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
-                    </svg>
+            {/* Reels Section */}
+            <div>
+              <h3 className="text-lg font-medium mb-4">Reels</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {posts && posts.length > 0 ? (
+                  posts.map(post => (
+                    <PostCard
+                      key={post.id}
+                      post={post}
+                      currentUser={currentUser}
+                      categories={categories}
+                    />
+                  ))
+                ) : (
+                  <div className="col-span-full text-center text-gray-500 py-12">
+                    <div className="bg-white rounded-2xl p-8 border border-gray-100">
+                      <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300">
+                          <polygon points="23 7 16 12 23 17 23 7" />
+                          <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+                        </svg>
+                      </div>
+                      <p className="font-medium text-lg mb-2">No reels yet</p>
+                      <p className="text-gray-300">Video content will appear here</p>
+                    </div>
                   </div>
-                  <p className="font-medium text-lg mb-2">No reels yet</p>
-                  <p className="text-gray-300">Video content will appear here</p>
-                </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
         )}
       </div>

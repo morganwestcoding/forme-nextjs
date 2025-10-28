@@ -114,12 +114,12 @@ const SmartBadgeWorker: React.FC<SmartBadgeWorkerProps> = ({
     <div className="flex items-center gap-2">
       {/* Rating container - keep existing styling */}
       <div className="border border-gray-300 rounded-lg px-3 py-2 bg-gray-50">
-        <div 
+        <div
           className="flex items-center  text-xs"
         >
-          <button 
+          <button
             onClick={handleRatingClick}
-            className="hover:text-gray-900 text-gray-500 transition-colors duration-200 flex items-center gap-1" 
+            className="hover:text-gray-900 text-gray-500 transition-colors duration-200 flex items-center gap-1"
             type="button"
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" color="currentColor" fill="none">
@@ -134,9 +134,9 @@ const SmartBadgeWorker: React.FC<SmartBadgeWorkerProps> = ({
       </div>
 
       {/* Book Now button - separate styled button */}
-      <button 
+      <button
         onClick={handleBookNowClick}
-        className="border border-gray-300 text-gray-500 rounded-lg px-3 py-2 bg-gray-50 hover:bg-[#60A5FA] transition-colors duration-200 text-xs"
+        className="border border-gray-300 text-gray-500 rounded-lg px-3 py-2 bg-gray-50 hover:border-[#60A5FA] hover:bg-blue-50 hover:text-[#60A5FA] transition-colors duration-200 text-xs"
         type="button"
       >
         Reserve

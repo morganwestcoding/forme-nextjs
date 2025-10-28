@@ -91,9 +91,9 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
 
   const getStatusColor = (color: string) => {
     switch (color) {
-      case 'green': return 'text-green-300';
-      case 'orange': return 'text-orange-300'; 
-      case 'red': return 'text-red-400';
+      case 'green': return 'text-green-400';
+      case 'orange': return 'text-orange-400';
+      case 'red': return 'text-red-500';
       default: return 'text-white/70';
     }
   };
@@ -150,10 +150,10 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
       {/* Time Status Button */}
       <button
         onClick={handleTimeClick}
-        className={`rounded-lg px-3 py-2 backdrop-blur-sm transition-all duration-200 ${getStatusBackground(timeStatus.color)} ${getStatusBorder(timeStatus.color)}`}
+        className={`rounded-lg px-3 py-2 w-[4.5rem] backdrop-blur-sm transition-all duration-200 ${getStatusBackground(timeStatus.color)} ${getStatusBorder(timeStatus.color)}`}
         type="button"
       >
-        <div 
+        <div
           className={`text-xs ${getStatusColor(timeStatus.color)} hover:brightness-110 transition-all duration-200`}
 
         >
