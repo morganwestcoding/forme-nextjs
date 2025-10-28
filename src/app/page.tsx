@@ -4,7 +4,7 @@ import getPosts, { IPostsParams } from './actions/getPost';
 import getListings from './actions/getListings';
 import getShops, { IShopsParams } from './actions/getShops';
 import { useCategoryStore } from './hooks/useCategoryStore';
-import NewsfeedClient from '@/components/NewsfeedClient';
+import DiscoverClient from '@/components/DiscoverClient';
 import { SafeListing } from '@/app/types';
 
 interface PostProps {
@@ -15,7 +15,7 @@ interface PostProps {
 
 export const dynamic = 'force-dynamic';
 
-const Newsfeed = async ({ searchParams }: PostProps) => {
+const Discover = async ({ searchParams }: PostProps) => {
   const store = useCategoryStore.getState();
   const categoryToUse = searchParams.category || store.selectedCategory;
   
@@ -50,7 +50,7 @@ const Newsfeed = async ({ searchParams }: PostProps) => {
   const employees = safeListings.flatMap((listing: SafeListing) => listing.employees);
 
   return (
-    <NewsfeedClient 
+    <DiscoverClient 
       initialPosts={posts}
       currentUser={currentUser}
       categoryToUse={categoryToUse}
@@ -61,4 +61,4 @@ const Newsfeed = async ({ searchParams }: PostProps) => {
   );
 };
 
-export default Newsfeed;
+export default Discover;

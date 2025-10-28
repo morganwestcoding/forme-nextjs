@@ -1,4 +1,4 @@
-// components/NewsfeedClient.tsx
+// components/DiscoverClient.tsx
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
@@ -11,7 +11,7 @@ import { usePostStore } from '@/app/hooks/usePostStore';
 import { useCategory } from '@/CategoryContext';
 import { useFilter } from '@/FilterContext';
 import Container from './Container';
-import NewsfeedHeader from './feed/NewsfeedHeader';
+import DiscoverHeader from './feed/DiscoverHeader';
 import PostCard from './feed/PostCard';
 import ListingCard from '@/components/listings/ListingCard';
 import WorkerCard from '@/components/listings/WorkerCard';
@@ -19,7 +19,7 @@ import ShopCard from '@/components/shop/ShopCard';
 import PropagateLoaderWrapper from '@/components/loaders/PropagateLoaderWrapper';
 import SectionHeader from '@/app/market/SectionHeader';
 
-interface NewsfeedClientProps {
+interface DiscoverClientProps {
   initialPosts: SafePost[];
   currentUser: SafeUser | null;
   categoryToUse?: string;
@@ -32,7 +32,7 @@ interface NewsfeedClientProps {
 const MIN_LOADER_MS = 1800;
 const CONTAINER_FADE_MS = 700;
 
-const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
+const DiscoverClient: React.FC<DiscoverClientProps> = ({
   initialPosts,
   currentUser,
   categoryToUse,
@@ -58,7 +58,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
   const searchParams = useSearchParams();
   const filterParam = searchParams?.get('filter') || 'for-you';
 
-  // Build NewsfeedHeader props from URL
+  // Build DiscoverHeader props from URL
   const headerSearchParams = {
     userId: searchParams?.get('userId') || undefined,
     locationValue: searchParams?.get('locationValue') || undefined,
@@ -177,23 +177,23 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
     });
   };
 
-  const trendingPosts = useMemo(() => 
-    getPaginatedItems(storePosts || [], postsOffset, 4), 
+  const trendingPosts = useMemo(() =>
+    getPaginatedItems(storePosts || [], postsOffset, 4),
     [storePosts, postsOffset]
   );
-  
-  const trendingListings = useMemo(() => 
-    getPaginatedItems(listings, listingsOffset, 4), 
+
+  const trendingListings = useMemo(() =>
+    getPaginatedItems(listings, listingsOffset, 4),
     [listings, listingsOffset]
   );
-  
-  const trendingEmployees = useMemo(() => 
-    getPaginatedItems(employees, employeesOffset, 4), 
+
+  const trendingEmployees = useMemo(() =>
+    getPaginatedItems(employees, employeesOffset, 4),
     [employees, employeesOffset]
   );
-  
-  const trendingShops = useMemo(() => 
-    getPaginatedItems(shops, shopsOffset, 4), 
+
+  const trendingShops = useMemo(() =>
+    getPaginatedItems(shops, shopsOffset, 4),
     [shops, shopsOffset]
   );
 
@@ -212,7 +212,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
         </div>
 
         {/* Search and Category Controls */}
-        <NewsfeedHeader
+        <DiscoverHeader
           searchParams={headerSearchParams}
         />
 
@@ -242,7 +242,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                           title="Curated for You"
                           onPrev={() => scrollTrendingPosts('left')}
                           onNext={() => scrollTrendingPosts('right')}
-                          onViewAll={() => router.push('/newsfeed?category=trending')}
+                          onViewAll={() => router.push('/Discover?category=trending')}
                         />
                         <div className="grid grid-cols-4 gap-4">
                           {trendingPosts.map((post, idx) => (
@@ -453,4 +453,4 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
   );
 };
 
-export default NewsfeedClient;
+export default DiscoverClient;

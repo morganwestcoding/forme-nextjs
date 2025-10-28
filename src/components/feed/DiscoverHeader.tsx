@@ -1,4 +1,4 @@
-// components/newsfeed/NewsfeedHeader.tsx
+// components/Discover/DiscoverHeader.tsx
 'use client';
 
 import React from 'react';
@@ -7,7 +7,7 @@ import { categories } from '@/components/Categories';
 import useCreatePostModal from '@/app/hooks/useCreatePostModal';
 import GlobalSearch from '../search/GlobalSearch';
 
-interface NewsfeedHeaderProps {
+interface DiscoverHeaderProps {
   searchParams: {
     userId?: string;
     locationValue?: string;
@@ -21,7 +21,7 @@ interface NewsfeedHeaderProps {
   };
 }
 
-const NewsfeedHeader: React.FC<NewsfeedHeaderProps> = ({
+const DiscoverHeader: React.FC<DiscoverHeaderProps> = ({
   searchParams
 }) => {
   const router = useRouter();
@@ -46,7 +46,7 @@ const NewsfeedHeader: React.FC<NewsfeedHeaderProps> = ({
 
     const search = current.toString();
     const query = search ? `?${search}` : '';
-    router.push(`/newsfeed${query}`);
+    router.push(`/${query}`);
   };
 
   const getCategoryStyle = (categoryLabel: string) => {
@@ -132,4 +132,4 @@ const NewsfeedHeader: React.FC<NewsfeedHeaderProps> = ({
   );
 };
 
-export default NewsfeedHeader;
+export default DiscoverHeader;
