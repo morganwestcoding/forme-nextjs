@@ -21,7 +21,7 @@ interface SmartBadgeWorkerProps {
   rating?: number;
   followerCount?: number;
   onRatingClick?: () => void;
-  onTimeClick?: () => void;
+  onTimeClick?: (e?: React.MouseEvent) => void;
   storeHours?: SafeStoreHours[];
   isVerified?: boolean; // Add this to determine when to show blue shadow
 }
@@ -107,7 +107,7 @@ const SmartBadgeWorker: React.FC<SmartBadgeWorkerProps> = ({
 
   const handleBookNowClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    onTimeClick?.(); // Reuse the existing callback for book now action
+    onTimeClick?.(e); // Pass the event to the callback
   };
 
   return (

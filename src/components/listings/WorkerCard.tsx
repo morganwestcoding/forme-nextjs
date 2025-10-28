@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { SafeListing, SafeUser, SafeEmployee } from '@/app/types';
 import SmartBadgeWorker from './SmartBadgeWorker';
 import HeartButton from '../HeartButton';
+import useReservationModal from '@/app/hooks/useReservationModal';
 
 interface WorkerCardProps {
   employee: SafeEmployee & {
@@ -75,6 +76,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
   const [/*isFollowing*/, setIsFollowing] = useState(false);
   const [imageError, setImageError] = useState(false);
   const router = useRouter();
+  const reservationModal = useReservationModal();
 
   const handleCardClick = () => {
     router.push(`/listings/${listing.id}`);
@@ -267,6 +269,13 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
               employee={employee}
               listingTitle={listingTitle}
               followerCount={employee.followerCount || 1247}
+              onTimeClick={(e?: React.MouseEvent) => {
+                e?.stopPropagation();
+                // Open reservation modal with this employee pre-selected
+                if (currentUser) {
+                  reservationModal.onOpen(listing, currentUser, undefined, employee.id);
+                }
+              }}
             />
           </div>
         </div>

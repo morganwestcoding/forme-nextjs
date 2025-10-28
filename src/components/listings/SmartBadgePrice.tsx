@@ -6,7 +6,7 @@ interface SmartBadgePriceProps {
   showPrice?: boolean; // Toggle between price and rating display
   onPriceClick?: () => void;
   onRatingClick?: () => void;
-  onBookNowClick?: () => void;
+  onBookNowClick?: (e: React.MouseEvent) => void;
   isVerified?: boolean;
 }
 
@@ -32,7 +32,7 @@ const SmartBadgePrice: React.FC<SmartBadgePriceProps> = ({
 
   const handleBookNowClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    onBookNowClick?.();
+    onBookNowClick?.(e);
   };
 
   const formatPrice = (n: number) =>

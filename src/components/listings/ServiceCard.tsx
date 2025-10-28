@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { SafeListing, SafeUser } from '@/app/types';
 import HeartButton from '../HeartButton';
 import SmartBadgePrice from './SmartBadgePrice'; // Import the SmartBadgePrice component
+import useReservationModal from '@/app/hooks/useReservationModal';
 
 interface ServiceItem {
   id: string;
@@ -141,6 +142,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   disabled = false,
 }) => {
   const router = useRouter();
+  const reservationModal = useReservationModal();
 
   const isOwner =
     !!currentUser?.id && !!listing?.user?.id && currentUser.id === listing.user.id;
@@ -290,9 +292,12 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                 // Handle price click (e.g., show pricing details)
                 console.log('Price clicked for service:', service.serviceName);
               }}
-              onBookNowClick={() => {
-                // Handle book now click (e.g., open booking modal)
-                console.log('Book now clicked for service:', service.serviceName);
+              onBookNowClick={(e: React.MouseEvent) => {
+                e.stopPropagation();
+                // Open reservation modal with this service pre-selected
+                if (listing && currentUser) {
+                  reservationModal.onOpen(listing, currentUser, service.id);
+                }
               }}
               isVerified={true} // You can control this based on your business logic
             />
