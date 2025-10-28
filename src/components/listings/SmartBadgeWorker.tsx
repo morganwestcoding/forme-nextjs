@@ -113,13 +113,13 @@ const SmartBadgeWorker: React.FC<SmartBadgeWorkerProps> = ({
   return (
     <div className="flex items-center gap-2">
       {/* Rating container - keep existing styling */}
-      <div className="border border-gray-300 rounded-lg px-3 py-2 bg-gray-50">
+      <div className="group/rating border border-gray-300 rounded-lg px-3 py-2 bg-gray-50 hover:border-[#60A5FA] hover:bg-blue-50 transition-colors duration-200">
         <div
           className="flex items-center  text-xs"
         >
           <button
             onClick={handleRatingClick}
-            className="hover:text-gray-900 text-gray-500 transition-colors duration-200 flex items-center gap-1"
+            className="group-hover/rating:text-[#60A5FA] text-gray-500 transition-colors duration-200 flex items-center gap-1"
             type="button"
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="12" height="12" color="currentColor" fill="none" className="flex-shrink-0">

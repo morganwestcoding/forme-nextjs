@@ -41,13 +41,13 @@ const SmartBadgePrice: React.FC<SmartBadgePriceProps> = ({
   return (
     <div className="flex items-center gap-2">
       {/* Left container - Price or Rating */}
-      <div className="border border-gray-300 rounded-lg px-3 py-2 bg-gray-50">
+      <div className="group/rating border border-gray-300 rounded-lg px-3 py-2 bg-gray-50 hover:border-[#60A5FA] hover:bg-blue-50 transition-colors duration-200">
         <div
           className="flex items-center text-gray-500 text-xs"
         >
           <button
             onClick={handleLeftClick}
-            className="hover:text-gray-900 transition-colors duration-200 flex items-center gap-1"
+            className="group-hover/rating:text-[#60A5FA] transition-colors duration-200 flex items-center gap-1"
             type="button"
           >
             {showPrice ? (
@@ -76,7 +76,7 @@ const SmartBadgePrice: React.FC<SmartBadgePriceProps> = ({
       {/* Book Now button - separate styled button */}
       <button
         onClick={handleBookNowClick}
-        className="text-gray-500 border border-gray-300 rounded-lg px-3 py-2 bg-gray-50 hover:border-[#60A5FA] hover:bg-blue-50 hover:text-[#60A5FA] transition-colors duration-200 text-xs "
+        className="text-gray-500 border border-gray-300 rounded-lg px-3.5 py-2 bg-gray-50 hover:border-[#60A5FA] hover:bg-blue-50 hover:text-[#60A5FA] transition-colors duration-200 text-xs "
         type="button"
       >
         Reserve

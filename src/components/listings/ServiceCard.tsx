@@ -251,7 +251,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
           <div className="relative">
             {/* Colored circular background with icon */}
             <div
-              className="w-24 h-24 rounded-full flex items-center justify-center text-white shadow-lg border border-gray-300 transition-transform group-hover:scale-[1.05]"
+              className="w-24 h-24 rounded-full flex items-center justify-center text-white shadow-lg border border-gray-300"
               style={{ backgroundColor: iconBg }}
               aria-label="Service icon"
               title={service.serviceName}

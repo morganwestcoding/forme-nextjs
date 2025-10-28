@@ -7,6 +7,7 @@ import ServiceCard from './ServiceCard';
 import WorkerCard from './WorkerCard';
 import PostCard from '../feed/PostCard';
 import QRModal from '../modals/QRModal';
+import HeartButton from '../HeartButton';
 import { SafePost, SafeUser, SafeListing } from '@/app/types';
 import useReservationModal from '@/app/hooks/useReservationModal';
 import useRentModal from '@/app/hooks/useListingModal';
@@ -53,7 +54,6 @@ const ListingHead: React.FC<ListingHeadProps> = ({
 
   const isFollowing = !!currentUser?.id && followers.includes(currentUser.id);
   const [activeTab, setActiveTab] = useState<TabKey>('Services');
-  const [city, state] = location?.split(',').map(s => s.trim()) || [];
 
   const reservationModal = useReservationModal();
   const rentModal = useRentModal();
@@ -168,7 +168,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
         <div className="w-full rounded-xl p-6 border border-gray-300 bg-white relative min-h-[151px]">
           {/* Image positioned on the left */}
           <div className="absolute left-6 top-6">
-            <div className="w-[140px] h-[140px] shadow-sm rounded-lg overflow-hidden relative hover:shadow-md transition-shadow group border border-gray-300">
+            <div className="w-[140px] h-[140px] shadow-sm rounded-xl overflow-hidden relative hover:shadow-md transition-shadow group border border-gray-300">
               <img
                 src={mainImage}
                 alt={title}
@@ -346,7 +346,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               )}
             </div>
 
-            <div className="flex flex-col h-[139px] justify-between py-1">
+            <div className="flex flex-col h-[139px] justify-end py-1">
               {/* Title Row */}
               <div>
                 <div className="flex items-center gap-2 mb-3">
@@ -387,11 +387,11 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 </div>
 
                 {/* Location & Status with separator */}
-                <div className="mb-4">
+                <div>
                   <span className="inline-flex items-center text-sm text-gray-500">
-                    <span>{city}{state ? `, ${state}` : ''}</span>
+                    <span>{location}</span>
                     <span className="mx-2 text-gray-500">•</span>
-                    <OpenStatus 
+                    <OpenStatus
                       storeHours={storeHours}
                     />
                   </span>
@@ -399,29 +399,33 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               </div>
 
               {/* Stats Counters with Buttons */}
-              <div className="flex items-center justify-between ">
-                {/* Stats - All Under One Gray Background */}
-                <div className="flex items-center  gap-6 px-5 py-3 border border-gray-300 rounded-lg  bg-gray-50">
+              <div className="flex items-center justify-between">
+                {/* Stats - Minimalist Text Style */}
+                <div className="flex items-center gap-4">
                   {/* Rating Counter */}
                   <button
                     onClick={() => setActiveTab('Reviews')}
-                    className="flex items-center gap-2  hover:opacity-70 transition-opacity"
+                    className="flex items-center gap-1.5 hover:opacity-70 transition-opacity"
                     type="button"
                   >
-                    <span className="text-md font-bold text-black">4.8</span>
-                    <span className="text-sm text-gray-500 ">Rating</span>
+                    <span className="text-sm font-semibold text-black">4.8</span>
+                    <span className="text-sm text-gray-400">rating</span>
                   </button>
 
+                  <span className="text-gray-300">·</span>
+
                   {/* Posts Counter */}
-                  <div className="flex items-center gap-2">
-                    <span className="text-md font-bold text-black">{posts?.length || 0}</span>
-                    <span className="text-sm text-gray-500 ">Posts</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-sm font-semibold text-black">{posts?.length || 0}</span>
+                    <span className="text-sm text-gray-400">posts</span>
                   </div>
 
+                  <span className="text-gray-300">·</span>
+
                   {/* Followers Counter */}
-                  <div className="flex items-center gap-2">
-                    <span className="text-md font-bold text-black">{followers.length}</span>
-                    <span className="text-sm text-gray-500 ">Followers</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-sm font-semibold text-black">{followers.length}</span>
+                    <span className="text-sm text-gray-400">followers</span>
                   </div>
                 </div>
 
@@ -431,7 +435,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   {canShowQR ? (
                     <button
                       onClick={handleQRClick}
-                      className="h-12 px-4 rounded-lg  transition-all duration-500 flex items-center justify-center border-[#60A5FA] border shadow-sm bg-blue-50 hover:shadow-md hover:from-blue-100/80 hover:via-blue-50 hover:to-blue-100"
+                      className="h-12 px-4 rounded-lg transition-all duration-300 flex items-center justify-center border-[#60A5FA] border bg-blue-50 hover:shadow-lg hover:shadow-blue-100/50 hover:border-[#60A5FA] hover:bg-blue-50 [transition:background_400ms_ease-in-out,border-color_300ms_ease,box-shadow_300ms_ease]"
                       type="button"
                       aria-label="Show QR Code"
                     >
@@ -449,10 +453,10 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                     currentUser && (
                       <button
                         onClick={handleToggleFollow}
-                        className={`group w-28 px-4 py-3 rounded-lg border transition-all duration-300 flex items-center justify-center text-sm ${
+                        className={`group w-28 px-4 py-3 rounded-lg border transition-all duration-300 flex items-center justify-center text-sm [transition:background_400ms_ease-in-out,border-color_300ms_ease,box-shadow_300ms_ease] ${
                           isFollowing
-                            ? 'bg-blue-50 border-[#60A5FA] text-[#60A5FA] hover:bg-blue-100 hover:shadow-md'
-                            : 'bg-gray-50 border-gray-300 text-gray-500 hover:shadow-md hover:border-[#60A5FA] hover:text-[#60A5FA] hover:bg-blue-50'
+                            ? 'bg-blue-50 border-[#60A5FA] text-[#60A5FA] hover:shadow-lg hover:shadow-blue-100/50 hover:bg-blue-50'
+                            : 'bg-gray-50 border-gray-300 text-gray-500 hover:shadow-lg hover:shadow-blue-100/50 hover:border-[#60A5FA] hover:text-[#60A5FA] hover:bg-blue-50'
                         }`}
                         type="button"
                         aria-label={isFollowing ? 'Unfollow' : 'Follow'}
@@ -466,7 +470,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   {currentUser && (
 <button
   onClick={handleReserveClick}
-  className="w-28 px-4 py-3 rounded-lg border border-gray-300 transition-all duration-300  bg-gray-50 text-gray-500 hover:shadow-md hover:from-blue-100/80 hover:via-blue-50 hover:to-blue-100 flex items-center justify-center text-sm"
+  className="w-28 px-4 py-3 rounded-lg border border-gray-300 transition-all duration-300 bg-gray-50 text-gray-500 hover:shadow-lg hover:shadow-blue-100/50 hover:border-[#60A5FA] hover:text-[#60A5FA] hover:bg-blue-50 [transition:background_400ms_ease-in-out,border-color_300ms_ease,box-shadow_300ms_ease] flex items-center justify-center text-sm"
   type="button"
 >
                       Reserve
