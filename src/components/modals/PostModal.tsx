@@ -19,10 +19,10 @@ const styles = `
     background: transparent;
   }
 
-  @keyframes avatarFade {
+  @keyframes crossfadeMorph {
     0% {
       opacity: 0;
-      filter: blur(10px);
+      filter: blur(4px);
     }
     100% {
       opacity: 1;
@@ -30,8 +30,13 @@ const styles = `
     }
   }
 
-  .avatar-trippy {
-    animation: avatarFade 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  .avatar-container {
+    position: relative;
+    border-radius: 50%;
+  }
+
+  .avatar-image-morph {
+    animation: crossfadeMorph 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
 `;
 
@@ -1121,8 +1126,10 @@ useEffect(() => {
             <span className="text-xs">Close</span>
           </div>
 
-          <div key={avatarKey} className="border border-white rounded-full avatar-trippy">
-            <Avatar src={currentPost.user.image ?? undefined} />
+          <div className="border border-white rounded-full avatar-container">
+            <div key={avatarKey} className="avatar-image-morph">
+              <Avatar src={currentPost.user.image ?? undefined} />
+            </div>
           </div>
 
           <div className="flex flex-col items-center gap-2">
@@ -1296,7 +1303,7 @@ useEffect(() => {
                         )}
                       </div>
                       <div className="flex-1 min-w-0 pt-1">
-                        <div className="flex items-center gap-2 text-gray-500 text-xs mb-1">
+                        <div className="flex items-center gap-2 text-gray-500 text-xs">
                           <span className="font-medium text-gray-900 text-sm">{comment.user.name || 'Anonymous'}</span>
                           <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
                           <span>
@@ -1304,7 +1311,7 @@ useEffect(() => {
                               const commentDate = new Date(comment.createdAt);
                               const now = new Date();
                               const diffInHours = (now.getTime() - commentDate.getTime()) / (1000 * 60 * 60);
-                              
+
                               if (diffInHours < 24) {
                                 return format(commentDate, 'h:mm a');
                               } else {
