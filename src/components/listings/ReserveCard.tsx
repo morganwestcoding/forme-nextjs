@@ -184,7 +184,7 @@ const ReserveCard: React.FC<ReserveCardProps> = ({
               {reservation.serviceName}
             </p>
             
-            {/* Worker info - more compact */}
+            {/* Professional info - more compact */}
             <p className="text-xs text-gray-500 font-medium">
               {employeeName}
             </p>

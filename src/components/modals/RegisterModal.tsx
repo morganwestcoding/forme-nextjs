@@ -54,7 +54,7 @@ const EDIT_HUB_STEP = -1;
 
 const RegisterModal = () => {
   const router = useRouter();
-  const { status } = useSession();
+  const { status, update } = useSession();
   const registerModal = useRegisterModal();
   const loginModal = useLoginModal();
   const modalRef = useRef<ModalHandle>(null);
@@ -346,10 +346,16 @@ const RegisterModal = () => {
       });
 
       if (signInRes?.ok || signInRes?.status === 200) {
+        // Force session update to ensure client recognizes login immediately
+        await update();
+
         setStep(STEPS.ACCOUNT);
         if (modalRef.current?.close) modalRef.current.close();
         registerModal.onClose();
-        
+
+        // Force router refresh to update server-side session
+        router.refresh();
+
         // UPDATED: Route based on user type
         setTimeout(() => {
           if (data.userType === 'individual' || data.userType === 'team') {

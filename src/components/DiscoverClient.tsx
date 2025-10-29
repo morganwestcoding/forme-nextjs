@@ -79,8 +79,8 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
     page: searchParams?.get('page') || undefined,
   };
 
-  // Get type filter (posts, listings, workers, shops)
-  const typeFilter = searchParams?.get('type') as 'posts' | 'listings' | 'workers' | 'shops' | null;
+  // Get type filter (posts, listings, professionals, shops)
+  const typeFilter = searchParams?.get('type') as 'posts' | 'listings' | 'professionals' | 'shops' | null;
 
   // Filtering logic
   const filterInfo = useMemo(() => {
@@ -105,7 +105,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
       const typeNames = {
         posts: 'All Posts',
         listings: 'All Listings',
-        workers: 'All Workers',
+        professionals: 'All Professionals',
         shops: 'All Shops'
       };
       resultsHeaderText = typeNames[typeFilter] || 'All Results';
@@ -315,7 +315,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                           title="Your Perfect Match"
                           onPrev={() => scrollTrendingEmployees('left')}
                           onNext={() => scrollTrendingEmployees('right')}
-                          onViewAll={() => handleNavigation('/?type=workers')}
+                          onViewAll={() => handleNavigation('/?type=professionals')}
                         />
                         <div className="grid grid-cols-4 gap-4">
                           {trendingEmployees.map((employee, idx) => {
@@ -372,7 +372,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                       allItems = (storePosts || []).map(post => ({ type: 'post' as const, data: post }));
                     } else if (filterInfo.typeFilter === 'listings') {
                       allItems = (listings || []).map(listing => ({ type: 'listing' as const, data: listing }));
-                    } else if (filterInfo.typeFilter === 'workers') {
+                    } else if (filterInfo.typeFilter === 'professionals') {
                       allItems = (employees || []).map(employee => {
                         const listing = listings.find(l => l.id === employee.listingId) || listings[0];
                         return { type: 'employee' as const, data: employee, listingContext: listing };

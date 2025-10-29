@@ -136,7 +136,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
       onMouseLeave={handleMouseLeave}
       className="
         group cursor-pointer relative
-        rounded-xl border border-gray-300 bg-white transition-all duration-300
+        rounded-xl  bg-white transition-all duration-300
         hover:-translate-y-1 hover:shadow-md
         max-w-[250px]"
     >

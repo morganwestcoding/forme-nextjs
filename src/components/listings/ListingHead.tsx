@@ -552,13 +552,13 @@ const ListingHead: React.FC<ListingHeadProps> = ({
 
                   <div className="absolute bottom-5 left-5 right-5 z-20">
                     <div className="mb-4">
-                      <h3 className="text-lg  text-gray-500 mb-1 text-center">
+                      <h3 className="text-lg font-semibold text-gray-500 mb-1 text-center">
                         Add Service
                       </h3>
-                      <p className="text-xs text-gray-300 leading-relaxed text-center">
+                      <p className="text-xs text-gray-500 leading-relaxed text-center">
                         Create a new service offering
                       </p>
-                      <div className="opacity-90 mt-0.5 text-xs text-gray-300 font-light text-center">
+                      <div className="opacity-90 mt-0.5 text-xs text-gray-500 font-light text-center">
                         Click to get started
                       </div>
                     </div>

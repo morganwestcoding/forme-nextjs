@@ -58,6 +58,35 @@ export const authOptions: AuthOptions = {
   debug: process.env.NODE_ENV === 'development',
   session: {
     strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  callbacks: {
+    async jwt({ token, user, trigger }) {
+      // Initial sign in
+      if (user) {
+        token.id = user.id;
+        token.email = user.email;
+      }
+      // Handle session update trigger
+      if (trigger === "update") {
+        // Refetch user data on manual update
+        const updatedUser = await prisma.user.findUnique({
+          where: { email: token.email as string }
+        });
+        if (updatedUser) {
+          token.id = updatedUser.id;
+          token.email = updatedUser.email;
+        }
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session?.user) {
+        session.user.id = token.id as string;
+        session.user.email = token.email as string;
+      }
+      return session;
+    }
   },
   secret: process.env.NEXTAUTH_SECRET,
 }

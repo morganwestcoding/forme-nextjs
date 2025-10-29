@@ -1,13 +1,14 @@
 // app/subscription/SubscriptionClient.tsx
 'use client';
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { SafeUser } from "@/app/types";
 import FeatureComparison from "@/components/subscription/FeatureComparison";
 import { Check, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 type Billing = "monthly" | "yearly";
 
@@ -30,8 +31,57 @@ interface Props {
 
 const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
   const router = useRouter();
+  const { update } = useSession();
   const [billing, setBilling] = useState<Billing>("monthly");
   const [saving, setSaving] = useState(false);
+  const [hasProcessedPayment, setHasProcessedPayment] = useState(false);
+  const [searchParams] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return new URLSearchParams(window.location.search);
+    }
+    return new URLSearchParams();
+  });
+  const isOnboarding = searchParams.get('onboarding') === 'true';
+  const status = searchParams.get('status');
+  const sessionId = searchParams.get('session_id');
+
+  // Handle payment success and redirect to discover during onboarding
+  useEffect(() => {
+    // Don't process if already processed
+    if (hasProcessedPayment) return;
+
+    const handlePaymentSuccess = async () => {
+      if (status === 'success' && sessionId && isOnboarding) {
+        setHasProcessedPayment(true);
+
+        try {
+          // Update session to get latest subscription info
+          await update();
+
+          // Refresh to get updated user data
+          router.refresh();
+
+          // Show success message and redirect to discover
+          toast.success("Subscription activated! Welcome to ForMe.");
+
+          setTimeout(() => {
+            router.push('/');
+          }, 1000);
+        } catch (error) {
+          console.error('Error updating session after payment:', error);
+          // Still redirect even if there's an error
+          setTimeout(() => {
+            router.push('/');
+          }, 1000);
+        }
+      } else if (status === 'cancelled' && isOnboarding && !hasProcessedPayment) {
+        setHasProcessedPayment(true);
+        toast.error("Payment cancelled. You can try again or continue with Bronze.");
+      }
+    };
+
+    handlePaymentSuccess();
+  }, [status, sessionId, isOnboarding, router, update, hasProcessedPayment]);
 
   const plans = [
     {
@@ -75,17 +125,29 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
 
     try {
       setSaving(true);
-      
+
       if (planId === "bronze") {
         await axios.post("/api/subscription/select", { plan: "Bronze", interval: billing });
         toast.success("Bronze plan selected");
+
+        // Force refresh to update session with new subscription
         router.refresh();
+
+        // If onboarding, redirect to discover page after a short delay
+        if (isOnboarding) {
+          setTimeout(() => {
+            toast.success("Welcome to ForMe! Let's explore.");
+            router.push('/');
+          }, 800);
+        }
         return;
       }
 
       const res = await axios.post("/api/subscription/checkout", {
         planId: planId as "gold",
         interval: billing,
+        // Pass onboarding flag so we can redirect properly after payment
+        metadata: { isOnboarding: isOnboarding ? 'true' : 'false' }
       });
 
       const { sessionId } = res.data || {};
@@ -98,6 +160,7 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
       const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
       if (!stripe) throw new Error("Stripe failed to load");
 
+      // Redirect to Stripe checkout - after payment, they'll come back to success URL
       await stripe.redirectToCheckout({ sessionId });
     } catch (err: any) {
       toast.error(err?.response?.data?.error || "Something went wrong");
@@ -110,11 +173,17 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
     <div className="max-w-5xl mx-auto px-4 py-12">
       {/* Header */}
       <div className="text-center mb-12">
+        {isOnboarding && (
+          <p className="text-sm text-[#60A5FA] font-medium mb-2">Step 2 of 2</p>
+        )}
         <h1 className="text-4xl font-bold text-gray-900 mb-3">
-          Simple, transparent pricing
+          {isOnboarding ? "Choose Your Plan" : "Simple, transparent pricing"}
         </h1>
         <p className="text-xl text-gray-600">
-          Currently on <span className="font-semibold">{cleanLabel(currentUser?.subscriptionTier)}</span>
+          {isOnboarding
+            ? "Start with Bronze and upgrade anytime"
+            : <>Currently on <span className="font-semibold">{cleanLabel(currentUser?.subscriptionTier)}</span></>
+          }
         </p>
       </div>
 

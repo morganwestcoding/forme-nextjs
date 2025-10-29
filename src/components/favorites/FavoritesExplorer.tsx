@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Grid, List } from 'lucide-react';
 import GlobalSearch from '../search/GlobalSearch';
 
-type FavoriteTab = 'Market' | 'Workers' | 'Shops' | 'Posts';
+type FavoriteTab = 'Market' | 'Professionals' | 'Shops' | 'Posts';
 
 interface ViewState {
   mode: 'grid' | 'list';
@@ -33,7 +33,7 @@ const FavoritesExplorer: React.FC<FavoritesExplorerProps> = ({
 
   const tabs: { key: FavoriteTab; label: string }[] = [
     { key: 'Market', label: 'Market' },
-    { key: 'Workers', label: 'Workers' },
+    { key: 'Professionals', label: 'Professionals' },
     { key: 'Shops', label: 'Shops' },
     { key: 'Posts', label: 'Posts' },
   ];

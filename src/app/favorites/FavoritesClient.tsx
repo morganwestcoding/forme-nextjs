@@ -13,7 +13,7 @@ import EmptyState from '@/components/EmptyState';
 import SectionHeader from '../market/SectionHeader';
 import PropagateLoaderWrapper from '@/components/loaders/PropagateLoaderWrapper';
 
-type FavoriteTab = 'Market' | 'Workers' | 'Shops' | 'Posts';
+type FavoriteTab = 'Market' | 'Professionals' | 'Shops' | 'Posts';
 
 interface FavoritesClientProps {
   listings: SafeListing[];
@@ -59,7 +59,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
   const emptyCopy: Record<string, { title: string;  }> = {
     All:     { title: 'No favorites yet, start hearting items to start your collection'},
     Market:  { title: 'No favorite listings yet',  },
-    Workers: { title: 'No favorite workers yet' },
+    Professionals: { title: 'No favorite professionals yet' },
     Shops:   { title: 'No favorite shops yet' },
     Posts:   { title: 'No favorite posts yet'},
   };
@@ -86,7 +86,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
         });
         break;
 
-      case 'Workers':
+      case 'Professionals':
         safeWorkers.forEach((worker) => {
           const associatedListing = safeListings.find(listing => 
             listing.employees?.some(emp => emp.id === worker.id)
@@ -199,7 +199,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
     switch (activeTab) {
       case 'Market':
         return safeListings.length > 0;
-      case 'Workers':
+      case 'Professionals':
         return safeWorkers.length > 0;
       case 'Shops':
         return safeShops.length > 0;

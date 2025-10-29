@@ -59,7 +59,7 @@ const MarketClient: React.FC<MarketClientProps> = ({
   const [trendingVisible, setTrendingVisible] = useState(true);
   
   // View all state
-  const [viewAllMode, setViewAllMode] = useState<'storefronts' | 'workers' | null>(null);
+  const [viewAllMode, setViewAllMode] = useState<'storefronts' | 'professionals' | null>(null);
 
   // Loader (nice UX delay)
   const [isLoading, setIsLoading] = useState(true);
@@ -263,7 +263,7 @@ const MarketClient: React.FC<MarketClientProps> = ({
   };
   
   const handleViewAllWorkers = () => {
-    setViewAllMode('workers');
+    setViewAllMode('professionals');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
   
@@ -334,8 +334,8 @@ const MarketClient: React.FC<MarketClientProps> = ({
                   </>
                 )}
 
-                {/* View All Workers Mode */}
-                {viewAllMode === 'workers' && (
+                {/* View All Professionals Mode */}
+                {viewAllMode === 'professionals' && (
                   <>
                     <SectionHeader
                       title="All Teammates"

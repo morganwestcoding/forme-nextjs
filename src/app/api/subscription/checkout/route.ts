@@ -70,14 +70,17 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { planId, interval } = (await request.json()) as {
+    const { planId, interval, metadata } = (await request.json()) as {
       planId: PlanId;
       interval: Interval;
+      metadata?: { isOnboarding?: string };
     };
 
     if (!planId || !interval) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
+
+    const isOnboarding = metadata?.isOnboarding === 'true';
 
     const currentUser = await prisma.user.findUnique({
       where: { email: session.user.email as string },
@@ -103,25 +106,35 @@ export async function POST(request: Request) {
       });
     }
 
+    const successUrl = isOnboarding
+      ? `${process.env.NEXT_PUBLIC_APP_URL}/subscription?status=success&session_id={CHECKOUT_SESSION_ID}&onboarding=true`
+      : `${process.env.NEXT_PUBLIC_APP_URL}/subscription?status=success&session_id={CHECKOUT_SESSION_ID}`;
+
+    const cancelUrl = isOnboarding
+      ? `${process.env.NEXT_PUBLIC_APP_URL}/subscription?status=cancelled&onboarding=true`
+      : `${process.env.NEXT_PUBLIC_APP_URL}/subscription?status=cancelled`;
+
     const checkoutSession = await stripe.checkout.sessions.create({
       mode: "subscription",
       customer: stripeCustomerId,
       payment_method_types: ["card"],
       line_items: [{ price: price.id, quantity: 1 }],
       allow_promotion_codes: true,
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/subscription?status=success&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/subscription?status=cancelled`,
+      success_url: successUrl,
+      cancel_url: cancelUrl,
       metadata: {
         kind: "subscription",
         userId: currentUser.id,
         planId,
         interval,
+        isOnboarding: isOnboarding ? 'true' : 'false',
       },
       subscription_data: {
         metadata: {
           userId: currentUser.id,
           planId,
           interval,
+          isOnboarding: isOnboarding ? 'true' : 'false',
         },
       },
     });
