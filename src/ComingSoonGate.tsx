@@ -246,7 +246,7 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
              The complete business ecosystem. Built for the future.
             </p>
             <p className="text-sm text-gray-400 leading-relaxed mb-4">
-            Whether you're a solo entrepreneur or growing a team, ForMe gives you everything you need to run your business your way.
+            Whether you&apos;re a solo entrepreneur or growing a team, ForMe gives you everything you need to run your business your way.
             </p>
             <p className="text-sm text-gray-400 leading-relaxed">
             From client booking and payment processing to storefront creation, team coordination, and community building every tool is unified in one intelligent, all-in-one platform.

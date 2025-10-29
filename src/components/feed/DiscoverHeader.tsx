@@ -19,10 +19,12 @@ interface DiscoverHeaderProps {
     order?: 'asc' | 'desc';
     page?: string;
   };
+  onNavigate?: (url: string) => void;
 }
 
 const DiscoverHeader: React.FC<DiscoverHeaderProps> = ({
-  searchParams
+  searchParams,
+  onNavigate
 }) => {
   const router = useRouter();
   const params = useSearchParams();
@@ -46,7 +48,13 @@ const DiscoverHeader: React.FC<DiscoverHeaderProps> = ({
 
     const search = current.toString();
     const query = search ? `?${search}` : '';
-    router.push(`/${query}`, { scroll: false });
+
+    // Use onNavigate callback if provided, otherwise fallback to router.push
+    if (onNavigate) {
+      onNavigate(`/${query}`);
+    } else {
+      router.push(`/${query}`, { scroll: false });
+    }
   };
 
   const getCategoryStyle = (categoryLabel: string) => {

@@ -29,7 +29,7 @@ interface DiscoverClientProps {
 }
 
 /** Animation timing */
-const MIN_LOADER_MS = 1800;
+const MIN_LOADER_MS = 1200;
 const CONTAINER_FADE_MS = 700;
 
 const DiscoverClient: React.FC<DiscoverClientProps> = ({
@@ -248,6 +248,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
         {/* Search and Category Controls */}
         <DiscoverHeader
           searchParams={headerSearchParams}
+          onNavigate={handleNavigation}
         />
 
         {/* Content + loader overlay */}
@@ -415,7 +416,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                               style={{
                                 opacity: 0,
                                 animation: `fadeInUp 520ms ease-out forwards`,
-                                animationDelay: `${Math.min(idx * 30, 300)}ms`,
+                                animationDelay: `${140 + idx * 30}ms`,
                                 willChange: 'transform, opacity',
                               }}
                               className="group/card relative"
