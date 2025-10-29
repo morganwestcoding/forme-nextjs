@@ -58,6 +58,14 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
   const searchParams = useSearchParams();
   const filterParam = searchParams?.get('filter') || 'for-you';
 
+  // Navigation handler that shows loading state before navigating
+  const handleNavigation = (url: string) => {
+    setUiLoading(true);
+    setTimeout(() => {
+      router.push(url, { scroll: false });
+    }, 50); // Small delay to ensure loading state renders first
+  };
+
   // Build DiscoverHeader props from URL
   const headerSearchParams = {
     userId: searchParams?.get('userId') || undefined,
@@ -70,6 +78,9 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
     order: (searchParams?.get('order') as 'asc' | 'desc') || undefined,
     page: searchParams?.get('page') || undefined,
   };
+
+  // Get type filter (posts, listings, workers, shops)
+  const typeFilter = searchParams?.get('type') as 'posts' | 'listings' | 'workers' | 'shops' | null;
 
   // Filtering logic
   const filterInfo = useMemo(() => {
@@ -85,10 +96,20 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
       headerSearchParams.state?.toString()?.trim()
     );
 
-    const isFiltered = categoryIsActive || hasPriceFilter || hasLocationFilter;
+    const hasTypeFilter = !!typeFilter;
+
+    const isFiltered = categoryIsActive || hasPriceFilter || hasLocationFilter || hasTypeFilter;
 
     let resultsHeaderText = '';
-    if (categoryIsActive && currentCategory) {
+    if (hasTypeFilter && typeFilter) {
+      const typeNames = {
+        posts: 'All Posts',
+        listings: 'All Listings',
+        workers: 'All Workers',
+        shops: 'All Shops'
+      };
+      resultsHeaderText = typeNames[typeFilter] || 'All Results';
+    } else if (categoryIsActive && currentCategory) {
       const categoryName = currentCategory.charAt(0).toUpperCase() + currentCategory.slice(1);
       resultsHeaderText = `${categoryName} Feed`;
     } else if (hasPriceFilter || hasLocationFilter) {
@@ -99,9 +120,10 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
       isFiltered,
       categoryIsActive,
       resultsHeaderText,
-      currentCategory
+      currentCategory,
+      typeFilter: hasTypeFilter ? typeFilter : null
     };
-  }, [headerSearchParams]);
+  }, [headerSearchParams, typeFilter]);
 
   // Fetch posts on category/filter change
   useEffect(() => {
@@ -239,10 +261,10 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
           )}
 
           <div
-            className={`transition-opacity ease-out ${uiLoading ? 'opacity-0' : 'opacity-100'}`}
+            className={`transition-opacity ease-out ${uiLoading ? 'opacity-0 invisible' : 'opacity-100 visible'}`}
             style={{ transitionDuration: `${CONTAINER_FADE_MS}ms` }}
           >
-            {hasContent ? (
+            {!uiLoading && hasContent ? (
               <>
                 {/* Trending Sections - Only show when not filtered */}
                 {!filterInfo.isFiltered && (
@@ -254,7 +276,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                           title="Curated for You"
                           onPrev={() => scrollTrendingPosts('left')}
                           onNext={() => scrollTrendingPosts('right')}
-                          onViewAll={() => router.push('/Discover?category=trending')}
+                          onViewAll={() => handleNavigation('/?type=posts')}
                         />
                         <div className="grid grid-cols-4 gap-4">
                           {trendingPosts.map((post, idx) => (
@@ -273,7 +295,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                           title="Handpicked Experiences"
                           onPrev={() => scrollTrendingListings('left')}
                           onNext={() => scrollTrendingListings('right')}
-                          onViewAll={() => router.push('/listings')}
+                          onViewAll={() => handleNavigation('/?type=listings')}
                         />
                         <div className="grid grid-cols-4 gap-4">
                           {trendingListings.map((listing, idx) => (
@@ -292,7 +314,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                           title="Your Perfect Match"
                           onPrev={() => scrollTrendingEmployees('left')}
                           onNext={() => scrollTrendingEmployees('right')}
-                          onViewAll={() => router.push('/teammates')}
+                          onViewAll={() => handleNavigation('/?type=workers')}
                         />
                         <div className="grid grid-cols-4 gap-4">
                           {trendingEmployees.map((employee, idx) => {
@@ -324,7 +346,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                           title="Recommended Vendors"
                           onPrev={() => scrollTrendingShops('left')}
                           onNext={() => scrollTrendingShops('right')}
-                          onViewAll={() => router.push('/shops')}
+                          onViewAll={() => handleNavigation('/?type=shops')}
                         />
                         <div className="grid grid-cols-4 gap-4">
                           {trendingShops.map((shop, idx) => (
@@ -341,25 +363,46 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                 {/* Filtered Results Section - Unified Grid */}
                 {filterInfo.isFiltered && (() => {
                   // Combine all items into a single array with type information
-                  const allItems: Array<{type: 'post' | 'listing' | 'employee' | 'shop', data: any, listingContext?: any}> = [
-                    ...(storePosts || []).map(post => ({ type: 'post' as const, data: post })),
-                    ...(listings || []).map(listing => ({ type: 'listing' as const, data: listing })),
-                    ...(employees || []).map(employee => {
-                      const listing = listings.find(l => l.id === employee.listingId) || listings[0];
-                      return { type: 'employee' as const, data: employee, listingContext: listing };
-                    }),
-                    ...(shops || []).map(shop => ({ type: 'shop' as const, data: shop })),
-                  ];
+                  let allItems: Array<{type: 'post' | 'listing' | 'employee' | 'shop', data: any, listingContext?: any}> = [];
+
+                  // If type filter is active, only include items of that type
+                  if (filterInfo.typeFilter) {
+                    if (filterInfo.typeFilter === 'posts') {
+                      allItems = (storePosts || []).map(post => ({ type: 'post' as const, data: post }));
+                    } else if (filterInfo.typeFilter === 'listings') {
+                      allItems = (listings || []).map(listing => ({ type: 'listing' as const, data: listing }));
+                    } else if (filterInfo.typeFilter === 'workers') {
+                      allItems = (employees || []).map(employee => {
+                        const listing = listings.find(l => l.id === employee.listingId) || listings[0];
+                        return { type: 'employee' as const, data: employee, listingContext: listing };
+                      });
+                    } else if (filterInfo.typeFilter === 'shops') {
+                      allItems = (shops || []).map(shop => ({ type: 'shop' as const, data: shop }));
+                    }
+                  } else {
+                    // Otherwise, show all types mixed together
+                    allItems = [
+                      ...(storePosts || []).map(post => ({ type: 'post' as const, data: post })),
+                      ...(listings || []).map(listing => ({ type: 'listing' as const, data: listing })),
+                      ...(employees || []).map(employee => {
+                        const listing = listings.find(l => l.id === employee.listingId) || listings[0];
+                        return { type: 'employee' as const, data: employee, listingContext: listing };
+                      }),
+                      ...(shops || []).map(shop => ({ type: 'shop' as const, data: shop })),
+                    ];
+                  }
 
                   if (allItems.length === 0) return null;
 
                   return (
-                    <div key={filterInfo.currentCategory}>
+                    <div key={`${filterInfo.currentCategory}-${filterInfo.typeFilter}`}>
                       {/* Results Section Header */}
                       {filterInfo.resultsHeaderText && (
                         <SectionHeader
                           title={filterInfo.resultsHeaderText}
                           className="mb-6"
+                          onViewAll={() => handleNavigation('/')}
+                          viewAllLabel="← Back to Discover"
                         />
                       )}
 
