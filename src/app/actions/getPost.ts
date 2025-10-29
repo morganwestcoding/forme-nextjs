@@ -4,6 +4,8 @@ import getCurrentUser from "./getCurrentUser";
 
 export interface IPostsParams {
   userId?: string;
+  listingId?: string;
+  shopId?: string;
   startDate?: string;
   endDate?: string;
   locationValue?: string;
@@ -16,18 +18,20 @@ export interface IPostsParams {
 
 export default async function getPosts(params: IPostsParams) {
   try {
-    const { 
-      userId, 
-      locationValue, 
-      startDate, 
-      endDate, 
+    const {
+      userId,
+      listingId,
+      shopId,
+      locationValue,
+      startDate,
+      endDate,
       category,
       state,
       city,
       order,
       filter = 'for-you'
     } = params;
-    
+
     const currentUser = await getCurrentUser();
 
     if ((filter === 'following' || filter === 'likes' || filter === 'bookmarks') && !currentUser) {
@@ -36,7 +40,41 @@ export default async function getPosts(params: IPostsParams) {
 
     let query: any = {};
 
-    if (userId) query.userId = userId;
+    // If userId is provided, get posts created by OR tagged with this user
+    if (userId) {
+      query.OR = [
+        { userId: userId },
+        {
+          mentions: {
+            some: {
+              entityId: userId,
+              entityType: 'user'
+            }
+          }
+        }
+      ];
+    }
+
+    // If listingId is provided, get posts tagged with this listing
+    if (listingId) {
+      query.mentions = {
+        some: {
+          entityId: listingId,
+          entityType: 'listing'
+        }
+      };
+    }
+
+    // If shopId is provided, get posts tagged with this shop
+    if (shopId) {
+      query.mentions = {
+        some: {
+          entityId: shopId,
+          entityType: 'shop'
+        }
+      };
+    }
+
     if (category) query.category = category;
     if (locationValue) query.locationValue = locationValue;
     if (startDate && endDate) {

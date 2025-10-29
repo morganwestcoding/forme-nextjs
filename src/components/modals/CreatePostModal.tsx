@@ -414,78 +414,84 @@ const CreatePostModal = () => {
     if (step === STEPS.MEDIA) {
       const showOverlayControls = postType === 'Reel';
       return (
-        <div className="flex flex-col gap-4">
-          <Heading
-            title="Upload your media"
-            subtitle={showOverlayControls ? 'Add a photo, video, or GIF and optional on-media text' : 'Add a photo, video, or GIF'}
-          />
+        <div className="space-y-6">
+          {/* Heading */}
+          <Heading title="Media" subtitle="Upload your content" />
 
-          {/* Preview with overlay */}
-          <div ref={previewRef} className="w-full max-w-md mx-auto relative">
-            <MediaUpload 
-              onMediaUpload={setMediaData} 
-              currentMedia={mediaData}
-              ratio="landscape"
-              heightClass="h-80"
-            />
-
-            {/* Improved overlay preview */}
-            {mediaData && overlayText.trim().length > 0 && (
-              <div
-                className="pointer-events-none absolute inset-0 flex items-center justify-center p-5"
-                style={{
-                  justifyContent:
-                    overlayPos.endsWith('left') ? 'flex-start' :
-                    overlayPos.endsWith('right') ? 'flex-end' :
-                    'center',
-                  alignItems:
-                    overlayPos.startsWith('top') ? 'flex-start' :
-                    overlayPos.startsWith('bottom') ? 'flex-end' :
-                    'center',
-                }}
-              >
-                <div
-                  className="relative"
-                  style={{
-                    fontSize: `${overlaySize}px`,
-                    color: overlayColor === 'ffffff' ? '#fff' : '#000',
-                    textShadow: overlayColor === 'ffffff'
-                      ? '2px 2px 4px rgba(0,0,0,0.7), 0 0 8px rgba(0,0,0,0.3)'
-                      : '2px 2px 4px rgba(255,255,255,0.7), 0 0 8px rgba(255,255,255,0.3)',
-                    lineHeight: 1.2,
-                    fontWeight: 700,
-                    maxWidth: `${WRAP_PERCENT * 100}%`,
-                    wordBreak: 'break-word',
-                    textAlign:
-                      overlayPos.endsWith('left') ? 'left' :
-                      overlayPos.endsWith('right') ? 'right' :
-                      'center',
-                    padding: '4px 8px',
-                  }}
-                >
-                  {overlayText}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Overlay controls */}
-          {showOverlayControls && (
-            <div className="flex flex-col gap-4">
-              <div className="grid grid-cols-1 gap-2">
-                <label className="text-sm font-medium text-neutral-800">Text on media</label>
-                <input
-                  type="text"
-                  value={overlayText}
-                  onChange={(e) => setOverlayText(e.target.value)}
-                  placeholder="Add text (optional)"
-                  className="w-full rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm shadow-sm"
+          {/* Upload Area with Controls */}
+          <div className="flex gap-6 items-center">
+            {/* Upload Rectangle */}
+            <div ref={previewRef} className="flex-shrink-0" style={{ width: '240px' }}>
+              <div className="relative" style={{ aspectRatio: '9/16' }}>
+                <MediaUpload
+                  onMediaUpload={setMediaData}
+                  currentMedia={mediaData}
+                  ratio="free"
+                  heightClass="h-full"
+                  className="!h-full"
+                  label=""
+                  hint=""
+                  rounded="2xl"
                 />
-              </div>
 
-              <div className="grid grid-cols-3 gap-3">
-                <div className="flex flex-col">
-                  <label className="text-sm font-medium text-neutral-800">Size</label>
+                {/* Improved overlay preview */}
+                {mediaData && overlayText.trim().length > 0 && (
+                  <div
+                    className="pointer-events-none absolute inset-0 flex items-center justify-center p-5"
+                    style={{
+                      justifyContent:
+                        overlayPos.endsWith('left') ? 'flex-start' :
+                        overlayPos.endsWith('right') ? 'flex-end' :
+                        'center',
+                      alignItems:
+                        overlayPos.startsWith('top') ? 'flex-start' :
+                        overlayPos.startsWith('bottom') ? 'flex-end' :
+                        'center',
+                    }}
+                  >
+                    <div
+                      className="relative"
+                      style={{
+                        fontSize: `${overlaySize}px`,
+                        color: overlayColor === 'ffffff' ? '#fff' : '#000',
+                        textShadow: overlayColor === 'ffffff'
+                          ? '2px 2px 4px rgba(0,0,0,0.7), 0 0 8px rgba(0,0,0,0.3)'
+                          : '2px 2px 4px rgba(255,255,255,0.7), 0 0 8px rgba(255,255,255,0.3)',
+                        lineHeight: 1.2,
+                        fontWeight: 700,
+                        maxWidth: `${WRAP_PERCENT * 100}%`,
+                        wordBreak: 'break-word',
+                        textAlign:
+                          overlayPos.endsWith('left') ? 'left' :
+                          overlayPos.endsWith('right') ? 'right' :
+                          'center',
+                        padding: '4px 8px',
+                      }}
+                    >
+                      {overlayText}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Overlay controls on the right */}
+            {showOverlayControls && (
+              <div className="flex-1 space-y-4">
+                {/* Text Input */}
+                <div>
+                  <input
+                    type="text"
+                    value={overlayText}
+                    onChange={(e) => setOverlayText(e.target.value)}
+                    placeholder="Add text overlay (optional)"
+                    className="w-full rounded-xl border border-neutral-300 bg-white px-4 py-3 text-sm placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  />
+                </div>
+
+                {/* Size Control */}
+                <div className="bg-neutral-50 rounded-xl p-3 border border-neutral-200">
+                  <div className="text-xs font-medium text-neutral-600 mb-2">Size</div>
                   <input
                     type="range"
                     min={20}
@@ -493,51 +499,58 @@ const CreatePostModal = () => {
                     step={2}
                     value={overlaySize}
                     onChange={(e) => setOverlaySize(Number(e.target.value))}
-                    className="mt-1"
+                    className="w-full accent-blue-500"
                   />
-                  <div className="text-xs text-neutral-500 mt-1">{overlaySize}px</div>
+                  <div className="text-xs text-neutral-500 text-center mt-1">{overlaySize}px</div>
                 </div>
 
-                <div className="flex flex-col">
-                  <label className="text-sm font-medium text-neutral-800">Color</label>
-                  <select
-                    value={overlayColor}
-                    onChange={(e) => setOverlayColor(e.target.value as 'ffffff' | '000000')}
-                    className="rounded-xl border border-neutral-200 bg-white px-2 py-2 text-sm shadow-sm mt-1"
-                  >
-                    <option value="ffffff">White</option>
-                    <option value="000000">Black</option>
-                  </select>
+                {/* Color Control */}
+                <div className="bg-neutral-50 rounded-xl p-3 border border-neutral-200">
+                  <div className="text-xs font-medium text-neutral-600 mb-2">Color</div>
+                  <div className="flex gap-2 mt-2">
+                    <button
+                      onClick={() => setOverlayColor('ffffff')}
+                      className={`flex-1 h-10 rounded-lg border-2 transition-all ${
+                        overlayColor === 'ffffff'
+                          ? 'border-blue-500 bg-white shadow-sm'
+                          : 'border-neutral-300 bg-white hover:border-neutral-400'
+                      }`}
+                      title="White"
+                    />
+                    <button
+                      onClick={() => setOverlayColor('000000')}
+                      className={`flex-1 h-10 rounded-lg border-2 transition-all ${
+                        overlayColor === '000000'
+                          ? 'border-blue-500 bg-black shadow-sm'
+                          : 'border-neutral-300 bg-black hover:border-neutral-400'
+                      }`}
+                      title="Black"
+                    />
+                  </div>
                 </div>
 
-                <div className="flex flex-col">
-                  <label className="text-sm font-medium text-neutral-800">Position</label>
+                {/* Position Control */}
+                <div className="bg-neutral-50 rounded-xl p-3 border border-neutral-200">
+                  <div className="text-xs font-medium text-neutral-600 mb-2">Position</div>
                   <select
                     value={overlayPos}
                     onChange={(e) => setOverlayPos(e.target.value as OverlayPos)}
-                    className="rounded-xl border border-neutral-200 bg-white px-2 py-2 text-sm shadow-sm mt-1"
+                    className="w-full rounded-lg border border-neutral-300 bg-white px-2 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all mt-1"
                   >
                     <option value="top-left">Top Left</option>
-                    <option value="top-center">Top Center</option>
+                    <option value="top-center">Top</option>
                     <option value="top-right">Top Right</option>
-                    <option value="center-left">Center Left</option>
+                    <option value="center-left">Left</option>
                     <option value="center">Center</option>
-                    <option value="center-right">Center Right</option>
+                    <option value="center-right">Right</option>
                     <option value="bottom-left">Bottom Left</option>
-                    <option value="bottom-center">Bottom Center</option>
+                    <option value="bottom-center">Bottom</option>
                     <option value="bottom-right">Bottom Right</option>
                   </select>
                 </div>
               </div>
-
-              <div className="text-xs text-neutral-500 bg-blue-50 p-2 rounded-lg">
-                Preview dimensions: {previewDimensions.width}×{previewDimensions.height}px
-                {mediaData && (
-                  <> | Asset: {mediaData.width}×{mediaData.height}px</>
-                )}
-              </div>
-            </div>
-          )}
+            )}
+          </div>
 
           {mediaData && (
             <div className="text-center text-sm text-neutral-600">

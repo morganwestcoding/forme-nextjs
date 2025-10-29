@@ -31,7 +31,7 @@ const styles = `
   }
 
   .avatar-trippy {
-    animation: avatarFade 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: avatarFade 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 `;
 
@@ -54,8 +54,21 @@ const PostModal = () => {
   const currentUser = postModal.currentUser;
   const posts = postModal.posts || [];
   const initialIndex = postModal.initialIndex || 0;
-  
+
   const { updatePost } = usePostStore();
+
+  // Global effect to manage body overflow based on modal state
+  useEffect(() => {
+    if (postModal.isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [postModal.isOpen]);
 
   const [currentPostIndex, setCurrentPostIndex] = useState(initialIndex);
   const [isScrolling, setIsScrolling] = useState(false);
@@ -79,7 +92,15 @@ const PostModal = () => {
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const accumulatedDelta = useRef(0);
 
-  const currentPost = posts[currentPostIndex] || post;
+  const [localPost, setLocalPost] = useState<SafePost | null>(post);
+  const currentPost = posts[currentPostIndex] || localPost;
+
+  // Update local post when post changes
+  useEffect(() => {
+    if (post) {
+      setLocalPost(post);
+    }
+  }, [post]);
 
   const [likes, setLikes] = useState<string[]>([]);
   const [liked, setLiked] = useState(false);
@@ -93,6 +114,13 @@ const PostModal = () => {
   const [showFullCaption, setShowFullCaption] = useState(false);
   const [avatarKey, setAvatarKey] = useState(0);
   const [showModal, setShowModal] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const [showTagModal, setShowTagModal] = useState(false);
+  const [tagSearch, setTagSearch] = useState('');
+  const [tagResults, setTagResults] = useState<any[]>([]);
+  const [selectedTags, setSelectedTags] = useState<any[]>([]);
+  const [isTagSearching, setIsTagSearching] = useState(false);
 
   const videoRefs = useRef<Map<string, HTMLVideoElement>>(new Map());
   const [videoStates, setVideoStates] = useState<Map<string, {
@@ -418,12 +446,13 @@ useEffect(() => {
 
   // Trigger modal animation when opening
   useEffect(() => {
-    if (currentPost) {
-      // Delay to allow for initial render before animation
-      const timer = setTimeout(() => setShowModal(true), 10);
-      return () => clearTimeout(timer);
+    if (currentPost && !showModal && !isClosing && postModal.isOpen) {
+      // Use requestAnimationFrame for smoother animation timing
+      requestAnimationFrame(() => {
+        setShowModal(true);
+      });
     }
-  }, [currentPost]);
+  }, [currentPost, showModal, isClosing, postModal.isOpen]);
 
   useEffect(() => {
     if (currentPost && userId) {
@@ -437,23 +466,18 @@ useEffect(() => {
     setShowComments(false);
     setShowFullCaption(false);
     setAvatarKey(prev => prev + 1); // Trigger avatar animation
-
-    if (currentPost) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-      setShowModal(false);
-    }
-
-    return () => {
-      document.body.style.overflow = '';
-    };
   }, [currentPost?.id, userId, currentPost?.likes, currentPost?.bookmarks, currentPost?.comments, currentPost]);
 
   const handleClose = () => {
+    setIsClosing(true);
     setShowModal(false);
+    // Re-enable scrolling immediately when closing starts
+    document.body.style.overflow = '';
     setTimeout(() => {
       postModal.onClose();
+      setIsClosing(false);
+      // Force scroll restoration after modal closes
+      document.body.style.overflow = '';
     }, 300); // Match animation duration
   };
 
@@ -566,9 +590,102 @@ useEffect(() => {
     }
   };
 
+  const handleDeletePost = async () => {
+    if (!currentPost || !currentUser) return;
+
+    if (!confirm('Are you sure you want to delete this post?')) return;
+
+    try {
+      await axios.delete(`/api/post/${currentPost.id}`);
+      postModal.onClose();
+      window.location.reload(); // Refresh to update the feed
+    } catch (error) {
+      console.error('Failed to delete post:', error);
+      alert('Failed to delete post');
+    }
+  };
+
+  const handleReportPost = async () => {
+    if (!currentPost) return;
+
+    const reason = prompt('Please provide a reason for reporting this post:');
+    if (!reason?.trim()) return;
+
+    try {
+      await axios.post('/api/report', {
+        postId: currentPost.id,
+        reason: reason.trim(),
+      });
+      alert('Report submitted successfully');
+      setShowMenu(false);
+    } catch (error) {
+      console.error('Failed to report post:', error);
+      alert('Failed to submit report');
+    }
+  };
+
+  // Tag search handler
+  useEffect(() => {
+    const searchTags = async () => {
+      if (!tagSearch.trim()) {
+        setTagResults([]);
+        return;
+      }
+
+      setIsTagSearching(true);
+      try {
+        const response = await fetch(`/api/search?q=${encodeURIComponent(tagSearch)}`);
+        if (!response.ok) throw new Error('Search failed');
+
+        const data = await response.json();
+        const taggableResults = (data.results || []).filter((item: any) =>
+          ['user', 'listing', 'shop'].includes(item.type)
+        );
+        setTagResults(taggableResults);
+      } catch (error) {
+        console.error('Tag search error:', error);
+        setTagResults([]);
+      } finally {
+        setIsTagSearching(false);
+      }
+    };
+
+    const debounce = setTimeout(searchTags, 300);
+    return () => clearTimeout(debounce);
+  }, [tagSearch]);
+
+  const handleTagSelect = (tag: any) => {
+    if (!selectedTags.find(t => t.id === tag.id && t.type === tag.type)) {
+      setSelectedTags(prev => [...prev, tag]);
+    }
+    setTagSearch('');
+    setTagResults([]);
+  };
+
+  const handleTagRemove = (tagId: string, tagType: string) => {
+    setSelectedTags(prev => prev.filter(t => !(t.id === tagId && t.type === tagType)));
+  };
+
+  const handleSaveTags = async () => {
+    if (!currentPost) return;
+
+    try {
+      await axios.patch(`/api/post/${currentPost.id}`, {
+        taggedUsers: selectedTags.filter(t => t.type === 'user').map(t => t.id),
+        taggedListings: selectedTags.filter(t => t.type === 'listing').map(t => t.id),
+        taggedShops: selectedTags.filter(t => t.type === 'shop').map(t => t.id),
+      });
+      setShowTagModal(false);
+      alert('Tags saved successfully!');
+    } catch (error) {
+      console.error('Failed to save tags:', error);
+      alert('Failed to save tags');
+    }
+  };
+
   const handleCommentSubmit = async () => {
     if (!comment.trim() || !currentUser || !currentPost) return;
-    
+
     setIsSubmitting(true);
 
     try {
@@ -622,6 +739,9 @@ useEffect(() => {
     return text.substring(0, maxLength).trim() + '...';
   };
 
+  // Don't render if modal is not open and we're not animating
+  if (!postModal.isOpen && !isClosing) return null;
+
   if (!currentPost) return null;
 
   const listingAd = currentPost.listing as SafeListing | undefined;
@@ -669,6 +789,7 @@ useEffect(() => {
         className={`fixed inset-0 z-40 bg-neutral-900/70 transition-opacity duration-300 ${
           showModal ? 'opacity-100' : 'opacity-0'
         }`}
+        style={{ pointerEvents: showModal ? 'auto' : 'none' }}
         onClick={handleClose}
       />
 
@@ -683,19 +804,22 @@ useEffect(() => {
         onTouchEnd={handleTouchEnd}
         style={{
           touchAction: 'pan-y pinch-zoom',
-          overscrollBehavior: 'none'
+          overscrollBehavior: 'none',
+          pointerEvents: showModal ? 'auto' : 'none'
         }}
       >
         {/* TikTok-style continuous scroll container */}
         <div
-          className="relative w-full ultra-smooth"
+          className="relative w-full ultra-smooth transition-opacity duration-300"
           style={{
             height: `${posts.length * 100}vh`,
             // This creates the continuous scroll effect - you can see adjacent posts during transition
             transform: `translate3d(0, ${(-currentPostIndex * 100) + (isDragging ? (dragOffset / window.innerHeight) * 100 : 0)}vh, 0)`,
-            // Longer, smoother transition like TikTok - more time to see the scroll between posts
-            transition: isDragging ? 'none' : 'transform 0.6s cubic-bezier(0.25, 0.1, 0.25, 1)',
-            willChange: 'transform'
+            // Only apply transition after initial load, not on first render
+            transition: isDragging ? 'none' : showModal ? 'transform 0.6s cubic-bezier(0.25, 0.1, 0.25, 1), opacity 0.3s' : 'opacity 0.3s',
+            willChange: 'transform, opacity',
+            // Fade in/out content smoothly
+            opacity: showModal ? 1 : 0
           }}
         >
           {posts.map((postData, index) => {
@@ -982,9 +1106,12 @@ useEffect(() => {
         </div>
 
         {/* Side action buttons */}
-        <div className={`fixed top-1/2 transform -translate-y-1/2 flex flex-col items-center gap-6 text-white z-30 ${
-          currentPost?.tag === 'reel' || currentPost?.postType === 'reel' ? 'right-6' : 'left-1/2 ml-[calc(192px+60px)]'
-        }`}>
+        <div
+          className={`fixed top-1/2 transform -translate-y-1/2 flex flex-col items-center gap-6 text-white z-30 transition-opacity duration-300 ${
+            currentPost?.tag === 'reel' || currentPost?.postType === 'reel' ? 'right-6' : 'left-1/2 ml-[calc(192px+60px)]'
+          }`}
+          style={{ opacity: showModal ? 1 : 0 }}
+        >
           <div className="flex flex-col items-center gap-2">
             <button onClick={handleClose} className="hover:scale-110 transition-transform duration-200">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -1037,11 +1164,91 @@ useEffect(() => {
               </svg>
             </button>
             <span className="text-xs">Share</span>
-            
+
             {showShareSuccess && (
               <div className="absolute -left-20 top-1/2 transform -translate-y-1/2 bg-green-500 text-white text-xs px-3 py-1 rounded-full whitespace-nowrap">
                 Link copied!
               </div>
+            )}
+          </div>
+
+          <div className="flex flex-col items-center gap-2 relative">
+            <button
+              onClick={() => setShowMenu(!showMenu)}
+              className="hover:scale-110 transition-transform duration-200"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none">
+                <path d="M21 12C21 11.1716 20.3284 10.5 19.5 10.5C18.6716 10.5 18 11.1716 18 12C18 12.8284 18.6716 13.5 19.5 13.5C20.3284 13.5 21 12.8284 21 12Z" stroke="currentColor" strokeWidth="1.5"></path>
+                <path d="M13.5 12C13.5 11.1716 12.8284 10.5 12 10.5C11.1716 10.5 10.5 11.1716 10.5 12C10.5 12.8284 11.1716 13.5 12 13.5C12.8284 13.5 13.5 12.8284 13.5 12Z" stroke="currentColor" strokeWidth="1.5"></path>
+                <path d="M6 12C6 11.1716 5.32843 10.5 4.5 10.5C3.67157 10.5 3 11.1716 3 12C3 12.8284 3.67157 13.5 4.5 13.5C5.32843 13.5 6 12.8284 6 12Z" stroke="currentColor" strokeWidth="1.5"></path>
+              </svg>
+            </button>
+
+            {showMenu && (
+              <>
+                <div
+                  className="fixed inset-0 z-40"
+                  onClick={() => setShowMenu(false)}
+                />
+                <div className="absolute right-full mr-4 bottom-0 z-50 w-48 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden max-h-96 overflow-y-auto">
+                  {(() => {
+                    const isOwner = currentUser && currentPost.user.id === currentUser.id;
+                    console.log('Menu Debug:', {
+                      currentUserId: currentUser?.id,
+                      postUserId: currentPost.user.id,
+                      isOwner
+                    });
+                    return isOwner;
+                  })() ? (
+                    <>
+                      <button
+                        onClick={() => {
+                          setShowMenu(false);
+                          setShowTagModal(true);
+                        }}
+                        className="w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3 border-b border-gray-100"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none">
+                          <path d="M5.18007 15.2964C3.92249 16.0335 0.625213 17.5386 2.63348 19.422C3.6145 20.342 4.7071 21 6.08077 21H13.9192C15.2929 21 16.3855 20.342 17.3665 19.422C19.3748 17.5386 16.0775 16.0335 14.8199 15.2964C11.8709 13.5679 8.12906 13.5679 5.18007 15.2964Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                          <path d="M14 7C14 9.20914 12.2091 11 10 11C7.79086 11 6 9.20914 6 7C6 4.79086 7.79086 3 10 3C12.2091 3 14 4.79086 14 7Z" stroke="currentColor" strokeWidth="1.5" />
+                          <path d="M19.5 7V14M16 10.5H23" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                        </svg>
+                        Tag Post
+                      </button>
+                      <button
+                        onClick={() => {
+                          setShowMenu(false);
+                          handleDeletePost();
+                        }}
+                        className="w-full px-4 py-3 text-left text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center gap-3"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none">
+                          <path d="M19.5 5.5L18.8803 15.5251C18.7219 18.0864 18.6428 19.3671 18.0008 20.2879C17.6833 20.7431 17.2747 21.1273 16.8007 21.416C15.8421 22 14.559 22 11.9927 22C9.42312 22 8.1383 22 7.17905 21.4149C6.7048 21.1257 6.296 20.7408 5.97868 20.2848C5.33688 19.3626 5.25945 18.0801 5.10461 15.5152L4.5 5.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                          <path d="M3 5.5H21M16.0557 5.5L15.3731 4.09173C14.9196 3.15626 14.6928 2.68852 14.3017 2.39681C14.215 2.3321 14.1231 2.27454 14.027 2.2247C13.5939 2 13.0741 2 12.0345 2C10.9688 2 10.436 2 9.99568 2.23412C9.8981 2.28601 9.80498 2.3459 9.71729 2.41317C9.32164 2.7167 9.10063 3.20155 8.65861 4.17126L8.05292 5.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                          <path d="M9.5 16.5L9.5 10.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                          <path d="M14.5 16.5L14.5 10.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                        </svg>
+                        Delete
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setShowMenu(false);
+                        handleReportPost();
+                      }}
+                      className="w-full px-4 py-3 text-left text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center gap-3"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none">
+                        <path d="M5.32171 9.6829C7.73539 5.41196 8.94222 3.27648 10.5983 2.72678C11.5093 2.42437 12.4907 2.42437 13.4017 2.72678C15.0578 3.27648 16.2646 5.41196 18.6783 9.6829C21.092 13.9538 22.2988 16.0893 21.9368 17.8293C21.7376 18.7866 21.2469 19.6548 20.535 20.3097C19.241 21.5 16.8274 21.5 12 21.5C7.17265 21.5 4.75897 21.5 3.46496 20.3097C2.75308 19.6548 2.26239 18.7866 2.06322 17.8293C1.70119 16.0893 2.90803 13.9538 5.32171 9.6829Z" stroke="currentColor" strokeWidth="1.5" />
+                        <path d="M12 8V13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                        <path d="M11.992 16H12.001" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                      Report
+                    </button>
+                  )}
+                </div>
+              </>
             )}
           </div>
         </div>
@@ -1155,6 +1362,117 @@ useEffect(() => {
             </div>
           </div>
         </div>
+
+        {/* Tag Modal */}
+        {showTagModal && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+            <div
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+              onClick={() => setShowTagModal(false)}
+            />
+            <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden">
+              {/* Header */}
+              <div className="flex items-center justify-between p-6 border-b border-gray-200">
+                <h3 className="text-xl font-semibold text-gray-900">Tag Post</h3>
+                <button
+                  onClick={() => setShowTagModal(false)}
+                  className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              {/* Search Input */}
+              <div className="p-6 border-b border-gray-200">
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={tagSearch}
+                    onChange={(e) => setTagSearch(e.target.value)}
+                    placeholder="Search users, businesses, or shops..."
+                    className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                  {isTagSearching && (
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                      <div className="w-5 h-5 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
+                    </div>
+                  )}
+                </div>
+
+                {/* Search Results */}
+                {tagResults.length > 0 && (
+                  <div className="mt-3 max-h-48 overflow-y-auto border border-gray-200 rounded-xl">
+                    {tagResults.map((result) => (
+                      <button
+                        key={`${result.type}-${result.id}`}
+                        onClick={() => handleTagSelect(result)}
+                        className="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left"
+                      >
+                        {result.image && (
+                          <img src={result.image} alt="" className="w-10 h-10 rounded-full object-cover" />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 truncate">{result.title}</p>
+                          {result.subtitle && (
+                            <p className="text-xs text-gray-500 truncate">{result.subtitle}</p>
+                          )}
+                        </div>
+                        <span className="text-xs text-gray-400 capitalize">{result.type}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Selected Tags */}
+              <div className="p-6 max-h-64 overflow-y-auto">
+                <p className="text-sm font-medium text-gray-700 mb-3">Tagged ({selectedTags.length})</p>
+                {selectedTags.length === 0 ? (
+                  <p className="text-sm text-gray-500 text-center py-8">No tags added yet</p>
+                ) : (
+                  <div className="space-y-2">
+                    {selectedTags.map((tag) => (
+                      <div
+                        key={`${tag.type}-${tag.id}`}
+                        className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl"
+                      >
+                        {tag.image && (
+                          <img src={tag.image} alt="" className="w-8 h-8 rounded-full object-cover" />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 truncate">{tag.title}</p>
+                          <p className="text-xs text-gray-500 capitalize">{tag.type}</p>
+                        </div>
+                        <button
+                          onClick={() => handleTagRemove(tag.id, tag.type)}
+                          className="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Footer */}
+              <div className="flex items-center gap-3 p-6 border-t border-gray-200 bg-gray-50">
+                <button
+                  onClick={() => setShowTagModal(false)}
+                  className="flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSaveTags}
+                  className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-blue-500 rounded-xl hover:bg-blue-600 transition-colors"
+                >
+                  Save Tags
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );

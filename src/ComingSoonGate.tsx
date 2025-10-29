@@ -22,7 +22,7 @@ function ExpandableSection({ title, children, defaultOpen = false }: {
         />
       </button>
       {isOpen && (
-        <div className="px-4 pb-4 animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="px-4 pb-4 pt-3 animate-in fade-in slide-in-from-top-2 duration-200">
           {children}
         </div>
       )}
@@ -40,6 +40,12 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [waitlistCount, setWaitlistCount] = useState<number | null>(null); // Start with null to prevent flash
+  const [activeTab, setActiveTab] = useState<'waitlist' | 'demo'>('waitlist');
+  const [demoEmail, setDemoEmail] = useState('');
+  const [demoName, setDemoName] = useState('');
+  const [demoSubmitted, setDemoSubmitted] = useState(false);
+  const [demoError, setDemoError] = useState('');
+  const [demoLoading, setDemoLoading] = useState(false);
 
   // Check authentication status on mount
   useEffect(() => {
@@ -145,6 +151,63 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
       setEmailError('Network error. Please try again.');
     } finally {
       setEmailLoading(false);
+    }
+  };
+
+  const handleDemoSubmit = async () => {
+    if (!demoName.trim()) {
+      setDemoError('Name is required');
+      return;
+    }
+
+    if (!demoEmail.trim()) {
+      setDemoError('Email is required');
+      return;
+    }
+
+    if (!validateEmail(demoEmail)) {
+      setDemoError('Please enter a valid email address');
+      return;
+    }
+
+    setDemoLoading(true);
+    setDemoError('');
+
+    try {
+      const response = await fetch('/api/demo-request', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: demoName.trim(),
+          email: demoEmail.trim().toLowerCase(),
+          source: 'coming_soon'
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setDemoSubmitted(true);
+        setDemoName('');
+        setDemoEmail('');
+
+        setTimeout(() => {
+          setDemoSubmitted(false);
+        }, 3000);
+      } else {
+        if (response.status === 409) {
+          setDemoError('Demo request already submitted');
+        } else {
+          setDemoError(data.error || 'Failed to submit demo request');
+        }
+      }
+    } catch (error) {
+      console.error('Error submitting demo request:', error);
+      setDemoError('Network error. Please try again.');
+    } finally {
+      setDemoLoading(false);
     }
   };
 
@@ -290,64 +353,161 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
             </div>
           </ExpandableSection>
 
-          {/* Email Section */}
-          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4">
-            <p className="text-xs text-gray-400 mb-3">Join the waitlist</p>
-            <div className="flex gap-2">
-              <div className="flex-1 relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                    if (emailError) setEmailError('');
-                  }}
-                  onKeyDown={(e) => e.key === 'Enter' && !emailLoading && handleEmailSubmit()}
-                  placeholder="your@email.com"
-                  disabled={emailLoading || emailSubmitted}
-                  className={`w-full bg-white/5 border rounded-lg pl-10 pr-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none transition-all disabled:opacity-50 ${
-                    emailError 
-                      ? 'border-red-500 focus:border-red-500' 
-                      : 'border-white/10 focus:border-blue-500'
-                  }`}
-                />
-              </div>
+          {/* Waitlist / Demo Section */}
+          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden">
+            {/* Tab Headers */}
+            <div className="flex border-b border-white/10">
               <button
-                onClick={handleEmailSubmit}
-                disabled={emailLoading || emailSubmitted}
-                className="bg-white text-black font-medium px-4 py-2.5 rounded-lg hover:bg-blue-500 hover:text-white transition-all disabled:opacity-50 flex items-center"
+                onClick={() => setActiveTab('waitlist')}
+                className={`flex-1 px-4 py-3 text-xs font-medium transition-colors ${
+                  activeTab === 'waitlist'
+                    ? 'text-white bg-white/5'
+                    : 'text-gray-400 hover:text-white hover:bg-white/5'
+                }`}
               >
-                {emailLoading ? (
-                  <div className="w-4 h-4 border-2 border-gray-400 border-t-black rounded-full animate-spin" />
-                ) : emailSubmitted ? (
-                  <Check className="w-4 h-4" />
-                ) : (
-                  <ArrowRight className="w-4 h-4" />
-                )}
+                Join Waitlist
+              </button>
+              <button
+                onClick={() => setActiveTab('demo')}
+                className={`flex-1 px-4 py-3 text-xs font-medium transition-colors ${
+                  activeTab === 'demo'
+                    ? 'text-white bg-white/5'
+                    : 'text-gray-400 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                Request Demo
               </button>
             </div>
-            
-            {/* Error message */}
-            {emailError && (
-              <div className="flex items-center gap-2 mt-2 text-red-400 text-xs">
-                <AlertCircle className="w-3 h-3" />
-                {emailError}
-              </div>
-            )}
-            
-            {/* Success message */}
-            {emailSubmitted && (
-              <p className="text-xs text-green-400 mt-2">
-                ✓ Successfully joined the waitlist!
-              </p>
-            )}
-            
-            {waitlistCount !== null && (
-              <p className="text-xs text-gray-500 mt-2">
-                {waitlistCount > 0 ? `${waitlistCount.toLocaleString()} already waiting` : 'Be the first to join!'}
-              </p>
-            )}
+
+            {/* Tab Content */}
+            <div className="p-4">
+              {activeTab === 'waitlist' ? (
+                <>
+                  <div className="flex gap-2">
+                    <div className="flex-1 relative">
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => {
+                          setEmail(e.target.value);
+                          if (emailError) setEmailError('');
+                        }}
+                        onKeyDown={(e) => e.key === 'Enter' && !emailLoading && handleEmailSubmit()}
+                        placeholder="your@email.com"
+                        disabled={emailLoading || emailSubmitted}
+                        className={`w-full bg-white/5 border rounded-lg pl-10 pr-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none transition-all disabled:opacity-50 ${
+                          emailError
+                            ? 'border-red-500 focus:border-red-500'
+                            : 'border-white/10 focus:border-blue-500'
+                        }`}
+                      />
+                    </div>
+                    <button
+                      onClick={handleEmailSubmit}
+                      disabled={emailLoading || emailSubmitted}
+                      className="bg-white text-black font-medium px-4 py-2.5 rounded-lg hover:bg-blue-500 hover:text-white transition-all disabled:opacity-50 flex items-center"
+                    >
+                      {emailLoading ? (
+                        <div className="w-4 h-4 border-2 border-gray-400 border-t-black rounded-full animate-spin" />
+                      ) : emailSubmitted ? (
+                        <Check className="w-4 h-4" />
+                      ) : (
+                        <ArrowRight className="w-4 h-4" />
+                      )}
+                    </button>
+                  </div>
+
+                  {emailError && (
+                    <div className="flex items-center gap-2 mt-2 text-red-400 text-xs">
+                      <AlertCircle className="w-3 h-3" />
+                      {emailError}
+                    </div>
+                  )}
+
+                  {emailSubmitted && (
+                    <p className="text-xs text-green-400 mt-2">
+                      ✓ Successfully joined the waitlist!
+                    </p>
+                  )}
+
+                  {waitlistCount !== null && (
+                    <p className="text-xs text-gray-500 mt-2">
+                      {waitlistCount > 0 ? `${waitlistCount.toLocaleString()} already waiting` : 'Be the first to join!'}
+                    </p>
+                  )}
+                </>
+              ) : (
+                <>
+                  <div className="space-y-2">
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={demoName}
+                        onChange={(e) => {
+                          setDemoName(e.target.value);
+                          if (demoError) setDemoError('');
+                        }}
+                        placeholder="Your name"
+                        disabled={demoLoading || demoSubmitted}
+                        className={`w-full bg-white/5 border rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none transition-all disabled:opacity-50 ${
+                          demoError
+                            ? 'border-red-500 focus:border-red-500'
+                            : 'border-white/10 focus:border-blue-500'
+                        }`}
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      <div className="flex-1 relative">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                        <input
+                          type="email"
+                          value={demoEmail}
+                          onChange={(e) => {
+                            setDemoEmail(e.target.value);
+                            if (demoError) setDemoError('');
+                          }}
+                          onKeyDown={(e) => e.key === 'Enter' && !demoLoading && handleDemoSubmit()}
+                          placeholder="your@email.com"
+                          disabled={demoLoading || demoSubmitted}
+                          className={`w-full bg-white/5 border rounded-lg pl-10 pr-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none transition-all disabled:opacity-50 ${
+                            demoError
+                              ? 'border-red-500 focus:border-red-500'
+                              : 'border-white/10 focus:border-blue-500'
+                          }`}
+                        />
+                      </div>
+                      <button
+                        onClick={handleDemoSubmit}
+                        disabled={demoLoading || demoSubmitted}
+                        className="bg-white text-black font-medium px-4 py-2.5 rounded-lg hover:bg-blue-500 hover:text-white transition-all disabled:opacity-50 flex items-center"
+                      >
+                        {demoLoading ? (
+                          <div className="w-4 h-4 border-2 border-gray-400 border-t-black rounded-full animate-spin" />
+                        ) : demoSubmitted ? (
+                          <Check className="w-4 h-4" />
+                        ) : (
+                          <ArrowRight className="w-4 h-4" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  {demoError && (
+                    <div className="flex items-center gap-2 mt-2 text-red-400 text-xs">
+                      <AlertCircle className="w-3 h-3" />
+                      {demoError}
+                    </div>
+                  )}
+
+                  {demoSubmitted && (
+                    <p className="text-xs text-green-400 mt-2">
+                      ✓ Demo request submitted successfully!
+                    </p>
+                  )}
+                </>
+              )}
+            </div>
           </div>
 
           {/* Password Section */}

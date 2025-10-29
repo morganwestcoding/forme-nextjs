@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from "react";
-import { SafeListing, SafeReservation, SafeUser, SafeService } from "@/app/types";
+import { SafeListing, SafeReservation, SafeUser, SafeService, SafePost } from "@/app/types";
 
 import Container from "@/components/Container";
 import ListingHead from "@/components/listings/ListingHead";
@@ -15,12 +15,14 @@ interface ListingClientProps {
   };
   currentUser?: SafeUser | null;
   reservations?: SafeReservation[];
+  posts?: SafePost[];
 }
 
 const ListingClient: React.FC<ListingClientProps> = ({
   listing,
   currentUser,
   reservations = [],
+  posts = [],
 }) => {
   // disabledDates kept if you use them elsewhere
   const disabledDates = useMemo(() => {
@@ -40,6 +42,7 @@ const ListingClient: React.FC<ListingClientProps> = ({
   listing={listing}
   currentUser={currentUser}
   Services={listing.services}
+  posts={posts}
 />
         </div>
       </div>
