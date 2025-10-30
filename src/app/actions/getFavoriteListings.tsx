@@ -44,6 +44,7 @@ export default async function getFavoriteListings() {
         userId: employee.userId,
         serviceIds: employee.serviceIds,
         isActive: employee.isActive,
+        isIndependent: employee.isIndependent,
         createdAt: employee.createdAt.toISOString(),
         listingTitle: favorite.title, // Use the current listing's title
         listingCategory: favorite.category, // Use the current listing's category

@@ -64,8 +64,9 @@ const MessageModal: React.FC = () => {
   useEffect(() => {
     if (messageModal.isOpen && messageModal.conversationId) {
       fetchMessages();
+      fetchOtherUser();
     }
-  }, [messageModal.isOpen, messageModal.conversationId]);
+  }, [messageModal.isOpen, messageModal.conversationId, messageModal.otherUserId]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -78,19 +79,33 @@ const MessageModal: React.FC = () => {
       const response = await axios.get(`/api/messages/${messageModal.conversationId}`);
       const messagesData = response.data;
       setMessages(messagesData);
-      
-      // Find the other user's info from the messages
-      const otherUserMessage = messagesData.find((msg: Message) => msg.senderId === messageModal.otherUserId);
-      if (otherUserMessage) {
-        setOtherUser({
-          name: otherUserMessage.sender.name,
-          image: otherUserMessage.sender.image
-        });
-      }
     } catch {
       toast.error('Failed to load messages');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const fetchOtherUser = async () => {
+    if (!messageModal.otherUserId) return;
+    try {
+      const response = await axios.get(`/api/users/${messageModal.otherUserId}`);
+      setOtherUser({
+        name: response.data.name,
+        image: response.data.image || response.data.imageSrc
+      });
+    } catch (error) {
+      console.error('Failed to load user info:', error);
+      // Fallback: try to get from messages if they exist
+      if (messages.length > 0) {
+        const otherUserMessage = messages.find((msg: Message) => msg.senderId === messageModal.otherUserId);
+        if (otherUserMessage) {
+          setOtherUser({
+            name: otherUserMessage.sender.name,
+            image: otherUserMessage.sender.image
+          });
+        }
+      }
     }
   };
 

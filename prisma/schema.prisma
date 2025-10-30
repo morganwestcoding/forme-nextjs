@@ -265,12 +265,13 @@ model Employee {
   userId       String        @db.ObjectId
   serviceIds   String[]      @db.ObjectId
   isActive     Boolean       @default(true)
+  isIndependent Boolean      @default(false)
   createdAt    DateTime      @default(now())
-  
+
   listing      Listing       @relation(fields: [listingId], references: [id], onDelete: Cascade)
   user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   reservations Reservation[]
-  
+
   @@unique([userId, listingId])
 }
 

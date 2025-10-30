@@ -242,11 +242,16 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
 
         {/* Bottom info - positioned like ListingCard */}
         <div className="absolute bottom-5 left-5 right-5 z-20">
-          {/* Name with verification badge that stays with last word */}
-          <div className="mb-1">
+          {/* Name with verification badge and independent badge */}
+          <div className="mb-1 flex items-center gap-2">
             <h3 className="text-lg font-semibold text-gray-900">
               {renderNameWithBadge(employee.fullName)}
             </h3>
+            {employee.isIndependent && (
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-blue-100 text-blue-800 border border-blue-200">
+                Independent
+              </span>
+            )}
           </div>
 
           {/* Job title and location - improved formatting */}

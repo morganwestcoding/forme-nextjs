@@ -207,9 +207,10 @@ export type SafeEmployee = {
   fullName: string;
   jobTitle?: string | null;
   listingId: string;
-  userId: string; 
+  userId: string;
   serviceIds: string[];
   isActive: boolean;
+  isIndependent: boolean;
   createdAt: string;
   listingTitle: string;
   listingCategory: string;

@@ -168,7 +168,19 @@ export default async function getListings(params: IListingsParams = {}): Promise
       ...(take !== undefined && { take })
     });
 
-    const safeListings: SafeListing[] = listings.map((listing) => ({
+    // Filter out listings that only have independent workers (auto-generated for individual providers)
+    const filteredListings = listings.filter(listing => {
+      // If listing has no employees, keep it (it's a regular business listing)
+      if (!listing.employees || listing.employees.length === 0) {
+        return true;
+      }
+
+      // If listing has at least one non-independent employee, keep it (it's a real business)
+      const hasNonIndependentWorker = listing.employees.some(emp => !emp.isIndependent);
+      return hasNonIndependentWorker;
+    });
+
+    const safeListings: SafeListing[] = filteredListings.map((listing) => ({
       id: listing.id,
       title: listing.title,
       description: listing.description,
@@ -201,6 +213,7 @@ export default async function getListings(params: IListingsParams = {}): Promise
           userId: employee.userId,
           serviceIds: employee.serviceIds || [],
           isActive: employee.isActive,
+          isIndependent: employee.isIndependent,
           createdAt: employee.createdAt.toISOString(),
           listingTitle: listing.title,
           listingCategory: listing.category,

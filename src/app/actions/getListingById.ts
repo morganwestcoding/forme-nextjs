@@ -86,6 +86,7 @@ export default async function getListingById(params: IParams): Promise<(SafeList
           userId: employee.userId,
           serviceIds: employee.serviceIds || [],
           isActive: employee.isActive,
+          isIndependent: employee.isIndependent,
           createdAt: employee.createdAt.toISOString(),
           listingTitle: listing.title,
           listingCategory: listing.category,

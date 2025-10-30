@@ -154,10 +154,11 @@ export async function POST(request: Request) {
       }
     }
 
-    // For individual providers
+    // For individual providers - create listing and worker card
     if (userType === 'individual') {
       try {
-        await prisma.listing.create({
+        // Create the listing first
+        const listing = await prisma.listing.create({
           data: {
             title: `${name}'s Services`,
             description: bio || 'Professional services',
@@ -167,8 +168,23 @@ export async function POST(request: Request) {
             userId: user.id,
           }
         });
+
+        // Create worker card (Employee record) with isIndependent flag
+        await prisma.employee.create({
+          data: {
+            fullName: name,
+            jobTitle: jobTitle || null,
+            listingId: listing.id,
+            userId: user.id,
+            serviceIds: [],
+            isActive: true,
+            isIndependent: true, // Mark as independent worker
+          }
+        });
+
+        console.log('Independent worker card created for:', user.id);
       } catch (listingError) {
-        console.error('Error creating listing for individual provider:', listingError);
+        console.error('Error creating listing/worker card for individual provider:', listingError);
       }
     }
 

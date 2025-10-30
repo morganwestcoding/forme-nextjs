@@ -56,6 +56,7 @@ export default async function getFavoriteWorkers(): Promise<SafeEmployee[]> {
       userId: worker.userId,
       serviceIds: worker.serviceIds,
       isActive: worker.isActive,
+      isIndependent: worker.isIndependent,
       createdAt: worker.createdAt.toISOString(),
       listingTitle: worker.listing.title,
       listingCategory: worker.listing.category,
