@@ -125,8 +125,10 @@ const RegisterModal = () => {
     }
   }, [registerModal.isOpen, registerModal.prefill, reset, isEdit]);
 
+  // Auto-close on auth success (only when transitioning from unauthenticated to authenticated)
+  const prevStatusRef = useRef(status);
   useEffect(() => {
-    if (!isEdit && status === 'authenticated' && registerModal.isOpen) {
+    if (!isEdit && status === 'authenticated' && prevStatusRef.current !== 'authenticated' && registerModal.isOpen) {
       if (modalRef.current?.close) {
         modalRef.current.close();
       } else {
@@ -135,6 +137,7 @@ const RegisterModal = () => {
       const t = setTimeout(() => router.refresh(), 320);
       return () => clearTimeout(t);
     }
+    prevStatusRef.current = status;
   }, [status, registerModal.isOpen, router, registerModal, isEdit]);
 
   const setCustomValue = (id: string, value: any) => {

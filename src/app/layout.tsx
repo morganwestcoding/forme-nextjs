@@ -80,10 +80,10 @@ export default async function RootLayout({
                 <CreatePostModal />
                 <InboxModal/>
                 <ProfileModal/>
-                <StripeCheckoutModal /> 
-                <ProfileGalleryModal/> 
+                <StripeCheckoutModal />
+                <ProfileGalleryModal/>
                 <ListingGalleryModal/>
-                <ForgotPasswordModal/> 
+                <ForgotPasswordModal/>
                 <ResetPasswordModal/>
                 <MessageModal />
                 <SubscribeModal/>

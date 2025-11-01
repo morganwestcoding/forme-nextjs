@@ -122,6 +122,7 @@ export default async function getReservations(params: IParams) {
             userId: employee.userId,
             serviceIds: employee.serviceIds || [],
             isActive: employee.isActive,
+            isIndependent: employee.isIndependent,
             createdAt: employee.createdAt.toISOString(),
             listingTitle: reservation.listing.title,
             listingCategory: reservation.listing.category,

@@ -1,13 +1,12 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { SafeUser } from '@/app/types';
 import useShopModal from '@/app/hooks/useShopModal';
 import useProductModal from '@/app/hooks/useProductModal';
 import GlobalSearch from '../search/GlobalSearch';
 import { Grid, List } from 'lucide-react';
+import { categories } from '@/components/Categories';
 
 interface ShopHeaderProps {
   currentUser?: SafeUser | null;
@@ -21,14 +20,6 @@ interface ShopHeaderProps {
   onFilterChange?: (filters: any) => void;
 }
 
-const shopCategories = [
-  { label: 'Featured' },
-  { label: 'Trending' },
-  { label: 'Products' },
-  { label: 'Shops' },
-  { label: 'Categories' },
-];
-
 const ShopHeader: React.FC<ShopHeaderProps> = ({ 
   currentUser,
   shopId,
@@ -38,7 +29,6 @@ const ShopHeader: React.FC<ShopHeaderProps> = ({
   onFilterChange = () => {}
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const router = useRouter();
   const shopModal = useShopModal();
   const productModal = useProductModal();
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -163,29 +153,29 @@ const ShopHeader: React.FC<ShopHeaderProps> = ({
       </div>
 
       {/* Category Navigation - Clean with Vertical Dividers */}
-      <div className="py-5 border-y border-gray-200">
+      <div className="py-5 border-y border-gray-300">
         <div className="flex items-center justify-center">
-          {shopCategories.map((category, index) => {
+          {categories.map((category, index) => {
             const isSelected = filters.category === category.label;
-            const isLast = index === shopCategories.length - 1;
-            
+            const isLast = index === categories.length - 1;
+
             return (
               <div key={category.label} className="relative flex items-center">
                 {/* Category Button */}
                 <button
                   onClick={() => handleCategorySelect(category.label)}
                   className={`
-                    px-6 py-2.5 text-sm transition-colors duration-200 rounded-lg
-                    ${isSelected 
-                      ? 'text-[#60A5FA] hover:text-[#4F94E5]' 
-                      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                    px-6 py-2.5 text-sm  transition-colors duration-200 rounded-xl
+                    ${isSelected
+                      ? 'text-[#60A5FA] hover:text-[#4F94E5]'
+                      : 'text-gray-500 hover:text-gray-700 '
                     }
                   `}
                   type="button"
                 >
                   {category.label}
                 </button>
-                
+
                 {/* Vertical Divider */}
                 {!isLast && (
                   <div className="h-6 w-px bg-gray-300 mx-3" />

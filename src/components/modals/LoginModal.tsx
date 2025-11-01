@@ -32,9 +32,10 @@ const LoginModal = () => {
     defaultValues: { email: "", password: "" },
   });
 
-  // Auto-close on auth success
+  // Auto-close on auth success (only when transitioning from unauthenticated to authenticated)
+  const prevStatusRef = useRef(status);
   useEffect(() => {
-    if (status === "authenticated" && loginModal.isOpen) {
+    if (status === "authenticated" && prevStatusRef.current !== "authenticated" && loginModal.isOpen) {
       modalRef.current?.close?.();
       const t = setTimeout(() => {
         if (loginModal.isOpen) loginModal.onClose();
@@ -42,6 +43,7 @@ const LoginModal = () => {
       }, ANIM_MS + 20);
       return () => clearTimeout(t);
     }
+    prevStatusRef.current = status;
   }, [status, loginModal, router]);
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
