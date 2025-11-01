@@ -90,27 +90,27 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
 
   const getStatusColor = (color: string) => {
     switch (color) {
-      case 'green': return 'text-green-400';
-      case 'orange': return 'text-orange-400';
-      case 'red': return 'text-red-500';
+      case 'green': return 'text-emerald-400';
+      case 'orange': return 'text-amber-400';
+      case 'red': return 'text-rose-400';
       default: return 'text-white/70';
     }
   };
 
   const getStatusBackground = (color: string) => {
     switch (color) {
-      case 'green': return 'bg-gray-50/10 hover:bg-green-400/10';
-      case 'orange': return 'bg-gray-50/10 hover:bg-orange-400/10'; 
-      case 'red': return 'bg-gray-50/10 hover:bg-red-400/10';
+      case 'green': return 'bg-gray-50/10 hover:bg-emerald-400/10';
+      case 'orange': return 'bg-gray-50/10 hover:bg-amber-400/10';
+      case 'red': return 'bg-gray-50/10 hover:bg-rose-400/10';
       default: return 'bg-gray-50/10 hover:bg-white/10';
     }
   };
 
   const getStatusBorder = (color: string) => {
     switch (color) {
-      case 'green': return 'border border-white/40 hover:border-green-400/60';
-      case 'orange': return 'border border-white/40 hover:border-orange-400/60';
-      case 'red': return 'border border-white/40 hover:border-red-500/60';
+      case 'green': return 'border border-white/40 hover:border-emerald-400/50';
+      case 'orange': return 'border border-white/40 hover:border-amber-400/50';
+      case 'red': return 'border border-white/40 hover:border-rose-400/50';
       default: return 'border border-white/40';
     }
   };
