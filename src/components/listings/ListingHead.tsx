@@ -154,24 +154,25 @@ const ListingHead: React.FC<ListingHeadProps> = ({
   ];
 
   return (
-    <div className="w-full space-y-6">
-      {/* QR Modal */}
-      <QRModal 
+    <>
+      {/* QR Modal - Outside main flow */}
+      <QRModal
         isOpen={showQRModal}
         onClose={() => setShowQRModal(false)}
         listing={listing}
       />
 
-      {/* Dropdown backdrop - closes dropdown when clicked */}
+      {/* Dropdown backdrop - closes dropdown when clicked - Outside main flow */}
       {showDropdown && (
-        <div 
-          className="fixed inset-0 z-30" 
+        <div
+          className="fixed inset-0 z-30"
           onClick={() => setShowDropdown(false)}
         />
       )}
 
-      {/* Header - Everything in ONE DIV */}
-      <div className="w-full relative">
+      <div className="w-full space-y-6">
+        {/* Header - Everything in ONE DIV */}
+        <div className="w-full relative">
         {/* SINGLE CONTAINER: Image and content all in one div */}
         <div className="w-full rounded-xl p-6 border border-gray-300 bg-white relative min-h-[151px]">
           {/* Image positioned on the left */}
@@ -765,7 +766,8 @@ const ListingHead: React.FC<ListingHeadProps> = ({
           </>
         )}
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 
