@@ -139,6 +139,13 @@ const ListingHead: React.FC<ListingHeadProps> = ({
     router.push(`${url.pathname}?${url.searchParams.toString()}`, { scroll: false });
   };
 
+  const handleAddMedia = () => {
+    if (!isOwner) return;
+    const url = new URL(window.location.href);
+    url.searchParams.set('addMedia', '1');
+    router.push(`${url.pathname}?${url.searchParams.toString()}`, { scroll: false });
+  };
+
   const tabs: Array<{ key: TabKey; label: string }> = [
     { key: 'Services', label: 'Services' },
     { key: 'Team', label: 'Team' },
@@ -654,74 +661,108 @@ const ListingHead: React.FC<ListingHeadProps> = ({
         )}
 
         {activeTab === 'Posts' && (
-          <div className="space-y-6">
-            {/* Images Section */}
-            <div>
-              <h3 className="text-lg font-medium mb-4">Images</h3>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                {galleryImages && galleryImages.length > 0 ? (
-                  galleryImages.map((image, index) => (
-                    <div
-                      key={index}
-                      className="relative rounded-2xl overflow-hidden border border-gray-100 hover:shadow-md transition-all duration-200 group"
-                      style={{ aspectRatio: '1 / 1' }}
-                    >
-                      <img
-                        src={image}
-                        alt={`${title} - Image ${index + 1}`}
-                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-                    </div>
-                  ))
-                ) : (
-                  <div className="col-span-full text-center text-gray-500 py-12">
-                    <div className="bg-white rounded-2xl p-8 border border-gray-100">
-                      <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300">
-                          <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                          <circle cx="9" cy="9" r="2" />
-                          <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
-                        </svg>
-                      </div>
-                      <p className="font-medium text-lg mb-2">No images yet</p>
-                      <p className="text-gray-300">Photos will be displayed here</p>
-                    </div>
+          <>
+            {(!galleryImages || galleryImages.length === 0) && (!posts || posts.length === 0) ? (
+              <div className="text-center text-gray-500 py-12">
+                <div className="bg-white rounded-2xl p-8 border border-gray-100">
+                  <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300">
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                      <circle cx="9" cy="9" r="2" />
+                      <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+                    </svg>
                   </div>
-                )}
+                  <p className="font-medium text-lg mb-2">No posts yet</p>
+                  <p className="text-gray-300">Photos and videos will appear here</p>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Images Section */}
+                <div>
+                  <div className="grid grid-cols-2 gap-4">
+                    {galleryImages && galleryImages.length > 0 && (
+                      galleryImages.map((image, index) => (
+                        <div
+                          key={index}
+                          className="relative rounded-2xl overflow-hidden border border-gray-100 hover:shadow-md transition-all duration-200 group"
+                          style={{ aspectRatio: '1 / 1' }}
+                        >
+                          <img
+                            src={image}
+                            alt={`${title} - Image ${index + 1}`}
+                            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
 
-            {/* Reels Section */}
-            <div>
-              <h3 className="text-lg font-medium mb-4">Reels</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {posts && posts.length > 0 ? (
-                  posts.map(post => (
-                    <PostCard
-                      key={post.id}
-                      post={post}
-                      currentUser={currentUser}
-                      categories={categories}
-                    />
-                  ))
-                ) : (
-                  <div className="col-span-full text-center text-gray-500 py-12">
-                    <div className="bg-white rounded-2xl p-8 border border-gray-100">
-                      <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300">
-                          <polygon points="23 7 16 12 23 17 23 7" />
-                          <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
-                        </svg>
-                      </div>
-                      <p className="font-medium text-lg mb-2">No reels yet</p>
-                      <p className="text-gray-300">Video content will appear here</p>
-                    </div>
+                {/* Reels Section */}
+                <div>
+                  <div className="grid grid-cols-2 gap-4">
+                    {posts && posts.length > 0 && (
+                      posts.map(post => (
+                        <PostCard
+                          key={post.id}
+                          post={post}
+                          currentUser={currentUser}
+                          categories={categories}
+                          variant="listing"
+                        />
+                      ))
+                    )}
+
+                    {isOwner && (
+                      <button
+                        onClick={handleAddMedia}
+                        type="button"
+                        className="cursor-pointer bg-white rounded-xl hover:shadow-md overflow-hidden relative transition-all duration-300 hover:scale-[1.02] border border-gray-200"
+                      >
+                        <div className="relative h-[350px]">
+                          <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                            <div className="relative">
+                              <div className="w-24 h-24 rounded-full flex items-center justify-center text-gray-500 bg-gray-50 border-2 border-gray-300 ring-4 ring-white/50 transition-all duration-300 group-hover:border-[#60A5FA] group-hover:bg-blue-50 group-hover:text-[#60A5FA]">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                                  <circle cx="9" cy="9" r="2" />
+                                  <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+                                </svg>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="absolute bottom-5 left-5 right-5 z-20">
+                            <div className="mb-4">
+                              <h3 className="text-lg font-semibold text-gray-500 mb-1 text-center">
+                                Add Media
+                              </h3>
+                              <p className="text-xs text-gray-500 leading-relaxed text-center">
+                                Upload photos or videos
+                              </p>
+                              <div className="opacity-90 mt-0.5 text-xs text-gray-500 font-light text-center">
+                                Click to get started
+                              </div>
+                            </div>
+
+                            <div className="flex items-center justify-center">
+                              <div className="bg-gray-100 text-gray-500 px-3 py-2 border rounded-lg text-xs font-medium group-hover:bg-blue-100 group-hover:text-[#60A5FA] group-hover:border-[#60A5FA] transition-all duration-200">
+                                Get Started
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="pb-2" />
+                      </button>
+                    )}
                   </div>
-                )}
+                </div>
               </div>
-            </div>
-          </div>
+            )}
+          </>
         )}
       </div>
     </div>
