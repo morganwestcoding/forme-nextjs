@@ -108,10 +108,10 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
 
   const getStatusBorder = (color: string) => {
     switch (color) {
-      case 'green': return 'border border-white/40 hover:border-green-300/50';
-      case 'orange': return 'border border-white/40 hover:border-yellow-300/50';
-      case 'red': return 'border border-white/40 hover:border-rose-400/50';
-      default: return 'border border-white/40';
+      case 'green': return 'border border-white/30 hover:border-green-300/40';
+      case 'orange': return 'border border-white/30 hover:border-yellow-300/40';
+      case 'red': return 'border border-white/30 hover:border-rose-400/40';
+      default: return 'border border-white/30';
     }
   };
 
@@ -130,7 +130,7 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
       {/* Rating Button */}
       <button
         onClick={handleRatingClick}
-        className="group/rating rounded-md px-3 py-2 backdrop-blur-md bg-gray-50/10 hover:bg-blue-400/10 border border-white/40 hover:border-blue-400/60 transition-all duration-200"
+        className="group/rating rounded-md px-3 py-2 bg-black/60 hover:bg-blue-400/10 border border-white/30 hover:border-blue-400/50 transition-all duration-200"
         type="button"
       >
         <div className="flex items-center text-white group-hover/rating:text-[#60A5FA] text-xs gap-1 transition-all duration-200">
@@ -144,7 +144,7 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
       {/* Time Status Button */}
       <button
         onClick={handleTimeClick}
-        className={`rounded-md py-2 px-3 backdrop-blur-md transition-all duration-200 ${getStatusBackground(timeStatus.color)} ${getStatusBorder(timeStatus.color)}`}
+        className={`rounded-md py-2 px-4 bg-black/60 transition-all duration-200 ${getStatusBackground(timeStatus.color)} ${getStatusBorder(timeStatus.color)}`}
         type="button"
       >
         <div className="flex items-center justify-center">

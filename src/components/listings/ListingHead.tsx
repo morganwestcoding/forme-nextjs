@@ -307,7 +307,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
             <div className="relative z-10 px-6 md:px-24">
               {/* Title with Badges */}
               <div className="flex items-center gap-2.5 mb-3">
-                <h1 className="text-3xl font-bold tracking-tight text-white drop-shadow-lg">
+                <h1 className="text-4xl font-bold tracking-tight text-white drop-shadow-lg">
                   {title}
                 </h1>
 
@@ -354,7 +354,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               </div>
 
               {/* Address */}
-              <div className="text-sm text-white/90 mb-6 drop-shadow-md">
+              <div className="text-sm text-white/90 mb-5 drop-shadow-md">
                 {address && location ? `${address}, ${location}` : address || location}
                 <span className="text-white/70 ml-1">
                   · {(listing as any).radius ? `${(listing as any).radius} miles` : '2.3 miles away'}
@@ -366,7 +366,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 {/* Counter */}
                 <div className="relative flex items-center gap-8 px-5 py-3.5">
                   {/* Dark overlay behind counters only */}
-                  <div className="absolute inset-0 backdrop-blur-sm bg-black/15 border border-white/30 rounded-lg -z-10" />
+                  <div className="absolute inset-0  bg-black/50 border border-white/30 rounded-lg -z-10" />
 
                   {/* Rating Counter */}
                   <button
@@ -397,7 +397,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   {canShowQR ? (
                     <button
                       onClick={handleQRClick}
-                      className="h-12 px-5 rounded-lg backdrop-blur-md bg-black/15 hover:bg-blue-400/10 border border-white/40 hover:border-blue-400/60 transition-all duration-200 flex items-center justify-center"
+                      className="h-12 px-5 rounded-lg  bg-black/60 hover:bg-blue-400/10 border border-white/40 hover:border-blue-400/60 transition-all duration-200 flex items-center justify-center"
                       type="button"
                       aria-label="Show QR Code"
                     >
@@ -415,10 +415,10 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                     currentUser && (
                       <button
                         onClick={handleToggleFollow}
-                        className={`w-32 px-5 py-3 rounded-lg backdrop-blur-sm transition-all duration-200 border text-sm ${
+                        className={`w-32 px-5 py-3 rounded-lg  transition-all duration-200 border text-sm ${
                           isFollowing
-                            ? 'bg-black/15 hover:bg-blue-400/10 border-white/40 hover:border-blue-400/60 text-white hover:text-[#60A5FA]'
-                            : 'bg-black/15 hover:bg-blue-400/10 border-white/40 hover:border-blue-400/60 text-white hover:text-[#60A5FA]'
+                            ? 'bg-black/50 hover:bg-blue-400/10 border-white/40 hover:border-blue-400/60 text-white hover:text-[#60A5FA]'
+                            : 'bg-black/50 hover:bg-blue-400/10 border-white/40 hover:border-blue-400/60 text-white hover:text-[#60A5FA]'
                         }`}
                         type="button"
                         aria-label={isFollowing ? 'Unfollow' : 'Follow'}
@@ -432,7 +432,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   {currentUser && (
                     <button
                       onClick={handleReserveClick}
-                      className="w-32 px-5 py-3 rounded-lg backdrop-blur-sm bg-black/15 hover:bg-blue-400/10 border border-white/40 hover:border-blue-400/60 transition-all duration-200 flex items-center justify-center text-sm text-white hover:text-[#60A5FA]"
+                      className="w-32 px-5 py-3 rounded-lg  bg-black/50 hover:bg-blue-400/10 border border-white/40 hover:border-blue-400/60 transition-all duration-200 flex items-center justify-center text-sm text-white hover:text-[#60A5FA]"
                       type="button"
                     >
                       Reserve

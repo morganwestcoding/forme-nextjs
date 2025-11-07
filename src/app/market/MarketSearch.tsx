@@ -44,10 +44,10 @@ const MarketSearch: React.FC<MarketSearchProps> = ({ isHeroMode = false }) => {
 
   const activeFilterCount = getActiveFilterCount();
 
-  // Simple button styling with subtle gradient
+  // Hero mode or normal mode button styles
   const buttonBaseClasses = isHeroMode
     ? "backdrop-blur-md bg-white/10 hover:bg-blue-400/10 border border-white/40 hover:border-blue-400/60 text-white hover:text-[#60A5FA]"
-    : "bg-white hover:from-gray-100 hover:to-gray-50 border border-gray-300 text-gray-500 hover:border-gray-400 hover:text-gray-900";
+    : "bg-gray-300/25 border border-gray-400/50 text-gray-600/80 hover:border-[#60A5FA] hover:text-[#60A5FA] hover:bg-gradient-to-br";
 
   return (
     <div className="min-h-0">
@@ -64,7 +64,8 @@ const MarketSearch: React.FC<MarketSearchProps> = ({ isHeroMode = false }) => {
         {/* Filters Button */}
         <button
           onClick={handleOpenFilters}
-          className={`${buttonBaseClasses} py-3 px-4 rounded-lg transition-all duration-200 flex items-center space-x-2 text-sm relative hover:shadow-sm`}
+          className={`${buttonBaseClasses} py-2.5 px-4 rounded-lg transition-all duration-200 flex items-center space-x-2 text-sm relative hover:shadow-sm`}
+          style={{ textShadow: '0 1px 2px rgba(255, 255, 255, 0.8)' }}
           type="button"
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" color="currentColor" fill="none">
@@ -85,7 +86,8 @@ const MarketSearch: React.FC<MarketSearchProps> = ({ isHeroMode = false }) => {
         {/* Create Button */}
         <button
           onClick={handleCreateListing}
-          className={`${buttonBaseClasses} flex items-center justify-center py-3 space-x-2 px-4 rounded-lg transition-all duration-200 hover:shadow-sm`}
+          className={`${buttonBaseClasses} flex items-center justify-center py-2.5 space-x-2 px-4 rounded-lg transition-all duration-200 hover:shadow-sm`}
+          style={{ textShadow: '0 1px 2px rgba(255, 255, 255, 0.8)' }}
           type="button"
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" color="currentColor" fill="none">

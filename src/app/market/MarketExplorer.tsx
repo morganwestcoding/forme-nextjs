@@ -119,7 +119,7 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
 
   // Apple-inspired sleek button styling with enhanced glass morphism and shine
   const buttonBaseClasses = isHeroMode
-    ? "group relative backdrop-blur-2xl bg-gradient-to-b from-white/[0.12] via-white/[0.08] to-white/[0.05] hover:from-white/[0.18] hover:via-white/[0.15] hover:to-white/[0.10] border border-white/20 hover:border-white/30 text-white/90 hover:text-white shadow-lg shadow-black/10 hover:shadow-xl hover:shadow-black/20"
+    ? "group relative  bg-gradient-to-b from-white/[0.12] via-white/[] to-white/[0.05] hover:from-white/[0.18] hover:via-white/[0.15] hover:to-white/[0.10] border border-white/20 hover:border-white/30 text-white/90 hover:text-white shadow-lg shadow-black/10 hover:shadow-xl hover:shadow-black/20"
     : "group relative bg-gradient-to-b from-white via-white/95 to-white/90 hover:from-white hover:via-white hover:to-white/95 border border-black/[0.18] hover:border-black/[0.25] text-black hover:text-black shadow-[0_1px_2px_rgba(0,0,0,0.06),0_1px_3px_rgba(0,0,0,0.1)] hover:shadow-[0_2px_8px_rgba(0,0,0,0.08),0_2px_4px_rgba(0,0,0,0.12)]";
 
   return (
