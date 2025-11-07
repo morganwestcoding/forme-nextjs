@@ -8,6 +8,7 @@ interface SmartBadgePriceProps {
   onRatingClick?: () => void;
   onBookNowClick?: (e: React.MouseEvent) => void;
   isVerified?: boolean;
+  variant?: 'light' | 'dark'; // Support for different backgrounds
 }
 
 const SmartBadgePrice: React.FC<SmartBadgePriceProps> = ({
@@ -17,7 +18,8 @@ const SmartBadgePrice: React.FC<SmartBadgePriceProps> = ({
   onPriceClick,
   onRatingClick,
   onBookNowClick,
-  isVerified = true
+  isVerified = true,
+  variant = 'light'
 }) => {
 
   // Handle clicks
@@ -38,22 +40,41 @@ const SmartBadgePrice: React.FC<SmartBadgePriceProps> = ({
   const formatPrice = (n: number) =>
     Number.isInteger(n) ? `${n}` : `${n.toFixed(2)}`;
 
+  // Styling based on variant
+  const containerClasses = variant === 'dark'
+    ? "group/rating border border-white/40 rounded-md px-3 py-2 bg-white/10 backdrop-blur-md hover:border-white/60 hover:bg-white/20 transition-colors duration-200"
+    : "group/rating border border-gray-300 rounded-md px-3 py-2 bg-gray-50 hover:border-[#60A5FA] hover:bg-blue-50 transition-colors duration-200";
+
+  const textClasses = variant === 'dark'
+    ? "flex items-center text-white/90 text-xs"
+    : "flex items-center text-gray-500 text-xs";
+
+  const buttonHoverClasses = variant === 'dark'
+    ? "group-hover/rating:text-white transition-colors duration-200 flex items-center gap-1"
+    : "group-hover/rating:text-[#60A5FA] transition-colors duration-200 flex items-center gap-1";
+
+  const iconClasses = variant === 'dark'
+    ? "text-white/80"
+    : "text-gray-600";
+
+  const bookButtonClasses = variant === 'dark'
+    ? "text-white/90 border border-white/40 rounded-md px-3.5 py-2 bg-white/10 backdrop-blur-md hover:border-white/60 hover:bg-white/20 transition-colors duration-200 text-xs"
+    : "text-gray-500 border border-gray-300 rounded-md px-3.5 py-2 bg-gray-50 hover:border-[#60A5FA] hover:bg-blue-50 hover:text-[#60A5FA] transition-colors duration-200 text-xs";
+
   return (
     <div className="flex items-center gap-2">
       {/* Left container - Price or Rating */}
-      <div className="group/rating border border-gray-300 rounded-md px-3 py-2 bg-gray-50 hover:border-[#60A5FA] hover:bg-blue-50 transition-colors duration-200">
-        <div
-          className="flex items-center text-gray-500 text-xs"
-        >
+      <div className={containerClasses}>
+        <div className={textClasses}>
           <button
             onClick={handleLeftClick}
-            className="group-hover/rating:text-[#60A5FA] transition-colors duration-200 flex items-center gap-1"
+            className={buttonHoverClasses}
             type="button"
           >
             {showPrice ? (
               // Price display with dollar icon
               <>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="12" height="12" className="text-gray-600" fill="none">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="12" height="12" className={iconClasses} fill="none">
                   <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5"></circle>
                   <path d="M15 9.5C15 8.11929 13.8807 7 12.5 7C11.1193 7 10 8.11929 10 9.5C10 10.8807 11.1193 12 12.5 12C13.8807 12 15 13.1193 15 14.5C15 15.8807 13.8807 17 12.5 17C11.1193 17 10 15.8807 10 14.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"></path>
                   <path d="M12.5 7V5.5M12.5 18.5V17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"></path>
@@ -76,7 +97,7 @@ const SmartBadgePrice: React.FC<SmartBadgePriceProps> = ({
       {/* Book Now button - separate styled button */}
       <button
         onClick={handleBookNowClick}
-        className="text-gray-500 border border-gray-300 rounded-md px-3.5 py-2 bg-gray-50 hover:border-[#60A5FA] hover:bg-blue-50 hover:text-[#60A5FA] transition-colors duration-200 text-xs "
+        className={bookButtonClasses}
         type="button"
       >
         Reserve

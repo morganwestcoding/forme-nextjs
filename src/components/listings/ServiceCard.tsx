@@ -1,11 +1,11 @@
 // components/inputs/ServiceCard.tsx
 'use client';
 
-import React, { useMemo } from 'react';
+import React from 'react';
 import { useRouter } from 'next/navigation';
 import { SafeListing, SafeUser } from '@/app/types';
 import HeartButton from '../HeartButton';
-import SmartBadgePrice from './SmartBadgePrice'; // Import the SmartBadgePrice component
+import SmartBadgePrice from './SmartBadgePrice';
 import useReservationModal from '@/app/hooks/useReservationModal';
 
 interface ServiceItem {
@@ -35,16 +35,6 @@ interface ServiceCardProps {
 const formatPrice = (n: number) =>
   Number.isInteger(n) ? `$${n}` : `$${n.toFixed(2)}`;
 
-/** ---------- Helpers ---------- */
-const stringToColor = (seed: string, s = 70, l = 55) => {
-  let hash = 0;
-  for (let i = 0; i < seed.length; i++) {
-    // eslint-disable-next-line no-bitwise
-    hash = seed.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  const hue = Math.abs(hash) % 360;
-  return `hsl(${hue}, ${s}%, ${l}%)`;
-};
 
 /* ---------- Category → SVG icon ---------- */
 function CategoryIcon({
@@ -58,7 +48,7 @@ function CategoryIcon({
     className,
     fill: 'none',
     stroke: 'currentColor',
-    strokeWidth: '1.5',
+    strokeWidth: '1',
     strokeLinecap: 'round' as const,
     strokeLinejoin: 'round' as const,
   };
@@ -173,133 +163,122 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
     onDuplicate?.();
   };
 
-  // Memoize icon background color for performance
-  const iconBg = useMemo(
-    () => stringToColor(`${service.id}${service.category}${service.serviceName}`),
-    [service.id, service.category, service.serviceName]
-  );
-
   const priceNum = Number(service.price ?? 0);
-  const priceLabel = service.unit
-    ? `${formatPrice(priceNum)} / ${service.unit}`
-    : formatPrice(priceNum);
-
   const durationDisplay = service.unit || '60 min';
   const listingName = listing?.title || 'Service';
 
   return (
     <div
       onClick={handleCardClick}
-      className="group cursor-pointer bg-white rounded-lg overflow-hidden relative transition-all duration-300 hover:-translate-y-1 hover:scale-[1.01] hover:shadow-md max-w-[250px]"
+      className="group cursor-pointer rounded-lg overflow-hidden relative transition-all duration-300 hover:border-blue-500 hover:shadow-md max-w-[250px] border border-gray-300"
+      style={{
+        background: 'linear-gradient(to bottom, #ffffff 0%, #f9fafb 100%)'
+      }}
     >
-      {/* Match ListingCard and WorkerCard height structure */}
-      <div className="relative h-[350px]">
-        {/* Popular/New badges */}
-        {(service.popular || service.isNew) && (
-          <div className="absolute left-4 top-4 flex items-center gap-1 z-20">
-            {service.popular && (
-              <span className="px-2 py-1 text-[10px] font-medium rounded-lg bg-amber-100 text-amber-700 border border-amber-200">
-                Popular
-              </span>
-            )}
-            {service.isNew && (
-              <span className="px-2 py-1 text-[10px] font-medium rounded-lg bg-emerald-100 text-emerald-700 border border-emerald-200">
-                New
-              </span>
-            )}
+
+      <div className="relative z-10">
+        {/* Match ListingCard and WorkerCard height structure */}
+        <div className="relative h-[350px]">
+          {/* Popular/New badges */}
+          {(service.popular || service.isNew) && (
+            <div className="absolute left-4 top-4 flex items-center gap-1 z-20">
+              {service.popular && (
+                <span className="px-2 py-1 text-[10px] font-medium rounded-lg backdrop-blur-md bg-white/20 text-white border border-white/40">
+                  Popular
+                </span>
+              )}
+              {service.isNew && (
+                <span className="px-2 py-1 text-[10px] font-medium rounded-lg backdrop-blur-md bg-white/20 text-white border border-white/40">
+                  New
+                </span>
+              )}
+            </div>
+          )}
+
+          {/* Heart - Using HeartButton component */}
+          <div className="absolute top-4 right-4 z-20">
+            <HeartButton
+              listingId={service.id}
+              currentUser={currentUser}
+              variant="worker"
+            />
           </div>
-        )}
 
-        {/* Heart - Using HeartButton component */}
-        <div className="absolute top-4 right-4 z-20">
-          <HeartButton
-            listingId={service.id}
-            currentUser={currentUser}
-            variant="worker"
-          />
-        </div>
-
-        {/* Edit/Duplicate actions for owners */}
-        {(isOwner || onEdit || onDuplicate) && (
-          <div className="absolute right-4 top-12 flex flex-col gap-1 opacity-0 hover:opacity-100 transition z-20">
-            <button
-              aria-label={`Edit ${service.serviceName || 'service'}`}
-              onClick={goToEditThisService}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white/90 backdrop-blur-sm text-gray-700 hover:bg-white hover:shadow-md transition"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path d="M16.425 4.605L17.415 3.615c.82-.82 2.149-.82 2.97 0 .82.82.82 2.15 0 2.97l-0.99.99M16.425 4.605L9.766 11.264c-.508.508-.868 1.144-1.042 1.84L8 16l2.896-.724c.696-.174 1.332-.534 1.84-1.041l6.659-6.66M16.425 4.605l2.97 2.97" stroke="currentColor" strokeWidth="1.5" />
-                <path d="M19 13.5c0 3.288 0 4.931-0.908 6.038-.166.203-.352.389-.555.555C16.431 21 14.787 21 11.5 21H11c-3.771 0-5.657 0-6.828-1.172C3 18.657 3 16.771 3 13.5V13c0-3.287 0-4.931.908-6.038.166-.202.352-.388.555-.555C5.569 5.5 7.213 5.5 10.5 5.5" stroke="currentColor" strokeWidth="1.5" />
-              </svg>
-            </button>
-
-            {onDuplicate && (
+          {/* Edit/Duplicate actions for owners */}
+          {(isOwner || onEdit || onDuplicate) && (
+            <div className="absolute right-4 top-12 flex flex-col gap-1 opacity-0 hover:opacity-100 transition z-20">
               <button
-                aria-label={`Duplicate ${service.serviceName || 'service'}`}
-                onClick={handleDuplicate}
+                aria-label={`Edit ${service.serviceName || 'service'}`}
+                onClick={goToEditThisService}
                 className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white/90 backdrop-blur-sm text-gray-700 hover:bg-white hover:shadow-md transition"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M8 8.5C8 7.12 9.12 6 10.5 6H16.5C17.88 6 19 7.12 19 8.5V14.5C19 15.88 17.88 17 16.5 17H10.5C9.12 17 8 15.88 8 14.5V8.5Z" stroke="currentColor" strokeWidth="1.5"/>
-                  <path d="M6 10.5V15.5C6 17.985 8.015 20 10.5 20H15.5" stroke="currentColor" strokeWidth="1.5"/>
+                  <path d="M16.425 4.605L17.415 3.615c.82-.82 2.149-.82 2.97 0 .82.82.82 2.15 0 2.97l-0.99.99M16.425 4.605L9.766 11.264c-.508.508-.868 1.144-1.042 1.84L8 16l2.896-.724c.696-.174 1.332-.534 1.84-1.041l6.659-6.66M16.425 4.605l2.97 2.97" stroke="currentColor" strokeWidth="1.5" />
+                  <path d="M19 13.5c0 3.288 0 4.931-0.908 6.038-.166.203-.352.389-.555.555C16.431 21 14.787 21 11.5 21H11c-3.771 0-5.657 0-6.828-1.172C3 18.657 3 16.771 3 13.5V13c0-3.287 0-4.931.908-6.038.166-.202.352-.388.555-.555C5.569 5.5 7.213 5.5 10.5 5.5" stroke="currentColor" strokeWidth="1.5" />
                 </svg>
               </button>
-            )}
-          </div>
-        )}
 
-        {/* Service Icon - Centered towards middle-top */}
-        <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-          {/* Colored circular background with icon */}
-          <div
-            className="w-24 h-24 rounded-full flex items-center justify-center text-white shadow border border-gray-300"
-            style={{ backgroundColor: iconBg }}
-            aria-label="Service icon"
-            title={service.serviceName}
-          >
-            <CategoryIcon category={service.category} className="w-8 h-8" />
-          </div>
-        </div>
+              {onDuplicate && (
+                <button
+                  aria-label={`Duplicate ${service.serviceName || 'service'}`}
+                  onClick={handleDuplicate}
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white/90 backdrop-blur-sm text-gray-700 hover:bg-white hover:shadow-md transition"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M8 8.5C8 7.12 9.12 6 10.5 6H16.5C17.88 6 19 7.12 19 8.5V14.5C19 15.88 17.88 17 16.5 17H10.5C9.12 17 8 15.88 8 14.5V8.5Z" stroke="currentColor" strokeWidth="1.5"/>
+                    <path d="M6 10.5V15.5C6 17.985 8.015 20 10.5 20H15.5" stroke="currentColor" strokeWidth="1.5"/>
+                  </svg>
+                </button>
+              )}
+            </div>
+          )}
 
-        {/* Bottom info - positioned like WorkerCard */}
-        <div className="absolute bottom-5 left-5 right-5 z-20">
-          {/* Service Name and Details */}
-          <div className="mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-1 truncate">
-              {service.serviceName || 'Untitled Service'}
-            </h3>
-            <p className="text-xs text-gray-600 leading-relaxed truncate">
-              {service.category} at {listingName}
-            </p>
-            <div className="opacity-90 mt-0.5 text-xs text-gray-600 font-light">
-              {durationDisplay} • Available today
+          {/* Service Icon - Centered towards middle */}
+          <div className="absolute top-[32%] left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <div className="w-28 h-28 rounded-full shadow-md border-2 border-gray-100 flex items-center justify-center bg-gray-50">
+              <CategoryIcon category={service.category} className="w-10 h-10 text-gray-600" />
             </div>
           </div>
 
-          {/* SmartBadgePrice component */}
-          <div className="flex items-center">
-            <SmartBadgePrice
-              price={priceNum}
-              showPrice={true}
-              onPriceClick={() => {
-                // Handle price click (e.g., show pricing details)
-                console.log('Price clicked for service:', service.serviceName);
-              }}
-              onBookNowClick={(e: React.MouseEvent) => {
-                e.stopPropagation();
-                // Open reservation modal with this service pre-selected
-                if (listing && currentUser) {
-                  reservationModal.onOpen(listing, currentUser, service.id);
-                }
-              }}
-              isVerified={true} // You can control this based on your business logic
-            />
+          {/* Bottom info - positioned like WorkerCard */}
+          <div className="absolute bottom-5 left-5 right-5 z-20">
+            {/* Service Name and Details */}
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 mb-1 truncate">
+                {service.serviceName || 'Untitled Service'}
+              </h3>
+              <p className="text-gray-600 text-[11px] leading-4 truncate">
+                {service.category} at {listingName}
+              </p>
+              <div className="mt-0.5 text-[10px] text-gray-500 font-light">
+                {durationDisplay} • Available today
+              </div>
+            </div>
+
+            {/* SmartBadgePrice component */}
+            <div className="flex items-center">
+              <SmartBadgePrice
+                price={priceNum}
+                showPrice={true}
+                variant="light"
+                onPriceClick={() => {
+                  console.log('Price clicked for service:', service.serviceName);
+                }}
+                onBookNowClick={(e: React.MouseEvent) => {
+                  e.stopPropagation();
+                  if (listing && currentUser) {
+                    reservationModal.onOpen(listing, currentUser, service.id);
+                  }
+                }}
+                isVerified={true}
+              />
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Match ListingCard bottom padding */}
-      <div className="pb-2" />
+        {/* Match ListingCard bottom padding */}
+        <div className="pb-2" />
+      </div>
     </div>
   );
 };

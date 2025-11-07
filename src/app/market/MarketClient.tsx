@@ -6,7 +6,8 @@ import Container from '@/components/Container';
 import { SafeListing, SafeUser, SafeEmployee } from '@/app/types';
 import PropagateLoaderWrapper from '@/components/loaders/PropagateLoaderWrapper';
 import ListingCard from '@/components/listings/ListingCard';
-import MarketExplorer from './MarketExplorer';
+import MarketSearch from './MarketSearch';
+import CategoryNav from './CategoryNav';
 import RentModal from '@/components/modals/ListingModal';
 import WorkerCard from '@/components/listings/WorkerCard';
 import SectionHeader from './SectionHeader';
@@ -273,11 +274,11 @@ const MarketClient: React.FC<MarketClientProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <Container>
         {/* Hero Section - Full Width with Subtle Gradient & Shadow Layers */}
         <div className="-mx-6 md:-mx-24 -mt-2 md:-mt-8">
-        <div className="relative bg-gray-50 px-6 md:px-24 pt-10 pb-8 overflow-hidden">
+        <div className="relative px-6 md:px-24 pt-10 pb-8 overflow-hidden">
           {/* Subtle shadow layers for depth with animation */}
           <div className="absolute inset-0 pointer-events-none">
             {/* Top soft shadow */}
@@ -295,26 +296,20 @@ const MarketClient: React.FC<MarketClientProps> = ({
           <div className="relative z-10">
             {/* Main Market Title */}
             <div className="mb-6">
-              <h1 className="text-3xl md:text-4xl font-semibold text-gray-900 leading-tight tracking-tight">
+              <h1 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight tracking-tight">
                 Market
               </h1>
               <p className="text-gray-600 mt-1">Discover unique places from our vendors</p>
             </div>
 
             {/* Search and Controls */}
-            <MarketExplorer
-              searchParams={searchParams}
-              isHeroMode={false}
-            />
+            <MarketSearch isHeroMode={false} />
           </div>
         </div>
       </div>
 
       {/* Category Navigation */}
-      <MarketExplorer
-        searchParams={searchParams}
-        isCategoryOnly={true}
-      />
+      <CategoryNav searchParams={searchParams} />
 
       {/* Content + loader overlay */}
       <div className="relative">

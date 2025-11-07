@@ -172,23 +172,23 @@ const ListingHead: React.FC<ListingHeadProps> = ({
 
       <div className="w-full space-y-6">
         {/* Hero Banner Style Header */}
-        <div className="w-full relative rounded-lg overflow-hidden">
+        <div className="-mx-6 md:-mx-24 -mt-2 md:-mt-8">
           {/* Background Image */}
-          <div className="relative w-full h-[230px]">
+          <div className="relative w-full overflow-hidden pt-10 pb-8">
             <img
               src={mainImage}
               alt={title}
               className="absolute inset-0 w-full h-full object-cover"
             />
 
-            {/* Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-black/20" />
+            {/* Simple dark overlay */}
+            <div className="absolute inset-0 bg-black/40" />
 
             {/* Three-dot menu - top right */}
-            <div className="absolute top-6 right-6">
+            <div className="absolute top-6 right-6 md:right-24">
               <button
                 onClick={handleDropdownToggle}
-                className="p-1 hover:bg-white/20 rounded-lg transition-colors backdrop-blur-md"
+                className="p-1 hover:bg-white/20 rounded-lg transition-colors"
                 type="button"
                 aria-label="Options menu"
               >
@@ -304,7 +304,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
             </div>
 
             {/* Content Overlay */}
-            <div className="absolute bottom-0 left-0 right-0 p-8">
+            <div className="relative z-10 px-6 md:px-24">
               {/* Title with Badges */}
               <div className="flex items-center gap-2.5 mb-3">
                 <h1 className="text-3xl font-bold tracking-tight text-white drop-shadow-lg">
@@ -364,27 +364,30 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               {/* Stats and Buttons Row */}
               <div className="flex items-center justify-between">
                 {/* Counter */}
-                <div className="flex items-center gap-8">
+                <div className="relative flex items-center gap-8 px-5 py-3.5">
+                  {/* Dark overlay behind counters only */}
+                  <div className="absolute inset-0 backdrop-blur-sm bg-black/15 border border-white/30 rounded-lg -z-10" />
+
                   {/* Rating Counter */}
                   <button
                     onClick={() => setActiveTab('Reviews')}
-                    className="flex flex-col items-center justify-center group cursor-pointer transition-all duration-200 hover:scale-105"
+                    className="flex items-center gap-2 group cursor-pointer transition-all duration-200"
                     type="button"
                   >
-                    <span className="text-2xl font-bold text-white drop-shadow-lg group-hover:text-[#60A5FA] transition-colors leading-none">4.8</span>
-                    <span className="text-xs text-white/80 drop-shadow-md group-hover:text-[#60A5FA] transition-colors mt-0.5">rating</span>
+                    <span className="text-xl font-bold text-white drop-shadow-lg group-hover:text-[#60A5FA] transition-colors leading-none">4.8</span>
+                    <span className="text-sm text-white/80 drop-shadow-md group-hover:text-[#60A5FA] transition-colors">rating</span>
                   </button>
 
                   {/* Posts Counter */}
-                  <div className="flex flex-col items-center justify-center">
-                    <span className="text-2xl font-bold text-white drop-shadow-lg leading-none">{posts?.length || 0}</span>
-                    <span className="text-xs text-white/80 drop-shadow-md mt-0.5">posts</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl font-bold text-white drop-shadow-lg leading-none">{posts?.length || 0}</span>
+                    <span className="text-sm text-white/80 drop-shadow-md">posts</span>
                   </div>
 
                   {/* Followers Counter */}
-                  <div className="flex flex-col items-center justify-center">
-                    <span className="text-2xl font-bold text-white drop-shadow-lg leading-none">{followers.length}</span>
-                    <span className="text-xs text-white/80 drop-shadow-md mt-0.5">followers</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl font-bold text-white drop-shadow-lg leading-none">{followers.length}</span>
+                    <span className="text-sm text-white/80 drop-shadow-md">followers</span>
                   </div>
                 </div>
 
@@ -394,7 +397,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   {canShowQR ? (
                     <button
                       onClick={handleQRClick}
-                      className="h-12 px-5 rounded-lg backdrop-blur-md bg-gray-50/10 hover:bg-blue-400/10 border border-white/40 hover:border-blue-400/60 transition-all duration-200 flex items-center justify-center"
+                      className="h-12 px-5 rounded-lg backdrop-blur-md bg-black/15 hover:bg-blue-400/10 border border-white/40 hover:border-blue-400/60 transition-all duration-200 flex items-center justify-center"
                       type="button"
                       aria-label="Show QR Code"
                     >
@@ -412,10 +415,10 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                     currentUser && (
                       <button
                         onClick={handleToggleFollow}
-                        className={`w-32 px-5 py-3 rounded-lg backdrop-blur-md transition-all duration-200 border text-sm ${
+                        className={`w-32 px-5 py-3 rounded-lg backdrop-blur-sm transition-all duration-200 border text-sm ${
                           isFollowing
-                            ? 'bg-gray-50/10 hover:bg-blue-400/10 border-white/40 hover:border-blue-400/60 text-white hover:text-[#60A5FA]'
-                            : 'bg-gray-50/10 hover:bg-blue-400/10 border-white/40 hover:border-blue-400/60 text-white hover:text-[#60A5FA]'
+                            ? 'bg-black/15 hover:bg-blue-400/10 border-white/40 hover:border-blue-400/60 text-white hover:text-[#60A5FA]'
+                            : 'bg-black/15 hover:bg-blue-400/10 border-white/40 hover:border-blue-400/60 text-white hover:text-[#60A5FA]'
                         }`}
                         type="button"
                         aria-label={isFollowing ? 'Unfollow' : 'Follow'}
@@ -429,7 +432,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   {currentUser && (
                     <button
                       onClick={handleReserveClick}
-                      className="w-32 px-5 py-3 rounded-lg backdrop-blur-md bg-gray-50/10 hover:bg-blue-400/10 border border-white/40 hover:border-blue-400/60 transition-all duration-200 flex items-center justify-center text-sm text-white hover:text-[#60A5FA]"
+                      className="w-32 px-5 py-3 rounded-lg backdrop-blur-sm bg-black/15 hover:bg-blue-400/10 border border-white/40 hover:border-blue-400/60 transition-all duration-200 flex items-center justify-center text-sm text-white hover:text-[#60A5FA]"
                       type="button"
                     >
                       Reserve
@@ -443,7 +446,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
       </div>
 
       {/* Navigation Tabs - MarketExplorer Style */}
-      <div className="py-5 border-b border-gray-300">
+      <div className="-mx-6 md:-mx-24 py-5 bg-white border-y border-gray-300">
         <div className="flex items-center justify-center">
           {tabs.map(({ key, label }, index) => {
             const isSelected = activeTab === key;
@@ -477,7 +480,21 @@ const ListingHead: React.FC<ListingHeadProps> = ({
       {/* Tab Content */}
       <div className="mt-6">
         {activeTab === 'Services' && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <>
+            {/* Services Section Header */}
+            <div className="mb-4">
+              <div>
+                <h2 className="text-xl font-semibold tracking-tight text-gray-900">
+                  Available Services
+                </h2>
+                <div
+                  className="mt-1 h-[2px] w-14 rounded-full"
+                  style={{ backgroundColor: '#60A5FA' }}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {validServices.map(service => (
               <ServiceCard
                 key={service.id}
@@ -492,48 +509,123 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               <button
                 onClick={handleAddService}
                 type="button"
-                className="cursor-pointer bg-white rounded-xl hover:shadow-md overflow-hidden relative transition-all duration-300 hover:scale-[1.02] max-w-[250px] border border-gray-200"
+                className="group cursor-pointer rounded-lg overflow-hidden relative transition-all duration-300 hover:-translate-y-1 hover:scale-[1.01] hover:shadow-xl max-w-[250px] border border-gray-200/50"
               >
-                <div className="relative h-[350px]">
-                  <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                    <div className="relative">
-                      <div className="w-24 h-24 rounded-full flex items-center justify-center text-gray-500 bg-gray-50 border shadow border-gray-300 transition-all duration-300 group-hover:border-[#60A5FA] group-hover:bg-blue-50 group-hover:text-[#60A5FA]">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M12 5v14M5 12h14" />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
+                {/* Clean background with subtle depth */}
+                <div className="absolute inset-0 z-0">
+                  {/* Pure white base */}
+                  <div className="absolute inset-0 bg-white" />
 
-                  <div className="absolute bottom-5 left-5 right-5 z-20">
-                    <div className="mb-4">
-                      <h3 className="text-lg font-semibold text-gray-500 mb-1 text-center">
-                        Add Service
-                      </h3>
-                      <p className="text-xs text-gray-500 leading-relaxed text-center">
-                        Create a new service offering
-                      </p>
-                      <div className="opacity-90 mt-0.5 text-xs text-gray-500 font-light text-center">
-                        Click to get started
-                      </div>
-                    </div>
+                  {/* Ultra-subtle radial glow from center */}
+                  <div
+                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    style={{
+                      background: 'radial-gradient(circle at 50% 32%, rgba(59, 130, 246, 0.03) 0%, transparent 60%)'
+                    }}
+                  />
 
-                    <div className="flex items-center justify-center">
-                      <div className="bg-gray-100 text-gray-500 px-3 py-2 border rounded-lg text-xs font-medium group-hover:bg-blue-100 group-hover:text-[#60A5FA] group-hover:border-[#60A5FA] transition-all duration-200">
-                        Get Started
-                      </div>
-                    </div>
-                  </div>
+                  {/* Top glass reflection */}
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      background:
+                        'linear-gradient(to bottom,' +
+                        'rgba(255,255,255,0.8) 0%,' +
+                        'rgba(255,255,255,0.0) 20%)',
+                    }}
+                  />
+
+                  {/* Bottom subtle shadow for depth */}
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      background:
+                        'linear-gradient(to top,' +
+                        'rgba(0,0,0,0.02) 0%,' +
+                        'rgba(0,0,0,0.00) 30%)',
+                    }}
+                  />
                 </div>
 
-                <div className="pb-2" />
+                <div className="relative z-10">
+                  <div className="relative h-[350px]">
+                    {/* Icon - matching ServiceCard position */}
+                    <div className="absolute top-[32%] left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                      <div className="relative">
+                        {/* Outer glow ring - appears on hover */}
+                        <div className="absolute inset-0 w-28 h-28 rounded-full bg-blue-500/0 group-hover:bg-blue-500/5 blur-2xl transition-all duration-500" />
+
+                        {/* Main circle */}
+                        <div className="relative w-28 h-28 rounded-full flex items-center justify-center shadow-sm border border-gray-200 bg-gradient-to-br from-gray-50 to-white group-hover:border-blue-300 group-hover:shadow-md transition-all duration-300">
+                          {/* Inner highlight for depth */}
+                          <div className="absolute inset-2 rounded-full bg-gradient-to-br from-white/60 to-transparent pointer-events-none" />
+
+                          {/* Plus icon */}
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="28"
+                            height="28"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="text-gray-400 group-hover:text-blue-500 transition-colors duration-300 relative z-10"
+                          >
+                            <path d="M12 5v14M5 12h14" />
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Bottom info - matching ServiceCard */}
+                    <div className="absolute bottom-5 left-5 right-5 z-20">
+                      <div className="mb-4">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-1 text-center group-hover:text-gray-900 transition-colors">
+                          Add Service
+                        </h3>
+                        <p className="text-[11px] text-gray-500 leading-4 text-center">
+                          Create new offering
+                        </p>
+                        <div className="opacity-60 mt-0.5 text-[10px] text-gray-400 font-light text-center">
+                          Tap to begin
+                        </div>
+                      </div>
+
+                      {/* Clean button badge */}
+                      <div className="flex items-center justify-center">
+                        <div className="border border-gray-200 rounded-md px-3 py-2 bg-white group-hover:border-blue-400 group-hover:bg-blue-50 group-hover:text-blue-600 transition-all duration-300 text-xs text-gray-600 font-medium shadow-sm">
+                          Get Started
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pb-2" />
+                </div>
               </button>
             )}
           </div>
+          </>
         )}
 
         {activeTab === 'Team' && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <>
+            {/* Team Section Header */}
+            <div className="mb-4">
+              <div>
+                <h2 className="text-xl font-semibold tracking-tight text-gray-900">
+                  Our Team
+                </h2>
+                <div
+                  className="mt-1 h-[2px] w-14 rounded-full"
+                  style={{ backgroundColor: '#60A5FA' }}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {employees.map((employee: any, index: number) => (
               <WorkerCard
                 key={employee.id || index}
@@ -551,47 +643,108 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               <button
                 onClick={handleAddWorker}
                 type="button"
-                className="cursor-pointer bg-white rounded-xl hover:shadow-md overflow-hidden relative transition-all duration-300 hover:scale-[1.02] max-w-[250px] border border-gray-200"
+                className="group cursor-pointer rounded-lg overflow-hidden relative transition-all duration-300 hover:-translate-y-1 hover:scale-[1.01] hover:shadow-xl max-w-[250px] border border-gray-200/50"
               >
-                <div className="relative h-[350px]">
-                  <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                    <div className="relative">
-                      <div className="w-24 h-24 rounded-full flex items-center justify-center text-gray-500 bg-gray-50 border shadow border-gray-300 transition-all duration-300 group-hover:border-[#60A5FA] group-hover:bg-blue-50 group-hover:text-[#60A5FA]">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                          <circle cx="9" cy="7" r="4" />
-                          <line x1="19" y1="8" x2="19" y2="14" />
-                          <line x1="22" y1="11" x2="16" y2="11" />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
+                {/* Clean background with subtle depth */}
+                <div className="absolute inset-0 z-0">
+                  {/* Pure white base */}
+                  <div className="absolute inset-0 bg-white" />
 
-                  <div className="absolute bottom-5 left-5 right-5 z-20">
-                    <div className="mb-4">
-                      <h3 className="text-lg  text-gray-500 mb-1 text-center">
-                        Add Team Member
-                      </h3>
-                      <p className="text-xs text-gray-300 leading-relaxed text-center">
-                        Invite a new team member
-                      </p>
-                      <div className="opacity-90 mt-0.5 text-xs text-gray-300 font-light text-center">
-                        Click to get started
-                      </div>
-                    </div>
+                  {/* Ultra-subtle radial glow from center */}
+                  <div
+                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    style={{
+                      background: 'radial-gradient(circle at 50% 32%, rgba(59, 130, 246, 0.03) 0%, transparent 60%)'
+                    }}
+                  />
 
-                    <div className="flex items-center justify-center">
-                      <div className="bg-gray-100 text-gray-500 px-3 py-2 border rounded-lg text-xs font-medium group-hover:bg-blue-100 group-hover:text-[#60A5FA] group-hover:border-[#60A5FA] transition-all duration-200">
-                        Add Member
-                      </div>
-                    </div>
-                  </div>
+                  {/* Top glass reflection */}
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      background:
+                        'linear-gradient(to bottom,' +
+                        'rgba(255,255,255,0.8) 0%,' +
+                        'rgba(255,255,255,0.0) 20%)',
+                    }}
+                  />
+
+                  {/* Bottom subtle shadow for depth */}
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      background:
+                        'linear-gradient(to top,' +
+                        'rgba(0,0,0,0.02) 0%,' +
+                        'rgba(0,0,0,0.00) 30%)',
+                    }}
+                  />
                 </div>
 
-                <div className="pb-2" />
+                <div className="relative z-10">
+                  <div className="relative h-[350px]">
+                    {/* Icon - matching WorkerCard position */}
+                    <div className="absolute top-[32%] left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                      <div className="relative">
+                        {/* Outer glow ring - appears on hover */}
+                        <div className="absolute inset-0 w-28 h-28 rounded-full bg-blue-500/0 group-hover:bg-blue-500/5 blur-2xl transition-all duration-500" />
+
+                        {/* Main circle */}
+                        <div className="relative w-28 h-28 rounded-full flex items-center justify-center shadow-sm border border-gray-200 bg-gradient-to-br from-gray-50 to-white group-hover:border-blue-300 group-hover:shadow-md transition-all duration-300">
+                          {/* Inner highlight for depth */}
+                          <div className="absolute inset-2 rounded-full bg-gradient-to-br from-white/60 to-transparent pointer-events-none" />
+
+                          {/* User plus icon */}
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="28"
+                            height="28"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="text-gray-400 group-hover:text-blue-500 transition-colors duration-300 relative z-10"
+                          >
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                            <line x1="19" y1="8" x2="19" y2="14" />
+                            <line x1="22" y1="11" x2="16" y2="11" />
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Bottom info - matching WorkerCard */}
+                    <div className="absolute bottom-5 left-5 right-5 z-20">
+                      <div className="mb-4">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-1 text-center group-hover:text-gray-900 transition-colors">
+                          Add Team Member
+                        </h3>
+                        <p className="text-[11px] text-gray-500 leading-4 text-center">
+                          Invite new member
+                        </p>
+                        <div className="opacity-60 mt-0.5 text-[10px] text-gray-400 font-light text-center">
+                          Tap to begin
+                        </div>
+                      </div>
+
+                      {/* Clean button badge */}
+                      <div className="flex items-center justify-center">
+                        <div className="border border-gray-200 rounded-md px-3 py-2 bg-white group-hover:border-blue-400 group-hover:bg-blue-50 group-hover:text-blue-600 transition-all duration-300 text-xs text-gray-600 font-medium shadow-sm">
+                          Get Started
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pb-2" />
+                </div>
               </button>
             )}
           </div>
+          </>
         )}
 
         {activeTab === 'Reviews' && (
@@ -610,6 +763,19 @@ const ListingHead: React.FC<ListingHeadProps> = ({
 
         {activeTab === 'Posts' && (
           <>
+            {/* Posts Section Header */}
+            <div className="mb-4">
+              <div>
+                <h2 className="text-xl font-semibold tracking-tight text-gray-900">
+                  Gallery
+                </h2>
+                <div
+                  className="mt-1 h-[2px] w-14 rounded-full"
+                  style={{ backgroundColor: '#60A5FA' }}
+                />
+              </div>
+            </div>
+
             {(!galleryImages || galleryImages.length === 0) && (!posts || posts.length === 0) ? (
               <>
                 {isOwner ? (
@@ -617,19 +783,68 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                     <button
                       onClick={handleAddMedia}
                       type="button"
-                      className="cursor-pointer bg-white rounded-xl hover:shadow-md overflow-hidden relative transition-all duration-200 border border-gray-200"
+                      className="group cursor-pointer bg-white rounded-xl hover:shadow-lg overflow-hidden relative transition-all duration-300 border border-gray-200/50"
                       style={{ aspectRatio: '1 / 1' }}
                     >
-                      <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
-                        <div className="w-16 h-16 rounded-full flex items-center justify-center text-gray-400 bg-gray-50 border border-gray-300 mb-3 transition-all duration-300 group-hover:border-[#60A5FA] group-hover:bg-blue-50 group-hover:text-[#60A5FA]">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M12 5v14M5 12h14" />
-                          </svg>
+                      {/* Clean background with subtle depth */}
+                      <div className="absolute inset-0 z-0">
+                        <div className="absolute inset-0 bg-white" />
+
+                        <div
+                          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                          style={{
+                            background: 'radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.03) 0%, transparent 60%)'
+                          }}
+                        />
+
+                        <div
+                          className="absolute inset-0 pointer-events-none"
+                          style={{
+                            background:
+                              'linear-gradient(to bottom,' +
+                              'rgba(255,255,255,0.8) 0%,' +
+                              'rgba(255,255,255,0.0) 20%)',
+                          }}
+                        />
+
+                        <div
+                          className="absolute inset-0 pointer-events-none"
+                          style={{
+                            background:
+                              'linear-gradient(to top,' +
+                              'rgba(0,0,0,0.02) 0%,' +
+                              'rgba(0,0,0,0.00) 30%)',
+                          }}
+                        />
+                      </div>
+
+                      <div className="absolute inset-0 flex flex-col items-center justify-center p-4 z-10">
+                        <div className="relative mb-3">
+                          <div className="absolute inset-0 w-16 h-16 rounded-full bg-blue-500/0 group-hover:bg-blue-500/5 blur-xl transition-all duration-500" />
+
+                          <div className="relative w-16 h-16 rounded-full flex items-center justify-center shadow-sm border border-gray-200 bg-gradient-to-br from-gray-50 to-white group-hover:border-blue-300 group-hover:shadow-md transition-all duration-300">
+                            <div className="absolute inset-2 rounded-full bg-gradient-to-br from-white/60 to-transparent pointer-events-none" />
+
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="1.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="text-gray-400 group-hover:text-blue-500 transition-colors duration-300 relative z-10"
+                            >
+                              <path d="M12 5v14M5 12h14" />
+                            </svg>
+                          </div>
                         </div>
-                        <h3 className="text-sm font-semibold text-gray-500 mb-1 text-center">
+                        <h3 className="text-sm font-semibold text-gray-900 mb-0.5 text-center">
                           Add Media
                         </h3>
-                        <p className="text-xs text-gray-400 text-center">
+                        <p className="text-xs text-gray-500 text-center">
                           Upload photos or videos
                         </p>
                       </div>
@@ -680,19 +895,68 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   <button
                     onClick={handleAddMedia}
                     type="button"
-                    className="cursor-pointer bg-white rounded-xl hover:shadow-md overflow-hidden relative transition-all duration-200 border border-gray-200"
+                    className="group cursor-pointer bg-white rounded-xl hover:shadow-lg overflow-hidden relative transition-all duration-300 border border-gray-200/50"
                     style={{ aspectRatio: '1 / 1' }}
                   >
-                    <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
-                      <div className="w-16 h-16 rounded-full flex items-center justify-center text-gray-400 bg-gray-50 border shadow border-gray-300 mb-3 transition-all duration-300 group-hover:border-[#60A5FA] group-hover:bg-blue-50 group-hover:text-[#60A5FA]">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M12 5v14M5 12h14" />
-                        </svg>
+                    {/* Clean background with subtle depth */}
+                    <div className="absolute inset-0 z-0">
+                      <div className="absolute inset-0 bg-white" />
+
+                      <div
+                        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                        style={{
+                          background: 'radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.03) 0%, transparent 60%)'
+                        }}
+                      />
+
+                      <div
+                        className="absolute inset-0 pointer-events-none"
+                        style={{
+                          background:
+                            'linear-gradient(to bottom,' +
+                            'rgba(255,255,255,0.8) 0%,' +
+                            'rgba(255,255,255,0.0) 20%)',
+                        }}
+                      />
+
+                      <div
+                        className="absolute inset-0 pointer-events-none"
+                        style={{
+                          background:
+                            'linear-gradient(to top,' +
+                            'rgba(0,0,0,0.02) 0%,' +
+                            'rgba(0,0,0,0.00) 30%)',
+                        }}
+                      />
+                    </div>
+
+                    <div className="absolute inset-0 flex flex-col items-center justify-center p-4 z-10">
+                      <div className="relative mb-3">
+                        <div className="absolute inset-0 w-16 h-16 rounded-full bg-blue-500/0 group-hover:bg-blue-500/5 blur-xl transition-all duration-500" />
+
+                        <div className="relative w-16 h-16 rounded-full flex items-center justify-center shadow-sm border border-gray-200 bg-gradient-to-br from-gray-50 to-white group-hover:border-blue-300 group-hover:shadow-md transition-all duration-300">
+                          <div className="absolute inset-2 rounded-full bg-gradient-to-br from-white/60 to-transparent pointer-events-none" />
+
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="text-gray-400 group-hover:text-blue-500 transition-colors duration-300 relative z-10"
+                          >
+                            <path d="M12 5v14M5 12h14" />
+                          </svg>
+                        </div>
                       </div>
-                      <h3 className="text-sm font-semibold text-gray-500 mb-1 text-center">
+                      <h3 className="text-sm font-semibold text-gray-900 mb-0.5 text-center">
                         Add Media
                       </h3>
-                      <p className="text-xs text-gray-400 text-center">
+                      <p className="text-xs text-gray-500 text-center">
                         Upload photos or videos
                       </p>
                     </div>
