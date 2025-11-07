@@ -197,45 +197,63 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
   return (
     <div
       onClick={handleCardClick}
-      className="group cursor-pointer rounded-lg overflow-hidden relative transition-all duration-300 hover:-translate-y-1 hover:scale-[1.01] hover:shadow-md max-w-[250px]"
+      className="group cursor-pointer rounded-lg overflow-hidden relative transition-all duration-300 hover:-translate-y-1 hover:scale-[1.01] hover:shadow-md max-w-[250px] border border-gray-200/20"
     >
-      {/* Background with blue radial gradient */}
+      {/* Background with listing image */}
       <div className="absolute inset-0 z-0">
-        {/* Base gradient */}
-        <div className="absolute inset-0 bg-gradient-to-b from-gray-700 via-gray-800 to-gray-900" />
+        {/* Listing background image - grayscale and sharp */}
+        <div className="absolute inset-0">
+          <Image
+            src={data.imageSrc}
+            alt=""
+            fill
+            className="object-cover grayscale scale-105"
+            style={{ opacity: 0.75 }}
+            sizes="250px"
+          />
+        </div>
 
-        {/* Stronger blue radial gradient emanating from avatar position */}
+        {/* Very light desaturation overlay */}
         <div
-          className="absolute inset-0 opacity-50"
+          className="absolute inset-0 bg-gray-600/15"
+          style={{ mixBlendMode: 'multiply' }}
+        />
+
+        {/* Subtle blue radial gradient emanating from avatar position */}
+        <div
+          className="absolute inset-0 opacity-12"
           style={{
-            background: 'radial-gradient(circle at 50% 33%, rgba(96, 165, 250, 0.5) 0%, transparent 60%)'
+            background: 'radial-gradient(circle at 50% 28%, rgba(96, 165, 250, 0.18) 0%, transparent 55%)'
           }}
         />
 
-        {/* Subtle noise texture overlay */}
+        {/* Top gradient for framing and heart button visibility */}
         <div
-          className="absolute inset-0 opacity-[0.05]"
+          className="absolute inset-0 pointer-events-none"
           style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
-            backgroundSize: '200px 200px'
+            background:
+              'linear-gradient(to bottom,' +
+              'rgba(0,0,0,0.35) 0%,' +
+              'rgba(0,0,0,0.20) 15%,' +
+              'rgba(0,0,0,0.10) 30%,' +
+              'rgba(0,0,0,0.00) 45%)',
           }}
         />
 
-        {/* Bottom-heavy gradient overlay for text readability */}
+        {/* Very strong bottom gradient for text readability */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
             background:
               'linear-gradient(to top,' +
-              'rgba(0,0,0,0.75) 0%,' +
-              'rgba(0,0,0,0.70) 12%,' +
-              'rgba(0,0,0,0.60) 26%,' +
-              'rgba(0,0,0,0.45) 42%,' +
-              'rgba(0,0,0,0.30) 56%,' +
-              'rgba(0,0,0,0.15) 70%,' +
-              'rgba(0,0,0,0.04) 82%,' +
-              'rgba(0,0,0,0.00) 90%,' +
-              'rgba(0,0,0,0.00) 100%)',
+              'rgba(0,0,0,0.85) 0%,' +
+              'rgba(0,0,0,0.75) 12%,' +
+              'rgba(0,0,0,0.60) 25%,' +
+              'rgba(0,0,0,0.45) 38%,' +
+              'rgba(0,0,0,0.30) 50%,' +
+              'rgba(0,0,0,0.15) 65%,' +
+              'rgba(0,0,0,0.05) 80%,' +
+              'rgba(0,0,0,0.00) 90%)',
           }}
         />
       </div>
@@ -252,9 +270,9 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
           />
         </div>
 
-        {/* Avatar - Centered towards middle-top */}
-        <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-          <div className="relative transition-transform duration-300 group-hover:scale-110">
+        {/* Avatar - Centered towards middle */}
+        <div className="absolute top-[32%] left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+          <div className="relative transition-transform duration-300">
             {/* Profile Image or Initials Circle */}
             {shouldShowImage ? (
               <div className="w-28 h-28 rounded-full overflow-hidden shadow-lg border-2 border-white relative">
