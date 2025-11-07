@@ -190,7 +190,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   return (
     <div
       onClick={handleCardClick}
-      className="group cursor-pointer bg-white rounded-xl border border-gray-300 overflow-hidden relative transition-all duration-300 hover:-translate-y-1 hover:scale-[1.01] hover:shadow-md max-w-[250px]"
+      className="group cursor-pointer bg-white rounded-lg overflow-hidden relative transition-all duration-300 hover:-translate-y-1 hover:scale-[1.01] hover:shadow-md max-w-[250px]"
     >
       {/* Match ListingCard and WorkerCard height structure */}
       <div className="relative h-[350px]">
@@ -252,7 +252,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
         <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
           {/* Colored circular background with icon */}
           <div
-            className="w-24 h-24 rounded-full flex items-center justify-center text-white shadow-lg border border-gray-300"
+            className="w-24 h-24 rounded-full flex items-center justify-center text-white shadow border border-gray-300"
             style={{ backgroundColor: iconBg }}
             aria-label="Service icon"
             title={service.serviceName}

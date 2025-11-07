@@ -129,6 +129,9 @@ const MediaUpload: React.FC<MediaUploadProps> = ({
         return;
       }
 
+      // Set uploading state when actual upload starts
+      setIsUploading(true);
+
       let type: MediaType = 'image';
       if (resourceType === 'video') type = 'video';
       else if (format === 'gif') type = 'gif';
@@ -148,7 +151,6 @@ const MediaUpload: React.FC<MediaUploadProps> = ({
 
   const openIfOk = (open?: () => void) => {
     if (disabled) return;
-    setIsUploading(true);
     open?.();
   };
 
@@ -265,7 +267,7 @@ const MediaUpload: React.FC<MediaUploadProps> = ({
 
             {mediaPreview && (
               <>
-                <div className="absolute inset-0 overflow-hidden">{renderPreview()}</div>
+                <div className={`absolute inset-0 overflow-hidden ${roundedClass}`}>{renderPreview()}</div>
 
                 <div className="absolute top-2 left-2 inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-medium bg-neutral-900/70 text-white">
                   {mediaPreview.type === 'video' ? (

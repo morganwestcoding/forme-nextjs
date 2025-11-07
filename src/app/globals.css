@@ -114,7 +114,7 @@
   }
   html,
   body {
-    @apply text-foreground bg-[#f5f5f5];
+    @apply text-foreground bg-[#ffffff];
     min-height: 100vh;
   }
 }
@@ -190,6 +190,61 @@ main {
   100% { background-position-x: 200%; }
 }
 
+/* ---------- Mesh gradient animation ---------- */
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-gradient-shift {
+  animation: gradientShift 15s ease-in-out infinite;
+}
+
+/* Accessibility: respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .animate-gradient-shift {
+    animation: none;
+    background-position: 0% 50%;
+  }
+}
+
+
+/* Subtle floating animations for hero sections */
+@keyframes float-slow {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(30px, -20px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 30px) scale(0.95);
+  }
+}
+
+@keyframes float-slower {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  40% {
+    transform: translate(-40px, 20px) scale(1.05);
+  }
+  70% {
+    transform: translate(25px, -30px) scale(0.98);
+  }
+}
+
+.animate-float-slow {
+  animation: float-slow 20s ease-in-out infinite;
+}
+
+.animate-float-slower {
+  animation: float-slower 25s ease-in-out infinite;
+}
 
 @keyframes shadowRolling {
   0% {

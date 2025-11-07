@@ -19,10 +19,14 @@ interface MarketExplorerProps {
     order?: 'asc' | 'desc';
     page?: string;
   };
+  isHeroMode?: boolean;
+  isCategoryOnly?: boolean;
 }
 
 const MarketExplorer: React.FC<MarketExplorerProps> = ({
-  searchParams
+  searchParams,
+  isHeroMode = false,
+  isCategoryOnly = false
 }) => {
   const router = useRouter();
   const params = useSearchParams();
@@ -75,20 +79,66 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
 
   const activeFilterCount = getActiveFilterCount();
 
+  // If category-only mode, just show the category navigation
+  if (isCategoryOnly) {
+    return (
+      <div className="-mx-6 md:-mx-24 py-5 bg-white border-y border-gray-300">
+        <div className="flex items-center justify-center">
+          {categories.map((category, index) => {
+            const isSelected = currentCategory === category.label;
+            const isLast = index === categories.length - 1;
+
+            return (
+              <div key={category.label} className="relative flex items-center">
+                {/* Category Button */}
+                <button
+                  onClick={() => handleCategorySelect(category.label)}
+                  className={`
+                    px-6 py-2.5 text-sm  transition-colors duration-200 rounded-lg
+                    ${isSelected
+                      ? 'text-[#60A5FA] hover:text-[#4F94E5]'
+                      : 'text-gray-500 hover:text-gray-700 '
+                    }
+                  `}
+                  type="button"
+                >
+                  {category.label}
+                </button>
+
+                {/* Vertical Divider */}
+                {!isLast && (
+                  <div className="h-6 w-px bg-gray-300 mx-3" />
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  // Hero mode or normal mode
+  const buttonBaseClasses = isHeroMode
+    ? "backdrop-blur-md bg-white/10 hover:bg-blue-400/10 border border-white/40 hover:border-blue-400/60 text-white hover:text-[#60A5FA]"
+    : "bg-white border border-gray-300 text-gray-500 hover:border-[#60A5FA] hover:text-[#60A5FA] hover:bg-blue-50";
+
   return (
     <div className="min-h-0">
       {/* Search and Controls */}
-      <div className="flex mt-4 mb-6 gap-2">
+      <div className="flex mt-4 gap-2">
         {/* Search Bar */}
         <div className="relative flex-grow">
-          <GlobalSearch placeholder="Search posts, users, listings, shops, products…" />
+          <GlobalSearch
+            placeholder="Search posts, users, listings, shops, products…"
+            isHeroMode={isHeroMode}
+          />
         </div>
 
 
 {/* Filters Button */}
 <button
   onClick={handleOpenFilters}
-  className="text-gray-500 bg-white border border-gray-300 py-3 px-4 rounded-xl hover:from-blue-50/30 hover:via-white hover:border-[#60A5FA] hover:text-[#60A5FA] hover:bg-blue-50  transition-all duration-300 flex items-center space-x-2 text-sm relative hover:shadow-sm"
+  className={`${buttonBaseClasses} py-3 px-4 rounded-lg transition-all duration-200 flex items-center space-x-2 text-sm relative hover:shadow-sm`}
   type="button"
 >
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" color="currentColor" fill="none">
@@ -109,7 +159,7 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
 {/* Create Button */}
 <button
   onClick={handleCreateListing}
-  className="flex items-center justify-center py-3 space-x-2 px-4 rounded-xl border border-gray-300 text-gray-500 transition-all duration-300 bg-white hover:border-[#60A5FA] hover:text-[#60A5FA] hover:bg-blue-50 hover:shadow-sm"
+  className={`${buttonBaseClasses} flex items-center justify-center py-3 space-x-2 px-4 rounded-lg transition-all duration-200 hover:shadow-sm`}
   type="button"
 >
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" color="currentColor" fill="none">
@@ -118,40 +168,6 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
   </svg>
   <span className="text-sm">Create</span>
 </button>
-      </div>
-
-      {/* Category Navigation - Clean with Vertical Dividers */}
-      <div className="py-5 border-y border-gray-300">
-        <div className="flex items-center justify-center">
-          {categories.map((category, index) => {
-            const isSelected = currentCategory === category.label;
-            const isLast = index === categories.length - 1;
-            
-            return (
-              <div key={category.label} className="relative flex items-center">
-                {/* Category Button */}
-                <button
-                  onClick={() => handleCategorySelect(category.label)}
-                  className={`
-                    px-6 py-2.5 text-sm  transition-colors duration-200 rounded-xl
-                    ${isSelected 
-                      ? 'text-[#60A5FA] hover:text-[#4F94E5]' 
-                      : 'text-gray-500 hover:text-gray-700 '
-                    }
-                  `}
-                  type="button"
-                >
-                  {category.label}
-                </button>
-                
-                {/* Vertical Divider */}
-                {!isLast && (
-                  <div className="h-6 w-px bg-gray-300 mx-3" />
-                )}
-              </div>
-            );
-          })}
-        </div>
       </div>
     </div>
   );

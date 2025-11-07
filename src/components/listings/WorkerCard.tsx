@@ -197,10 +197,52 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
   return (
     <div
       onClick={handleCardClick}
-      className="group cursor-pointer bg-white rounded-xl border border-gray-300 overflow-hidden relative transition-all duration-300 hover:-translate-y-1 hover:scale-[1.01] hover:shadow-md max-w-[250px]"
+      className="group cursor-pointer rounded-lg overflow-hidden relative transition-all duration-300 hover:-translate-y-1 hover:scale-[1.01] hover:shadow-md max-w-[250px]"
     >
-      {/* Match ListingCard height structure */}
-      <div className="relative h-[350px]">
+      {/* Background with blue radial gradient */}
+      <div className="absolute inset-0 z-0">
+        {/* Base gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-700 via-gray-800 to-gray-900" />
+
+        {/* Stronger blue radial gradient emanating from avatar position */}
+        <div
+          className="absolute inset-0 opacity-50"
+          style={{
+            background: 'radial-gradient(circle at 50% 33%, rgba(96, 165, 250, 0.5) 0%, transparent 60%)'
+          }}
+        />
+
+        {/* Subtle noise texture overlay */}
+        <div
+          className="absolute inset-0 opacity-[0.05]"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+            backgroundSize: '200px 200px'
+          }}
+        />
+
+        {/* Bottom-heavy gradient overlay for text readability */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              'linear-gradient(to top,' +
+              'rgba(0,0,0,0.75) 0%,' +
+              'rgba(0,0,0,0.70) 12%,' +
+              'rgba(0,0,0,0.60) 26%,' +
+              'rgba(0,0,0,0.45) 42%,' +
+              'rgba(0,0,0,0.30) 56%,' +
+              'rgba(0,0,0,0.15) 70%,' +
+              'rgba(0,0,0,0.04) 82%,' +
+              'rgba(0,0,0,0.00) 90%,' +
+              'rgba(0,0,0,0.00) 100%)',
+          }}
+        />
+      </div>
+
+      <div className="relative z-10">
+        {/* Match ListingCard height structure */}
+        <div className="relative h-[350px]">
         {/* Heart - Using HeartButton component */}
         <div className="absolute top-4 right-4 z-20">
           <HeartButton
@@ -212,10 +254,10 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
 
         {/* Avatar - Centered towards middle-top */}
         <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-          <div className="relative">
+          <div className="relative transition-transform duration-300 group-hover:scale-110">
             {/* Profile Image or Initials Circle */}
             {shouldShowImage ? (
-              <div className="w-24 h-24 rounded-full overflow-hidden shadow-lg border border-gray-300 relative">
+              <div className="w-28 h-28 rounded-full overflow-hidden shadow-lg border-2 border-white relative">
                 <Image
                   src={profileImage}
                   alt={employee.fullName}
@@ -224,12 +266,12 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
                   onError={handleImageError}
                   onLoad={handleImageLoad}
                   priority={false}
-                  sizes="96px"
+                  sizes="112px"
                 />
               </div>
             ) : (
               <div
-                className="w-24 h-24 rounded-full flex items-center justify-center text-white font-semibold shadow-lg border border-gray-300"
+                className="w-28 h-28 rounded-full flex items-center justify-center text-white text-2xl font-semibold shadow-lg border-2 border-white"
                 style={{ backgroundColor: avatarBg }}
                 aria-label="Employee initials"
                 title={employee.fullName}
@@ -244,18 +286,18 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
         <div className="absolute bottom-5 left-5 right-5 z-20">
           {/* Name with verification badge and independent badge */}
           <div className="mb-1 flex items-center gap-2">
-            <h3 className="text-lg font-semibold text-gray-900">
+            <h3 className="text-lg font-semibold text-white drop-shadow">
               {renderNameWithBadge(employee.fullName)}
             </h3>
             {employee.isIndependent && (
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-blue-100 text-blue-800 border border-blue-200">
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium backdrop-blur-md bg-white/10 text-white border border-white/40">
                 Independent
               </span>
             )}
           </div>
 
           {/* Job title and location - improved formatting */}
-          <div className="text-gray-600 text-[11px] leading-4 mb-4">
+          <div className="text-white/90 text-[11px] leading-4 mb-4">
             {/* Job title with smart line breaking */}
             <div className="flex items-start gap-1 mb-1">
               <span className="leading-4">
@@ -263,7 +305,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
               </span>
             </div>
             {/* Distance with same styling as ListingCard */}
-            <div className="opacity-90 mt-0.5 font-light text-[10px]">
+            <div className="opacity-80 mt-0.5 font-light text-[10px]">
               2.3 miles away
             </div>
           </div>
@@ -284,10 +326,11 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
             />
           </div>
         </div>
-      </div>
+        </div>
 
-      {/* Match ListingCard bottom padding */}
-      <div className="pb-2" />
+        {/* Match ListingCard bottom padding */}
+        <div className="pb-2" />
+      </div>
     </div>
   );
 };

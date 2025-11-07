@@ -85,7 +85,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser }) => {
       onClick={() => router.push(`/listings/${data.id}`)}
 className="
   group cursor-pointer relative overflow-hidden
-  rounded-xl  bg-white transition-all duration-300
+  rounded-lg  bg-white transition-all duration-300
   hover:-translate-y-1 hover:scale-[1.01] hover:shadow-md
   max-w-[250px]"
     >
@@ -104,13 +104,13 @@ className="
           style={{
             background:
               'linear-gradient(to top,' +
-              'rgba(0,0,0,0.98) 0%,' +
-              'rgba(0,0,0,0.96) 12%,' +
-              'rgba(0,0,0,0.90) 26%,' +
-              'rgba(0,0,0,0.70) 42%,' +
-              'rgba(0,0,0,0.45) 56%,' +
-              'rgba(0,0,0,0.20) 70%,' +
-              'rgba(0,0,0,0.06) 82%,' +
+              'rgba(0,0,0,0.75) 0%,' +
+              'rgba(0,0,0,0.70) 12%,' +
+              'rgba(0,0,0,0.60) 26%,' +
+              'rgba(0,0,0,0.45) 42%,' +
+              'rgba(0,0,0,0.30) 56%,' +
+              'rgba(0,0,0,0.15) 70%,' +
+              'rgba(0,0,0,0.04) 82%,' +
               'rgba(0,0,0,0.00) 90%,' +
               'rgba(0,0,0,0.00) 100%)',
           }}

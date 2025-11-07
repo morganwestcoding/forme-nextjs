@@ -64,11 +64,13 @@ function useDebounced<T>(value: T, delay = 250) {
 interface GlobalSearchProps {
   placeholder?: string;
   className?: string;
+  isHeroMode?: boolean;
 }
 
 const GlobalSearch: React.FC<GlobalSearchProps> = ({
   placeholder = "Search posts, users, listings, shops, products, employees, services…",
   className,
+  isHeroMode = false,
 }) => {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -164,10 +166,16 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
     node?.scrollIntoView({ block: "nearest" });
   }, [activeIdx]);
 
+  const inputClasses = isHeroMode
+    ? "w-full h-12 pl-12 pr-4 text-sm backdrop-blur-md bg-white/10 border border-white/40 rounded-lg outline-none focus:ring-1 focus:ring-white/60 focus:border-white/60 text-white placeholder-white/70"
+    : "w-full h-12 pl-12 pr-4 text-sm border border-gray-300 rounded-lg outline-none focus:ring-1 focus:ring-[#60A5FA] bg-white placeholder-gray-500";
+
+  const iconClasses = isHeroMode ? "w-5 h-5 text-white" : "w-5 h-5 text-gray-500";
+
   return (
     <div className={`relative ${className || ""}`} ref={containerRef}>
-      <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-        <Search className="w-5 h-5 text-gray-500" />
+      <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none z-10">
+        <Search className={iconClasses} />
       </div>
       <input
         type="text"
@@ -176,7 +184,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
         onFocus={() => results.length && setOpen(true)}
         onKeyDown={onKeyDown}
         placeholder={placeholder}
-        className="w-full h-12 pl-12 pr-4 text-sm border border-gray-300 rounded-xl outline-none focus:ring-1 focus:ring-[#60A5FA] bg-white placeholder-gray-500"
+        className={inputClasses}
       />
 
       {/* Dropdown */}

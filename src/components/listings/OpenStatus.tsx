@@ -98,7 +98,7 @@ const OpenStatus: React.FC<OpenStatusProps> = ({ storeHours, className = '' }) =
 
   return (
     <div
-      className={`w-6 h-6 rounded-full border-2 border-white drop-shadow-sm ${
+      className={`w-[22px] h-[22px] rounded-full border border-white drop-shadow-sm ${
         isOpen ? 'bg-emerald-500' : 'bg-rose-400'
       } ${className}`}
       title={displayText}

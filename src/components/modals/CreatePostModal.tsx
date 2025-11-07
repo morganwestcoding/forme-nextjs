@@ -197,36 +197,36 @@ const CreatePostModal = () => {
     return () => ro.disconnect();
   }, []);
 
-  // Search for tags using the global search API
-  const searchTags = useCallback(async (query: string) => {
-    setIsSearching(true);
-    
-    try {
-      const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-      if (!response.ok) throw new Error('Search failed');
-      
-      const data = await response.json();
-      // Filter for taggable types: users, listings, shops
-      const taggableResults = (data.results || []).filter((item: any) => 
-        ['user', 'listing', 'shop'].includes(item.type)
-      );
-      setSearchResults(taggableResults);
-    } catch (error) {
-      console.error('Tag search error:', error);
-      setSearchResults([]);
-      toast.error('Failed to search');
-    } finally {
-      setIsSearching(false);
-    }
-  }, []);
-
+  // Search for tags using the global search API (same logic as PostModal)
   useEffect(() => {
-    if (searchQuery.trim().length > 0) {
-      searchTags(searchQuery);
-    } else {
-      setSearchResults([]);
-    }
-  }, [searchQuery, searchTags]);
+    const searchTags = async () => {
+      if (!searchQuery.trim()) {
+        setSearchResults([]);
+        setIsSearching(false);
+        return;
+      }
+
+      setIsSearching(true);
+      try {
+        const response = await fetch(`/api/search?q=${encodeURIComponent(searchQuery)}`);
+        if (!response.ok) throw new Error('Search failed');
+
+        const data = await response.json();
+        const taggableResults = (data.results || []).filter((item: any) =>
+          ['user', 'listing', 'shop'].includes(item.type)
+        );
+        setSearchResults(taggableResults);
+      } catch (error) {
+        console.error('Tag search error:', error);
+        setSearchResults([]);
+      } finally {
+        setIsSearching(false);
+      }
+    };
+
+    const debounce = setTimeout(searchTags, 300);
+    return () => clearTimeout(debounce);
+  }, [searchQuery]);
 
   const handleTagSelect = (tag: TagItem) => {
     // Prevent duplicate tags
@@ -323,10 +323,12 @@ const CreatePostModal = () => {
       tag: postType,
       postType,
       mediaOverlay: overlayMeta,
-      tags: selectedTags.map(tag => ({
+      mentions: selectedTags.map(tag => ({
         id: tag.id,
         type: tag.type,
-        title: tag.title
+        title: tag.title,
+        subtitle: tag.subtitle || null,
+        image: tag.image || null
       }))
     };
 
@@ -609,15 +611,23 @@ const CreatePostModal = () => {
             />
 
             {/* Search Results Dropdown */}
-            {searchQuery && (
+            {searchQuery.trim().length > 0 && (
               <div className="absolute z-50 mt-2 w-full max-h-64 overflow-auto rounded-xl border border-gray-200 bg-white shadow-lg">
                 {/* Loading */}
                 {isSearching && (
-                  <div className="px-4 py-3 text-sm text-gray-500">Searching...</div>
+                  <div className="px-4 py-3 text-sm text-gray-500 flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
+                    Searching...
+                  </div>
+                )}
+
+                {/* Too short */}
+                {!isSearching && searchQuery.trim().length < 2 && (
+                  <div className="px-4 py-3 text-sm text-gray-500">Type at least 2 characters...</div>
                 )}
 
                 {/* Empty */}
-                {!isSearching && searchQuery.length >= 2 && searchResults.length === 0 && (
+                {!isSearching && searchQuery.trim().length >= 2 && searchResults.length === 0 && (
                   <div className="px-4 py-3 text-sm text-gray-500">No results found</div>
                 )}
 
@@ -629,8 +639,8 @@ const CreatePostModal = () => {
                       return (
                         <div
                           key={`${item.type}-${item.id}`}
-                          className={`px-3 py-2 cursor-pointer flex items-center gap-3 ${
-                            isSelected ? "bg-green-50 opacity-50" : "hover:bg-gray-50"
+                          className={`px-3 py-2 cursor-pointer flex items-center gap-3 transition-colors ${
+                            isSelected ? "bg-green-50 opacity-50 cursor-not-allowed" : "hover:bg-gray-50"
                           }`}
                           onClick={() => !isSelected && handleTagSelect(item)}
                         >
