@@ -114,7 +114,7 @@
   }
   html,
   body {
-    @apply text-foreground bg-[#f3f3f3];
+    @apply text-foreground bg-[#f8f8f8];
     min-height: 100vh;
   }
 }

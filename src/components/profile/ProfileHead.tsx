@@ -224,6 +224,12 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                     </button>
                   ) : (
                     <>
+                      {/* Message Button - styled like QR button */}
+                      {currentUser && (
+                        <CreateChatButton currentUser={currentUser} otherUserId={id} />
+                      )}
+
+                      {/* Follow Button */}
                       <button
                         onClick={handleFollow}
                         className="bg-white/15 backdrop-blur-sm hover:bg-blue-400/10 border border-white/40 hover:border-blue-400/60 text-white hover:text-[#60A5FA] py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center hover:shadow-sm text-sm w-28"
@@ -231,7 +237,6 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                       >
                         {isFollowing ? 'Following' : 'Follow'}
                       </button>
-                      {currentUser && <CreateChatButton currentUser={currentUser} otherUserId={id} />}
                     </>
                   )}
                 </div>

@@ -45,6 +45,7 @@ import Image from 'next/image';
 import { format } from 'date-fns';
 import axios from 'axios';
 import { X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 import usePostModal from '@/app/hooks/usePostModal';
 import Avatar from '@/components/ui/avatar';
@@ -54,6 +55,7 @@ import { SafeListing, SafeShop, SafeComment, SafePost } from '@/app/types';
 import { usePostStore } from '@/app/hooks/usePostStore';
 
 const PostModal = () => {
+  const router = useRouter();
   const postModal = usePostModal();
   const post = postModal.post;
   const currentUser = postModal.currentUser;
@@ -484,6 +486,13 @@ useEffect(() => {
       // Force scroll restoration after modal closes
       document.body.style.overflow = '';
     }, 300); // Match animation duration
+  };
+
+  const handleProfileClick = (userId: string) => {
+    handleClose();
+    setTimeout(() => {
+      router.push(`/profile/${userId}`);
+    }, 300); // Wait for modal close animation to complete
   };
 
   const handleLike = async () => {
@@ -1033,14 +1042,17 @@ useEffect(() => {
                             <div className="absolute bottom-4 left-0 right-0 px-4 z-30">
                               <div className="video-controls rounded-2xl p-6 text-white shadow-2xl">
                                 <div className="flex items-center gap-3 mb-4">
-                                  <div className="relative w-10 h-10">
+                                  <button
+                                    onClick={() => handleProfileClick(postData.user.id)}
+                                    className="relative w-10 h-10 hover:scale-110 transition-transform duration-200 cursor-pointer flex-shrink-0"
+                                  >
                                     <Image
                                       src={postData.user.image || '/images/placeholder.jpg'}
                                       alt={postData.user.name || 'User'}
                                       fill
                                       className="rounded-full object-cover border-2 border-white/20"
                                     />
-                                  </div>
+                                  </button>
                                   <div className="flex-1">
                                     <p className="font-semibold text-sm">{postData.user.name || 'Anonymous'}</p>
                                     <p className="text-xs text-white/70">{formattedDate}</p>
@@ -1071,14 +1083,17 @@ useEffect(() => {
                           <div className="absolute bottom-4 left-0 right-0 px-4 z-30">
                             <div className="video-controls rounded-2xl p-6 text-white shadow-2xl">
                               <div className="flex items-center gap-3 mb-4">
-                                <div className="relative w-10 h-10">
+                                <button
+                                  onClick={() => handleProfileClick(postData.user.id)}
+                                  className="relative w-10 h-10 hover:scale-110 transition-transform duration-200 cursor-pointer flex-shrink-0"
+                                >
                                   <Image
                                     src={postData.user.image || '/images/placeholder.jpg'}
                                     alt={postData.user.name || 'User'}
                                     fill
                                     className="rounded-full object-cover border-2 border-white/20"
                                   />
-                                </div>
+                                </button>
                                 <div className="flex-1">
                                   <p className="font-semibold text-sm">{postData.user.name || 'Anonymous'}</p>
                                   <p className="text-xs text-white/70">{formattedDate}</p>
@@ -1126,11 +1141,14 @@ useEffect(() => {
             <span className="text-xs">Close</span>
           </div>
 
-          <div className="border border-white rounded-full avatar-container">
+          <button
+            onClick={() => handleProfileClick(currentPost.user.id)}
+            className="border border-white rounded-full avatar-container hover:scale-110 transition-transform duration-200 cursor-pointer"
+          >
             <div key={avatarKey} className="avatar-image-morph">
               <Avatar src={currentPost.user.image ?? undefined} />
             </div>
-          </div>
+          </button>
 
           <div className="flex flex-col items-center gap-2">
             <button onClick={handleLike} className="hover:scale-110 transition-transform duration-200">
