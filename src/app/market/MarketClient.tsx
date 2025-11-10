@@ -517,19 +517,6 @@ const MarketClient: React.FC<MarketClientProps> = ({
           }
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
       </Container>
     </div>
   );

@@ -451,7 +451,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
       </div>
 
       {/* Navigation Tabs - MarketExplorer Style */}
-      <div className="-mx-6 md:-mx-24 py-5 bg-white border-y border-gray-400">
+      <div className="-mx-6 md:-mx-24 py-4 bg-white border-y border-gray-400">
         <div className="flex items-center justify-center">
           {tabs.map(({ key, label }, index) => {
             const isSelected = activeTab === key;

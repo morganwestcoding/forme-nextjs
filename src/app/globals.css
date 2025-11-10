@@ -6,24 +6,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ---------- Listing & card overlay ---------- */
-.card__overlay {
-  position: absolute;
-  inset: 0;
-  padding: clamp(0.938rem, 5vw, 1.563rem);
-  display: flex;
-  justify-content: flex-end;
-  flex-direction: column;
-  color: #fff;
-  background: linear-gradient(
-    0deg,
-    rgba(0, 0, 0, 0.95) 0%,
-    rgba(0, 0, 0, 0.6) 50%,
-    rgba(0, 0, 0, 0.1) 90%,
-    rgba(0, 0, 0, 0) 100%
-  );
-}
-
 /* ---------- CSS Variables (theme) ---------- */
 @layer base {
   :root {
@@ -49,27 +31,6 @@
     --radius: 0.5rem;
   }
 
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-  }
 }
 
 /* ---------- Rotating text animation ---------- */
@@ -114,7 +75,7 @@
   }
   html,
   body {
-    @apply text-foreground bg-[#f8f8f8];
+    @apply text-foreground bg-[#fafafa];
     min-height: 100vh;
   }
 }
@@ -122,17 +83,6 @@
 * {
   margin: 0;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-}
-
-/* ---------- Background gradient ---------- */
-@keyframes gradient {
-  to {
-    background-position: 500% 100%;
-  }
-}
-
-.animate-gradient {
-  animation: gradient 30s infinite linear;
 }
 
 /* ---------- Leaflet map overrides ---------- */
@@ -183,67 +133,6 @@ main {
 @keyframes fadeInUp {
   from { opacity: 0; transform: translate3d(0, 8px, 0); }
   to   { opacity: 1; transform: translate3d(0, 0, 0); }
-}
-
-@keyframes sheen {
-  0% { background-position-x: 0%; }
-  100% { background-position-x: 200%; }
-}
-
-/* ---------- Mesh gradient animation ---------- */
-@keyframes gradientShift {
-  0%, 100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-}
-
-.animate-gradient-shift {
-  animation: gradientShift 15s ease-in-out infinite;
-}
-
-/* Accessibility: respect reduced motion preference */
-@media (prefers-reduced-motion: reduce) {
-  .animate-gradient-shift {
-    animation: none;
-    background-position: 0% 50%;
-  }
-}
-
-
-/* Subtle floating animations for hero sections */
-@keyframes float-slow {
-  0%, 100% {
-    transform: translate(0, 0) scale(1);
-  }
-  33% {
-    transform: translate(30px, -20px) scale(1.1);
-  }
-  66% {
-    transform: translate(-20px, 30px) scale(0.95);
-  }
-}
-
-@keyframes float-slower {
-  0%, 100% {
-    transform: translate(0, 0) scale(1);
-  }
-  40% {
-    transform: translate(-40px, 20px) scale(1.05);
-  }
-  70% {
-    transform: translate(25px, -30px) scale(0.98);
-  }
-}
-
-.animate-float-slow {
-  animation: float-slow 20s ease-in-out infinite;
-}
-
-.animate-float-slower {
-  animation: float-slower 25s ease-in-out infinite;
 }
 
 @keyframes shadowRolling {

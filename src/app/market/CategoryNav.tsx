@@ -32,7 +32,7 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams }) => {
   };
 
   return (
-    <div className="-mx-6 md:-mx-24 py-5 bg-white border-y border-gray-400">
+    <div className="-mx-6 md:-mx-24 py-4 bg-white border-y border-gray-400">
       <div className="flex items-center justify-center">
         {categories.map((category, index) => {
           const isSelected = currentCategory === category.label;

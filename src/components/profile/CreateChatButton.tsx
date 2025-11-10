@@ -2,7 +2,6 @@
 
 'use client'
 import useMessageModal from "@/app/hooks/useMessageModal";
-import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
@@ -17,7 +16,6 @@ const CreateChatButton: React.FC<CreateChatButtonProps> = ({
   currentUser,
   otherUserId
 }) => {
-  const router = useRouter();
   const messageModal = useMessageModal();
 
   const onCreateChat = useCallback(async () => {

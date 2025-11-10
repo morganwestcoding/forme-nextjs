@@ -165,19 +165,6 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
           </div>
         ))}
       </div>
-
-      <style jsx global>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translate3d(0, 20px, 0);
-          }
-          to {
-            opacity: 1;
-            transform: translate3d(0, 0, 0);
-          }
-        }
-      `}</style>
     </div>
   );
 }
