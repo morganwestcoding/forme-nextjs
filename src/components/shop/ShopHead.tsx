@@ -9,6 +9,7 @@ import PostCard from '../feed/PostCard';
 import { SafeProduct, SafeUser, SafeShop, SafePost } from '@/app/types';
 import useReservationModal from '@/app/hooks/useReservationModal';
 import HeartButton from '@/components/HeartButton';
+import { categories } from '@/components/Categories';
 
 interface ShopHeadProps {
   shop: SafeShop & {
@@ -55,6 +56,7 @@ const ShopHead: React.FC<ShopHeadProps> = ({
   const isFollowing = !!currentUser?.id && shopFollowers.includes(currentUser.id);
 
   const [activeTab, setActiveTab] = useState<'Products' | 'Team' | 'Reviews' | 'Images' | 'Reels'>('Products');
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [city, state] = (location ?? 'City, State').split(',').map((s: string) => s?.trim()) || [];
 
   const reservationModal = useReservationModal();
@@ -71,6 +73,23 @@ const ShopHead: React.FC<ShopHeadProps> = ({
       : description;
 
   const followersCount = shopFollowers.length; // ✅ accurate count from state
+
+  // Filter products by category
+  const filteredProducts = useMemo(() => {
+    if (!selectedCategory) return Products;
+    return Products.filter((product: any) => {
+      const productCategory = product?.category?.name || product?.category || '';
+      return productCategory === selectedCategory;
+    });
+  }, [Products, selectedCategory]);
+
+  const handleCategorySelect = (categoryLabel: string) => {
+    if (selectedCategory === categoryLabel) {
+      setSelectedCategory('');
+    } else {
+      setSelectedCategory(categoryLabel);
+    }
+  };
 
   const handleReserveClick = () => {
     if (listingId) {
@@ -240,7 +259,7 @@ const ShopHead: React.FC<ShopHeadProps> = ({
                 style={activeTab === key ? { color: '#60A5FA' } : {}}
                 type="button"
               >
-       
+
                 <span className={`transition-all duration-200 ${activeTab === key ? 'transform -translate-y-px' : ''}`}>
                   {label}
                 </span>
@@ -253,14 +272,50 @@ const ShopHead: React.FC<ShopHeadProps> = ({
         </div>
       </div>
 
+      {/* Category Navigation - Only show on Products tab */}
+      {activeTab === 'Products' && (
+        <div className="mt-4 py-4 bg-white border-y border-gray-400">
+          <div className="flex items-center justify-center">
+            {categories.map((category, index) => {
+              const isSelected = selectedCategory === category.label;
+              const isLast = index === categories.length - 1;
+
+              return (
+                <div key={category.label} className="relative flex items-center">
+                  {/* Category Button */}
+                  <button
+                    onClick={() => handleCategorySelect(category.label)}
+                    className={`
+                      px-6 py-2.5 text-sm transition-colors duration-150 rounded-lg
+                      ${isSelected
+                        ? 'text-[#60A5FA] hover:text-[#4F94E5]'
+                        : 'text-gray-600/90 hover:text-gray-700'
+                      }
+                    `}
+                    type="button"
+                  >
+                    {category.label}
+                  </button>
+
+                  {/* Vertical Divider */}
+                  {!isLast && (
+                    <div className="h-6 w-px bg-gray-400 mx-3" />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Tab Content */}
       <div className="px-4 sm:px-0 mt-6">
         {/* PRODUCTS */}
         {activeTab === 'Products' && (
           <>
-            {Products.length > 0 ? (
+            {filteredProducts.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {Products.map((p: any, idx: number) => {
+                {filteredProducts.map((p: any, idx: number) => {
                   // If it's already a SafeProduct (has id), use it
                   const isSafe = typeof p?.id === 'string';
 

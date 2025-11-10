@@ -94,11 +94,8 @@ const UserButton: React.FC<UserButtonProps> = ({
 
   const buttonClass = noBg
     ? "flex items-center justify-start cursor-pointer outline-none touch-manipulation"
-    : "w-44 py-3 mt-1 px-4 bg-gray-50/5 border border-gray-400 flex items-center justify-start mb-6 cursor-pointer rounded-lg relative transition-all duration-300 hover:bg-blue-50/50 hover:border-[#60A5FA]/50 hover:shadow-sm outline-none backdrop-blur-sm";
+    : "w-44 py-3 mt-1 px-4 bg-gray-50 border border-gray-400 flex items-center justify-start mb-6 cursor-pointer rounded-lg relative transition-all duration-300 hover:bg-blue-50/50 hover:border-[#60A5FA]/50 hover:shadow-sm outline-none backdrop-blur-sm";
 
-  const buttonStyle = noBg ? {} : {
-    backgroundImage: 'linear-gradient(to bottom right, rgba(96, 165, 250, 0.05), rgba(96, 165, 250, 0.08))'
-  };
 
   const dropdownWidthClass = noBg ? "min-w-44" : "w-44";
 
@@ -106,7 +103,7 @@ const UserButton: React.FC<UserButtonProps> = ({
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger
         className={buttonClass}
-        style={buttonStyle}
+     
         onClick={(e) => {
           e.stopPropagation();
           setIsOpen(!isOpen);
