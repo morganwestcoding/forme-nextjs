@@ -8,9 +8,10 @@ interface CategoryNavProps {
   searchParams: {
     category?: string;
   };
+  onNavigate?: (url: string) => void;
 }
 
-const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams }) => {
+const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams, onNavigate }) => {
   const router = useRouter();
   const params = useSearchParams();
 
@@ -28,7 +29,13 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams }) => {
 
     const search = current.toString();
     const query = search ? `?${search}` : '';
-    router.push(`/market${query}`);
+
+    // Use onNavigate callback if provided, otherwise fallback to router.push
+    if (onNavigate) {
+      onNavigate(`/${query}`);
+    } else {
+      router.push(`/${query}`, { scroll: false });
+    }
   };
 
   return (

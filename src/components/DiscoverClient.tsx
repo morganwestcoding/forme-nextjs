@@ -1,7 +1,7 @@
 // components/DiscoverClient.tsx
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useTransition } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import ClientProviders from '@/components/ClientProviders';
@@ -12,6 +12,7 @@ import { useCategory } from '@/CategoryContext';
 import { useFilter } from '@/FilterContext';
 import Container from './Container';
 import DiscoverHeader from './feed/DiscoverHeader';
+import CategoryNav from './feed/CategoryNav';
 import PostCard from './feed/PostCard';
 import ListingCard from '@/components/listings/ListingCard';
 import WorkerCard from '@/components/listings/WorkerCard';
@@ -28,10 +29,6 @@ interface DiscoverClientProps {
   shops?: SafeShop[];
 }
 
-/** Animation timing */
-const MIN_LOADER_MS = 1200;
-const CONTAINER_FADE_MS = 700;
-
 const DiscoverClient: React.FC<DiscoverClientProps> = ({
   initialPosts,
   currentUser,
@@ -45,8 +42,9 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
   const { selectedCategory } = useCategory();
   const { filters } = useFilter();
 
-  const [loading, setLoading] = useState(false);
-  const [uiLoading, setUiLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isPending, startTransition] = useTransition();
+  const [isContentReady, setIsContentReady] = useState(false);
 
   // State for section offsets
   const [postsOffset, setPostsOffset] = useState(0);
@@ -58,12 +56,9 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
   const searchParams = useSearchParams();
   const filterParam = searchParams?.get('filter') || 'for-you';
 
-  // Navigation handler that shows loading state before navigating
+  // Navigation handler
   const handleNavigation = (url: string) => {
-    setUiLoading(true);
-    setTimeout(() => {
-      router.push(url, { scroll: false });
-    }, 50); // Small delay to ensure loading state renders first
+    router.push(url, { scroll: false });
   };
 
   // Build DiscoverHeader props from URL
@@ -125,17 +120,21 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
     };
   }, [headerSearchParams, typeFilter]);
 
+  // Initial loader (nice UX delay)
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setIsLoading(false);
+      setIsContentReady(true);
+    }, 1200);
+    return () => clearTimeout(t);
+  }, []);
+
   // Fetch posts on category/filter change
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        // Start fade-out immediately
-        setUiLoading(true);
-
-        // Small delay to ensure fade-out completes before starting fetch
-        await new Promise(resolve => setTimeout(resolve, CONTAINER_FADE_MS));
-
-        setLoading(true);
+        // Mark content as not ready when starting to fetch
+        setIsContentReady(false);
 
         const params: Record<string, string | number> = {};
         const categoryParam = searchParams?.get('category');
@@ -151,20 +150,16 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
         if (filters.location?.city) params.city = filters.location.city;
         if (filters.sort?.order) params.order = filters.sort.order;
 
-        const startTime = Date.now();
         const { data } = await axios.get('/api/post', { params });
-        setPosts(data);
 
-        // Ensure minimum loader time for smooth animation
-        const elapsed = Date.now() - startTime;
-        const remainingTime = Math.max(0, MIN_LOADER_MS - elapsed);
-
-        await new Promise(resolve => setTimeout(resolve, remainingTime));
+        // Use transition to update posts smoothly
+        startTransition(() => {
+          setPosts(data);
+          setIsContentReady(true);
+        });
       } catch (error) {
         console.error('Error fetching posts:', error);
-      } finally {
-        setLoading(false);
-        setUiLoading(false);
+        setIsContentReady(true); // Still mark as ready even on error
       }
     };
 
@@ -238,22 +233,49 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
 
   return (
     <ClientProviders>
-      <Container>
-        {/* Main Discover Title */}
-        <div className="pt-2 mb-4">
-          <h1 className="text-3xl md:text-3xl font-bold text-black leading-tight tracking-wide">Discover</h1>
-          <p className="text-gray-600">Share whats new with you and your business</p>
-        </div>
+      <div className="min-h-screen">
+        <Container>
+          {/* Hero Section - Full Width with Subtle Gradient & Shadow Layers */}
+          <div className="-mx-6 md:-mx-24 -mt-2 md:-mt-8">
+            <div className="relative px-6 md:px-24 pt-10 pb-8 overflow-hidden">
+              {/* Subtle shadow layers for depth with animation */}
+              <div className="absolute inset-0 pointer-events-none">
+                {/* Top soft shadow */}
+                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
 
-        {/* Search and Category Controls */}
-        <DiscoverHeader
-          searchParams={headerSearchParams}
-          onNavigate={handleNavigation}
-        />
+                {/* Soft inner glow from top */}
+                <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-white/60 to-transparent"></div>
+
+                {/* Subtle corner accents */}
+                <div className="absolute top-0 left-0 w-64 h-64 bg-blue-500/[0.03] rounded-full blur-3xl"></div>
+                <div className="absolute bottom-0 right-0 w-96 h-96 bg-indigo-500/[0.02] rounded-full blur-3xl"></div>
+              </div>
+
+              {/* Content */}
+              <div className="relative z-10">
+                {/* Main Discover Title */}
+                <div className="mb-6">
+                  <h1 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight tracking-tight">
+                    Discover
+                  </h1>
+                  <p className="text-gray-600 mt-1">Share whats new with you and your business</p>
+                </div>
+
+                {/* Search and Controls */}
+                <DiscoverHeader isHeroMode={false} />
+              </div>
+            </div>
+          </div>
+
+          {/* Category Navigation */}
+          <CategoryNav
+            searchParams={headerSearchParams}
+            onNavigate={handleNavigation}
+          />
 
         {/* Content + loader overlay */}
         <div className="relative">
-          {uiLoading && (
+          {isLoading && (
             <div className="pointer-events-none absolute inset-0 z-10 flex items-start justify-center">
               <div className="mt-40 md:mt-40">
                 <PropagateLoaderWrapper size={12} speedMultiplier={1.15} />
@@ -262,10 +284,11 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
           )}
 
           <div
-            className={`transition-opacity ease-out ${uiLoading ? 'opacity-0 invisible' : 'opacity-100 visible'}`}
-            style={{ transitionDuration: `${CONTAINER_FADE_MS}ms` }}
+            className={`transition-opacity duration-300 ease-out ${
+              !isContentReady ? 'opacity-0' : 'opacity-100'
+            }`}
           >
-            {!uiLoading && hasContent ? (
+            {hasContent ? (
               <>
                 {/* Trending Sections - Only show when not filtered */}
                 {!filterInfo.isFiltered && (
@@ -281,7 +304,16 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                         />
                         <div className="grid grid-cols-4 gap-4">
                           {trendingPosts.map((post, idx) => (
-                            <div key={`trending-post-${post.id}`} className="group/card relative">
+                            <div
+                              key={`trending-post-${post.id}`}
+                              style={{
+                                opacity: 0,
+                                animation: `fadeInUp 520ms ease-out forwards`,
+                                animationDelay: `${idx * 30}ms`,
+                                willChange: 'transform, opacity',
+                              }}
+                              className="group/card relative"
+                            >
                               <PostCard post={post} currentUser={currentUser} categories={categories} />
                             </div>
                           ))}
@@ -300,7 +332,16 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                         />
                         <div className="grid grid-cols-4 gap-4">
                           {trendingListings.map((listing, idx) => (
-                            <div key={`trending-listing-${listing.id}`} className="group/card relative">
+                            <div
+                              key={`trending-listing-${listing.id}`}
+                              style={{
+                                opacity: 0,
+                                animation: `fadeInUp 520ms ease-out forwards`,
+                                animationDelay: `${idx * 30}ms`,
+                                willChange: 'transform, opacity',
+                              }}
+                              className="group/card relative"
+                            >
                               <ListingCard currentUser={currentUser} data={listing} categories={categories} />
                             </div>
                           ))}
@@ -321,7 +362,16 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                           {trendingEmployees.map((employee, idx) => {
                             const listing = listings[idx % listings.length] || listings[0];
                             return (
-                              <div key={`trending-employee-${employee.id}`} className="group/card relative">
+                              <div
+                                key={`trending-employee-${employee.id}`}
+                                style={{
+                                  opacity: 0,
+                                  animation: `fadeInUp 520ms ease-out forwards`,
+                                  animationDelay: `${idx * 30}ms`,
+                                  willChange: 'transform, opacity',
+                                }}
+                                className="group/card relative"
+                              >
                                 <WorkerCard
                                   employee={employee}
                                   listingTitle={listing?.title || 'Professional'}
@@ -351,7 +401,16 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                         />
                         <div className="grid grid-cols-4 gap-4">
                           {trendingShops.map((shop, idx) => (
-                            <div key={`trending-shop-${shop.id}`} className="group/card relative">
+                            <div
+                              key={`trending-shop-${shop.id}`}
+                              style={{
+                                opacity: 0,
+                                animation: `fadeInUp 520ms ease-out forwards`,
+                                animationDelay: `${idx * 30}ms`,
+                                willChange: 'transform, opacity',
+                              }}
+                              className="group/card relative"
+                            >
                               <ShopCard data={shop} currentUser={currentUser} />
                             </div>
                           ))}
@@ -416,7 +475,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                               style={{
                                 opacity: 0,
                                 animation: `fadeInUp 520ms ease-out forwards`,
-                                animationDelay: `${140 + idx * 30}ms`,
+                                animationDelay: `${idx * 30}ms`,
                                 willChange: 'transform, opacity',
                               }}
                               className="group/card relative"
@@ -459,7 +518,21 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
           }
           </div>
         </div>
-      </Container>
+
+        <style jsx>{`
+          @keyframes fadeInUp {
+            from {
+              opacity: 0;
+              transform: translateY(20px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+        `}</style>
+        </Container>
+      </div>
     </ClientProviders>
   );
 };

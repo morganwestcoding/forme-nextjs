@@ -301,10 +301,8 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
             >
               <CategoryIcon
                 category={service.category}
-                className="w-8 h-8 transition-colors duration-200"
-                style={{
-                  color: categoryStyle.solidColor,
-                }}
+                className="w-8 h-8 transition-colors duration-200 text-gray-400"
+
               />
             </div>
           </div>

@@ -297,7 +297,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
         {/* Hero Banner Style Header */}
         <div className="-mx-6 md:-mx-24 -mt-2 md:-mt-8 relative">
           {/* Background Image */}
-          <div className="relative w-full overflow-hidden pt-10 pb-8">
+          <div className="relative w-full overflow-hidden pt-10 pb-9">
             <img
               src={mainImage}
               alt={title}
@@ -360,7 +360,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               </div>
 
               {/* Address */}
-              <div className="text-sm text-white/90 mb-5 drop-shadow-md">
+              <div className="text-sm text-white/90 mb-4 drop-shadow-md">
                 {address && location ? `${address}, ${location}` : address || location}
                 <span className="text-white/70 ml-1">
                   · {(listing as any).radius ? `${(listing as any).radius} miles` : '2.3 miles away'}
@@ -406,7 +406,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   {canShowQR ? (
                     <button
                       onClick={handleQRClick}
-                      className="backdrop-blur-xl bg-white/15 hover:bg-blue-400/10 border border-white/40 hover:border-blue-400/60 text-white hover:text-[#60A5FA] py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center hover:shadow-sm"
+                      className=" bg-white/15 backdrop-blur-sm hover:bg-blue-400/10 border border-white/40 hover:border-blue-400/60 text-white hover:text-[#60A5FA] py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center hover:shadow-sm"
                       type="button"
                       aria-label="Show QR Code"
                     >
@@ -424,7 +424,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                     currentUser && (
                       <button
                         onClick={handleToggleFollow}
-                        className="backdrop-blur-xl bg-white/15 hover:bg-blue-400/10 border border-white/40 hover:border-blue-400/60 text-white hover:text-[#60A5FA] py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center hover:shadow-sm text-sm w-28"
+                        className=" bg-white/15 backdrop-blur-sm hover:bg-blue-400/10 border border-white/40 hover:border-blue-400/60 text-white hover:text-[#60A5FA] py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center hover:shadow-sm text-sm w-28"
                         type="button"
                         aria-label={isFollowing ? 'Unfollow' : 'Follow'}
                       >
@@ -437,7 +437,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   {currentUser && (
                     <button
                       onClick={handleReserveClick}
-                      className="backdrop-blur-xl bg-white/15 hover:bg-blue-400/10 border border-white/40 hover:border-blue-400/60 text-white hover:text-[#60A5FA] py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center hover:shadow-sm text-sm w-28"
+                      className=" bg-white/15 backdrop-blur-sm hover:bg-blue-400/10 border border-white/40 hover:border-blue-400/60 text-white hover:text-[#60A5FA] py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center hover:shadow-sm text-sm w-28"
                       type="button"
                     >
                       <span>Reserve</span>
