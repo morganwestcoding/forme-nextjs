@@ -36,19 +36,79 @@ const formatPrice = (n: number) =>
   Number.isInteger(n) ? `$${n}` : `$${n.toFixed(2)}`;
 
 
-/* ---------- Category → SVG icon ---------- */
+/* ---------- Category → Gradient + SVG icon ---------- */
+function getCategoryGradient(category?: string): {
+  gradient: string;
+  radialGlow: string;
+  iconColor: string;
+  solidColor: string;
+} {
+  switch ((category || '').toLowerCase()) {
+    case 'spa':
+    case 'wellness':
+      return {
+        gradient: 'linear-gradient(135deg, #8a9bd8 0%, #8295d4 15%, #7a8fd0 30%, #7289cc 45%, #6a83c8 60%, #627dc4 75%, #5a77c0 90%, #5271bc 100%)',
+        radialGlow: 'radial-gradient(circle at 50% 28%, rgba(138, 155, 216, 0.12) 0%, rgba(138, 155, 216, 0.06) 35%, rgba(138, 155, 216, 0.02) 60%, transparent 80%)',
+        iconColor: '#e8eaf6',
+        solidColor: '#7289cc',
+      };
+    case 'beauty':
+    case 'nails':
+      return {
+        gradient: 'linear-gradient(135deg, #e5adc4 0%, #e1a7bf 15%, #dda1ba 30%, #d99bb5 45%, #d595b0 60%, #d18fab 75%, #cd89a6 90%, #c983a1 100%)',
+        radialGlow: 'radial-gradient(circle at 50% 28%, rgba(229, 173, 196, 0.12) 0%, rgba(229, 173, 196, 0.06) 35%, rgba(229, 173, 196, 0.02) 60%, transparent 80%)',
+        iconColor: '#fce8f3',
+        solidColor: '#d99bb5',
+      };
+    case 'barber':
+    case 'hair':
+    case 'salon':
+      return {
+        gradient: 'linear-gradient(135deg, #7db5cc 0%, #75afca 15%, #6da9c8 30%, #65a3c6 45%, #5d9dc4 60%, #5597c2 75%, #4d91c0 90%, #458bbe 100%)',
+        radialGlow: 'radial-gradient(circle at 50% 28%, rgba(125, 181, 204, 0.12) 0%, rgba(125, 181, 204, 0.06) 35%, rgba(125, 181, 204, 0.02) 60%, transparent 80%)',
+        iconColor: '#e3f2f9',
+        solidColor: '#65a3c6',
+      };
+    case 'fitness':
+    case 'training':
+      return {
+        gradient: 'linear-gradient(135deg, #ebad98 0%, #e9a793 15%, #e7a18e 30%, #e59b89 45%, #e39584 60%, #e18f7f 75%, #df897a 90%, #dd8375 100%)',
+        radialGlow: 'radial-gradient(circle at 50% 28%, rgba(235, 173, 152, 0.12) 0%, rgba(235, 173, 152, 0.06) 35%, rgba(235, 173, 152, 0.02) 60%, transparent 80%)',
+        iconColor: '#fff4ed',
+        solidColor: '#e59b89',
+      };
+    case 'massage':
+      return {
+        gradient: 'linear-gradient(135deg, #abd8d3 0%, #a5d4cf 15%, #9fd0cb 30%, #99ccc7 45%, #93c8c3 60%, #8dc4bf 75%, #87c0bb 90%, #81bcb7 100%)',
+        radialGlow: 'radial-gradient(circle at 50% 28%, rgba(171, 216, 211, 0.12) 0%, rgba(171, 216, 211, 0.06) 35%, rgba(171, 216, 211, 0.02) 60%, transparent 80%)',
+        iconColor: '#e6f7f5',
+        solidColor: '#99ccc7',
+      };
+    default:
+      return {
+        gradient: 'linear-gradient(135deg, #8a9bd8 0%, #8295d4 15%, #7a8fd0 30%, #7289cc 45%, #6a83c8 60%, #627dc4 75%, #5a77c0 90%, #5271bc 100%)',
+        radialGlow: 'radial-gradient(circle at 50% 28%, rgba(138, 155, 216, 0.12) 0%, rgba(138, 155, 216, 0.06) 35%, rgba(138, 155, 216, 0.02) 60%, transparent 80%)',
+        iconColor: '#e8eaf6',
+        solidColor: '#7289cc',
+      };
+  }
+}
+
 function CategoryIcon({
   category,
   className = 'w-8 h-8',
+  style,
 }: {
   category?: string;
   className?: string;
+  style?: React.CSSProperties;
 }) {
   const commonProps = {
     className,
+    style,
     fill: 'none',
     stroke: 'currentColor',
-    strokeWidth: '1',
+    strokeWidth: '1.25',
     strokeLinecap: 'round' as const,
     strokeLinejoin: 'round' as const,
   };
@@ -167,118 +227,127 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   const durationDisplay = service.unit || '60 min';
   const listingName = listing?.title || 'Service';
 
+  // Get category-specific styling
+  const categoryStyle = getCategoryGradient(service.category);
+
   return (
     <div
       onClick={handleCardClick}
-      className="group cursor-pointer rounded-lg overflow-hidden relative transition-all duration-300 hover:border-blue-500 hover:shadow-md max-w-[250px] border border-gray-300"
-      style={{
-        background: 'linear-gradient(to bottom, #ffffff 0%, #f9fafb 100%)'
-      }}
+      className="group cursor-pointer rounded-lg relative transition-all duration-300 hover:-translate-y-1 hover:scale-[1.01] hover:shadow-md max-w-[250px] bg-white overflow-hidden border border-gray-400"
     >
 
-      <div className="relative z-10">
-        {/* Match ListingCard and WorkerCard height structure */}
-        <div className="relative h-[350px]">
-          {/* Popular/New badges */}
-          {(service.popular || service.isNew) && (
-            <div className="absolute left-4 top-4 flex items-center gap-1 z-20">
-              {service.popular && (
-                <span className="px-2 py-1 text-[10px] font-medium rounded-lg backdrop-blur-md bg-white/20 text-white border border-white/40">
-                  Popular
-                </span>
-              )}
-              {service.isNew && (
-                <span className="px-2 py-1 text-[10px] font-medium rounded-lg backdrop-blur-md bg-white/20 text-white border border-white/40">
-                  New
-                </span>
-              )}
-            </div>
-          )}
-
-          {/* Heart - Using HeartButton component */}
-          <div className="absolute top-4 right-4 z-20">
-            <HeartButton
-              listingId={service.id}
-              currentUser={currentUser}
-              variant="worker"
-            />
+      {/* Match ListingCard and WorkerCard height structure */}
+      <div className="relative h-[350px] z-10">
+        {/* Popular/New badges */}
+        {(service.popular || service.isNew) && (
+          <div className="absolute left-4 top-4 flex items-center gap-1 z-20">
+            {service.popular && (
+              <span className="px-2 py-1 text-[10px] font-medium rounded-full backdrop-blur-md bg-white/80 text-gray-800 border border-gray-200 shadow-sm">
+                Popular
+              </span>
+            )}
+            {service.isNew && (
+              <span className="px-2 py-1 text-[10px] font-medium rounded-full backdrop-blur-md bg-white/80 text-gray-800 border border-gray-200 shadow-sm">
+                New
+              </span>
+            )}
           </div>
+        )}
 
-          {/* Edit/Duplicate actions for owners */}
-          {(isOwner || onEdit || onDuplicate) && (
-            <div className="absolute right-4 top-12 flex flex-col gap-1 opacity-0 hover:opacity-100 transition z-20">
+        {/* Heart - Using HeartButton component */}
+        <div className="absolute top-4 right-4 z-20">
+          <HeartButton
+            listingId={service.id}
+            currentUser={currentUser}
+            variant="worker"
+          />
+        </div>
+
+        {/* Edit/Duplicate actions for owners */}
+        {(isOwner || onEdit || onDuplicate) && (
+          <div className="absolute right-4 top-12 flex flex-col gap-1 opacity-0 hover:opacity-100 transition z-20">
+            <button
+              aria-label={`Edit ${service.serviceName || 'service'}`}
+              onClick={goToEditThisService}
+              className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white/90 backdrop-blur-sm text-gray-700 hover:bg-white hover:shadow-md transition"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M16.425 4.605L17.415 3.615c.82-.82 2.149-.82 2.97 0 .82.82.82 2.15 0 2.97l-0.99.99M16.425 4.605L9.766 11.264c-.508.508-.868 1.144-1.042 1.84L8 16l2.896-.724c.696-.174 1.332-.534 1.84-1.041l6.659-6.66M16.425 4.605l2.97 2.97" stroke="currentColor" strokeWidth="1.5" />
+                <path d="M19 13.5c0 3.288 0 4.931-0.908 6.038-.166.203-.352.389-.555.555C16.431 21 14.787 21 11.5 21H11c-3.771 0-5.657 0-6.828-1.172C3 18.657 3 16.771 3 13.5V13c0-3.287 0-4.931.908-6.038.166-.202.352-.388.555-.555C5.569 5.5 7.213 5.5 10.5 5.5" stroke="currentColor" strokeWidth="1.5" />
+              </svg>
+            </button>
+
+            {onDuplicate && (
               <button
-                aria-label={`Edit ${service.serviceName || 'service'}`}
-                onClick={goToEditThisService}
+                aria-label={`Duplicate ${service.serviceName || 'service'}`}
+                onClick={handleDuplicate}
                 className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white/90 backdrop-blur-sm text-gray-700 hover:bg-white hover:shadow-md transition"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M16.425 4.605L17.415 3.615c.82-.82 2.149-.82 2.97 0 .82.82.82 2.15 0 2.97l-0.99.99M16.425 4.605L9.766 11.264c-.508.508-.868 1.144-1.042 1.84L8 16l2.896-.724c.696-.174 1.332-.534 1.84-1.041l6.659-6.66M16.425 4.605l2.97 2.97" stroke="currentColor" strokeWidth="1.5" />
-                  <path d="M19 13.5c0 3.288 0 4.931-0.908 6.038-.166.203-.352.389-.555.555C16.431 21 14.787 21 11.5 21H11c-3.771 0-5.657 0-6.828-1.172C3 18.657 3 16.771 3 13.5V13c0-3.287 0-4.931.908-6.038.166-.202.352-.388.555-.555C5.569 5.5 7.213 5.5 10.5 5.5" stroke="currentColor" strokeWidth="1.5" />
+                  <path d="M8 8.5C8 7.12 9.12 6 10.5 6H16.5C17.88 6 19 7.12 19 8.5V14.5C19 15.88 17.88 17 16.5 17H10.5C9.12 17 8 15.88 8 14.5V8.5Z" stroke="currentColor" strokeWidth="1.5"/>
+                  <path d="M6 10.5V15.5C6 17.985 8.015 20 10.5 20H15.5" stroke="currentColor" strokeWidth="1.5"/>
                 </svg>
               </button>
-
-              {onDuplicate && (
-                <button
-                  aria-label={`Duplicate ${service.serviceName || 'service'}`}
-                  onClick={handleDuplicate}
-                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white/90 backdrop-blur-sm text-gray-700 hover:bg-white hover:shadow-md transition"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
-                    <path d="M8 8.5C8 7.12 9.12 6 10.5 6H16.5C17.88 6 19 7.12 19 8.5V14.5C19 15.88 17.88 17 16.5 17H10.5C9.12 17 8 15.88 8 14.5V8.5Z" stroke="currentColor" strokeWidth="1.5"/>
-                    <path d="M6 10.5V15.5C6 17.985 8.015 20 10.5 20H15.5" stroke="currentColor" strokeWidth="1.5"/>
-                  </svg>
-                </button>
-              )}
-            </div>
-          )}
-
-          {/* Service Icon - Centered towards middle */}
-          <div className="absolute top-[32%] left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-            <div className="w-28 h-28 rounded-full shadow-md border-2 border-gray-100 flex items-center justify-center bg-gray-50">
-              <CategoryIcon category={service.category} className="w-10 h-10 text-gray-600" />
-            </div>
+            )}
           </div>
+        )}
 
-          {/* Bottom info - positioned like WorkerCard */}
-          <div className="absolute bottom-5 left-5 right-5 z-20">
-            {/* Service Name and Details */}
-            <div className="mb-4">
-              <h3 className="text-lg font-semibold text-gray-900 mb-1 truncate">
-                {service.serviceName || 'Untitled Service'}
-              </h3>
-              <p className="text-gray-600 text-[11px] leading-4 truncate">
-                {service.category} at {listingName}
-              </p>
-              <div className="mt-0.5 text-[10px] text-gray-500 font-light">
-                {durationDisplay} • Available today
-              </div>
-            </div>
-
-            {/* SmartBadgePrice component */}
-            <div className="flex items-center">
-              <SmartBadgePrice
-                price={priceNum}
-                showPrice={true}
-                variant="light"
-                onPriceClick={() => {
-                  console.log('Price clicked for service:', service.serviceName);
+        {/* Service Icon - Centered towards middle */}
+        <div className="absolute top-[32%] left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+          <div className="relative w-28 h-28">
+            {/* White circle with gray border */}
+            <div
+              className="w-full h-full rounded-full flex items-center justify-center bg-white border border-gray-400 shadow transition-all duration-300"
+            >
+              <CategoryIcon
+                category={service.category}
+                className="w-8 h-8 transition-colors duration-200"
+                style={{
+                  color: categoryStyle.solidColor,
                 }}
-                onBookNowClick={(e: React.MouseEvent) => {
-                  e.stopPropagation();
-                  if (listing && currentUser) {
-                    reservationModal.onOpen(listing, currentUser, service.id);
-                  }
-                }}
-                isVerified={true}
               />
             </div>
           </div>
         </div>
 
-        {/* Match ListingCard bottom padding */}
-        <div className="pb-2" />
+        {/* Bottom info - positioned like WorkerCard */}
+        <div className="absolute bottom-5 left-5 right-5 z-20">
+          {/* Service Name and Details */}
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-1 truncate">
+              {service.serviceName || 'Untitled Service'}
+            </h3>
+            <p className="text-gray-700 text-[11px] leading-4 truncate">
+              {service.category} at {listingName}
+            </p>
+            <div className="mt-0.5 text-[10px] text-gray-600 font-light">
+              {durationDisplay} • Available today
+            </div>
+          </div>
+
+          {/* SmartBadgePrice component */}
+          <div className="flex items-center">
+            <SmartBadgePrice
+              price={priceNum}
+              showPrice={true}
+              variant="light"
+              onPriceClick={() => {
+                console.log('Price clicked for service:', service.serviceName);
+              }}
+              onBookNowClick={(e: React.MouseEvent) => {
+                e.stopPropagation();
+                if (listing && currentUser) {
+                  reservationModal.onOpen(listing, currentUser, service.id);
+                }
+              }}
+              isVerified={true}
+            />
+          </div>
+        </div>
       </div>
+
+      {/* Match ListingCard bottom padding */}
+      <div className="pb-2" />
     </div>
   );
 };

@@ -135,7 +135,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       <div 
         className={`
           h-screen overflow-y-auto bg-white w-56
-          fixed top-0 left-0 bottom-0 border-r border-gray-300 z-50
+          fixed top-0 left-0 bottom-0 border-r border-gray-400 z-50
           transition-transform duration-300 ease-in-out
           ${isCollapsed ? '-translate-x-full' : 'translate-x-0'}
         `}
@@ -198,10 +198,10 @@ const Sidebar: React.FC<SidebarProps> = ({
             <ul className="list-none m-0 p-0 flex flex-col items-center space-y-4 flex-1">
               {/* Discover */}
               <li className="relative w-full">
-                <div 
+                <div
                   className={`
                     flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
-                    ${selectedButton === 'home' ? 'text-[#60A5FA]' : 'text-gray-500 hover:text-neutral-700 hover:bg-gray-50'}
+                    ${selectedButton === 'home' ? 'text-[#60A5FA]' : 'text-gray-600/90 hover:text-neutral-700 hover:bg-gray-50'}
                   `}
                   onClick={() => handleNavigate('/', 'home')}
                 >
@@ -226,11 +226,11 @@ const Sidebar: React.FC<SidebarProps> = ({
 
               {/* Market */}
               <li className="relative w-full">
-                <div 
+                <div
                   className={`
                     flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
-                    ${selectedButton === 'market' ? 'text-[#60A5FA]' : 'text-gray-500 hover:text-neutral-700 hover:bg-gray-50'}
-                  `} 
+                    ${selectedButton === 'market' ? 'text-[#60A5FA]' : 'text-gray-600/90 hover:text-neutral-700 hover:bg-gray-50'}
+                  `}
                   onClick={() => handleNavigate('/market', 'market')}
                 >
                   <div className="w-8 flex justify-center">
@@ -255,11 +255,11 @@ const Sidebar: React.FC<SidebarProps> = ({
 
               {/* Vendors */}
               <li className="relative w-full">
-                <div 
+                <div
                   className={`
                     flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
-                    ${selectedButton === 'shops' ? 'text-[#60A5FA]' : 'text-gray-500 hover:text-neutral-700 hover:bg-gray-50'}
-                  `} 
+                    ${selectedButton === 'shops' ? 'text-[#60A5FA]' : 'text-gray-600/90 hover:text-neutral-700 hover:bg-gray-50'}
+                  `}
                   onClick={() => handleNavigate('/shops', 'shops')}
                 >
                   <div className="w-8 flex justify-center">
@@ -285,11 +285,11 @@ const Sidebar: React.FC<SidebarProps> = ({
 
               {/* Favorites */}
               <li className="relative w-full">
-                <div 
+                <div
                   className={`
                     flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
-                    ${selectedButton === 'favorites' ? 'text-[#60A5FA]' : 'text-gray-500 hover:text-neutral-700 hover:bg-gray-50'}
-                  `} 
+                    ${selectedButton === 'favorites' ? 'text-[#60A5FA]' : 'text-gray-600/90 hover:text-neutral-700 hover:bg-gray-50'}
+                  `}
                   onClick={() => handleNavigate('/favorites', 'favorites')}
                 >
                   <div className="w-8 flex justify-center">
@@ -312,11 +312,11 @@ const Sidebar: React.FC<SidebarProps> = ({
 
               {/* Appointments */}
               <li className="relative w-full">
-                <div 
+                <div
                   className={`
                     flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
-                    ${selectedButton === 'Appointments' ? 'text-[#60A5FA]' : 'text-gray-500 hover:text-neutral-700 hover:bg-gray-50'}
-                  `} 
+                    ${selectedButton === 'Appointments' ? 'text-[#60A5FA]' : 'text-gray-600/90 hover:text-neutral-700 hover:bg-gray-50'}
+                  `}
                   onClick={() => handleNavigate('/bookings/reservations', 'Appointments')}
                 >
                   <div className="w-8 flex justify-center">
@@ -342,11 +342,11 @@ const Sidebar: React.FC<SidebarProps> = ({
 
               {/* Inbox */}
               <li className="relative w-full">
-                <div 
+                <div
                   className={`
                     flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
-                    ${selectedButton === 'inbox' ? 'text-[#60A5FA]' : 'text-gray-500 hover:text-neutral-700 hover:bg-gray-50'}
-                  `} 
+                    ${selectedButton === 'inbox' ? 'text-[#60A5FA]' : 'text-gray-600/90 hover:text-neutral-700 hover:bg-gray-50'}
+                  `}
                   onClick={() => handleModalOpen(() => inboxModal.onOpen(currentUser), 'inbox')}
                 >
                   <div className="w-8 flex justify-center">
@@ -370,11 +370,11 @@ const Sidebar: React.FC<SidebarProps> = ({
               
               {/* Notifications */}
               <li className="relative w-full">
-                <div 
+                <div
                   className={`
                     flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
-                    ${selectedButton === 'notifications' ? 'text-[#60A5FA]' : 'text-gray-500 hover:text-neutral-700 hover:bg-gray-50'}
-                  `} 
+                    ${selectedButton === 'notifications' ? 'text-[#60A5FA]' : 'text-gray-600/90 hover:text-neutral-700 hover:bg-gray-50'}
+                  `}
                   onClick={() => handleModalOpen(() => notificationsModal.onOpen(), 'notifications')}
                 >
                   <div className="w-8 flex justify-center">
@@ -399,8 +399,8 @@ const Sidebar: React.FC<SidebarProps> = ({
 
             {/* Settings Button at Bottom */}
             <div className="flex justify-center mb-5">
-              <button 
-                className="px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl hover:bg-gray-100 text-gray-500 transition-all duration-200"
+              <button
+                className="px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl hover:bg-gray-100 text-gray-600/90 hover:text-neutral-700 transition-all duration-200"
                 onClick={() => {/* Add settings functionality */}}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"  fill="none">

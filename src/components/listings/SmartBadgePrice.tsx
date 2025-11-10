@@ -40,26 +40,26 @@ const SmartBadgePrice: React.FC<SmartBadgePriceProps> = ({
   const formatPrice = (n: number) =>
     Number.isInteger(n) ? `${n}` : `${n.toFixed(2)}`;
 
-  // Styling based on variant
+  // Styling based on variant - matching MarketSearch button styles
   const containerClasses = variant === 'dark'
-    ? "group/rating border border-white/40 rounded-md px-3 py-2 bg-white/10 backdrop-blur-md hover:border-white/60 hover:bg-white/20 transition-colors duration-200"
-    : "group/rating border border-gray-300 rounded-md px-3 py-2 bg-gray-50 hover:border-[#60A5FA] hover:bg-blue-50 transition-colors duration-200";
+    ? "group/rating backdrop-blur-md bg-white/10 hover:bg-blue-400/10 border border-white/40 hover:border-blue-400/60 rounded-lg px-3 py-2 transition-all duration-200"
+    : "group/rating bg-gradient-to-br from-white via-white to-gray-50 border border-gray-400 rounded-lg px-3 py-2 hover:!bg-gray-100 hover:bg-none hover:border-gray-500 transition-all duration-500 ease-out";
 
   const textClasses = variant === 'dark'
-    ? "flex items-center text-white/90 text-xs"
-    : "flex items-center text-gray-500 text-xs";
+    ? "flex items-center text-white text-xs"
+    : "flex items-center text-gray-600/90 text-xs";
 
   const buttonHoverClasses = variant === 'dark'
-    ? "group-hover/rating:text-white transition-colors duration-200 flex items-center gap-1"
-    : "group-hover/rating:text-[#60A5FA] transition-colors duration-200 flex items-center gap-1";
+    ? "group-hover/rating:text-[#60A5FA] transition-colors duration-200 flex items-center gap-1"
+    : "group-hover/rating:text-gray-700 transition-colors duration-200 flex items-center gap-1";
 
   const iconClasses = variant === 'dark'
-    ? "text-white/80"
-    : "text-gray-600";
+    ? "text-white"
+    : "text-gray-600/90 group-hover/rating:text-gray-700 transition-colors duration-200";
 
   const bookButtonClasses = variant === 'dark'
-    ? "text-white/90 border border-white/40 rounded-md px-3.5 py-2 bg-white/10 backdrop-blur-md hover:border-white/60 hover:bg-white/20 transition-colors duration-200 text-xs"
-    : "text-gray-500 border border-gray-300 rounded-md px-3.5 py-2 bg-gray-50 hover:border-[#60A5FA] hover:bg-blue-50 hover:text-[#60A5FA] transition-colors duration-200 text-xs";
+    ? "backdrop-blur-md bg-white/10 hover:bg-blue-400/10 border border-white/40 hover:border-blue-400/60 text-white hover:text-[#60A5FA] rounded-lg px-3.5 py-2 transition-all duration-200 text-xs"
+    : "bg-gradient-to-br from-white via-white to-gray-50 border border-gray-400 text-gray-600/90 hover:!bg-gray-100 hover:bg-none hover:border-gray-500 hover:text-gray-700 rounded-lg px-3.5 py-2 transition-all duration-500 ease-out text-xs";
 
   return (
     <div className="flex items-center gap-2">

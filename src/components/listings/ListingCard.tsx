@@ -146,7 +146,7 @@ className="
                 </span>
               </div>
               {/* Distance below with subtle styling */}
-              <div className="opacity-80 font-light text-[10px]">
+              <div className="opacity-80 mt-0.5 font-light text-[10px]">
                 2.3 miles away
               </div>
             </div>

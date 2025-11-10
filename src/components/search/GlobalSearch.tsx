@@ -168,12 +168,12 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
 
   const inputClasses = isHeroMode
     ? "w-full h-12 pl-12 pr-4 text-sm backdrop-blur-md bg-white/10 border border-white/40 rounded-lg outline-none focus:ring-1 focus:ring-white/60 focus:border-white/60 text-white placeholder-white/70"
-    : "w-full h-12 pl-12 pr-4 text-sm border border-gray-300 rounded-lg outline-none focus:ring-1 focus:ring-[#60A5FA] bg-white placeholder-gray-500";
+    : "w-full h-12 pl-12 pr-4 text-sm border border-gray-400 rounded-lg outline-none focus:border-gray-500 hover:text-gray-700 bg-gradient-to-br from-white via-white to-gray-50 placeholder-gray-600/90 text-gray-600/90 transition-all duration-200";
 
-  const iconClasses = isHeroMode ? "w-5 h-5 text-white" : "w-5 h-5 text-gray-500";
+  const iconClasses = isHeroMode ? "w-5 h-5 text-white" : "w-5 h-5 text-gray-600/90 group-hover:text-gray-700 transition-colors duration-200";
 
   return (
-    <div className={`relative ${className || ""}`} ref={containerRef}>
+    <div className={`relative group ${className || ""}`} ref={containerRef}>
       <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none z-10">
         <Search className={iconClasses} />
       </div>
