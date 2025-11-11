@@ -48,39 +48,65 @@ const ProductCard: React.FC<ProductCardProps> = ({ data, currentUser, disabled =
   return (
     <div
       onClick={handleCardClick}
-      className="
-        group cursor-pointer relative overflow-hidden
-        rounded-lg bg-white shadow-lg transition-all duration-300
-        hover:shadow-xl
-        max-w-[250px]"
+      className="group cursor-pointer rounded-lg overflow-hidden relative transition-all duration-300 hover:-translate-y-1 hover:scale-[1.01] hover:shadow-md max-w-[250px]"
     >
-      {/* Background image + gradient overlay */}
+      {/* Background with shop image (grayscale) */}
       <div className="absolute inset-0 z-0">
-        <Image
-          src={productImage}
-          alt={data.name}
-          fill
-          className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-          sizes="(max-width:768px) 100vw, 33vw"
-          priority={false}
+        {/* Shop background image - grayscale and sharp */}
+        <div className="absolute inset-0">
+          <Image
+            src={data.shop?.logo || productImage}
+            alt=""
+            fill
+            className="object-cover grayscale scale-105"
+            style={{ opacity: 0.75 }}
+            sizes="250px"
+          />
+        </div>
+
+        {/* Very light desaturation overlay */}
+        <div
+          className="absolute inset-0 bg-gray-600/15"
+          style={{ mixBlendMode: 'multiply' }}
         />
+
+        {/* Subtle blue radial gradient emanating from product position */}
+        <div
+          className="absolute inset-0 opacity-12"
+          style={{
+            background: 'radial-gradient(circle at 50% 28%, rgba(96, 165, 250, 0.18) 0%, transparent 55%)'
+          }}
+        />
+
+        {/* Top gradient for framing and button visibility */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              'linear-gradient(to bottom,' +
+              'rgba(0,0,0,0.35) 0%,' +
+              'rgba(0,0,0,0.20) 15%,' +
+              'rgba(0,0,0,0.10) 30%,' +
+              'rgba(0,0,0,0.00) 45%)',
+          }}
+        />
+
+        {/* Very strong bottom gradient for text readability */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
             background:
               'linear-gradient(to top,' +
-              'rgba(0,0,0,0.98) 0%,' +
-              'rgba(0,0,0,0.96) 12%,' +
-              'rgba(0,0,0,0.90) 26%,' +
-              'rgba(0,0,0,0.70) 42%,' +
-              'rgba(0,0,0,0.45) 56%,' +
-              'rgba(0,0,0,0.20) 70%,' +
-              'rgba(0,0,0,0.06) 82%,' +
-              'rgba(0,0,0,0.00) 90%,' +
-              'rgba(0,0,0,0.00) 100%)',
+              'rgba(0,0,0,0.85) 0%,' +
+              'rgba(0,0,0,0.75) 12%,' +
+              'rgba(0,0,0,0.60) 25%,' +
+              'rgba(0,0,0,0.45) 38%,' +
+              'rgba(0,0,0,0.30) 50%,' +
+              'rgba(0,0,0,0.15) 65%,' +
+              'rgba(0,0,0,0.05) 80%,' +
+              'rgba(0,0,0,0.00) 90%)',
           }}
         />
-        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors" />
       </div>
 
       <div className="relative z-10">
@@ -113,18 +139,36 @@ const ProductCard: React.FC<ProductCardProps> = ({ data, currentUser, disabled =
             </div>
           </div>
 
-          {/* Bottom info */}
+          {/* Product Image Circle - Centered towards middle */}
+          <div className="absolute top-[32%] left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <div className="relative transition-transform duration-300">
+              <div className="w-28 h-28 rounded-full overflow-hidden shadow-lg border-2 border-white relative">
+                <Image
+                  src={productImage}
+                  alt={data.name}
+                  fill
+                  className="object-cover"
+                  priority={false}
+                  sizes="112px"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom info - positioned like WorkerCard */}
           <div className="absolute bottom-5 left-5 right-5 z-20">
             {/* Product Name */}
             <div className="mb-1">
-              <h1 className="text-white text-md leading-6 font-semibold drop-shadow">
+              <h3 className="text-lg font-semibold text-white drop-shadow">
                 {data.name}
-              </h1>
+              </h3>
             </div>
 
             {/* Shop Name */}
-            <div className="text-white/90 text-[11px] leading-4 mb-2">
-              <div className="opacity-90">From {shopName}</div>
+            <div className="text-white/90 text-[11px] leading-4 mb-4">
+              <div className="flex items-start gap-1 mb-1">
+                <span className="leading-4">From {shopName}</span>
+              </div>
             </div>
 
             {/* Price and Rating Pills */}

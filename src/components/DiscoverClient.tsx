@@ -255,7 +255,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
               <div className="relative z-10">
                 {/* Main Discover Title */}
                 <div className="mb-3">
-                  <h1 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight tracking-tight">
+                  <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 leading-tight tracking-tight">
                     Discover
                   </h1>
                   <p className="text-gray-600 mt-3">Share whats new with you and your business</p>

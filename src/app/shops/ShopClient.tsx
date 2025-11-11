@@ -7,6 +7,7 @@ import { SafeUser, SafeShop, SafeProduct, SafeProductCategory } from '@/app/type
 import ShopCard from '@/components/shop/ShopCard';
 import ProductCard from '@/components/shop/ProductCard';
 import ShopHeader from '@/components/shop/ShopHeader';
+import CategoryNav from '@/components/shop/CategoryNav';
 import PropagateLoaderWrapper from '@/components/loaders/PropagateLoaderWrapper';
 import SectionHeader from '@/app/market/SectionHeader';
 
@@ -117,7 +118,7 @@ const ShopClient: React.FC<ShopClientProps> = ({
           <div className="relative z-10">
             {/* Main Vendors Title */}
             <div className="mb-3">
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight tracking-tight">
+              <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 leading-tight tracking-tight">
                 Vendors
               </h1>
               <p className="text-gray-600 mt-3">Discover unique shops and products from our vendors</p>
@@ -128,6 +129,9 @@ const ShopClient: React.FC<ShopClientProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Category Navigation */}
+      <CategoryNav searchParams={{ category: currentCategory }} />
 
       {/* Content + loader overlay */}
       <div className="relative">

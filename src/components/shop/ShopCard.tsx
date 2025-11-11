@@ -2,8 +2,6 @@
 
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import axios from 'axios';
 import SmartBadgeShop from './SmartBadgeShop';
 import HeartButton from '../HeartButton';
 import { SafeShop, SafeUser } from '@/app/types';
@@ -37,16 +35,17 @@ const ShopCard: React.FC<ShopCardProps> = ({
       onClick={handleCardClick}
       className="
         group cursor-pointer relative overflow-hidden
-        rounded-xl bg-white shadow-lg transition-all duration-300
-        hover:shadow-xl max-w-[250px]"
+        rounded-lg bg-white transition-all duration-300
+        hover:-translate-y-1 hover:scale-[1.01] hover:shadow-md
+        max-w-[250px]"
     >
-      {/* Background image + layered scrim (matches ListingCard) */}
+      {/* Background image + lighter-at-top, bottom-heavy gradient */}
       <div className="absolute inset-0 z-0">
         <Image
           src={cardImage}
           alt={data.name}
           fill
-          className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+          className="object-cover"
           sizes="(max-width:768px) 100vw, 33vw"
           priority={false}
         />
@@ -55,18 +54,17 @@ const ShopCard: React.FC<ShopCardProps> = ({
           style={{
             background:
               'linear-gradient(to top,' +
-              'rgba(0,0,0,0.98) 0%,' +
-              'rgba(0,0,0,0.96) 12%,' +
-              'rgba(0,0,0,0.90) 26%,' +
-              'rgba(0,0,0,0.70) 42%,' +
-              'rgba(0,0,0,0.45) 56%,' +
-              'rgba(0,0,0,0.20) 70%,' +
-              'rgba(0,0,0,0.06) 82%,' +
+              'rgba(0,0,0,0.75) 0%,' +
+              'rgba(0,0,0,0.70) 12%,' +
+              'rgba(0,0,0,0.60) 26%,' +
+              'rgba(0,0,0,0.45) 42%,' +
+              'rgba(0,0,0,0.30) 56%,' +
+              'rgba(0,0,0,0.15) 70%,' +
+              'rgba(0,0,0,0.04) 82%,' +
               'rgba(0,0,0,0.00) 90%,' +
               'rgba(0,0,0,0.00) 100%)',
           }}
         />
-        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors" />
       </div>
 
       <div className="relative z-10">
@@ -116,15 +114,18 @@ const ShopCard: React.FC<ShopCardProps> = ({
               </h1>
             </div>
 
-            {/* Location (one line) + products below */}
-            <div className="text-white/90 text-[11px] leading-4 mb-2">
-              <div className="flex items-center gap-1">
-                <span>
-                  {city}
-                  {state ? `, ${state}` : ''}
+            {/* Location - improved formatting */}
+            <div className="text-white/90 text-[11px] leading-4 mb-4">
+              {/* City, State on one line with better spacing */}
+              <div className="flex items-center gap-1 mb-1">
+                <span className="truncate">
+                  {city && state ? `${city}, ${state}` : city || state || 'Location not specified'}
                 </span>
               </div>
-              <div className="opacity-90 mt-0.5">{productCount} products</div>
+              {/* Product count below with subtle styling */}
+              <div className="opacity-80 mt-0.5 font-light text-[10px]">
+                {productCount} products
+              </div>
             </div>
 
             {/* Rating + followers */}

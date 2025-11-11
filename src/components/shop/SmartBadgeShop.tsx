@@ -12,97 +12,44 @@ interface SmartBadgeShopProps {
 
 const SmartBadgeShop: React.FC<SmartBadgeShopProps> = ({
   rating = 4.7,
-  isTrending = false,
-  followerCount = 0,
   onRatingClick,
   onFollowerClick
 }) => {
-  // Match SmartBadgeRating's badge logic for the left pill
-  const getBadgeProps = () => {
-    if (isTrending) {
-      return {
-        bgColor: 'bg-gradient-to-r from-purple-500/20 to-violet-500/20',
-        borderColor: 'border-purple-400/40',
-        textColor: 'text-purple-200',
-        glowColor: 'shadow-purple-500/20',
-      };
-    } else if (rating >= 4.5) {
-      return {
-        bgColor: 'bg-gradient-to-r from-yellow-500/20 to-amber-500/20',
-        borderColor: 'border-yellow-400/40',
-        textColor: 'text-yellow-200',
-        glowColor: 'shadow-yellow-500/20',
-      };
-    } else {
-      return {
-        bgColor: 'bg-gradient-to-r from-blue-500/20 to-cyan-500/20',
-        borderColor: 'border-blue-400/40',
-        textColor: 'text-blue-200',
-        glowColor: 'shadow-blue-500/20',
-      };
-    }
+  const handleRatingClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onRatingClick?.();
   };
 
-  const badgeProps = getBadgeProps();
-
-  // keep follower format compact (e.g., 1.2K)
-  const formatFollowerCount = (count: number) => {
-    if (count >= 1_000_000) return `${(count / 1_000_000).toFixed(1)}M`;
-    if (count >= 1_000) return `${(count / 1_000).toFixed(1)}K`;
-    return `${count}`;
+  const handleShopClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onFollowerClick?.();
   };
 
   return (
     <div className="flex items-center gap-2">
-      {/* Rating pill — identical structure to SmartBadgeRating */}
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          onRatingClick?.();
-        }}
-        className="inline-flex rounded-xl hover:bg-white/10 transition-all duration-300 group p-0"
-        type="button"
-      >
-        <div
-          className={`border rounded-md px-2 py-1 group-hover:scale-105 transition-all duration-300 ${badgeProps.bgColor} ${badgeProps.borderColor} ${badgeProps.glowColor} shadow-sm inline-flex items-center justify-center gap-1 w-20`}
-        >
-          {/* same star/sparkle icon used in SmartBadgeRating */}
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-               width="12" height="12" className={badgeProps.textColor} fill="none">
-            <path d="M18.5202 6.22967C18.8121 7.89634 17.5004 9 17.5004 9C17.5004 9 15.8969 8.437 15.605 6.77033C15.3131 5.10366 16.6248 4 16.6248 4C16.6248 4 18.2284 4.56301 18.5202 6.22967Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            <path d="M20.9271 13.5887C19.5822 14.7178 17.937 14.0892 17.937 14.0892C17.937 14.0892 17.6366 12.3314 18.9815 11.2023C20.3264 10.0732 21.9716 10.7019 21.9716 10.7019C21.9716 10.7019 22.272 12.4596 20.9271 13.5887Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            <path d="M16.7336 19.8262C15.2336 19.2506 15.0001 17.6366 15.0001 17.6366C15.0001 17.6366 16.2666 16.5982 17.7666 17.1738C19.2666 17.7494 19.5001 19.3634 19.5001 19.3634C19.5001 19.3634 18.2336 20.4018 16.7336 19.8262Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            <path d="M15.0001 17.6366C16.4052 16.4358 18.0007 14.0564 18.0007 11.7273C18.0007 10.7628 17.8458 9.84221 17.5645 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            <path d="M5.47999 6.22967C5.18811 7.89634 6.4998 9 6.4998 9C6.4998 9 8.10337 8.437 8.39525 6.77033C8.68713 5.10366 7.37544 4 7.37544 4C7.37544 4 5.77187 4.56301 5.47999 6.22967Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            <path d="M3.07316 13.5887C4.41805 14.7178 6.06329 14.0892 6.06329 14.0892C6.06329 14.0892 6.36364 12.3314 5.01876 11.2023C3.67387 10.0732 2.02863 10.7019 2.02863 10.7019C2.02863 10.7019 1.72828 12.4596 3.07316 13.5887Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            <path d="M7.26663 19.8262C8.76663 19.2506 9.00012 17.6366 9.00012 17.6366C9.00012 17.6366 7.73361 16.5982 6.23361 17.1738C4.73361 17.7494 4.50012 19.3634 4.50012 19.3634C4.50012 19.3634 5.76663 20.4018 7.26663 19.8262Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            <path d="M9.00012 17.6366C7.59501 16.4358 5.99957 14.0564 5.99957 11.7273C5.99957 10.7628 6.15445 9.84221 6.43571 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          <span className={`text-xs ${badgeProps.textColor}`}>{rating}</span>
+      {/* Rating Button */}
+      <div className="group/rating border border-white/40 rounded-md px-3 py-2 bg-white/10 backdrop-blur-md hover:border-white/60 hover:bg-white/20 transition-colors duration-200">
+        <div className="flex items-center text-white/90 text-xs">
+          <button
+            onClick={handleRatingClick}
+            className="group-hover/rating:text-white transition-colors duration-200 flex items-center gap-1"
+            type="button"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="12" height="12" color="currentColor" fill="none" className="flex-shrink-0 text-white/80">
+              <path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <span>{rating}</span>
+          </button>
         </div>
-      </button>
+      </div>
 
-      {/* Followers pill — styled like SmartBadgeRating's right pill (time), but blue */}
+      {/* Shop Label Button */}
       <button
-        onClick={(e) => {
-          e.stopPropagation();
-          onFollowerClick?.();
-        }}
-        className="inline-flex rounded-xl hover:bg-white/10 transition-all duration-300 group p-0"
+        onClick={handleShopClick}
+        className="text-white/90 border border-white/40 rounded-md px-3.5 py-2 bg-white/10 backdrop-blur-md hover:border-white/60 hover:bg-white/20 transition-colors duration-200 text-xs"
         type="button"
       >
-        <div
-          className={`border rounded-md px-2 py-1 group-hover:scale-105 transition-all duration-300 shadow-sm inline-flex items-center justify-center gap-1 w-20 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border-blue-400/40 shadow-blue-500/20`}
-        >
-          {/* simple “followers” icon */}
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-               width="12" height="12" className="text-blue-200" fill="none">
-            <path d="M10.4107 19.9677C7.58942 17.858 2 13.0348 2 8.69444C2 5.82563 4.10526 3.5 7 3.5C8.5 3.5 10 4 12 6C14 4 15.5 3.5 17 3.5C19.8947 3.5 22 5.82563 22 8.69444C22 13.0348 16.4106 17.858 13.5893 19.9677C12.6399 20.6776 11.3601 20.6776 10.4107 19.9677Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-          </svg>
-          <span className="text-xs text-blue-200">
-            {formatFollowerCount(followerCount)}
-          </span>
-        </div>
+        Shop
       </button>
     </div>
   );

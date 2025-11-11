@@ -107,7 +107,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
       {/* Hero Banner Style Header - Matches ListingHead */}
       <div className="-mx-6 md:-mx-24 -mt-2 md:-mt-8 relative">
         {/* Background Image (Black & White) */}
-        <div className="relative w-full overflow-hidden pt-10 pb-9">
+        <div className="relative w-full overflow-hidden pt-10 pb-8">
           <Image
             src={heroImage}
             alt={name ?? 'User'}
@@ -185,7 +185,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
               </div>
 
               {/* Location */}
-              <div className="text-sm text-white/90 mb-4 drop-shadow-md">
+              <div className="text-base text-white/90 mb-4 drop-shadow-md">
                 {city || 'City'}{state ? `, ${state}` : ''}
               </div>
 

@@ -296,7 +296,7 @@ const MarketClient: React.FC<MarketClientProps> = ({
           <div className="relative z-10">
             {/* Main Market Title */}
             <div className="mb-3">
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight tracking-tight">
+              <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 leading-tight tracking-tight">
                 Market
               </h1>
               <p className="text-gray-600 mt-3">Discover unique places from our vendors</p>

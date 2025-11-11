@@ -1,13 +1,12 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { SafeUser } from '@/app/types';
 import useShopModal from '@/app/hooks/useShopModal';
 import useProductModal from '@/app/hooks/useProductModal';
 import useFilterModal from '@/app/hooks/useFilterModal';
 import GlobalSearch from '../search/GlobalSearch';
-import { categories } from '@/components/Categories';
 
 interface ShopHeaderProps {
   currentUser?: SafeUser | null;
@@ -20,7 +19,6 @@ const ShopHeader: React.FC<ShopHeaderProps> = ({
   shopId,
   isHeroMode = false
 }) => {
-  const router = useRouter();
   const params = useSearchParams();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const shopModal = useShopModal();
@@ -28,8 +26,6 @@ const ShopHeader: React.FC<ShopHeaderProps> = ({
   const filterModal = useFilterModal();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-
-  const currentCategory = params?.get('category') || '';
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -51,21 +47,6 @@ const ShopHeader: React.FC<ShopHeaderProps> = ({
 
   const handleOpenFilters = () => {
     filterModal.onOpen();
-  };
-
-  // Toggle: select to set; click again to clear (show all)
-  const handleCategorySelect = (categoryLabel: string) => {
-    const current = new URLSearchParams(Array.from(params?.entries() || []));
-
-    if (currentCategory === categoryLabel) {
-      current.delete('category');
-    } else {
-      current.set('category', categoryLabel);
-    }
-
-    const search = current.toString();
-    const query = search ? `?${search}` : '';
-    router.push(`/shops${query}`);
   };
 
   // Count active filters for badge

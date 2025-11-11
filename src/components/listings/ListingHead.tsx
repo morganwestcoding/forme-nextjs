@@ -297,7 +297,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
         {/* Hero Banner Style Header */}
         <div className="-mx-6 md:-mx-24 -mt-2 md:-mt-8 relative">
           {/* Background Image */}
-          <div className="relative w-full overflow-hidden pt-10 pb-9">
+          <div className="relative w-full overflow-hidden pt-10 pb-8">
             <img
               src={mainImage}
               alt={title}
@@ -360,9 +360,9 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               </div>
 
               {/* Address */}
-              <div className="text-sm text-white/90 mb-4 drop-shadow-md">
+              <div className="text-base text-white mb-4 drop-shadow-sm">
                 {address && location ? `${address}, ${location}` : address || location}
-                <span className="text-white/70 ml-1">
+                <span className=" ml-1">
                   · {(listing as any).radius ? `${(listing as any).radius} miles` : '2.3 miles away'}
                 </span>
               </div>
@@ -514,100 +514,29 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               <button
                 onClick={handleAddService}
                 type="button"
-                className="group cursor-pointer rounded-lg overflow-hidden relative transition-all duration-300 hover:-translate-y-1 hover:scale-[1.01] hover:shadow-xl max-w-[250px] border border-gray-200/50"
+                className="group relative h-[350px] max-w-[250px] rounded-lg border-2 border-dashed border-gray-200 bg-gray-50/30 hover:border-blue-300 hover:bg-blue-50/30 transition-all duration-200"
               >
-                {/* Clean background with subtle depth */}
-                <div className="absolute inset-0 z-0">
-                  {/* Pure white base */}
-                  <div className="absolute inset-0 bg-white" />
+                <div className="absolute inset-0 flex flex-col items-center justify-center p-6">
+                  {/* Simple plus icon */}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="32"
+                    height="32"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="text-gray-400 group-hover:text-blue-500 transition-colors duration-200 mb-3"
+                  >
+                    <path d="M12 5v14M5 12h14" />
+                  </svg>
 
-                  {/* Ultra-subtle radial glow from center */}
-                  <div
-                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                    style={{
-                      background: 'radial-gradient(circle at 50% 32%, rgba(59, 130, 246, 0.03) 0%, transparent 60%)'
-                    }}
-                  />
-
-                  {/* Top glass reflection */}
-                  <div
-                    className="absolute inset-0 pointer-events-none"
-                    style={{
-                      background:
-                        'linear-gradient(to bottom,' +
-                        'rgba(255,255,255,0.8) 0%,' +
-                        'rgba(255,255,255,0.0) 20%)',
-                    }}
-                  />
-
-                  {/* Bottom subtle shadow for depth */}
-                  <div
-                    className="absolute inset-0 pointer-events-none"
-                    style={{
-                      background:
-                        'linear-gradient(to top,' +
-                        'rgba(0,0,0,0.02) 0%,' +
-                        'rgba(0,0,0,0.00) 30%)',
-                    }}
-                  />
-                </div>
-
-                <div className="relative z-10">
-                  <div className="relative h-[350px]">
-                    {/* Icon - matching ServiceCard position */}
-                    <div className="absolute top-[32%] left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                      <div className="relative">
-                        {/* Outer glow ring - appears on hover */}
-                        <div className="absolute inset-0 w-28 h-28 rounded-full bg-blue-500/0 group-hover:bg-blue-500/5 blur-2xl transition-all duration-500" />
-
-                        {/* Main circle */}
-                        <div className="relative w-28 h-28 rounded-full flex items-center justify-center shadow-sm border border-gray-200 bg-gradient-to-br from-gray-50 to-white group-hover:border-blue-300 group-hover:shadow-md transition-all duration-300">
-                          {/* Inner highlight for depth */}
-                          <div className="absolute inset-2 rounded-full bg-gradient-to-br from-white/60 to-transparent pointer-events-none" />
-
-                          {/* Plus icon */}
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="28"
-                            height="28"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="text-gray-400 group-hover:text-blue-500 transition-colors duration-300 relative z-10"
-                          >
-                            <path d="M12 5v14M5 12h14" />
-                          </svg>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Bottom info - matching ServiceCard */}
-                    <div className="absolute bottom-5 left-5 right-5 z-20">
-                      <div className="mb-4">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-1 text-center group-hover:text-gray-900 transition-colors">
-                          Add Service
-                        </h3>
-                        <p className="text-[11px] text-gray-500 leading-4 text-center">
-                          Create new offering
-                        </p>
-                        <div className="opacity-60 mt-0.5 text-[10px] text-gray-400 font-light text-center">
-                          Tap to begin
-                        </div>
-                      </div>
-
-                      {/* Clean button badge */}
-                      <div className="flex items-center justify-center">
-                        <div className="border border-gray-200 rounded-md px-3 py-2 bg-white group-hover:border-blue-400 group-hover:bg-blue-50 group-hover:text-blue-600 transition-all duration-300 text-xs text-gray-600 font-medium shadow-sm">
-                          Get Started
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="pb-2" />
+                  {/* Text */}
+                  <h3 className="text-sm font-medium text-gray-600 group-hover:text-gray-900 transition-colors duration-200">
+                    Add Service
+                  </h3>
                 </div>
               </button>
             )}
@@ -648,103 +577,29 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               <button
                 onClick={handleAddWorker}
                 type="button"
-                className="group cursor-pointer rounded-lg overflow-hidden relative transition-all duration-300 hover:-translate-y-1 hover:scale-[1.01] hover:shadow-xl max-w-[250px] border border-gray-200/50"
+                className="group relative h-[350px] max-w-[250px] rounded-lg border-2 border-dashed border-gray-200 bg-gray-50/30 hover:border-blue-300 hover:bg-blue-50/30 transition-all duration-200"
               >
-                {/* Clean background with subtle depth */}
-                <div className="absolute inset-0 z-0">
-                  {/* Pure white base */}
-                  <div className="absolute inset-0 bg-white" />
+                <div className="absolute inset-0 flex flex-col items-center justify-center p-6">
+                  {/* Simple plus icon */}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="32"
+                    height="32"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="text-gray-400 group-hover:text-blue-500 transition-colors duration-200 mb-3"
+                  >
+                    <path d="M12 5v14M5 12h14" />
+                  </svg>
 
-                  {/* Ultra-subtle radial glow from center */}
-                  <div
-                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                    style={{
-                      background: 'radial-gradient(circle at 50% 32%, rgba(59, 130, 246, 0.03) 0%, transparent 60%)'
-                    }}
-                  />
-
-                  {/* Top glass reflection */}
-                  <div
-                    className="absolute inset-0 pointer-events-none"
-                    style={{
-                      background:
-                        'linear-gradient(to bottom,' +
-                        'rgba(255,255,255,0.8) 0%,' +
-                        'rgba(255,255,255,0.0) 20%)',
-                    }}
-                  />
-
-                  {/* Bottom subtle shadow for depth */}
-                  <div
-                    className="absolute inset-0 pointer-events-none"
-                    style={{
-                      background:
-                        'linear-gradient(to top,' +
-                        'rgba(0,0,0,0.02) 0%,' +
-                        'rgba(0,0,0,0.00) 30%)',
-                    }}
-                  />
-                </div>
-
-                <div className="relative z-10">
-                  <div className="relative h-[350px]">
-                    {/* Icon - matching WorkerCard position */}
-                    <div className="absolute top-[32%] left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                      <div className="relative">
-                        {/* Outer glow ring - appears on hover */}
-                        <div className="absolute inset-0 w-28 h-28 rounded-full bg-blue-500/0 group-hover:bg-blue-500/5 blur-2xl transition-all duration-500" />
-
-                        {/* Main circle */}
-                        <div className="relative w-28 h-28 rounded-full flex items-center justify-center shadow-sm border border-gray-200 bg-gradient-to-br from-gray-50 to-white group-hover:border-blue-300 group-hover:shadow-md transition-all duration-300">
-                          {/* Inner highlight for depth */}
-                          <div className="absolute inset-2 rounded-full bg-gradient-to-br from-white/60 to-transparent pointer-events-none" />
-
-                          {/* User plus icon */}
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="28"
-                            height="28"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="text-gray-400 group-hover:text-blue-500 transition-colors duration-300 relative z-10"
-                          >
-                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                            <circle cx="9" cy="7" r="4" />
-                            <line x1="19" y1="8" x2="19" y2="14" />
-                            <line x1="22" y1="11" x2="16" y2="11" />
-                          </svg>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Bottom info - matching WorkerCard */}
-                    <div className="absolute bottom-5 left-5 right-5 z-20">
-                      <div className="mb-4">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-1 text-center group-hover:text-gray-900 transition-colors">
-                          Add Team Member
-                        </h3>
-                        <p className="text-[11px] text-gray-500 leading-4 text-center">
-                          Invite new member
-                        </p>
-                        <div className="opacity-60 mt-0.5 text-[10px] text-gray-400 font-light text-center">
-                          Tap to begin
-                        </div>
-                      </div>
-
-                      {/* Clean button badge */}
-                      <div className="flex items-center justify-center">
-                        <div className="border border-gray-200 rounded-md px-3 py-2 bg-white group-hover:border-blue-400 group-hover:bg-blue-50 group-hover:text-blue-600 transition-all duration-300 text-xs text-gray-600 font-medium shadow-sm">
-                          Get Started
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="pb-2" />
+                  {/* Text */}
+                  <h3 className="text-sm font-medium text-gray-600 group-hover:text-gray-900 transition-colors duration-200">
+                    Add Team Member
+                  </h3>
                 </div>
               </button>
             )}
@@ -788,70 +643,30 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                     <button
                       onClick={handleAddMedia}
                       type="button"
-                      className="group cursor-pointer bg-white rounded-lg hover:shadow-lg overflow-hidden relative transition-all duration-300 border border-gray-200/50"
+                      className="group relative rounded-lg border-2 border-dashed border-gray-200 bg-gray-50/30 hover:border-blue-300 hover:bg-blue-50/30 transition-all duration-200"
                       style={{ aspectRatio: '1 / 1' }}
                     >
-                      {/* Clean background with subtle depth */}
-                      <div className="absolute inset-0 z-0">
-                        <div className="absolute inset-0 bg-white" />
+                      <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
+                        {/* Simple plus icon */}
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="32"
+                          height="32"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="text-gray-400 group-hover:text-blue-500 transition-colors duration-200 mb-2"
+                        >
+                          <path d="M12 5v14M5 12h14" />
+                        </svg>
 
-                        <div
-                          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                          style={{
-                            background: 'radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.03) 0%, transparent 60%)'
-                          }}
-                        />
-
-                        <div
-                          className="absolute inset-0 pointer-events-none"
-                          style={{
-                            background:
-                              'linear-gradient(to bottom,' +
-                              'rgba(255,255,255,0.8) 0%,' +
-                              'rgba(255,255,255,0.0) 20%)',
-                          }}
-                        />
-
-                        <div
-                          className="absolute inset-0 pointer-events-none"
-                          style={{
-                            background:
-                              'linear-gradient(to top,' +
-                              'rgba(0,0,0,0.02) 0%,' +
-                              'rgba(0,0,0,0.00) 30%)',
-                          }}
-                        />
-                      </div>
-
-                      <div className="absolute inset-0 flex flex-col items-center justify-center p-4 z-10">
-                        <div className="relative mb-3">
-                          <div className="absolute inset-0 w-16 h-16 rounded-full bg-blue-500/0 group-hover:bg-blue-500/5 blur-xl transition-all duration-500" />
-
-                          <div className="relative w-16 h-16 rounded-full flex items-center justify-center shadow-sm border border-gray-200 bg-gradient-to-br from-gray-50 to-white group-hover:border-blue-300 group-hover:shadow-md transition-all duration-300">
-                            <div className="absolute inset-2 rounded-full bg-gradient-to-br from-white/60 to-transparent pointer-events-none" />
-
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="24"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="1.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              className="text-gray-400 group-hover:text-blue-500 transition-colors duration-300 relative z-10"
-                            >
-                              <path d="M12 5v14M5 12h14" />
-                            </svg>
-                          </div>
-                        </div>
-                        <h3 className="text-sm font-semibold text-gray-900 mb-0.5 text-center">
+                        {/* Text */}
+                        <h3 className="text-sm font-medium text-gray-600 group-hover:text-gray-900 transition-colors duration-200">
                           Add Media
                         </h3>
-                        <p className="text-xs text-gray-500 text-center">
-                          Upload photos or videos
-                        </p>
                       </div>
                     </button>
                   </div>
@@ -900,70 +715,30 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   <button
                     onClick={handleAddMedia}
                     type="button"
-                    className="group cursor-pointer bg-white rounded-lg hover:shadow-lg overflow-hidden relative transition-all duration-300 border border-gray-200/50"
+                    className="group relative rounded-lg border-2 border-dashed border-gray-200 bg-gray-50/30 hover:border-blue-300 hover:bg-blue-50/30 transition-all duration-200"
                     style={{ aspectRatio: '1 / 1' }}
                   >
-                    {/* Clean background with subtle depth */}
-                    <div className="absolute inset-0 z-0">
-                      <div className="absolute inset-0 bg-white" />
+                    <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
+                      {/* Simple plus icon */}
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="32"
+                        height="32"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="text-gray-400 group-hover:text-blue-500 transition-colors duration-200 mb-2"
+                      >
+                        <path d="M12 5v14M5 12h14" />
+                      </svg>
 
-                      <div
-                        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                        style={{
-                          background: 'radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.03) 0%, transparent 60%)'
-                        }}
-                      />
-
-                      <div
-                        className="absolute inset-0 pointer-events-none"
-                        style={{
-                          background:
-                            'linear-gradient(to bottom,' +
-                            'rgba(255,255,255,0.8) 0%,' +
-                            'rgba(255,255,255,0.0) 20%)',
-                        }}
-                      />
-
-                      <div
-                        className="absolute inset-0 pointer-events-none"
-                        style={{
-                          background:
-                            'linear-gradient(to top,' +
-                            'rgba(0,0,0,0.02) 0%,' +
-                            'rgba(0,0,0,0.00) 30%)',
-                        }}
-                      />
-                    </div>
-
-                    <div className="absolute inset-0 flex flex-col items-center justify-center p-4 z-10">
-                      <div className="relative mb-3">
-                        <div className="absolute inset-0 w-16 h-16 rounded-full bg-blue-500/0 group-hover:bg-blue-500/5 blur-xl transition-all duration-500" />
-
-                        <div className="relative w-16 h-16 rounded-full flex items-center justify-center shadow-sm border border-gray-200 bg-gradient-to-br from-gray-50 to-white group-hover:border-blue-300 group-hover:shadow-md transition-all duration-300">
-                          <div className="absolute inset-2 rounded-full bg-gradient-to-br from-white/60 to-transparent pointer-events-none" />
-
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="text-gray-400 group-hover:text-blue-500 transition-colors duration-300 relative z-10"
-                          >
-                            <path d="M12 5v14M5 12h14" />
-                          </svg>
-                        </div>
-                      </div>
-                      <h3 className="text-sm font-semibold text-gray-900 mb-0.5 text-center">
+                      {/* Text */}
+                      <h3 className="text-sm font-medium text-gray-600 group-hover:text-gray-900 transition-colors duration-200">
                         Add Media
                       </h3>
-                      <p className="text-xs text-gray-500 text-center">
-                        Upload photos or videos
-                      </p>
                     </div>
                   </button>
                 )}
