@@ -143,7 +143,7 @@ const Modal = forwardRef<ModalHandle, ModalProps>(({
           >
             <div
               id={id}
-              className="h-full lg:h-auto md:h-auto border-0 rounded-3xl relative flex flex-col w-full bg-white/95 backdrop-blur-md outline-none"
+              className="h-full lg:h-auto md:h-auto border-0 rounded-xl relative flex flex-col w-full bg-white/95 backdrop-blur-md outline-none"
             >
               {/* Close (X) */}
               <div className="relative w-full">
