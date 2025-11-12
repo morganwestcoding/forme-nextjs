@@ -168,17 +168,11 @@ export default async function getListings(params: IListingsParams = {}): Promise
       ...(take !== undefined && { take })
     });
 
-    // Filter out listings that only have independent workers (auto-generated for individual providers)
-    const filteredListings = listings.filter(listing => {
-      // If listing has no employees, keep it (it's a regular business listing)
-      if (!listing.employees || listing.employees.length === 0) {
-        return true;
-      }
-
-      // If listing has at least one non-independent employee, keep it (it's a real business)
-      const hasNonIndependentWorker = listing.employees.some(emp => !emp.isIndependent);
-      return hasNonIndependentWorker;
-    });
+    // Keep ALL listings including those with independent workers
+    // The MarketClient and ProfileHead will handle display logic separately
+    // - Personal listings won't show as ListingCards (filtered in UI)
+    // - Independent workers WILL show as WorkerCards (extracted from employees)
+    const filteredListings = listings;
 
     const safeListings: SafeListing[] = filteredListings.map((listing) => ({
       id: listing.id,

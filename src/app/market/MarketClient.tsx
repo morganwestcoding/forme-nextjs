@@ -174,13 +174,17 @@ const MarketClient: React.FC<MarketClientProps> = ({
 
   // Get current items for display
   const currentFeaturedListings = useMemo(() => {
+    // Filter out "Personal" category listings (auto-generated for individual providers)
+    // These listings are infrastructure only - we show their workers in Trending Professionals
+    const visibleListings = listings.filter(l => l.category !== 'Personal');
+
     const itemsPerPage = ITEMS_PER_PAGE;
-    if (listings.length <= itemsPerPage) {
-      return listings;
+    if (visibleListings.length <= itemsPerPage) {
+      return visibleListings;
     }
     const start = featuredIndex * itemsPerPage;
     const end = start + itemsPerPage;
-    return listings.slice(start, end);
+    return visibleListings.slice(start, end);
   }, [listings, featuredIndex, ITEMS_PER_PAGE]);
 
   const currentTrendingItems = useMemo(() => {
@@ -194,7 +198,12 @@ const MarketClient: React.FC<MarketClientProps> = ({
   }, [finalTrending, trendingIndex, ITEMS_PER_PAGE]);
 
   // Calculate total pages (minimum 1 page)
-  const totalFeaturedPages = Math.max(1, Math.ceil(listings.length / ITEMS_PER_PAGE));
+  // Use filtered listings count (excluding Personal category)
+  const visibleListingsCount = useMemo(() =>
+    listings.filter(l => l.category !== 'Personal').length,
+    [listings]
+  );
+  const totalFeaturedPages = Math.max(1, Math.ceil(visibleListingsCount / ITEMS_PER_PAGE));
   const totalTrendingPages = Math.max(1, Math.ceil(finalTrending.length / ITEMS_PER_PAGE));
 
   // Animation helper function
@@ -299,7 +308,7 @@ const MarketClient: React.FC<MarketClientProps> = ({
               <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 leading-tight tracking-tight">
                 Market
               </h1>
-              <p className="text-gray-600 mt-3">Discover unique places from our vendors</p>
+              <p className="text-gray-600 text-md mt-3">Discover unique places from our vendors</p>
             </div>
 
             {/* Search and Controls */}
@@ -337,21 +346,23 @@ const MarketClient: React.FC<MarketClientProps> = ({
                       onViewAll={handleBackToMain}
                       viewAllLabel="← Back to Market"
                     />
-                    
+
                     <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
-                      {listings.map((listing, idx) => (
-                        <div
-                          key={listing.id}
-                          style={{
-                            opacity: 0,
-                            animation: `fadeInUp 520ms ease-out forwards`,
-                            animationDelay: `${Math.min(idx * 30, 300)}ms`,
-                            willChange: 'transform, opacity',
-                          }}
-                        >
-                          <ListingCard currentUser={currentUser} data={listing} />
-                        </div>
-                      ))}
+                      {listings
+                        .filter(l => l.category !== 'Personal')
+                        .map((listing, idx) => (
+                          <div
+                            key={listing.id}
+                            style={{
+                              opacity: 0,
+                              animation: `fadeInUp 520ms ease-out forwards`,
+                              animationDelay: `${Math.min(idx * 30, 300)}ms`,
+                              willChange: 'transform, opacity',
+                            }}
+                          >
+                            <ListingCard currentUser={currentUser} data={listing} />
+                          </div>
+                        ))}
                     </div>
                   </>
                 )}

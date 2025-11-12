@@ -9,9 +9,12 @@ import { SafeListing, SafePost, SafeUser } from '@/app/types';
 import CreateChatButton from '@/components/profile/CreateChatButton';
 import PostCard from '@/components/feed/PostCard';
 import ListingCard from '@/components/listings/ListingCard';
+import ServiceCard from '@/components/listings/ServiceCard';
 import SectionHeader from '@/app/market/SectionHeader';
 import { categories } from '@/components/Categories';
 import useRegisterModal from '@/app/hooks/useRegisterModal';
+import ServiceSelector, { Service } from '@/components/inputs/ServiceSelector';
+import Modal from '@/components/modals/Modal';
 
 interface ProfileHeadProps {
   user: SafeUser;
@@ -42,8 +45,16 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
   const registerModal = useRegisterModal();
 
   const [activeTab, setActiveTab] = React.useState<
-    'Posts' | 'Listings' | 'Images' | 'Reels'
+    'Posts' | 'Listings' | 'Images' | 'Services'
   >('Posts');
+
+  // State for services
+  const [services, setServices] = React.useState<any[]>([]);
+  const [isProvider, setIsProvider] = React.useState(false);
+  const [isLoadingServices, setIsLoadingServices] = React.useState(false);
+  const [isEditingServices, setIsEditingServices] = React.useState(false);
+  const [editServicesList, setEditServicesList] = React.useState<Service[]>([]);
+  const [isSavingServices, setIsSavingServices] = React.useState(false);
 
   const [isFollowing, setIsFollowing] = React.useState(
     !!currentUser?.following?.includes(id)
@@ -93,6 +104,68 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
         imageSrc: imageSrc ?? '',
       },
     });
+  };
+
+  // Fetch services for providers
+  React.useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        setIsLoadingServices(true);
+        const res = await axios.get(`/api/employees/services?userId=${id}`);
+        if (res.data.services && res.data.services.length > 0) {
+          setServices(res.data.services);
+          setIsProvider(true);
+        } else {
+          setServices([]);
+          setIsProvider(false);
+        }
+      } catch (error) {
+        console.error('Error fetching services:', error);
+        setServices([]);
+        setIsProvider(false);
+      } finally {
+        setIsLoadingServices(false);
+      }
+    };
+
+    fetchServices();
+  }, [id]);
+
+  const handleEditServices = () => {
+    setEditServicesList(services.map(s => ({
+      id: s.id,
+      serviceName: s.serviceName,
+      price: s.price,
+      category: s.category,
+    })));
+    setIsEditingServices(true);
+  };
+
+  const handleSaveServices = async () => {
+    if (!isOwner) return;
+
+    try {
+      setIsSavingServices(true);
+      const res = await axios.post('/api/employees/services', {
+        services: editServicesList,
+      });
+
+      if (res.data.success) {
+        setServices(res.data.services);
+        setIsEditingServices(false);
+        toast.success('Services updated successfully!');
+      }
+    } catch (error) {
+      console.error('Error saving services:', error);
+      toast.error('Failed to update services');
+    } finally {
+      setIsSavingServices(false);
+    }
+  };
+
+  const handleCancelEditServices = () => {
+    setIsEditingServices(false);
+    setEditServicesList([]);
   };
 
   // Hero background image - use first listing's image or user's imageSrc or first gallery image
@@ -250,35 +323,38 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
       <div className="-mx-6 md:-mx-24 py-4 bg-white border-y border-gray-400">
         <div className="flex items-center justify-center">
           {[
-            { key: 'Posts', label: 'Posts' },
-            { key: 'Listings', label: 'Listings' },
-            { key: 'Images', label: 'Images' },
-          ].map(({ key, label }, index) => {
-            const isSelected = activeTab === key;
-            const isLast = index === 2;
+            { key: 'Posts', label: 'Posts', show: true },
+            { key: 'Listings', label: 'Listings', show: true },
+            { key: 'Images', label: 'Images', show: true },
+            { key: 'Services', label: 'Services', show: isProvider },
+          ]
+            .filter(tab => tab.show)
+            .map(({ key, label }, index, arr) => {
+              const isSelected = activeTab === key;
+              const isLast = index === arr.length - 1;
 
-            return (
-              <div key={key} className="relative flex items-center">
-                <button
-                  onClick={() => setActiveTab(key as typeof activeTab)}
-                  className={`
-                    px-6 py-2.5 text-sm transition-colors duration-200
-                    ${isSelected
-                      ? 'text-[#60A5FA] hover:text-[#4F94E5]'
-                      : 'text-gray-600/90 hover:text-gray-700'
-                    }
-                  `}
-                  type="button"
-                >
-                  {label}
-                </button>
+              return (
+                <div key={key} className="relative flex items-center">
+                  <button
+                    onClick={() => setActiveTab(key as typeof activeTab)}
+                    className={`
+                      px-6 py-2.5 text-sm transition-colors duration-200
+                      ${isSelected
+                        ? 'text-[#60A5FA] hover:text-[#4F94E5]'
+                        : 'text-gray-600/90 hover:text-gray-700'
+                      }
+                    `}
+                    type="button"
+                  >
+                    {label}
+                  </button>
 
-                {!isLast && (
-                  <div className="h-6 w-px bg-gray-400 mx-3" />
-                )}
-              </div>
-            );
-          })}
+                  {!isLast && (
+                    <div className="h-6 w-px bg-gray-400 mx-3" />
+                  )}
+                </div>
+              );
+            })}
         </div>
       </div>
 
@@ -309,20 +385,24 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
         {activeTab === 'Listings' && (
           <>
             <SectionHeader title={`${firstName}'s Listings`} accent="#60A5FA" />
-            {listings.length ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-5 gap-4">
-                {listings.map((listing) => (
-                  <ListingCard
-                    key={listing.id}
-                    data={listing}
-                    currentUser={currentUser}
-                    categories={categories}
-                  />
-                ))}
-              </div>
-            ) : (
-              <EmptyBlock text="No listings yet" />
-            )}
+            {(() => {
+              // Filter out personal listings (category = 'Personal')
+              const visibleListings = listings.filter(l => l.category !== 'Personal');
+              return visibleListings.length ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-5 gap-4">
+                  {visibleListings.map((listing) => (
+                    <ListingCard
+                      key={listing.id}
+                      data={listing}
+                      currentUser={currentUser}
+                      categories={categories}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <EmptyBlock text="No listings yet" />
+              );
+            })()}
           </>
         )}
 
@@ -352,8 +432,90 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
           </>
         )}
 
+        {/* SERVICES */}
+        {activeTab === 'Services' && (
+          <>
+            <div className="flex items-center justify-between mb-6">
+              <SectionHeader title={`${firstName}'s Services`} accent="#60A5FA" />
+              {isOwner && services.length > 0 && (
+                <button
+                  onClick={handleEditServices}
+                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition"
+                >
+                  Edit Services
+                </button>
+              )}
+            </div>
 
+            {isLoadingServices ? (
+              <div className="text-center py-12">
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <p className="mt-4 text-gray-500">Loading services...</p>
+              </div>
+            ) : services.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
+                {services.map((service) => (
+                  <ServiceCard
+                    key={service.id}
+                    service={service}
+                    currentUser={currentUser}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-12 px-4 border-2 border-dashed border-gray-300 rounded-lg">
+                <div className="rounded-full flex items-center justify-center bg-gray-100 text-gray-400 w-16 h-16 mb-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No services yet</h3>
+                <p className="text-sm text-gray-500 mb-6 text-center max-w-sm">
+                  {isOwner
+                    ? 'Add services you provide to help clients find you.'
+                    : `${firstName} hasn't added any services yet.`}
+                </p>
+                {isOwner && (
+                  <button
+                    onClick={handleEditServices}
+                    className="inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                      <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                    </svg>
+                    Add your first service
+                  </button>
+                )}
+              </div>
+            )}
+          </>
+        )}
       </div>
+
+      {/* Services Edit Modal */}
+      {isEditingServices && (
+        <Modal
+          isOpen={isEditingServices}
+          title="Edit Your Services"
+          actionLabel={isSavingServices ? 'Saving...' : 'Save Changes'}
+          secondaryActionLabel="Cancel"
+          onClose={handleCancelEditServices}
+          onSubmit={handleSaveServices}
+          secondaryAction={handleCancelEditServices}
+          disabled={isSavingServices}
+          body={
+            <div className="flex flex-col gap-6">
+              <p className="text-sm text-gray-600">
+                Manage the services you provide. Add, edit, or remove services to keep your profile up to date.
+              </p>
+              <ServiceSelector
+                onServicesChange={setEditServicesList}
+                existingServices={editServicesList}
+              />
+            </div>
+          }
+        />
+      )}
     </div>
   );
 };

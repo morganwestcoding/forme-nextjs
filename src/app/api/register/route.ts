@@ -22,12 +22,12 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    const { 
+    const {
       name,
       email,
       password,
       location,
-      subscription, 
+      subscription,
       bio,
       image,
       imageSrc,
@@ -36,6 +36,7 @@ export async function POST(request: Request) {
       jobTitle,
       isOwnerManager,
       selectedServices,
+      individualServices, // Services array for individual providers
     } = body || {};
 
     if (!email || !password || !name) {
@@ -154,20 +155,39 @@ export async function POST(request: Request) {
       }
     }
 
-    // For individual providers - create listing and worker card
+    // For individual providers - create a hidden personal listing with services and worker card
     if (userType === 'individual') {
       try {
-        // Create the listing first
+        // Create a hidden personal listing (not shown in Listings tab)
+        // This maintains referential integrity since services require a listingId
         const listing = await prisma.listing.create({
           data: {
-            title: `${name}'s Services`,
+            title: `${name}'s Personal Services`,
             description: bio || 'Professional services',
             imageSrc: image || '',
-            category: 'General',
+            category: 'Personal', // Special category to identify personal listings
             location: location || '',
             userId: user.id,
           }
         });
+
+        // Create services if provided during registration
+        const serviceIds: string[] = [];
+        if (individualServices && Array.isArray(individualServices) && individualServices.length > 0) {
+          for (const svc of individualServices) {
+            if (svc.serviceName?.trim() && svc.category?.trim() && Number(svc.price) > 0) {
+              const createdService = await prisma.service.create({
+                data: {
+                  serviceName: svc.serviceName.trim(),
+                  price: Number(svc.price),
+                  category: svc.category.trim(),
+                  listingId: listing.id,
+                }
+              });
+              serviceIds.push(createdService.id);
+            }
+          }
+        }
 
         // Create worker card (Employee record) with isIndependent flag
         await prisma.employee.create({
@@ -176,15 +196,16 @@ export async function POST(request: Request) {
             jobTitle: jobTitle || null,
             listingId: listing.id,
             userId: user.id,
-            serviceIds: [],
+            serviceIds: serviceIds, // Link to created services
             isActive: true,
             isIndependent: true, // Mark as independent worker
           }
         });
 
-        console.log('Independent worker card created for:', user.id);
+        console.log('Independent worker card created for:', user.id, 'with', serviceIds.length, 'services');
       } catch (listingError) {
         console.error('Error creating listing/worker card for individual provider:', listingError);
+        // Don't fail registration if this fails, just log it
       }
     }
 

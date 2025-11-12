@@ -21,6 +21,8 @@ import JobTitleStep from "../inputs/JobTitleStep";
 import BusinessSelectStep from "../inputs/BusinessSelectStep";
 import ServiceSelectStep from "../inputs/ServiceSelectStep";
 import InterestsStep from "../inputs/InterestStep";
+import ServiceSelector, { Service } from "../inputs/ServiceSelector";
+import ServiceCard from "../listings/ServiceCard";
 
 type UserType = 'customer' | 'individual' | 'team';
 
@@ -45,9 +47,11 @@ enum STEPS {
   JOB_TITLE = 3,
   BUSINESS_SELECT = 4,
   SERVICE_SELECT = 5,
-  LOCATION = 6,
-  BIOGRAPHY = 7,
-  IMAGES = 8,
+  SERVICES_FORM = 6,    // For individual providers
+  SERVICES_LIST = 7,    // For individual providers
+  LOCATION = 8,
+  BIOGRAPHY = 9,
+  IMAGES = 10,
 }
 
 const EDIT_HUB_STEP = -1;
@@ -101,6 +105,10 @@ const RegisterModal = () => {
 
   const [step, setStep] = useState<number>(isEdit ? EDIT_HUB_STEP : STEPS.ACCOUNT);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Services management for individual providers
+  const [services, setServices] = useState<Service[]>([]);
+  const [editingServiceIndex, setEditingServiceIndex] = useState<number | null>(null);
 
   useEffect(() => {
     if (registerModal.isOpen && registerModal.prefill) {
@@ -162,6 +170,9 @@ const RegisterModal = () => {
     if (currentStep === STEPS.JOB_TITLE) {
       if (userType === 'team') {
         return STEPS.BUSINESS_SELECT;
+      } else if (userType === 'individual') {
+        // Individual providers go to services list (skippable)
+        return STEPS.SERVICES_LIST;
       } else {
         return STEPS.LOCATION;
       }
@@ -171,6 +182,12 @@ const RegisterModal = () => {
     }
     if (currentStep === STEPS.SERVICE_SELECT) {
       return STEPS.LOCATION;
+    }
+    if (currentStep === STEPS.SERVICES_LIST && userType === 'individual') {
+      return STEPS.LOCATION;
+    }
+    if (currentStep === STEPS.SERVICES_FORM && userType === 'individual') {
+      return STEPS.SERVICES_LIST;
     }
     return currentStep + 1;
   };
@@ -183,10 +200,16 @@ const RegisterModal = () => {
       if (userType === 'team') {
         return STEPS.SERVICE_SELECT;
       } else if (userType === 'individual') {
-        return STEPS.JOB_TITLE;
+        return STEPS.SERVICES_LIST;
       } else {
         return STEPS.USER_TYPE;
       }
+    }
+    if (currentStep === STEPS.SERVICES_LIST && userType === 'individual') {
+      return STEPS.JOB_TITLE;
+    }
+    if (currentStep === STEPS.SERVICES_FORM && userType === 'individual') {
+      return STEPS.SERVICES_LIST;
     }
     if (currentStep === STEPS.SERVICE_SELECT && userType === 'team') {
       return STEPS.BUSINESS_SELECT;
@@ -212,6 +235,19 @@ const RegisterModal = () => {
     }
     const previousStep = getPreviousStep(step, userType);
     setStep(previousStep);
+  };
+
+  // Service management helpers for individual providers
+  const openEditForIndex = (idx: number) => {
+    setEditingServiceIndex(idx);
+    setStep(STEPS.SERVICES_FORM);
+  };
+
+  const addNewService = () => {
+    const newService: Service = { serviceName: '', price: 0, category: '' };
+    setServices((prev) => [...prev, newService]);
+    setEditingServiceIndex(services.length);
+    setStep(STEPS.SERVICES_FORM);
   };
 
   const validatePassword = (password: string) => ({
@@ -326,6 +362,13 @@ const RegisterModal = () => {
       }
 
       // REGISTER FLOW
+      // Filter valid services for individual providers
+      const validServices = services.filter(s =>
+        s.serviceName?.trim() &&
+        s.category?.trim() &&
+        Number(s.price) > 0
+      );
+
       await axios.post('/api/register', {
         name: data.name,
         email: data.email,
@@ -339,6 +382,8 @@ const RegisterModal = () => {
         jobTitle: data.jobTitle,
         isOwnerManager: data.isOwnerManager,
         selectedServices: data.selectedServices,
+        // For individual providers, send their services
+        individualServices: data.userType === 'individual' ? validServices : undefined,
       });
       toast.success('Registered! Logging you in…');
 
@@ -475,6 +520,14 @@ const RegisterModal = () => {
                 complete: Boolean(selectedServices && selectedServices.length > 0),
               }
             ] : []),
+            ...(userType === 'individual' ? [
+              {
+                key: STEPS.SERVICES_LIST,
+                title: 'Services',
+                description: 'Services you provide',
+                complete: Boolean(services && services.length > 0),
+              }
+            ] : []),
             {
               key: STEPS.LOCATION,
               title: 'Location',
@@ -557,6 +610,100 @@ const RegisterModal = () => {
         onServicesChange={(serviceIds) => setCustomValue('selectedServices', serviceIds)}
         isLoading={isLoading}
       />
+    );
+  }
+
+  if (step === STEPS.SERVICES_LIST) {
+    const validServices = (services || []).filter(
+      s => (s.serviceName?.trim() || '') || s.category || s.price
+    );
+
+    bodyContent = (
+      <div className="flex flex-col gap-6">
+        <Heading
+          title="What services do you provide?"
+          subtitle="Add the services you offer (optional - you can skip and add later)"
+        />
+
+        {validServices.length > 0 ? (
+          <div className="grid grid-cols-2 gap-3">
+            {validServices.map((s, i) => (
+              <ServiceCard
+                key={`svc-card-${s.id ?? i}`}
+                service={{
+                  id: String(s.id ?? i),
+                  serviceName: s.serviceName || 'Untitled Service',
+                  price: Number(s.price) || 0,
+                  category: s.category || '',
+                }}
+                currentUser={undefined}
+                onClick={() => openEditForIndex(i)}
+                onEdit={() => openEditForIndex(i)}
+              />
+            ))}
+
+            {/* Add Service tile */}
+            <button
+              type="button"
+              onClick={addNewService}
+              className={[
+                'group relative w-full',
+                'rounded-2xl border-2 border-gray-200 bg-white p-4',
+                'flex flex-col items-center justify-center text-center gap-2.5',
+                'hover:border-blue-500 hover:shadow-md transition-all duration-200',
+                'h-[140px]',
+              ].join(' ')}
+            >
+              <div className="rounded-full flex items-center justify-center bg-gray-100 text-gray-600 group-hover:bg-blue-50 group-hover:text-blue-600">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-gray-900">Add a service</p>
+                <p className="text-xs text-gray-500">Name, price, category</p>
+              </div>
+            </button>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-12 px-4 border-2 border-dashed border-gray-300 rounded-lg">
+            <div className="rounded-full flex items-center justify-center bg-gray-100 text-gray-400 w-16 h-16 mb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none">
+                <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No services yet</h3>
+            <p className="text-sm text-gray-500 mb-6 text-center max-w-sm">
+              Add services you provide to help clients find you. You can skip this step and add services later.
+            </p>
+            <button
+              type="button"
+              onClick={addNewService}
+              className="inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              </svg>
+              Add your first service
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  if (step === STEPS.SERVICES_FORM) {
+    bodyContent = (
+      <div className="flex flex-col gap-8">
+        <Heading title="Edit service" subtitle="Update name, price, and category." />
+        <ServiceSelector
+          key={`svc-${editingServiceIndex ?? 'all'}`}
+          id="service-selector"
+          onServicesChange={setServices}
+          existingServices={services}
+          singleIndex={editingServiceIndex ?? undefined}
+        />
+      </div>
     );
   }
 

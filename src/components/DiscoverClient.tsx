@@ -10,10 +10,12 @@ import { SafePost, SafeUser, SafeListing, SafeEmployee, SafeShop } from '@/app/t
 import { usePostStore } from '@/app/hooks/usePostStore';
 import { useCategory } from '@/CategoryContext';
 import { useFilter } from '@/FilterContext';
+import { useViewMode } from '@/app/hooks/useViewMode';
 import Container from './Container';
 import DiscoverHeader from './feed/DiscoverHeader';
 import CategoryNav from './feed/CategoryNav';
 import PostCard from './feed/PostCard';
+import TikTokView from './feed/TikTokView';
 import ListingCard from '@/components/listings/ListingCard';
 import WorkerCard from '@/components/listings/WorkerCard';
 import ShopCard from '@/components/shop/ShopCard';
@@ -41,6 +43,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
   const storePosts = usePostStore((state) => state.posts);
   const { selectedCategory } = useCategory();
   const { filters } = useFilter();
+  const { viewMode, setViewMode } = useViewMode();
 
   const [isLoading, setIsLoading] = useState(true);
   const [isPending, startTransition] = useTransition();
@@ -231,6 +234,40 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
     [storePosts]
   );
 
+  // Prepare all items for TikTok view
+  const allContentItems = useMemo(() => {
+    let items: Array<{type: 'post' | 'listing' | 'employee' | 'shop', data: any, listingContext?: any}> = [];
+
+    // If type filter is active, only include items of that type
+    if (filterInfo.typeFilter) {
+      if (filterInfo.typeFilter === 'posts') {
+        items = (storePosts || []).map(post => ({ type: 'post' as const, data: post }));
+      } else if (filterInfo.typeFilter === 'listings') {
+        items = (listings || []).map(listing => ({ type: 'listing' as const, data: listing }));
+      } else if (filterInfo.typeFilter === 'professionals') {
+        items = (employees || []).map(employee => {
+          const listing = listings.find(l => l.id === employee.listingId) || listings[0];
+          return { type: 'employee' as const, data: employee, listingContext: listing };
+        });
+      } else if (filterInfo.typeFilter === 'shops') {
+        items = (shops || []).map(shop => ({ type: 'shop' as const, data: shop }));
+      }
+    } else {
+      // Otherwise, show all types mixed together
+      items = [
+        ...(storePosts || []).map(post => ({ type: 'post' as const, data: post })),
+        ...(listings || []).map(listing => ({ type: 'listing' as const, data: listing })),
+        ...(employees || []).map(employee => {
+          const listing = listings.find(l => l.id === employee.listingId) || listings[0];
+          return { type: 'employee' as const, data: employee, listingContext: listing };
+        }),
+        ...(shops || []).map(shop => ({ type: 'shop' as const, data: shop })),
+      ];
+    }
+
+    return items;
+  }, [storePosts, listings, employees, shops, filterInfo.typeFilter]);
+
   return (
     <ClientProviders>
       <div className="min-h-screen">
@@ -290,8 +327,11 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
           >
             {hasContent ? (
               <>
-                {/* Trending Sections - Only show when not filtered */}
-                {!filterInfo.isFiltered && (
+                {/* Grid View Mode */}
+                {viewMode === 'grid' ? (
+                  <>
+                    {/* Trending Sections - Only show when not filtered */}
+                    {!filterInfo.isFiltered && (
                   <>
                     {/* Trending Posts */}
                     {trendingPosts.length > 0 && (
@@ -509,6 +549,8 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                     </div>
                   );
                 })()}
+                  </>
+                ) : null}
               </>
             ) : (
               <div className="px-8 pt-32 text-center text-gray-500 ">
@@ -520,6 +562,15 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
         </div>
         </Container>
       </div>
+
+      {/* TikTok View Modal Overlay */}
+      {viewMode === 'tiktok' && (
+        <TikTokView
+          items={allContentItems}
+          currentUser={currentUser}
+          onClose={() => setViewMode('grid')}
+        />
+      )}
     </ClientProviders>
   );
 };
