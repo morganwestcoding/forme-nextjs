@@ -2,6 +2,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 
@@ -79,8 +80,14 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<ResultItem[]>([]);
   const [activeIdx, setActiveIdx] = useState<number>(-1);
+  const [dropdownPosition, setDropdownPosition] = useState<{
+    top: number;
+    left: number;
+    width: number;
+  } | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
   // Fetch
@@ -119,6 +126,30 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
       ignore = true;
     };
   }, [debouncedQ]);
+
+  // Update dropdown position when open or on scroll/resize
+  useEffect(() => {
+    const updatePosition = () => {
+      if (!inputRef.current || !open) return;
+      const rect = inputRef.current.getBoundingClientRect();
+      setDropdownPosition({
+        top: rect.bottom + 8, // 8px gap (mt-2)
+        left: rect.left,
+        width: rect.width,
+      });
+    };
+
+    if (open) {
+      updatePosition();
+      window.addEventListener("scroll", updatePosition, true);
+      window.addEventListener("resize", updatePosition);
+    }
+
+    return () => {
+      window.removeEventListener("scroll", updatePosition, true);
+      window.removeEventListener("resize", updatePosition);
+    };
+  }, [open]);
 
   // Click outside to close
   useEffect(() => {
@@ -159,11 +190,24 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
     }
   };
 
-  // Keep active item in view
+  // Keep active item in view - scroll within dropdown only, not the page
   useEffect(() => {
-    if (!listRef.current) return;
-    const node = listRef.current.querySelector<HTMLElement>(`[data-idx="${activeIdx}"]`);
-    node?.scrollIntoView({ block: "nearest" });
+    if (!listRef.current || activeIdx < 0) return;
+    const dropdown = listRef.current;
+    const node = dropdown.querySelector<HTMLElement>(`[data-idx="${activeIdx}"]`);
+    if (!node) return;
+
+    const dropdownRect = dropdown.getBoundingClientRect();
+    const nodeRect = node.getBoundingClientRect();
+
+    // Check if node is above visible area
+    if (nodeRect.top < dropdownRect.top) {
+      dropdown.scrollTop -= dropdownRect.top - nodeRect.top;
+    }
+    // Check if node is below visible area
+    else if (nodeRect.bottom > dropdownRect.bottom) {
+      dropdown.scrollTop += nodeRect.bottom - dropdownRect.bottom;
+    }
   }, [activeIdx]);
 
   const inputClasses = isHeroMode
@@ -178,6 +222,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
         <Search className={iconClasses} />
       </div>
       <input
+        ref={inputRef}
         type="text"
         value={q}
         onChange={(e) => setQ(e.target.value)}
@@ -187,12 +232,18 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
         className={inputClasses}
       />
 
-      {/* Dropdown */}
-      {open && (
-        <div
-          ref={listRef}
-          className="absolute z-50 mt-2 w-full max-h-96 overflow-auto rounded-xl  bg-white shadow-lg"
-        >
+      {/* Dropdown - Portaled to body to escape stacking context */}
+      {open && dropdownPosition && typeof window !== "undefined" &&
+        createPortal(
+          <div
+            ref={listRef}
+            className="fixed z-[9999] max-h-96 overflow-auto rounded-xl bg-white shadow-lg"
+            style={{
+              top: `${dropdownPosition.top}px`,
+              left: `${dropdownPosition.left}px`,
+              width: `${dropdownPosition.width}px`,
+            }}
+          >
           {/* Loading */}
           {loading && (
             <div className="px-4 py-3 text-sm text-gray-500">Searching…</div>
@@ -270,8 +321,10 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
               )}
             </div>
           )}
-        </div>
-      )}
+          </div>,
+          document.body
+        )
+      }
     </div>
   );
 };
