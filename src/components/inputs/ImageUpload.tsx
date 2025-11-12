@@ -315,32 +315,27 @@ export default function ImageUpload({
                   src={value}
                   alt="Uploaded"
                   fill
-                  className="object-cover"
+                  className={clsx("object-cover", rounded !== 'full' && roundedClass)}
                   sizes="(max-width: 768px) 100vw, 800px"
                   priority
                 />
 
-                <div className="absolute top-2 left-2 inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-medium bg-neutral-900/70 text-white">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    width="16"
-                    height="16"
-                    color="#ffffff"
-                    fill="none"
-                  >
-                    {enableCrop ? (
-                      <path d="M6 2v3M18 6v12M6 8h12M6 22v-3M2 6h3M22 18h-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    ) : (
-                      <>
-                        <path d="M14 3.5H10C6.2288 3.5 4.3431 3.5 3.1716 4.6716C2 5.8431 2 7.7288 2 11.5V13.5C2 17.2712 2 19.1569 3.1716 20.3284C4.3431 21.5 6.2288 21.5 10 21.5H14C17.7712 21.5 19.6569 21.5 20.8284 20.3284C22 19.1569 22 17.2712 22 13.5V11.5C22 7.7288 22 5.8431 20.8284 4.6716C19.6569 3.5 17.7712 3.5 14 3.5Z" stroke="currentColor" strokeWidth="1.5" />
-                        <circle cx="8.5" cy="9" r="1.5" stroke="currentColor" strokeWidth="1.5" />
-                        <path d="M21.5 17.5L16.348 11.88C16.1263 11.6377 15.8131 11.5 15.485 11.5C15.1744 11.5 14.8766 11.6234 14.6571 11.8429L10 16.5L7.8393 14.3393C7.622 14.122 7.3274 14 7.0202 14C6.6893 14 6.3742 14.1415 6.1544 14.3888L2.5 18.5" stroke="currentColor" strokeWidth="1.5" />
-                      </>
-                    )}
-                  </svg>
-                  {enableCrop ? 'Auto-cropped' : 'Image'}
-                </div>
+                {/* Circular overlay for rounded full images */}
+                {rounded === 'full' && (
+                  <div className="absolute inset-0 pointer-events-none">
+                    <svg className="w-full h-full" viewBox="0 0 100 100">
+                      <defs>
+                        <mask id="circle-mask">
+                          <rect x="0" y="0" width="100" height="100" fill="white" />
+                          <circle cx="50" cy="50" r="48" fill="black" />
+                        </mask>
+                      </defs>
+                      <rect x="0" y="0" width="100" height="100" fill="black" fillOpacity="0.5" mask="url(#circle-mask)" />
+                      <circle cx="50" cy="50" r="48" fill="none" stroke="white" strokeWidth="0.5" strokeDasharray="2,2" />
+                    </svg>
+                  </div>
+                )}
+
 
                 <div className="absolute bottom-2 right-2 flex gap-1">
                   <button
