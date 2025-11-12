@@ -47,20 +47,20 @@ const UserTypeStep: React.FC<UserTypeStepProps> = ({
     {
       type: 'customer' as const,
       icon: ShoppingBagIcon,
-      title: 'Customer',
-      info: 'Browse businesses, book appointments, and discover new services in your area.',
+      title: 'Simple Shopper',
+      info: 'Perfect for discovering services, booking appointments, and making purchases. This option is designed for personal use—not for promoting or managing a business.',
     },
     {
       type: 'individual' as const,
       icon: UserIcon,
       title: 'Individual Provider',
-      info: "Create your own business listing and manage your services independently.",
+      info: "Ideal for independent professionals operating solo. Create your own business profile, showcase your services, and manage your bookings—all without being part of a larger organization.",
     },
     {
       type: 'team' as const,
       icon: TeamIcon,
       title: 'Team Member',
-      info: "Find your business and set up your employee profile with the services you provide.",
+      info: "For professionals working within an established business. Connect to your company's existing profile and set up your individual service offerings as part of the team.",
     },
   ];
 
@@ -160,7 +160,7 @@ const UserTypeStep: React.FC<UserTypeStepProps> = ({
                 <div className="text-center space-y-2 flex-1 flex flex-col justify-center">
                   <h3
                     className={`
-                      font-semibold text-md leading-tight
+                     font-semibold leading-tight
                       transition-colors duration-300
                       text-gray-900
                     `}
@@ -195,20 +195,21 @@ const UserTypeStep: React.FC<UserTypeStepProps> = ({
               >
                 <svg
                   className="w-5 h-5 text-white"
-                  fill="none"
-                  stroke="currentColor"
+                  xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
+                  fill="none"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></circle>
+                  <path d="M12 16V11.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+                  <path d="M12 8.01172V8.00172" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
                 </svg>
               </div>
               <div className="flex-1 min-w-0">
-                <h4 className="text-sm font-semibold text-gray-900 mb-1">What's next?</h4>
+                <h4 className="text-sm font-semibold text-gray-900 mb-1">
+                  {userType === 'customer' && "What's a Simple Shopper?"}
+                  {userType === 'individual' && "What's an Individual Provider?"}
+                  {userType === 'team' && "What's a Team Member?"}
+                </h4>
                 <p className="text-sm text-gray-700 leading-relaxed">
                   {options.find(opt => opt.type === userType)?.info}
                 </p>
