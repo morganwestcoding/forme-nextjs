@@ -75,7 +75,7 @@
   }
   html,
   body {
-    @apply text-foreground bg-[#fafafa];
+    @apply text-foreground bg-white;
     min-height: 100vh;
   }
 }
@@ -133,6 +133,11 @@ main {
 @keyframes fadeInUp {
   from { opacity: 0; transform: translate3d(0, 8px, 0); }
   to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes shimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 
 @keyframes shadowRolling {
@@ -199,4 +204,26 @@ main {
       200px 0 rgba(96, 165, 250, 0),
       200px 0 rgba(96, 165, 250, 0);
   }
+}
+
+/* ===========================
+   Quick Flash Effect
+   =========================== */
+@keyframes quickFlash {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+    filter: brightness(2);
+  }
+  100% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+}
+
+.flash-animation {
+  display: inline-block;
+  animation: quickFlash 0.3s ease-out forwards;
 }

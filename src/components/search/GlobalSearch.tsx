@@ -212,7 +212,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
 
   const inputClasses = isHeroMode
     ? "w-full h-12 pl-12 pr-4 text-sm backdrop-blur-md bg-white/10 border border-white/40 rounded-lg outline-none focus:ring-1 focus:ring-white/60 focus:border-white/60 text-white placeholder-white/70"
-    : "w-full h-12 pl-12 pr-4 text-sm border border-gray-400 rounded-lg outline-none focus:border-gray-500 hover:text-gray-700 bg-white placeholder-gray-600/90 text-gray-600/90 transition-all duration-200";
+    : "w-full h-12 pl-12 pr-4 text-sm border border-gray-300 rounded-xl outline-none focus:border-gray-400 hover:text-gray-900 bg-white placeholder-gray-600 text-gray-700 transition-all duration-200 shadow-sm";
 
   const iconClasses = isHeroMode ? "w-5 h-5 text-white" : "w-5 h-5 text-gray-600/90 group-hover:text-gray-700 transition-colors duration-200";
 
@@ -263,7 +263,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
                   if (!section.length) return null;
                   return (
                     <div key={typeKey}>
-                      <div className="px-4 pt-2 pb-1 text-[11px] uppercase tracking-wide text-gray-400">
+                      <div className="px-4 pt-3 pb-1 text-[11px] uppercase tracking-wide text-gray-400">
                         {typeLabel[typeKey as ItemType]}
                       </div>
                       <ul className="mb-1">

@@ -22,19 +22,19 @@ const ShoppingBagIcon = ({ className }: { className?: string }) => (
 
 const UserIcon = ({ className }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" className={`block ${className || ''}`}>
-    <path d="M17 8.5C17 5.73858 14.7614 3.5 12 3.5C9.23858 3.5 7 5.73858 7 8.5C7 11.2614 9.23858 13.5 12 13.5C14.7614 13.5 17 11.2614 17 8.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M19 20.5C19 16.634 15.866 13.5 12 13.5C8.13401 13.5 5 16.634 5 20.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" stroke="currentColor" strokeWidth="1.5" />
+    <path d="M14 14H10C7.23858 14 5 16.2386 5 19C5 20.1046 5.89543 21 7 21H17C18.1046 21 19 20.1046 19 19C19 16.2386 16.7614 14 14 14Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
   </svg>
 );
 
 const TeamIcon = ({ className }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" className={`block ${className || ''}`}>
-    <path d="M15.5 11C15.5 9.067 13.933 7.5 12 7.5C10.067 7.5 8.5 9.067 8.5 11C8.5 12.933 10.067 14.5 12 14.5C13.933 14.5 15.5 12.933 15.5 11Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M15.4827 11.3499C15.8047 11.4475 16.1462 11.5 16.5 11.5C18.433 11.5 20 9.933 20 8C20 6.067 18.433 4.5 16.5 4.5C14.6851 4.5 13.1928 5.8814 13.0173 7.65013" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M10.9827 7.65013C10.8072 5.8814 9.31492 4.5 7.5 4.5C5.567 4.5 4 6.067 4 8C4 9.933 5.567 11.5 7.5 11.5C7.85381 11.5 8.19535 11.4475 8.51727 11.3499" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M22 16.5C22 13.7386 19.5376 11.5 16.5 11.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M17.5 19.5C17.5 16.7386 15.0376 14.5 12 14.5C8.96243 14.5 6.5 16.7386 6.5 19.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M7.5 11.5C4.46243 11.5 2 13.7386 2 16.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M15 8C15 9.65685 13.6569 11 12 11C10.3431 11 9 9.65685 9 8C9 6.34315 10.3431 5 12 5C13.6569 5 15 6.34315 15 8Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M16 4C17.6568 4 19 5.34315 19 7C19 8.22309 18.268 9.27523 17.2183 9.7423" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M13.7143 14H10.2857C7.91876 14 5.99998 15.9188 5.99998 18.2857C5.99998 19.2325 6.76749 20 7.71426 20H16.2857C17.2325 20 18 19.2325 18 18.2857C18 15.9188 16.0812 14 13.7143 14Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M17.7143 13C20.0812 13 22 14.9188 22 17.2857C22 18.2325 21.2325 19 20.2857 19" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M8 4C6.34315 4 5 5.34315 5 7C5 8.22309 5.73193 9.27523 6.78168 9.7423" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M3.71429 19C2.76751 19 2 18.2325 2 17.2857C2 14.9188 3.91878 13 6.28571 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
@@ -47,31 +47,31 @@ const UserTypeStep: React.FC<UserTypeStepProps> = ({
     {
       type: 'customer' as const,
       icon: ShoppingBagIcon,
-      title: 'Simple Shopper',
+      title: 'Simple\nShopper',
       info: 'Perfect for discovering services, booking appointments, and making purchases. This option is designed for personal use—not for promoting or managing a business.',
     },
     {
       type: 'individual' as const,
       icon: UserIcon,
-      title: 'Individual Provider',
+      title: 'Individual\nProvider',
       info: "Ideal for independent professionals operating solo. Create your own business profile, showcase your services, and manage your bookings—all without being part of a larger organization.",
     },
     {
       type: 'team' as const,
       icon: TeamIcon,
-      title: 'Team Member',
+      title: 'Team\nMember',
       info: "For professionals working within an established business. Connect to your company's existing profile and set up your individual service offerings as part of the team.",
     },
   ];
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-4">
       <Heading
         title="How will you use Forme?"
         subtitle="Choose your account type to get started with the right experience."
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {options.map((option) => {
           const Icon = option.icon;
           const isSelected = userType === option.type;
@@ -88,7 +88,7 @@ const UserTypeStep: React.FC<UserTypeStepProps> = ({
                 ${isLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
                 ${isSelected
                   ? 'ring-2 ring-offset-2 shadow scale-[1.02]'
-                  : 'hover:scale-[1.02] hover:shadow shadow'
+                  : 'hover:scale-[1.02] hover:shadow shadow-sm'
                 }
                 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2
               `}
@@ -128,14 +128,14 @@ const UserTypeStep: React.FC<UserTypeStepProps> = ({
               )}
 
               {/* Content */}
-              <div className="relative z-10 flex flex-col p-8 min-h-[200px]">
+              <div className="relative z-10 flex flex-col p-8 min-h-[170px]">
                 {/* Icon container - fixed at top */}
-                <div className="flex justify-center mb-4">
+                <div className="flex justify-center">
                   <div
                     className={`
                       w-16 h-16 rounded-md
                       flex items-center justify-center
-                      transition-all duration-300
+                      transition-all duration-300 mb-2
                       ${isSelected
                         ? 'bg-white shadow'
                         : 'bg-white shadow-sm group-hover:shadow'
@@ -149,7 +149,7 @@ const UserTypeStep: React.FC<UserTypeStepProps> = ({
                       <Icon
                         className={`
                           transition-all duration-300
-                          ${isSelected ? '' : 'text-gray-700 group-hover:text-gray-900'}
+                          ${isSelected ? '' : 'text-gray-600/90 group-hover:text-gray-900'}
                         `}
                       />
                     </div>
@@ -160,9 +160,10 @@ const UserTypeStep: React.FC<UserTypeStepProps> = ({
                 <div className="text-center space-y-2 flex-1 flex flex-col justify-center">
                   <h3
                     className={`
-                     font-semibold leading-tight
+                     text-xs leading-tight
                       transition-colors duration-300
                       text-gray-900
+                      whitespace-pre-line
                     `}
                   >
                     {option.title}

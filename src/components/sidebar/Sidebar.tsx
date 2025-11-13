@@ -134,13 +134,16 @@ const Sidebar: React.FC<SidebarProps> = ({
       )}
 
       {/* Main Sidebar */}
-      <div 
+      <div
         className={`
-          h-screen overflow-y-auto bg-white w-56
-          fixed top-0 left-0 bottom-0 border-r border-gray-400 z-50
+          h-screen overflow-y-auto w-56
+          fixed top-0 left-0 border-r border-gray-300/30 bottom-0 z-50
           transition-transform duration-300 ease-in-out
           ${isCollapsed ? '-translate-x-full' : 'translate-x-0'}
         `}
+        style={{
+          background: '#f5f5f5'
+        }}
       >
         {/* Collapse button hover zone - only on right edge */}
         {!isMobile && !isCollapsed && (
@@ -196,14 +199,14 @@ const Sidebar: React.FC<SidebarProps> = ({
             </div>
           )}
 
-          <div className="flex flex-col w-full px-6 pt-2 flex-1">
+          <div className="flex flex-col w-full px-6 pt-1 flex-1">
             <ul className="list-none m-0 p-0 flex flex-col items-center space-y-4 flex-1">
               {/* Discover */}
               <li className="relative w-full">
                 <div
                   className={`
-                    flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
-                    ${selectedButton === 'home' ? 'text-[#60A5FA]' : 'text-gray-600/90 hover:text-neutral-700 hover:bg-gray-50'}
+                    flex items-center w-full px-5 py-2.5 rounded-xl transition-all duration-200 cursor-pointer border border-transparent
+                    ${selectedButton === 'home' ? 'text-[#4F9EF8]' : 'text-gray-600/90 hover:text-neutral-700 hover:bg-white/80 hover:border-gray-300/70'}
                   `}
                   onClick={() => handleNavigate('/', 'home')}
                 >
@@ -230,8 +233,8 @@ const Sidebar: React.FC<SidebarProps> = ({
               <li className="relative w-full">
                 <div
                   className={`
-                    flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
-                    ${selectedButton === 'market' ? 'text-[#60A5FA]' : 'text-gray-600/90 hover:text-neutral-700 hover:bg-gray-50'}
+                    flex items-center w-full px-5 py-2.5 rounded-xl transition-all duration-200 cursor-pointer border border-transparent
+                    ${selectedButton === 'market' ? 'text-[#4F9EF8]' : 'text-gray-600/90 hover:text-neutral-700 hover:bg-white/80 hover:border-gray-300/70'}
                   `}
                   onClick={() => handleNavigate('/market', 'market')}
                 >
@@ -259,8 +262,8 @@ const Sidebar: React.FC<SidebarProps> = ({
               <li className="relative w-full">
                 <div
                   className={`
-                    flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
-                    ${selectedButton === 'shops' ? 'text-[#60A5FA]' : 'text-gray-600/90 hover:text-neutral-700 hover:bg-gray-50'}
+                    flex items-center w-full px-5 py-2.5 rounded-xl transition-all duration-200 cursor-pointer border border-transparent
+                    ${selectedButton === 'shops' ? 'text-[#4F9EF8] bg-gray-200/50 border-gray-300/60' : 'text-gray-600/90 hover:text-neutral-700 hover:bg-white/80 hover:border-gray-300/70'}
                   `}
                   onClick={() => handleNavigate('/shops', 'shops')}
                 >
@@ -289,8 +292,8 @@ const Sidebar: React.FC<SidebarProps> = ({
               <li className="relative w-full">
                 <div
                   className={`
-                    flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
-                    ${selectedButton === 'favorites' ? 'text-[#60A5FA]' : 'text-gray-600/90 hover:text-neutral-700 hover:bg-gray-50'}
+                    flex items-center w-full px-5 py-2.5 rounded-xl transition-all duration-200 cursor-pointer border border-transparent
+                    ${selectedButton === 'favorites' ? 'text-[#4F9EF8] bg-gray-200/50 border-gray-300/60' : 'text-gray-600/90 hover:text-neutral-700 hover:bg-white/80 hover:border-gray-300/70'}
                   `}
                   onClick={() => handleNavigate('/favorites', 'favorites')}
                 >
@@ -316,8 +319,8 @@ const Sidebar: React.FC<SidebarProps> = ({
               <li className="relative w-full">
                 <div
                   className={`
-                    flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
-                    ${selectedButton === 'Appointments' ? 'text-[#60A5FA]' : 'text-gray-600/90 hover:text-neutral-700 hover:bg-gray-50'}
+                    flex items-center w-full px-5 py-2.5 rounded-xl transition-all duration-200 cursor-pointer border border-transparent
+                    ${selectedButton === 'Appointments' ? 'text-[#4F9EF8] bg-gray-200/50 border-gray-300/60' : 'text-gray-600/90 hover:text-neutral-700 hover:bg-white/80 hover:border-gray-300/70'}
                   `}
                   onClick={() => handleNavigate('/bookings/reservations', 'Appointments')}
                 >
@@ -346,8 +349,8 @@ const Sidebar: React.FC<SidebarProps> = ({
               <li className="relative w-full">
                 <div
                   className={`
-                    flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
-                    ${selectedButton === 'inbox' ? 'text-[#60A5FA]' : 'text-gray-600/90 hover:text-neutral-700 hover:bg-gray-50'}
+                    flex items-center w-full px-5 py-2.5 rounded-xl transition-all duration-200 cursor-pointer border border-transparent
+                    ${selectedButton === 'inbox' ? 'text-[#4F9EF8] bg-gray-200/50 border-gray-300/60' : 'text-gray-600/90 hover:text-neutral-700 hover:bg-white/80 hover:border-gray-300/70'}
                   `}
                   onClick={() => handleModalOpen(() => inboxModal.onOpen(currentUser), 'inbox')}
                 >
@@ -374,8 +377,8 @@ const Sidebar: React.FC<SidebarProps> = ({
               <li className="relative w-full">
                 <div
                   className={`
-                    flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
-                    ${selectedButton === 'notifications' ? 'text-[#60A5FA]' : 'text-gray-600/90 hover:text-neutral-700 hover:bg-gray-50'}
+                    flex items-center w-full px-5 py-2.5 rounded-xl transition-all duration-200 cursor-pointer border border-transparent
+                    ${selectedButton === 'notifications' ? 'text-[#4F9EF8] bg-gray-200/50 border-gray-300/60' : 'text-gray-600/90 hover:text-neutral-700 hover:bg-white/80 hover:border-gray-300/70'}
                   `}
                   onClick={() => handleModalOpen(() => notificationsModal.onOpen(), 'notifications')}
                 >
@@ -402,8 +405,8 @@ const Sidebar: React.FC<SidebarProps> = ({
               <li className="relative w-full">
                 <div
                   className={`
-                    flex items-center w-full px-5 py-2.5 rounded-md transition-all duration-200 cursor-pointer
-                    ${selectedButton === 'settings' ? 'text-[#60A5FA]' : 'text-gray-600/90 hover:text-neutral-700 hover:bg-gray-50'}
+                    flex items-center w-full px-5 py-2.5 rounded-xl transition-all duration-200 cursor-pointer border border-transparent
+                    ${selectedButton === 'settings' ? 'text-[#4F9EF8] bg-gray-200/50 border-gray-300/60' : 'text-gray-600/90 hover:text-neutral-700 hover:bg-white/80 hover:border-gray-300/70'}
                   `}
                   onClick={() => handleNavigate('/settings', 'settings')}
                 >

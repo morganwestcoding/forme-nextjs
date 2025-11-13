@@ -285,40 +285,35 @@ const MarketClient: React.FC<MarketClientProps> = ({
   return (
     <div className="min-h-screen">
       <Container>
-        {/* Hero Section - Full Width with Subtle Gradient & Shadow Layers */}
+        {/* Hero Section - Frosted Glass Effect */}
         <div className="-mx-6 md:-mx-24 -mt-2 md:-mt-8">
-        <div className="relative px-6 md:px-24 pt-10 pb-8 overflow-hidden">
-          {/* Subtle shadow layers for depth with animation */}
-          <div className="absolute inset-0 pointer-events-none">
-            {/* Top soft shadow */}
-            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
-
-            {/* Soft inner glow from top */}
-            <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-white/60 to-transparent"></div>
-
-            {/* Subtle corner accents */}
-            <div className="absolute top-0 left-0 w-64 h-64 bg-blue-500/[0.03] rounded-full blur-3xl"></div>
-            <div className="absolute bottom-0 right-0 w-96 h-96 bg-indigo-500/[0.02] rounded-full blur-3xl"></div>
-          </div>
+        <div
+          className="relative px-6 md:px-24 pt-10 overflow-hidden"
+          style={{
+            background: 'linear-gradient(to bottom, #FFFFFF 0%, #FAFAFA 100%)'
+          }}
+        >
 
           {/* Content */}
-          <div className="relative z-10">
+          <div className="relative z-10 pb-8">
             {/* Main Market Title */}
-            <div className="mb-3">
-              <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 leading-tight tracking-tight">
+            <div className="">
+              <h1 className="text-4xl md:text-4xl font-extrabold text-gray-900 leading-tight tracking-tight">
                 Market
               </h1>
-              <p className="text-gray-600 text-md mt-3">Discover unique places from our vendors</p>
+              <p className="text-gray-600 text-lg mt-1">Discover unique places from our vendors</p>
             </div>
 
             {/* Search and Controls */}
             <MarketSearch isHeroMode={false} />
+                  {/* Category Navigation */}
+    
           </div>
+            <CategoryNav searchParams={searchParams} />
         </div>
       </div>
 
-      {/* Category Navigation */}
-      <CategoryNav searchParams={searchParams} />
+
 
       {/* Content + loader overlay */}
       <div className="relative">

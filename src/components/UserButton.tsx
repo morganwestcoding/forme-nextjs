@@ -94,7 +94,7 @@ const UserButton: React.FC<UserButtonProps> = ({
 
   const buttonClass = noBg
     ? "flex items-center justify-start cursor-pointer outline-none touch-manipulation"
-    : "w-44 py-3 mt-1 px-4 bg-gray-50 border border-gray-400 flex items-center justify-start mb-6 cursor-pointer rounded-lg relative transition-all duration-300 hover:bg-blue-50/50 hover:border-[#60A5FA]/50 hover:shadow-sm outline-none backdrop-blur-sm";
+    : "w-44 py-3 px-3 bg-white flex items-center mt-1 gap-3 mb-6 cursor-pointer rounded-xl relative transition-all duration-200 outline-none group hover:bg-white/80 border border-gray-200/50 hover:border-gray-300/70";
 
 
   const dropdownWidthClass = noBg ? "min-w-44" : "w-44";
@@ -111,25 +111,26 @@ const UserButton: React.FC<UserButtonProps> = ({
         aria-expanded={isOpen}
         data-state={isOpen ? "open" : "closed"}
       >
-        <Avatar src={currentUser?.image ?? undefined} />
-        <div className="ml-3 flex flex-col items-start text-left">
+        <div className="ml-0.5 relative">
+          <Avatar src={currentUser?.image ?? undefined} />
+          <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full" />
+        </div>
+        <div className="flex flex-col items-start flex-1 min-w-0 pl-0.5">
           {currentUser ? (
             <>
-              <span className="text-black  font-medium text-xs leading-none">
+              <span className="text-gray-700 font-medium text-xs truncate w-full text-left">
                 {displayName}
               </span>
-              <div className="h-1" />
-              <span className="text-gray-500   text-xs leading-none">
+              <span className="text-gray-400 text-xs text-left">
                 {planLabel}
               </span>
             </>
           ) : (
             <>
-              <span className="text-black text-sm font-medium leading-none">
+              <span className="text-gray-700 text-xs font-medium text-left">
                 Login
               </span>
-              <div className="h-1" />
-              <span className="text-gray-500 text-xs leading-none">
+              <span className="text-gray-400 text-[11px] text-left">
                 {`${formatTier(undefined)} Tier`}
               </span>
             </>
@@ -138,9 +139,9 @@ const UserButton: React.FC<UserButtonProps> = ({
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
-        className={`bg-white bg-opacity-90 backdrop-blur-lg rounded-lg p-3 shadow-lg border-none z-[100] ${dropdownWidthClass}`}
+        className={`bg-white rounded-xl p-2 shadow-[0_20px_60px_-12px_rgba(0,0,0,0.25)] border border-gray-200/80 z-[100] ${dropdownWidthClass}`}
         side="bottom"
-        align="center"
+        align="start"
         sideOffset={8}
       >
         {currentUser ? (
