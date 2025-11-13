@@ -143,7 +143,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         `}
         style={{
           background: '#f5f5f5',
-          boxShadow: 'inset -2px 0 8px rgba(0, 0, 0, 0.03)'
+          boxShadow: 'inset -2px 0 8px rgba(0, 0, 0, 0.01)'
         }}
       >
         {/* Collapse button hover zone - only on right edge */}

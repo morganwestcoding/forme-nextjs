@@ -113,7 +113,7 @@ const SmartBadgeWorker: React.FC<SmartBadgeWorkerProps> = ({
   return (
     <div className="flex items-center gap-2">
       {/* Rating container - glassmorphism theme */}
-      <div className="group/rating border border-white/40 rounded-md px-3 py-2 bg-white/10 backdrop-blur-md hover:border-white/60 hover:bg-white/20 transition-colors duration-200">
+      <div className="group/rating border border-white/15 rounded-lg px-3 py-2 bg-white/10 backdrop-blur-md hover:border-white/60 hover:bg-white/20 transition-colors duration-200">
         <div className="flex items-center text-white/90 text-xs">
           <button
             onClick={handleRatingClick}
@@ -131,7 +131,7 @@ const SmartBadgeWorker: React.FC<SmartBadgeWorkerProps> = ({
       {/* Reserve button - glassmorphism theme */}
       <button
         onClick={handleBookNowClick}
-        className="text-white/90 border border-white/40 rounded-md px-3.5 py-2 bg-white/10 backdrop-blur-md hover:border-white/60 hover:bg-white/20 transition-colors duration-200 text-xs"
+        className="text-white/90 border border-white/15 rounded-lg px-3.5 py-2 bg-white/10 backdrop-blur-md hover:border-white/60 hover:bg-white/20 transition-colors duration-200 text-xs"
         type="button"
       >
         Reserve

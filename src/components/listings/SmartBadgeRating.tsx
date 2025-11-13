@@ -97,10 +97,10 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
 
   const getStatusBorderColor = (color: string) => {
     switch (color) {
-      case 'green': return 'border-white/40 hover:border-green-300/60';
-      case 'orange': return 'border-white/40 hover:border-yellow-300/60';
-      case 'red': return 'border-white/40 hover:border-rose-400/60';
-      default: return 'border-white/40 hover:border-white/60';
+      case 'green': return 'border-white/15 hover:border-green-300/60';
+      case 'orange': return 'border-white/15 hover:border-yellow-300/60';
+      case 'red': return 'border-white/15 hover:border-rose-400/60';
+      default: return 'border-white/15 hover:border-white/60';
     }
   };
 
@@ -117,7 +117,7 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
   return (
     <div className="flex items-center gap-2">
       {/* Rating Button */}
-      <div className="group/rating border border-white/40 rounded-md px-3 py-2 bg-white/10 backdrop-blur-md hover:border-white/60 hover:bg-white/20 transition-colors duration-200">
+      <div className="group/rating border border-white/10 rounded-lg px-3 py-2 bg-white/10 backdrop-blur-md hover:border-white/60 hover:bg-white/20 transition-colors duration-200">
         <div className="flex items-center text-white/90 text-xs">
           <button
             onClick={handleRatingClick}
@@ -135,7 +135,7 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
       {/* Time Status Button with color-coded status */}
       <button
         onClick={handleTimeClick}
-        className={`${getStatusTextColor(timeStatus.color)} border ${getStatusBorderColor(timeStatus.color)} rounded-md px-3.5 py-2 bg-white/10 backdrop-blur-md hover:bg-white/20 transition-colors duration-200 text-xs`}
+        className={`${getStatusTextColor(timeStatus.color)} border ${getStatusBorderColor(timeStatus.color)} rounded-lg px-3.5 py-2 bg-white/10 backdrop-blur-md hover:bg-white/20 transition-colors duration-200 text-xs`}
         type="button"
       >
         {timeStatus.message}
