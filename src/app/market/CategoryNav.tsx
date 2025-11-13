@@ -44,7 +44,7 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams }) => {
               <button
                 onClick={() => handleCategorySelect(category.label)}
                 className={`
-                  px-6 py-2.5 text-sm transition-colors duration-150 rounded-lg
+                  px-6 py-3.5 text-sm transition-colors duration-150 rounded-lg
                   ${isSelected
                     ? 'text-[#60A5FA] hover:text-[#4F94E5]'
                     : 'text-gray-600/90 hover:text-gray-700'

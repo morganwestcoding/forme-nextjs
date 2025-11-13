@@ -305,7 +305,9 @@ const MarketClient: React.FC<MarketClientProps> = ({
             </div>
 
             {/* Search and Controls */}
-            <MarketSearch isHeroMode={false} />
+            <div className="mt-5">
+              <MarketSearch isHeroMode={false} />
+            </div>
                   {/* Category Navigation */}
     
           </div>

@@ -25,7 +25,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
   const hasNavigation = onPrev || onNext;
 
   return (
-    <div className={`mt-10 mb-4 ${className}`}>
+    <div className={`mt-8 mb-4 ${className}`}>
       <div className="flex items-end justify-between">
         {/* LEFT: title with underline (unchanged as requested) */}
         <div>
