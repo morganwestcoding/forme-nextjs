@@ -9,6 +9,7 @@ import PostCard from '@/components/feed/PostCard';
 import { categories } from '@/components/Categories';
 import { SafeListing, SafeUser, SafeEmployee, SafeShop, SafePost } from '@/app/types';
 import FavoritesExplorer from '@/components/favorites/FavoritesExplorer';
+import CategoryNav from '@/components/favorites/CategoryNav';
 import EmptyState from '@/components/EmptyState';
 import SectionHeader from '../market/SectionHeader';
 import PropagateLoaderWrapper from '@/components/loaders/PropagateLoaderWrapper';
@@ -264,19 +265,34 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
 
   return (
     <Container>
-      <div className="pt-2 mb-4">
-        <h1 className="text-3xl md:text-3xl font-bold text-black leading-tight tracking-wide">Favorites</h1>
-        <p className="text-gray-600">A one stop shop for all of your favorite things</p>
+      <div className="-mx-6 md:-mx-24 -mt-2 md:-mt-8">
+        <div
+          className="relative px-6 md:px-24 pt-10 overflow-hidden"
+          style={{
+            background: 'linear-gradient(to bottom, #FFFFFF 0%, #FAFAFA 100%)'
+          }}
+        >
+          <div className="relative z-10 pb-8">
+            <div className="">
+              <h1 className="text-4xl md:text-4xl font-extrabold text-gray-900 leading-tight tracking-tight">
+                Favorites
+              </h1>
+              <p className="text-gray-600 text-lg mt-1">A one stop shop for all of your favorite things</p>
+            </div>
+
+            <div className="mt-5">
+              <FavoritesExplorer
+                viewState={viewState}
+                setViewState={setViewState}
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
+              />
+            </div>
+          </div>
+          <CategoryNav activeTab={activeTab} setActiveTab={setActiveTab} />
+        </div>
       </div>
 
-      <FavoritesExplorer
-        viewState={viewState}
-        setViewState={setViewState}
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-      />
-
-      {/* Content + loader overlay */}
       <div className="relative">
         {isLoading && (
           <div className="pointer-events-none absolute inset-0 z-10 flex items-start justify-center">

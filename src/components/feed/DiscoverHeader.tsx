@@ -1,11 +1,9 @@
-// components/Discover/DiscoverHeader.tsx
 'use client';
 
 import React from 'react';
 import { useSearchParams } from 'next/navigation';
 import useCreatePostModal from '@/app/hooks/useCreatePostModal';
 import useFilterModal from '@/app/hooks/useFilterModal';
-import { useViewMode } from '@/app/hooks/useViewMode';
 import GlobalSearch from '../search/GlobalSearch';
 
 interface DiscoverHeaderProps {
@@ -18,7 +16,6 @@ const DiscoverHeader: React.FC<DiscoverHeaderProps> = ({
   const params = useSearchParams();
   const createPostModal = useCreatePostModal();
   const filterModal = useFilterModal();
-  const { viewMode, setViewMode } = useViewMode();
 
   const handleCreatePost = () => {
     createPostModal.onOpen();
@@ -49,10 +46,9 @@ const DiscoverHeader: React.FC<DiscoverHeaderProps> = ({
 
   const activeFilterCount = getActiveFilterCount();
 
-  // Hero mode or normal mode button styles
   const buttonBaseClasses = isHeroMode
     ? "backdrop-blur-md bg-white/10 hover:bg-blue-400/10 border border-white/40 hover:border-blue-400/60 text-white hover:text-[#60A5FA]"
-    : "bg-gradient-to-br from-white via-white to-gray-50 border border-gray-400 text-gray-600/90 hover:!bg-gray-100 hover:bg-none hover:border-gray-500 hover:text-gray-700 transition-all duration-500 ease-out";
+    : "bg-white border border-gray-300 hover:border-gray-400 text-gray-700 hover:bg-white/80 transition-all duration-200 shadow-sm";
 
   return (
     <div className="min-h-0">
@@ -66,63 +62,10 @@ const DiscoverHeader: React.FC<DiscoverHeaderProps> = ({
           />
         </div>
 
-        {/* View Toggle */}
-        <div className={`${buttonBaseClasses} rounded-lg flex items-center gap-0.5 px-2 py-0.5 relative group`}>
-          {/* Grid View Button */}
-          <button
-            onClick={() => setViewMode('grid')}
-            className={`relative py-1.5 px-3.5 rounded-md transition-all duration-200 ${
-              viewMode === 'grid'
-                ? 'bg-gray-50 border-gray-400 border text-gray-600/90'
-                : 'hover:bg-black/5'
-            }`}
-            type="button"
-            title="Grid View"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              width="18"
-              height="18"
-              fill="none"
-              className="transition-colors duration-200"
-            >
-              <path d="M13 4H11C8.64298 4 7.46447 4 6.73223 4.73223C6 5.46447 6 6.64298 6 9V15C6 17.357 6 18.5355 6.73223 19.2678C7.46447 20 8.64298 20 11 20H13C15.357 20 16.5355 20 17.2678 19.2678C18 18.5355 18 17.357 18 15V9C18 6.64298 18 5.46447 17.2678 4.73223C16.5355 4 15.357 4 13 4Z" stroke={viewMode === 'grid' ? 'rgb(75 85 99 / 0.9)' : 'currentColor'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M2 17.5C2.82843 17.5 3.5 16.8284 3.5 16V8C3.5 7.17157 2.82843 6.5 2 6.5" stroke={viewMode === 'grid' ? 'rgb(75 85 99 / 0.9)' : 'currentColor'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M22 17.5C21.1716 17.5 20.5 16.8284 20.5 16V8C20.5 7.17157 21.1716 6.5 22 6.5" stroke={viewMode === 'grid' ? 'rgb(75 85 99 / 0.9)' : 'currentColor'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
-
-          {/* TikTok View Button */}
-          <button
-            onClick={() => setViewMode('tiktok')}
-            className={`relative py-1.5 px-3.5 rounded-md transition-all duration-200 ${
-              viewMode === 'tiktok'
-                ? 'bg-gray-50 border-gray-400 border'
-                : 'hover:bg-black/5'
-            }`}
-            type="button"
-            title="TikTok View"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              width="18"
-              height="18"
-              fill="none"
-              className="transition-colors duration-200"
-            >
-              <path d="M16 7C18.357 7 19.5355 7 20.2678 7.73223C21 8.46447 21 9.64298 21 12C21 14.357 21 15.5355 20.2678 16.2678C19.5355 17 18.357 17 16 17H8C5.64298 17 4.46447 17 3.73223 16.2678C3 15.5355 3 14.357 3 12C3 9.64298 3 8.46447 3.73223 7.73223C4.46447 7 5.64298 7 8 7L16 7Z" stroke={viewMode === 'tiktok' ? 'rgb(75 85 99 / 0.9)' : 'currentColor'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M17 2C16.8955 2.54697 16.7107 2.94952 16.3838 3.26777C15.6316 4 14.4211 4 12 4C9.5789 4 8.36835 4 7.61621 3.26777C7.28931 2.94952 7.10449 2.54697 7 2" stroke={viewMode === 'tiktok' ? 'rgb(75 85 99 / 0.9)' : 'currentColor'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M17 22C16.8955 21.453 16.7107 21.0505 16.3838 20.7322C15.6316 20 14.4211 20 12 20C9.5789 20 8.36835 20 7.61621 20.7322C7.28931 21.0505 7.10449 21.453 7 22" stroke={viewMode === 'tiktok' ? 'rgb(75 85 99 / 0.9)' : 'currentColor'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
-        </div>
-
         {/* Filters Button */}
         <button
           onClick={handleOpenFilters}
-          className={`${buttonBaseClasses} py-2.5 px-4 rounded-lg transition-all duration-200 flex items-center space-x-2 text-sm relative group`}
+          className={`${buttonBaseClasses} py-2.5 px-4 rounded-xl transition-all duration-200 flex items-center space-x-2 text-sm relative group`}
           type="button"
         >
           <div className="relative w-[22px] h-[22px] flex items-center justify-center">
@@ -151,7 +94,7 @@ const DiscoverHeader: React.FC<DiscoverHeaderProps> = ({
                 height: '28px'
               }}
             >
-              <span className="w-full h-full rounded-md border-[#60A5FA] border bg-blue-50 flex items-center justify-center text-xs font-semibold" style={{ color: '#60A5FA' }}>
+              <span className="w-full h-full rounded-full border-[#60A5FA]/50 border bg-blue-50 flex items-center justify-center text-sm font-semibold" style={{ color: '#60A5FA' }}>
                 {activeFilterCount > 0 && activeFilterCount}
               </span>
             </span>
@@ -162,7 +105,7 @@ const DiscoverHeader: React.FC<DiscoverHeaderProps> = ({
         {/* Create Button */}
         <button
           onClick={handleCreatePost}
-          className={`${buttonBaseClasses} flex items-center justify-center py-2.5 space-x-2 px-4 rounded-lg transition-all duration-200 group`}
+          className={`${buttonBaseClasses} flex items-center justify-center py-2.5 space-x-2 px-4 rounded-xl transition-all duration-200 group`}
           type="button"
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" color="currentColor" fill="none" className="transition-colors duration-200">

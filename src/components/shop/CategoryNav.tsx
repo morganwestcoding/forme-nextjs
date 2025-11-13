@@ -32,7 +32,7 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams }) => {
   };
 
   return (
-    <div className="-mx-6 md:-mx-24 py-4 bg-white border-y border-gray-400">
+    <div className="-mx-6 md:-mx-24 pb-4 border-b border-gray-300">
       <div className="flex items-center justify-center">
         {categories.map((category, index) => {
           const isSelected = currentCategory === category.label;
@@ -40,11 +40,10 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams }) => {
 
           return (
             <div key={category.label} className="relative flex items-center">
-              {/* Category Button */}
               <button
                 onClick={() => handleCategorySelect(category.label)}
                 className={`
-                  px-6 py-2.5 text-sm transition-colors duration-150 rounded-lg
+                  px-6 py-3.5 text-sm transition-colors duration-150 rounded-lg
                   ${isSelected
                     ? 'text-[#60A5FA] hover:text-[#4F94E5]'
                     : 'text-gray-600/90 hover:text-gray-700'
@@ -55,9 +54,8 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams }) => {
                 {category.label}
               </button>
 
-              {/* Vertical Divider */}
               {!isLast && (
-                <div className="h-6 w-px bg-gray-400 mx-3" />
+                <div className="h-6 w-px bg-gray-300 mx-3" />
               )}
             </div>
           );

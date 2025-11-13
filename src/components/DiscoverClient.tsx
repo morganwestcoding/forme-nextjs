@@ -1,4 +1,3 @@
-// components/DiscoverClient.tsx
 'use client';
 
 import React, { useEffect, useMemo, useState, useTransition } from 'react';
@@ -27,7 +26,7 @@ interface DiscoverClientProps {
   currentUser: SafeUser | null;
   categoryToUse?: string;
   listings: SafeListing[];
-  employees?: SafeEmployee[]; // Back to SafeEmployee[] since it now includes listing context
+  employees?: SafeEmployee[];
   shops?: SafeShop[];
 }
 
@@ -47,9 +46,6 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
 
   const [isLoading, setIsLoading] = useState(true);
   const [isPending, startTransition] = useTransition();
-  const [isContentReady, setIsContentReady] = useState(false);
-
-  // State for section offsets
   const [postsOffset, setPostsOffset] = useState(0);
   const [listingsOffset, setListingsOffset] = useState(0);
   const [employeesOffset, setEmployeesOffset] = useState(0);
@@ -59,12 +55,10 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
   const searchParams = useSearchParams();
   const filterParam = searchParams?.get('filter') || 'for-you';
 
-  // Navigation handler
   const handleNavigation = (url: string) => {
     router.push(url, { scroll: false });
   };
 
-  // Build DiscoverHeader props from URL
   const headerSearchParams = {
     userId: searchParams?.get('userId') || undefined,
     locationValue: searchParams?.get('locationValue') || undefined,
@@ -77,25 +71,17 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
     page: searchParams?.get('page') || undefined,
   };
 
-  // Get type filter (posts, listings, professionals, shops)
   const typeFilter = searchParams?.get('type') as 'posts' | 'listings' | 'professionals' | 'shops' | null;
 
-  // Filtering logic
   const filterInfo = useMemo(() => {
     const currentCategory = headerSearchParams?.category || '';
     const categoryIsActive = currentCategory !== '' && currentCategory !== 'featured' && currentCategory !== 'all';
-
-    const hasPriceFilter =
-      headerSearchParams.minPrice !== undefined ||
-      headerSearchParams.maxPrice !== undefined;
-
+    const hasPriceFilter = headerSearchParams.minPrice !== undefined || headerSearchParams.maxPrice !== undefined;
     const hasLocationFilter = !!(
       headerSearchParams.city?.toString()?.trim() ||
       headerSearchParams.state?.toString()?.trim()
     );
-
     const hasTypeFilter = !!typeFilter;
-
     const isFiltered = categoryIsActive || hasPriceFilter || hasLocationFilter || hasTypeFilter;
 
     let resultsHeaderText = '';
@@ -114,31 +100,17 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
       resultsHeaderText = 'Feed Results';
     }
 
-    return {
-      isFiltered,
-      categoryIsActive,
-      resultsHeaderText,
-      currentCategory,
-      typeFilter: hasTypeFilter ? typeFilter : null
-    };
+    return { isFiltered, categoryIsActive, resultsHeaderText, currentCategory, typeFilter: hasTypeFilter ? typeFilter : null };
   }, [headerSearchParams, typeFilter]);
 
-  // Initial loader (nice UX delay)
   useEffect(() => {
-    const t = setTimeout(() => {
-      setIsLoading(false);
-      setIsContentReady(true);
-    }, 1200);
+    const t = setTimeout(() => setIsLoading(false), 1200);
     return () => clearTimeout(t);
   }, []);
 
-  // Fetch posts on category/filter change
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        // Mark content as not ready when starting to fetch
-        setIsContentReady(false);
-
         const params: Record<string, string | number> = {};
         const categoryParam = searchParams?.get('category');
 
@@ -154,29 +126,20 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
         if (filters.sort?.order) params.order = filters.sort.order;
 
         const { data } = await axios.get('/api/post', { params });
-
-        // Use transition to update posts smoothly
-        startTransition(() => {
-          setPosts(data);
-          setIsContentReady(true);
-        });
+        startTransition(() => setPosts(data));
       } catch (error) {
         console.error('Error fetching posts:', error);
-        setIsContentReady(true); // Still mark as ready even on error
       }
     };
 
     fetchPosts();
   }, [selectedCategory, filterParam, filters, setPosts, searchParams]);
 
-  // Get paginated items for each section
   const getPaginatedItems = <T,>(array: T[], offset: number, count: number = 4): T[] => {
     const start = offset * count;
-    const end = start + count;
-    return array.slice(start, end);
+    return array.slice(start, start + count);
   };
 
-  // Scroll functions for each section
   const scrollTrendingPosts = (dir: 'left' | 'right') => {
     setPostsOffset(prev => {
       const maxOffset = Math.max(0, Math.ceil((storePosts?.length || 0) / 4) - 1);
@@ -209,36 +172,15 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
     });
   };
 
-  const trendingPosts = useMemo(() =>
-    getPaginatedItems(storePosts || [], postsOffset, 4),
-    [storePosts, postsOffset]
-  );
+  const trendingPosts = useMemo(() => getPaginatedItems(storePosts || [], postsOffset, 4), [storePosts, postsOffset]);
+  const trendingListings = useMemo(() => getPaginatedItems(listings, listingsOffset, 4), [listings, listingsOffset]);
+  const trendingEmployees = useMemo(() => getPaginatedItems(employees, employeesOffset, 4), [employees, employeesOffset]);
+  const trendingShops = useMemo(() => getPaginatedItems(shops, shopsOffset, 4), [shops, shopsOffset]);
+  const hasContent = useMemo(() => Array.isArray(storePosts) && storePosts.length > 0, [storePosts]);
 
-  const trendingListings = useMemo(() =>
-    getPaginatedItems(listings, listingsOffset, 4),
-    [listings, listingsOffset]
-  );
-
-  const trendingEmployees = useMemo(() =>
-    getPaginatedItems(employees, employeesOffset, 4),
-    [employees, employeesOffset]
-  );
-
-  const trendingShops = useMemo(() =>
-    getPaginatedItems(shops, shopsOffset, 4),
-    [shops, shopsOffset]
-  );
-
-  const hasContent = useMemo(
-    () => Array.isArray(storePosts) && storePosts.length > 0,
-    [storePosts]
-  );
-
-  // Prepare all items for TikTok view
   const allContentItems = useMemo(() => {
     let items: Array<{type: 'post' | 'listing' | 'employee' | 'shop', data: any, listingContext?: any}> = [];
 
-    // If type filter is active, only include items of that type
     if (filterInfo.typeFilter) {
       if (filterInfo.typeFilter === 'posts') {
         items = (storePosts || []).map(post => ({ type: 'post' as const, data: post }));
@@ -253,7 +195,6 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
         items = (shops || []).map(shop => ({ type: 'shop' as const, data: shop }));
       }
     } else {
-      // Otherwise, show all types mixed together
       items = [
         ...(storePosts || []).map(post => ({ type: 'post' as const, data: post })),
         ...(listings || []).map(listing => ({ type: 'listing' as const, data: listing })),
@@ -272,47 +213,46 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
     <ClientProviders>
       <div className="min-h-screen">
         <Container>
-          {/* Hero Section - Full Width with Subtle Gradient & Shadow Layers */}
           <div className="-mx-6 md:-mx-24 -mt-2 md:-mt-8">
-            <div className="relative px-6 md:px-24 pt-10 pb-8 overflow-hidden">
-
-              {/* Content */}
-              <div className="relative z-10">
-                {/* Main Discover Title */}
-                <div className="mb-3">
-                  <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 leading-tight tracking-tight">
+            <div
+              className="relative px-6 md:px-24 pt-10 overflow-hidden"
+              style={{
+                background: 'linear-gradient(to bottom, #FFFFFF 0%, #FAFAFA 100%)'
+              }}
+            >
+              <div className="relative z-10 pb-8">
+                <div className="">
+                  <h1 className="text-4xl md:text-4xl font-extrabold text-gray-900 leading-tight tracking-tight">
                     Discover
                   </h1>
-                  <p className="text-gray-600 mt-3">Share whats new with you and your business</p>
+                  <p className="text-gray-600 text-lg mt-1">Share whats new with you and your business</p>
                 </div>
 
-                {/* Search and Controls */}
-                <DiscoverHeader isHeroMode={false} />
+                <div className="mt-5">
+                  <DiscoverHeader isHeroMode={false} />
+                </div>
               </div>
+              <CategoryNav
+                searchParams={headerSearchParams}
+                onNavigate={handleNavigation}
+              />
             </div>
           </div>
 
-          {/* Category Navigation */}
-          <CategoryNav
-            searchParams={headerSearchParams}
-            onNavigate={handleNavigation}
-          />
-
-        {/* Content + loader overlay */}
-        <div className="relative">
-          {isLoading && (
-            <div className="pointer-events-none absolute inset-0 z-10 flex items-start justify-center">
-              <div className="mt-40 md:mt-40">
-                <PropagateLoaderWrapper size={12} speedMultiplier={1.15} />
+          <div className="relative">
+            {isLoading && (
+              <div className="pointer-events-none absolute inset-0 z-10 flex items-start justify-center">
+                <div className="mt-40 md:mt-40">
+                  <PropagateLoaderWrapper size={12} speedMultiplier={1.15} />
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          <div
-            className={`transition-opacity duration-300 ease-out ${
-              !isContentReady ? 'opacity-0' : 'opacity-100'
-            }`}
-          >
+            <div
+              className={`transition-opacity duration-700 ease-out ${
+                isLoading ? 'opacity-0' : 'opacity-100'
+              }`}
+            >
             {hasContent ? (
               <>
                 {/* Grid View Mode */}

@@ -70,10 +70,9 @@ const ShopHeader: React.FC<ShopHeaderProps> = ({
 
   const activeFilterCount = getActiveFilterCount();
 
-  // Hero mode or normal mode button styles
   const buttonBaseClasses = isHeroMode
     ? "backdrop-blur-md bg-white/10 hover:bg-blue-400/10 border border-white/40 hover:border-blue-400/60 text-white hover:text-[#60A5FA]"
-    : "bg-gradient-to-br from-white via-white to-gray-50 border border-gray-400 text-gray-600/90 hover:!bg-gray-100 hover:bg-none hover:border-gray-500 hover:text-gray-700 transition-all duration-500 ease-out";
+    : "bg-white border border-gray-300 hover:border-gray-400 text-gray-700 hover:bg-white/80 transition-all duration-200 shadow-sm";
 
   return (
     <div className="min-h-0">
@@ -90,7 +89,7 @@ const ShopHeader: React.FC<ShopHeaderProps> = ({
         {/* Filters Button */}
         <button
           onClick={handleOpenFilters}
-          className={`${buttonBaseClasses} py-2.5 px-4 rounded-lg transition-all duration-200 flex items-center space-x-2 text-sm relative group`}
+          className={`${buttonBaseClasses} py-2.5 px-4 rounded-xl transition-all duration-200 flex items-center space-x-2 text-sm relative group`}
           type="button"
         >
           <div className="relative w-[22px] h-[22px] flex items-center justify-center">
@@ -119,7 +118,7 @@ const ShopHeader: React.FC<ShopHeaderProps> = ({
                 height: '28px'
               }}
             >
-              <span className="w-full h-full rounded-md border-[#60A5FA] border bg-blue-50 flex items-center justify-center text-xs font-semibold" style={{ color: '#60A5FA' }}>
+              <span className="w-full h-full rounded-full border-[#60A5FA]/50 border bg-blue-50 flex items-center justify-center text-sm font-semibold" style={{ color: '#60A5FA' }}>
                 {activeFilterCount > 0 && activeFilterCount}
               </span>
             </span>
@@ -133,7 +132,7 @@ const ShopHeader: React.FC<ShopHeaderProps> = ({
             <button
               ref={buttonRef}
               onClick={toggleDropdown}
-              className={`${buttonBaseClasses} flex items-center justify-center py-2.5 space-x-2 px-4 rounded-lg transition-all duration-200 group`}
+              className={`${buttonBaseClasses} flex items-center justify-center py-2.5 space-x-2 px-4 rounded-xl transition-all duration-200 group`}
               type="button"
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" color="currentColor" fill="none" className="transition-colors duration-200">

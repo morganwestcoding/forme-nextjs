@@ -1,171 +1,31 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { Search } from 'lucide-react';
 
-const directionalCategories = [
-  { label: 'Incoming', value: 'incoming', isDirection: true },
-  { label: 'Outgoing', value: 'outgoing', isDirection: true },
-];
-
-const statusCategories = [
-  { 
-    label: 'Pending', 
-    value: 'pending',
-    subheader: 'Reservations awaiting your response',
-    isDirection: false
-  },
-  { 
-    label: 'Confirmed', 
-    value: 'confirmed',
-    subheader: 'Approved bookings ready to go',
-    isDirection: false
-  },
-  { 
-    label: 'Completed', 
-    value: 'completed',
-    subheader: 'Successfully finished appointments',
-    isDirection: false
-  },
-  { 
-    label: 'Cancelled', 
-    value: 'cancelled',
-    subheader: 'Bookings that were cancelled',
-    isDirection: false
-  },
-  { 
-    label: 'Overdue', 
-    value: 'overdue',
-    subheader: 'Past appointments that need attention',
-    isDirection: false
-  },
-];
-
-const directionSubheaders = {
-  incoming: 'Reservations you\'ve received from customers',
-  outgoing: 'Bookings you\'ve made with other businesses'
-};
-
 interface BookingsHeaderProps {
-  title?: string;
-  subtitle?: string;
-  bookingsCount?: number;
-  tripsCount?: number;
-  bookingsHref?: string;
-  tripsHref?: string;
-  accentHex?: string;
   onSearch?: (q: string) => void;
   onOpenFilters?: () => void;
   onCreate?: () => void;
-  onCategorySelect?: (category: string) => void;
-  selectedCategories?: string[];
 }
 
 const BookingsHeader: React.FC<BookingsHeaderProps> = ({
-  title = 'Appointments',
-  subtitle = "Manage reservations you've received and trips you've booked",
-  bookingsCount,
-  tripsCount,
-  bookingsHref = '/bookings/reservations',
-  tripsHref = '/bookings/trips',
-  accentHex = '#60A5FA',
   onSearch,
   onOpenFilters,
   onCreate,
-  onCategorySelect,
-  selectedCategories = [],
 }) => {
-  const router = useRouter();
-  const pathname = usePathname();
-  const params = useSearchParams();
   const [query, setQuery] = useState('');
-
-  // Read selected categories from URL, fallback to props
-  const activeCategories = params?.get('categories')?.split(',').filter(Boolean) || selectedCategories;
 
   const submitSearch = (e: React.FormEvent) => {
     e.preventDefault();
     onSearch?.(query);
   };
 
-  const handleCategorySelect = (categoryValue: string) => {
-    const current = new URLSearchParams(Array.from(params?.entries() || []));
-    const currentCategories = current.get('categories')?.split(',').filter(Boolean) || [];
-    
-    const isDirectional = ['incoming', 'outgoing'].includes(categoryValue);
-    const isStatus = !isDirectional;
-    
-    let newCategories;
-    
-    if (isDirectional) {
-      // Directional filters are mutually exclusive (incoming OR outgoing, not both)
-      if (currentCategories.includes(categoryValue)) {
-        // Remove the directional filter
-        newCategories = currentCategories.filter(cat => !['incoming', 'outgoing'].includes(cat));
-      } else {
-        // Remove any existing directional filter and add the new one
-        newCategories = currentCategories.filter(cat => !['incoming', 'outgoing'].includes(cat));
-        newCategories.push(categoryValue);
-      }
-    } else {
-      // Status filters are mutually exclusive
-      if (currentCategories.includes(categoryValue)) {
-        // Remove the status filter
-        newCategories = currentCategories.filter(cat => !statusCategories.some(status => status.value === cat));
-      } else {
-        // Remove any existing status filter and add the new one
-        newCategories = currentCategories.filter(cat => !statusCategories.some(status => status.value === cat));
-        newCategories.push(categoryValue);
-      }
-    }
-    
-    if (newCategories.length > 0) {
-      current.set('categories', newCategories.join(','));
-    } else {
-      current.delete('categories');
-    }
-    
-    const search = current.toString();
-    const queryString = search ? `?${search}` : '';
-    router.push(`${pathname}${queryString}`);
-    
-    onCategorySelect?.(categoryValue);
-  };
-
-  const getCurrentSubheader = () => {
-    if (activeCategories.length === 0) return subtitle;
-    
-    if (activeCategories.length === 1) {
-      const category = activeCategories[0];
-      if (category === 'incoming' || category === 'outgoing') {
-        return directionSubheaders[category as keyof typeof directionSubheaders];
-      }
-      const statusCategory = statusCategories.find(cat => cat.value === category);
-      return statusCategory?.subheader || subtitle;
-    }
-    
-    const directions = activeCategories.filter(cat => ['incoming', 'outgoing'].includes(cat));
-    const statuses = activeCategories.filter(cat => !['incoming', 'outgoing'].includes(cat));
-    
-    if (directions.length > 0 && statuses.length > 0) {
-      return `${directions.join(' & ')} ${statuses.join(' & ')} appointments`;
-    }
-    
-    return `${activeCategories.join(' & ')} appointments`;
-  };
-
-  // Combine all categories for unified rendering
-  const allCategories = [...directionalCategories, ...statusCategories];
+  const buttonBaseClasses = "bg-white border border-gray-300 hover:border-gray-400 text-gray-700 hover:bg-white/80 transition-all duration-200 shadow-sm";
 
   return (
-    <div className="w-full">
-      <div className="pt-2 mb-4">
-        <h1 className="text-3xl md:text-3xl font-bold text-black leading-tight tracking-wide">{title}</h1>
-        <p className="text-gray-600">{getCurrentSubheader()}</p>
-      </div>
-
-      <div className="flex mt-4 mb-6 gap-2">
+    <div className="min-h-0">
+      <div className="flex mt-4 gap-2">
         <form onSubmit={submitSearch} className="relative flex-grow">
           <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
             <Search className="w-5 h-5 text-gray-400" />
@@ -182,7 +42,7 @@ const BookingsHeader: React.FC<BookingsHeaderProps> = ({
 
         <button
           onClick={onOpenFilters}
-          className="shadow-sm bg-white text-gray-500 py-3 px-4 rounded-xl hover:bg-neutral-100 transition-colors flex items-center space-x-2 text-sm"
+          className={`${buttonBaseClasses} py-2.5 px-4 rounded-xl transition-all duration-200 flex items-center space-x-2 text-sm`}
           type="button"
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" color="currentColor" fill="none">
@@ -197,55 +57,15 @@ const BookingsHeader: React.FC<BookingsHeaderProps> = ({
 
         <button
           onClick={onCreate}
-          className="flex items-center justify-center py-3 space-x-2 px-4 shadow-sm rounded-xl transition-all bg-white text-gray-500 hover:bg-neutral-200"
+          className={`${buttonBaseClasses} flex items-center justify-center py-2.5 space-x-2 px-4 rounded-xl transition-all duration-200`}
           type="button"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" color="currentColor" fill="none">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" color="currentColor" fill="none" className="transition-colors duration-200">
             <path d="M16.4249 4.60509L17.4149 3.6151C18.2351 2.79497 19.5648 2.79497 20.3849 3.6151C21.205 4.43524 21.205 5.76493 20.3849 6.58507L19.3949 7.57506M16.4249 4.60509L9.76558 11.2644C9.25807 11.772 8.89804 12.4078 8.72397 13.1041L8 16L10.8959 15.276C11.5922 15.102 12.228 14.7419 12.7356 14.2344L19.3949 7.57506M16.4249 4.60509L19.3949 7.57506" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"></path>
             <path d="M18.9999 13.5C18.9999 16.7875 18.9999 18.4312 18.092 19.5376C17.9258 19.7401 17.7401 19.9258 17.5375 20.092C16.4312 21 14.7874 21 11.4999 21H11C7.22876 21 5.34316 21 4.17159 19.8284C3.00003 18.6569 3 16.7712 3 13V12.5C3 9.21252 3 7.56879 3.90794 6.46244C4.07417 6.2599 4.2599 6.07417 4.46244 5.90794C5.56879 5 7.21252 5 10.5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
           </svg>
           <span className="text-sm">Create</span>
         </button>
-      </div>
-
-      {/* Category Navigation - Clean with Vertical Dividers */}
-      <div className="py-5 border-y border-gray-200">
-        <div className="flex items-center justify-center">
-          {allCategories.map((category, index) => {
-            const isSelected = activeCategories.includes(category.value);
-            const isLast = index === allCategories.length - 1;
-            const isDirectional = category.isDirection;
-            const isIncoming = category.value === 'incoming';
-            
-            return (
-              <div key={category.value} className="relative flex items-center">
-                {/* Category Button */}
-                <button
-                  onClick={() => handleCategorySelect(category.value)}
-                  className={`
-                    px-6 py-2.5 text-sm transition-colors duration-200 rounded-lg
-                    ${isSelected 
-                      ? isDirectional
-                        ? isIncoming
-                          ? 'text-emerald-600 hover:text-emerald-700'
-                          : 'text-blue-600 hover:text-blue-700'
-                        : 'text-[#60A5FA] hover:text-[#4F94E5]'
-                      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
-                    }
-                  `}
-                  type="button"
-                >
-                  {category.label}
-                </button>
-                
-                {/* Vertical Divider */}
-                {!isLast && (
-                  <div className="h-6 w-px bg-gray-300 mx-3" />
-                )}
-              </div>
-            );
-          })}
-        </div>
       </div>
     </div>
   );

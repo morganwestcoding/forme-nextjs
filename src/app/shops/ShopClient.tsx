@@ -1,4 +1,3 @@
-// components/shop/ShopClient.tsx
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
@@ -98,28 +97,28 @@ const ShopClient: React.FC<ShopClientProps> = ({
 
   return (
     <>
-      {/* Hero Section - Full Width with Subtle Gradient & Shadow Layers */}
       <div className="-mx-6 md:-mx-24 -mt-2 md:-mt-8">
-        <div className="relative px-6 md:px-24 pt-10 pb-8 overflow-hidden">
-
-          {/* Content */}
-          <div className="relative z-10">
-            {/* Main Vendors Title */}
-            <div className="mb-3">
-              <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 leading-tight tracking-tight">
+        <div
+          className="relative px-6 md:px-24 pt-10 overflow-hidden"
+          style={{
+            background: 'linear-gradient(to bottom, #FFFFFF 0%, #FAFAFA 100%)'
+          }}
+        >
+          <div className="relative z-10 pb-8">
+            <div className="">
+              <h1 className="text-4xl md:text-4xl font-extrabold text-gray-900 leading-tight tracking-tight">
                 Vendors
               </h1>
-              <p className="text-gray-600 mt-3">Discover unique shops and products from our vendors</p>
+              <p className="text-gray-600 text-lg mt-1">Discover unique shops and products from our vendors</p>
             </div>
 
-            {/* Search and Controls */}
-            <ShopHeader currentUser={currentUser} isHeroMode={false} />
+            <div className="mt-5">
+              <ShopHeader currentUser={currentUser} isHeroMode={false} />
+            </div>
           </div>
+          <CategoryNav searchParams={{ category: currentCategory }} />
         </div>
       </div>
-
-      {/* Category Navigation */}
-      <CategoryNav searchParams={{ category: currentCategory }} />
 
       {/* Content + loader overlay */}
       <div className="relative">
