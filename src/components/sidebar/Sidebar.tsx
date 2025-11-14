@@ -200,7 +200,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             </div>
           )}
 
-          <div className="flex flex-col w-full px-6 pt-1 flex-1">
+          <div className="flex flex-col w-full px-6 flex-1">
             <ul className="list-none m-0 p-0 flex flex-col items-center space-y-4 flex-1">
               {/* Discover */}
               <li className="relative w-full">

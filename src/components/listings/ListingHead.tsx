@@ -295,17 +295,18 @@ const ListingHead: React.FC<ListingHeadProps> = ({
 
       <div className="w-full space-y-6">
         {/* Hero Banner Style Header */}
-        <div className="-mx-6 md:-mx-24 -mt-2 md:-mt-8 relative">
-          {/* Background Image */}
-          <div className="relative w-full overflow-hidden pt-10 pb-8">
-            <img
-              src={mainImage}
-              alt={title}
-              className="absolute inset-0 w-full h-full object-cover"
-            />
-
-            {/* Simple dark overlay */}
-            <div className="absolute inset-0 bg-black/30" />
+        <div className="-mx-6 md:-mx-24 -mt-2 md:-mt-8">
+          <div className="relative px-6 md:px-24 pt-10 overflow-hidden">
+            {/* Background Image - extends to bottom of CategoryNav */}
+            <div className="absolute inset-0 -mx-6 md:-mx-24">
+              <img
+                src={mainImage}
+                alt={title}
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              {/* Simple dark overlay */}
+              <div className="absolute inset-0 bg-black/30" />
+            </div>
 
             {/* Three-dot menu button - top right */}
             <div className="absolute top-6 right-6 md:right-24 z-50">
@@ -324,161 +325,161 @@ const ListingHead: React.FC<ListingHeadProps> = ({
             </div>
 
             {/* Content Overlay */}
-            <div className="relative z-10 px-6 md:px-24">
-              {/* Title with Badges */}
-              <div className="flex items-center gap-2.5 mb-3">
-                <h1 className="text-4xl font-bold tracking-tight text-white drop-shadow-lg">
-                  {title}
-                </h1>
+            <div className="relative z-10 pb-8">
+                {/* Title with Badges */}
+                <div className="flex items-center gap-2.5 mb-3">
+                  <h1 className="text-4xl font-bold tracking-tight text-white drop-shadow-lg">
+                    {title}
+                  </h1>
 
-                {/* Verified Badge */}
-                <div className="flex items-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    width="26"
-                    height="26"
-                    fill="#60A5FA"
-                    className="shrink-0 text-white drop-shadow-lg"
-                    aria-label="Verified"
-                  >
-                    <path
-                      d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z"
-                      stroke="white"
-                      strokeWidth="1"
+                  {/* Verified Badge */}
+                  <div className="flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      width="26"
+                      height="26"
                       fill="#60A5FA"
-                    />
-                    <path
-                      d="M9 12.8929L10.8 14.5L15 9.5"
-                      stroke="white"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-              </div>
-
-              {/* Address */}
-              <div className="text-base text-white mb-4 drop-shadow-sm">
-                {address && location ? `${address}, ${location}` : address || location}
-                <span className=" ml-1">
-                  · {(listing as any).radius ? `${(listing as any).radius} miles` : '2.3 miles away'}
-                </span>
-              </div>
-
-              {/* Stats and Buttons Row */}
-              <div className="flex items-center justify-between">
-                {/* Counter - Option 1: Minimal Inline Stats */}
-                <div className="flex items-center gap-6">
-                  {/* Rating */}
-                  <button
-                    onClick={() => setActiveTab('Reviews')}
-                    className="flex flex-col group hover:scale-105 transition-transform"
-                    type="button"
-                    aria-label="View reviews and rating"
-                  >
-                    <span className="text-2xl font-semibold text-white">4.8</span>
-                    <span className="text-xs text-white/70">Rating</span>
-                  </button>
-
-                  {/* Posts */}
-                  <button
-                    onClick={() => setActiveTab('Posts')}
-                    className="flex flex-col group hover:scale-105 transition-transform"
-                    type="button"
-                    aria-label="View posts"
-                  >
-                    <span className="text-2xl font-semibold text-white">{posts?.length || 0}</span>
-                    <span className="text-xs text-white/70">Posts</span>
-                  </button>
-
-                  {/* Followers */}
-                  <div className="flex flex-col">
-                    <span className="text-2xl font-semibold text-white">{followers.length}</span>
-                    <span className="text-xs text-white/70">Followers</span>
+                      className="shrink-0 text-white drop-shadow-lg"
+                      aria-label="Verified"
+                    >
+                      <path
+                        d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z"
+                        stroke="white"
+                        strokeWidth="1"
+                        fill="#60A5FA"
+                      />
+                      <path
+                        d="M9 12.8929L10.8 14.5L15 9.5"
+                        stroke="white"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
                   </div>
                 </div>
 
-                {/* Buttons - Right Side */}
-                <div className="flex items-center gap-2">
-                  {/* QR Code Button - Show for owners and employees ONLY */}
-                  {canShowQR ? (
+                {/* Address */}
+                <div className="text-base text-white mb-4 drop-shadow-sm">
+                  {address && location ? `${address}, ${location}` : address || location}
+                  <span className=" ml-1">
+                    · {(listing as any).radius ? `${(listing as any).radius} miles` : '2.3 miles away'}
+                  </span>
+                </div>
+
+                {/* Stats and Buttons Row */}
+                <div className="flex items-center justify-between">
+                  {/* Counter - Option 1: Minimal Inline Stats */}
+                  <div className="flex items-center gap-6">
+                    {/* Rating */}
                     <button
-                      onClick={handleQRClick}
-                      className=" bg-white/15 backdrop-blur-sm hover:bg-blue-400/10 border border-white/40 hover:border-blue-400/60 text-white hover:text-[#60A5FA] py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center hover:shadow-sm"
+                      onClick={() => setActiveTab('Reviews')}
+                      className="flex flex-col group hover:scale-105 transition-transform"
                       type="button"
-                      aria-label="Show QR Code"
+                      aria-label="View reviews and rating"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" className="transition-colors duration-200" fill="none" stroke="currentColor">
-                        <path d="M3 6C3 4.58579 3 3.87868 3.43934 3.43934C3.87868 3 4.58579 3 6 3C7.41421 3 8.12132 3 8.56066 3.43934C9 3.87868 9 4.58579 9 6C9 7.41421 9 8.12132 8.56066 8.56066C8.12132 9 7.41421 9 6 9C4.58579 9 3.87868 9 3.43934 8.56066C3 8.12132 3 7.41421 3 6Z" strokeWidth="1.5"></path>
-                        <path d="M3 18C3 16.5858 3 15.8787 3.43934 15.4393C3.87868 15 4.58579 15 6 15C7.41421 15 8.12132 15 8.56066 15.4393C9 15.8787 9 16.5858 9 18C9 19.4142 9 20.1213 8.56066 20.5607C8.12132 21 7.41421 21 6 21C4.58579 21 3.87868 21 3.43934 20.5607C3 20.1213 3 19.4142 3 18Z" strokeWidth="1.5"></path>
-                        <path d="M3 12L9 12" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-                        <path d="M12 3V8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-                        <path d="M15 6C15 4.58579 15 3.87868 15.4393 3.43934C15.8787 3 16.5858 3 18 3C19.4142 3 20.1213 3 20.5607 3.43934C21 3.87868 21 4.58579 21 6C21 7.41421 21 8.12132 20.5607 8.56066C20.1213 9 19.4142 9 18 9C16.5858 9 15.8787 9 15.4393 8.56066C15 8.12132 15 7.41421 15 6Z" strokeWidth="1.5"></path>
-                        <path d="M21 12H15C13.5858 12 12.8787 12 12.4393 12.4393C12 12.8787 12 13.5858 12 15M12 17.7692V20.5385M15 15V16.5C15 17.9464 15.7837 18 17 18C17.5523 18 18 18.4477 18 19M16 21H15M18 15C19.4142 15 20.1213 15 20.5607 15.44C21 15.8799 21 16.5881 21 18.0043C21 19.4206 21 20.1287 20.5607 20.5687C20.24 20.8898 19.7767 20.9766 19 21" strokeWidth="1.5" strokeLinecap="round"></path>
-                      </svg>
+                      <span className="text-2xl font-semibold text-white">4.8</span>
+                      <span className="text-xs text-white/70">Rating</span>
                     </button>
-                  ) : (
-                    /* Follow Button - Show for everyone else who is logged in */
-                    currentUser && (
+
+                    {/* Posts */}
+                    <button
+                      onClick={() => setActiveTab('Posts')}
+                      className="flex flex-col group hover:scale-105 transition-transform"
+                      type="button"
+                      aria-label="View posts"
+                    >
+                      <span className="text-2xl font-semibold text-white">{posts?.length || 0}</span>
+                      <span className="text-xs text-white/70">Posts</span>
+                    </button>
+
+                    {/* Followers */}
+                    <div className="flex flex-col">
+                      <span className="text-2xl font-semibold text-white">{followers.length}</span>
+                      <span className="text-xs text-white/70">Followers</span>
+                    </div>
+                  </div>
+
+                  {/* Buttons - Right Side */}
+                  <div className="flex items-center gap-2">
+                    {/* QR Code Button - Show for owners and employees ONLY */}
+                    {canShowQR ? (
                       <button
-                        onClick={handleToggleFollow}
+                        onClick={handleQRClick}
+                        className=" bg-white/15 backdrop-blur-sm hover:bg-blue-400/10 border border-white/40 hover:border-blue-400/60 text-white hover:text-[#60A5FA] py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center hover:shadow-sm"
+                        type="button"
+                        aria-label="Show QR Code"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" className="transition-colors duration-200" fill="none" stroke="currentColor">
+                          <path d="M3 6C3 4.58579 3 3.87868 3.43934 3.43934C3.87868 3 4.58579 3 6 3C7.41421 3 8.12132 3 8.56066 3.43934C9 3.87868 9 4.58579 9 6C9 7.41421 9 8.12132 8.56066 8.56066C8.12132 9 7.41421 9 6 9C4.58579 9 3.87868 9 3.43934 8.56066C3 8.12132 3 7.41421 3 6Z" strokeWidth="1.5"></path>
+                          <path d="M3 18C3 16.5858 3 15.8787 3.43934 15.4393C3.87868 15 4.58579 15 6 15C7.41421 15 8.12132 15 8.56066 15.4393C9 15.8787 9 16.5858 9 18C9 19.4142 9 20.1213 8.56066 20.5607C8.12132 21 7.41421 21 6 21C4.58579 21 3.87868 21 3.43934 20.5607C3 20.1213 3 19.4142 3 18Z" strokeWidth="1.5"></path>
+                          <path d="M3 12L9 12" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+                          <path d="M12 3V8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+                          <path d="M15 6C15 4.58579 15 3.87868 15.4393 3.43934C15.8787 3 16.5858 3 18 3C19.4142 3 20.1213 3 20.5607 3.43934C21 3.87868 21 4.58579 21 6C21 7.41421 21 8.12132 20.5607 8.56066C20.1213 9 19.4142 9 18 9C16.5858 9 15.8787 9 15.4393 8.56066C15 8.12132 15 7.41421 15 6Z" strokeWidth="1.5"></path>
+                          <path d="M21 12H15C13.5858 12 12.8787 12 12.4393 12.4393C12 12.8787 12 13.5858 12 15M12 17.7692V20.5385M15 15V16.5C15 17.9464 15.7837 18 17 18C17.5523 18 18 18.4477 18 19M16 21H15M18 15C19.4142 15 20.1213 15 20.5607 15.44C21 15.8799 21 16.5881 21 18.0043C21 19.4206 21 20.1287 20.5607 20.5687C20.24 20.8898 19.7767 20.9766 19 21" strokeWidth="1.5" strokeLinecap="round"></path>
+                        </svg>
+                      </button>
+                    ) : (
+                      /* Follow Button - Show for everyone else who is logged in */
+                      currentUser && (
+                        <button
+                          onClick={handleToggleFollow}
+                          className=" bg-white/15 backdrop-blur-sm hover:bg-blue-400/10 border border-white/40 hover:border-blue-400/60 text-white hover:text-[#60A5FA] py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center hover:shadow-sm text-sm w-28"
+                          type="button"
+                          aria-label={isFollowing ? 'Unfollow' : 'Follow'}
+                        >
+                          <span>{isFollowing ? 'Following' : 'Follow'}</span>
+                        </button>
+                      )
+                    )}
+
+                    {/* Reserve Button - Show for all current users */}
+                    {currentUser && (
+                      <button
+                        onClick={handleReserveClick}
                         className=" bg-white/15 backdrop-blur-sm hover:bg-blue-400/10 border border-white/40 hover:border-blue-400/60 text-white hover:text-[#60A5FA] py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center hover:shadow-sm text-sm w-28"
                         type="button"
-                        aria-label={isFollowing ? 'Unfollow' : 'Follow'}
                       >
-                        <span>{isFollowing ? 'Following' : 'Follow'}</span>
+                        <span>Reserve</span>
                       </button>
-                    )
-                  )}
-
-                  {/* Reserve Button - Show for all current users */}
-                  {currentUser && (
-                    <button
-                      onClick={handleReserveClick}
-                      className=" bg-white/15 backdrop-blur-sm hover:bg-blue-400/10 border border-white/40 hover:border-blue-400/60 text-white hover:text-[#60A5FA] py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center hover:shadow-sm text-sm w-28"
-                      type="button"
-                    >
-                      <span>Reserve</span>
-                    </button>
-                  )}
+                    )}
+                  </div>
                 </div>
-              </div>
+            </div>
+
+            {/* Navigation Tabs - Outside content wrapper but inside main wrapper */}
+            <div className="-mx-6 md:-mx-24 pb-4 border-b border-gray-300 relative z-10">
+                <div className="flex items-center justify-center">
+                  {tabs.map(({ key, label }, index) => {
+                    const isSelected = activeTab === key;
+                    const isLast = index === tabs.length - 1;
+
+                    return (
+                      <div key={key} className="relative flex items-center">
+                        <button
+                          onClick={() => setActiveTab(key)}
+                          className={`
+                            px-6 py-3.5 text-sm transition-colors duration-150 rounded-lg
+                            ${isSelected
+                              ? 'text-[#60A5FA] hover:text-[#4F94E5]'
+                              : 'text-white/90 hover:text-white'
+                            }
+                          `}
+                          type="button"
+                        >
+                          {label}
+                        </button>
+
+                        {!isLast && (
+                          <div className="h-6 w-px bg-white/80 mx-3" />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Navigation Tabs - MarketExplorer Style */}
-      <div className="-mx-6 md:-mx-24 py-4 bg-white border-y border-gray-400">
-        <div className="flex items-center justify-center">
-          {tabs.map(({ key, label }, index) => {
-            const isSelected = activeTab === key;
-            const isLast = index === tabs.length - 1;
-
-            return (
-              <div key={key} className="relative flex items-center">
-                <button
-                  onClick={() => setActiveTab(key)}
-                  className={`
-                    px-6 py-2.5 text-sm transition-colors duration-200
-                    ${isSelected
-                      ? 'text-[#60A5FA] hover:text-[#4F94E5]'
-                      : 'text-gray-600/90 hover:text-gray-700'
-                    }
-                  `}
-                  type="button"
-                >
-                  {label}
-                </button>
-
-                {!isLast && (
-                  <div className="h-6 w-px bg-gray-400 mx-3" />
-                )}
-              </div>
-            );
-          })}
         </div>
       </div>
 

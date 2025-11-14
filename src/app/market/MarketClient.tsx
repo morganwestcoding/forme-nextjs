@@ -41,7 +41,7 @@ const MarketClient: React.FC<MarketClientProps> = ({
 }) => {
 
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const ITEMS_PER_PAGE = isSidebarCollapsed ? 5 : 4;
+  const ITEMS_PER_PAGE = 8;
 
   const [featuredIndex, setFeaturedIndex] = useState(0);
   const [trendingIndex, setTrendingIndex] = useState(0);
@@ -211,7 +211,7 @@ const MarketClient: React.FC<MarketClientProps> = ({
         >
 
           {/* Content */}
-          <div className="relative z-10 pb-8">
+          <div className="relative z-10 pb-6">
             {/* Main Market Title */}
             <div className="">
               <h1 className="text-4xl md:text-4xl font-extrabold text-gray-900 leading-tight tracking-tight">
@@ -225,7 +225,7 @@ const MarketClient: React.FC<MarketClientProps> = ({
               <MarketSearch isHeroMode={false} />
             </div>
                   {/* Category Navigation */}
-    
+
           </div>
             <CategoryNav searchParams={searchParams} />
         </div>
