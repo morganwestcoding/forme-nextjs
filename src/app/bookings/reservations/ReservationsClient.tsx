@@ -116,7 +116,7 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
               <h1 className="text-4xl md:text-4xl font-extrabold text-gray-900 leading-tight tracking-tight">
                 Reservations
               </h1>
-              <p className="text-gray-600 text-lg mt-1">Reservations you've received from customers</p>
+              <p className="text-gray-600 text-lg mt-1">Reservations you&lsquo;ve received from customers</p>
             </div>
 
             <div className="mt-5">

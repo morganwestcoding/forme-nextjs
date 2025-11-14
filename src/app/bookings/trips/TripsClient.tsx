@@ -92,7 +92,7 @@ const TripsClient: React.FC<TripsClientProps> = ({
               <h1 className="text-4xl md:text-4xl font-extrabold text-gray-900 leading-tight tracking-tight">
                 Trips
               </h1>
-              <p className="text-gray-600 text-lg mt-1">Bookings you've made with other businesses</p>
+              <p className="text-gray-600 text-lg mt-1">Bookings you&lsquo;ve made with other businesses</p>
             </div>
 
             <div className="mt-5">
