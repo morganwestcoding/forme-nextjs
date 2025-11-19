@@ -11,7 +11,7 @@ type Result = {
   href: string;           // where to navigate
 };
 
-function hrefFor(r: Result): string {
+function hrefFor(r: Result & { parentId?: string }): string {
   // ✅ Route users to /profile/:id (was /users/:id)
   switch (r.type) {
     case "user":
@@ -19,15 +19,19 @@ function hrefFor(r: Result): string {
     case "listing":
       return `/listings/${r.id}`;
     case "post":
-      return `/posts/${r.id}`;
+      // Posts don't have a dedicated page - route to feed/discover
+      return `/feed`;
     case "shop":
       return `/shops/${r.id}`;
     case "product":
-      return `/products/${r.id}`;
+      // Products are nested under shops: /shops/[shopId]/products/[productId]
+      return r.parentId ? `/shops/${r.parentId}` : `/shops`;
     case "employee":
-      return `/employees/${r.id}`;   // update if nested
+      // Employees are nested under listings: /listings/[listingId]/employees/[employeeId]
+      return r.parentId ? `/listings/${r.parentId}` : `/listings`;
     case "service":
-      return `/services/${r.id}`;    // update if nested
+      // Services are nested under listings: /listings/[listingId]/services/[serviceId]
+      return r.parentId ? `/listings/${r.parentId}` : `/listings`;
     default:
       return "/";
   }
@@ -117,7 +121,7 @@ export async function GET(req: Request) {
             { tags: { hasSome: [q] } },
           ],
         },
-        select: { id: true, name: true, mainImage: true, price: true },
+        select: { id: true, name: true, mainImage: true, price: true, shopId: true },
         take: LIMIT,
         orderBy: { createdAt: "desc" },
       }),
@@ -205,6 +209,7 @@ export async function GET(req: Request) {
         subtitle: p.price != null ? `$${Number(p.price).toFixed(2)}` : "",
         image: p.mainImage,
         href: "",
+        parentId: p.shopId,
       })),
       ...employees.map((e) => ({
         id: e.id,
@@ -213,6 +218,7 @@ export async function GET(req: Request) {
         subtitle: [e.jobTitle, e.listing?.title].filter(Boolean).join(" • "),
         image: e.user?.imageSrc || e.user?.image || null, // Use user's profile image
         href: "",
+        parentId: e.listingId,
       })),
       ...services.map((s) => ({
         id: s.id,
@@ -223,6 +229,7 @@ export async function GET(req: Request) {
           .join(" • "),
         image: s.listing?.imageSrc || null,
         href: "",
+        parentId: s.listingId,
       })),
     ].map((r) => ({ ...r, href: hrefFor(r) }));
 

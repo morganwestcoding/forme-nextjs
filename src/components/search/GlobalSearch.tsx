@@ -154,8 +154,10 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
   // Click outside to close
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
-      if (!containerRef.current) return;
-      if (!containerRef.current.contains(e.target as Node)) {
+      if (!containerRef.current || !listRef.current) return;
+      const target = e.target as Node;
+      // Check if click is outside both the input container AND the dropdown list
+      if (!containerRef.current.contains(target) && !listRef.current.contains(target)) {
         setOpen(false);
       }
     };
@@ -212,12 +214,12 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
 
   const inputClasses = isHeroMode
     ? "w-full h-12 pl-12 pr-4 text-sm backdrop-blur-md bg-white/10 border border-white/40 rounded-lg outline-none focus:ring-1 focus:ring-white/60 focus:border-white/60 text-white placeholder-white/70"
-    : "w-full h-12 pl-12 pr-4 text-sm bg-white border border-gray-300 rounded-xl outline-none focus:border-gray-400 hover:border-gray-400 text-gray-700 placeholder-gray-600 transition-all duration-200 shadow-sm";
+    : "w-full h-12 pl-12 pr-4 text-sm bg-white border border-gray-300/90 rounded-xl outline-none focus:border-gray-400 hover:border-gray-400 text-gray-700 placeholder-gray-600 transition-all duration-200";
 
   const iconClasses = isHeroMode ? "w-5 h-5 text-white" : "w-5 h-5 text-gray-600/90 group-hover:text-gray-700 transition-colors duration-200";
 
   return (
-    <div className={`relative group ${className || ""}`} ref={containerRef}>
+    <div className={`relative group w-full ${className || ""}`} ref={containerRef}>
       <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none z-10">
         <Search className={iconClasses} />
       </div>
@@ -280,7 +282,11 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
                                 active ? "bg-[#EBF4FE]" : "hover:bg-gray-50"
                               }`}
                               onMouseEnter={() => setActiveIdx(idx)}
-                              onClick={() => onSelect(item)}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                onSelect(item);
+                              }}
                             >
                               {/* Thumbnail */}
                               <div className="w-8 h-8 rounded-md bg-gray-100 overflow-hidden shrink-0">

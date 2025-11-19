@@ -176,26 +176,25 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
     '/placeholder.jpg';
 
   return (
-    <div className="w-full">
+    <div className="w-full space-y-6">
       {/* Hero Banner Style Header - Matches ListingHead */}
-      <div className="-mx-6 md:-mx-24 -mt-2 md:-mt-8 relative">
-        {/* Background Image (Black & White) */}
-        <div className="relative w-full overflow-hidden pt-10 pb-8">
-          <Image
-            src={heroImage}
-            alt={name ?? 'User'}
-            fill
-            className="object-cover grayscale"
-            priority
-          />
-
-          {/* Simple dark overlay */}
-          <div className="absolute inset-0 bg-black/30" />
+      <div className="-mx-6 md:-mx-24 -mt-2 md:-mt-8">
+        <div className="relative px-6 md:px-24 pt-10 overflow-hidden">
+          {/* Background Image - extends to bottom of CategoryNav */}
+          <div className="absolute inset-0 -mx-6 md:-mx-24">
+            <img
+              src={heroImage}
+              alt={name ?? 'User'}
+              className="absolute inset-0 w-full h-full object-cover grayscale"
+            />
+            {/* Simple dark overlay */}
+            <div className="absolute inset-0 bg-black/30" />
+          </div>
 
           {/* Three-dot menu button - top right */}
           <div className="absolute top-6 right-6 md:right-24 z-50">
             <button
-              className="p-1 hover:bg-white/20 rounded-lg transition-colors relative z-50"
+              className="p-1 hover:bg-white/20 rounded-xl transition-colors relative z-50"
               type="button"
               aria-label="Options menu"
             >
@@ -208,7 +207,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
           </div>
 
           {/* Content Overlay */}
-          <div className="relative z-10 px-6 md:px-24 flex items-center gap-6">
+          <div className="relative z-10 pb-6 flex items-center gap-6">
             {/* User Profile Image - Circular, Full Color, Left Side */}
             <div className="flex-shrink-0">
               <div className="w-28 h-28 rounded-full overflow-hidden border-2 border-white shadow-lg relative group">
@@ -316,12 +315,10 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Navigation Tabs - Matches ListingHead Style */}
-      <div className="-mx-6 md:-mx-24 py-4 bg-white border-y border-gray-400">
-        <div className="flex items-center justify-center">
+          {/* Navigation Tabs - Outside content wrapper but inside main wrapper */}
+          <div className="-mx-6 md:-mx-24 pb-3 border-b border-gray-300/80 relative z-10">
+            <div className="flex items-center justify-center">
           {[
             { key: 'Posts', label: 'Posts', show: true },
             { key: 'Listings', label: 'Listings', show: true },
@@ -338,7 +335,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                   <button
                     onClick={() => setActiveTab(key as typeof activeTab)}
                     className={`
-                      px-6 py-2.5 text-sm transition-colors duration-200
+                      px-6 py-3.5 text-sm transition-colors duration-150 rounded-lg
                       ${isSelected
                         ? 'text-[#60A5FA] hover:text-[#4F94E5]'
                         : 'text-gray-600/90 hover:text-gray-700'
@@ -350,20 +347,24 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                   </button>
 
                   {!isLast && (
-                    <div className="h-6 w-px bg-gray-400 mx-3" />
+                    <div className="h-6 w-px bg-gray-300 mx-3" />
                   )}
                 </div>
               );
             })}
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Tab content */}
-      <div className="px-4 sm:px-0 mt-6">
+      <div>
         {/* POSTS */}
         {activeTab === 'Posts' && (
           <>
-            <SectionHeader title={`${firstName}'s Posts`} accent="#60A5FA" />
+            <div className="mt-8 mb-4">
+              <SectionHeader title={`${firstName}'s Posts`} accent="#60A5FA" className="mt-0 mb-0" />
+            </div>
             {posts.length ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-5 gap-4">
                 {posts.map((post) => (
@@ -384,7 +385,9 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
         {/* LISTINGS */}
         {activeTab === 'Listings' && (
           <>
-            <SectionHeader title={`${firstName}'s Listings`} accent="#60A5FA" />
+            <div className="mt-8 mb-4">
+              <SectionHeader title={`${firstName}'s Listings`} accent="#60A5FA" className="mt-0 mb-0" />
+            </div>
             {(() => {
               // Filter out personal listings (category = 'Personal')
               const visibleListings = listings.filter(l => l.category !== 'Personal');
@@ -409,7 +412,9 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
         {/* IMAGES */}
         {activeTab === 'Images' && (
           <>
-            <SectionHeader title={`${firstName}'s Gallery`} accent="#60A5FA" />
+            <div className="mt-8 mb-4">
+              <SectionHeader title={`${firstName}'s Gallery`} accent="#60A5FA" className="mt-0 mb-0" />
+            </div>
             {galleryImages.length ? (
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-4">
                 {galleryImages.map((img, i) => (
@@ -435,8 +440,8 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
         {/* SERVICES */}
         {activeTab === 'Services' && (
           <>
-            <div className="flex items-center justify-between mb-6">
-              <SectionHeader title={`${firstName}'s Services`} accent="#60A5FA" />
+            <div className="mt-8 mb-4 flex items-center justify-between">
+              <SectionHeader title={`${firstName}'s Services`} accent="#60A5FA" className="mt-0 mb-0" />
               {isOwner && services.length > 0 && (
                 <button
                   onClick={handleEditServices}

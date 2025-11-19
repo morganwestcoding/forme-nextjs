@@ -137,13 +137,13 @@ const Sidebar: React.FC<SidebarProps> = ({
       <div
         className={`
           h-screen overflow-y-auto w-56
-          fixed top-0 left-0 border-r border-gray-400/20 bottom-0 z-50
+          fixed top-0 left-0 border-r border-gray-300/80 bottom-0 z-50
           transition-transform duration-300 ease-in-out
           ${isCollapsed ? '-translate-x-full' : 'translate-x-0'}
         `}
         style={{
           background: '#f5f5f5',
-          boxShadow: 'inset -2px 0 8px rgba(0, 0, 0, 0.01)'
+          boxShadow: 'inset -2px 0 8px rgba(0, 0, 0, 0.0090)'
         }}
       >
         {/* Collapse button hover zone - only on right edge */}

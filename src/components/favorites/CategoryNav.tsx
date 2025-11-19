@@ -18,7 +18,7 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ activeTab, setActiveTab }) =>
   ];
 
   return (
-    <div className="-mx-6 md:-mx-24 pb-4 border-b border-gray-300">
+    <div className="-mx-6 md:-mx-24 pb-3 border-b border-gray-300/80">
       <div className="flex items-center justify-center">
         {tabs.map((tab, index) => {
           const isSelected = activeTab === tab.key;

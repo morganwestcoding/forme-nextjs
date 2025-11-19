@@ -11,14 +11,14 @@ interface ViewState {
   mode: 'grid' | 'list';
 }
 
-interface FavoritesExplorerProps {
+interface FavoritesSearchProps {
   viewState: ViewState;
   setViewState: React.Dispatch<React.SetStateAction<ViewState>>;
   activeTab: FavoriteTab | null;
   setActiveTab: React.Dispatch<React.SetStateAction<FavoriteTab | null>>;
 }
 
-const FavoritesExplorer: React.FC<FavoritesExplorerProps> = ({
+const FavoritesSearch: React.FC<FavoritesSearchProps> = ({
   viewState,
   setViewState,
   activeTab,
@@ -30,7 +30,8 @@ const FavoritesExplorer: React.FC<FavoritesExplorerProps> = ({
     setViewState((prev) => ({ ...prev, mode }));
   };
 
-  const buttonBaseClasses = "bg-white border border-gray-300 hover:border-gray-400 text-gray-700 hover:bg-white/80 transition-all duration-200 shadow-sm";
+  // Hero mode or normal mode button styles
+  const buttonBaseClasses = "bg-white border border-gray-300/90 hover:border-gray-400 text-gray-700 hover:bg-white/80 transition-all duration-200";
 
   return (
     <div className="min-h-0">
@@ -69,4 +70,4 @@ const FavoritesExplorer: React.FC<FavoritesExplorerProps> = ({
   );
 };
 
-export default FavoritesExplorer;
+export default FavoritesSearch;

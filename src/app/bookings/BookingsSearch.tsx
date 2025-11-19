@@ -3,13 +3,13 @@
 import React, { useState } from 'react';
 import { Search } from 'lucide-react';
 
-interface BookingsHeaderProps {
+interface BookingsSearchProps {
   onSearch?: (q: string) => void;
   onOpenFilters?: () => void;
   onCreate?: () => void;
 }
 
-const BookingsHeader: React.FC<BookingsHeaderProps> = ({
+const BookingsSearch: React.FC<BookingsSearchProps> = ({
   onSearch,
   onOpenFilters,
   onCreate,
@@ -21,7 +21,8 @@ const BookingsHeader: React.FC<BookingsHeaderProps> = ({
     onSearch?.(query);
   };
 
-  const buttonBaseClasses = "bg-white border border-gray-300 hover:border-gray-400 text-gray-700 hover:bg-white/80 transition-all duration-200 shadow-sm";
+  // Hero mode or normal mode button styles
+  const buttonBaseClasses = "bg-white border border-gray-300/90 hover:border-gray-400 text-gray-700 hover:bg-white/80 transition-all duration-200";
 
   return (
     <div className="min-h-0">
@@ -71,4 +72,4 @@ const BookingsHeader: React.FC<BookingsHeaderProps> = ({
   );
 };
 
-export default BookingsHeader;
+export default BookingsSearch;

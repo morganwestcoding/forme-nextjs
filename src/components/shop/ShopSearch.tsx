@@ -8,13 +8,13 @@ import useProductModal from '@/app/hooks/useProductModal';
 import useFilterModal from '@/app/hooks/useFilterModal';
 import GlobalSearch from '../search/GlobalSearch';
 
-interface ShopHeaderProps {
+interface ShopSearchProps {
   currentUser?: SafeUser | null;
   shopId?: string;
   isHeroMode?: boolean;
 }
 
-const ShopHeader: React.FC<ShopHeaderProps> = ({
+const ShopSearch: React.FC<ShopSearchProps> = ({
   currentUser,
   shopId,
   isHeroMode = false
@@ -70,9 +70,10 @@ const ShopHeader: React.FC<ShopHeaderProps> = ({
 
   const activeFilterCount = getActiveFilterCount();
 
+  // Hero mode or normal mode button styles
   const buttonBaseClasses = isHeroMode
     ? "backdrop-blur-md bg-white/10 hover:bg-blue-400/10 border border-white/40 hover:border-blue-400/60 text-white hover:text-[#60A5FA]"
-    : "bg-white border border-gray-300 hover:border-gray-400 text-gray-700 hover:bg-white/80 transition-all duration-200 shadow-sm";
+    : "bg-white border border-gray-300/90 hover:border-gray-400 text-gray-700 hover:bg-white/80 transition-all duration-200";
 
   return (
     <div className="min-h-0">
@@ -118,7 +119,7 @@ const ShopHeader: React.FC<ShopHeaderProps> = ({
                 height: '28px'
               }}
             >
-              <span className="w-full h-full rounded-full border-[#60A5FA]/50 border bg-blue-50 flex items-center justify-center text-sm font-semibold" style={{ color: '#60A5FA' }}>
+              <span className="w-full h-full -ml-0.5 rounded-lg border-[#60A5FA]/50 border bg-blue-50 flex items-center justify-center text-sm font-semibold" style={{ color: '#60A5FA' }}>
                 {activeFilterCount > 0 && activeFilterCount}
               </span>
             </span>
@@ -177,4 +178,4 @@ const ShopHeader: React.FC<ShopHeaderProps> = ({
   );
 };
 
-export default ShopHeader;
+export default ShopSearch;

@@ -233,7 +233,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   return (
     <div
       onClick={handleCardClick}
-      className="group cursor-pointer rounded-lg relative transition-all duration-300 hover:-translate-y-1 hover:scale-[1.01] hover:shadow-md max-w-[250px] bg-white overflow-hidden border border-gray-400"
+      className="group cursor-pointer rounded-xl relative transition-all duration-300 hover:-translate-y-1 hover:scale-[1.01] hover:shadow-md max-w-[250px] bg-white overflow-hidden border border-gray-400"
     >
 
       {/* Match ListingCard and WorkerCard height structure */}
@@ -269,7 +269,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
             <button
               aria-label={`Edit ${service.serviceName || 'service'}`}
               onClick={goToEditThisService}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white/90 backdrop-blur-sm text-gray-700 hover:bg-white hover:shadow-md transition"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-white/90 backdrop-blur-sm text-gray-700 hover:bg-white hover:shadow-md transition"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
                 <path d="M16.425 4.605L17.415 3.615c.82-.82 2.149-.82 2.97 0 .82.82.82 2.15 0 2.97l-0.99.99M16.425 4.605L9.766 11.264c-.508.508-.868 1.144-1.042 1.84L8 16l2.896-.724c.696-.174 1.332-.534 1.84-1.041l6.659-6.66M16.425 4.605l2.97 2.97" stroke="currentColor" strokeWidth="1.5" />
@@ -281,7 +281,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
               <button
                 aria-label={`Duplicate ${service.serviceName || 'service'}`}
                 onClick={handleDuplicate}
-                className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white/90 backdrop-blur-sm text-gray-700 hover:bg-white hover:shadow-md transition"
+                className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-white/90 backdrop-blur-sm text-gray-700 hover:bg-white hover:shadow-md transition"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
                   <path d="M8 8.5C8 7.12 9.12 6 10.5 6H16.5C17.88 6 19 7.12 19 8.5V14.5C19 15.88 17.88 17 16.5 17H10.5C9.12 17 8 15.88 8 14.5V8.5Z" stroke="currentColor" strokeWidth="1.5"/>

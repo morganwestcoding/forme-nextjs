@@ -11,7 +11,7 @@ import { useCategory } from '@/CategoryContext';
 import { useFilter } from '@/FilterContext';
 import { useViewMode } from '@/app/hooks/useViewMode';
 import Container from './Container';
-import DiscoverHeader from './feed/DiscoverHeader';
+import DiscoverSearch from './feed/DiscoverSearch';
 import CategoryNav from './feed/CategoryNav';
 import PostCard from './feed/PostCard';
 import TikTokView from './feed/TikTokView';
@@ -213,31 +213,38 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
     <ClientProviders>
       <div className="min-h-screen">
         <Container>
+          {/* Hero Section - Frosted Glass Effect */}
           <div className="-mx-6 md:-mx-24 -mt-2 md:-mt-8">
-            <div
-              className="relative px-6 md:px-24 pt-10 overflow-hidden"
-              style={{
-                background: 'linear-gradient(to bottom, #FFFFFF 0%, #FAFAFA 100%)'
-              }}
-            >
-              <div className="relative z-10 pb-8">
-                <div className="">
-                  <h1 className="text-4xl md:text-4xl font-extrabold text-gray-900 leading-tight tracking-tight">
-                    Discover
-                  </h1>
-                  <p className="text-gray-600 text-lg mt-1">Share whats new with you and your business</p>
-                </div>
+          <div
+            className="relative px-6 md:px-24 pt-10 overflow-hidden"
+            style={{
+              background: 'linear-gradient(to bottom, #FFFFFF 0%, #F8F8F8 100%)'
+            }}
+          >
 
-                <div className="mt-5">
-                  <DiscoverHeader isHeroMode={false} />
-                </div>
+            {/* Content */}
+            <div className="relative z-10 pb-6">
+              {/* Main Discover Title */}
+              <div className="">
+                <h1 className="text-4xl md:text-4xl font-extrabold text-gray-900 leading-tight tracking-tight">
+                  Discover
+                </h1>
+                <p className="text-gray-600 text-lg mt-1">Share whats new with you and your business</p>
               </div>
+
+              {/* Search and Controls */}
+              <div className="mt-5">
+                <DiscoverSearch isHeroMode={false} />
+              </div>
+                    {/* Category Navigation */}
+
+            </div>
               <CategoryNav
                 searchParams={headerSearchParams}
                 onNavigate={handleNavigation}
               />
-            </div>
           </div>
+        </div>
 
           <div className="relative">
             {isLoading && (

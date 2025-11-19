@@ -7,7 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { SafeReservation, SafeUser } from "@/app/types";
 import Container from "@/components/Container";
 import ReserveCard from "@/components/listings/ReserveCard";
-import BookingsHeader from "@/app/bookings/BookingsHeader";
+import BookingsSearch from "@/app/bookings/BookingsSearch";
 import CategoryNav from "@/app/bookings/CategoryNav";
 import SectionHeader from "@/app/market/SectionHeader";
 import PropagateLoaderWrapper from "@/components/loaders/PropagateLoaderWrapper";
@@ -104,28 +104,35 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
 
   return (
     <Container>
+      {/* Hero Section - Frosted Glass Effect */}
       <div className="-mx-6 md:-mx-24 -mt-2 md:-mt-8">
-        <div
-          className="relative px-6 md:px-24 pt-10 overflow-hidden"
-          style={{
-            background: 'linear-gradient(to bottom, #FFFFFF 0%, #FAFAFA 100%)'
-          }}
-        >
-          <div className="relative z-10 pb-8">
-            <div className="">
-              <h1 className="text-4xl md:text-4xl font-extrabold text-gray-900 leading-tight tracking-tight">
-                Reservations
-              </h1>
-              <p className="text-gray-600 text-lg mt-1">Reservations you&lsquo;ve received from customers</p>
-            </div>
+      <div
+        className="relative px-6 md:px-24 pt-10 overflow-hidden"
+        style={{
+          background: 'linear-gradient(to bottom, #FFFFFF 0%, #F8F8F8 100%)'
+        }}
+      >
 
-            <div className="mt-5">
-              <BookingsHeader />
-            </div>
+        {/* Content */}
+        <div className="relative z-10 pb-6">
+          {/* Main Reservations Title */}
+          <div className="">
+            <h1 className="text-4xl md:text-4xl font-extrabold text-gray-900 leading-tight tracking-tight">
+              Reservations
+            </h1>
+            <p className="text-gray-600 text-lg mt-1">Reservations you&lsquo;ve received from customers</p>
           </div>
-          <CategoryNav />
+
+          {/* Search and Controls */}
+          <div className="mt-5">
+            <BookingsSearch />
+          </div>
+                {/* Category Navigation */}
+
         </div>
+          <CategoryNav />
       </div>
+    </div>
 
       <div className="relative">
         {isLoading && (

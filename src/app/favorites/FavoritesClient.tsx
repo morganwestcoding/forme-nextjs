@@ -8,7 +8,7 @@ import ShopCard from '@/components/shop/ShopCard';
 import PostCard from '@/components/feed/PostCard';
 import { categories } from '@/components/Categories';
 import { SafeListing, SafeUser, SafeEmployee, SafeShop, SafePost } from '@/app/types';
-import FavoritesExplorer from '@/components/favorites/FavoritesExplorer';
+import FavoritesSearch from '@/components/favorites/FavoritesSearch';
 import CategoryNav from '@/components/favorites/CategoryNav';
 import EmptyState from '@/components/EmptyState';
 import SectionHeader from '../market/SectionHeader';
@@ -265,33 +265,40 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
 
   return (
     <Container>
+      {/* Hero Section - Frosted Glass Effect */}
       <div className="-mx-6 md:-mx-24 -mt-2 md:-mt-8">
-        <div
-          className="relative px-6 md:px-24 pt-10 overflow-hidden"
-          style={{
-            background: 'linear-gradient(to bottom, #FFFFFF 0%, #FAFAFA 100%)'
-          }}
-        >
-          <div className="relative z-10 pb-8">
-            <div className="">
-              <h1 className="text-4xl md:text-4xl font-extrabold text-gray-900 leading-tight tracking-tight">
-                Favorites
-              </h1>
-              <p className="text-gray-600 text-lg mt-1">A one stop shop for all of your favorite things</p>
-            </div>
+      <div
+        className="relative px-6 md:px-24 pt-10 overflow-hidden"
+        style={{
+          background: 'linear-gradient(to bottom, #FFFFFF 0%, #F8F8F8 100%)'
+        }}
+      >
 
-            <div className="mt-5">
-              <FavoritesExplorer
-                viewState={viewState}
-                setViewState={setViewState}
-                activeTab={activeTab}
-                setActiveTab={setActiveTab}
-              />
-            </div>
+        {/* Content */}
+        <div className="relative z-10 pb-6">
+          {/* Main Favorites Title */}
+          <div className="">
+            <h1 className="text-4xl md:text-4xl font-extrabold text-gray-900 leading-tight tracking-tight">
+              Favorites
+            </h1>
+            <p className="text-gray-600 text-lg mt-1">A one stop shop for all of your favorite things</p>
           </div>
-          <CategoryNav activeTab={activeTab} setActiveTab={setActiveTab} />
+
+          {/* Search and Controls */}
+          <div className="mt-5">
+            <FavoritesSearch
+              viewState={viewState}
+              setViewState={setViewState}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+            />
+          </div>
+                {/* Category Navigation */}
+
         </div>
+          <CategoryNav activeTab={activeTab} setActiveTab={setActiveTab} />
       </div>
+    </div>
 
       <div className="relative">
         {isLoading && (

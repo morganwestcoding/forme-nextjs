@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { SafeUser, SafeShop, SafeProduct, SafeProductCategory } from '@/app/types';
 import ShopCard from '@/components/shop/ShopCard';
 import ProductCard from '@/components/shop/ProductCard';
-import ShopHeader from '@/components/shop/ShopHeader';
+import ShopSearch from '@/components/shop/ShopSearch';
 import CategoryNav from '@/components/shop/CategoryNav';
 import PropagateLoaderWrapper from '@/components/loaders/PropagateLoaderWrapper';
 import SectionHeader from '@/app/market/SectionHeader';
@@ -97,28 +97,35 @@ const ShopClient: React.FC<ShopClientProps> = ({
 
   return (
     <>
+      {/* Hero Section - Frosted Glass Effect */}
       <div className="-mx-6 md:-mx-24 -mt-2 md:-mt-8">
-        <div
-          className="relative px-6 md:px-24 pt-10 overflow-hidden"
-          style={{
-            background: 'linear-gradient(to bottom, #FFFFFF 0%, #FAFAFA 100%)'
-          }}
-        >
-          <div className="relative z-10 pb-8">
-            <div className="">
-              <h1 className="text-4xl md:text-4xl font-extrabold text-gray-900 leading-tight tracking-tight">
-                Vendors
-              </h1>
-              <p className="text-gray-600 text-lg mt-1">Discover unique shops and products from our vendors</p>
-            </div>
+      <div
+        className="relative px-6 md:px-24 pt-10 overflow-hidden"
+        style={{
+          background: 'linear-gradient(to bottom, #FFFFFF 0%, #F8F8F8 100%)'
+        }}
+      >
 
-            <div className="mt-5">
-              <ShopHeader currentUser={currentUser} isHeroMode={false} />
-            </div>
+        {/* Content */}
+        <div className="relative z-10 pb-6">
+          {/* Main Vendors Title */}
+          <div className="">
+            <h1 className="text-4xl md:text-4xl font-extrabold text-gray-900 leading-tight tracking-tight">
+              Vendors
+            </h1>
+            <p className="text-gray-600 text-lg mt-1">Discover unique shops and products from our vendors</p>
           </div>
-          <CategoryNav searchParams={{ category: currentCategory }} />
+
+          {/* Search and Controls */}
+          <div className="mt-5">
+            <ShopSearch currentUser={currentUser} isHeroMode={false} />
+          </div>
+                {/* Category Navigation */}
+
         </div>
+          <CategoryNav searchParams={{ category: currentCategory }} />
       </div>
+    </div>
 
       {/* Content + loader overlay */}
       <div className="relative">

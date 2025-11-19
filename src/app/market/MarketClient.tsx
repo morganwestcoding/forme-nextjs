@@ -206,7 +206,7 @@ const MarketClient: React.FC<MarketClientProps> = ({
         <div
           className="relative px-6 md:px-24 pt-10 overflow-hidden"
           style={{
-            background: 'linear-gradient(to bottom, #FFFFFF 0%, #FAFAFA 100%)'
+            background: 'linear-gradient(to bottom, #FFFFFF 0%, #F8F8F8 100%)'
           }}
         >
 

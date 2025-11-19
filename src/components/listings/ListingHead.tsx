@@ -8,6 +8,7 @@ import WorkerCard from './WorkerCard';
 import PostCard from '../feed/PostCard';
 import QRModal from '../modals/QRModal';
 import OpenStatus from './OpenStatus';
+import ListingLocalSearch from './ListingLocalSearch';
 import { SafePost, SafeUser, SafeListing } from '@/app/types';
 import useReservationModal from '@/app/hooks/useReservationModal';
 import useRentModal from '@/app/hooks/useListingModal';
@@ -62,6 +63,8 @@ const ListingHead: React.FC<ListingHeadProps> = ({
     listingId: listing.id,
     currentUser
   });
+
+  const [searchQuery, setSearchQuery] = useState('');
 
   const mainImage = imageSrc || galleryImages?.[0] || '/placeholder.jpg';
 
@@ -128,6 +131,39 @@ const ListingHead: React.FC<ListingHeadProps> = ({
     [Services]
   );
 
+  // Filter services based on search query
+  const filteredServices = useMemo(() => {
+    if (!searchQuery.trim()) return validServices;
+    const query = searchQuery.toLowerCase();
+    return validServices.filter(
+      (service) =>
+        service.serviceName?.toLowerCase().includes(query) ||
+        service.category?.toLowerCase().includes(query) ||
+        service.description?.toLowerCase().includes(query) ||
+        service.price?.toString().includes(query)
+    );
+  }, [validServices, searchQuery]);
+
+  // Filter employees based on search query
+  const filteredEmployees = useMemo(() => {
+    if (!searchQuery.trim()) return employees;
+    const query = searchQuery.toLowerCase();
+    return employees.filter((employee: any) =>
+      employee.name?.toLowerCase().includes(query) ||
+      employee.specialty?.toLowerCase().includes(query) ||
+      employee.bio?.toLowerCase().includes(query)
+    );
+  }, [employees, searchQuery]);
+
+  // Filter posts based on search query
+  const filteredPosts = useMemo(() => {
+    if (!searchQuery.trim()) return posts;
+    const query = searchQuery.toLowerCase();
+    return posts.filter((post) =>
+      post.content?.toLowerCase().includes(query)
+    );
+  }, [posts, searchQuery]);
+
   const handleAddService = () => {
     if (!isOwner) return;
     const url = new URL(window.location.href);
@@ -177,7 +213,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
       {/* Dropdown Menu - Fixed position to escape overflow */}
       {showDropdown && (
         <div
-          className="fixed top-20 right-6 md:right-24 w-48 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50"
+          className="fixed top-20 right-6 md:right-24 w-48 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-50"
           style={{ maxHeight: 'calc(100vh - 100px)', overflowY: 'auto' }}
         >
           {isOwner && (
@@ -312,7 +348,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
             <div className="absolute top-6 right-6 md:right-24 z-50">
               <button
                 onClick={handleDropdownToggle}
-                className="p-1 hover:bg-white/20 rounded-lg transition-colors relative z-50"
+                className="p-1 hover:bg-white/20 rounded-xl transition-colors relative z-50"
                 type="button"
                 aria-label="Options menu"
               >
@@ -325,10 +361,10 @@ const ListingHead: React.FC<ListingHeadProps> = ({
             </div>
 
             {/* Content Overlay */}
-            <div className="relative z-10 pb-8">
+            <div className="relative z-10 pb-6">
                 {/* Title with Badges */}
                 <div className="flex items-center gap-2.5 mb-3">
-                  <h1 className="text-4xl font-bold tracking-tight text-white drop-shadow-lg">
+                  <h1 className="text-4xl font-bold tracking-tight text-white">
                     {title}
                   </h1>
 
@@ -340,7 +376,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                       width="26"
                       height="26"
                       fill="#60A5FA"
-                      className="shrink-0 text-white drop-shadow-lg"
+                      className="shrink-0 text-white/45"
                       aria-label="Verified"
                     >
                       <path
@@ -368,37 +404,14 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   </span>
                 </div>
 
-                {/* Stats and Buttons Row */}
-                <div className="flex items-center justify-between">
-                  {/* Counter - Option 1: Minimal Inline Stats */}
-                  <div className="flex items-center gap-6">
-                    {/* Rating */}
-                    <button
-                      onClick={() => setActiveTab('Reviews')}
-                      className="flex flex-col group hover:scale-105 transition-transform"
-                      type="button"
-                      aria-label="View reviews and rating"
-                    >
-                      <span className="text-2xl font-semibold text-white">4.8</span>
-                      <span className="text-xs text-white/70">Rating</span>
-                    </button>
-
-                    {/* Posts */}
-                    <button
-                      onClick={() => setActiveTab('Posts')}
-                      className="flex flex-col group hover:scale-105 transition-transform"
-                      type="button"
-                      aria-label="View posts"
-                    >
-                      <span className="text-2xl font-semibold text-white">{posts?.length || 0}</span>
-                      <span className="text-xs text-white/70">Posts</span>
-                    </button>
-
-                    {/* Followers */}
-                    <div className="flex flex-col">
-                      <span className="text-2xl font-semibold text-white">{followers.length}</span>
-                      <span className="text-xs text-white/70">Followers</span>
-                    </div>
+                {/* Search Bar and Buttons Row */}
+                <div className="flex items-center gap-2">
+                  {/* Local Search Bar */}
+                  <div className="flex-1">
+                    <ListingLocalSearch
+                      placeholder="Search services, team, posts..."
+                      onSearchChange={setSearchQuery}
+                    />
                   </div>
 
                   {/* Buttons - Right Side */}
@@ -407,7 +420,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                     {canShowQR ? (
                       <button
                         onClick={handleQRClick}
-                        className=" bg-white/15 backdrop-blur-sm hover:bg-blue-400/10 border border-white/40 hover:border-blue-400/60 text-white hover:text-[#60A5FA] py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center hover:shadow-sm"
+                        className=" bg-white/15 backdrop-blur-sm hover:bg-blue-400/10 border border-white/30 hover:border-blue-400/60 text-white hover:text-[#60A5FA] py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center hover:shadow-sm"
                         type="button"
                         aria-label="Show QR Code"
                       >
@@ -425,7 +438,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                       currentUser && (
                         <button
                           onClick={handleToggleFollow}
-                          className=" bg-white/15 backdrop-blur-sm hover:bg-blue-400/10 border border-white/40 hover:border-blue-400/60 text-white hover:text-[#60A5FA] py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center hover:shadow-sm text-sm w-28"
+                          className=" bg-white/15 backdrop-blur-sm hover:bg-blue-400/10 border border-white/30 hover:border-blue-400/60 text-white hover:text-[#60A5FA] py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center hover:shadow-sm text-sm w-28"
                           type="button"
                           aria-label={isFollowing ? 'Unfollow' : 'Follow'}
                         >
@@ -438,7 +451,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                     {currentUser && (
                       <button
                         onClick={handleReserveClick}
-                        className=" bg-white/15 backdrop-blur-sm hover:bg-blue-400/10 border border-white/40 hover:border-blue-400/60 text-white hover:text-[#60A5FA] py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center hover:shadow-sm text-sm w-28"
+                        className=" bg-white/15 backdrop-blur-sm hover:bg-blue-400/10 border border-white/30 hover:border-blue-400/60 text-white hover:text-[#60A5FA] py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center hover:shadow-sm text-sm w-28"
                         type="button"
                       >
                         <span>Reserve</span>
@@ -449,7 +462,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
             </div>
 
             {/* Navigation Tabs - Outside content wrapper but inside main wrapper */}
-            <div className="-mx-6 md:-mx-24 pb-4 border-b border-gray-300 relative z-10">
+            <div className="-mx-6 md:-mx-24 pb-3 border-b border-gray-300/80 relative z-10">
                 <div className="flex items-center justify-center">
                   {tabs.map(({ key, label }, index) => {
                     const isSelected = activeTab === key;
@@ -460,7 +473,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                         <button
                           onClick={() => setActiveTab(key)}
                           className={`
-                            px-6 py-3.5 text-sm transition-colors duration-150 rounded-lg
+                            px-6 py-3.5 text-sm transition-colors duration-150 rounded-xl
                             ${isSelected
                               ? 'text-[#60A5FA] hover:text-[#4F94E5]'
                               : 'text-white/90 hover:text-white'
@@ -484,11 +497,11 @@ const ListingHead: React.FC<ListingHeadProps> = ({
       </div>
 
       {/* Tab Content */}
-      <div className="mt-6">
+      <div>
         {activeTab === 'Services' && (
           <>
             {/* Services Section Header */}
-            <div className="mb-4">
+            <div className="mt-8 mb-4">
               <div>
                 <h2 className="text-xl font-semibold tracking-tight text-gray-900">
                   Available Services
@@ -500,55 +513,61 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {validServices.map(service => (
-              <ServiceCard
-                key={service.id}
-                service={service}
-                listing={listing}
-                currentUser={currentUser}
-                storeHours={storeHours}
-              />
-            ))}
+            {filteredServices.length === 0 && searchQuery.trim() ? (
+              <div className="col-span-full text-center py-12">
+                <p className="text-gray-500">No services found matching &quot;{searchQuery}&quot;</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {filteredServices.map(service => (
+                <ServiceCard
+                  key={service.id}
+                  service={service}
+                  listing={listing}
+                  currentUser={currentUser}
+                  storeHours={storeHours}
+                />
+              ))}
 
-            {isOwner && (
-              <button
-                onClick={handleAddService}
-                type="button"
-                className="group relative h-[350px] max-w-[250px] rounded-lg border-2 border-dashed border-gray-200 bg-gray-50/30 hover:border-blue-300 hover:bg-blue-50/30 transition-all duration-200"
-              >
-                <div className="absolute inset-0 flex flex-col items-center justify-center p-6">
-                  {/* Simple plus icon */}
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="32"
-                    height="32"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="text-gray-400 group-hover:text-blue-500 transition-colors duration-200 mb-3"
-                  >
-                    <path d="M12 5v14M5 12h14" />
-                  </svg>
+              {isOwner && (
+                <button
+                  onClick={handleAddService}
+                  type="button"
+                  className="group relative h-[350px] max-w-[250px] rounded-xl border-2 border-dashed border-gray-200 bg-gray-50/30 hover:border-blue-300 hover:bg-blue-50/30 transition-all duration-200"
+                >
+                  <div className="absolute inset-0 flex flex-col items-center justify-center p-6">
+                    {/* Simple plus icon */}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="32"
+                      height="32"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="text-gray-400 group-hover:text-blue-500 transition-colors duration-200 mb-3"
+                    >
+                      <path d="M12 5v14M5 12h14" />
+                    </svg>
 
-                  {/* Text */}
-                  <h3 className="text-sm font-medium text-gray-600 group-hover:text-gray-900 transition-colors duration-200">
-                    Add Service
-                  </h3>
-                </div>
-              </button>
+                    {/* Text */}
+                    <h3 className="text-sm font-medium text-gray-600 group-hover:text-gray-900 transition-colors duration-200">
+                      Add Service
+                    </h3>
+                  </div>
+                </button>
+              )}
+            </div>
             )}
-          </div>
           </>
         )}
 
         {activeTab === 'Team' && (
           <>
             {/* Team Section Header */}
-            <div className="mb-4">
+            <div className="mt-8 mb-4">
               <div>
                 <h2 className="text-xl font-semibold tracking-tight text-gray-900">
                   Our Team
@@ -560,51 +579,57 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {employees.map((employee: any, index: number) => (
-              <WorkerCard
-                key={employee.id || index}
-                employee={employee}
-                listingTitle={title}
-                data={{ title, imageSrc: mainImage, category: (listing as any).category }}
-                listing={listing}
-                currentUser={currentUser}
-                onFollow={() => { }}
-                onBook={() => { }}
-              />
-            ))}
+            {filteredEmployees.length === 0 && searchQuery.trim() ? (
+              <div className="col-span-full text-center py-12">
+                <p className="text-gray-500">No team members found matching &quot;{searchQuery}&quot;</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {filteredEmployees.map((employee: any, index: number) => (
+                <WorkerCard
+                  key={employee.id || index}
+                  employee={employee}
+                  listingTitle={title}
+                  data={{ title, imageSrc: mainImage, category: (listing as any).category }}
+                  listing={listing}
+                  currentUser={currentUser}
+                  onFollow={() => { }}
+                  onBook={() => { }}
+                />
+              ))}
 
-            {isOwner && (
-              <button
-                onClick={handleAddWorker}
-                type="button"
-                className="group relative h-[350px] max-w-[250px] rounded-lg border-2 border-dashed border-gray-200 bg-gray-50/30 hover:border-blue-300 hover:bg-blue-50/30 transition-all duration-200"
-              >
-                <div className="absolute inset-0 flex flex-col items-center justify-center p-6">
-                  {/* Simple plus icon */}
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="32"
-                    height="32"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="text-gray-400 group-hover:text-blue-500 transition-colors duration-200 mb-3"
-                  >
-                    <path d="M12 5v14M5 12h14" />
-                  </svg>
+              {isOwner && (
+                <button
+                  onClick={handleAddWorker}
+                  type="button"
+                  className="group relative h-[350px] max-w-[250px] rounded-xl border-2 border-dashed border-gray-200 bg-gray-50/30 hover:border-blue-300 hover:bg-blue-50/30 transition-all duration-200"
+                >
+                  <div className="absolute inset-0 flex flex-col items-center justify-center p-6">
+                    {/* Simple plus icon */}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="32"
+                      height="32"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="text-gray-400 group-hover:text-blue-500 transition-colors duration-200 mb-3"
+                    >
+                      <path d="M12 5v14M5 12h14" />
+                    </svg>
 
-                  {/* Text */}
-                  <h3 className="text-sm font-medium text-gray-600 group-hover:text-gray-900 transition-colors duration-200">
-                    Add Team Member
-                  </h3>
-                </div>
-              </button>
+                    {/* Text */}
+                    <h3 className="text-sm font-medium text-gray-600 group-hover:text-gray-900 transition-colors duration-200">
+                      Add Team Member
+                    </h3>
+                  </div>
+                </button>
+              )}
+            </div>
             )}
-          </div>
           </>
         )}
 
@@ -625,7 +650,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
         {activeTab === 'Posts' && (
           <>
             {/* Posts Section Header */}
-            <div className="mb-4">
+            <div className="mt-8 mb-4">
               <div>
                 <h2 className="text-xl font-semibold tracking-tight text-gray-900">
                   Gallery
@@ -644,7 +669,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                     <button
                       onClick={handleAddMedia}
                       type="button"
-                      className="group relative rounded-lg border-2 border-dashed border-gray-200 bg-gray-50/30 hover:border-blue-300 hover:bg-blue-50/30 transition-all duration-200"
+                      className="group relative rounded-xl border-2 border-dashed border-gray-200 bg-gray-50/30 hover:border-blue-300 hover:bg-blue-50/30 transition-all duration-200"
                       style={{ aspectRatio: '1 / 1' }}
                     >
                       <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
@@ -699,8 +724,8 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 )}
 
                 {/* Post Cards */}
-                {posts && posts.length > 0 && (
-                  posts.map(post => (
+                {filteredPosts && filteredPosts.length > 0 && (
+                  filteredPosts.map(post => (
                     <PostCard
                       key={post.id}
                       post={post}
@@ -716,7 +741,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   <button
                     onClick={handleAddMedia}
                     type="button"
-                    className="group relative rounded-lg border-2 border-dashed border-gray-200 bg-gray-50/30 hover:border-blue-300 hover:bg-blue-50/30 transition-all duration-200"
+                    className="group relative rounded-xl border-2 border-dashed border-gray-200 bg-gray-50/30 hover:border-blue-300 hover:bg-blue-50/30 transition-all duration-200"
                     style={{ aspectRatio: '1 / 1' }}
                   >
                     <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
