@@ -137,7 +137,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       <div
         className={`
           h-screen overflow-y-auto w-56
-          fixed top-0 left-0 border-r border-gray-300/80 bottom-0 z-50
+          fixed top-0 left-0 border-r border-gray-300 bottom-0 z-50
           transition-transform duration-300 ease-in-out
           ${isCollapsed ? '-translate-x-full' : 'translate-x-0'}
         `}

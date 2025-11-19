@@ -194,17 +194,20 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
 
   const shouldShowImage = profileImage && !imageError;
 
+  // Use user's background image if available, otherwise fall back to listing image
+  const backgroundImageSrc = employee.user.backgroundImage || data.imageSrc;
+
   return (
     <div
       onClick={handleCardClick}
       className="group cursor-pointer rounded-xl overflow-hidden relative transition-all duration-300 hover:-translate-y-1 hover:scale-[1.01] hover:shadow-md max-w-[250px]"
     >
-      {/* Background with listing image */}
+      {/* Background with user's background image or listing image */}
       <div className="absolute inset-0 z-0">
-        {/* Listing background image - grayscale and sharp */}
+        {/* Background image - grayscale and sharp */}
         <div className="absolute inset-0">
           <Image
-            src={data.imageSrc}
+            src={backgroundImageSrc}
             alt=""
             fill
             className="object-cover grayscale scale-105"

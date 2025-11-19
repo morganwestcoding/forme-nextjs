@@ -65,8 +65,8 @@ const RegisterModal = () => {
 
   const isEdit = registerModal.mode === 'edit';
 
-  const { 
-    register, 
+  const {
+    register,
     handleSubmit,
     setValue,
     watch,
@@ -83,6 +83,7 @@ const RegisterModal = () => {
       location: '',
       bio: '',
       image: '',
+      backgroundImage: '',
       userType: '',
       selectedListing: '',
       jobTitle: '',
@@ -96,6 +97,7 @@ const RegisterModal = () => {
   const locationVal = watch('location');
   const bioVal = watch('bio');
   const image = watch('image');
+  const backgroundImage = watch('backgroundImage');
   const userType = watch('userType') as UserType;
   const selectedListing = watch('selectedListing');
   const jobTitle = watch('jobTitle');
@@ -123,6 +125,7 @@ const RegisterModal = () => {
         location: p.location ?? '',
         bio: p.bio ?? '',
         image: p.image ?? '',
+        backgroundImage: p.backgroundImage ?? '',
         userType: '',
         selectedListing: '',
         jobTitle: '',
@@ -350,6 +353,7 @@ const RegisterModal = () => {
           location: data.location,
           bio: data.bio,
           image: data.image,
+          backgroundImage: data.backgroundImage,
         };
 
         await axios.put(`/api/users/${userId}`, payload);
@@ -377,6 +381,7 @@ const RegisterModal = () => {
         location: data.location,
         bio: data.bio,
         image: data.image,
+        backgroundImage: data.backgroundImage,
         userType: data.userType,
         selectedListing: data.selectedListing,
         jobTitle: data.jobTitle,
@@ -542,8 +547,8 @@ const RegisterModal = () => {
             },
             {
               key: STEPS.IMAGES,
-              title: 'Profile Picture',
-              description: 'Your profile photo',
+              title: 'Photos',
+              description: 'Profile & background images',
               complete: Boolean(image),
             },
           ]}
@@ -746,31 +751,69 @@ const RegisterModal = () => {
 
   if (step === STEPS.IMAGES) {
     bodyContent = (
-      <div className="flex flex-col gap-8 py-6">
+      <div className="flex flex-col gap-4">
         <Heading
-          title={isEdit ? "Update your photo" : "Add your photo"}
+          title={isEdit ? "Update your photos" : "Add your photos"}
           subtitle={isEdit ? "Show the world your best self" : "Make a great first impression"}
         />
 
-        <div className="flex justify-center py-8">
-          <ImageUpload
-            uploadId="profile-picture"
-            onChange={(v) => setCustomValue('image', v)}
-            value={image}
-            className="w-48 h-48"
-            ratio="square"
-            rounded="full"
-            enableCrop={true}
-            cropMode="fixed"
-            label="Profile Picture"
-            maxFileSizeMB={5}
-            onRemove={() => setCustomValue('image', '')}
-          />
+        {/* Profile Picture Section */}
+        <div className="bg-gradient-to-br from-blue-50/50 to-indigo-50/30 rounded-2xl p-6 border border-blue-100/50">
+          <div className="flex items-center gap-5">
+            {/* Profile Picture Upload */}
+            <div className="flex-shrink-0">
+              <ImageUpload
+                uploadId="profile-picture"
+                onChange={(v) => setCustomValue('image', v)}
+                value={image}
+                className="w-28 h-28"
+                ratio="square"
+                rounded="full"
+                enableCrop={true}
+                cropMode="fixed"
+                label=""
+                maxFileSizeMB={5}
+                onRemove={() => setCustomValue('image', '')}
+              />
+            </div>
+
+            {/* Profile Picture Info */}
+            <div className="flex-1">
+              <h3 className="text-base font-semibold text-neutral-900 mb-1.5">
+                Profile Picture
+              </h3>
+              <p className="text-sm text-neutral-600 leading-relaxed">
+                Upload a photo that represents you. It&apos;ll be displayed as a circle throughout the app.
+              </p>
+            </div>
+          </div>
         </div>
 
-        <p className="text-sm text-neutral-500 text-center max-w-sm mx-auto">
-          Upload a photo that represents you. It&apos;ll be shown as a circle throughout the app.
-        </p>
+        {/* Background Image Section */}
+        <div className="bg-gradient-to-br from-purple-50/50 to-pink-50/30 rounded-2xl p-6 border border-purple-100/50 -mb-6">
+          <div className="mb-4">
+            <h3 className="text-base font-semibold text-neutral-900 mb-1.5">
+              Background Image
+            </h3>
+            <p className="text-sm text-neutral-600 leading-relaxed">
+              Choose a backdrop for your profile header and worker cards. This helps you stand out.
+            </p>
+          </div>
+
+          <ImageUpload
+            uploadId="background-image"
+            onChange={(v) => setCustomValue('backgroundImage', v)}
+            value={backgroundImage}
+            className="w-full h-36"
+            ratio="wide"
+            rounded="2xl"
+            enableCrop={true}
+            cropMode="fixed"
+            label=""
+            maxFileSizeMB={5}
+            onRemove={() => setCustomValue('backgroundImage', '')}
+          />
+        </div>
       </div>
     );
   }

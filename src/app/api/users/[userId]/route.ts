@@ -31,6 +31,7 @@ export async function PUT(
       bio,
       image,
       imageSrc,
+      backgroundImage,
     } = body || {};
 
     const updated = await prisma.user.update({
@@ -41,6 +42,7 @@ export async function PUT(
         ...(typeof bio === "string" ? { bio } : {}),
         ...(typeof image === "string" ? { image } : {}),
         ...(typeof imageSrc === "string" ? { imageSrc } : {}),
+        ...(typeof backgroundImage === "string" ? { backgroundImage } : {}),
       },
     });
 

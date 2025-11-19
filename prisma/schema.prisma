@@ -25,9 +25,10 @@ model User {
   posts          Post[]
   accounts       Account[]
   bio            String
-  imageSrc       String?      
+  imageSrc       String?
   location       String?
   galleryImages  String[]
+  backgroundImage String?
   
   // Licensing/Verification fields
   licensingImage String?

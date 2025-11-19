@@ -31,6 +31,7 @@ export async function POST(request: Request) {
       bio,
       image,
       imageSrc,
+      backgroundImage,
       userType,
       selectedListing,
       jobTitle,
@@ -97,6 +98,7 @@ export async function POST(request: Request) {
         bio: bio ?? '',
         image: image ?? '',
         imageSrc: imageSrc ?? '',
+        backgroundImage: backgroundImage ?? '',
         subscriptionTier: subscription ?? 'bronze (customer)',
         isSubscribed,
         managedListings: [], // Initialize as empty array

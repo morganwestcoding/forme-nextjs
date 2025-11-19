@@ -271,7 +271,7 @@ export default function ImageUpload({
             )}
           >
             {!value && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6">
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-6">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="32"
@@ -282,7 +282,8 @@ export default function ImageUpload({
                   strokeWidth="1.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  className="text-gray-400 group-hover:text-blue-500 transition-colors duration-200"
+                  className="text-gray-400 group-hover:text-blue-500 transition-colors duration-200 flex-shrink-0"
+                  style={{ display: 'block' }}
                 >
                   <path d="M12 5v14M5 12h14" />
                 </svg>

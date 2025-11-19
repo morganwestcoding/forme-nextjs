@@ -9,6 +9,7 @@ type Prefill = {
   bio?: string;
   image?: string | null;
   imageSrc?: string | null;
+  backgroundImage?: string | null;
 };
 
 interface RegisterModalStore {

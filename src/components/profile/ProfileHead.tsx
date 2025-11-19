@@ -36,6 +36,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
     location,
     image,
     imageSrc,
+    backgroundImage,
     followers = [],
     following = [],
     galleryImages = [],
@@ -102,6 +103,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
         bio: bio ?? '',
         image: image ?? '',
         imageSrc: imageSrc ?? '',
+        backgroundImage: backgroundImage ?? '',
       },
     });
   };
@@ -168,8 +170,9 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
     setEditServicesList([]);
   };
 
-  // Hero background image - use first listing's image or user's imageSrc or first gallery image
+  // Hero background image - prioritize user's backgroundImage, then fallback to other images
   const heroImage =
+    backgroundImage ||
     (listings.length > 0 && listings[0].imageSrc) ||
     imageSrc ||
     (galleryImages.length > 0 && galleryImages[0]) ||

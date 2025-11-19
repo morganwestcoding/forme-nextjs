@@ -83,9 +83,10 @@ export type SafeUser = Omit<
 
   // Basic profile
   name: string | null;
-   email: string | null; 
+   email: string | null;
   image: string | null;
   imageSrc?: string | null;
+  backgroundImage?: string | null;
   bio: string;
   location?: string | null;
   galleryImages?: string[]; 
@@ -219,6 +220,7 @@ export type SafeEmployee = {
     name: string | null;
     image: string | null;
     imageSrc: string | null;
+    backgroundImage?: string | null;
   };
 };
 

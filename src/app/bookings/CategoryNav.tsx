@@ -71,7 +71,7 @@ const CategoryNav: React.FC<CategoryNavProps> = ({
   const allCategories = [...directionalCategories, ...statusCategories];
 
   return (
-    <div className="-mx-6 md:-mx-24 pb-3 border-b border-gray-300/80">
+    <div className="-mx-6 md:-mx-24 pb-3 border-b border-gray-300">
       <div className="flex items-center justify-center">
         {allCategories.map((category, index) => {
           const isSelected = activeCategories.includes(category.value);
