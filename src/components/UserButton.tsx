@@ -94,7 +94,7 @@ const UserButton: React.FC<UserButtonProps> = ({
 
   const buttonClass = noBg
     ? "flex items-center justify-start cursor-pointer outline-none touch-manipulation"
-    : "w-44 py-3 px-3 bg-white flex items-center mt-1 gap-3 mb-5 cursor-pointer rounded-xl relative transition-all duration-200 outline-none group hover:bg-white/80 border border-gray-200/90 hover:border-gray-400";
+    : "w-44 py-3 px-3 bg-white flex items-center mt-1 gap-3 mb-5 cursor-pointer rounded-xl relative transition-all duration-200 outline-none group hover:bg-white/80 border-[0.75px] border-gray-400/55 hover:border-gray-600";
 
 
   const dropdownWidthClass = noBg ? "min-w-44" : "w-44";

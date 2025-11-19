@@ -32,7 +32,7 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams }) => {
   };
 
   return (
-    <div className="-mx-6 md:-mx-24 pb-3 border-b border-gray-300">
+    <div className="-mx-6 md:-mx-24 pb-3 border-b-[0.75px] border-gray-400">
       <div className="flex items-center justify-center">
         {categories.map((category, index) => {
           const isSelected = currentCategory === category.label;
@@ -57,7 +57,7 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams }) => {
 
               {/* Vertical Divider */}
               {!isLast && (
-                <div className="h-6 w-px bg-gray-300 mx-3" />
+                <div className="h-6 w-px bg-gray-200 mx-3" />
               )}
             </div>
           );

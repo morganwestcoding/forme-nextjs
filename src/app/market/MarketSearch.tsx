@@ -47,7 +47,7 @@ const MarketSearch: React.FC<MarketSearchProps> = ({ isHeroMode = false }) => {
   // Hero mode or normal mode button styles
   const buttonBaseClasses = isHeroMode
     ? "backdrop-blur-md bg-white/10 hover:bg-blue-400/10 border border-white/40 hover:border-blue-400/60 text-white hover:text-[#60A5FA]"
-    : "bg-white border border-gray-300/90 hover:border-gray-400 text-gray-700 hover:bg-white/80 transition-all duration-200";
+    : "bg-white border-[0.75px] border-gray-400 hover:border-gray-400 text-gray-700 hover:bg-white/80 transition-all duration-200";
 
   return (
     <div className="min-h-0">

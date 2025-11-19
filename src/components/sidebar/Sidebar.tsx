@@ -137,7 +137,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       <div
         className={`
           h-screen overflow-y-auto w-56
-          fixed top-0 left-0 border-r border-gray-300 bottom-0 z-50
+          fixed top-0 left-0 border-r-[0.75px] border-gray-400 bottom-0 z-50
           transition-transform duration-300 ease-in-out
           ${isCollapsed ? '-translate-x-full' : 'translate-x-0'}
         `}
@@ -224,7 +224,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                       <path d="M15.8292 3.82152C18.5323 2.13939 20.7205 1.51937 21.6005 2.39789C23.1408 3.93544 20.0911 9.48081 14.7889 14.7838C9.48663 20.0868 3.93971 23.1394 2.39946 21.6018C1.52414 20.728 2.13121 18.5599 3.79165 15.8774" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
                     </svg>
                   </div>
-                  <span className="ml-3 text-sm">
+                  <span className="ml-3  text-sm">
                     Discover
                   </span>
                 </div>

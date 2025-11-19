@@ -214,7 +214,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
 
   const inputClasses = isHeroMode
     ? "w-full h-12 pl-12 pr-4 text-sm backdrop-blur-md bg-white/10 border border-white/40 rounded-lg outline-none focus:ring-1 focus:ring-white/60 focus:border-white/60 text-white placeholder-white/70"
-    : "w-full h-12 pl-12 pr-4 text-sm bg-white border border-gray-300/90 rounded-xl outline-none focus:border-gray-400 hover:border-gray-400 text-gray-700 placeholder-gray-600 transition-all duration-200";
+    : "w-full h-12 pl-12 pr-4 text-sm bg-white border-[0.75px] border-gray-400 rounded-xl outline-none focus:border-gray-400 hover:border-gray-400 text-gray-700 placeholder-gray-600 transition-all duration-200";
 
   const iconClasses = isHeroMode ? "w-5 h-5 text-white" : "w-5 h-5 text-gray-600/90 group-hover:text-gray-700 transition-colors duration-200";
 
