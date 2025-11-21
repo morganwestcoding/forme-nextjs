@@ -1,5 +1,6 @@
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
+import { canModifyResource } from "@/app/libs/authorization";
 
 export async function POST(request: Request) {
   const currentUser = await getCurrentUser();
@@ -9,7 +10,17 @@ export async function POST(request: Request) {
 
   const body = await request.json();
   console.log("Received request body:", body);
-  const { image, imageSrc, bio, location, action, galleryImage } = body;
+  const { image, imageSrc, bio, location, action, galleryImage, targetUserId } = body;
+
+  // Determine which user to update (self or target if master)
+  const userIdToUpdate = targetUserId || currentUser.id;
+
+  // If trying to update another user, verify master/admin access
+  if (targetUserId && targetUserId !== currentUser.id) {
+    if (!canModifyResource(currentUser, targetUserId)) {
+      return new Response("Unauthorized to modify this user", { status: 403 });
+    }
+  }
 
   try {
     let updatedUser;
@@ -17,7 +28,7 @@ export async function POST(request: Request) {
     if (action === "addGalleryImage") {
       console.log("Adding new gallery image:", galleryImage);
       updatedUser = await prisma.user.update({
-        where: { id: currentUser.id },
+        where: { id: userIdToUpdate },
         data: {
           galleryImages: {
             push: galleryImage
@@ -28,7 +39,7 @@ export async function POST(request: Request) {
     } else if (action === "updateProfile") {
       // Update other profile information
       updatedUser = await prisma.user.update({
-        where: { id: currentUser.id },
+        where: { id: userIdToUpdate },
         data: { image, imageSrc, bio, location },
       });
     } else {
@@ -82,14 +93,25 @@ export async function DELETE(request: Request) {
 
   const { searchParams } = new URL(request.url);
   const imageIndex = searchParams.get('imageIndex');
+  const targetUserId = searchParams.get('targetUserId');
 
   if (imageIndex === null) {
     return new Response("Image index is required", { status: 400 });
   }
 
+  // Determine which user to update (self or target if master)
+  const userIdToUpdate = targetUserId || currentUser.id;
+
+  // If trying to update another user, verify master/admin access
+  if (targetUserId && targetUserId !== currentUser.id) {
+    if (!canModifyResource(currentUser, targetUserId)) {
+      return new Response("Unauthorized to modify this user", { status: 403 });
+    }
+  }
+
   try {
     const user = await prisma.user.findUnique({
-      where: { id: currentUser.id },
+      where: { id: userIdToUpdate },
     });
 
     if (!user) {
@@ -99,7 +121,7 @@ export async function DELETE(request: Request) {
     const updatedGalleryImages = user.galleryImages.filter((_, index) => index !== parseInt(imageIndex));
 
     const updatedUser = await prisma.user.update({
-      where: { id: currentUser.id },
+      where: { id: userIdToUpdate },
       data: {
         galleryImages: updatedGalleryImages,
       },

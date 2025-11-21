@@ -348,7 +348,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
             <div className="absolute top-6 right-6 md:right-24 z-50">
               <button
                 onClick={handleDropdownToggle}
-                className="p-1 hover:bg-white/20 rounded-xl transition-colors relative z-50"
+                className="p-1 hover:bg-white/5 rounded-xl transition-colors relative z-50"
                 type="button"
                 aria-label="Options menu"
               >
@@ -420,7 +420,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                     {canShowQR ? (
                       <button
                         onClick={handleQRClick}
-                        className=" bg-white/15 backdrop-blur-sm hover:bg-blue-400/10 border border-white/30 hover:border-blue-400/60 text-white hover:text-[#60A5FA] py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center hover:shadow-sm"
+                        className="bg-white border border-gray-200 hover:border-gray-300 text-gray-600 hover:text-gray-800 py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center shadow-[inset_0_2px_4px_rgba(0,0,0,0.06)]"
                         type="button"
                         aria-label="Show QR Code"
                       >
@@ -438,7 +438,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                       currentUser && (
                         <button
                           onClick={handleToggleFollow}
-                          className=" bg-white/15 backdrop-blur-sm hover:bg-blue-400/10 border border-white/30 hover:border-blue-400/60 text-white hover:text-[#60A5FA] py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center hover:shadow-sm text-sm w-28"
+                          className="bg-white border border-gray-200 hover:border-gray-300 text-gray-600 hover:text-gray-800 py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center shadow-[inset_0_2px_4px_rgba(0,0,0,0.06)] text-sm w-28"
                           type="button"
                           aria-label={isFollowing ? 'Unfollow' : 'Follow'}
                         >
@@ -451,7 +451,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                     {currentUser && (
                       <button
                         onClick={handleReserveClick}
-                        className=" bg-white/15 backdrop-blur-sm hover:bg-blue-400/10 border border-white/30 hover:border-blue-400/60 text-white hover:text-[#60A5FA] py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center hover:shadow-sm text-sm w-28"
+                        className="bg-white border border-gray-200 hover:border-gray-300 text-gray-600 hover:text-gray-800 py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center shadow-[inset_0_2px_4px_rgba(0,0,0,0.06)] text-sm w-28"
                         type="button"
                       >
                         <span>Reserve</span>

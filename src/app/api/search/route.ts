@@ -139,11 +139,12 @@ export async function GET(req: Request) {
           // profileImage removed - use user.imageSrc instead
           listingId: true,
           listing: { select: { title: true } },
-          user: { 
-            select: { 
-              imageSrc: true, 
-              image: true 
-            } 
+          user: {
+            select: {
+              imageSrc: true,
+              image: true,
+              backgroundImage: true,
+            }
           }, // Include user for profile image
         },
         take: LIMIT,

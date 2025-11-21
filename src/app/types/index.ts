@@ -119,14 +119,14 @@ export type SafeUser = Omit<
   conversationIds?: string[];
 
   // Professional/Business fields
-  managedListings: string[]; 
+  managedListings: string[];
 
   // Reset password fields
   resetToken?: string | null;
   resetTokenExpiry: Date | null;
 
-  
-
+  // Role for access control
+  role?: string | null; // "user" | "admin" | "master"
 };
 
 

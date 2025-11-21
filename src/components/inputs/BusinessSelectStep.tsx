@@ -15,12 +15,14 @@ interface ListingResult {
 interface BusinessSelectStepProps {
   selectedListing: string;
   onListingChange: (listingId: string) => void;
+  onSkip?: () => void;
   isLoading?: boolean;
 }
 
 const BusinessSelectStep: React.FC<BusinessSelectStepProps> = ({
   selectedListing,
   onListingChange,
+  onSkip,
   isLoading = false,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -210,12 +212,41 @@ const BusinessSelectStep: React.FC<BusinessSelectStepProps> = ({
         </div>
       )}
 
-      {/* Helper Text */}
-      <div className="bg-neutral-50 rounded-lg p-4">
+      {/* Helper Text with Skip Option */}
+      <div className="bg-neutral-50 rounded-lg p-4 space-y-3">
         <p className="text-sm text-neutral-600">
-          Can&apos;t find your business? Contact your manager to make sure they&apos;ve set up their ForMe listing, 
+          Can&apos;t find your business? Contact your manager to make sure they&apos;ve set up their ForMe listing,
           or ask them to add you manually through their business dashboard.
         </p>
+
+        {/* Skip Option */}
+        {!selectedListingData && (
+          <div className="pt-2 border-t border-neutral-200">
+            <p className="text-xs text-neutral-500 mb-2">
+              Business doesn&apos;t exist on ForMe yet?
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setSearchQuery('');
+                if (onSkip) {
+                  onSkip();
+                } else {
+                  onListingChange('SKIP');
+                }
+              }}
+              disabled={isLoading}
+              className={`
+                w-full py-2 px-4 rounded-lg border border-neutral-300
+                bg-white hover:bg-neutral-50 text-sm font-medium text-neutral-700
+                transition-colors
+                ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}
+              `}
+            >
+              Skip - I&apos;ll add my business later
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

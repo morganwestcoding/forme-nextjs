@@ -84,7 +84,10 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
     }
   };
 
+  // Check if user can edit this profile (owner or master/admin)
+  const isMasterUser = currentUser?.role === 'master' || currentUser?.role === 'admin';
   const isOwner = !!currentUser?.id && currentUser.id === id;
+  const canEdit = isOwner || isMasterUser;
 
   // Get first name from user's full name
   const firstName = React.useMemo(() => {
@@ -104,6 +107,8 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
         image: image ?? '',
         imageSrc: imageSrc ?? '',
         backgroundImage: backgroundImage ?? '',
+        // Pass targetUserId if master is editing another user's profile
+        targetUserId: !isOwner && isMasterUser ? id : undefined,
       },
     });
   };
@@ -144,7 +149,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
   };
 
   const handleSaveServices = async () => {
-    if (!isOwner) return;
+    if (!canEdit) return;
 
     try {
       setIsSavingServices(true);
@@ -289,7 +294,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
 
                 {/* Buttons - Right Side */}
                 <div className="flex items-center gap-2">
-                  {isOwner ? (
+                  {canEdit && (
                     <button
                       onClick={openEditProfile}
                       className="bg-white/15 backdrop-blur-sm hover:bg-blue-400/10 border border-white/40 hover:border-blue-400/60 text-white hover:text-[#60A5FA] py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center hover:shadow-sm text-sm w-28"
@@ -297,7 +302,8 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                     >
                       Edit Profile
                     </button>
-                  ) : (
+                  )}
+                  {!isOwner && (
                     <>
                       {/* Message Button - styled like QR button */}
                       {currentUser && (
@@ -445,7 +451,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
           <>
             <div className="mt-8 mb-4 flex items-center justify-between">
               <SectionHeader title={`${firstName}'s Services`} accent="#60A5FA" className="mt-0 mb-0" />
-              {isOwner && services.length > 0 && (
+              {canEdit && services.length > 0 && (
                 <button
                   onClick={handleEditServices}
                   className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition"
@@ -479,11 +485,11 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                 </div>
                 <h3 className="text-lg font-medium text-gray-900 mb-2">No services yet</h3>
                 <p className="text-sm text-gray-500 mb-6 text-center max-w-sm">
-                  {isOwner
+                  {canEdit
                     ? 'Add services you provide to help clients find you.'
                     : `${firstName} hasn't added any services yet.`}
                 </p>
-                {isOwner && (
+                {canEdit && (
                   <button
                     onClick={handleEditServices}
                     className="inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition"

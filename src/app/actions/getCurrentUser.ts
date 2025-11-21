@@ -30,14 +30,15 @@ export default async function getCurrentUser() {
       updatedAt: currentUser.updatedAt.toISOString(),
       emailVerified: currentUser.emailVerified?.toISOString() || null,
       bio: currentUser.bio || "No Bio Provided Yet.." ,
-      isSubscribed: currentUser.isSubscribed, 
-      subscriptionTier: currentUser.subscriptionTier, // Add this
+      isSubscribed: currentUser.isSubscribed,
+      subscriptionTier: currentUser.subscriptionTier,
       location: currentUser.location,
       image: currentUser.image,
       imageSrc: currentUser.imageSrc,
       galleryImages: currentUser.galleryImages || [],
       following: currentUser.following || [],
       followers: currentUser.followers || [],
+      role: currentUser.role || "user",
     };
   } catch (error: any) {
     return null;

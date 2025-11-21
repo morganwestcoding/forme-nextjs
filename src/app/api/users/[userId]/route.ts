@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
+import { canModifyResource } from "@/app/libs/authorization";
 
 export async function PUT(
   request: Request,
@@ -19,8 +20,8 @@ export async function PUT(
       return new NextResponse("Missing userId", { status: 400 });
     }
 
-    // Only allow user to update themselves
-    if (currentUser.id !== targetUserId) {
+    // Only allow user to update themselves OR master/admin users
+    if (!canModifyResource(currentUser, targetUserId)) {
       return new NextResponse("Forbidden", { status: 403 });
     }
 

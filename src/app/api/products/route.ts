@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
+import { canModifyResource } from "@/app/libs/authorization";
 
 // Function to get or create a default category
 async function getOrCreateDefaultCategory(categoryName: string) {
@@ -77,8 +78,8 @@ export async function POST(request: Request) {
           return new Response("Shop not found", { status: 404 });
         }
         
-        // Verify ownership
-        if (shop.userId !== currentUser.id) {
+        // Verify ownership (owner or master/admin)
+        if (!canModifyResource(currentUser, shop.userId)) {
           console.log(`[DEBUG] Not authorized - Shop belongs to ${shop.userId}, not ${currentUser.id}`);
           return new Response("Not authorized to modify this shop", { status: 403 });
         }
@@ -312,7 +313,8 @@ export async function POST(request: Request) {
       return new Response("Shop not found", { status: 404 });
     }
 
-    if (shop.userId !== currentUser.id) {
+    // Check if user can modify (owner or master/admin)
+    if (!canModifyResource(currentUser, shop.userId)) {
       console.log(`[DEBUG] User ${currentUser.id} does not own shop ${shopId} (owned by ${shop.userId})`);
       return new Response("Not authorized to add products to this shop", { status: 403 });
     }

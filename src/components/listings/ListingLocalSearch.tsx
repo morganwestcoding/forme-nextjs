@@ -31,19 +31,19 @@ const ListingLocalSearch: React.FC<ListingLocalSearchProps> = ({
   return (
     <div className={`relative group ${className}`}>
       <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none z-10">
-        <Search className="w-5 h-5 text-white/70" />
+        <Search className="w-5 h-5 text-gray-500" />
       </div>
       <input
         type="text"
         value={query}
         onChange={handleChange}
         placeholder={placeholder}
-        className="w-full h-12 pl-12 pr-12 text-sm bg-white/15 backdrop-blur-sm border border-white/30 rounded-xl outline-none focus:ring-1 focus:ring-white/60 focus:border-white/60 hover:bg-white/20 text-white placeholder-white/70 transition-all duration-200"
+        className="w-full h-12 pl-12 pr-12 text-sm bg-white border border-gray-200 rounded-xl outline-none focus:ring-1 focus:ring-gray-300 focus:border-gray-300 hover:border-gray-300 text-gray-700 placeholder-gray-500 transition-all duration-200 shadow-[inset_0_2px_4px_rgba(0,0,0,0.06)]"
       />
       {query && (
         <button
           onClick={handleClear}
-          className="absolute inset-y-0 right-4 flex items-center text-white/70 hover:text-white transition-colors z-10"
+          className="absolute inset-y-0 right-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors z-10"
           type="button"
           aria-label="Clear search"
         >

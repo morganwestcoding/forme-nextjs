@@ -2,7 +2,7 @@
 import { create } from "zustand";
 
 type Prefill = {
-  id?: string;            // <<< add this
+  id?: string;
   name?: string;
   email?: string;
   location?: string;
@@ -10,6 +10,7 @@ type Prefill = {
   image?: string | null;
   imageSrc?: string | null;
   backgroundImage?: string | null;
+  targetUserId?: string;  // For master users editing other profiles
 };
 
 interface RegisterModalStore {

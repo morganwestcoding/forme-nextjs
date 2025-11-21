@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/app/libs/prismadb";
 import { PostMention } from "@/app/types";
+import { canModifyResource } from "@/app/libs/authorization";
 
 export async function GET(
   request: Request,
@@ -101,8 +102,9 @@ export async function PATCH(
       return new NextResponse("Post not found", { status: 404 });
     }
 
-    if (post.userId !== currentUser.id) {
-      return new NextResponse("Unauthorized", { status: 401 });
+    // Check if user can modify (owner or master/admin)
+    if (!canModifyResource(currentUser, post.userId)) {
+      return new NextResponse("Unauthorized", { status: 403 });
     }
 
     // Delete existing mentions for this post
@@ -210,8 +212,9 @@ export async function DELETE(
       return new NextResponse("Post not found", { status: 404 });
     }
 
-    if (post.userId !== currentUser.id) {
-      return new NextResponse("Unauthorized", { status: 401 });
+    // Check if user can modify (owner or master/admin)
+    if (!canModifyResource(currentUser, post.userId)) {
+      return new NextResponse("Unauthorized", { status: 403 });
     }
 
     const deletedPost = await prisma.post.delete({

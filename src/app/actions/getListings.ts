@@ -148,6 +148,7 @@ export default async function getListings(params: IListingsParams = {}): Promise
                 name: true,
                 image: true,
                 imageSrc: true,
+                backgroundImage: true,
               }
             }
           }
@@ -216,6 +217,7 @@ export default async function getListings(params: IListingsParams = {}): Promise
             name: employee.user!.name,
             image: employee.user!.image,
             imageSrc: employee.user!.imageSrc,
+            backgroundImage: employee.user!.backgroundImage,
           }
         })),
       storeHours: listing.storeHours.map(hour => ({

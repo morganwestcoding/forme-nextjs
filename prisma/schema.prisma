@@ -62,8 +62,11 @@ model User {
   shops           Shop[]
 
   // Professional/Business fields
-  employees       Employee[]   
-  managedListings String[]      @db.ObjectId 
+  employees       Employee[]
+  managedListings String[]      @db.ObjectId
+
+  // Role field for access control
+  role            String        @default("user") // "user" | "admin" | "master"
 }
 
 

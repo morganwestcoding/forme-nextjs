@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/app/libs/prismadb";
+import { canModifyResource } from "@/app/libs/authorization";
 
 interface IParams {
   listingId?: string;
@@ -25,13 +26,19 @@ export async function PUT(request: Request, { params }: { params: IParams }) {
   try {
     const body = await request.json();
 
-    // Ensure the listing is owned by the current user
-    const owned = await prisma.listing.findFirst({
-      where: { id: listingId, userId: currentUser.id },
+    // Fetch the listing first
+    const listing = await prisma.listing.findUnique({
+      where: { id: listingId },
       include: { services: true },
     });
-    if (!owned) {
-      return new NextResponse("Unauthorized or listing not found", { status: 403 });
+
+    if (!listing) {
+      return new NextResponse("Listing not found", { status: 404 });
+    }
+
+    // Check if user can modify (owner or master/admin)
+    if (!canModifyResource(currentUser, listing.userId)) {
+      return new NextResponse("Unauthorized", { status: 403 });
     }
 
     const incomingServices = Array.isArray(body.services) ? body.services : [];

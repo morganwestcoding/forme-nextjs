@@ -51,32 +51,32 @@ export async function POST(request: Request) {
 
     // Validate team member data
     if (userType === 'team') {
-      if (!selectedListing) {
-        return new NextResponse('Business selection required for team members', { status: 400 });
-      }
-      
+      // Job title required unless owner/manager (business selection is now optional)
       if (!isOwnerManager && !jobTitle?.trim()) {
         return new NextResponse('Job title required for team members', { status: 400 });
       }
 
-      const listing = await prisma.listing.findUnique({
-        where: { id: selectedListing }
-      });
-      
-      if (!listing) {
-        return new NextResponse('Selected business not found', { status: 400 });
-      }
-
-      if (selectedServices && selectedServices.length > 0) {
-        const validServices = await prisma.service.findMany({
-          where: {
-            id: { in: selectedServices },
-            listingId: selectedListing
-          }
+      // Only validate business/services if a listing was selected
+      if (selectedListing) {
+        const listing = await prisma.listing.findUnique({
+          where: { id: selectedListing }
         });
 
-        if (validServices.length !== selectedServices.length) {
-          return new NextResponse('Some selected services are invalid', { status: 400 });
+        if (!listing) {
+          return new NextResponse('Selected business not found', { status: 400 });
+        }
+
+        if (selectedServices && selectedServices.length > 0) {
+          const validServices = await prisma.service.findMany({
+            where: {
+              id: { in: selectedServices },
+              listingId: selectedListing
+            }
+          });
+
+          if (validServices.length !== selectedServices.length) {
+            return new NextResponse('Some selected services are invalid', { status: 400 });
+          }
         }
       }
     }

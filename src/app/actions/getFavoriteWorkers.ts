@@ -33,6 +33,7 @@ export default async function getFavoriteWorkers(): Promise<SafeEmployee[]> {
             name: true,
             image: true,
             imageSrc: true,
+            backgroundImage: true,
           },
         },
         listing: {
@@ -65,6 +66,7 @@ export default async function getFavoriteWorkers(): Promise<SafeEmployee[]> {
         name: worker.user.name,
         image: worker.user.image,
         imageSrc: worker.user.imageSrc,
+        backgroundImage: worker.user.backgroundImage,
       },
     }));
 

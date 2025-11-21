@@ -159,7 +159,7 @@ const RegisterModal = () => {
     });
   };
 
-  const getNextStep = (currentStep: number, userType: UserType) => {
+  const getNextStep = (currentStep: number, userType: UserType, listing?: string) => {
     if (currentStep === STEPS.INTERESTS) {
       return STEPS.USER_TYPE;
     }
@@ -181,6 +181,12 @@ const RegisterModal = () => {
       }
     }
     if (currentStep === STEPS.BUSINESS_SELECT && userType === 'team') {
+      // If they skipped business selection or left it empty, go directly to location
+      const currentListing = listing ?? selectedListing;
+      // Check for SKIP, empty string, null, undefined
+      if (!currentListing || currentListing === 'SKIP' || currentListing.trim() === '') {
+        return STEPS.LOCATION;
+      }
       return STEPS.SERVICE_SELECT;
     }
     if (currentStep === STEPS.SERVICE_SELECT) {
@@ -201,6 +207,10 @@ const RegisterModal = () => {
     }
     if (currentStep === STEPS.LOCATION) {
       if (userType === 'team') {
+        // If they skipped business selection, go back to business select
+        if (!selectedListing || selectedListing === 'SKIP' || selectedListing.trim() === '') {
+          return STEPS.BUSINESS_SELECT;
+        }
         return STEPS.SERVICE_SELECT;
       } else if (userType === 'individual') {
         return STEPS.SERVICES_LIST;
@@ -226,8 +236,8 @@ const RegisterModal = () => {
     return currentStep - 1;
   };
 
-  const onNext = () => {
-    const nextStep = getNextStep(step, userType);
+  const onNext = (overrideListing?: string) => {
+    const nextStep = getNextStep(step, userType, overrideListing);
     setStep(nextStep);
   };
 
@@ -321,16 +331,17 @@ const RegisterModal = () => {
       }
 
       if (step === STEPS.BUSINESS_SELECT) {
-        if (data.userType === 'team' && !data.selectedListing) {
-          toast.error('Please select a business to join');
-          return;
-        }
+        // Allow skipping business selection if they chose "SKIP"
+        // No validation needed - they can proceed without a business
       }
 
       if (step === STEPS.SERVICE_SELECT) {
-        if (data.userType === 'team' && (!data.selectedServices || data.selectedServices.length === 0)) {
-          toast.error('Please select at least one service you provide');
-          return;
+        // Only validate services if they selected an actual business (not SKIP)
+        if (data.userType === 'team' && data.selectedListing && data.selectedListing !== 'SKIP') {
+          if (!data.selectedServices || data.selectedServices.length === 0) {
+            toast.error('Please select at least one service you provide');
+            return;
+          }
         }
       }
       
@@ -383,10 +394,12 @@ const RegisterModal = () => {
         image: data.image,
         backgroundImage: data.backgroundImage,
         userType: data.userType,
-        selectedListing: data.selectedListing,
+        // Don't send listing ID if they skipped
+        selectedListing: data.selectedListing === 'SKIP' ? null : data.selectedListing,
         jobTitle: data.jobTitle,
         isOwnerManager: data.isOwnerManager,
-        selectedServices: data.selectedServices,
+        // Don't send services if they skipped business selection
+        selectedServices: data.selectedListing === 'SKIP' ? [] : data.selectedServices,
         // For individual providers, send their services
         individualServices: data.userType === 'individual' ? validServices : undefined,
       });
@@ -602,6 +615,11 @@ const RegisterModal = () => {
       <BusinessSelectStep
         selectedListing={selectedListing}
         onListingChange={(listingId) => setCustomValue('selectedListing', listingId)}
+        onSkip={() => {
+          // Set the value to SKIP and advance to the next step
+          setCustomValue('selectedListing', 'SKIP');
+          setStep(STEPS.LOCATION);
+        }}
         isLoading={isLoading}
       />
     );

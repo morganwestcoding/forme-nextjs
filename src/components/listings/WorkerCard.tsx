@@ -79,7 +79,12 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
   const reservationModal = useReservationModal();
 
   const handleCardClick = () => {
-    router.push(`/listings/${listing.id}`);
+    // Independent workers should route to their user profile, not a listing
+    if (employee.isIndependent) {
+      router.push(`/profile/${employee.userId}`);
+    } else {
+      router.push(`/listings/${listing.id}`);
+    }
   };
 
   // Memoize initials + bg for perf
@@ -194,8 +199,16 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
 
   const shouldShowImage = profileImage && !imageError;
 
-  // Use user's background image if available, otherwise fall back to listing image
-  const backgroundImageSrc = employee.user.backgroundImage || data.imageSrc;
+  // Background image priority - matches ProfileHead logic:
+  // 1. user.backgroundImage (primary background)
+  // 2. listing.imageSrc (for team members, or if no backgroundImage)
+  // 3. user.imageSrc (fallback)
+  // 4. placeholder
+  const backgroundImageSrc =
+    employee.user.backgroundImage ||
+    data.imageSrc ||
+    employee.user.imageSrc ||
+    '/images/placeholder.jpg';
 
   return (
     <div

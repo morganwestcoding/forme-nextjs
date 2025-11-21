@@ -117,7 +117,7 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
   return (
     <div className="flex items-center gap-2">
       {/* Rating Button */}
-      <div className="group/rating border-[0.5px] border-white/35 rounded-lg px-3 py-2 bg-white/5 backdrop-blur hover:border-white/60 hover:bg-white/10 transition-colors duration-200">
+      <div className="group/rating border border-white/35 rounded-lg px-3 py-2 bg-white/5 backdrop-blur hover:border-white/60 hover:bg-white/10 transition-colors duration-200">
         <div className="flex items-center text-white/90 text-xs">
           <button
             onClick={handleRatingClick}
@@ -135,7 +135,7 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
       {/* Time Status Button with color-coded status */}
       <button
         onClick={handleTimeClick}
-        className={`${getStatusTextColor(timeStatus.color)} border-[0.5px] ${getStatusBorderColor(timeStatus.color)} rounded-lg px-3.5 py-2 bg-white/5 backdrop-blur hover:bg-white/10 transition-colors duration-200 text-xs`}
+        className={`${getStatusTextColor(timeStatus.color)} border ${getStatusBorderColor(timeStatus.color)} rounded-lg px-3.5 py-2 bg-white/5 backdrop-blur hover:bg-white/10 transition-colors duration-200 text-xs`}
         type="button"
       >
         {timeStatus.message}

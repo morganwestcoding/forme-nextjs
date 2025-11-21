@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/app/libs/prismadb";
+import { canModifyResource, isMasterUser } from "@/app/libs/authorization";
 
 interface IParams {
  reservationId?: string;
@@ -48,8 +49,8 @@ export async function PATCH(
      throw new Error('Reservation not found');
    }
 
-   // Verify the current user is the listing owner
-   if (reservation.listing.userId !== currentUser.id) {
+   // Verify the current user is the listing owner (or master/admin)
+   if (!canModifyResource(currentUser, reservation.listing.userId)) {
      throw new Error('Unauthorized');
    }
 
@@ -126,11 +127,12 @@ export async function DELETE(
      throw new Error('Reservation not found');
    }
 
-   // Check if the current user is either the reservation owner or the listing owner
+   // Check if the current user is either the reservation owner, listing owner, or master/admin
    const isReservationOwner = reservation.userId === currentUser.id;
    const isListingOwner = reservation.listing.userId === currentUser.id;
+   const isMaster = isMasterUser(currentUser);
 
-   if (!isReservationOwner && !isListingOwner) {
+   if (!isReservationOwner && !isListingOwner && !isMaster) {
      throw new Error('Unauthorized');
    }
 
