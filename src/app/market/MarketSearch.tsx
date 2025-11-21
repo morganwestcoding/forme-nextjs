@@ -47,12 +47,12 @@ const MarketSearch: React.FC<MarketSearchProps> = ({ isHeroMode = false }) => {
   // Hero mode or normal mode button styles
   const buttonBaseClasses = isHeroMode
     ? "backdrop-blur-md bg-white/10 hover:bg-blue-400/10 border border-white/40 hover:border-blue-400/60 text-white hover:text-[#60A5FA]"
-    : "bg-white border border-gray-200 hover:border-gray-300 text-gray-600 hover:text-gray-800 shadow-[inset_0_2px_4px_rgba(0,0,0,0.03)]";
+    : "bg-white border border-gray-200 hover:border-gray-300 text-gray-600 hover:text-gray-700";
 
   return (
     <div className="min-h-0">
       {/* Search and Controls */}
-      <div className="flex mt-4 gap-2">
+      <div className="flex mt-4 gap-3">
         {/* Search Bar */}
         <div className="relative flex-grow">
           <GlobalSearch

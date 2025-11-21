@@ -27,15 +27,31 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
   return (
     <div className={`mt-8 mb-4 ${className}`}>
       <div className="flex items-end justify-between">
-        {/* LEFT: title with underline (unchanged as requested) */}
-        <div>
+        {/* LEFT: title with corner accents */}
+        <div className="flex items-center gap-2.5">
+          <svg width="6" height="18" viewBox="0 0 6 18" className="shrink-0">
+            <path
+              d="M5 1H2c-.5 0-1 .5-1 1v3"
+              stroke={accent}
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              fill="none"
+            />
+          </svg>
           <h2 className="text-xl font-semibold tracking-tight text-gray-900">
             {title}
           </h2>
-          <div
-            className="mt-1 h-[2px] w-14 rounded-full"
-            style={{ backgroundColor: accent }}
-          />
+          <svg width="6" height="18" viewBox="0 0 6 18" className="shrink-0">
+            <path
+              d="M1 17h3c.5 0 1-.5 1-1v-3"
+              stroke={accent}
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              fill="none"
+            />
+          </svg>
         </div>
 
         {/* RIGHT: ghost arrows + view all */}
