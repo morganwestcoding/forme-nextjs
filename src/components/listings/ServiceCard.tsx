@@ -2,6 +2,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { SafeListing, SafeUser } from '@/app/types';
 import HeartButton from '../HeartButton';
@@ -32,155 +33,6 @@ interface ServiceCardProps {
   storeHours?: any[];
 }
 
-const formatPrice = (n: number) =>
-  Number.isInteger(n) ? `$${n}` : `$${n.toFixed(2)}`;
-
-
-/* ---------- Category → Gradient + SVG icon ---------- */
-function getCategoryGradient(category?: string): {
-  gradient: string;
-  radialGlow: string;
-  iconColor: string;
-  solidColor: string;
-} {
-  switch ((category || '').toLowerCase()) {
-    case 'spa':
-    case 'wellness':
-      return {
-        gradient: 'linear-gradient(135deg, #8a9bd8 0%, #8295d4 15%, #7a8fd0 30%, #7289cc 45%, #6a83c8 60%, #627dc4 75%, #5a77c0 90%, #5271bc 100%)',
-        radialGlow: 'radial-gradient(circle at 50% 28%, rgba(138, 155, 216, 0.12) 0%, rgba(138, 155, 216, 0.06) 35%, rgba(138, 155, 216, 0.02) 60%, transparent 80%)',
-        iconColor: '#e8eaf6',
-        solidColor: '#7289cc',
-      };
-    case 'beauty':
-    case 'nails':
-      return {
-        gradient: 'linear-gradient(135deg, #e5adc4 0%, #e1a7bf 15%, #dda1ba 30%, #d99bb5 45%, #d595b0 60%, #d18fab 75%, #cd89a6 90%, #c983a1 100%)',
-        radialGlow: 'radial-gradient(circle at 50% 28%, rgba(229, 173, 196, 0.12) 0%, rgba(229, 173, 196, 0.06) 35%, rgba(229, 173, 196, 0.02) 60%, transparent 80%)',
-        iconColor: '#fce8f3',
-        solidColor: '#d99bb5',
-      };
-    case 'barber':
-    case 'hair':
-    case 'salon':
-      return {
-        gradient: 'linear-gradient(135deg, #7db5cc 0%, #75afca 15%, #6da9c8 30%, #65a3c6 45%, #5d9dc4 60%, #5597c2 75%, #4d91c0 90%, #458bbe 100%)',
-        radialGlow: 'radial-gradient(circle at 50% 28%, rgba(125, 181, 204, 0.12) 0%, rgba(125, 181, 204, 0.06) 35%, rgba(125, 181, 204, 0.02) 60%, transparent 80%)',
-        iconColor: '#e3f2f9',
-        solidColor: '#65a3c6',
-      };
-    case 'fitness':
-    case 'training':
-      return {
-        gradient: 'linear-gradient(135deg, #ebad98 0%, #e9a793 15%, #e7a18e 30%, #e59b89 45%, #e39584 60%, #e18f7f 75%, #df897a 90%, #dd8375 100%)',
-        radialGlow: 'radial-gradient(circle at 50% 28%, rgba(235, 173, 152, 0.12) 0%, rgba(235, 173, 152, 0.06) 35%, rgba(235, 173, 152, 0.02) 60%, transparent 80%)',
-        iconColor: '#fff4ed',
-        solidColor: '#e59b89',
-      };
-    case 'massage':
-      return {
-        gradient: 'linear-gradient(135deg, #abd8d3 0%, #a5d4cf 15%, #9fd0cb 30%, #99ccc7 45%, #93c8c3 60%, #8dc4bf 75%, #87c0bb 90%, #81bcb7 100%)',
-        radialGlow: 'radial-gradient(circle at 50% 28%, rgba(171, 216, 211, 0.12) 0%, rgba(171, 216, 211, 0.06) 35%, rgba(171, 216, 211, 0.02) 60%, transparent 80%)',
-        iconColor: '#e6f7f5',
-        solidColor: '#99ccc7',
-      };
-    default:
-      return {
-        gradient: 'linear-gradient(135deg, #8a9bd8 0%, #8295d4 15%, #7a8fd0 30%, #7289cc 45%, #6a83c8 60%, #627dc4 75%, #5a77c0 90%, #5271bc 100%)',
-        radialGlow: 'radial-gradient(circle at 50% 28%, rgba(138, 155, 216, 0.12) 0%, rgba(138, 155, 216, 0.06) 35%, rgba(138, 155, 216, 0.02) 60%, transparent 80%)',
-        iconColor: '#e8eaf6',
-        solidColor: '#7289cc',
-      };
-  }
-}
-
-function CategoryIcon({
-  category,
-  className = 'w-8 h-8',
-  style,
-}: {
-  category?: string;
-  className?: string;
-  style?: React.CSSProperties;
-}) {
-  const commonProps = {
-    className,
-    style,
-    fill: 'none',
-    stroke: 'currentColor',
-    strokeWidth: '1.25',
-    strokeLinecap: 'round' as const,
-    strokeLinejoin: 'round' as const,
-  };
-
-  switch ((category || '').toLowerCase()) {
-    case 'spa':
-    case 'wellness':
-      return (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...commonProps}>
-          <path d="M9.0923 16C8.78292 16.6819 8.0701 16.986 7.43887 17.3162L3.79262 19.2233C2.32845 19.9891 3.05949 22 4.62985 22C8.12204 22 10.8836 20.3064 14.0404 19C14.835 18.6711 15.2201 18.7415 16 19.0912" />
-          <path d="M9 19.0912C9.77995 18.7415 10.165 18.6711 10.9596 19C14.1164 20.3064 16.878 22 20.3702 22C21.9405 22 22.6715 19.9891 21.2074 19.2233L17.5611 17.3162C16.9299 16.986 16.2171 16.6819 15.9077 16" />
-          <path d="M10 4C10 5.10457 10.8954 6 12 6C13.1046 6 14 5.10457 14 4C14 2.89543 13.1046 2 12 2C10.8954 2 10 2.89543 10 4Z" />
-          <path d="M12 8C8.68629 8 6 10.6863 6 14C9.31371 14 12 11.3137 12 8Z" />
-          <path d="M12 8C15.3137 8 18 10.6863 18 14C14.6863 14 12 11.3137 12 8Z" />
-        </svg>
-      );
-    case 'beauty':
-    case 'nails':
-      return (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...commonProps}>
-          <path d="M4 14.0695C5.0145 14.0695 6.43122 13.7685 7.31944 14.4193L9.08188 15.7108C9.73667 16.1906 10.4458 16.0325 11.1765 15.9178C12.1389 15.7667 13 16.5875 13 17.6562C13 17.9482 10.9272 18.6905 10.6276 18.8316C10.0391 19.1088 9.36297 19.0406 8.83021 18.6502L6.84211 17.1934" />
-          <path d="M13 17L17.091 15.1096C17.8244 14.854 18.6331 15.0535 19.1797 15.625L19.8505 16.3262C20.0902 16.5768 20.0338 16.9976 19.7375 17.1697L11.8829 21.7315C11.4097 22.0063 10.8514 22.0734 10.3309 21.9179L4 20.0269" />
-          <path d="M12.0019 12C12.0019 12 14.1019 9.76142 14.1019 7C14.1019 4.23858 12.0019 2 12.0019 2C12.0019 2 9.9019 4.23858 9.9019 7C9.9019 9.76142 12.0019 12 12.0019 12ZM12.0019 12C12.0019 12 15.0689 11.9316 17.0019 9.95918C18.9349 7.98674 19.0019 4.85714 19.0019 4.85714C19.0019 4.85714 17.7324 4.88544 16.3122 5.43087M12.0019 12C12.0019 12 8.9349 11.9316 7.0019 9.95918C5.0689 7.98674 5.0019 4.85714 5.0019 4.85714C5.0019 4.85714 6.27135 4.88544 7.69157 5.43087" />
-        </svg>
-      );
-    case 'barber':
-    case 'hair':
-      return (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...commonProps}>
-          <path d="M4 14.0695C5.0145 14.0695 6.43122 13.7685 7.31944 14.4193L9.08188 15.7108C9.73667 16.1906 10.4458 16.0325 11.1765 15.9178C12.1389 15.7667 13 16.5875 13 17.6562C13 17.9482 10.9272 18.6905 10.6276 18.8316C10.0391 19.1088 9.36297 19.0406 8.83021 18.6502L6.84211 17.1934" />
-          <path d="M13 17L17.091 15.1096C17.8244 14.854 18.6331 15.0535 19.1797 15.625L19.8505 16.3262C20.0902 16.5768 20.0338 16.9976 19.7375 17.1697L11.8829 21.7315C11.4097 22.0063 10.8514 22.0734 10.3309 21.9179L4 20.0269" />
-          <path d="M12.0019 12C12.0019 12 14.1019 9.76142 14.1019 7C14.1019 4.23858 12.0019 2 12.0019 2C12.0019 2 9.9019 4.23858 9.9019 7C9.9019 9.76142 12.0019 12 12.0019 12ZM12.0019 12C12.0019 12 15.0689 11.9316 17.0019 9.95918C18.9349 7.98674 19.0019 4.85714 19.0019 4.85714C19.0019 4.85714 17.7324 4.88544 16.3122 5.43087M12.0019 12C12.0019 12 8.9349 11.9316 7.0019 9.95918C5.0689 7.98674 5.0019 4.85714 5.0019 4.85714C5.0019 4.85714 6.27135 4.88544 7.69157 5.43087" />
-        </svg>
-      );
-    case 'fitness':
-    case 'training':
-      return (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...commonProps}>
-          <path d="M16 5.5C16 6.32843 15.3284 7 14.5 7C13.6716 7 13 6.32843 13 5.5C13 4.67157 13.6716 4 14.5 4C15.3284 4 16 4.67157 16 5.5Z" />
-          <path d="M14.3602 15L15.3039 14.454C16.3786 13.8323 16.9159 13.5214 16.9885 13.0784C16.9999 13.0092 17.0028 12.9391 16.9973 12.8694C16.9622 12.4229 16.4524 12.0789 15.4329 11.3907L10.7259 8.21359C8.87718 6.96577 8.45184 4.69114 9.75097 3" />
-          <path d="M10.7259 8.21359C8.22588 10.7136 7 17.6324 7 21.0003M10.7259 8.21359C8.87718 6.96577 8.45184 4.69114 9.75097 3M10.7259 8.21359L13.3725 10M14.3602 15L15.3039 14.454C16.3786 13.8323 16.9159 13.5214 16.9885 13.0784C16.9999 13.0092 17.0028 12.9391 16.9973 12.8694C16.9622 12.4229 16.4524 12.0789 15.4329 11.3907L13.3725 10M15.0002 21.0003C14.0268 19.8647 13.0257 18.3 12.0502 16.8578C11.3666 15.8474 11.0249 15.3422 10.9845 14.8132M13.3725 10C12.5697 11.0391 12.0164 12.0207 11.6026 12.8942C11.1636 13.8209 10.9441 14.2843 10.9845 14.8132M10.9845 14.8132L8 14" />
-        </svg>
-      );
-    case 'salon':
-      return (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...commonProps}>
-          <path d="M4 14.0695C5.0145 14.0695 6.43122 13.7685 7.31944 14.4193L9.08188 15.7108C9.73667 16.1906 10.4458 16.0325 11.1765 15.9178C12.1389 15.7667 13 16.5875 13 17.6562C13 17.9482 10.9272 18.6905 10.6276 18.8316C10.0391 19.1088 9.36297 19.0406 8.83021 18.6502L6.84211 17.1934" />
-          <path d="M13 17L17.091 15.1096C17.8244 14.854 18.6331 15.0535 19.1797 15.625L19.8505 16.3262C20.0902 16.5768 20.0338 16.9976 19.7375 17.1697L11.8829 21.7315C11.4097 22.0063 10.8514 22.0734 10.3309 21.9179L4 20.0269" />
-          <path d="M12.0019 12C12.0019 12 14.1019 9.76142 14.1019 7C14.1019 4.23858 12.0019 2 12.0019 2C12.0019 2 9.9019 4.23858 9.9019 7C9.9019 9.76142 12.0019 12 12.0019 12ZM12.0019 12C12.0019 12 15.0689 11.9316 17.0019 9.95918C18.9349 7.98674 19.0019 4.85714 19.0019 4.85714C19.0019 4.85714 17.7324 4.88544 16.3122 5.43087M12.0019 12C12.0019 12 8.9349 11.9316 7.0019 9.95918C5.0689 7.98674 5.0019 4.85714 5.0019 4.85714C5.0019 4.85714 6.27135 4.88544 7.69157 5.43087" />
-        </svg>
-      );
-    case 'massage':
-      return (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...commonProps}>
-          <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12v0a2.5 2.5 0 0 0-2.5-2.5v0A2.5 2.5 0 0 0 6 12v0a2.5 2.5 0 0 0 2.5 2.5v0Z" />
-          <path d="M15.5 14.5A2.5 2.5 0 0 0 18 12v0a2.5 2.5 0 0 0-2.5-2.5v0A2.5 2.5 0 0 0 13 12v0a2.5 2.5 0 0 0 2.5 2.5v0Z" />
-          <path d="M12 7.5c1.38 0 2.5-1.12 2.5-2.5S13.38 2.5 12 2.5 9.5 3.62 9.5 5 10.62 7.5 12 7.5Z" />
-          <path d="M5.5 18c.83 0 1.5-.67 1.5-1.5S6.33 15 5.5 15 4 15.67 4 16.5 4.67 18 5.5 18Z" />
-          <path d="M18.5 18c.83 0 1.5-.67 1.5-1.5S19.33 15 18.5 15 17 15.67 17 16.5 17.67 18 18.5 18Z" />
-          <path d="M12 20.5c.83 0 1.5-.67 1.5-1.5S12.83 17.5 12 17.5 10.5 18.17 10.5 19 11.17 20.5 12 20.5Z" />
-        </svg>
-      );
-    default:
-      return (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...commonProps}>
-          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-        </svg>
-      );
-  }
-}
-/* ----------------------------------------- */
-
 const ServiceCard: React.FC<ServiceCardProps> = ({
   service,
   listing,
@@ -188,7 +40,6 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   onClick,
   onEdit,
   onDuplicate,
-  selected = false,
   disabled = false,
 }) => {
   const router = useRouter();
@@ -227,125 +78,253 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   const durationDisplay = service.unit || '60 min';
   const listingName = listing?.title || 'Service';
 
-  // Get category-specific styling
-  const categoryStyle = getCategoryGradient(service.category);
+  // Background image - only use service-specific image
+  const hasServiceImage = service.imageSrc && service.imageSrc !== '/images/placeholder.jpg';
+  const backgroundImageSrc = service.imageSrc;
+
+  // Verification badge component (matches ListingCard/WorkerCard)
+  const VerificationBadge = () => (
+    <span className="inline-flex items-center align-middle ml-1.5 translate-y-[-1px]">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        width="20"
+        height="20"
+        fill="#60A5FA"
+        className="shrink-0 text-white/20 drop-shadow-sm"
+        aria-label="Verified"
+      >
+        <path
+          d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z"
+          stroke="white"
+          strokeWidth="1"
+          fill="#60A5FA"
+        />
+        <path
+          d="M9 12.8929L10.8 14.5L15 9.5"
+          stroke="white"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </span>
+  );
 
   return (
     <div
       onClick={handleCardClick}
-      className="group cursor-pointer rounded-xl relative transition-all duration-300 hover:-translate-y-1 hover:scale-[1.01] hover:shadow-md max-w-[250px] bg-white overflow-hidden border border-gray-400"
+      className="group cursor-pointer rounded-xl overflow-hidden relative transition-all duration-300 hover:-translate-y-1 hover:scale-[1.01] hover:shadow-md max-w-[250px]"
     >
+      {/* Background with image or empty state */}
+      <div className="absolute inset-0 z-0">
+        {hasServiceImage ? (
+          <>
+            <Image
+              src={backgroundImageSrc!}
+              alt={service.serviceName || 'Service'}
+              fill
+              className="object-cover"
+              sizes="(max-width:768px) 100vw, 250px"
+              priority={false}
+            />
 
-      {/* Match ListingCard and WorkerCard height structure */}
-      <div className="relative h-[350px] z-10">
-        {/* Popular/New badges */}
-        {(service.popular || service.isNew) && (
-          <div className="absolute left-4 top-4 flex items-center gap-1 z-20">
-            {service.popular && (
-              <span className="px-2 py-1 text-[10px] font-medium rounded-full backdrop-blur-md bg-white/80 text-gray-800 border border-gray-200 shadow-sm">
-                Popular
-              </span>
-            )}
-            {service.isNew && (
-              <span className="px-2 py-1 text-[10px] font-medium rounded-full backdrop-blur-md bg-white/80 text-gray-800 border border-gray-200 shadow-sm">
-                New
-              </span>
-            )}
+            {/* Top gradient for badges and heart button visibility */}
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background:
+                  'linear-gradient(to bottom,' +
+                  'rgba(0,0,0,0.35) 0%,' +
+                  'rgba(0,0,0,0.20) 15%,' +
+                  'rgba(0,0,0,0.10) 30%,' +
+                  'rgba(0,0,0,0.00) 45%)',
+              }}
+            />
+
+            {/* Bottom gradient for text readability - matches ListingCard */}
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background:
+                  'linear-gradient(to top,' +
+                  'rgba(0,0,0,0.75) 0%,' +
+                  'rgba(0,0,0,0.70) 12%,' +
+                  'rgba(0,0,0,0.60) 26%,' +
+                  'rgba(0,0,0,0.45) 42%,' +
+                  'rgba(0,0,0,0.30) 56%,' +
+                  'rgba(0,0,0,0.15) 70%,' +
+                  'rgba(0,0,0,0.04) 82%,' +
+                  'rgba(0,0,0,0.00) 90%,' +
+                  'rgba(0,0,0,0.00) 100%)',
+              }}
+            />
+          </>
+        ) : (
+          /* Empty state when no service image */
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200">
+            <div className="absolute inset-0 flex items-center justify-center">
+              {isOwner ? (
+                /* Owner sees upload CTA */
+                <div className="text-center px-6">
+                  <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-white/90 backdrop-blur-sm shadow-lg flex items-center justify-center border-2 border-gray-200">
+                    <svg
+                      className="w-9 h-9 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                      <circle cx="12" cy="13" r="4" />
+                    </svg>
+                  </div>
+                  <p className="text-sm font-semibold text-gray-700 mb-1">Add Service Photo</p>
+                  <p className="text-xs text-gray-500 leading-relaxed">Photos get 3x more bookings</p>
+                </div>
+              ) : (
+                /* Non-owners see minimal placeholder */
+                <div className="w-20 h-20 rounded-full bg-white/90 backdrop-blur-sm shadow-lg flex items-center justify-center border-2 border-gray-200">
+                  <svg
+                    className="w-9 h-9 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                    <circle cx="8.5" cy="8.5" r="1.5" />
+                    <polyline points="21 15 16 10 5 21" />
+                  </svg>
+                </div>
+              )}
+            </div>
+
+            {/* Light gradient overlay for text readability on empty state */}
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background:
+                  'linear-gradient(to top,' +
+                  'rgba(0,0,0,0.45) 0%,' +
+                  'rgba(0,0,0,0.35) 15%,' +
+                  'rgba(0,0,0,0.20) 35%,' +
+                  'rgba(0,0,0,0.00) 60%)',
+              }}
+            />
           </div>
         )}
+      </div>
 
-        {/* Heart - Using HeartButton component */}
-        <div className="absolute top-4 right-4 z-20">
-          <HeartButton
-            listingId={service.id}
-            currentUser={currentUser}
-            variant="worker"
-          />
-        </div>
+      <div className="relative z-10">
+        <div className="relative h-[350px]">
+          {/* Popular/New badges - top left */}
+          {(service.popular || service.isNew) && (
+            <div className="absolute left-4 top-4 flex items-center gap-1.5 z-20">
+              {service.popular && (
+                <span className="px-2.5 py-1 text-[10px] font-medium rounded-full backdrop-blur-md bg-white/15 text-white border border-white/30">
+                  Popular
+                </span>
+              )}
+              {service.isNew && (
+                <span className="px-2.5 py-1 text-[10px] font-medium rounded-full backdrop-blur-md bg-white/15 text-white border border-white/30">
+                  New
+                </span>
+              )}
+            </div>
+          )}
 
-        {/* Edit/Duplicate actions for owners */}
-        {(isOwner || onEdit || onDuplicate) && (
-          <div className="absolute right-4 top-12 flex flex-col gap-1 opacity-0 hover:opacity-100 transition z-20">
-            <button
-              aria-label={`Edit ${service.serviceName || 'service'}`}
-              onClick={goToEditThisService}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-white/90 backdrop-blur-sm text-gray-700 hover:bg-white hover:shadow-md transition"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path d="M16.425 4.605L17.415 3.615c.82-.82 2.149-.82 2.97 0 .82.82.82 2.15 0 2.97l-0.99.99M16.425 4.605L9.766 11.264c-.508.508-.868 1.144-1.042 1.84L8 16l2.896-.724c.696-.174 1.332-.534 1.84-1.041l6.659-6.66M16.425 4.605l2.97 2.97" stroke="currentColor" strokeWidth="1.5" />
-                <path d="M19 13.5c0 3.288 0 4.931-0.908 6.038-.166.203-.352.389-.555.555C16.431 21 14.787 21 11.5 21H11c-3.771 0-5.657 0-6.828-1.172C3 18.657 3 16.771 3 13.5V13c0-3.287 0-4.931.908-6.038.166-.202.352-.388.555-.555C5.569 5.5 7.213 5.5 10.5 5.5" stroke="currentColor" strokeWidth="1.5" />
-              </svg>
-            </button>
+          {/* Heart - top right */}
+          <div className="absolute top-4 right-4 z-20">
+            <HeartButton
+              listingId={service.id}
+              currentUser={currentUser}
+              variant="worker"
+            />
+          </div>
 
-            {onDuplicate && (
+          {/* Edit/Duplicate actions for owners - appears on hover */}
+          {(isOwner || onEdit || onDuplicate) && (
+            <div className="absolute right-4 top-12 flex flex-col gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-20">
               <button
-                aria-label={`Duplicate ${service.serviceName || 'service'}`}
-                onClick={handleDuplicate}
-                className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-white/90 backdrop-blur-sm text-gray-700 hover:bg-white hover:shadow-md transition"
+                aria-label={`Edit ${service.serviceName || 'service'}`}
+                onClick={goToEditThisService}
+                className="inline-flex h-8 w-8 items-center justify-center rounded-full backdrop-blur-md bg-white/15 text-white border border-white/30 hover:bg-white/25 transition"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M8 8.5C8 7.12 9.12 6 10.5 6H16.5C17.88 6 19 7.12 19 8.5V14.5C19 15.88 17.88 17 16.5 17H10.5C9.12 17 8 15.88 8 14.5V8.5Z" stroke="currentColor" strokeWidth="1.5"/>
-                  <path d="M6 10.5V15.5C6 17.985 8.015 20 10.5 20H15.5" stroke="currentColor" strokeWidth="1.5"/>
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <path d="M16.425 4.605L17.415 3.615c.82-.82 2.149-.82 2.97 0 .82.82.82 2.15 0 2.97l-0.99.99M16.425 4.605L9.766 11.264c-.508.508-.868 1.144-1.042 1.84L8 16l2.896-.724c.696-.174 1.332-.534 1.84-1.041l6.659-6.66M16.425 4.605l2.97 2.97" stroke="currentColor" strokeWidth="1.5" />
+                  <path d="M19 13.5c0 3.288 0 4.931-0.908 6.038-.166.203-.352.389-.555.555C16.431 21 14.787 21 11.5 21H11c-3.771 0-5.657 0-6.828-1.172C3 18.657 3 16.771 3 13.5V13c0-3.287 0-4.931.908-6.038.166-.202.352-.388.555-.555C5.569 5.5 7.213 5.5 10.5 5.5" stroke="currentColor" strokeWidth="1.5" />
                 </svg>
               </button>
-            )}
-          </div>
-        )}
 
-        {/* Service Icon - Centered towards middle */}
-        <div className="absolute top-[32%] left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-          <div className="relative w-28 h-28">
-            {/* White circle with gray border */}
-            <div
-              className="w-full h-full rounded-full flex items-center justify-center bg-white border border-gray-400 shadow transition-all duration-300"
-            >
-              <CategoryIcon
-                category={service.category}
-                className="w-8 h-8 transition-colors duration-200 text-gray-600/90"
+              {onDuplicate && (
+                <button
+                  aria-label={`Duplicate ${service.serviceName || 'service'}`}
+                  onClick={handleDuplicate}
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-full backdrop-blur-md bg-white/15 text-white border border-white/30 hover:bg-white/25 transition"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none">
+                    <path d="M8 8.5C8 7.12 9.12 6 10.5 6H16.5C17.88 6 19 7.12 19 8.5V14.5C19 15.88 17.88 17 16.5 17H10.5C9.12 17 8 15.88 8 14.5V8.5Z" stroke="currentColor" strokeWidth="1.5"/>
+                    <path d="M6 10.5V15.5C6 17.985 8.015 20 10.5 20H15.5" stroke="currentColor" strokeWidth="1.5"/>
+                  </svg>
+                </button>
+              )}
+            </div>
+          )}
 
+
+          {/* Bottom info - matches ListingCard/WorkerCard structure */}
+          <div className="absolute bottom-5 left-5 right-5 z-20">
+            {/* Service Name with verification badge */}
+            <div className="mb-1">
+              <h3 className="text-white text-md leading-6 font-semibold drop-shadow">
+                <span className="whitespace-nowrap">
+                  {service.serviceName || 'Untitled Service'}
+                  <VerificationBadge />
+                </span>
+              </h3>
+            </div>
+
+            {/* Category and location info */}
+            <div className="text-white/90 text-[11px] leading-4 mb-4">
+              <div className="flex items-center gap-1 mb-1">
+                <span className="truncate">
+                  {service.category} at {listingName}
+                </span>
+              </div>
+              <div className="opacity-80 mt-0.5 font-light text-[10px]">
+                {durationDisplay} • Available today
+              </div>
+            </div>
+
+            {/* SmartBadgePrice - using dark variant for image background */}
+            <div className="flex items-center">
+              <SmartBadgePrice
+                price={priceNum}
+                showPrice={true}
+                variant="dark"
+                onPriceClick={() => {
+                  console.log('Price clicked for service:', service.serviceName);
+                }}
+                onBookNowClick={(e: React.MouseEvent) => {
+                  e.stopPropagation();
+                  if (listing && currentUser) {
+                    reservationModal.onOpen(listing, currentUser, service.id);
+                  }
+                }}
+                isVerified={true}
               />
             </div>
           </div>
         </div>
 
-        {/* Bottom info - positioned like WorkerCard */}
-        <div className="absolute bottom-5 left-5 right-5 z-20">
-          {/* Service Name and Details */}
-          <div className="mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-1 truncate">
-              {service.serviceName || 'Untitled Service'}
-            </h3>
-            <p className="text-gray-700 text-[11px] leading-4 truncate">
-              {service.category} at {listingName}
-            </p>
-            <div className="mt-0.5 text-[10px] text-gray-600 font-light">
-              {durationDisplay} • Available today
-            </div>
-          </div>
-
-          {/* SmartBadgePrice component */}
-          <div className="flex items-center">
-            <SmartBadgePrice
-              price={priceNum}
-              showPrice={true}
-              variant="light"
-              onPriceClick={() => {
-                console.log('Price clicked for service:', service.serviceName);
-              }}
-              onBookNowClick={(e: React.MouseEvent) => {
-                e.stopPropagation();
-                if (listing && currentUser) {
-                  reservationModal.onOpen(listing, currentUser, service.id);
-                }
-              }}
-              isVerified={true}
-            />
-          </div>
-        </div>
+        {/* Bottom padding to match ListingCard */}
+        <div className="pb-2" />
       </div>
-
-      {/* Match ListingCard bottom padding */}
-      <div className="pb-2" />
     </div>
   );
 };

@@ -141,9 +141,10 @@ model Service {
   serviceName String
   price       Int
   category    String
+  imageSrc    String?
   listingId   String  @db.ObjectId
   listing     Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
-  reservations Reservation[] 
+  reservations Reservation[]
 }
 
 model Post {

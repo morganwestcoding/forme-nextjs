@@ -3,12 +3,14 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { categories } from '../Categories';
 import FloatingLabelSelect, { FLSelectOption } from './FloatingLabelSelect';
+import ImageUpload from './ImageUpload';
 
 export type Service = {
   id?: string;           // carry DB id so PUT can upsert, not delete
   serviceName: string;
   price: number;
   category: string;
+  imageSrc?: string;     // service-specific image
 };
 
 type ServiceSelectorProps = {
@@ -36,8 +38,9 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
         serviceName: s.serviceName ?? '',
         price: typeof s.price === 'number' ? s.price : 0,
         category: s.category ?? '',
+        imageSrc: s.imageSrc ?? '',
       }))
-    : [{ serviceName: '', price: 0, category: '' }];
+    : [{ serviceName: '', price: 0, category: '', imageSrc: '' }];
 
   const [services, setServices] = useState<Service[]>(initialRows);
 
@@ -95,7 +98,7 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
 
   const addService = () => {
     // ⬇️ no ceiling; always add a fresh row
-    setServices((prev) => [...prev, { serviceName: '', price: 0, category: '' }]);
+    setServices((prev) => [...prev, { serviceName: '', price: 0, category: '', imageSrc: '' }]);
     setPriceInputs((prev) => [...prev, '']);
     setFocusedName((prev) => [...prev, false]);
     setFocusedPrice((prev) => [...prev, false]);
@@ -214,6 +217,23 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
                     isDisabled={false}
                   />
                 </div>
+              </div>
+
+              {/* SERVICE IMAGE UPLOAD */}
+              <div className="mt-4">
+                <p className="text-xs text-neutral-500 mb-2">Service Photo (optional)</p>
+                <ImageUpload
+                  value={svc.imageSrc}
+                  onChange={(url) => setRow(i, { imageSrc: url })}
+                  onRemove={() => setRow(i, { imageSrc: '' })}
+                  label="Upload Photo"
+                  ratio="landscape"
+                  rounded="lg"
+                  enableCrop={true}
+                  cropMode="fixed"
+                  uploadId={`service-${svc.id || i}`}
+                  className="w-full max-w-xs h-32"
+                />
               </div>
             </div>
           );

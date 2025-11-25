@@ -38,7 +38,7 @@ const ListingLocalSearch: React.FC<ListingLocalSearchProps> = ({
         value={query}
         onChange={handleChange}
         placeholder={placeholder}
-        className="w-full h-12 pl-12 pr-12 text-sm bg-white border border-gray-200 rounded-xl outline-none focus:ring-1 focus:ring-gray-300 focus:border-gray-300 hover:border-gray-300 text-gray-700 placeholder-gray-500 transition-all duration-200 shadow-[inset_0_2px_4px_rgba(0,0,0,0.06)]"
+        className="w-full h-12 pl-12 pr-12 text-sm bg-white border border-gray-200 rounded-xl outline-none focus:ring-1 focus:ring-gray-300 focus:border-gray-300 hover:border-gray-300 text-gray-700 placeholder-gray-500 transition-all duration-200 shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)]"
       />
       {query && (
         <button

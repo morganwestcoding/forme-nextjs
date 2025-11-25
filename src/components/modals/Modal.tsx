@@ -125,53 +125,51 @@ const Modal = forwardRef<ModalHandle, ModalProps>(({
       role="dialog"
       aria-modal="true"
       aria-labelledby={title ? `${id || "modal"}-title` : undefined}
-      className="fixed inset-0 z-[9999] bg-neutral-900/70"
+      className="fixed inset-0 z-[9999] backdrop-blur-sm bg-neutral-900/60 animate-in fade-in duration-300"
       onMouseDown={handleBackdropClick}
     >
       {backdropVideo && <ModalBackdrop videoSrc={backdropVideo} />}
 
-      <div className="fixed inset-0 flex items-center justify-center overflow-y-auto">
+      <div className="fixed inset-0 flex items-center justify-center overflow-y-auto p-4">
         <div
-          className={`relative ${className || "w-full md:w-4/6 lg:w-3/6 xl:w-2/5"} my-2 mx-auto h-full lg:h-auto md:h-auto`}
+          className={`relative ${className || "w-full md:w-4/6 lg:w-3/6 xl:w-2/5"} mx-auto`}
           // stop backdrop handler when clicking inside content
           onMouseDown={(e) => e.stopPropagation()}
         >
           {/* Slide + fade */}
           <div
-            className={`duration-300 h-full transform transition-all
-              ${showModal ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"}`}
+            className={`transform transition-all duration-300 ease-out
+              ${showModal ? "translate-y-0 opacity-100 scale-100" : "translate-y-8 opacity-0 scale-95"}`}
           >
             <div
               id={id}
-              className="h-full lg:h-auto md:h-auto border-0 rounded-xl relative flex flex-col w-full bg-white backdrop-blur-md outline-none"
+              className="relative flex flex-col w-full bg-white/95 backdrop-blur-xl border border-gray-200/60 rounded-2xl shadow-2xl shadow-gray-900/20 overflow-hidden"
             >
               {/* Close (X) */}
-              <div className="relative w-full">
-                <button
-                  aria-label="Close"
-                  onClick={(e) => { e.stopPropagation(); handleClose(); }}
-                  className="absolute right-4 top-4 p-1 hover:opacity-70 transition z-10"
-                >
-                  <X size={18} className="text-black" />
-                </button>
-              </div>
+              <button
+                aria-label="Close"
+                onClick={(e) => { e.stopPropagation(); handleClose(); }}
+                className="absolute right-5 top-5 p-2 rounded-xl hover:bg-gray-100/80 active:bg-gray-200/80 transition-all duration-200 z-10 group"
+              >
+                <X size={20} className="text-gray-400 group-hover:text-gray-600 transition-colors duration-200" />
+              </button>
 
               {/* Content */}
-              <div id={`${modalContentId || "modal-content"}-wrapper`} className="flex flex-col flex-1">
+              <div id={`${modalContentId || "modal-content"}-wrapper`} className="flex flex-col">
                 {title && (
                   <h2 id={`${id || "modal"}-title`} className="sr-only">
                     {title}
                   </h2>
                 )}
-                <div id={modalContentId || "modal-content"} className="flex flex-col flex-1">
-                  <div className="relative p-6 text-black flex-auto">
+                <div id={modalContentId || "modal-content"} className="flex flex-col">
+                  <div className="relative px-8 pt-8 pb-6 text-gray-800">
                     {body}
                   </div>
                 </div>
 
                 {(actionLabel || secondaryActionLabel || footer) && (
-                  <div className="flex flex-col gap-2 p-6">
-                    <div className="flex flex-row items-center gap-4 w-full">
+                  <div className="flex flex-col gap-3 px-8 pb-8 pt-2">
+                    <div className="flex flex-row items-center gap-3 w-full">
                       {secondaryAction && secondaryActionLabel && (
                         <ModalButton
                           id="secondary-action-button"

@@ -74,11 +74,11 @@ const SmartBadgeListing: React.FC<SmartBadgeListingProps> = ({
     const currMin = toMin(hhmm);
     if (inRange(hhmm, openTime, closeTime)) {
       const minsLeft = toMin(closeTime) - currMin;
-      if (minsLeft <= 30) return { message: 'Closing', color: 'orange' as const };
-      if (minsLeft <= 120) return { message: 'Closing', color: 'green' as const };
+      if (minsLeft <= 30) return { message: 'Closing Soon', color: 'orange' as const };
+      if (minsLeft <= 120) return { message: 'Closing Soon', color: 'green' as const };
       return { message: 'Open', color: 'green' as const };
     }
-    if (currMin < toMin(openTime)) return { message: 'Soon', color: 'orange' as const };
+    if (currMin < toMin(openTime)) return { message: 'Opening Soon', color: 'orange' as const };
     return { message: 'Closed', color: 'red' as const };
   };
 
@@ -206,7 +206,7 @@ const SmartBadgeListing: React.FC<SmartBadgeListingProps> = ({
         <div
           className={[
             pillBase,
-            'w-20',
+            'min-w-20',
             timeTheme.bg,
             `border ${timeTheme.border}`,
             timeTheme.text,

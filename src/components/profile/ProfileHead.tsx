@@ -297,7 +297,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                   {canEdit && (
                     <button
                       onClick={openEditProfile}
-                      className="bg-white/15 backdrop-blur-sm hover:bg-blue-400/10 border border-white/40 hover:border-blue-400/60 text-white hover:text-[#60A5FA] py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center hover:shadow-sm text-sm w-28"
+                      className="bg-transparent border border-white/50 hover:border-white text-white hover:text-white py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center text-sm w-28"
                       type="button"
                     >
                       Edit Profile
@@ -313,7 +313,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                       {/* Follow Button */}
                       <button
                         onClick={handleFollow}
-                        className="bg-white/15 backdrop-blur-sm hover:bg-blue-400/10 border border-white/40 hover:border-blue-400/60 text-white hover:text-[#60A5FA] py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center hover:shadow-sm text-sm w-28"
+                        className="bg-transparent border border-white/50 hover:border-white text-white hover:text-white py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center text-sm w-28"
                         type="button"
                       >
                         {isFollowing ? 'Following' : 'Follow'}

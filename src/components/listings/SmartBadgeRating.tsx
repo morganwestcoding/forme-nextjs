@@ -77,10 +77,10 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
     const currMin = toMin(hhmm);
     if (inRange(hhmm, open, close)) {
       const minsLeft = toMin(close) - currMin;
-      if (minsLeft <= 120) return { message: 'Closing', color: 'orange' as const };
+      if (minsLeft <= 120) return { message: 'Closing Soon', color: 'orange' as const };
       return { message: 'Available', color: 'green' as const };
     }
-    if (currMin < toMin(open)) return { message: 'Soon', color: 'orange' as const };
+    if (currMin < toMin(open)) return { message: 'Opening Soon', color: 'orange' as const };
     return { message: 'Closed', color: 'red' as const };
   };
 

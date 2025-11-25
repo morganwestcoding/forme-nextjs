@@ -12,43 +12,45 @@ interface ModalButtonProps {
   id?: string;
 }
 
-const ModalButton: React.FC<ModalButtonProps> = ({ 
-  label, 
-  onClick, 
-  disabled, 
+const ModalButton: React.FC<ModalButtonProps> = ({
+  label,
+  onClick,
+  disabled,
   outline,
   small,
   icon: Icon,
   id
 }) => {
   const isEditButton = label.toLowerCase().includes('edit');
-  
-  return ( 
+
+  return (
     <button
       id={id}
       disabled={disabled}
       onClick={onClick}
       className={`
         relative
+        disabled:opacity-50
         disabled:cursor-not-allowed
-        rounded-lg
-        border-transparent
-        transition
-        shadow-sm
-        shadow-gray-300
+        rounded-xl
+        transition-all
+        duration-200
         w-full
-        ${isEditButton ? 'bg-white border-[#e2e8f0] text-[#5E6365] hover:bg-[#e2e8f0]' : outline ? 'bg-gray-400 text-white' : ' bg-[#60A5FA] text-white'}
-        ${outline ? 'text-black' : isEditButton ? 'text-[#5E6365]' : 'text-white'}
-        ${small ? 'text-sm' : 'text-md'}
-        ${small ? 'py-1' : 'py-3'}
-
-        ${small ? 'border-[1px]' : 'border-[1px]'}
+        font-medium
+        active:scale-[0.98]
+        ${isEditButton
+          ? 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400'
+          : outline
+            ? 'bg-transparent border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400'
+            : 'bg-[#60A5FA] text-white hover:bg-[#3b82f6] border border-[#60A5FA] hover:border-[#3b82f6] shadow-lg shadow-[#60A5FA]/25 hover:shadow-xl hover:shadow-[#60A5FA]/30'
+        }
+        ${small ? 'text-sm py-2 px-4' : 'text-sm py-3.5 px-6'}
       `}
     >
       {Icon && (
         <Icon
-          size={24}
-          className="absolute left-4 top-3"
+          size={small ? 18 : 20}
+          className="absolute left-4 top-1/2 -translate-y-1/2"
         />
       )}
       {label}

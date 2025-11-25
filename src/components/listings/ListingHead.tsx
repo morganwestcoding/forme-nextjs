@@ -13,6 +13,7 @@ import { SafePost, SafeUser, SafeListing } from '@/app/types';
 import useReservationModal from '@/app/hooks/useReservationModal';
 import useRentModal from '@/app/hooks/useListingModal';
 import useFavorite from '@/app/hooks/useFavorite';
+import SectionHeader from '@/app/market/SectionHeader';
 
 interface ServiceItem {
   id: string;
@@ -340,8 +341,20 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 alt={title}
                 className="absolute inset-0 w-full h-full object-cover"
               />
-              {/* Simple dark overlay */}
-              <div className="absolute inset-0 bg-black/30" />
+              {/* Gradient overlay - smooth transition, darker at bottom for nav */}
+              <div
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  background:
+                    'linear-gradient(to top,' +
+                    'rgba(0,0,0,0.65) 0%,' +
+                    'rgba(0,0,0,0.55) 15%,' +
+                    'rgba(0,0,0,0.40) 35%,' +
+                    'rgba(0,0,0,0.25) 55%,' +
+                    'rgba(0,0,0,0.15) 75%,' +
+                    'rgba(0,0,0,0.08) 100%)',
+                }}
+              />
             </div>
 
             {/* Three-dot menu button - top right */}
@@ -420,7 +433,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                     {canShowQR ? (
                       <button
                         onClick={handleQRClick}
-                        className="bg-white border border-gray-200 hover:border-gray-300 text-gray-600 hover:text-gray-800 py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center shadow-[inset_0_2px_4px_rgba(0,0,0,0.06)]"
+                        className="backdrop-blur-md bg-white/10 hover:bg-white/15 border border-white/30 hover:border-white/50 text-white py-3 px-4 rounded-xl transition-all duration-300 flex items-center justify-center"
                         type="button"
                         aria-label="Show QR Code"
                       >
@@ -438,7 +451,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                       currentUser && (
                         <button
                           onClick={handleToggleFollow}
-                          className="bg-white border border-gray-200 hover:border-gray-300 text-gray-600 hover:text-gray-800 py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center shadow-[inset_0_2px_4px_rgba(0,0,0,0.06)] text-sm w-28"
+                          className="backdrop-blur-md bg-white/10 hover:bg-white/15 border border-white/30 hover:border-white/50 text-white py-3 px-4 rounded-xl transition-all duration-300 flex items-center justify-center text-sm w-28"
                           type="button"
                           aria-label={isFollowing ? 'Unfollow' : 'Follow'}
                         >
@@ -451,7 +464,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                     {currentUser && (
                       <button
                         onClick={handleReserveClick}
-                        className="bg-white border border-gray-200 hover:border-gray-300 text-gray-600 hover:text-gray-800 py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center shadow-[inset_0_2px_4px_rgba(0,0,0,0.06)] text-sm w-28"
+                        className="backdrop-blur-md bg-white/10 hover:bg-white/15 border border-white/30 hover:border-white/50 text-white py-3 px-4 rounded-xl transition-all duration-300 flex items-center justify-center text-sm w-28"
                         type="button"
                       >
                         <span>Reserve</span>
@@ -462,21 +475,32 @@ const ListingHead: React.FC<ListingHeadProps> = ({
             </div>
 
             {/* Navigation Tabs - Outside content wrapper but inside main wrapper */}
-            <div className="-mx-6 md:-mx-24 pb-3 border-b border-gray-300/80 relative z-10">
+            <div className="-mx-6 md:-mx-24 pb-3 relative z-10">
+                {/* Gradient border that fades into content */}
+                <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent" />
                 <div className="flex items-center justify-center">
                   {tabs.map(({ key, label }, index) => {
                     const isSelected = activeTab === key;
-                    const isLast = index === tabs.length - 1;
+                    const selectedIndex = tabs.findIndex(t => t.key === activeTab);
+                    const hasSelection = selectedIndex !== -1;
+
+                    // Determine divider state: adjacent to selected rotates horizontal, others disappear
+                    const getDividerState = () => {
+                      if (!hasSelection) return 'vertical';
+                      if (index === selectedIndex - 1 || index === selectedIndex) return 'horizontal';
+                      return 'hidden';
+                    };
+                    const dividerState = getDividerState();
 
                     return (
                       <div key={key} className="relative flex items-center">
                         <button
                           onClick={() => setActiveTab(key)}
                           className={`
-                            px-6 py-3.5 text-sm transition-colors duration-150 rounded-xl
+                            px-8 py-3.5 text-sm transition-all duration-200
                             ${isSelected
-                              ? 'text-[#60A5FA] hover:text-[#4F94E5]'
-                              : 'text-white/90 hover:text-white'
+                              ? 'text-[#60A5FA] font-medium'
+                              : 'text-white/80 hover:text-white'
                             }
                           `}
                           type="button"
@@ -484,8 +508,16 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                           {label}
                         </button>
 
-                        {!isLast && (
-                          <div className="h-6 w-px bg-white/80 mx-3" />
+                        {/* Divider: vertical by default, rotates horizontal when adjacent to selected, disappears otherwise */}
+                        {index < tabs.length - 1 && (
+                          <span
+                            className={`
+                              bg-white/60 transition-all duration-300 ease-out
+                              ${dividerState === 'horizontal' ? 'w-3 h-[0.5px] bg-[#60A5FA]' : ''}
+                              ${dividerState === 'vertical' ? 'w-[0.5px] h-4' : ''}
+                              ${dividerState === 'hidden' ? 'w-[0.5px] h-4 opacity-0' : ''}
+                            `}
+                          />
                         )}
                       </div>
                     );
@@ -500,18 +532,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
       <div>
         {activeTab === 'Services' && (
           <>
-            {/* Services Section Header */}
-            <div className="mt-8 mb-4">
-              <div>
-                <h2 className="text-xl font-semibold tracking-tight text-gray-900">
-                  Available Services
-                </h2>
-                <div
-                  className="mt-1 h-[2px] w-14 rounded-full"
-                  style={{ backgroundColor: '#60A5FA' }}
-                />
-              </div>
-            </div>
+            <SectionHeader title="Available Services" />
 
             {filteredServices.length === 0 && searchQuery.trim() ? (
               <div className="col-span-full text-center py-12">
@@ -566,18 +587,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
 
         {activeTab === 'Team' && (
           <>
-            {/* Team Section Header */}
-            <div className="mt-8 mb-4">
-              <div>
-                <h2 className="text-xl font-semibold tracking-tight text-gray-900">
-                  Our Team
-                </h2>
-                <div
-                  className="mt-1 h-[2px] w-14 rounded-full"
-                  style={{ backgroundColor: '#60A5FA' }}
-                />
-              </div>
-            </div>
+            <SectionHeader title="Our Team" />
 
             {filteredEmployees.length === 0 && searchQuery.trim() ? (
               <div className="col-span-full text-center py-12">
@@ -649,18 +659,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
 
         {activeTab === 'Posts' && (
           <>
-            {/* Posts Section Header */}
-            <div className="mt-8 mb-4">
-              <div>
-                <h2 className="text-xl font-semibold tracking-tight text-gray-900">
-                  Gallery
-                </h2>
-                <div
-                  className="mt-1 h-[2px] w-14 rounded-full"
-                  style={{ backgroundColor: '#60A5FA' }}
-                />
-              </div>
-            </div>
+            <SectionHeader title="Gallery" />
 
             {(!galleryImages || galleryImages.length === 0) && (!posts || posts.length === 0) ? (
               <>
