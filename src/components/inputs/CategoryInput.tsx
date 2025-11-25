@@ -32,32 +32,44 @@ const CategoryInputBase: React.FC<CategoryInputProps> = ({ label, selected, onCl
       type="button"
       onClick={() => onClick(label)}
       className={`
-        rounded-xl flex flex-col items-center justify-center p-4 space-y-2
+        group relative overflow-hidden
+        rounded-xl flex flex-col items-center justify-center gap-2.5 p-4
         cursor-pointer select-none
-        transition-[transform,background-color,color] duration-200 ease-out
-        ${selected ? 'bg-[#60A5FA] text-white' : 'bg-gradient-to-br from-blue-50/30 via-white to-blue-50/30 border-gray-200 border text-neutral-700 hover:shadow-sm hover:bg-blue-50'}
+        transition-all duration-300 ease-out
         will-change-transform transform-gpu
         focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#60A5FA]
+        ${selected
+          ? 'bg-gradient-to-br from-[#60A5FA] to-[#3b82f6] text-white shadow-md hover:shadow-lg border border-[#60A5FA]/50'
+          : 'bg-white border border-gray-300 text-gray-600 hover:border-gray-400 hover:shadow-sm hover:text-gray-700'
+        }
       `}
     >
-      <Icon
-        className={`
-          w-5 h-5
-          transition-transform duration-200 ease-out
-          ${selected ? 'scale-110' : 'scale-100'}
-          transform-gpu
-        `}
-      />
-      <span
-        className={`
-          text-xs leading-none
-          transition-transform duration-200 ease-out
-          ${selected ? 'scale-105' : 'scale-100'}
-          transform-gpu
-        `}
-      >
-        {label}
-      </span>
+      <div className="relative z-10 flex flex-col items-center gap-2">
+        {/* Icon container - simpler, cleaner */}
+        <div className={`
+          transition-all duration-300
+          ${selected
+            ? 'text-white'
+            : 'text-gray-500 group-hover:text-[#60A5FA]'
+          }
+        `}>
+          <Icon
+            className="w-5 h-5 transition-transform duration-300 ease-out group-hover:scale-110 transform-gpu"
+          />
+        </div>
+
+        {/* Label */}
+        <span
+          className={`
+            text-xs font-medium leading-tight
+            transition-all duration-300 ease-out
+            ${selected ? 'text-white' : 'text-gray-700 group-hover:text-gray-900'}
+            transform-gpu
+          `}
+        >
+          {label}
+        </span>
+      </div>
     </button>
   );
 };

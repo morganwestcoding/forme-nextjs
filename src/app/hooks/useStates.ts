@@ -13,6 +13,15 @@ interface StateItem {
   value: string;
 }
 
+interface CacheEntry {
+  at: number;
+  items: StateItem[];
+}
+
+// Module-level cache (persists across component mounts)
+const _cache = new Map<string, CacheEntry>();
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
+
 const useStates = (countryCode: string) => {
   const [states, setStates] = useState<Array<StateItem>>([]);
   const [loading, setLoading] = useState(false);
@@ -22,9 +31,20 @@ const useStates = (countryCode: string) => {
     if (!countryCode) return;
 
     const fetchStates = async () => {
+      // Check cache first
+      const cacheKey = `states_${countryCode}`;
+      const cached = _cache.get(cacheKey);
+      const now = Date.now();
+
+      if (cached && now - cached.at < CACHE_TTL_MS) {
+        setStates(cached.items);
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
       setError(null);
-      
+
       try {
         const response = await axios.get(`https://secure.geonames.org/searchJSON`, {
           params: {
@@ -44,6 +64,8 @@ const useStates = (countryCode: string) => {
             }))
             .sort((a: StateItem, b: StateItem) => a.label.localeCompare(b.label));
 
+          // Cache the results
+          _cache.set(cacheKey, { at: now, items: formattedStates });
           setStates(formattedStates);
         }
       } catch (err) {

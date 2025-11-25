@@ -33,7 +33,7 @@ interface FloatingLabelSelectProps {
 }
 
 const CONTROL_HEIGHT = 58;
-const BORDER_RADIUS = 8;
+const BORDER_RADIUS = 12;
 const PADDING_LEFT = 16;
 const PADDING_RIGHT = 40;
 const PADDING_TOP = 24;
@@ -49,14 +49,30 @@ const makeStyles = (
     minHeight: CONTROL_HEIGHT,
     height: CONTROL_HEIGHT,
     borderRadius: BORDER_RADIUS,
-    backgroundColor: '#fafafa',
-    borderColor: error ? '#f43f5e' : state.isFocused ? '#000000' : '#d4d4d4',
-    boxShadow: 'none',
+    backgroundColor: '#ffffff',
+    borderColor: error
+      ? '#fb7185'
+      : state.isFocused
+        ? '#60A5FA'
+        : 'rgba(229, 231, 235, 0.6)',
+    borderWidth: '1px',
+    boxShadow: error
+      ? state.isFocused
+        ? '0 0 0 2px rgba(251, 113, 133, 0.1)'
+        : 'none'
+      : state.isFocused
+        ? '0 0 0 2px rgba(96, 165, 250, 0.1)'
+        : 'none',
     ':hover': {
-      borderColor: error ? '#f43f5e' : state.isFocused ? '#000000' : '#d4d4d4',
+      borderColor: error
+        ? '#fb7185'
+        : state.isFocused
+          ? '#60A5FA'
+          : '#d1d5db',
     },
     padding: 0,
     cursor: 'pointer',
+    transition: 'all 200ms ease',
   }),
   valueContainer: (base) => ({
     ...base,
@@ -73,7 +89,7 @@ const makeStyles = (
   }),
   singleValue: (base) => ({
     ...base,
-    color: '#000000',
+    color: '#374151',
     fontSize: `${FONT_SIZE_PX}px`,
     lineHeight: `${LINE_HEIGHT_PX}px`,
     margin: 0,
@@ -81,7 +97,7 @@ const makeStyles = (
   }),
   input: (base) => ({
     ...base,
-    color: '#262626',
+    color: '#374151',
     fontSize: `${FONT_SIZE_PX}px`,
     lineHeight: `${LINE_HEIGHT_PX}px`,
     margin: 0,
@@ -94,7 +110,7 @@ const makeStyles = (
     top: 0,
     height: CONTROL_HEIGHT,
     paddingRight: 12,
-    color: '#737373',
+    color: '#9ca3af',
   }),
   indicatorSeparator: () => ({ display: 'none' }),
   dropdownIndicator: (base) => ({ ...base, padding: 0, margin: 0 }),
@@ -103,24 +119,29 @@ const makeStyles = (
   menu: (base) => ({
     ...base,
     borderRadius: BORDER_RADIUS,
-    border: '1px solid #e5e5e5', // ✅ fixed string
+    border: '1px solid rgba(229, 231, 235, 0.6)',
     overflow: 'hidden',
-    marginTop: 4,
+    marginTop: 8,
+    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+    backgroundColor: '#ffffff',
   }),
-  menuList: (base) => ({ ...base, padding: 8 }),
+  menuList: (base) => ({ ...base, padding: 6 }),
   option: (base, state) => ({
     ...base,
-    borderRadius: 6,
+    borderRadius: 10,
     padding: '10px 14px',
+    margin: '2px 0',
     backgroundColor: state.isSelected
-      ? '#e5e5e5'
+      ? 'rgba(96, 165, 250, 0.1)'
       : state.isFocused
-      ? '#f5f5f5'
-      : '#ffffff',
-    color: '#000000',
+        ? '#f9fafb'
+        : '#ffffff',
+    color: state.isSelected ? '#60A5FA' : '#374151',
     cursor: 'pointer',
     fontSize: `${FONT_SIZE_PX}px`,
     lineHeight: `${LINE_HEIGHT_PX}px`,
+    transition: 'all 200ms ease',
+    fontWeight: state.isSelected ? '500' : '400',
   }),
 });
 
@@ -155,10 +176,10 @@ const FloatingLabelSelect: React.FC<FloatingLabelSelectProps> = ({
   const selectRef =
     useRef<SelectInstance<FLSelectOption, false, GroupBase<FLSelectOption>>>(null);
 
-  // Floating-label behavior
-  const labelFloated = focused || hasValue;
-  const labelSize = focused ? 'text-xs' : 'text-sm';
-  const labelPos = labelFloated ? 'top-6 -translate-y-4' : 'top-1/2 -translate-y-1/2';
+  // Floating-label behavior (should float when focused, has value, menu is open, OR there's an error)
+  const labelFloated = focused || hasValue || menuOpen || error;
+  const labelSize = labelFloated ? 'text-xs scale-75' : 'text-sm scale-100';
+  const labelPos = labelFloated ? 'top-5 -translate-y-4' : 'top-1/2 -translate-y-1/2';
 
   // Unified “open” behavior anywhere on the control wrapper
   const openMenu = () => {
@@ -244,7 +265,7 @@ const FloatingLabelSelect: React.FC<FloatingLabelSelectProps> = ({
       <label
         className={[
           'absolute left-4 origin-[0] pointer-events-none transition-all duration-150',
-          error ? 'text-rose-500' : 'text-neutral-500',
+          error ? 'text-rose-500' : 'text-gray-500',
           labelSize,
           labelPos,
         ].join(' ')}

@@ -502,12 +502,19 @@ const ListingModal = () => {
     bodyContent = (
       <div className="flex flex-col gap-4">
         {saveStatus?.type === 'success' && (
-          <div className="rounded-xl border border-green-200 bg-green-50 text-green-700 px-4 py-2 text-sm">
+          <div className="rounded-xl border border-green-200/60 bg-green-50/80 backdrop-blur-sm text-green-700 px-4 py-3 text-sm font-medium flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" className="text-green-600">
+              <path d="M5 14l3.5 3.5L19 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
             {saveStatus.message}
           </div>
         )}
         {saveStatus?.type === 'error' && (
-          <div className="rounded-xl border border-rose-200 bg-rose-50 text-rose-700 px-4 py-2 text-sm">
+          <div className="rounded-xl border border-rose-200/60 bg-rose-50/80 backdrop-blur-sm text-rose-700 px-4 py-3 text-sm font-medium flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" className="text-rose-600">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5"/>
+              <path d="M12 8v4M12 16h.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+            </svg>
             {saveStatus.message}
           </div>
         )}
@@ -534,14 +541,22 @@ const ListingModal = () => {
           initialZipCode={isEditMode ? (listing?.zipCode ?? null) : null}
           onLocationSubmit={(value) => {
             setCustomValue('location', value ?? '');
-            if (value) clearErrors('location');
+            // Only clear error when both state and city are selected (value exists)
+            if (value) {
+              clearErrors('location');
+            }
           }}
           onAddressSelect={(data) => {
             setCustomValue('address', data.address);
             setCustomValue('zipCode', data.zipCode);
             const locStr = `${data.city}, ${data.state}`;
             setCustomValue('location', locStr);
+            // Clear all location-related errors when address is selected
             clearErrors(['address', 'zipCode', 'location']);
+          }}
+          onFieldChange={(fieldId) => {
+            // Clear error when user starts typing in the field
+            clearErrors(fieldId);
           }}
           register={register}
           errors={errors}
@@ -579,22 +594,21 @@ const ListingModal = () => {
           <button
             type="button"
             onClick={addNewService}
-            className={[
-              'group relative w-full',
-              'rounded-2xl border-2 border-gray-200 bg-white p-4',
-              'flex flex-col items-center justify-center text-center gap-2.5',
-              'hover:border-blue-500 hover:shadow-md transition-all duration-200',
-              'h-[140px]',
-            ].join(' ')}
+            className="group relative w-full rounded-2xl border border-gray-200/60 bg-white/90 backdrop-blur-sm p-6 flex flex-col items-center justify-center text-center gap-3 hover:border-[#60A5FA] hover:shadow-lg hover:shadow-[#60A5FA]/10 hover:scale-[1.02] active:scale-[0.99] transition-all duration-300 h-[140px]"
           >
-            <div className="rounded-full flex items-center justify-center bg-gray-100 text-gray-600 group-hover:bg-blue-50 group-hover:text-blue-600">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              </svg>
-            </div>
-            <div className="min-w-0">
-              <p className="text-sm font-medium text-gray-900">Add a service</p>
-              <p className="text-xs text-gray-500">Name, price, category</p>
+            {/* Subtle gradient overlay on hover */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-50/0 via-blue-50/0 to-blue-50/0 group-hover:from-blue-50/40 group-hover:via-blue-50/20 group-hover:to-blue-50/40 transition-all duration-300 rounded-2xl" />
+
+            <div className="relative z-10 flex flex-col items-center gap-3">
+              <div className="rounded-xl p-2.5 flex items-center justify-center bg-gray-50/80 group-hover:bg-[#60A5FA]/10 text-gray-500 group-hover:text-[#60A5FA] transition-all duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" className="transition-transform duration-300 group-hover:scale-110">
+                  <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-gray-900 group-hover:text-[#60A5FA] transition-colors duration-300">Add a service</p>
+                <p className="text-xs text-gray-500">Name, price, category</p>
+              </div>
             </div>
           </button>
         </div>

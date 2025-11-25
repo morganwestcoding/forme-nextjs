@@ -23,8 +23,17 @@ interface AddressAutocompleteProps {
   }) => void;
   proximity?: { lat: number; lng: number };
 
-  /** NEW: prefill the visible input (e.g., saved address in edit mode) */
+  /** Prefill the visible input (e.g., saved address in edit mode) */
   initialValue?: string;
+
+  /** Filter addresses to specific state (state code like "CA") */
+  filterState?: string;
+
+  /** Filter addresses to specific city */
+  filterCity?: string;
+
+  /** Callback to clear errors when user types */
+  onFieldChange?: (fieldId: string) => void;
 }
 
 interface Suggestion {
@@ -44,7 +53,10 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
   errors,
   onAddressSelect,
   proximity,
-  initialValue,                // ⬅️ NEW
+  initialValue,
+  filterState,
+  filterCity,
+  onFieldChange,
 }) => {
   const [query, setQuery] = useState(initialValue ?? ''); // ⬅️ start with initial
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
@@ -99,22 +111,52 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
         autocomplete: 'true',
         language: 'en',
       });
+
+      // Add proximity if available
       if (effectiveProximity) {
         params.set('proximity', `${effectiveProximity.lng},${effectiveProximity.lat}`);
       }
+
       const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(input)}.json?${params.toString()}`;
       const res = await fetch(url);
       const data = await res.json();
-      return (data?.features as Suggestion[]) || [];
+      let results = (data?.features as Suggestion[]) || [];
+
+      // Filter by state and/or city if provided
+      if (filterState || filterCity) {
+        results = results.filter(sugg => {
+          let matchesState = true;
+          let matchesCity = true;
+
+          if (filterState) {
+            const stateContext = sugg.context?.find(c => c.id.startsWith('region'));
+            matchesState = stateContext?.short_code?.replace('US-', '') === filterState;
+          }
+
+          if (filterCity) {
+            const cityContext = sugg.context?.find(c => c.id.startsWith('place'));
+            matchesCity = cityContext?.text.toLowerCase() === filterCity.toLowerCase();
+          }
+
+          return matchesState && matchesCity;
+        });
+      }
+
+      return results;
     } catch {
       return [];
     }
-  }, [effectiveProximity]);
+  }, [effectiveProximity, filterState, filterCity]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setQuery(value);
     rhfOnChange(e);
+
+    // Clear address error when user starts typing
+    if (value && onFieldChange) {
+      onFieldChange('address');
+    }
 
     if (debounceRef.current) clearTimeout(debounceRef.current);
     if (value.length > 2) {
@@ -202,11 +244,10 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
         placeholder=" "
         autoComplete="off"
         className={`
-          peer w-full p-3 pt-6 bg-neutral-50 border rounded-lg outline-none transition
-          disabled:opacity-70 disabled:cursor-not-allowed
-          ${errors[id] ? 'border-rose-500' : 'border-neutral-300'}
-          ${errors[id] ? 'focus:border-rose-500' : 'focus:border-black'}
+          peer w-full p-3 pt-6 bg-white border rounded-xl outline-none transition-all duration-200
+          disabled:opacity-50 disabled:cursor-not-allowed hover:border-gray-300
           pl-4 pr-4 h-[60px]
+          ${errors[id] ? 'border-rose-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/10' : 'border-gray-200/60 focus:border-[#60A5FA] focus:ring-2 focus:ring-[#60A5FA]/10'}
         `}
         aria-autocomplete="list"
         aria-controls={`${id}-listbox`}
@@ -216,8 +257,8 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
       <label
         htmlFor={id}
         className={`
-          absolute text-sm duration-150 transform -translate-y-3 top-5 left-4 origin-[0]
-          ${errors[id] ? 'text-rose-500' : 'text-neutral-500'}
+          absolute text-sm duration-150 transform -translate-y-3 top-5 left-4 origin-[0] pointer-events-none
+          ${errors[id] ? 'text-rose-500' : 'text-gray-500'}
           peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0
           peer-focus:scale-75 peer-focus:-translate-y-4
         `}
@@ -230,7 +271,7 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
           id={`${id}-listbox`}
           role="listbox"
           ref={listRef}
-          className="absolute w-full bg-white shadow-md rounded-md mt-1 z-[9999] max-h-[220px] overflow-y-auto border border-neutral-200"
+          className="absolute w-full bg-white shadow-xl rounded-xl mt-2 z-[9999] max-h-[220px] overflow-y-auto border border-gray-200/60 p-1.5"
         >
           {suggestions.map((sugg, index) => (
             <div
@@ -238,8 +279,8 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
               role="option"
               aria-selected={activeIndex === index}
               key={`${sugg.place_name}-${index}`}
-              className={`p-3 cursor-pointer text-sm text-neutral-700 transition-colors
-                ${activeIndex === index ? 'bg-blue-50' : 'hover:bg-neutral-100'}
+              className={`p-3 cursor-pointer text-sm rounded-lg transition-all duration-200
+                ${activeIndex === index ? 'bg-[#60A5FA]/10 text-[#60A5FA] font-medium' : 'text-gray-700 hover:bg-gray-50'}
               `}
               onMouseEnter={() => setActiveIndex(index)}
               onMouseLeave={() => setActiveIndex(-1)}
@@ -252,7 +293,7 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
       )}
 
       {errors[id] && (
-        <span className="text-rose-500 text-xs mt-1 block">
+        <span className="text-rose-500 text-xs mt-1.5 block font-medium">
           {typeof errors[id]?.message === 'string'
             ? (errors[id]?.message as string)
             : 'Please enter a valid address'}

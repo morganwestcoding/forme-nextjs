@@ -17,23 +17,22 @@ const Heading: React.FC<HeadingProps> = ({
   const category = categories.find(category => category.label === label);
   const defaultBgColor = 'bg-gray-200';
 
-  return ( 
-    <div className={`${center ? 'text-center' : 'text-left'}`}>
-      <div className="text-lg font-medium flex items-center justify-start mb-1">
-        {title}  
+  return (
+    <div className={`${center ? 'text-center' : 'text-left'} space-y-1.5`}>
+      <div className="text-xl font-semibold tracking-tight flex items-center justify-start text-gray-900">
+        {title}
         {label && category && (
-          <div className={`drop-shadow-sm rounded px-3 py-1 mx-auto my-1 ml-3 text-xs font-light ${category ? category.color : defaultBgColor} text-white inline-block`}>
+          <div className={`rounded-lg px-3 py-1.5 ml-3 text-xs font-medium shadow-sm ${category ? category.color : defaultBgColor} text-white inline-flex items-center`}>
             {label}
           </div>
         )}
       </div>
-    
+
       {subtitle && (
-        <div className="font-light text-sm text-neutral-500 mb-2 ">
+        <div className="text-sm text-gray-500 leading-relaxed">
           {subtitle}
         </div>
       )}
-      {/* Star icon with rating next to the subtitle */}
     </div>
    );
 }

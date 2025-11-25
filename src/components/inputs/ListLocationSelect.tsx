@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FieldErrors, FieldValues, UseFormRegister } from 'react-hook-form';
 import useStates from '@/app/hooks/useStates';
 import useCities from '@/app/hooks/useCities';
@@ -9,14 +9,13 @@ import Input from '../inputs/Input';
 import MapComponent from '../MapComponent';
 import FloatingLabelSelect, { FLSelectOption } from './FloatingLabelSelect';
 
-type LocationSelection = { label: string; value: string };
 type Coordinates = { lat: number; lng: number };
 
 interface ListLocationSelectProps {
-  /** EXACTLY like register flow: emit "City, State" or null */
+  /** Callback when location ("City, State") changes */
   onLocationSubmit: (location: string | null) => void;
 
-  /** Let parent set address/zip (since RHF lives above) */
+  /** Callback when address is selected from autocomplete */
   onAddressSelect?: (data: {
     address: string;
     city: string;
@@ -24,6 +23,9 @@ interface ListLocationSelectProps {
     zipCode: string;
     coordinates: Coordinates;
   }) => void;
+
+  /** Callback to clear errors when user types */
+  onFieldChange?: (fieldId: string) => void;
 
   register: UseFormRegister<FieldValues>;
   errors: FieldErrors;
@@ -35,44 +37,27 @@ interface ListLocationSelectProps {
   initialZipCode?: string | null;
 }
 
-/** Normalize strings for matching (case/diacritics/punct/abbrev) */
-const normalize = (s: string) =>
-  s
-    .toLowerCase()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-    .replace(/\bst[.\s]\b/g, 'saint ')
-    .replace(/[^a-z0-9]+/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
+/** Parse "City, State" into separate values */
+function parseLocation(location: string | null): { city: string; state: string } | null {
+  if (!location) return null;
+  const parts = location.split(',').map(p => p.trim()).filter(Boolean);
+  if (parts.length < 2) return null;
+  return { city: parts[0], state: parts[1] };
+}
 
-/** Find a city option with several heuristics */
-function findCityOption(cities: LocationSelection[], desiredRaw: string): LocationSelection | undefined {
-  const want = normalize(desiredRaw);
-  if (!want) return;
-
-  // 1) exact label/value match post-normalize
-  let match = cities.find(c => normalize(c.label) === want || normalize(c.value) === want);
-  if (match) return match;
-
-  // 2) inclusive match
-  match = cities.find(c => {
-    const n = normalize(c.label);
-    return n.includes(want) || want.includes(n);
-  });
-  if (match) return match;
-
-  // 3) token-based (all tokens present)
-  const tokens = want.split(' ');
-  match = cities.find(c => {
-    const n = normalize(c.label);
-    return tokens.every(t => n.includes(t));
-  });
-  return match;
+/** Find option by label (case-insensitive) */
+function findOption(options: FLSelectOption[], searchTerm: string): FLSelectOption | undefined {
+  const normalized = searchTerm.toLowerCase().trim();
+  return options.find(opt =>
+    opt.label.toLowerCase() === normalized ||
+    opt.value.toLowerCase() === normalized
+  );
 }
 
 const ListLocationSelect: React.FC<ListLocationSelectProps> = ({
   onLocationSubmit,
   onAddressSelect,
+  onFieldChange,
   register,
   errors,
   id,
@@ -80,99 +65,71 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({
   initialAddress,
   initialZipCode,
 }) => {
-  // EXACTLY like register flow: local-only state/city, emit single string
-  const [selectedState, setSelectedState] = useState<LocationSelection | null>(null);
-  const [selectedCity, setSelectedCity] = useState<LocationSelection | null>(null);
-  const [currentLocation, setCurrentLocation] = useState<string | null>(null);
-
-  // Map-only coords (optional)
+  // Selected values
+  const [selectedState, setSelectedState] = useState<FLSelectOption | null>(null);
+  const [selectedCity, setSelectedCity] = useState<FLSelectOption | null>(null);
   const [coordinates, setCoordinates] = useState<Coordinates | null>(null);
 
-  // Datasets — use the same inputs as your register flow
+  // Fetch data
   const { states, loading: statesLoading } = useStates('US');
   const { cities, loading: citiesLoading } = useCities(selectedState?.value ?? '');
 
-  // One-time prefill tracking
-  const initializedRef = useRef(false);
-  const targetCityRef = useRef<string | null>(null);
-
-  const findStateOption = (token: string): LocationSelection | undefined => {
-    const want = normalize(token);
-    return states.find(s => normalize(s.label) === want || normalize(s.value) === want);
-  };
-
-  /** Stage 1: derive State from initialLocation */
+  // Initialize from props (only runs once when data loads)
   useEffect(() => {
-    if (initializedRef.current) return;
-    if (!initialLocation) return;
-    if (statesLoading || states.length === 0) return;
+    if (!initialLocation || statesLoading || states.length === 0) return;
+    if (selectedState) return; // Already initialized
 
-    // Accept "City, State" | "State, City" | "City, State, Country"
-    const parts = initialLocation.split(',').map(p => p.trim()).filter(Boolean);
-    if (parts.length < 2) return;
+    const parsed = parseLocation(initialLocation);
+    if (!parsed) return;
 
-    const last = parts[parts.length - 1];
-    const secondLast = parts[parts.length - 2];
-
-    let stateOpt = findStateOption(last) || findStateOption(secondLast);
-    let cityName = stateOpt && stateOpt.label === last ? secondLast : parts[0];
-
-    // Fallback "State, City"
-    if (!stateOpt) {
-      const maybeState = findStateOption(parts[0]);
-      if (maybeState) {
-        stateOpt = maybeState;
-        cityName = parts[1] ?? cityName;
-      }
-    }
-
+    const stateOpt = findOption(states, parsed.state);
     if (stateOpt) {
       setSelectedState(stateOpt);
-      targetCityRef.current = cityName ?? null;
+      // City will be set in a separate effect after cities load
     }
-  }, [initialLocation, states, statesLoading]);
+  }, [initialLocation, states, statesLoading, selectedState]);
 
-  /** Stage 2: set City once its list is loaded, emit location string */
+  // Initialize city after state is set and cities are loaded
   useEffect(() => {
-    if (initializedRef.current) return;
-    if (!selectedState) return;
-    if (citiesLoading) return;
+    if (!initialLocation || !selectedState || citiesLoading || cities.length === 0) return;
+    if (selectedCity) return; // Already initialized
 
-    const desiredCityRaw = (targetCityRef.current ?? '').trim();
-    if (!desiredCityRaw) {
-      // We still want to emit state (but no city yet) — keep it null to force user pick
-      initializedRef.current = true;
-      return;
-    }
+    const parsed = parseLocation(initialLocation);
+    if (!parsed) return;
 
-    const cityOpt = findCityOption(cities, desiredCityRaw) ?? { label: desiredCityRaw, value: desiredCityRaw };
+    const cityOpt = findOption(cities, parsed.city) ?? { label: parsed.city, value: parsed.city };
     setSelectedCity(cityOpt);
 
-    // Emit "City, State" to RHF
+    // Emit initial location
     const loc = `${cityOpt.label}, ${selectedState.label}`;
-    setCurrentLocation(loc);
     onLocationSubmit(loc);
+  }, [initialLocation, selectedState, cities, citiesLoading, selectedCity, onLocationSubmit]);
 
-    initializedRef.current = true;
-  }, [selectedState, cities, citiesLoading, onLocationSubmit]);
-
-  /** Manual State change (clear city & location like register flow) */
+  /** Handle state change */
   const handleStateChange = (opt: FLSelectOption | null) => {
-    setSelectedState(opt as LocationSelection | null);
-    setSelectedCity(null);
-    setCurrentLocation(null);
-    onLocationSubmit(null);
+    setSelectedState(opt);
+    setSelectedCity(null); // Clear city when state changes
+
+    // Only emit null if we're clearing, otherwise wait for city
+    if (!opt) {
+      onLocationSubmit(null);
+    }
   };
 
-  /** Manual City change (emit "City, State") */
+  /** Handle city change */
   const handleCityChange = (opt: FLSelectOption | null) => {
-    setSelectedCity(opt as LocationSelection | null);
-    const loc = opt && selectedState ? `${opt.label}, ${selectedState.label}` : null;
-    setCurrentLocation(loc);
-    onLocationSubmit(loc);
+    setSelectedCity(opt);
+
+    // Only emit location when both state AND city are selected
+    if (opt && selectedState) {
+      const loc = `${opt.label}, ${selectedState.label}`;
+      onLocationSubmit(loc);
+    } else {
+      onLocationSubmit(null);
+    }
   };
 
-  /** Address picker — also emit location from address and forward address/zip up */
+  /** Handle address selection from autocomplete */
   const handleAddressSelect = (data: {
     address: string;
     city: string;
@@ -180,36 +137,28 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({
     zipCode: string;
     coordinates: Coordinates;
   }) => {
-    // Sync local dropdowns from address selection (nice UX)
-    const stateOpt =
-      states.find(s => s.label === data.state) ||
-      states.find(s => s.value === data.state) ||
-      ({ label: data.state, value: data.state });
+    // Sync state/city dropdowns from address
+    const stateOpt = findOption(states, data.state) ?? { label: data.state, value: data.state };
+    const cityOpt: FLSelectOption = { label: data.city, value: data.city };
 
-    setSelectedState(stateOpt as LocationSelection);
-    const cityOpt: LocationSelection = { label: data.city, value: data.city };
+    setSelectedState(stateOpt);
     setSelectedCity(cityOpt);
-
-    // Emit "City, State" like register flow
-    const loc = `${data.city}, ${data.state}`;
-    setCurrentLocation(loc);
-    onLocationSubmit(loc);
-
-    // Keep coordinates for map
     setCoordinates(data.coordinates);
 
-    // Let parent set address & zip in RHF
+    // Emit location
+    const loc = `${data.city}, ${data.state}`;
+    onLocationSubmit(loc);
+
+    // Forward to parent
     onAddressSelect?.(data);
   };
 
-  const menuNoCityMessage = useMemo(
-    () => (selectedState ? 'No cities found' : 'Please select a state first'),
-    [selectedState]
-  );
+  // Determine if location fields have errors
+  const hasLocationError = !!(errors.location || errors.address);
 
   return (
-    <div id={id} className="flex flex-col gap-3 -mt-4">
-      {/* Address input (visible + RHF) */}
+    <div id={id} className="flex flex-col gap-4">
+      {/* Address Autocomplete */}
       <AddressAutocomplete
         id="address"
         label="Street Address"
@@ -219,45 +168,70 @@ const ListLocationSelect: React.FC<ListLocationSelectProps> = ({
         onAddressSelect={handleAddressSelect}
         errors={errors}
         initialValue={initialAddress ?? ''}
+        filterState={selectedState?.value}
+        filterCity={selectedCity?.label}
+        onFieldChange={onFieldChange}
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
-        {/* STATE (local only) */}
-        <FloatingLabelSelect
-          label="State"
-          options={states as FLSelectOption[]}
-          value={selectedState as FLSelectOption | null}
-          onChange={handleStateChange}
-          isLoading={statesLoading}
-          isDisabled={false}
-          noOptionsMessage={() => 'No states found'}
-        />
+      {/* State, City, ZIP Row */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        {/* State */}
+        <div className="relative">
+          <FloatingLabelSelect
+            label="State"
+            options={states}
+            value={selectedState}
+            onChange={handleStateChange}
+            isLoading={statesLoading}
+            isDisabled={false}
+            noOptionsMessage={() => 'No states found'}
+            name="state-select"
+            inputId="state-input"
+            error={hasLocationError}
+          />
+          {/* Error message for location - aligned with ZIP error */}
+          {hasLocationError && (
+            <span className="text-rose-500 text-xs mt-1.5 block font-medium">
+              {errors.location?.message as string || errors.address?.message as string || 'Please complete the location fields'}
+            </span>
+          )}
+        </div>
 
-        {/* CITY (local only) */}
+        {/* City */}
         <FloatingLabelSelect
           label="City"
-          options={cities as FLSelectOption[]}
-          value={selectedCity as FLSelectOption | null}
+          options={cities}
+          value={selectedCity}
           onChange={handleCityChange}
           isLoading={citiesLoading}
           isDisabled={!selectedState}
-          noOptionsMessage={() => menuNoCityMessage}
+          noOptionsMessage={() => selectedState ? 'No cities found' : 'Please select a state first'}
+          name="city-select"
+          inputId="city-input"
+          error={hasLocationError}
         />
 
-        {/* ZIP (RHF-controlled by parent) */}
+        {/* ZIP Code */}
         <Input
           id="zipCode"
           label="ZIP Code"
           register={register}
           errors={errors}
           required
+          onChange={(e) => {
+            // Clear zipCode error when user types
+            if (e.target.value && onFieldChange) {
+              onFieldChange('zipCode');
+            }
+          }}
         />
       </div>
 
-      <div className="mt-4">
+      {/* Map */}
+      <div className="mt-2">
         <MapComponent
           coordinates={coordinates ?? undefined}
-          location={coordinates ? null : currentLocation}
+          location={coordinates ? null : (selectedCity && selectedState ? `${selectedCity.label}, ${selectedState.label}` : null)}
           zoom={coordinates ? 15 : 10}
         />
       </div>
