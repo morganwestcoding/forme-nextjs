@@ -453,23 +453,12 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                     currentUser && (
                       <button
                         onClick={handleToggleFollow}
-                        className="backdrop-blur-md bg-white/10 hover:bg-white/15 border border-white/30 hover:border-white/50 text-white py-3 px-4 rounded-xl transition-all duration-300 flex items-center justify-center gap-1.5 text-sm"
+                        className={`backdrop-blur-md bg-white/10 hover:bg-white/15 border border-white/30 hover:border-white/50 text-white py-3 rounded-xl transition-all duration-300 flex items-center justify-center text-sm ${
+                          isFollowing ? 'px-5' : 'w-[88px]'
+                        }`}
                         type="button"
                         aria-label={isFollowing ? 'Unfollow' : 'Follow'}
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor">
-                          {isFollowing ? (
-                            <>
-                              <path d="M2.5 12.0001C2.5 7.52171 2.5 5.28254 3.89124 3.8913C5.28249 2.50005 7.52166 2.50005 12 2.50005C16.4783 2.50005 18.7175 2.50005 20.1088 3.8913C21.5 5.28254 21.5 7.52171 21.5 12.0001C21.5 16.4784 21.5 18.7176 20.1088 20.1088C18.7175 21.5001 16.4783 21.5001 12 21.5001C7.52166 21.5001 5.28249 21.5001 3.89124 20.1088C2.5 18.7176 2.5 16.4784 2.5 12.0001Z" stroke-width="1.5" />
-                              <path d="M16 12.0001L8 12.0001" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                            </>
-                          ) : (
-                            <>
-                              <path d="M2.5 12.0001C2.5 7.52171 2.5 5.28254 3.89124 3.8913C5.28249 2.50005 7.52166 2.50005 12 2.50005C16.4783 2.50005 18.7175 2.50005 20.1088 3.8913C21.5 5.28254 21.5 7.52171 21.5 12.0001C21.5 16.4784 21.5 18.7176 20.1088 20.1088C18.7175 21.5001 16.4783 21.5001 12 21.5001C7.52166 21.5001 5.28249 21.5001 3.89124 20.1088C2.5 18.7176 2.5 16.4784 2.5 12.0001Z" stroke-width="1.5" />
-                              <path d="M12 8.00005V16.0001M16 12.0001L8 12.0001" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                            </>
-                          )}
-                        </svg>
                         {isFollowing ? 'Following' : 'Follow'}
                       </button>
                     )
@@ -479,13 +468,9 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   {currentUser && (
                     <button
                       onClick={handleReserveClick}
-                      className="backdrop-blur-md bg-white/10 hover:bg-white/15 border border-white/30 hover:border-white/50 text-white py-3 pl-3 pr-4 rounded-xl transition-all duration-300 flex items-center justify-center gap-1.5 text-sm"
+                      className="backdrop-blur-md bg-white/10 hover:bg-white/15 border border-white/30 hover:border-white/50 text-white py-3 w-[88px] rounded-xl transition-all duration-300 flex items-center justify-center text-sm"
                       type="button"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor">
-                        <path d="M2.5 12C2.5 7.52166 2.5 5.28249 3.89124 3.89124C5.28249 2.5 7.52166 2.5 12 2.5C16.4783 2.5 18.7175 2.5 20.1088 3.89124C21.5 5.28249 21.5 7.52166 21.5 12C21.5 16.4783 21.5 18.7175 20.1088 20.1088C18.7175 21.5 16.4783 21.5 12 21.5C7.52166 21.5 5.28249 21.5 3.89124 20.1088C2.5 18.7175 2.5 16.4783 2.5 12Z" stroke-width="1.5" />
-                        <path d="M12 9.00014V16.0002M15.5 11.5C15.5 11.5 12.9223 8.00001 12 8C11.0777 7.99999 8.5 11.5 8.5 11.5" stroke-width="1.5" />
-                      </svg>
                       Reserve
                     </button>
                   )}

@@ -263,17 +263,17 @@ const ReserveCard: React.FC<ReserveCardProps> = ({
                 className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 shadow-sm ${
                   disabled
                     ? 'bg-gray-100 cursor-not-allowed'
-                    : isConfirmed 
+                    : isConfirmed
                       ? 'bg-gray-100 hover:bg-gray-200 hover:shadow-md' // Gray cancel style after confirmation
                       : 'bg-red-100 hover:bg-red-200 hover:shadow-md'    // Red decline style when pending
                 } ${isConfirmed ? 'translate-x-0' : ''}`}
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                  <path 
-                    d="M18 6L6 18M6 6l12 12" 
-                    stroke={isConfirmed ? "#6b7280" : "#dc2626"} 
-                    strokeWidth="2" 
-                    strokeLinecap="round" 
+                  <path
+                    d="M18 6L6 18M6 6l12 12"
+                    stroke={isConfirmed ? "#6b7280" : "#dc2626"}
+                    strokeWidth="2"
+                    strokeLinecap="round"
                     strokeLinejoin="round"
                   />
                 </svg>
