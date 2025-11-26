@@ -63,6 +63,7 @@ export default async function getFavoritePosts(): Promise<SafePost[]> {
         emailVerified: post.user.emailVerified?.toISOString() || null,
         bio: post.user.bio || "No Bio Provided Yet..",
         imageSrc: post.user.imageSrc || null,
+        backgroundImage: post.user.backgroundImage || null,
         licensingImage: post.user.licensingImage || null,
         verificationStatus: post.user.verificationStatus || null,
         verifiedAt: post.user.verifiedAt || null,
@@ -85,6 +86,7 @@ export default async function getFavoritePosts(): Promise<SafePost[]> {
         conversationIds: post.user.conversationIds || [],
         favoriteIds: post.user.favoriteIds || [],
         managedListings: post.user.managedListings || [],
+        role: post.user.role || null,
       },
       comments: post.comments.map(comment => ({
         id: comment.id,
