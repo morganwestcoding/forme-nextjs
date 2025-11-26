@@ -1,10 +1,10 @@
 'use client';
 
 import axios from 'axios';
+import Image from 'next/image';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useMemo, useState, useCallback, useEffect } from "react";
-import ServiceCard from '../listings/ServiceCard';
 import useListingModal from '@/app/hooks/useListingModal';
 import Modal from "./Modal";
 import CategoryInput from '../inputs/CategoryInput';
@@ -15,7 +15,7 @@ import ServiceSelector, { Service } from '../inputs/ServiceSelector';
 import ListLocationSelect from '../inputs/ListLocationSelect';
 import EmployeeSelector from '../inputs/EmployeeSelector';
 import StoreHours, { StoreHourType } from '../inputs/StoreHours';
-import ImageUploadGrid from '../inputs/ImageUploadGrid';
+import ImageUpload from '../inputs/ImageUpload';
 import EditOverview from './EditOverview';
 
 interface EmployeeInput {
@@ -43,10 +43,11 @@ enum STEPS {
   LOCATION = 1,
   SERVICES_LIST = 2,
   SERVICES_FORM = 3,
-  IMAGES = 4,
-  DESCRIPTION = 5,
-  HOURS = 6,
-  EMPLOYEE = 7,
+  IMAGES_LIST = 4,
+  IMAGES_FORM = 5,
+  DESCRIPTION = 6,
+  HOURS = 7,
+  EMPLOYEE = 8,
 }
 
 const EDIT_HUB_STEP = -1;
@@ -99,6 +100,7 @@ const ListingModal = () => {
 
   const [storeHours, setStoreHours] = useState<StoreHourType[]>(listing?.storeHours || initialStoreHours);
   const [editingServiceIndex, setEditingServiceIndex] = useState<number | null>(null);
+  const [editingImageIndex, setEditingImageIndex] = useState<number | null>(null);
   const [saveStatus, setSaveStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [lastUpdatedKey, setLastUpdatedKey] = useState<number | null>(null);
 
@@ -130,6 +132,7 @@ const ListingModal = () => {
     if (!listingModal.isOpen) return;
     setStep(isEditMode ? EDIT_HUB_STEP : STEPS.CATEGORY);
     setEditingServiceIndex(null);
+    setEditingImageIndex(null);
     setSaveStatus(null);
     setLastUpdatedKey(null);
 
@@ -189,6 +192,7 @@ const ListingModal = () => {
     
     setStoreHours(listing.storeHours || initialStoreHours);
     setEditingServiceIndex(null);
+    setEditingImageIndex(null);
     setResetKey((k) => k + 1);
   }, [listing, reset]);
 
@@ -253,6 +257,7 @@ const ListingModal = () => {
     setStoreHours(initialStoreHours);
     setStep(STEPS.CATEGORY);
     setEditingServiceIndex(null);
+    setEditingImageIndex(null);
     setResetKey((k) => k + 1);
     setSaveStatus(null);
     setLastUpdatedKey(null);
@@ -266,8 +271,16 @@ const ListingModal = () => {
     }
 
     if (step === STEPS.CATEGORY) return;
-    if (step === STEPS.IMAGES) {
+    if (step === STEPS.SERVICES_FORM) {
       setStep(STEPS.SERVICES_LIST);
+      return;
+    }
+    if (step === STEPS.IMAGES_LIST) {
+      setStep(STEPS.SERVICES_LIST);
+      return;
+    }
+    if (step === STEPS.IMAGES_FORM) {
+      setStep(STEPS.IMAGES_LIST);
       return;
     }
     const goingTo = (step - 1) as STEPS;
@@ -295,7 +308,22 @@ const ListingModal = () => {
     }
 
     if (step === STEPS.SERVICES_LIST) {
-      setStep(STEPS.IMAGES);
+      setStep(STEPS.IMAGES_LIST);
+      return;
+    }
+
+    if (step === STEPS.SERVICES_FORM) {
+      setStep(STEPS.SERVICES_LIST);
+      return;
+    }
+
+    if (step === STEPS.IMAGES_LIST) {
+      setStep(STEPS.DESCRIPTION);
+      return;
+    }
+
+    if (step === STEPS.IMAGES_FORM) {
+      setStep(STEPS.IMAGES_LIST);
       return;
     }
 
@@ -381,6 +409,7 @@ const ListingModal = () => {
     if (isEditMode) return 'Update';
     if (step === STEPS.EMPLOYEE) return 'Create';
     if (step === STEPS.SERVICES_FORM) return 'Save';
+    if (step === STEPS.IMAGES_FORM) return 'Save';
     return 'Next';
   }, [step, isEditMode]);
 
@@ -418,7 +447,7 @@ const ListingModal = () => {
       description: servicesCount ? `${servicesCount} service${servicesCount > 1 ? 's' : ''}` : 'Add services',
     },
     {
-      key: STEPS.IMAGES,
+      key: STEPS.IMAGES_LIST,
       title: 'Images',
       description: imagesCount ? `${imagesCount} image${imagesCount > 1 ? 's' : ''}` : 'Add photos',
     },
@@ -445,11 +474,22 @@ const ListingModal = () => {
   };
 
   const addNewService = () => {
-    const next = [...(services || []), { serviceName: '', price: 0, category: '' }]; 
+    const next = [...(services || []), { serviceName: '', price: 0, category: '' }];
     setServices(next);
     const newIndex = next.length - 1;
     setEditingServiceIndex(newIndex);
     setStep(STEPS.SERVICES_FORM);
+  };
+
+  const openEditImageForIndex = (i: number) => {
+    setEditingImageIndex(i);
+    setStep(STEPS.IMAGES_FORM);
+  };
+
+  const addNewImage = () => {
+    const current = [imageSrc, ...galleryImages].filter(Boolean);
+    setEditingImageIndex(current.length);
+    setStep(STEPS.IMAGES_FORM);
   };
 
   useEffect(() => {
@@ -574,41 +614,72 @@ const ListingModal = () => {
       <div className="flex flex-col gap-6">
         <Heading title="Your services" subtitle="Review and edit each one." />
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {validServices.map((s, i) => (
-            <ServiceCard
+            <button
               key={`svc-card-${s.id ?? i}`}
-              service={{
-                id: String(s.id ?? i),
-                serviceName: s.serviceName || 'Untitled Service',
-                price: Number(s.price) || 0,
-                category: s.category || '',
-              }}
-              currentUser={undefined}
+              type="button"
               onClick={() => openEditForIndex(i)}
-              onEdit={() => openEditForIndex(i)}
-            />
+              className="group relative overflow-hidden rounded-xl flex flex-col items-center justify-center gap-3 p-6 cursor-pointer select-none transition-all duration-300 ease-out will-change-transform transform-gpu focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#60A5FA] bg-white border-2 border-gray-200 text-gray-600 hover:border-gray-300 hover:shadow-md hover:text-gray-700"
+            >
+              <div className="relative z-10 flex flex-col items-center gap-2.5">
+                {/* Icon container */}
+                <div className="rounded-full bg-gray-50 p-2.5 transition-all duration-300 group-hover:bg-[#60A5FA]/10 group-hover:scale-105">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-5 h-5 text-gray-500 group-hover:text-[#60A5FA] transition-all duration-300 ease-out transform-gpu"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+                    <path d="M9 12h6M9 16h6" />
+                  </svg>
+                </div>
+
+                {/* Service name - centered */}
+                <span className="text-sm font-medium leading-tight transition-all duration-300 ease-out text-gray-700 group-hover:text-gray-900 transform-gpu text-center line-clamp-2 px-1">
+                  {s.serviceName || 'Untitled'}
+                </span>
+
+                {/* Price badge */}
+                {Number(s.price) > 0 && (
+                  <span className="text-xs font-semibold text-[#60A5FA] group-hover:text-[#3b82f6] transition-colors duration-300">
+                    ${Number(s.price)}
+                  </span>
+                )}
+              </div>
+            </button>
           ))}
 
           {/* Add Service tile */}
           <button
             type="button"
             onClick={addNewService}
-            className="group relative w-full rounded-2xl border border-gray-200/60 bg-white/90 backdrop-blur-sm p-6 flex flex-col items-center justify-center text-center gap-3 hover:border-[#60A5FA] hover:shadow-lg hover:shadow-[#60A5FA]/10 hover:scale-[1.02] active:scale-[0.99] transition-all duration-300 h-[140px]"
+            className="group relative overflow-hidden rounded-xl flex flex-col items-center justify-center gap-3 p-6 cursor-pointer select-none transition-all duration-300 ease-out will-change-transform transform-gpu focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#60A5FA] bg-gradient-to-br from-[#60A5FA]/5 to-[#3b82f6]/5 border-2 border-dashed border-[#60A5FA]/30 text-gray-600 hover:border-[#60A5FA]/60 hover:shadow-md hover:from-[#60A5FA]/10 hover:to-[#3b82f6]/10"
           >
-            {/* Subtle gradient overlay on hover */}
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-50/0 via-blue-50/0 to-blue-50/0 group-hover:from-blue-50/40 group-hover:via-blue-50/20 group-hover:to-blue-50/40 transition-all duration-300 rounded-2xl" />
-
-            <div className="relative z-10 flex flex-col items-center gap-3">
-              <div className="rounded-xl p-2.5 flex items-center justify-center bg-gray-50/80 group-hover:bg-[#60A5FA]/10 text-gray-500 group-hover:text-[#60A5FA] transition-all duration-300">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" className="transition-transform duration-300 group-hover:scale-110">
-                  <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            <div className="relative z-10 flex flex-col items-center gap-2.5">
+              <div className="rounded-full bg-white p-2.5 shadow-sm transition-all duration-300 group-hover:shadow-md group-hover:scale-105">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-5 h-5 text-[#60A5FA] transition-transform duration-300 ease-out group-hover:rotate-90 transform-gpu"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                >
+                  <path d="M12 5v14M5 12h14" />
                 </svg>
               </div>
-              <div className="min-w-0">
-                <p className="text-sm font-medium text-gray-900 group-hover:text-[#60A5FA] transition-colors duration-300">Add a service</p>
-                <p className="text-xs text-gray-500">Name, price, category</p>
-              </div>
+
+              <span className="text-sm font-semibold leading-tight transition-all duration-300 ease-out text-[#60A5FA] group-hover:text-[#3b82f6] transform-gpu">
+                Add service
+              </span>
             </div>
           </button>
         </div>
@@ -631,17 +702,189 @@ const ListingModal = () => {
     );
   }
 
-  if (step === STEPS.IMAGES) {
+  if (step === STEPS.IMAGES_LIST) {
     bodyContent = (
-      <div className="flex flex-col gap-8">
-        <Heading title={isEditMode ? "Update your photos" : "Add photos of your place"} subtitle="Show guests what your place looks like!" />
-        <ImageUploadGrid
-          key={`img-${resetKey}`}
-          id="image-upload"
-          onChange={(value) => setCustomValue('imageSrc', value)}
-          onGalleryChange={(values) => setCustomValue('galleryImages', values)}
-          value={imageSrc}
-          galleryImages={galleryImages}
+      <div className="flex flex-col gap-6">
+        <Heading title="Your images" subtitle="Set your main photo and gallery images." />
+
+        {/* Profile Image Section */}
+        <div>
+          <div className="text-sm font-semibold text-neutral-700 mb-3 flex items-center gap-2">
+            Main Listing Photo
+            <span className="text-xs font-normal text-neutral-500">(Shown on listing cards)</span>
+          </div>
+
+          {imageSrc ? (
+            <button
+              type="button"
+              onClick={() => openEditImageForIndex(0)}
+              className="group relative overflow-hidden rounded-xl w-full max-w-sm aspect-[4/3] cursor-pointer select-none transition-all duration-300 ease-out will-change-transform transform-gpu focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#60A5FA] bg-white border-2 border-[#60A5FA] hover:border-[#3b82f6] hover:shadow-lg"
+            >
+              <Image
+                src={imageSrc}
+                alt="Main listing photo"
+                fill
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <span className="text-white text-sm font-medium">Edit main photo</span>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 text-white">
+                  <path d="M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.65-.65z" />
+                  <path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0010 3H4.75A2.75 2.75 0 002 5.75v9.5A2.75 2.75 0 004.75 18h9.5A2.75 2.75 0 0017 15.25V10a.75.75 0 00-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5z" />
+                </svg>
+              </div>
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => openEditImageForIndex(0)}
+              className="group relative overflow-hidden rounded-xl w-full max-w-sm aspect-[4/3] flex flex-col items-center justify-center gap-3 p-6 cursor-pointer select-none transition-all duration-300 ease-out will-change-transform transform-gpu focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#60A5FA] bg-gradient-to-br from-[#60A5FA]/5 to-[#3b82f6]/5 border-2 border-dashed border-[#60A5FA]/50 hover:border-[#60A5FA] hover:shadow-md hover:from-[#60A5FA]/10 hover:to-[#3b82f6]/10"
+            >
+              <div className="rounded-full bg-white p-3 shadow-sm transition-all duration-300 group-hover:shadow-md group-hover:scale-105">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-8 h-8 text-[#60A5FA]">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                </svg>
+              </div>
+              <div className="text-center">
+                <span className="block text-sm font-semibold text-[#60A5FA] group-hover:text-[#3b82f6] transition-colors">
+                  Add main photo
+                </span>
+                <span className="block text-xs text-neutral-500 mt-1">
+                  Required - This will be your primary listing image
+                </span>
+              </div>
+            </button>
+          )}
+        </div>
+
+        {/* Gallery Images Section */}
+        <div>
+          <div className="text-sm font-semibold text-neutral-700 mb-3 flex items-center gap-2">
+            Gallery Images
+            <span className="text-xs font-normal text-neutral-500">(Shown in listing detail view)</span>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {galleryImages.map((imgUrl, i) => (
+              <button
+                key={`gallery-${i}`}
+                type="button"
+                onClick={() => openEditImageForIndex(i + 1)}
+                className="group relative overflow-hidden rounded-xl aspect-square cursor-pointer select-none transition-all duration-300 ease-out will-change-transform transform-gpu focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-neutral-400 bg-white border-2 border-neutral-200 hover:border-neutral-300 hover:shadow-md"
+              >
+                <Image
+                  src={imgUrl}
+                  alt={`Gallery ${i + 1}`}
+                  fill
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
+              </button>
+            ))}
+
+            {/* Add Gallery Image tile */}
+            <button
+              type="button"
+              onClick={addNewImage}
+              disabled={!imageSrc}
+              className="group relative overflow-hidden rounded-xl aspect-square flex flex-col items-center justify-center gap-2 p-4 cursor-pointer select-none transition-all duration-300 ease-out will-change-transform transform-gpu focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-neutral-400 bg-gradient-to-br from-neutral-50 to-neutral-100 border-2 border-dashed border-neutral-300 hover:border-neutral-400 hover:shadow-sm hover:from-neutral-100 hover:to-neutral-200 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-neutral-300 disabled:hover:shadow-none"
+              title={!imageSrc ? "Add main photo first" : "Add gallery image"}
+            >
+              <div className="relative z-10 flex flex-col items-center gap-1.5">
+                <div className="rounded-full bg-white p-2 shadow-sm transition-all duration-300 group-hover:shadow group-hover:scale-105 group-disabled:scale-100">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-4 h-4 text-neutral-500 transition-transform duration-300 ease-out group-hover:rotate-90 transform-gpu group-disabled:rotate-0"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  >
+                    <path d="M12 5v14M5 12h14" />
+                  </svg>
+                </div>
+
+                <span className="text-xs font-medium leading-tight text-neutral-600 group-hover:text-neutral-800 transform-gpu text-center">
+                  Add to gallery
+                </span>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (step === STEPS.IMAGES_FORM) {
+    const editIndex = editingImageIndex ?? 0;
+    const isProfileImage = editIndex === 0;
+    const isNewImage = editIndex >= (imageSrc ? 1 : 0) + galleryImages.length;
+    const currentGalleryIndex = isProfileImage ? -1 : editIndex - 1;
+    const currentImageValue = isProfileImage ? imageSrc : (galleryImages[currentGalleryIndex] || '');
+
+    bodyContent = (
+      <div className="flex flex-col gap-6">
+        {isProfileImage ? (
+          <>
+            <div className="rounded-xl bg-gradient-to-br from-[#60A5FA]/10 to-[#3b82f6]/5 border border-[#60A5FA]/20 p-4">
+              <div>
+                <h3 className="text-sm font-semibold text-neutral-800 mb-1">Main Listing Photo</h3>
+                <p className="text-xs text-neutral-600 leading-relaxed">
+                  This is the primary image displayed on listing cards throughout the platform. Choose a high-quality photo that best represents your listing.
+                </p>
+              </div>
+            </div>
+            <Heading
+              title="Edit main listing photo"
+              subtitle="This image will appear on listing cards"
+            />
+          </>
+        ) : (
+          <>
+            <div className="rounded-xl bg-neutral-50 border border-neutral-200 p-4">
+              <div>
+                <h3 className="text-sm font-semibold text-neutral-800 mb-1">Gallery Image</h3>
+                <p className="text-xs text-neutral-600 leading-relaxed">
+                  Gallery images are displayed when users view your full listing details. Add multiple photos to showcase different aspects of your listing.
+                </p>
+              </div>
+            </div>
+            <Heading
+              title={isNewImage ? "Add gallery image" : "Edit gallery image"}
+              subtitle="Additional photos shown in listing details"
+            />
+          </>
+        )}
+        <ImageUpload
+          key={`img-${resetKey}-${editIndex}`}
+          value={currentImageValue}
+          onChange={(url) => {
+            if (isProfileImage) {
+              setCustomValue('imageSrc', url);
+            } else {
+              const newGallery = [...galleryImages];
+              if (currentGalleryIndex < newGallery.length) {
+                newGallery[currentGalleryIndex] = url;
+              } else {
+                newGallery.push(url);
+              }
+              setCustomValue('galleryImages', newGallery);
+            }
+          }}
+          onRemove={() => {
+            if (isProfileImage) {
+              setCustomValue('imageSrc', '');
+            } else {
+              const newGallery = galleryImages.filter((_, i) => i !== currentGalleryIndex);
+              setCustomValue('galleryImages', newGallery);
+            }
+          }}
+          ratio={isProfileImage ? "landscape" : "square"}
+          label={isProfileImage ? "Upload Main Photo" : "Upload Gallery Image"}
+          uploadId={isProfileImage ? "listing-main" : `listing-gallery-${currentGalleryIndex}`}
+          className="w-full max-w-2xl mx-auto"
         />
       </div>
     );

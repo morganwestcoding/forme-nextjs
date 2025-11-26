@@ -451,11 +451,24 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                       currentUser && (
                         <button
                           onClick={handleToggleFollow}
-                          className="backdrop-blur-md bg-white/10 hover:bg-white/15 border border-white/30 hover:border-white/50 text-white py-3 px-4 rounded-xl transition-all duration-300 flex items-center justify-center text-sm w-28"
+                          className="backdrop-blur-md bg-white/10 hover:bg-white/15 border border-white/30 hover:border-white/50 text-white py-3 px-4 rounded-xl transition-all duration-300 flex items-center justify-center gap-1.5 text-sm"
                           type="button"
                           aria-label={isFollowing ? 'Unfollow' : 'Follow'}
                         >
-                          <span>{isFollowing ? 'Following' : 'Follow'}</span>
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                            {isFollowing ? (
+                              <>
+                                <path d="M22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12Z" />
+                                <path d="M16 12H8" />
+                              </>
+                            ) : (
+                              <>
+                                <path d="M22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12Z" />
+                                <path d="M12 8V16M16 12H8" />
+                              </>
+                            )}
+                          </svg>
+                          {isFollowing ? 'Following' : 'Follow'}
                         </button>
                       )
                     )}
@@ -464,10 +477,13 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                     {currentUser && (
                       <button
                         onClick={handleReserveClick}
-                        className="backdrop-blur-md bg-white/10 hover:bg-white/15 border border-white/30 hover:border-white/50 text-white py-3 px-4 rounded-xl transition-all duration-300 flex items-center justify-center text-sm w-28"
+                        className="backdrop-blur-md bg-white/10 hover:bg-white/15 border border-white/30 hover:border-white/50 text-white py-3 pl-3 pr-4 rounded-xl transition-all duration-300 flex items-center justify-center gap-1.5 text-sm"
                         type="button"
                       >
-                        <span>Reserve</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round">
+                          <path d="M8.62814 12.6736H8.16918C6.68545 12.6736 5.94358 12.6736 5.62736 12.1844C5.31114 11.6953 5.61244 11.0138 6.21504 9.65083L8.02668 5.55323C8.57457 4.314 8.84852 3.69438 9.37997 3.34719C9.91142 3 10.5859 3 11.935 3H14.0244C15.6632 3 16.4826 3 16.7916 3.53535C17.1007 4.0707 16.6942 4.78588 15.8811 6.21623L14.8092 8.10188C14.405 8.81295 14.2029 9.16849 14.2057 9.45952C14.2094 9.83775 14.4105 10.1862 14.7354 10.377C14.9854 10.5239 15.3927 10.5239 16.2074 10.5239C17.2373 10.5239 17.7523 10.5239 18.0205 10.7022C18.3689 10.9338 18.5513 11.3482 18.4874 11.7632C18.4382 12.0826 18.0918 12.4656 17.399 13.2317L11.8639 19.3523C10.7767 20.5545 10.2331 21.1556 9.86807 20.9654C9.50303 20.7751 9.67833 19.9822 10.0289 18.3962L10.7157 15.2896C10.9826 14.082 11.1161 13.4782 10.7951 13.0759C10.4741 12.6736 9.85877 12.6736 8.62814 12.6736Z" />
+                        </svg>
+                        Reserve
                       </button>
                     )}
                   </div>
@@ -554,29 +570,26 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 <button
                   onClick={handleAddService}
                   type="button"
-                  className="group relative h-[350px] max-w-[250px] rounded-xl border-2 border-dashed border-gray-200 bg-gray-50/30 hover:border-blue-300 hover:bg-blue-50/30 transition-all duration-200"
+                  className="group relative h-[350px] max-w-[250px] rounded-xl border-2 border-dashed border-neutral-300 bg-gradient-to-br from-neutral-50 to-neutral-100 hover:border-neutral-400 hover:shadow-sm hover:from-neutral-100 hover:to-neutral-200 transition-all duration-300 ease-out"
                 >
-                  <div className="absolute inset-0 flex flex-col items-center justify-center p-6">
-                    {/* Simple plus icon */}
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="32"
-                      height="32"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="text-gray-400 group-hover:text-blue-500 transition-colors duration-200 mb-3"
-                    >
-                      <path d="M12 5v14M5 12h14" />
-                    </svg>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-6">
+                    <div className="rounded-full bg-white p-2 shadow-sm transition-all duration-300 group-hover:shadow group-hover:scale-105">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="w-4 h-4 text-neutral-500 transition-transform duration-300 ease-out group-hover:rotate-90 transform-gpu"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                      >
+                        <path d="M12 5v14M5 12h14" />
+                      </svg>
+                    </div>
 
-                    {/* Text */}
-                    <h3 className="text-sm font-medium text-gray-600 group-hover:text-gray-900 transition-colors duration-200">
+                    <span className="text-xs font-medium leading-tight text-neutral-600 group-hover:text-neutral-800 transform-gpu text-center">
                       Add Service
-                    </h3>
+                    </span>
                   </div>
                 </button>
               )}
@@ -612,29 +625,26 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 <button
                   onClick={handleAddWorker}
                   type="button"
-                  className="group relative h-[350px] max-w-[250px] rounded-xl border-2 border-dashed border-gray-200 bg-gray-50/30 hover:border-blue-300 hover:bg-blue-50/30 transition-all duration-200"
+                  className="group relative h-[350px] max-w-[250px] rounded-xl border-2 border-dashed border-neutral-300 bg-gradient-to-br from-neutral-50 to-neutral-100 hover:border-neutral-400 hover:shadow-sm hover:from-neutral-100 hover:to-neutral-200 transition-all duration-300 ease-out"
                 >
-                  <div className="absolute inset-0 flex flex-col items-center justify-center p-6">
-                    {/* Simple plus icon */}
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="32"
-                      height="32"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="text-gray-400 group-hover:text-blue-500 transition-colors duration-200 mb-3"
-                    >
-                      <path d="M12 5v14M5 12h14" />
-                    </svg>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-6">
+                    <div className="rounded-full bg-white p-2 shadow-sm transition-all duration-300 group-hover:shadow group-hover:scale-105">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="w-4 h-4 text-neutral-500 transition-transform duration-300 ease-out group-hover:rotate-90 transform-gpu"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                      >
+                        <path d="M12 5v14M5 12h14" />
+                      </svg>
+                    </div>
 
-                    {/* Text */}
-                    <h3 className="text-sm font-medium text-gray-600 group-hover:text-gray-900 transition-colors duration-200">
+                    <span className="text-xs font-medium leading-tight text-neutral-600 group-hover:text-neutral-800 transform-gpu text-center">
                       Add Team Member
-                    </h3>
+                    </span>
                   </div>
                 </button>
               )}
@@ -668,30 +678,27 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                     <button
                       onClick={handleAddMedia}
                       type="button"
-                      className="group relative rounded-xl border-2 border-dashed border-gray-200 bg-gray-50/30 hover:border-blue-300 hover:bg-blue-50/30 transition-all duration-200"
+                      className="group relative rounded-xl border-2 border-dashed border-neutral-300 bg-gradient-to-br from-neutral-50 to-neutral-100 hover:border-neutral-400 hover:shadow-sm hover:from-neutral-100 hover:to-neutral-200 transition-all duration-300 ease-out"
                       style={{ aspectRatio: '1 / 1' }}
                     >
-                      <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
-                        {/* Simple plus icon */}
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="32"
-                          height="32"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="text-gray-400 group-hover:text-blue-500 transition-colors duration-200 mb-2"
-                        >
-                          <path d="M12 5v14M5 12h14" />
-                        </svg>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 p-4">
+                        <div className="rounded-full bg-white p-2 shadow-sm transition-all duration-300 group-hover:shadow group-hover:scale-105">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="w-4 h-4 text-neutral-500 transition-transform duration-300 ease-out group-hover:rotate-90 transform-gpu"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                          >
+                            <path d="M12 5v14M5 12h14" />
+                          </svg>
+                        </div>
 
-                        {/* Text */}
-                        <h3 className="text-sm font-medium text-gray-600 group-hover:text-gray-900 transition-colors duration-200">
+                        <span className="text-xs font-medium leading-tight text-neutral-600 group-hover:text-neutral-800 transform-gpu text-center">
                           Add Media
-                        </h3>
+                        </span>
                       </div>
                     </button>
                   </div>
@@ -740,30 +747,27 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   <button
                     onClick={handleAddMedia}
                     type="button"
-                    className="group relative rounded-xl border-2 border-dashed border-gray-200 bg-gray-50/30 hover:border-blue-300 hover:bg-blue-50/30 transition-all duration-200"
+                    className="group relative rounded-xl border-2 border-dashed border-neutral-300 bg-gradient-to-br from-neutral-50 to-neutral-100 hover:border-neutral-400 hover:shadow-sm hover:from-neutral-100 hover:to-neutral-200 transition-all duration-300 ease-out"
                     style={{ aspectRatio: '1 / 1' }}
                   >
-                    <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
-                      {/* Simple plus icon */}
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="32"
-                        height="32"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="text-gray-400 group-hover:text-blue-500 transition-colors duration-200 mb-2"
-                      >
-                        <path d="M12 5v14M5 12h14" />
-                      </svg>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 p-4">
+                      <div className="rounded-full bg-white p-2 shadow-sm transition-all duration-300 group-hover:shadow group-hover:scale-105">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="w-4 h-4 text-neutral-500 transition-transform duration-300 ease-out group-hover:rotate-90 transform-gpu"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                        >
+                          <path d="M12 5v14M5 12h14" />
+                        </svg>
+                      </div>
 
-                      {/* Text */}
-                      <h3 className="text-sm font-medium text-gray-600 group-hover:text-gray-900 transition-colors duration-200">
+                      <span className="text-xs font-medium leading-tight text-neutral-600 group-hover:text-neutral-800 transform-gpu text-center">
                         Add Media
-                      </h3>
+                      </span>
                     </div>
                   </button>
                 )}
