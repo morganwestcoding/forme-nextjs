@@ -72,13 +72,13 @@ const ShopSearch: React.FC<ShopSearchProps> = ({
 
   // Hero mode or normal mode button styles
   const buttonBaseClasses = isHeroMode
-    ? "backdrop-blur-md bg-white/10 hover:bg-blue-400/10 border border-white/40 hover:border-blue-400/60 text-white hover:text-[#60A5FA]"
-    : "bg-white border border-gray-300/90 hover:border-gray-400 text-gray-700 hover:bg-white/80 transition-all duration-200";
+    ? "backdrop-blur-md bg-white/10 hover:bg-white/15 border border-white/30 hover:border-white/50 text-white hover:text-white"
+    : "bg-transparent border border-gray-300 hover:border-gray-400 text-gray-500 hover:text-gray-700";
 
   return (
     <div className="min-h-0">
       {/* Search and Controls */}
-      <div className="flex mt-4 gap-2">
+      <div className="flex mt-4 gap-3">
         {/* Search Bar */}
         <div className="relative flex-grow">
           <GlobalSearch
@@ -90,7 +90,7 @@ const ShopSearch: React.FC<ShopSearchProps> = ({
         {/* Filters Button */}
         <button
           onClick={handleOpenFilters}
-          className={`${buttonBaseClasses} py-2.5 px-4 rounded-xl transition-all duration-200 flex items-center space-x-2 text-sm relative group`}
+          className={`${buttonBaseClasses} py-2.5 px-4 rounded-xl transition-all duration-300 flex items-center space-x-2 text-sm relative group`}
           type="button"
         >
           <div className="relative w-[22px] h-[22px] flex items-center justify-center">
@@ -133,7 +133,7 @@ const ShopSearch: React.FC<ShopSearchProps> = ({
             <button
               ref={buttonRef}
               onClick={toggleDropdown}
-              className={`${buttonBaseClasses} flex items-center justify-center py-2.5 space-x-2 px-4 rounded-xl transition-all duration-200 group`}
+              className={`${buttonBaseClasses} flex items-center justify-center py-2.5 space-x-2 px-4 rounded-xl transition-all duration-300 group`}
               type="button"
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" color="currentColor" fill="none" className="transition-colors duration-200">

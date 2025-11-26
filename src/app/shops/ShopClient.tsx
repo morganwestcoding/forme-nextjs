@@ -127,6 +127,8 @@ const ShopClient: React.FC<ShopClientProps> = ({
       </div>
     </div>
 
+
+
       {/* Content + loader overlay */}
       <div className="relative">
         {isLoading && (

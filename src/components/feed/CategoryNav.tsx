@@ -38,22 +38,32 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams, onNavigate }) =
     }
   };
 
+  const selectedIndex = categories.findIndex(c => c.label === currentCategory);
+  const hasSelection = selectedIndex !== -1;
+
+  // Determine divider state: adjacent to selected rotates horizontal, others disappear
+  const getDividerState = (index: number) => {
+    if (!hasSelection) return 'vertical'; // No selection = all vertical
+    if (index === selectedIndex - 1 || index === selectedIndex) return 'horizontal'; // Adjacent = rotate
+    return 'hidden'; // Others = disappear
+  };
+
   return (
-    <div className="-mx-6 md:-mx-24 pb-3 border-b border-gray-400/80">
+    <div className="-mx-6 md:-mx-24 pb-3 border-b-[0.75px] border-gray-400">
       <div className="flex items-center justify-center">
         {categories.map((category, index) => {
           const isSelected = currentCategory === category.label;
-          const isLast = index === categories.length - 1;
+          const dividerState = getDividerState(index);
 
           return (
             <div key={category.label} className="relative flex items-center">
               <button
                 onClick={() => handleCategorySelect(category.label)}
                 className={`
-                  px-6 py-3.5 text-sm transition-colors duration-150 rounded-lg
+                  px-8 py-3.5 text-sm transition-all duration-200
                   ${isSelected
-                    ? 'text-[#60A5FA] hover:text-[#4F94E5]'
-                    : 'text-gray-600/90 hover:text-gray-700'
+                    ? 'text-[#60A5FA] font-medium'
+                    : 'text-gray-500 hover:text-gray-700'
                   }
                 `}
                 type="button"
@@ -61,8 +71,16 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams, onNavigate }) =
                 {category.label}
               </button>
 
-              {!isLast && (
-                <div className="h-6 w-px bg-gray-300 mx-3" />
+              {/* Divider: vertical by default, rotates horizontal when adjacent to selected, disappears otherwise */}
+              {index < categories.length - 1 && (
+                <span
+                  className={`
+                    bg-gray-300 transition-all duration-300 ease-out
+                    ${dividerState === 'horizontal' ? 'w-3 h-[0.5px] bg-[#60A5FA]' : ''}
+                    ${dividerState === 'vertical' ? 'w-[0.5px] h-4' : ''}
+                    ${dividerState === 'hidden' ? 'w-[0.5px] h-4 opacity-0' : ''}
+                  `}
+                />
               )}
             </div>
           );

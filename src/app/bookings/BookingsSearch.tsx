@@ -22,11 +22,11 @@ const BookingsSearch: React.FC<BookingsSearchProps> = ({
   };
 
   // Hero mode or normal mode button styles
-  const buttonBaseClasses = "bg-white border border-gray-300/90 hover:border-gray-400 text-gray-700 hover:bg-white/80 transition-all duration-200";
+  const buttonBaseClasses = "bg-transparent border border-gray-300 hover:border-gray-400 text-gray-500 hover:text-gray-700";
 
   return (
     <div className="min-h-0">
-      <div className="flex mt-4 gap-2">
+      <div className="flex mt-4 gap-3">
         <form onSubmit={submitSearch} className="relative flex-grow">
           <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
             <Search className="w-5 h-5 text-gray-400" />
@@ -43,7 +43,7 @@ const BookingsSearch: React.FC<BookingsSearchProps> = ({
 
         <button
           onClick={onOpenFilters}
-          className={`${buttonBaseClasses} py-2.5 px-4 rounded-xl transition-all duration-200 flex items-center space-x-2 text-sm`}
+          className={`${buttonBaseClasses} py-2.5 px-4 rounded-xl transition-all duration-300 flex items-center space-x-2 text-sm`}
           type="button"
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" color="currentColor" fill="none">
@@ -58,7 +58,7 @@ const BookingsSearch: React.FC<BookingsSearchProps> = ({
 
         <button
           onClick={onCreate}
-          className={`${buttonBaseClasses} flex items-center justify-center py-2.5 space-x-2 px-4 rounded-xl transition-all duration-200`}
+          className={`${buttonBaseClasses} flex items-center justify-center py-2.5 space-x-2 px-4 rounded-xl transition-all duration-300`}
           type="button"
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" color="currentColor" fill="none" className="transition-colors duration-200">

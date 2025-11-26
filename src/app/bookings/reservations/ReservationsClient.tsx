@@ -134,6 +134,8 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
       </div>
     </div>
 
+
+
       <div className="relative">
         {isLoading && (
           <div className="pointer-events-none absolute inset-0 z-10 flex items-start justify-center">
