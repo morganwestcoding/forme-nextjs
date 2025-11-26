@@ -113,6 +113,7 @@ export default async function getListingById(params: IParams): Promise<(SafeList
       email: listing.user.email,
       image: listing.user.image,
       imageSrc: listing.user.imageSrc || null,
+      backgroundImage: listing.user.backgroundImage || null,
       bio: listing.user.bio || '',
       location: listing.user.location || null,
       galleryImages: listing.user.galleryImages || [],
@@ -141,6 +142,7 @@ export default async function getListingById(params: IParams): Promise<(SafeList
       managedListings: listing.user.managedListings || [],
       resetToken: listing.user.resetToken || null,
       resetTokenExpiry: listing.user.resetTokenExpiry || null,
+      role: listing.user.role,
     };
 
     return {

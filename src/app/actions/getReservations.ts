@@ -146,6 +146,7 @@ export default async function getReservations(params: IParams) {
         email: reservation.user.email,
         image: reservation.user.image,
         imageSrc: reservation.user.imageSrc || null,
+        backgroundImage: reservation.user.backgroundImage || null,
         bio: reservation.user.bio || "No Bio Provided Yet..",
         location: reservation.user.location || null,
         galleryImages: reservation.user.galleryImages || [],
@@ -174,6 +175,7 @@ export default async function getReservations(params: IParams) {
         managedListings: reservation.user.managedListings || [],
         resetToken: reservation.user.resetToken || null,
         resetTokenExpiry: reservation.user.resetTokenExpiry || null,
+        role: reservation.user.role,
       }
     }));
 

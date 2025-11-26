@@ -201,11 +201,13 @@ export default async function getPosts(params: IPostsParams) {
           subscriptionStartDate: user.subscriptionStartDate,
           subscriptionEndDate: user.subscriptionEndDate,
           bio: user.bio || "No Bio Provided Yet..",
+          backgroundImage: user.backgroundImage || null,
           galleryImages: user.galleryImages || [],
           following: user.following || [],
           followers: user.followers || [],
           conversationIds: user.conversationIds || [],
-          isSubscribed: user.isSubscribed || false
+          isSubscribed: user.isSubscribed || false,
+          role: user.role
         }
       };
     });

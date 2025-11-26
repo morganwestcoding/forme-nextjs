@@ -237,6 +237,7 @@ export default async function getListings(params: IListingsParams = {}): Promise
         emailVerified: listing.user.emailVerified?.toISOString() || null,
         favoriteIds: listing.user.favoriteIds || [],
         imageSrc: listing.user.imageSrc || null,
+        backgroundImage: listing.user.backgroundImage || null,
         bio: listing.user.bio || '',
         location: listing.user.location || null,
         galleryImages: listing.user.galleryImages || [],
@@ -255,6 +256,7 @@ export default async function getListings(params: IListingsParams = {}): Promise
         subscriptionStatus: listing.user.subscriptionStatus || null,
         subscriptionBillingInterval: listing.user.subscriptionBillingInterval || null,
         currentPeriodEnd: listing.user.currentPeriodEnd || null,
+        role: listing.user.role,
       }
     }));
 

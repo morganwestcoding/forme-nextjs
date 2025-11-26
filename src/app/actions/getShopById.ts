@@ -49,6 +49,8 @@ export default async function getShopById(params: IParams) {
         emailVerified: shop.user.emailVerified
           ? shop.user.emailVerified.toISOString()
           : null,
+        backgroundImage: shop.user.backgroundImage ?? null,
+        role: shop.user.role,
       },
       products: (shop.products ?? []).map((p) => ({
         ...p,

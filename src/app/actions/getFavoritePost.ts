@@ -86,7 +86,7 @@ export default async function getFavoritePosts(): Promise<SafePost[]> {
         conversationIds: post.user.conversationIds || [],
         favoriteIds: post.user.favoriteIds || [],
         managedListings: post.user.managedListings || [],
-        role: post.user.role || null,
+        role: post.user.role,
       },
       comments: post.comments.map(comment => ({
         id: comment.id,

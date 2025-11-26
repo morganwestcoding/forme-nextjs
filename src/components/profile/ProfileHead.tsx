@@ -372,7 +372,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
         {activeTab === 'Posts' && (
           <>
             <div className="mt-8 mb-4">
-              <SectionHeader title={`${firstName}'s Posts`} accent="#60A5FA" className="mt-0 mb-0" />
+              <SectionHeader title={`${firstName}'s Posts`} className="mt-0 mb-0" />
             </div>
             {posts.length ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-5 gap-4">
@@ -395,7 +395,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
         {activeTab === 'Listings' && (
           <>
             <div className="mt-8 mb-4">
-              <SectionHeader title={`${firstName}'s Listings`} accent="#60A5FA" className="mt-0 mb-0" />
+              <SectionHeader title={`${firstName}'s Listings`} className="mt-0 mb-0" />
             </div>
             {(() => {
               // Filter out personal listings (category = 'Personal')
@@ -422,7 +422,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
         {activeTab === 'Images' && (
           <>
             <div className="mt-8 mb-4">
-              <SectionHeader title={`${firstName}'s Gallery`} accent="#60A5FA" className="mt-0 mb-0" />
+              <SectionHeader title={`${firstName}'s Gallery`} className="mt-0 mb-0" />
             </div>
             {galleryImages.length ? (
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-4">
@@ -450,7 +450,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
         {activeTab === 'Services' && (
           <>
             <div className="mt-8 mb-4 flex items-center justify-between">
-              <SectionHeader title={`${firstName}'s Services`} accent="#60A5FA" className="mt-0 mb-0" />
+              <SectionHeader title={`${firstName}'s Services`} className="mt-0 mb-0" />
               {canEdit && services.length > 0 && (
                 <button
                   onClick={handleEditServices}
