@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import ServiceCard from './ServiceCard';
@@ -55,7 +55,17 @@ const ListingHead: React.FC<ListingHeadProps> = ({
   const [showDropdown, setShowDropdown] = useState(false);
 
   const isFollowing = !!currentUser?.id && followers.includes(currentUser.id);
-  const [activeTab, setActiveTab] = useState<TabKey>('About');
+  const [activeTab, setActiveTab] = useState<TabKey | null>(null);
+  const [scrollY, setScrollY] = useState(0);
+
+  // Parallax effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const reservationModal = useReservationModal();
   const rentModal = useRentModal();
@@ -335,12 +345,17 @@ const ListingHead: React.FC<ListingHeadProps> = ({
         <div
           className="relative px-6 md:px-24 pt-10 overflow-hidden"
         >
-          {/* Background Image */}
-          <div className="absolute inset-0 -mx-6 md:-mx-24">
+          {/* Background Image with Parallax Effect */}
+          <div className="absolute inset-0 -mx-6 md:-mx-24 overflow-hidden">
             <img
               src={mainImage}
               alt={title}
-              className="absolute inset-0 w-full h-full object-cover"
+              className="absolute w-full object-cover will-change-transform"
+              style={{
+                top: '-20%',
+                height: '140%',
+                transform: `translateY(${scrollY * 0.3}px)`
+              }}
             />
             {/* Gradient overlay */}
             <div
@@ -378,6 +393,45 @@ const ListingHead: React.FC<ListingHeadProps> = ({
           <div className="relative z-10 pb-6">
             {/* Listing Title */}
             <div className="">
+              {/* Breadcrumb Navigation */}
+              <nav className="flex items-center gap-2 text-sm mb-3">
+                <button
+                  onClick={() => router.push('/')}
+                  className="text-white/60 hover:text-white transition-colors"
+                >
+                  Home
+                </button>
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-white/40">
+                  <path d="M9 6L15 12L9 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                <button
+                  onClick={() => router.push('/market')}
+                  className="text-white/60 hover:text-white transition-colors"
+                >
+                  Market
+                </button>
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-white/40">
+                  <path d="M9 6L15 12L9 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                <span className="text-white font-medium truncate max-w-[300px]">{title}</span>
+              </nav>
+
+              {/* Operating Status Banner */}
+              {storeHours && storeHours.length > 0 && (() => {
+                const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+                const todayHours = storeHours.find(h => h.dayOfWeek === today);
+                const isOpen = todayHours && !todayHours.isClosed;
+
+                return (
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/10 backdrop-blur-md border border-white/20 mb-3">
+                    <div className={`w-2 h-2 rounded-full ${isOpen ? 'bg-emerald-400 animate-pulse' : 'bg-gray-400'}`} />
+                    <span className="text-sm font-medium text-white">
+                      {isOpen ? `Open Now · Closes at ${todayHours.closeTime}` : 'Closed'}
+                    </span>
+                  </div>
+                );
+              })()}
+
               <div className="flex items-center gap-2.5">
                 <h1 className="text-4xl md:text-4xl font-extrabold text-white leading-tight tracking-tight">
                   {title}
@@ -453,9 +507,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                     currentUser && (
                       <button
                         onClick={handleToggleFollow}
-                        className={`backdrop-blur-md bg-white/10 hover:bg-white/15 border border-white/30 hover:border-white/50 text-white py-3 rounded-xl transition-all duration-300 flex items-center justify-center text-sm ${
-                          isFollowing ? 'px-5' : 'w-[88px]'
-                        }`}
+                        className={`backdrop-blur-md bg-white/10 hover:bg-white/15 border border-white/30 hover:border-white/50 text-white py-3 px-6 rounded-xl transition-all duration-300 flex items-center justify-center text-sm`}
                         type="button"
                         aria-label={isFollowing ? 'Unfollow' : 'Follow'}
                       >
@@ -468,13 +520,69 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   {currentUser && (
                     <button
                       onClick={handleReserveClick}
-                      className="backdrop-blur-md bg-white/10 hover:bg-white/15 border border-white/30 hover:border-white/50 text-white py-3 w-[88px] rounded-xl transition-all duration-300 flex items-center justify-center text-sm"
+                      className="backdrop-blur-md bg-white/10 hover:bg-white/15 border border-white/30 hover:border-white/50 text-white py-3 px-6 rounded-xl transition-all duration-300 flex items-center justify-center text-sm"
                       type="button"
                     >
                       Reserve
                     </button>
                   )}
+
+                  {/* Share Button */}
+                  <button
+                    onClick={() => {
+                      if (navigator.share) {
+                        navigator.share({
+                          title: title,
+                          text: `Check out ${title} on Forme`,
+                          url: window.location.href,
+                        }).catch(() => {});
+                      } else {
+                        navigator.clipboard.writeText(window.location.href);
+                        alert('Link copied to clipboard!');
+                      }
+                    }}
+                    className="backdrop-blur-md bg-white/10 hover:bg-white/15 border border-white/30 hover:border-white/50 text-white py-3 px-4 rounded-xl transition-all duration-300 flex items-center justify-center"
+                    type="button"
+                    aria-label="Share"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+                      <polyline points="16 6 12 2 8 6"/>
+                      <line x1="12" y1="2" x2="12" y2="15"/>
+                    </svg>
+                  </button>
                 </div>
+              </div>
+            </div>
+
+            {/* Social Stats Row */}
+            <div className="mt-4 flex items-center gap-2">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 backdrop-blur-md border border-white/20">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" className="text-white/80">
+                  <path d="M12.5 22H6.59087C5.04549 22 3.81631 21.248 2.71266 20.1966C0.453365 18.0441 4.1628 16.324 5.57757 15.4816C8.12805 13.9629 11.2057 13.6118 14 14.4281" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M16.5 6.5C16.5 8.98528 14.4853 11 12 11C9.51472 11 7.5 8.98528 7.5 6.5C7.5 4.01472 9.51472 2 12 2C14.4853 2 16.5 4.01472 16.5 6.5Z" stroke="currentColor" strokeWidth="1.5" />
+                  <path d="M18.4332 13.8485C18.7685 13.4851 18.9362 13.3035 19.1143 13.1975C19.5442 12.9418 20.0736 12.9339 20.5107 13.1765C20.6918 13.2771 20.8646 13.4537 21.2103 13.8067C21.5559 14.1598 21.7287 14.3364 21.8272 14.5214C22.0647 14.9679 22.0569 15.5087 21.8066 15.9478C21.7029 16.1304 21.5251 16.3011 21.1694 16.6425L16.9378 20.7276C16.2638 21.3788 15.9268 21.7044 15.5056 21.8878C15.0845 22.0712 14.6214 22.0949 13.6954 22.1422L13.5694 22.1464C13.0875 22.1668 12.8466 22.1769 12.7054 22.0305C12.5642 21.8842 12.5795 21.6434 12.6099 21.1617L12.6309 20.8537C12.6913 20.0023 12.7215 19.5765 12.8407 19.1711C12.9599 18.7657 13.1646 18.3978 13.5739 17.6619L18.4332 13.8485Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+                </svg>
+                <span className="text-sm font-medium text-white">{followers.length}</span>
+                <span className="text-xs text-white/60">Followers</span>
+              </div>
+
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 backdrop-blur-md border border-white/20">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" className="text-white/80">
+                  <path d="M2.5 12C2.5 7.52166 2.5 5.28249 3.89124 3.89124C5.28249 2.5 7.52166 2.5 12 2.5C16.4783 2.5 18.7175 2.5 20.1088 3.89124C21.5 5.28249 21.5 7.52166 21.5 12C21.5 16.4783 21.5 18.7175 20.1088 20.1088C18.7175 21.5 16.4783 21.5 12 21.5C7.52166 21.5 5.28249 21.5 3.89124 20.1088C2.5 18.7175 2.5 16.4783 2.5 12Z" stroke="currentColor" strokeWidth="1.5" />
+                  <path d="M16 12C16 14.2091 14.2091 16 12 16C9.79086 16 8 14.2091 8 12C8 9.79086 9.79086 8 12 8C14.2091 8 16 9.79086 16 12Z" stroke="currentColor" strokeWidth="1.5" />
+                  <path d="M17.5 6.5H17.509" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                <span className="text-sm font-medium text-white">{posts?.length || 0}</span>
+                <span className="text-xs text-white/60">Posts</span>
+              </div>
+
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 backdrop-blur-md border border-white/20">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" className="text-white/80">
+                  <path d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+                <span className="text-sm font-medium text-white">0</span>
+                <span className="text-xs text-white/60">Likes</span>
               </div>
             </div>
             {/* Category Navigation */}
@@ -488,6 +596,11 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 const selectedIndex = tabs.findIndex(t => t.key === activeTab);
                 const hasSelection = selectedIndex !== -1;
 
+                // Toggle behavior: click to select, click again to deselect (show all)
+                const handleTabClick = () => {
+                  setActiveTab(activeTab === key ? null : key);
+                };
+
                 // Determine divider state: adjacent to selected rotates horizontal, others disappear
                 const getDividerState = () => {
                   if (!hasSelection) return 'vertical';
@@ -499,7 +612,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 return (
                   <div key={key} className="relative flex items-center">
                     <button
-                      onClick={() => setActiveTab(key)}
+                      onClick={handleTabClick}
                       className={`
                         px-8 py-3.5 text-sm transition-all duration-200
                         ${isSelected
@@ -533,16 +646,13 @@ const ListingHead: React.FC<ListingHeadProps> = ({
 
       {/* Tab Content */}
       <div>
-        {activeTab === 'About' && (
+        {/* About Section */}
+        {(activeTab === null || activeTab === 'About') && (
           <>
             {/* Description Section */}
             {description && (
               <>
-                <div className="mt-8 mb-4">
-                  <h2 className="text-3xl font-bold tracking-tight text-gray-900">
-                    Our Story
-                  </h2>
-                </div>
+                <SectionHeader title="What We're All About" />
                 <div className="mb-8">
                   <p className="text-gray-700 leading-relaxed text-[15px]">{description}</p>
                 </div>
@@ -553,141 +663,169 @@ const ListingHead: React.FC<ListingHeadProps> = ({
             {storeHours && storeHours.length > 0 && (
               <>
                 <SectionHeader title="Store Hours" />
-                <div className="mb-8">
-                  {/* Hours Grid - 2 rows */}
-                  <div className="grid grid-cols-4 gap-3">
-                    {storeHours.map((hours, index) => {
-                      const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
-                      const isToday = hours.dayOfWeek === today;
+                <div className="mb-8 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                  {storeHours.map((hours, index) => {
+                    const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+                    const isToday = hours.dayOfWeek === today;
 
-                      return (
-                        <div
-                          key={index}
-                          className="relative group"
-                        >
-                          {/* Very subtle status indicator - inside today's card */}
-                          {isToday && (
-                            <div className="absolute top-3 right-3 z-10 opacity-40">
-                              <div className={`w-1.5 h-1.5 rounded-full ${hours.isClosed ? 'bg-rose-400' : 'bg-emerald-400'}`} />
+                    return (
+                      <div
+                        key={index}
+                        className={`
+                          relative rounded-xl p-4 transition-all duration-200
+                          ${isToday
+                            ? 'bg-gray-900 text-white'
+                            : hours.isClosed
+                            ? 'bg-gray-50 text-gray-400'
+                            : 'bg-white border border-gray-200 text-gray-700 hover:border-gray-300 hover:shadow-sm'
+                          }
+                        `}
+                      >
+                        {/* Open now indicator */}
+                        {isToday && !hours.isClosed && (
+                          <div className="absolute top-3 right-3">
+                            <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                          </div>
+                        )}
+
+                        <div className="space-y-2">
+                          {/* Day */}
+                          <div className={`text-xs font-semibold uppercase tracking-wide ${isToday ? 'text-white/80' : 'text-gray-500'}`}>
+                            {hours.dayOfWeek.substring(0, 3)}
+                          </div>
+
+                          {/* Hours */}
+                          {hours.isClosed ? (
+                            <div className="text-sm font-medium">Closed</div>
+                          ) : (
+                            <div className={`text-sm font-medium tabular-nums ${isToday ? 'text-white' : 'text-gray-900'}`}>
+                              {hours.openTime}
+                              <div className={`text-xs ${isToday ? 'text-white/60' : 'text-gray-400'} my-0.5`}>to</div>
+                              {hours.closeTime}
                             </div>
                           )}
-
-                          {/* Card */}
-                          <div
-                            className={`
-                              relative overflow-hidden rounded-xl p-4 h-full
-                              transition-all duration-200 border
-                              ${isToday
-                                ? 'bg-gray-100 shadow-sm border-gray-300'
-                                : hours.isClosed
-                                ? 'bg-gray-50/50 opacity-50 border-gray-100'
-                                : 'bg-gray-50 border-gray-200 hover:border-gray-300 hover:shadow-sm'
-                              }
-                            `}
-                          >
-                            {/* Content */}
-                            <div className="relative z-10">
-                              {/* Day */}
-                              <div
-                                className={`
-                                  text-[11px] font-semibold uppercase tracking-wider mb-3
-                                  ${isToday ? 'text-gray-700' : 'text-gray-500'}
-                                `}
-                              >
-                                {hours.dayOfWeek.substring(0, 3)}
-                              </div>
-
-                              {/* Time */}
-                              {hours.isClosed ? (
-                                <div className="text-xs font-medium text-gray-400">
-                                  Closed
-                                </div>
-                              ) : (
-                                <div className={`space-y-1 ${isToday ? 'text-gray-900 font-bold' : 'text-gray-900'}`}>
-                                  <div className="text-sm font-semibold leading-tight">
-                                    {hours.openTime}
-                                  </div>
-                                  <div className="text-[10px] text-gray-400">
-                                    to
-                                  </div>
-                                  <div className="text-sm font-semibold leading-tight">
-                                    {hours.closeTime}
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          </div>
                         </div>
-                      );
-                    })}
-                  </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </>
             )}
 
             {/* Contact Information */}
-            {(address || location || phoneNumber || website) && (
-              <>
-                <SectionHeader title="Get In Touch" />
-                <div className="mb-8 space-y-3">
-                  {/* Address */}
-                  {(address || location) && (
-                    <div className="flex items-start gap-3">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 mt-0.5 flex-shrink-0">
-                        <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
-                        <circle cx="12" cy="10" r="3" />
-                      </svg>
-                      <div>
-                        <p className="text-gray-900 text-[15px]">
-                          {address && location ? `${address}, ${location}` : address || location}
-                        </p>
-                      </div>
-                    </div>
-                  )}
+            <SectionHeader title="Get In Touch" />
+            <div className="mb-8">
+              {/* Contact info - simple inline badges */}
+              <div className="flex flex-wrap items-center gap-2 mb-4">
+                {phoneNumber && (
+                  <a
+                    href={`tel:${phoneNumber}`}
+                    className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-50 hover:bg-gray-100 border border-gray-200 transition-colors text-sm text-gray-700 hover:text-gray-900"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
+                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                    </svg>
+                    <span className="font-medium">{phoneNumber}</span>
+                  </a>
+                )}
 
-                  {/* Phone Number */}
-                  {phoneNumber && (
-                    <div className="flex items-start gap-3">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 mt-0.5 flex-shrink-0">
-                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-                      </svg>
-                      <a href={`tel:${phoneNumber}`} className="text-gray-900 hover:text-gray-600 transition-colors text-[15px]">
-                        {phoneNumber}
-                      </a>
-                    </div>
-                  )}
+                {website && (
+                  <a
+                    href={website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-50 hover:bg-gray-100 border border-gray-200 transition-colors text-sm text-gray-700 hover:text-gray-900"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
+                      <circle cx="12" cy="12" r="10" />
+                      <line x1="2" x2="22" y1="12" y2="12" />
+                      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                    </svg>
+                    <span className="font-medium">{website.replace(/^https?:\/\/(www\.)?/, '')}</span>
+                  </a>
+                )}
 
-                  {/* Website */}
-                  {website && (
-                    <div className="flex items-start gap-3">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 mt-0.5 flex-shrink-0">
-                        <circle cx="12" cy="12" r="10" />
-                        <line x1="2" x2="22" y1="12" y2="12" />
-                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-                      </svg>
-                      <a
-                        href={website}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-gray-900 hover:text-gray-600 transition-colors break-all text-[15px]"
-                      >
-                        {website}
-                      </a>
-                    </div>
-                  )}
-                </div>
-              </>
-            )}
+                {(address || location) && (
+                  <span className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-50 border border-gray-200 text-sm text-gray-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
+                      <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                      <circle cx="12" cy="10" r="3" />
+                    </svg>
+                    <span className="font-medium">{address && location ? `${address}, ${location}` : address || location}</span>
+                  </span>
+                )}
+              </div>
+
+              {/* Social Links - inline badges */}
+              <div className="flex flex-wrap items-center gap-2">
+                <a
+                  href="#"
+                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gray-50 hover:bg-pink-50 border border-gray-200 hover:border-pink-300 transition-colors text-sm text-gray-600 hover:text-pink-600"
+                  aria-label="Instagram"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none">
+                    <path d="M2.5 12C2.5 7.52166 2.5 5.28249 3.89124 3.89124C5.28249 2.5 7.52166 2.5 12 2.5C16.4783 2.5 18.7175 2.5 20.1088 3.89124C21.5 5.28249 21.5 7.52166 21.5 12C21.5 16.4783 21.5 18.7175 20.1088 20.1088C18.7175 21.5 16.4783 21.5 12 21.5C7.52166 21.5 5.28249 21.5 3.89124 20.1088C2.5 18.7175 2.5 16.4783 2.5 12Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+                    <path d="M16.5 12C16.5 14.4853 14.4853 16.5 12 16.5C9.51472 16.5 7.5 14.4853 7.5 12C7.5 9.51472 9.51472 7.5 12 7.5C14.4853 7.5 16.5 9.51472 16.5 12Z" stroke="currentColor" strokeWidth="1.5" />
+                    <path d="M17.5078 6.5L17.4988 6.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  <span className="font-medium">Instagram</span>
+                </a>
+
+                <a
+                  href="#"
+                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gray-50 hover:bg-gray-100 border border-gray-200 hover:border-gray-400 transition-colors text-sm text-gray-600 hover:text-gray-900"
+                  aria-label="X (Twitter)"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none">
+                    <path d="M3 21L10.5484 13.4516M21 3L13.4516 10.5484M13.4516 10.5484L8 3H3L10.5484 13.4516M13.4516 10.5484L21 21H16L10.5484 13.4516" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  <span className="font-medium">X</span>
+                </a>
+
+                <a
+                  href="#"
+                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gray-50 hover:bg-blue-50 border border-gray-200 hover:border-blue-300 transition-colors text-sm text-gray-600 hover:text-blue-600"
+                  aria-label="Facebook"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none">
+                    <path d="M2.5 12C2.5 7.52166 2.5 5.28249 3.89124 3.89124C5.28249 2.5 7.52166 2.5 12 2.5C16.4783 2.5 18.7175 2.5 20.1088 3.89124C21.5 5.28249 21.5 7.52166 21.5 12C21.5 16.4783 21.5 18.7175 20.1088 20.1088C18.7175 21.5 16.4783 21.5 12 21.5C7.52166 21.5 5.28249 21.5 3.89124 20.1088C2.5 18.7175 2.5 16.4783 2.5 12Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+                    <path d="M15.9655 12H13.9999V20.5M13.9999 12V8.82143C13.9999 7.81583 14.8035 7 15.7942 7H16.5M13.9999 12H10.9999" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  <span className="font-medium">Facebook</span>
+                </a>
+
+                <a
+                  href="#"
+                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gray-50 hover:bg-blue-50 border border-gray-200 hover:border-blue-400 transition-colors text-sm text-gray-600 hover:text-blue-700"
+                  aria-label="LinkedIn"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none">
+                    <path d="M7 10V17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M11 13V17M11 13C11 11.3431 12.3431 10 14 10C15.6569 10 17 11.3431 17 13V17M11 13V10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M7.00801 7L6.99902 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M2.5 12C2.5 7.52166 2.5 5.28249 3.89124 3.89124C5.28249 2.5 7.52166 2.5 12 2.5C16.4783 2.5 18.7175 2.5 20.1088 3.89124C21.5 5.28249 21.5 7.52166 21.5 12C21.5 16.4783 21.5 18.7175 20.1088 20.1088C18.7175 21.5 16.4783 21.5 12 21.5C7.52166 21.5 5.28249 21.5 3.89124 20.1088C2.5 18.7175 2.5 16.4783 2.5 12Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+                  </svg>
+                  <span className="font-medium">LinkedIn</span>
+                </a>
+              </div>
+            </div>
           </>
         )}
 
-        {activeTab === 'Services' && (
+        {/* Services Section */}
+        {(activeTab === null || activeTab === 'Services') && (
           <>
             <SectionHeader title="Available Services" />
 
-            {filteredServices.length === 0 && searchQuery.trim() ? (
-              <div className="col-span-full text-center py-12">
-                <p className="text-gray-500">No services found matching &quot;{searchQuery}&quot;</p>
+            {validServices.length === 0 ? (
+              <div className="text-center py-16">
+                <p className="text-base font-medium text-gray-600 mb-1">No services yet</p>
+                <p className="text-sm text-gray-500">Services will be listed here once added</p>
+              </div>
+            ) : filteredServices.length === 0 && searchQuery.trim() ? (
+              <div className="text-center py-16">
+                <p className="text-base font-medium text-gray-600 mb-1">No services found</p>
+                <p className="text-sm text-gray-500">Try a different search term</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -733,13 +871,20 @@ const ListingHead: React.FC<ListingHeadProps> = ({
           </>
         )}
 
-        {activeTab === 'Team' && (
+        {/* Team Section */}
+        {(activeTab === null || activeTab === 'Team') && (
           <>
             <SectionHeader title="Our Team" />
 
-            {filteredEmployees.length === 0 && searchQuery.trim() ? (
-              <div className="col-span-full text-center py-12">
-                <p className="text-gray-500">No team members found matching &quot;{searchQuery}&quot;</p>
+            {employees.length === 0 ? (
+              <div className="text-center py-16">
+                <p className="text-base font-medium text-gray-600 mb-1">No team members yet</p>
+                <p className="text-sm text-gray-500">Team members will appear here once added</p>
+              </div>
+            ) : filteredEmployees.length === 0 && searchQuery.trim() ? (
+              <div className="text-center py-16">
+                <p className="text-base font-medium text-gray-600 mb-1">No team members found</p>
+                <p className="text-sm text-gray-500">Try a different search term</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -760,7 +905,8 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 <button
                   onClick={handleAddWorker}
                   type="button"
-                  className="group relative h-[350px] max-w-[250px] rounded-xl border-2 border-dashed border-neutral-300 bg-gradient-to-br from-neutral-50 to-neutral-100 hover:border-neutral-400 hover:shadow-sm hover:from-neutral-100 hover:to-neutral-200 transition-all duration-300 ease-out"
+                  className="group relative max-w-[250px] rounded-xl border-2 border-dashed border-neutral-300 bg-gradient-to-br from-neutral-50 to-neutral-100 hover:border-neutral-400 hover:shadow-sm hover:from-neutral-100 hover:to-neutral-200 transition-all duration-300 ease-out"
+                  style={{ height: '358px' }}
                 >
                   <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-6">
                     <div className="rounded-full bg-white p-2 shadow-sm transition-all duration-300 group-hover:shadow group-hover:scale-105">
@@ -788,21 +934,8 @@ const ListingHead: React.FC<ListingHeadProps> = ({
           </>
         )}
 
-        {activeTab === 'Reviews' && (
-          <div className="text-center text-gray-500 py-12">
-            <div className="bg-white rounded-2xl p-8 border border-gray-100">
-              <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                </svg>
-              </div>
-              <p className="font-medium text-lg mb-2">No reviews yet</p>
-              <p className="text-gray-300">Reviews from customers will appear here</p>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'Posts' && (
+        {/* Posts Section */}
+        {(activeTab === null || activeTab === 'Posts') && (
           <>
             <SectionHeader title="Gallery" />
 
@@ -908,6 +1041,17 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 )}
               </div>
             )}
+          </>
+        )}
+
+        {/* Reviews Section */}
+        {(activeTab === null || activeTab === 'Reviews') && (
+          <>
+            <SectionHeader title="Reviews" />
+            <div className="text-center py-16">
+              <p className="text-base font-medium text-gray-600 mb-1">No reviews yet</p>
+              <p className="text-sm text-gray-500">Reviews from customers will appear here</p>
+            </div>
           </>
         )}
       </div>
