@@ -1,7 +1,7 @@
 // components/profile/ProfileHead.tsx
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
@@ -15,6 +15,7 @@ import { categories } from '@/components/Categories';
 import useRegisterModal from '@/app/hooks/useRegisterModal';
 import ServiceSelector, { Service } from '@/components/inputs/ServiceSelector';
 import Modal from '@/components/modals/Modal';
+import ListingLocalSearch from '@/components/listings/ListingLocalSearch';
 
 interface ProfileHeadProps {
   user: SafeUser;
@@ -22,6 +23,8 @@ interface ProfileHeadProps {
   posts: SafePost[];
   listings: SafeListing[];
 }
+
+type TabKey = 'About' | 'Posts' | 'Listings' | 'Images' | 'Services';
 
 const ProfileHead: React.FC<ProfileHeadProps> = ({
   user,
@@ -45,24 +48,34 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
 
   const registerModal = useRegisterModal();
 
-  const [activeTab, setActiveTab] = React.useState<
-    'Posts' | 'Listings' | 'Images' | 'Services'
-  >('Posts');
+  const [activeTab, setActiveTab] = useState<TabKey | null>(null);
+  const [scrollY, setScrollY] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  // Parallax effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // State for services
-  const [services, setServices] = React.useState<any[]>([]);
-  const [isProvider, setIsProvider] = React.useState(false);
-  const [isLoadingServices, setIsLoadingServices] = React.useState(false);
-  const [isEditingServices, setIsEditingServices] = React.useState(false);
-  const [editServicesList, setEditServicesList] = React.useState<Service[]>([]);
-  const [isSavingServices, setIsSavingServices] = React.useState(false);
+  const [services, setServices] = useState<any[]>([]);
+  const [isProvider, setIsProvider] = useState(false);
+  const [isLoadingServices, setIsLoadingServices] = useState(false);
+  const [isEditingServices, setIsEditingServices] = useState(false);
+  const [editServicesList, setEditServicesList] = useState<Service[]>([]);
+  const [isSavingServices, setIsSavingServices] = useState(false);
 
-  const [isFollowing, setIsFollowing] = React.useState(
+  const [isFollowing, setIsFollowing] = useState(
     !!currentUser?.following?.includes(id)
   );
-  const [followersCount, setFollowersCount] = React.useState(followers.length);
+  const [followersCount, setFollowersCount] = useState(followers.length);
 
-  const [city, state] = React.useMemo(
+  const [city, state] = useMemo(
     () => (location ? location.split(',').map((s) => s.trim()) : [null, null]),
     [location]
   );
@@ -90,12 +103,13 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
   const canEdit = isOwner || isMasterUser;
 
   // Get first name from user's full name
-  const firstName = React.useMemo(() => {
+  const firstName = useMemo(() => {
     if (!name) return 'User';
     return name.split(' ')[0];
   }, [name]);
 
   const openEditProfile = () => {
+    setShowDropdown(false);
     registerModal.onOpen({
       mode: 'edit',
       prefill: {
@@ -114,7 +128,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
   };
 
   // Fetch services for providers
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchServices = async () => {
       try {
         setIsLoadingServices(true);
@@ -175,6 +189,47 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
     setEditServicesList([]);
   };
 
+  const handleDropdownToggle = () => {
+    setShowDropdown(!showDropdown);
+  };
+
+  // Filter posts based on search query
+  const filteredPosts = useMemo(() => {
+    if (!searchQuery.trim()) return posts;
+    const query = searchQuery.toLowerCase();
+    return posts.filter((post) =>
+      post.content?.toLowerCase().includes(query)
+    );
+  }, [posts, searchQuery]);
+
+  // Filter listings based on search query
+  const filteredListings = useMemo(() => {
+    if (!searchQuery.trim()) return listings.filter(l => l.category !== 'Personal');
+    const query = searchQuery.toLowerCase();
+    return listings
+      .filter(l => l.category !== 'Personal')
+      .filter((listing) =>
+        listing.title?.toLowerCase().includes(query) ||
+        listing.description?.toLowerCase().includes(query) ||
+        listing.location?.toLowerCase().includes(query)
+      );
+  }, [listings, searchQuery]);
+
+  // Filter images based on search - images don't have searchable text, so just return all
+  const filteredImages = galleryImages;
+
+  // Filter services based on search query
+  const filteredServices = useMemo(() => {
+    if (!searchQuery.trim()) return services;
+    const query = searchQuery.toLowerCase();
+    return services.filter(
+      (service) =>
+        service.serviceName?.toLowerCase().includes(query) ||
+        service.category?.toLowerCase().includes(query) ||
+        service.description?.toLowerCase().includes(query)
+    );
+  }, [services, searchQuery]);
+
   // Hero background image - prioritize user's backgroundImage, then fallback to other images
   const heroImage =
     backgroundImage ||
@@ -183,26 +238,173 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
     (galleryImages.length > 0 && galleryImages[0]) ||
     '/placeholder.jpg';
 
+  // Build tabs array
+  const tabs: Array<{ key: TabKey; label: string }> = [
+    { key: 'About', label: 'About' },
+    { key: 'Posts', label: 'Posts' },
+    { key: 'Listings', label: 'Listings' },
+    { key: 'Images', label: 'Images' },
+    ...(isProvider ? [{ key: 'Services' as TabKey, label: 'Services' }] : []),
+  ];
+
   return (
-    <div className="w-full space-y-6">
-      {/* Hero Banner Style Header - Matches ListingHead */}
+    <>
+      {/* Dropdown backdrop - closes dropdown when clicked - Outside main flow */}
+      {showDropdown && (
+        <div
+          className="fixed inset-0 z-40"
+          onClick={() => setShowDropdown(false)}
+        />
+      )}
+
+      {/* Dropdown Menu - Fixed position to escape overflow */}
+      {showDropdown && (
+        <div
+          className="fixed top-20 right-6 md:right-24 w-48 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-50"
+          style={{ maxHeight: 'calc(100vh - 100px)', overflowY: 'auto' }}
+        >
+          {/* Owner options */}
+          {canEdit && (
+            <>
+              <button
+                onClick={openEditProfile}
+                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3"
+                type="button"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                  <path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/>
+                </svg>
+                Edit Profile
+              </button>
+              {isProvider && (
+                <button
+                  onClick={() => {
+                    setShowDropdown(false);
+                    handleEditServices();
+                  }}
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3"
+                  type="button"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
+                    <path d="M12 5v14M5 12h14"/>
+                  </svg>
+                  Edit Services
+                </button>
+              )}
+              <hr className="my-1 border-gray-200" />
+              <button
+                onClick={() => setShowDropdown(false)}
+                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3"
+                type="button"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
+                  <path d="M3 6h18l-2 13H5L3 6z"/>
+                  <path d="M8 10v6"/>
+                  <path d="M16 10v6"/>
+                  <path d="M12 10v6"/>
+                </svg>
+                View Analytics
+              </button>
+              <button
+                onClick={() => setShowDropdown(false)}
+                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3"
+                type="button"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
+                  <circle cx="12" cy="12" r="3"/>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                </svg>
+                Profile Settings
+              </button>
+            </>
+          )}
+
+          {/* Non-owner options */}
+          {!isOwner && currentUser && (
+            <>
+              <button
+                onClick={() => {
+                  handleFollow();
+                  setShowDropdown(false);
+                }}
+                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3"
+                type="button"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                  <circle cx="9" cy="7" r="4"/>
+                  <line x1="19" y1="8" x2="19" y2="14"/>
+                  <line x1="22" y1="11" x2="16" y2="11"/>
+                </svg>
+                {isFollowing ? 'Unfollow' : 'Follow'}
+              </button>
+              <hr className="my-1 border-gray-200" />
+              <button
+                onClick={() => setShowDropdown(false)}
+                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3"
+                type="button"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
+                  <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
+                  <line x1="4" x2="4" y1="22" y2="15"/>
+                </svg>
+                Report Profile
+              </button>
+              <button
+                onClick={() => setShowDropdown(false)}
+                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3"
+                type="button"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                </svg>
+                Copy Link
+              </button>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* Hero Section */}
       <div className="-mx-6 md:-mx-24 -mt-2 md:-mt-8">
-        <div className="relative px-6 md:px-24 pt-10 overflow-hidden">
-          {/* Background Image - extends to bottom of CategoryNav */}
-          <div className="absolute inset-0 -mx-6 md:-mx-24">
+        <div
+          className="relative px-6 md:px-24 pt-10 overflow-hidden"
+        >
+          {/* Background Image with Parallax Effect */}
+          <div className="absolute inset-0 -mx-6 md:-mx-24 overflow-hidden">
             <img
               src={heroImage}
               alt={name ?? 'User'}
-              className="absolute inset-0 w-full h-full object-cover grayscale"
+              className="absolute w-full object-cover will-change-transform"
+              style={{
+                top: '-20%',
+                height: '140%',
+                transform: `translateY(${scrollY * 0.3}px)`
+              }}
             />
-            {/* Simple dark overlay */}
-            <div className="absolute inset-0 bg-black/30" />
+            {/* Gradient overlay */}
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background:
+                  'linear-gradient(to top,' +
+                  'rgba(0,0,0,0.65) 0%,' +
+                  'rgba(0,0,0,0.55) 15%,' +
+                  'rgba(0,0,0,0.40) 35%,' +
+                  'rgba(0,0,0,0.25) 55%,' +
+                  'rgba(0,0,0,0.15) 75%,' +
+                  'rgba(0,0,0,0.08) 100%)',
+              }}
+            />
           </div>
 
           {/* Three-dot menu button - top right */}
           <div className="absolute top-6 right-6 md:right-24 z-50">
             <button
-              className="p-1 hover:bg-white/20 rounded-xl transition-colors relative z-50"
+              onClick={handleDropdownToggle}
+              className="p-1 hover:bg-white/5 rounded-xl transition-colors relative z-50"
               type="button"
               aria-label="Options menu"
             >
@@ -214,37 +416,35 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
             </button>
           </div>
 
-          {/* Content Overlay */}
-          <div className="relative z-10 pb-6 flex items-center gap-6">
-            {/* User Profile Image - Circular, Full Color, Left Side */}
-            <div className="flex-shrink-0">
-              <div className="w-28 h-28 rounded-full overflow-hidden border-2 border-white shadow-lg relative group">
-                <Image
-                  src={avatar}
-                  alt={name ?? 'User'}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                />
+          {/* Content */}
+          <div className="relative z-10 pb-6">
+            {/* Row 1: Avatar + Name + Location */}
+            <div className="flex items-center gap-3 mb-6">
+              {/* User Profile Image - Circular, Full Color */}
+              <div className="flex-shrink-0">
+                <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-white shadow-lg relative group">
+                  <Image
+                    src={avatar}
+                    alt={name ?? 'User'}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
               </div>
-            </div>
 
-            {/* Content - Right of Profile Picture */}
-            <div className="flex-1 flex flex-col justify-center">
-              {/* Name with Badge */}
-              <div className="flex items-center gap-2.5 mb-3">
-                <h1 className="text-4xl font-bold tracking-tight text-white drop-shadow-lg">
-                  {name ?? 'User'}
-                </h1>
-
-                {/* Verified Badge */}
-                <div className="flex items-center">
+              {/* Name and Location */}
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <h1 className="text-4xl font-bold text-white">
+                    {name ?? 'User'}
+                  </h1>
+                  {/* Verified Badge */}
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
-                    width="26"
-                    height="26"
+                    width="24"
+                    height="24"
                     fill="#60A5FA"
-                    className="shrink-0 text-white drop-shadow-lg"
                     aria-label="Verified"
                   >
                     <path
@@ -262,121 +462,242 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                     />
                   </svg>
                 </div>
-              </div>
 
-              {/* Location */}
-              <div className="text-base text-white/90 mb-4 drop-shadow-md">
-                {city || 'City'}{state ? `, ${state}` : ''}
-              </div>
+                <div className="flex items-center gap-3 text-white/80">
+                  <span className="text-sm">
+                    {city || 'City'}{state ? `, ${state}` : ''}
+                  </span>
+                  {/* Operating Status - from first listing if available */}
+                  {(() => {
+                    const firstListing = listings.find(l => l.category !== 'Personal');
+                    const storeHours = firstListing?.storeHours;
 
-              {/* Stats and Buttons Row */}
-              <div className="flex items-center justify-between">
-                {/* Stats Counter */}
-                <div className="flex items-center gap-6">
-                  {/* Posts Counter */}
-                  <div className="flex flex-col">
-                    <span className="text-2xl font-semibold text-white">{posts?.length || 0}</span>
-                    <span className="text-xs text-white/70">Posts</span>
-                  </div>
+                    if (storeHours && storeHours.length > 0) {
+                      const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+                      const todayHours = storeHours.find((h: any) => h.dayOfWeek === today);
+                      const isOpen = todayHours && !todayHours.isClosed;
 
-                  {/* Followers Counter */}
-                  <div className="flex flex-col">
-                    <span className="text-2xl font-semibold text-white">{followersCount}</span>
-                    <span className="text-xs text-white/70">Followers</span>
-                  </div>
-
-                  {/* Following Counter */}
-                  <div className="flex flex-col">
-                    <span className="text-2xl font-semibold text-white">{following.length}</span>
-                    <span className="text-xs text-white/70">Following</span>
-                  </div>
-                </div>
-
-                {/* Buttons - Right Side */}
-                <div className="flex items-center gap-2">
-                  {canEdit && (
-                    <button
-                      onClick={openEditProfile}
-                      className="bg-transparent border border-white/50 hover:border-white text-white hover:text-white py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center text-sm w-28"
-                      type="button"
-                    >
-                      Edit Profile
-                    </button>
-                  )}
-                  {!isOwner && (
-                    <>
-                      {/* Message Button - styled like QR button */}
-                      {currentUser && (
-                        <CreateChatButton currentUser={currentUser} otherUserId={id} />
-                      )}
-
-                      {/* Follow Button */}
-                      <button
-                        onClick={handleFollow}
-                        className="bg-transparent border border-white/50 hover:border-white text-white hover:text-white py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center text-sm w-28"
-                        type="button"
-                      >
-                        {isFollowing ? 'Following' : 'Follow'}
-                      </button>
-                    </>
-                  )}
+                      return (
+                        <>
+                          <span className="text-white/40">·</span>
+                          <span className="flex items-center gap-1.5">
+                            <div className={`w-1.5 h-1.5 rounded-full ${isOpen ? 'bg-emerald-400' : 'bg-red-400'}`} />
+                            <span className="text-sm">
+                              {isOpen ? `Open until ${todayHours.closeTime}` : `Closed today`}
+                            </span>
+                          </span>
+                        </>
+                      );
+                    }
+                    return null;
+                  })()}
                 </div>
               </div>
             </div>
+
+            {/* Row 2: Search Bar and Buttons */}
+            <div className="flex gap-3">
+              <div className="flex-grow">
+                <ListingLocalSearch
+                  placeholder="Search..."
+                  onSearchChange={setSearchQuery}
+                />
+              </div>
+
+              {/* Action Buttons - Side by Side */}
+              {currentUser && (
+                <>
+                  {/* Message Button or Edit Button */}
+                  {canEdit ? (
+                    <button
+                      onClick={openEditProfile}
+                      className="bg-transparent border border-white/30 hover:border-white/50 text-white hover:text-white py-2.5 px-4 rounded-xl transition-all duration-300 text-sm flex items-center justify-center space-x-2"
+                      type="button"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <path d="M16.4249 4.60509L17.4149 3.6151C18.2351 2.79497 19.5648 2.79497 20.3849 3.6151C21.205 4.43524 21.205 5.76493 20.3849 6.58507L19.3949 7.57506M16.4249 4.60509L9.76558 11.2644C9.25807 11.772 8.89804 12.4078 8.72397 13.1041L8 16L10.8959 15.276C11.5922 15.102 12.228 14.7419 12.7356 14.2344L19.3949 7.57506M16.4249 4.60509L19.3949 7.57506" strokeLinejoin="round"/>
+                        <path d="M18.9999 13.5C18.9999 16.7875 18.9999 18.4312 18.092 19.5376C17.9258 19.7401 17.7401 19.9258 17.5375 20.092C16.4312 21 14.7874 21 11.4999 21H11C7.22876 21 5.34316 21 4.17159 19.8284C3.00003 18.6569 3 16.7712 3 13V12.5C3 9.21252 3 7.56879 3.90794 6.46244C4.07417 6.2599 4.2599 6.07417 4.46244 5.90794C5.56879 5 7.21252 5 10.5 5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      <span>Edit</span>
+                    </button>
+                  ) : (
+                    <CreateChatButton currentUser={currentUser} otherUserId={id} />
+                  )}
+
+                  {/* Follow Button for non-owners */}
+                  {!isOwner && (
+                    <button
+                      onClick={handleFollow}
+                      className="bg-transparent border border-white/30 hover:border-white/50 text-white hover:text-white py-2.5 px-4 rounded-xl transition-all duration-300 text-sm flex items-center justify-center space-x-2"
+                      type="button"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <line x1="19" y1="8" x2="19" y2="14"/>
+                        <line x1="22" y1="11" x2="16" y2="11"/>
+                      </svg>
+                      <span>{isFollowing ? 'Following' : 'Follow'}</span>
+                    </button>
+                  )}
+                </>
+              )}
+            </div>
           </div>
 
-          {/* Navigation Tabs - Outside content wrapper but inside main wrapper */}
-          <div className="-mx-6 md:-mx-24 pb-3 border-b border-gray-300/80 relative z-10">
+          {/* Navigation Tabs */}
+          <div className="-mx-6 md:-mx-24 pb-3 relative z-10">
             <div className="flex items-center justify-center">
-          {[
-            { key: 'Posts', label: 'Posts', show: true },
-            { key: 'Listings', label: 'Listings', show: true },
-            { key: 'Images', label: 'Images', show: true },
-            { key: 'Services', label: 'Services', show: isProvider },
-          ]
-            .filter(tab => tab.show)
-            .map(({ key, label }, index, arr) => {
-              const isSelected = activeTab === key;
-              const isLast = index === arr.length - 1;
+              {tabs.map(({ key, label }, index) => {
+                const isSelected = activeTab === key;
+                const selectedIndex = tabs.findIndex(t => t.key === activeTab);
+                const hasSelection = selectedIndex !== -1;
 
-              return (
-                <div key={key} className="relative flex items-center">
-                  <button
-                    onClick={() => setActiveTab(key as typeof activeTab)}
-                    className={`
-                      px-6 py-3.5 text-sm transition-colors duration-150 rounded-lg
-                      ${isSelected
-                        ? 'text-[#60A5FA] hover:text-[#4F94E5]'
-                        : 'text-gray-600/90 hover:text-gray-700'
-                      }
-                    `}
-                    type="button"
-                  >
-                    {label}
-                  </button>
+                // Toggle behavior: click to select, click again to deselect (show all)
+                const handleTabClick = () => {
+                  setActiveTab(activeTab === key ? null : key);
+                };
 
-                  {!isLast && (
-                    <div className="h-6 w-px bg-gray-300 mx-3" />
-                  )}
-                </div>
-              );
-            })}
+                // Determine divider state: adjacent to selected rotates horizontal, others disappear
+                const getDividerState = () => {
+                  if (!hasSelection) return 'vertical';
+                  if (index === selectedIndex - 1 || index === selectedIndex) return 'horizontal';
+                  return 'hidden';
+                };
+                const dividerState = getDividerState();
+
+                return (
+                  <div key={key} className="relative flex items-center">
+                    <button
+                      onClick={handleTabClick}
+                      className={`
+                        px-8 py-3.5 text-sm transition-all duration-200
+                        ${isSelected
+                          ? 'text-[#60A5FA] font-medium'
+                          : 'text-white/80 hover:text-white'
+                        }
+                      `}
+                      type="button"
+                    >
+                      {label}
+                    </button>
+
+                    {/* Divider: vertical by default, rotates horizontal when adjacent to selected, disappears otherwise */}
+                    {index < tabs.length - 1 && (
+                      <span
+                        className={`
+                          bg-white/60 transition-all duration-300 ease-out
+                          ${dividerState === 'horizontal' ? 'w-3 h-[0.5px] bg-[#60A5FA]' : ''}
+                          ${dividerState === 'vertical' ? 'w-[0.5px] h-4' : ''}
+                          ${dividerState === 'hidden' ? 'w-[0.5px] h-4 opacity-0' : ''}
+                        `}
+                      />
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Tab content */}
+      {/* Tab Content */}
       <div>
-        {/* POSTS */}
-        {activeTab === 'Posts' && (
+        {/* About Section */}
+        {(activeTab === null || activeTab === 'About') && (
           <>
-            <div className="mt-8 mb-4">
-              <SectionHeader title={`${firstName}'s Posts`} className="mt-0 mb-0" />
-            </div>
-            {posts.length ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-5 gap-4">
-                {posts.map((post) => (
+            {/* Bio Section */}
+            {bio && (
+              <>
+                <SectionHeader title="About" />
+                <div className="mb-6">
+                  <p className="text-gray-700 leading-relaxed text-[15px]">{bio}</p>
+                </div>
+
+                {/* Engagement Metrics */}
+                {(followersCount > 0 || posts.length > 0 || following.length > 0) && (
+                  <div className="flex items-center gap-6 pb-8 mb-8 text-sm border-b border-gray-100">
+                    {/* Posts - only show if > 0 */}
+                    {posts.length > 0 && (
+                      <>
+                        <div className="flex items-baseline gap-1.5">
+                          <span className="font-semibold text-gray-700">{posts.length}</span>
+                          <span className="text-gray-500">posts</span>
+                        </div>
+                        <span className="text-gray-300">·</span>
+                      </>
+                    )}
+
+                    {/* Followers - only show if > 0 */}
+                    {followersCount > 0 && (
+                      <>
+                        <div className="flex items-baseline gap-1.5">
+                          <span className="font-semibold text-gray-700">{followersCount}</span>
+                          <span className="text-gray-500">followers</span>
+                        </div>
+                        <span className="text-gray-300">·</span>
+                      </>
+                    )}
+
+                    {/* Following - only show if > 0 */}
+                    {following.length > 0 && (
+                      <>
+                        <div className="flex items-baseline gap-1.5">
+                          <span className="font-semibold text-gray-700">{following.length}</span>
+                          <span className="text-gray-500">following</span>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* Contact Information */}
+            {(location || email) && (
+              <div className="mb-12">
+                <SectionHeader title="Contact" />
+                <div className="flex flex-wrap items-center gap-2 mb-4">
+                  {email && (
+                    <a
+                      href={`mailto:${email}`}
+                      className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-50 hover:bg-gray-100 border border-gray-200 transition-colors text-sm text-gray-700 hover:text-gray-900"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                        <polyline points="22,6 12,13 2,6"/>
+                      </svg>
+                      <span className="font-medium">{email}</span>
+                    </a>
+                  )}
+
+                  {location && (
+                    <span className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-50 border border-gray-200 text-sm text-gray-700">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
+                        <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                        <circle cx="12" cy="10" r="3" />
+                      </svg>
+                      <span className="font-medium">{location}</span>
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* Posts Section */}
+        {(activeTab === null || activeTab === 'Posts') && (
+          <div className="mb-12">
+            <SectionHeader title={`${firstName}'s Posts`} />
+            {filteredPosts.length === 0 && searchQuery.trim() ? (
+              <div className="text-center py-16">
+                <p className="text-base font-medium text-gray-600 mb-1">No posts found</p>
+                <p className="text-sm text-gray-500">Try a different search term</p>
+              </div>
+            ) : filteredPosts.length ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {filteredPosts.map((post) => (
                   <PostCard
                     key={post.id}
                     post={post}
@@ -386,89 +707,91 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                 ))}
               </div>
             ) : (
-              <EmptyBlock text="No posts yet" />
+              <div className="text-center py-16">
+                <p className="text-base font-medium text-gray-600 mb-1">No posts yet</p>
+                <p className="text-sm text-gray-500">Posts will appear here once shared</p>
+              </div>
             )}
-          </>
+          </div>
         )}
 
-        {/* LISTINGS */}
-        {activeTab === 'Listings' && (
-          <>
-            <div className="mt-8 mb-4">
-              <SectionHeader title={`${firstName}'s Listings`} className="mt-0 mb-0" />
-            </div>
-            {(() => {
-              // Filter out personal listings (category = 'Personal')
-              const visibleListings = listings.filter(l => l.category !== 'Personal');
-              return visibleListings.length ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-5 gap-4">
-                  {visibleListings.map((listing) => (
-                    <ListingCard
-                      key={listing.id}
-                      data={listing}
-                      currentUser={currentUser}
-                      categories={categories}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <EmptyBlock text="No listings yet" />
-              );
-            })()}
-          </>
+        {/* Listings Section */}
+        {(activeTab === null || activeTab === 'Listings') && (
+          <div className="mb-12">
+            <SectionHeader title={`${firstName}'s Listings`} />
+            {filteredListings.length === 0 && searchQuery.trim() ? (
+              <div className="text-center py-16">
+                <p className="text-base font-medium text-gray-600 mb-1">No listings found</p>
+                <p className="text-sm text-gray-500">Try a different search term</p>
+              </div>
+            ) : filteredListings.length ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {filteredListings.map((listing) => (
+                  <ListingCard
+                    key={listing.id}
+                    data={listing}
+                    currentUser={currentUser}
+                    categories={categories}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-16">
+                <p className="text-base font-medium text-gray-600 mb-1">No listings yet</p>
+                <p className="text-sm text-gray-500">Listings will appear here once created</p>
+              </div>
+            )}
+          </div>
         )}
 
-        {/* IMAGES */}
-        {activeTab === 'Images' && (
-          <>
-            <div className="mt-8 mb-4">
-              <SectionHeader title={`${firstName}'s Gallery`} className="mt-0 mb-0" />
-            </div>
-            {galleryImages.length ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-4">
-                {galleryImages.map((img, i) => (
+        {/* Images Section */}
+        {(activeTab === null || activeTab === 'Images') && (
+          <div className="mb-12">
+            <SectionHeader title={`${firstName}'s Gallery`} />
+            {filteredImages.length ? (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                {filteredImages.map((img, i) => (
                   <div
                     key={i}
-                    className="aspect-square relative rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 group"
+                    className="relative rounded-2xl overflow-hidden border border-gray-100 hover:shadow-md transition-all duration-200 group"
+                    style={{ aspectRatio: '1 / 1' }}
                   >
-                    <Image
+                    <img
                       src={img}
                       alt={`${name || 'User'} - Image ${i + 1}`}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                   </div>
                 ))}
               </div>
             ) : (
-              <EmptyBlock text="No images yet" />
+              <div className="text-center py-16">
+                <p className="text-base font-medium text-gray-600 mb-1">No images yet</p>
+                <p className="text-sm text-gray-500">Gallery images will appear here</p>
+              </div>
             )}
-          </>
+          </div>
         )}
 
-        {/* SERVICES */}
-        {activeTab === 'Services' && (
-          <>
-            <div className="mt-8 mb-4 flex items-center justify-between">
-              <SectionHeader title={`${firstName}'s Services`} className="mt-0 mb-0" />
-              {canEdit && services.length > 0 && (
-                <button
-                  onClick={handleEditServices}
-                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition"
-                >
-                  Edit Services
-                </button>
-              )}
-            </div>
+        {/* Services Section */}
+        {(activeTab === null || activeTab === 'Services') && isProvider && (
+          <div className="mb-12">
+            <SectionHeader title={`${firstName}'s Services`} />
 
             {isLoadingServices ? (
-              <div className="text-center py-12">
+              <div className="text-center py-16">
                 <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                 <p className="mt-4 text-gray-500">Loading services...</p>
               </div>
-            ) : services.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
-                {services.map((service) => (
+            ) : filteredServices.length === 0 && searchQuery.trim() ? (
+              <div className="text-center py-16">
+                <p className="text-base font-medium text-gray-600 mb-1">No services found</p>
+                <p className="text-sm text-gray-500">Try a different search term</p>
+              </div>
+            ) : filteredServices.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {filteredServices.map((service) => (
                   <ServiceCard
                     key={service.id}
                     service={service}
@@ -477,32 +800,12 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                 ))}
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center py-12 px-4 border-2 border-dashed border-gray-300 rounded-lg">
-                <div className="rounded-full flex items-center justify-center bg-gray-100 text-gray-400 w-16 h-16 mb-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No services yet</h3>
-                <p className="text-sm text-gray-500 mb-6 text-center max-w-sm">
-                  {canEdit
-                    ? 'Add services you provide to help clients find you.'
-                    : `${firstName} hasn't added any services yet.`}
-                </p>
-                {canEdit && (
-                  <button
-                    onClick={handleEditServices}
-                    className="inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
-                      <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                    </svg>
-                    Add your first service
-                  </button>
-                )}
+              <div className="text-center py-16">
+                <p className="text-base font-medium text-gray-600 mb-1">No services yet</p>
+                <p className="text-sm text-gray-500">Services will appear here once added</p>
               </div>
             )}
-          </>
+          </div>
         )}
       </div>
 
@@ -530,18 +833,8 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
           }
         />
       )}
-    </div>
+    </>
   );
 };
-
-function EmptyBlock({ text }: { text: string }) {
-  return (
-    <div className="text-center text-gray-500 py-12">
-      <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm">
-        <p className="font-medium">{text}</p>
-      </div>
-    </div>
-  );
-}
 
 export default ProfileHead;

@@ -84,12 +84,9 @@ const ListingHead: React.FC<ListingHeadProps> = ({
   };
 
   const isOwner = !!currentUser?.id && currentUser.id === user?.id;
-  
+
   // Check if current user is an employee of this listing
   const isEmployee = !!currentUser?.id && employees.some(emp => emp.userId === currentUser.id);
-  
-  // Show QR button if user is owner OR employee
-  const canShowQR = isOwner || isEmployee;
 
   const handleToggleFollow = async () => {
     if (isOwner) return;
@@ -227,36 +224,108 @@ const ListingHead: React.FC<ListingHeadProps> = ({
           className="fixed top-20 right-6 md:right-24 w-48 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-50"
           style={{ maxHeight: 'calc(100vh - 100px)', overflowY: 'auto' }}
         >
-          {isOwner && (
+          {/* Owner and Employee options */}
+          {(isOwner || isEmployee) && (
             <>
-              <button
-                onClick={handleEditListing}
-                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3"
-                type="button"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
-                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                  <path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/>
-                </svg>
-                Edit Listing
-              </button>
+              {/* QR Code option for owners and employees */}
               <button
                 onClick={() => {
                   setShowDropdown(false);
-                  handleAddService();
+                  handleQRClick();
                 }}
                 className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3"
                 type="button"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
-                  <path d="M12 5v14M5 12h14"/>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" className="text-gray-500">
+                  <path d="M3 6C3 4.58579 3 3.87868 3.43934 3.43934C3.87868 3 4.58579 3 6 3C7.41421 3 8.12132 3 8.56066 3.43934C9 3.87868 9 4.58579 9 6C9 7.41421 9 8.12132 8.56066 8.56066C8.12132 9 7.41421 9 6 9C4.58579 9 3.87868 9 3.43934 8.56066C3 8.12132 3 7.41421 3 6Z" strokeWidth="1.5"></path>
+                  <path d="M3 18C3 16.5858 3 15.8787 3.43934 15.4393C3.87868 15 4.58579 15 6 15C7.41421 15 8.12132 15 8.56066 15.4393C9 15.8787 9 16.5858 9 18C9 19.4142 9 20.1213 8.56066 20.5607C8.12132 21 7.41421 21 6 21C4.58579 21 3.87868 21 3.43934 20.5607C3 20.1213 3 19.4142 3 18Z" strokeWidth="1.5"></path>
+                  <path d="M3 12L9 12" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+                  <path d="M12 3V8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+                  <path d="M15 6C15 4.58579 15 3.87868 15.4393 3.43934C15.8787 3 16.5858 3 18 3C19.4142 3 20.1213 3 20.5607 3.43934C21 3.87868 21 4.58579 21 6C21 7.41421 21 8.12132 20.5607 8.56066C20.1213 9 19.4142 9 18 9C16.5858 9 15.8787 9 15.4393 8.56066C15 8.12132 15 7.41421 15 6Z" strokeWidth="1.5"></path>
+                  <path d="M21 12H15C13.5858 12 12.8787 12 12.4393 12.4393C12 12.8787 12 13.5858 12 15M12 17.7692V20.5385M15 15V16.5C15 17.9464 15.7837 18 17 18C17.5523 18 18 18.4477 18 19M16 21H15M18 15C19.4142 15 20.1213 15 20.5607 15.44C21 15.8799 21 16.5881 21 18.0043C21 19.4206 21 20.1287 20.5607 20.5687C20.24 20.8898 19.7767 20.9766 19 21" strokeWidth="1.5" strokeLinecap="round"></path>
                 </svg>
-                Add Service
+                Show QR Code
               </button>
+              {isOwner && (
+                <>
+                  <hr className="my-1 border-gray-200" />
+                  <button
+                    onClick={handleEditListing}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3"
+                    type="button"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                      <path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/>
+                    </svg>
+                    Edit Listing
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowDropdown(false);
+                      handleAddService();
+                    }}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3"
+                    type="button"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
+                      <path d="M12 5v14M5 12h14"/>
+                    </svg>
+                    Add Service
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowDropdown(false);
+                      handleAddWorker();
+                    }}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3"
+                    type="button"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
+                      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                      <circle cx="9" cy="7" r="4"/>
+                      <line x1="19" y1="8" x2="19" y2="14"/>
+                      <line x1="22" y1="11" x2="16" y2="11"/>
+                    </svg>
+                    Add Team Member
+                  </button>
+                  <hr className="my-1 border-gray-200" />
+                  <button
+                    onClick={() => setShowDropdown(false)}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3"
+                    type="button"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
+                      <path d="M3 6h18l-2 13H5L3 6z"/>
+                      <path d="M8 10v6"/>
+                      <path d="M16 10v6"/>
+                      <path d="M12 10v6"/>
+                    </svg>
+                    View Analytics
+                  </button>
+                  <button
+                    onClick={() => setShowDropdown(false)}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3"
+                    type="button"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
+                      <circle cx="12" cy="12" r="3"/>
+                      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                    </svg>
+                    Listing Settings
+                  </button>
+                </>
+              )}
+            </>
+          )}
+
+          {/* Non-owner options */}
+          {!isOwner && !isEmployee && currentUser && (
+            <>
               <button
                 onClick={() => {
+                  handleToggleFollow();
                   setShowDropdown(false);
-                  handleAddWorker();
                 }}
                 className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3"
                 type="button"
@@ -267,39 +336,8 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   <line x1="19" y1="8" x2="19" y2="14"/>
                   <line x1="22" y1="11" x2="16" y2="11"/>
                 </svg>
-                Add Team Member
+                {isFollowing ? 'Unfollow' : 'Follow'}
               </button>
-              <hr className="my-1 border-gray-200" />
-              <button
-                onClick={() => setShowDropdown(false)}
-                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3"
-                type="button"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
-                  <path d="M3 6h18l-2 13H5L3 6z"/>
-                  <path d="M8 10v6"/>
-                  <path d="M16 10v6"/>
-                  <path d="M12 10v6"/>
-                </svg>
-                View Analytics
-              </button>
-              <button
-                onClick={() => setShowDropdown(false)}
-                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3"
-                type="button"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
-                  <circle cx="12" cy="12" r="3"/>
-                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-                </svg>
-                Listing Settings
-              </button>
-            </>
-          )}
-
-          {/* Non-owner options */}
-          {!isOwner && currentUser && (
-            <>
               <button
                 onClick={(e: any) => {
                   toggleFavorite(e);
@@ -313,6 +351,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 </svg>
                 {hasFavorited ? 'Saved' : 'Save Listing'}
               </button>
+              <hr className="my-1 border-gray-200" />
               <button
                 onClick={() => setShowDropdown(false)}
                 className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3"
@@ -391,201 +430,122 @@ const ListingHead: React.FC<ListingHeadProps> = ({
 
           {/* Content */}
           <div className="relative z-10 pb-6">
-            {/* Listing Title */}
-            <div className="">
-              {/* Breadcrumb Navigation */}
-              <nav className="flex items-center gap-2 text-sm mb-3">
-                <button
-                  onClick={() => router.push('/')}
-                  className="text-white/60 hover:text-white transition-colors"
-                >
-                  Home
-                </button>
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-white/40">
-                  <path d="M9 6L15 12L9 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                <button
-                  onClick={() => router.push('/market')}
-                  className="text-white/60 hover:text-white transition-colors"
-                >
-                  Market
-                </button>
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-white/40">
-                  <path d="M9 6L15 12L9 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                <span className="text-white font-medium truncate max-w-[300px]">{title}</span>
-              </nav>
-
-              {/* Operating Status Banner */}
-              {storeHours && storeHours.length > 0 && (() => {
-                const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
-                const todayHours = storeHours.find(h => h.dayOfWeek === today);
-                const isOpen = todayHours && !todayHours.isClosed;
-
-                return (
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/10 backdrop-blur-md border border-white/20 mb-3">
-                    <div className={`w-2 h-2 rounded-full ${isOpen ? 'bg-emerald-400 animate-pulse' : 'bg-gray-400'}`} />
-                    <span className="text-sm font-medium text-white">
-                      {isOpen ? `Open Now · Closes at ${todayHours.closeTime}` : 'Closed'}
-                    </span>
-                  </div>
-                );
-              })()}
-
-              <div className="flex items-center gap-2.5">
-                <h1 className="text-4xl md:text-4xl font-extrabold text-white leading-tight tracking-tight">
+            {/* Single Column Layout */}
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <h1 className="text-4xl font-bold text-white">
                   {title}
                 </h1>
-
                 {/* Verified Badge */}
-                <div className="flex items-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    width="26"
-                    height="26"
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  height="24"
+                  fill="#60A5FA"
+                  aria-label="Verified"
+                >
+                  <path
+                    d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z"
+                    stroke="white"
+                    strokeWidth="1"
                     fill="#60A5FA"
-                    className="shrink-0 text-white/45"
-                    aria-label="Verified"
-                  >
-                    <path
-                      d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z"
-                      stroke="white"
-                      strokeWidth="1"
-                      fill="#60A5FA"
-                    />
-                    <path
-                      d="M9 12.8929L10.8 14.5L15 9.5"
-                      stroke="white"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
+                  />
+                  <path
+                    d="M9 12.8929L10.8 14.5L15 9.5"
+                    stroke="white"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
               </div>
-              <p className="text-white text-lg mt-1">
-                {address && location ? `${address}, ${location}` : address || location}
-                <span className=" ml-1">
-                  · {(listing as any).radius ? `${(listing as any).radius} miles` : '2.3 miles away'}
-                </span>
-              </p>
-            </div>
 
-            {/* Search and Controls */}
-            <div className="mt-5">
-              <div className="flex items-center gap-3">
-                {/* Local Search Bar */}
-                <div className="flex-1">
+              <div className="flex items-center gap-3 text-white/80 mb-6">
+                <span className="text-sm">
+                  {address && location ? `${address}, ${location}` : address || location}
+                </span>
+                {/* Operating Status */}
+                {storeHours && storeHours.length > 0 && (() => {
+                  const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+                  const todayHours = storeHours.find(h => h.dayOfWeek === today);
+                  const isOpen = todayHours && !todayHours.isClosed;
+
+                  return (
+                    <>
+                      <span className="text-white/40">·</span>
+                      <span className="flex items-center gap-1.5">
+                        <div className={`w-1.5 h-1.5 rounded-full ${isOpen ? 'bg-emerald-400' : 'bg-red-400'}`} />
+                        <span className="text-sm">
+                          {isOpen ? `We're open until ${todayHours.closeTime}` : `We're closed today`}
+                        </span>
+                      </span>
+                    </>
+                  );
+                })()}
+              </div>
+
+              {/* Search Bar and Buttons Row */}
+              <div className="flex gap-3">
+                <div className="flex-grow">
                   <ListingLocalSearch
-                    placeholder="Search services, team, posts..."
+                    placeholder="Search..."
                     onSearchChange={setSearchQuery}
                   />
                 </div>
 
-                {/* Buttons - Right Side */}
-                <div className="flex items-center gap-3">
-                  {/* QR Code Button - Show for owners and employees ONLY */}
-                  {canShowQR ? (
-                    <button
-                      onClick={handleQRClick}
-                      className="backdrop-blur-md bg-white/10 hover:bg-white/15 border border-white/30 hover:border-white/50 text-white py-3 px-4 rounded-xl transition-all duration-300 flex items-center justify-center"
-                      type="button"
-                      aria-label="Show QR Code"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" className="transition-colors duration-200" fill="none" stroke="currentColor">
-                        <path d="M3 6C3 4.58579 3 3.87868 3.43934 3.43934C3.87868 3 4.58579 3 6 3C7.41421 3 8.12132 3 8.56066 3.43934C9 3.87868 9 4.58579 9 6C9 7.41421 9 8.12132 8.56066 8.56066C8.12132 9 7.41421 9 6 9C4.58579 9 3.87868 9 3.43934 8.56066C3 8.12132 3 7.41421 3 6Z" strokeWidth="1.5"></path>
-                        <path d="M3 18C3 16.5858 3 15.8787 3.43934 15.4393C3.87868 15 4.58579 15 6 15C7.41421 15 8.12132 15 8.56066 15.4393C9 15.8787 9 16.5858 9 18C9 19.4142 9 20.1213 8.56066 20.5607C8.12132 21 7.41421 21 6 21C4.58579 21 3.87868 21 3.43934 20.5607C3 20.1213 3 19.4142 3 18Z" strokeWidth="1.5"></path>
-                        <path d="M3 12L9 12" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-                        <path d="M12 3V8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-                        <path d="M15 6C15 4.58579 15 3.87868 15.4393 3.43934C15.8787 3 16.5858 3 18 3C19.4142 3 20.1213 3 20.5607 3.43934C21 3.87868 21 4.58579 21 6C21 7.41421 21 8.12132 20.5607 8.56066C20.1213 9 19.4142 9 18 9C16.5858 9 15.8787 9 15.4393 8.56066C15 8.12132 15 7.41421 15 6Z" strokeWidth="1.5"></path>
-                        <path d="M21 12H15C13.5858 12 12.8787 12 12.4393 12.4393C12 12.8787 12 13.5858 12 15M12 17.7692V20.5385M15 15V16.5C15 17.9464 15.7837 18 17 18C17.5523 18 18 18.4477 18 19M16 21H15M18 15C19.4142 15 20.1213 15 20.5607 15.44C21 15.8799 21 16.5881 21 18.0043C21 19.4206 21 20.1287 20.5607 20.5687C20.24 20.8898 19.7767 20.9766 19 21" strokeWidth="1.5" strokeLinecap="round"></path>
-                      </svg>
-                    </button>
-                  ) : (
-                    /* Follow Button - Show for everyone else who is logged in */
-                    currentUser && (
-                      <button
-                        onClick={handleToggleFollow}
-                        className={`backdrop-blur-md bg-white/10 hover:bg-white/15 border border-white/30 hover:border-white/50 text-white py-3 px-6 rounded-xl transition-all duration-300 flex items-center justify-center text-sm`}
-                        type="button"
-                        aria-label={isFollowing ? 'Unfollow' : 'Follow'}
-                      >
-                        {isFollowing ? 'Following' : 'Follow'}
-                      </button>
-                    )
-                  )}
-
-                  {/* Reserve Button - Show for all current users */}
-                  {currentUser && (
+                {/* Action Buttons - Side by Side */}
+                {currentUser && (
+                  <>
+                    {/* Reserve Button */}
                     <button
                       onClick={handleReserveClick}
-                      className="backdrop-blur-md bg-white/10 hover:bg-white/15 border border-white/30 hover:border-white/50 text-white py-3 px-6 rounded-xl transition-all duration-300 flex items-center justify-center text-sm"
+                      className="bg-transparent border border-white/30 hover:border-white/50 text-white hover:text-white py-2.5 px-4 rounded-xl transition-all duration-300 text-sm flex items-center justify-center space-x-2"
                       type="button"
                     >
-                      Reserve
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <path d="M18 2V4M6 2V4" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M11.9955 13H12.0045M11.9955 17H12.0045M15.991 13H16M8 13H8.00897M8 17H8.00897" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M3.5 8H20.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M2.5 12.2432C2.5 7.88594 2.5 5.70728 3.75212 4.35364C5.00424 3 7.01949 3 11.05 3H12.95C16.9805 3 18.9958 3 20.2479 4.35364C21.5 5.70728 21.5 7.88594 21.5 12.2432V12.7568C21.5 17.1141 21.5 19.2927 20.2479 20.6464C18.9958 22 16.9805 22 12.95 22H11.05C7.01949 22 5.00424 22 3.75212 20.6464C2.5 19.2927 2.5 17.1141 2.5 12.7568V12.2432Z" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M3 8H21" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      <span>Reserve</span>
                     </button>
-                  )}
 
-                  {/* Share Button */}
-                  <button
-                    onClick={() => {
-                      if (navigator.share) {
-                        navigator.share({
-                          title: title,
-                          text: `Check out ${title} on Forme`,
-                          url: window.location.href,
-                        }).catch(() => {});
-                      } else {
-                        navigator.clipboard.writeText(window.location.href);
-                        alert('Link copied to clipboard!');
-                      }
-                    }}
-                    className="backdrop-blur-md bg-white/10 hover:bg-white/15 border border-white/30 hover:border-white/50 text-white py-3 px-4 rounded-xl transition-all duration-300 flex items-center justify-center"
-                    type="button"
-                    aria-label="Share"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
-                      <polyline points="16 6 12 2 8 6"/>
-                      <line x1="12" y1="2" x2="12" y2="15"/>
-                    </svg>
-                  </button>
-                </div>
+                    {/* Follow Button for non-owners/non-employees OR Edit Button for owners/employees */}
+                    {isOwner || isEmployee ? (
+                      <button
+                        onClick={handleEditListing}
+                        className="bg-transparent border border-white/30 hover:border-white/50 text-white hover:text-white py-2.5 px-4 rounded-xl transition-all duration-300 text-sm flex items-center justify-center space-x-2"
+                        type="button"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.5">
+                          <path d="M16.4249 4.60509L17.4149 3.6151C18.2351 2.79497 19.5648 2.79497 20.3849 3.6151C21.205 4.43524 21.205 5.76493 20.3849 6.58507L19.3949 7.57506M16.4249 4.60509L9.76558 11.2644C9.25807 11.772 8.89804 12.4078 8.72397 13.1041L8 16L10.8959 15.276C11.5922 15.102 12.228 14.7419 12.7356 14.2344L19.3949 7.57506M16.4249 4.60509L19.3949 7.57506" strokeLinejoin="round"/>
+                          <path d="M18.9999 13.5C18.9999 16.7875 18.9999 18.4312 18.092 19.5376C17.9258 19.7401 17.7401 19.9258 17.5375 20.092C16.4312 21 14.7874 21 11.4999 21H11C7.22876 21 5.34316 21 4.17159 19.8284C3.00003 18.6569 3 16.7712 3 13V12.5C3 9.21252 3 7.56879 3.90794 6.46244C4.07417 6.2599 4.2599 6.07417 4.46244 5.90794C5.56879 5 7.21252 5 10.5 5" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                        <span>Edit</span>
+                      </button>
+                    ) : (
+                      <button
+                        onClick={handleToggleFollow}
+                        className="bg-transparent border border-white/30 hover:border-white/50 text-white hover:text-white py-2.5 px-4 rounded-xl transition-all duration-300 text-sm flex items-center justify-center space-x-2"
+                        type="button"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.5">
+                          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                          <circle cx="9" cy="7" r="4"/>
+                          <line x1="19" y1="8" x2="19" y2="14"/>
+                          <line x1="22" y1="11" x2="16" y2="11"/>
+                        </svg>
+                        <span>{isFollowing ? 'Following' : 'Follow'}</span>
+                      </button>
+                    )}
+                  </>
+                )}
               </div>
             </div>
 
-            {/* Social Stats Row */}
-            <div className="mt-4 flex items-center gap-2">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 backdrop-blur-md border border-white/20">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" className="text-white/80">
-                  <path d="M12.5 22H6.59087C5.04549 22 3.81631 21.248 2.71266 20.1966C0.453365 18.0441 4.1628 16.324 5.57757 15.4816C8.12805 13.9629 11.2057 13.6118 14 14.4281" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M16.5 6.5C16.5 8.98528 14.4853 11 12 11C9.51472 11 7.5 8.98528 7.5 6.5C7.5 4.01472 9.51472 2 12 2C14.4853 2 16.5 4.01472 16.5 6.5Z" stroke="currentColor" strokeWidth="1.5" />
-                  <path d="M18.4332 13.8485C18.7685 13.4851 18.9362 13.3035 19.1143 13.1975C19.5442 12.9418 20.0736 12.9339 20.5107 13.1765C20.6918 13.2771 20.8646 13.4537 21.2103 13.8067C21.5559 14.1598 21.7287 14.3364 21.8272 14.5214C22.0647 14.9679 22.0569 15.5087 21.8066 15.9478C21.7029 16.1304 21.5251 16.3011 21.1694 16.6425L16.9378 20.7276C16.2638 21.3788 15.9268 21.7044 15.5056 21.8878C15.0845 22.0712 14.6214 22.0949 13.6954 22.1422L13.5694 22.1464C13.0875 22.1668 12.8466 22.1769 12.7054 22.0305C12.5642 21.8842 12.5795 21.6434 12.6099 21.1617L12.6309 20.8537C12.6913 20.0023 12.7215 19.5765 12.8407 19.1711C12.9599 18.7657 13.1646 18.3978 13.5739 17.6619L18.4332 13.8485Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-                </svg>
-                <span className="text-sm font-medium text-white">{followers.length}</span>
-                <span className="text-xs text-white/60">Followers</span>
-              </div>
-
-              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 backdrop-blur-md border border-white/20">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" className="text-white/80">
-                  <path d="M2.5 12C2.5 7.52166 2.5 5.28249 3.89124 3.89124C5.28249 2.5 7.52166 2.5 12 2.5C16.4783 2.5 18.7175 2.5 20.1088 3.89124C21.5 5.28249 21.5 7.52166 21.5 12C21.5 16.4783 21.5 18.7175 20.1088 20.1088C18.7175 21.5 16.4783 21.5 12 21.5C7.52166 21.5 5.28249 21.5 3.89124 20.1088C2.5 18.7175 2.5 16.4783 2.5 12Z" stroke="currentColor" strokeWidth="1.5" />
-                  <path d="M16 12C16 14.2091 14.2091 16 12 16C9.79086 16 8 14.2091 8 12C8 9.79086 9.79086 8 12 8C14.2091 8 16 9.79086 16 12Z" stroke="currentColor" strokeWidth="1.5" />
-                  <path d="M17.5 6.5H17.509" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-                <span className="text-sm font-medium text-white">{posts?.length || 0}</span>
-                <span className="text-xs text-white/60">Posts</span>
-              </div>
-
-              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 backdrop-blur-md border border-white/20">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" className="text-white/80">
-                  <path d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                </svg>
-                <span className="text-sm font-medium text-white">0</span>
-                <span className="text-xs text-white/60">Likes</span>
-              </div>
-            </div>
-            {/* Category Navigation */}
 
           </div>
           {/* Navigation Tabs */}
@@ -653,17 +613,53 @@ const ListingHead: React.FC<ListingHeadProps> = ({
             {description && (
               <>
                 <SectionHeader title="What We're All About" />
-                <div className="mb-8">
+                <div className="mb-6">
                   <p className="text-gray-700 leading-relaxed text-[15px]">{description}</p>
                 </div>
+
+                {/* Engagement Metrics - Only show if there's meaningful data */}
+                {(followers.length > 0 || (posts?.length || 0) > 0) && (
+                  <div className="flex items-center gap-6 pb-8 mb-8 text-sm border-b border-gray-100">
+                    {/* Followers - only show if > 0 */}
+                    {followers.length > 0 && (
+                      <>
+                        <div className="flex items-baseline gap-1.5">
+                          <span className="font-semibold text-gray-700">{followers.length}</span>
+                          <span className="text-gray-500">followers</span>
+                        </div>
+                        <span className="text-gray-300">·</span>
+                      </>
+                    )}
+
+                    {/* Posts - only show if > 0 */}
+                    {(posts?.length || 0) > 0 && (
+                      <>
+                        <div className="flex items-baseline gap-1.5">
+                          <span className="font-semibold text-gray-700">{posts?.length || 0}</span>
+                          <span className="text-gray-500">posts</span>
+                        </div>
+                        <span className="text-gray-300">·</span>
+                      </>
+                    )}
+
+                    {/* Rating - always show with star icon */}
+                    <div className="flex items-center gap-1.5">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="#FBBF24" stroke="#FBBF24" strokeWidth="1.5">
+                        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+                      </svg>
+                      <span className="font-semibold text-gray-700">4.8</span>
+                      <span className="text-gray-500">rating</span>
+                    </div>
+                  </div>
+                )}
               </>
             )}
 
             {/* Store Hours Section */}
             {storeHours && storeHours.length > 0 && (
-              <>
+              <div className="mb-12">
                 <SectionHeader title="Store Hours" />
-                <div className="mb-8 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 max-w-4xl">
                   {storeHours.map((hours, index) => {
                     const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
                     const isToday = hours.dayOfWeek === today;
@@ -672,35 +668,28 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                       <div
                         key={index}
                         className={`
-                          relative rounded-xl p-4 transition-all duration-200
+                          rounded-lg border transition-all duration-200
                           ${isToday
-                            ? 'bg-gray-900 text-white'
-                            : hours.isClosed
-                            ? 'bg-gray-50 text-gray-400'
-                            : 'bg-white border border-gray-200 text-gray-700 hover:border-gray-300 hover:shadow-sm'
+                            ? 'bg-gray-900 border-gray-900 text-white shadow-sm'
+                            : 'bg-white border-gray-200 hover:border-gray-300'
                           }
                         `}
                       >
-                        {/* Open now indicator */}
-                        {isToday && !hours.isClosed && (
-                          <div className="absolute top-3 right-3">
-                            <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                          </div>
-                        )}
-
-                        <div className="space-y-2">
+                        <div className="px-3 py-2.5">
                           {/* Day */}
-                          <div className={`text-xs font-semibold uppercase tracking-wide ${isToday ? 'text-white/80' : 'text-gray-500'}`}>
-                            {hours.dayOfWeek.substring(0, 3)}
+                          <div className={`text-xs font-semibold mb-1 uppercase tracking-wide ${isToday ? 'text-white/70' : 'text-gray-500'}`}>
+                            {hours.dayOfWeek}
                           </div>
 
                           {/* Hours */}
                           {hours.isClosed ? (
-                            <div className="text-sm font-medium">Closed</div>
+                            <div className={`text-sm font-medium ${isToday ? 'text-white/80' : 'text-gray-400'}`}>
+                              Closed
+                            </div>
                           ) : (
-                            <div className={`text-sm font-medium tabular-nums ${isToday ? 'text-white' : 'text-gray-900'}`}>
+                            <div className={`text-sm font-semibold tabular-nums ${isToday ? 'text-white' : 'text-gray-900'}`}>
                               {hours.openTime}
-                              <div className={`text-xs ${isToday ? 'text-white/60' : 'text-gray-400'} my-0.5`}>to</div>
+                              <span className={`text-xs mx-1 ${isToday ? 'text-white/50' : 'text-gray-400'}`}>→</span>
                               {hours.closeTime}
                             </div>
                           )}
@@ -709,12 +698,13 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                     );
                   })}
                 </div>
-              </>
+              </div>
             )}
 
             {/* Contact Information */}
-            <SectionHeader title="Get In Touch" />
-            <div className="mb-8">
+            <div className="mb-12">
+              <SectionHeader title="Get In Touch" />
+              <div>
               {/* Contact info - simple inline badges */}
               <div className="flex flex-wrap items-center gap-2 mb-4">
                 {phoneNumber && (
@@ -808,13 +798,14 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   <span className="font-medium">LinkedIn</span>
                 </a>
               </div>
+              </div>
             </div>
           </>
         )}
 
         {/* Services Section */}
         {(activeTab === null || activeTab === 'Services') && (
-          <>
+          <div className="mb-12">
             <SectionHeader title="Available Services" />
 
             {validServices.length === 0 ? (
@@ -868,12 +859,12 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               )}
             </div>
             )}
-          </>
+          </div>
         )}
 
         {/* Team Section */}
         {(activeTab === null || activeTab === 'Team') && (
-          <>
+          <div className="mb-12">
             <SectionHeader title="Our Team" />
 
             {employees.length === 0 ? (
@@ -931,12 +922,12 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               )}
             </div>
             )}
-          </>
+          </div>
         )}
 
         {/* Posts Section */}
         {(activeTab === null || activeTab === 'Posts') && (
-          <>
+          <div className="mb-12">
             <SectionHeader title="Gallery" />
 
             {(!galleryImages || galleryImages.length === 0) && (!posts || posts.length === 0) ? (
@@ -1041,18 +1032,18 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 )}
               </div>
             )}
-          </>
+          </div>
         )}
 
         {/* Reviews Section */}
         {(activeTab === null || activeTab === 'Reviews') && (
-          <>
+          <div className="mb-12">
             <SectionHeader title="Reviews" />
             <div className="text-center py-16">
               <p className="text-base font-medium text-gray-600 mb-1">No reviews yet</p>
               <p className="text-sm text-gray-500">Reviews from customers will appear here</p>
             </div>
-          </>
+          </div>
         )}
       </div>
     </>

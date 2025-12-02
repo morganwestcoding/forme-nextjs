@@ -165,7 +165,7 @@ const ShopClient: React.FC<ShopClientProps> = ({
 
                 {/* Shops Grid (4 visible when not filtered, all when filtered) */}
                 {hasShops && (
-                  <div className="grid grid-cols-4 gap-4 mb-8">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                     {(filterInfo.isFiltered ? shops : shops.slice(0, 4)).map((shop, idx) => (
                       <div
                         key={shop.id}
@@ -191,7 +191,7 @@ const ShopClient: React.FC<ShopClientProps> = ({
                     onNext={() => scrollFeaturedProducts('right')}
                   />
 
-                  <div className="grid grid-cols-4 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {products.slice(0, 4).map((product, idx) => (
                       <div
                         key={product.id}
@@ -211,7 +211,7 @@ const ShopClient: React.FC<ShopClientProps> = ({
 
               {/* Products Grid (when filtered) */}
               {filterInfo.isFiltered && hasProducts && (
-                <div className="grid grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   {products.map((product, idx) => (
                     <div
                       key={product.id}
