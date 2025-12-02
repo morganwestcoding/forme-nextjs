@@ -63,6 +63,17 @@ const MessageModal: React.FC = () => {
 
   useEffect(() => {
     if (messageModal.isOpen && messageModal.conversationId) {
+      console.log('MessageModal opened with:', {
+        conversationId: messageModal.conversationId,
+        otherUserId: messageModal.otherUserId,
+        otherUserData: messageModal.otherUserData
+      });
+
+      // If we have user data from the modal, use it immediately
+      if (messageModal.otherUserData) {
+        setOtherUser(messageModal.otherUserData);
+      }
+
       fetchMessages();
       fetchOtherUser();
     }
@@ -71,6 +82,22 @@ const MessageModal: React.FC = () => {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  // Update otherUser when messages load if we don't have user info yet
+  useEffect(() => {
+    if (messages.length > 0 && !otherUser && messageModal.otherUserId) {
+      console.log('Trying to get user from messages, otherUserId:', messageModal.otherUserId);
+      const otherUserMessage = messages.find((msg: Message) => msg.senderId === messageModal.otherUserId);
+      console.log('Found message from other user:', otherUserMessage);
+      if (otherUserMessage) {
+        console.log('Setting otherUser from message:', otherUserMessage.sender);
+        setOtherUser({
+          name: otherUserMessage.sender.name,
+          image: otherUserMessage.sender.image
+        });
+      }
+    }
+  }, [messages, otherUser, messageModal.otherUserId]);
 
   const fetchMessages = async () => {
     if (!messageModal.conversationId) return;
@@ -87,25 +114,20 @@ const MessageModal: React.FC = () => {
   };
 
   const fetchOtherUser = async () => {
-    if (!messageModal.otherUserId) return;
+    if (!messageModal.otherUserId) {
+      console.log('No otherUserId available');
+      return;
+    }
+    console.log('Fetching user info for:', messageModal.otherUserId);
     try {
       const response = await axios.get(`/api/users/${messageModal.otherUserId}`);
+      console.log('User data received:', response.data);
       setOtherUser({
         name: response.data.name,
         image: response.data.image || response.data.imageSrc
       });
     } catch (error) {
       console.error('Failed to load user info:', error);
-      // Fallback: try to get from messages if they exist
-      if (messages.length > 0) {
-        const otherUserMessage = messages.find((msg: Message) => msg.senderId === messageModal.otherUserId);
-        if (otherUserMessage) {
-          setOtherUser({
-            name: otherUserMessage.sender.name,
-            image: otherUserMessage.sender.image
-          });
-        }
-      }
     }
   };
 
@@ -175,12 +197,12 @@ const MessageModal: React.FC = () => {
     });
 
     return (
-      <div className="relative flex items-center my-6">
-        <div className="flex-grow border-t border-gray-200" />
-        <span className="mx-4 bg-gray-50 text-gray-600 font-medium text-xs px-3 py-1 rounded-full">
+      <div className="relative flex items-center my-5">
+        <div className="flex-grow border-t border-gray-100" />
+        <span className="mx-3 text-gray-400 font-medium text-[10px] px-2.5 py-0.5 rounded-md bg-gray-50">
           {formatted}
         </span>
-        <div className="flex-grow border-t border-gray-200" />
+        <div className="flex-grow border-t border-gray-100" />
       </div>
     );
   };
@@ -189,35 +211,35 @@ const MessageModal: React.FC = () => {
 
   const bodyContent = (
     <div className="flex flex-col h-[500px] relative">
-      {/* Back button positioned outside the content flow */}
+      {/* Back button */}
       <button
         onClick={handleBackToInbox}
-        className="absolute -left-3 -top-2.5 p-1 rounded-full hover:bg-gray-200/50 transition-colors z-20"
+        className="absolute left-4 top-5 p-1.5 rounded-lg hover:bg-gray-100 transition-colors z-20"
         aria-label="Back to Inbox"
       >
-        <ArrowLeft className="w-5 h-5 text-gray-700" />
+        <ArrowLeft className="w-4 h-4 text-gray-600" />
       </button>
 
-      {/* Custom Header with user info */}
-      <div className="flex items-center justify-center p-4 border-b border-gray-200">
-        {/* User Avatar and Name - Centered */}
+      {/* Clean Header with user info */}
+      <div className="flex items-center justify-center py-4 px-4 border-b border-gray-100">
         <div className="flex items-center gap-3">
-          <div className="relative">
+          {/* Avatar */}
+          <div className="relative flex-shrink-0">
             <div
-              className={`w-10 h-10 rounded-full overflow-hidden flex items-center justify-center text-white font-medium text-sm
+              className={`w-11 h-11 rounded-full overflow-hidden flex items-center justify-center text-white font-semibold text-sm
                          ${!otherUser?.image ? avatarColor : 'bg-gray-100'}`}
             >
               {otherUser?.image ? (
                 <Image
                   src={otherUser.image}
                   alt={otherUser.name || 'User'}
-                  width={40}
-                  height={40}
+                  width={44}
+                  height={44}
                   className="object-cover w-full h-full"
                   onError={(e) => {
                     const target = e.currentTarget.parentElement;
                     if (target) {
-                      target.className = `w-10 h-10 rounded-full overflow-hidden flex items-center justify-center text-white font-medium text-sm ${avatarColor}`;
+                      target.className = `w-11 h-11 rounded-full overflow-hidden flex items-center justify-center text-white font-semibold text-sm ${avatarColor}`;
                       target.innerHTML = `<span>${initials(otherUser?.name)}</span>`;
                     }
                   }}
@@ -227,14 +249,15 @@ const MessageModal: React.FC = () => {
               )}
             </div>
             {/* Online status */}
-            <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
+            <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></div>
           </div>
-          
+
+          {/* Name */}
           <div>
-            <h3 className="font-semibold text-gray-900 text-sm">
+            <h3 className="font-semibold text-gray-900 text-sm tracking-tight">
               {otherUser?.name || 'Loading...'}
             </h3>
-            <p className="text-xs text-green-600 font-medium">Online</p>
+            <p className="text-[10px] text-gray-500 font-medium">Active now</p>
           </div>
         </div>
       </div>
@@ -249,7 +272,7 @@ const MessageModal: React.FC = () => {
       ) : (
         <>
           {/* Messages Area */}
-          <div className="flex-grow overflow-y-auto px-4 py-4 space-y-4">
+          <div className="flex-grow overflow-y-auto px-4 py-3 space-y-3">
             {Object.entries(groupMessagesByDate(messages)).map(([dateKey, dateMessages]) => (
               <React.Fragment key={dateKey}>
                 {renderDateSeparator(dateKey)}
@@ -262,17 +285,17 @@ const MessageModal: React.FC = () => {
                         <div className={`relative w-full flex ${isOther ? 'flex-row' : 'flex-row-reverse'} items-end gap-2 max-w-[80%]`}>
                           {/* Avatar - only show for other user and at end of message runs */}
                           {isOther && showTime && (
-                            <div className="w-8 h-8 rounded-full overflow-hidden shrink-0 mb-1">
+                            <div className="w-7 h-7 rounded-full overflow-hidden shrink-0 mb-0.5">
                               <div
-                                className={`w-full h-full flex items-center justify-center text-white font-medium text-xs
+                                className={`w-full h-full flex items-center justify-center text-white font-semibold text-[10px]
                                            ${!message.sender.image ? getAvatarColor(message.sender.name) : 'bg-gray-100'}`}
                               >
                                 {message.sender.image ? (
                                   <Image
                                     src={message.sender.image}
                                     alt={message.sender.name || 'User'}
-                                    width={32}
-                                    height={32}
+                                    width={28}
+                                    height={28}
                                     className="object-cover w-full h-full"
                                   />
                                 ) : (
@@ -284,13 +307,13 @@ const MessageModal: React.FC = () => {
 
                           {/* Message Bubble */}
                           <div
-                            className={`inline-block w-auto max-w-full rounded-2xl px-4 py-3 shadow-sm ${
+                            className={`inline-block w-auto max-w-full rounded-xl px-3.5 py-2.5 ${
                               isOther
-                                ? 'bg-white text-gray-800 border border-gray-200'
+                                ? 'bg-gray-100 text-gray-900'
                                 : 'bg-blue-500 text-white'
-                            } ${!isOther && showTime ? 'rounded-br-md' : ''} ${isOther && showTime ? 'rounded-bl-md' : ''}`}
+                            } ${!isOther && showTime ? 'rounded-br-sm' : ''} ${isOther && showTime ? 'rounded-bl-sm' : ''}`}
                           >
-                            <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">
+                            <p className="whitespace-pre-wrap break-words text-[13px] leading-relaxed">
                               {message.content}
                             </p>
                           </div>
@@ -312,8 +335,8 @@ const MessageModal: React.FC = () => {
             <div ref={messagesEndRef} />
           </div>
           {/* Message Input */}
-          <div className="p-4 border-t border-gray-200">
-            <div className="flex items-center gap-3">
+          <div className="p-3.5 border-t border-gray-100">
+            <div className="flex items-center gap-2.5">
               <div className="flex-1 relative">
                 <input
                   type="text"
@@ -321,22 +344,22 @@ const MessageModal: React.FC = () => {
                   onChange={(e) => setNewMessage(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder="Type a message..."
-                  className="w-full px-4 py-3 pr-12 text-sm text-gray-700 placeholder-gray-400 bg-white 
-                           border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 
-                           focus:border-transparent transition-all duration-200"
+                  className="w-full px-4 py-2.5 pr-11 text-sm text-gray-700 placeholder-gray-400 bg-gray-50
+                           border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500
+                           focus:border-transparent focus:bg-white transition-all duration-200"
                 />
                 <button
                   onClick={sendMessage}
                   disabled={!newMessage.trim()}
-                  className={`absolute right-2 top-1/2 transform -translate-y-1/2 w-8 h-8 rounded-full
+                  className={`absolute right-1.5 top-1/2 transform -translate-y-1/2 w-7 h-7 rounded-lg
                             flex items-center justify-center transition-all duration-200 ${
-                            newMessage.trim() 
-                              ? 'bg-[#60A5FA] hover:bg-blue-500 text-white shadow-md hover:shadow-lg' 
-                              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                            newMessage.trim()
+                              ? 'bg-blue-500 hover:bg-blue-600 text-white'
+                              : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                           }`}
                   aria-label="Send message"
                 >
-                  <Send className="w-4 h-4" />
+                  <Send className="w-3.5 h-3.5" />
                 </button>
               </div>
             </div>

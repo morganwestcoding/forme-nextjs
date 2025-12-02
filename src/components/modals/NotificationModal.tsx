@@ -4,11 +4,15 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-import { Bell, User, Heart, MapPin, Clock, Check, CheckCheck, Calendar } from 'lucide-react';
+import {
+  Notification03Icon,
+  UserIcon,
+  FavouriteIcon,
+  Location01Icon,
+  Calendar03Icon
+} from 'hugeicons-react';
 import Modal from './Modal';
-import Heading from '../Heading';
 import useNotificationsModal from '@/app/hooks/useNotificationsModal';
-
 
 // Type based on your Prisma schema
 interface Notification {
@@ -19,22 +23,20 @@ interface Notification {
   isRead: boolean;
 }
 
-// Notification type to icon mapping
-const getNotificationIcon = (type: string) => {
+// Notification type to icon and color mapping
+const getNotificationStyle = (type: string) => {
   switch (type) {
     case 'follow':
-      return <User className="w-5 h-5 text-blue-500" />;
+      return { icon: UserIcon, color: 'text-neutral-700', bg: 'bg-neutral-50' };
     case 'favorite_listing':
-      return <MapPin className="w-5 h-5 text-green-500" />;
+      return { icon: Location01Icon, color: 'text-neutral-700', bg: 'bg-neutral-50' };
     case 'favorite_post':
-      return <Heart className="w-5 h-5 text-red-500" />;
+      return { icon: FavouriteIcon, color: 'text-neutral-700', bg: 'bg-neutral-50' };
     case 'reservation':
     case 'reservation_request':
-      return <Calendar className="w-5 h-5 text-purple-500" />;
-    case 'booking':
-      return <Clock className="w-5 h-5 text-orange-500" />;
+      return { icon: Calendar03Icon, color: 'text-neutral-700', bg: 'bg-neutral-50' };
     default:
-      return <Bell className="w-5 h-5 text-gray-500" />;
+      return { icon: Notification03Icon, color: 'text-neutral-700', bg: 'bg-neutral-50' };
   }
 };
 
@@ -43,7 +45,7 @@ const formatTimeAgo = (dateString: string) => {
   const date = new Date(dateString);
   const now = new Date();
   const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-  
+
   if (diffInHours < 1) return 'Just now';
   if (diffInHours < 24) return `${diffInHours}h ago`;
   if (diffInHours < 48) return 'Yesterday';
@@ -56,37 +58,44 @@ interface NotificationItemProps {
 }
 
 const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onMarkAsRead }) => {
+  const style = getNotificationStyle(notification.type);
+  const Icon = style.icon;
+
   return (
-    <div 
-      className={`flex items-start gap-3 p-3 rounded-lg transition-colors hover:bg-gray-50 ${
-        !notification.isRead ? 'bg-blue-50 border-l-4 border-blue-500' : ''
-      }`}
-    >
-      {/* Icon */}
-      <div className="flex-shrink-0 mt-1">
-        {getNotificationIcon(notification.type)}
+    <div className="relative mb-2">
+      <div
+        className={`group relative flex items-center gap-3.5 px-5 py-4 rounded-lg
+                    transition-all duration-200 cursor-pointer
+                    ${!notification.isRead
+                      ? 'bg-white hover:bg-neutral-50/60'
+                      : 'bg-white/50 hover:bg-white/80'
+                    }`}
+        onClick={() => !notification.isRead && onMarkAsRead(notification.id)}
+      >
+        {/* Icon */}
+        <div className={`flex-shrink-0 w-9 h-9 rounded-full ${style.bg}
+                        flex items-center justify-center
+                        transition-transform duration-200 group-hover:scale-105`}>
+          <Icon className={`w-[15px] h-[15px] ${style.color}`} strokeWidth={1.5} />
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 min-w-0">
+          <p className={`text-[13.5px] leading-[1.5] tracking-[-0.01em] ${
+            !notification.isRead ? 'font-medium text-neutral-900' : 'text-neutral-600'
+          }`}>
+            {notification.content}
+          </p>
+          <p className="text-[11.5px] text-neutral-500 mt-1.5">
+            {formatTimeAgo(notification.createdAt)}
+          </p>
+        </div>
+
+        {/* Unread indicator */}
+        {!notification.isRead && (
+          <div className="flex-shrink-0 w-1.5 h-1.5 bg-neutral-900 rounded-full" />
+        )}
       </div>
-      
-      {/* Content */}
-      <div className="flex-1 min-w-0">
-        <p className={`text-sm ${!notification.isRead ? 'font-medium text-gray-900' : 'text-gray-600'}`}>
-          {notification.content}
-        </p>
-        <p className="text-xs text-gray-500 mt-1">
-          {formatTimeAgo(notification.createdAt)}
-        </p>
-      </div>
-      
-      {/* Mark as read button */}
-      {!notification.isRead && (
-        <button
-          onClick={() => onMarkAsRead(notification.id)}
-          className="flex-shrink-0 p-1 text-gray-400 hover:text-blue-500 transition-colors"
-          title="Mark as read"
-        >
-          <Check className="w-4 h-4" />
-        </button>
-      )}
     </div>
   );
 };
@@ -163,68 +172,66 @@ const NotificationsModal = () => {
   };
 
   const styles = `
-    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
     .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 3px; }
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.2); }
-    .custom-scrollbar { scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.1) transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.06); border-radius: 2px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.12); }
+    .custom-scrollbar { scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.06) transparent; }
   `;
 
   const bodyContent = (
-    <div className="flex flex-col h-[580px] pb-2 pt-4 md:pt-6">
+    <div className="flex flex-col h-[600px] py-6">
       <style>{styles}</style>
-      
-      <div className="mx-auto w-full max-w-[520px]">
-        {/* Header */}
-        <div className="mb-6">
-          <Heading 
-            title="Notifications" 
-            subtitle="Stay updated with your latest activity" 
-          />
-        </div>
 
-        {/* Actions Bar */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <Bell className="w-5 h-5 text-gray-700" />
-            {unreadCount > 0 && (
-              <span className="bg-blue-500 text-white text-xs font-medium px-2 py-1 rounded-full">
-                {unreadCount} new
-              </span>
-            )}
-          </div>
-          
+      <div className="mx-auto w-full max-w-[460px] flex flex-col h-full">
+        {/* Header - Centered */}
+        <div className="text-center mb-8">
+          <h2 className="text-[15px] font-semibold text-neutral-900 tracking-tight">
+            Notifications
+          </h2>
           {unreadCount > 0 && (
-            <button
-              onClick={handleMarkAllAsRead}
-              className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
-            >
-              <CheckCheck className="w-4 h-4" />
-              Mark all read
-            </button>
+            <p className="text-[12px] text-neutral-500 mt-1">
+              {unreadCount} unread
+            </p>
           )}
         </div>
 
+        {/* Mark all read - Centered */}
+        {unreadCount > 0 && (
+          <div className="flex justify-center mb-6">
+            <button
+              onClick={handleMarkAllAsRead}
+              className="text-[11.5px] text-neutral-600 hover:text-neutral-900
+                         font-medium transition-colors duration-200
+                         px-4 py-1.5 hover:bg-neutral-50 rounded-full"
+            >
+              Mark all as read
+            </button>
+          </div>
+        )}
+
         {/* Notifications List */}
-        <div className="h-[420px] overflow-y-auto custom-scrollbar">
+        <div className="flex-1 overflow-y-auto custom-scrollbar -mx-6 px-6">
           {loading ? (
-            <div className="flex items-center justify-center h-32">
-              <div className="animate-spin w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+            <div className="flex items-center justify-center h-48">
+              <div className="animate-spin w-5 h-5 border-[1.5px] border-neutral-300 border-t-neutral-900 rounded-full"></div>
             </div>
           ) : notifications.length === 0 ? (
-            <div className="text-center mt-16 space-y-4">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Bell className="w-8 h-8 text-gray-400" />
+            <div className="text-center pt-20">
+              <div className="w-12 h-12 bg-neutral-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Notification03Icon className="w-5 h-5 text-neutral-400" strokeWidth={1.5} />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">No notifications yet</h3>
-                <p className="text-gray-600 text-sm max-w-xs mx-auto">
-                  When you get notifications, they&apos;ll show up here
+                <h3 className="text-[13.5px] font-medium text-neutral-900 mb-1">
+                  No notifications
+                </h3>
+                <p className="text-neutral-500 text-[12px] max-w-[240px] mx-auto leading-relaxed">
+                  When you receive notifications, they&apos;ll appear here
                 </p>
               </div>
             </div>
           ) : (
-            <div className="space-y-1">
+            <div>
               {notifications.map((notification) => (
                 <NotificationItem
                   key={notification.id}
@@ -246,7 +253,7 @@ const NotificationsModal = () => {
       onSubmit={() => {}}
       title="Notifications"
       body={bodyContent}
-      className="md:w-[520px]"
+      className="md:w-[480px]"
     />
   );
 };

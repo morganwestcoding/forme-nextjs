@@ -5,7 +5,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-import { Search, MessageCircle, Clock, User, ChevronRight } from 'lucide-react';
+import { Search, MessageCircle, User } from 'lucide-react';
 import { SafeConversation } from "@/app/types";
 import useMessageModal from "@/app/hooks/useMessageModal";
 import Modal from './Modal';
@@ -37,10 +37,10 @@ const initials = (name?: string | null) => {
 // Generate avatar colors based on name
 const getAvatarColor = (name?: string | null) => {
   if (!name) return 'bg-gray-500';
-  
+
   const colors = [
     'bg-blue-500',
-    'bg-green-500', 
+    'bg-green-500',
     'bg-yellow-500',
     'bg-purple-500',
     'bg-pink-500',
@@ -50,27 +50,27 @@ const getAvatarColor = (name?: string | null) => {
     'bg-red-500',
     'bg-cyan-500'
   ];
-  
+
   const index = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
   return colors[index % colors.length];
 };
 
-const Avatar: React.FC<{ 
-  src?: string | null; 
-  name?: string | null; 
-  size?: number; 
-}> = ({ 
-  src, 
-  name, 
-  size = 44
+const Avatar: React.FC<{
+  src?: string | null;
+  name?: string | null;
+  size?: number;
+}> = ({
+  src,
+  name,
+  size = 48
 }) => {
   const px = `${size}px`;
   const avatarColor = getAvatarColor(name);
-  
+
   return (
-    <div className="relative">
+    <div className="relative flex-shrink-0">
       <div
-        className={`relative rounded-full overflow-hidden flex items-center justify-center text-white font-medium
+        className={`relative rounded-full overflow-hidden flex items-center justify-center text-white font-semibold
                    ${!src ? avatarColor : 'bg-gray-100'}`}
         style={{ width: px, height: px }}
       >
@@ -84,7 +84,7 @@ const Avatar: React.FC<{
             onError={(e) => {
               const target = e.currentTarget.parentElement;
               if (target) {
-                target.className = `relative rounded-full overflow-hidden flex items-center justify-center text-white font-medium ${avatarColor}`;
+                target.className = `relative rounded-full overflow-hidden flex items-center justify-center text-white font-semibold ${avatarColor}`;
                 target.innerHTML = `<span style="font-size: ${size * 0.4}px">${initials(name)}</span>`;
               }
             }}
@@ -93,9 +93,9 @@ const Avatar: React.FC<{
           <span style={{ fontSize: `${size * 0.4}px` }}>{initials(name)}</span>
         )}
       </div>
-      
-      {/* Green online status indicator - always show */}
-      <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
+
+      {/* Green online status indicator */}
+      <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full"></div>
     </div>
   );
 };
@@ -104,84 +104,70 @@ const ConversationCard: React.FC<{
   conversation: SafeConversation;
   onClick: () => void;
 }> = ({ conversation, onClick }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  // Check if conversation is read from global state OR from lastMessage.isRead
   const isRead = readConversations.has(conversation.id) || (conversation.lastMessage?.isRead ?? true);
   const hasUnread = conversation.lastMessage && !isRead;
-  
+
+  const formatRelativeTime = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
+
+    if (diffInMinutes < 1) return 'now';
+    if (diffInMinutes < 60) return `${diffInMinutes}m`;
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) return `${diffInHours}h`;
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays === 1) return 'yesterday';
+    if (diffInDays < 7) return `${diffInDays}d`;
+    return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+  };
+
   return (
     <div
-      className="relative"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      className={`group cursor-pointer rounded-lg border bg-white transition-all duration-300
+                 hover:-translate-y-0.5 hover:shadow-lg
+                 ${hasUnread ? 'border-gray-300 shadow-sm' : 'border-gray-200'}`}
+      onClick={onClick}
     >
-      <div
-        className={`w-full flex items-center gap-3 cursor-pointer
-                   bg-white border rounded-xl p-3 transition-all duration-300 ease-out
-                   ${hasUnread ? 'border-blue-500 bg-blue-50/30' : 'border-gray-200'}
-                   ${isHovered ? 'shadow-lg border-gray-400' : 'shadow-sm'}`}
-        onClick={onClick}
-      >
+      <div className="flex items-center gap-3.5 p-3.5">
         {/* Avatar */}
-        <div className={`transition-transform duration-300 ${isHovered ? 'scale-105' : ''}`}>
-          <Avatar 
-            src={conversation.otherUser.image} 
-            name={conversation.otherUser.name} 
-            size={44}
+        <div className="relative flex-shrink-0">
+          <Avatar
+            src={conversation.otherUser.image}
+            name={conversation.otherUser.name}
+            size={52}
           />
         </div>
 
+        {/* Content */}
         <div className="flex-1 min-w-0">
-          {/* Name and message closer together */}
-          <div className="space-y-0.5">
-            <h3 className={`font-semibold truncate text-sm transition-colors duration-200 ${
-              hasUnread ? 'text-gray-900' : 'text-gray-800'
-            } ${isHovered ? 'text-blue-600' : ''}`}>
+          <div className="flex items-baseline justify-between gap-3 mb-0.5">
+            <h3 className={`font-semibold text-sm tracking-tight truncate ${
+              hasUnread ? 'text-gray-900' : 'text-gray-700'
+            }`}>
               {conversation.otherUser.name}
             </h3>
-            <p className={`text-xs truncate leading-tight transition-colors duration-200 ${
-              hasUnread ? 'text-gray-700' : 'text-gray-600'
-            } ${isHovered ? 'text-gray-800' : ''}`}>
+            {conversation.lastMessage?.createdAt && (
+              <span className={`text-[10px] flex-shrink-0 ${
+                hasUnread ? 'text-gray-500 font-medium' : 'text-gray-400'
+              }`}>
+                {formatRelativeTime(conversation.lastMessage.createdAt)}
+              </span>
+            )}
+          </div>
+
+          <div className="flex items-center justify-between gap-3">
+            <p className={`text-xs truncate ${
+              hasUnread ? 'text-gray-600 font-medium' : 'text-gray-500'
+            }`}>
               {conversation.lastMessage?.content || (
-                <span className="italic text-gray-500">Start a conversation</span>
+                <span className="italic text-gray-400">Say hello...</span>
               )}
             </p>
+            {hasUnread && (
+              <div className="w-1.5 h-1.5 bg-blue-500 rounded-full flex-shrink-0"></div>
+            )}
           </div>
-        </div>
-
-        <div className="flex flex-col items-end gap-1 shrink-0">
-          {/* Time */}
-          {conversation.lastMessage?.createdAt && (
-            <span className={`text-[10px] font-medium transition-colors duration-200 ${
-              isHovered ? 'text-blue-500' : 'text-gray-500'
-            }`}>
-              {new Date(conversation.lastMessage.createdAt).toLocaleTimeString([], {
-                hour: '2-digit',
-                minute: '2-digit',
-              })}
-            </span>
-          )}
-          
-          {/* Status indicator */}
-          {conversation.lastMessage && (
-            <div className="flex items-center gap-1">
-              {hasUnread ? (
-                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse shadow-sm"></div>
-              ) : (
-                <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
-              )}
-              <span className={`text-[10px] font-medium transition-colors duration-200 ${
-                hasUnread ? 'text-blue-600' : 'text-gray-500'
-              } ${isHovered ? 'text-blue-600' : ''}`}>
-                {hasUnread ? 'New' : 'Read'}
-              </span>
-            </div>
-          )}
-          
-          {/* Hover arrow */}
-          <ChevronRight className={`w-3 h-3 transition-all duration-300 ${
-            isHovered ? 'translate-x-1 opacity-100 text-blue-500' : 'opacity-0 text-gray-400'
-          }`} />
         </div>
       </div>
     </div>
@@ -220,18 +206,27 @@ const InboxModal = () => {
     }
   };
 
-  const openConversation = async (conversationId: string, otherUserId: string) => {
+  const openConversation = async (
+    conversationId: string,
+    otherUserId: string,
+    otherUserName?: string | null,
+    otherUserImage?: string | null
+  ) => {
     try {
       // Add to read conversations set immediately
       readConversations.add(conversationId);
-      
+
       // Trigger re-render by updating conversations state
       setConversations(prev => [...prev]);
-      
+
       // Call API to mark as read
       await axios.post('/api/messages/read', { conversationId });
-      
-      messageModal.onOpen(conversationId, otherUserId);
+
+      // Pass user data to modal
+      messageModal.onOpen(conversationId, otherUserId, {
+        name: otherUserName || null,
+        image: otherUserImage || null
+      });
       inboxModal.onClose();
     } catch (error) {
       console.error('Error updating message read status:', error);
@@ -313,11 +308,10 @@ const InboxModal = () => {
     return () => document.removeEventListener('mousedown', handleClick);
   }, [open]);
 
-  // FIXED: keyboard nav - only handle when dropdown is open AND this input is focused
+  // keyboard nav
   const onKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (e) => {
-    // Only handle keyboard nav if dropdown is open AND this is the focused element
     if (!open || e.target !== e.currentTarget) return;
-    
+
     if (e.key === 'ArrowDown') {
       e.preventDefault();
       setActiveIdx((idx) => Math.min(idx + 1, results.length - 1));
@@ -331,7 +325,6 @@ const InboxModal = () => {
       e.preventDefault();
       setOpen(false);
     }
-    // Let all other keys (including space) pass through normally
   };
 
   // keep active in view
@@ -358,19 +351,19 @@ const InboxModal = () => {
   const bodyContent = (
     <div className="flex flex-col h-[580px] pb-2 pt-4 md:pt-6 px-3">
       <style>{styles}</style>
-      
+
       <div className="mx-auto w-full max-w-[520px]">
         {/* Header */}
-        <div className="text-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Inbox</h2>
-          <p className="text-gray-600">Connect with your community</p>
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-1.5">Messages</h2>
+          <p className="text-sm text-gray-600">Connect with your community</p>
         </div>
 
         {/* Search */}
-        <div ref={containerRef} className="relative mb-6">
+        <div ref={containerRef} className="relative mb-5">
           <div className="relative">
             <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-              <Search className="w-5 h-5 text-gray-400" />
+              <Search className="w-4 h-4 text-gray-400" />
             </div>
             <input
               type="text"
@@ -379,7 +372,7 @@ const InboxModal = () => {
               onFocus={() => results.length && setOpen(true)}
               onKeyDown={onKeyDown}
               placeholder="Search for people to message..."
-              className="w-full h-12 pl-12 pr-4 text-sm bg-white border border-gray-200 rounded-lg
+              className="w-full h-11 pl-11 pr-4 text-sm bg-white border border-gray-200 rounded-lg
                          outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
                          text-gray-700 placeholder:text-gray-400 transition-all duration-200"
             />
@@ -389,24 +382,24 @@ const InboxModal = () => {
           {open && (
             <div
               ref={listRef}
-              className="absolute z-50 mt-2 w-full max-h-80 overflow-auto rounded-lg
+              className="absolute z-50 mt-2 w-full max-h-72 overflow-auto rounded-lg
                          border border-gray-200 bg-white shadow-lg custom-scrollbar"
             >
               {loading && (
                 <div className="px-4 py-3 text-sm text-gray-600 flex items-center gap-3">
                   <div className="animate-spin w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>
-                  Searching for people...
+                  Searching...
                 </div>
               )}
               {!loading && q.trim().length >= 2 && results.length === 0 && (
                 <div className="px-4 py-8 text-center">
                   <User className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-                  <div className="text-sm text-gray-600">No people found</div>
-                  <div className="text-xs text-gray-400 mt-1">Try a different search term</div>
+                  <div className="text-sm font-medium text-gray-700">No people found</div>
+                  <div className="text-xs text-gray-500 mt-1">Try a different search term</div>
                 </div>
               )}
               {!loading && results.length > 0 && (
-                <ul className="py-2">
+                <ul className="py-1">
                   {results.map((item, idx) => {
                     const active = idx === activeIdx;
                     return (
@@ -415,21 +408,18 @@ const InboxModal = () => {
                         data-idx={idx}
                         onMouseEnter={() => setActiveIdx(idx)}
                         onClick={() => handleSelect(item)}
-                        className={`px-3 py-2 cursor-pointer flex items-center gap-3 transition-colors ${
-                          active ? 'bg-blue-50' : 'hover:bg-gray-50'
+                        className={`px-3 py-2.5 cursor-pointer flex items-center gap-3 transition-colors ${
+                          active ? 'bg-gray-50' : 'hover:bg-gray-50'
                         }`}
                       >
                         <div className="shrink-0">
                           <Avatar src={item.image} name={item.title} size={36} />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <div className="text-sm font-medium text-gray-800 truncate">{item.title}</div>
+                          <div className="text-sm font-semibold text-gray-800 truncate">{item.title}</div>
                           {!!item.subtitle && (
-                            <div className="text-xs text-gray-600 truncate">{item.subtitle}</div>
+                            <div className="text-xs text-gray-500 truncate">{item.subtitle}</div>
                           )}
-                        </div>
-                        <div className="text-xs text-gray-400 font-medium">
-                          User
                         </div>
                       </li>
                     );
@@ -441,27 +431,30 @@ const InboxModal = () => {
         </div>
 
         {/* Conversations */}
-        <div className="h-[400px] overflow-y-auto overflow-x-visible custom-scrollbar">
-          <div className="space-y-3">
+        <div className="h-[400px] overflow-y-auto custom-scrollbar -mx-3 px-3">
+          <div className="space-y-3 py-1">
             {conversations.map((conversation) => (
               <ConversationCard
                 key={conversation.id}
                 conversation={conversation}
-                onClick={() => openConversation(conversation.id, conversation.otherUser.id)}
+                onClick={() => openConversation(
+                  conversation.id,
+                  conversation.otherUser.id,
+                  conversation.otherUser.name,
+                  conversation.otherUser.image
+                )}
               />
             ))}
 
             {conversations.length === 0 && (
-              <div className="text-center mt-16 space-y-4">
+              <div className="text-center pt-20 pb-16">
                 <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <MessageCircle className="w-8 h-8 text-gray-400" />
                 </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-800 mb-2">No conversations yet</h3>
-                  <p className="text-gray-600 text-sm max-w-xs mx-auto">
-                    Search for someone above to start your first conversation
-                  </p>
-                </div>
+                <h3 className="text-base font-semibold text-gray-800 mb-2">No conversations yet</h3>
+                <p className="text-sm text-gray-500 max-w-xs mx-auto">
+                  Search for someone above to start your first conversation
+                </p>
               </div>
             )}
           </div>

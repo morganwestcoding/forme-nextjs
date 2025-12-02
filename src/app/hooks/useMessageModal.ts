@@ -2,11 +2,17 @@
 
 import { create } from 'zustand';
 
+interface OtherUserData {
+  name: string | null;
+  image: string | null;
+}
+
 interface MessageModalStore {
   isOpen: boolean;
   conversationId: string | null;
   otherUserId: string | null;
-  onOpen: (conversationId: string, otherUserId: string) => void;
+  otherUserData: OtherUserData | null;
+  onOpen: (conversationId: string, otherUserId: string, otherUserData?: OtherUserData) => void;
   onClose: () => void;
 }
 
@@ -14,8 +20,10 @@ const useMessageModal = create<MessageModalStore>((set) => ({
   isOpen: false,
   conversationId: null,
   otherUserId: null,
-  onOpen: (conversationId: string, otherUserId: string) => set({ isOpen: true, conversationId, otherUserId }),
-  onClose: () => set({ isOpen: false, conversationId: null, otherUserId: null }),
+  otherUserData: null,
+  onOpen: (conversationId: string, otherUserId: string, otherUserData?: OtherUserData) =>
+    set({ isOpen: true, conversationId, otherUserId, otherUserData: otherUserData || null }),
+  onClose: () => set({ isOpen: false, conversationId: null, otherUserId: null, otherUserData: null }),
 }));
 
 export default useMessageModal;
