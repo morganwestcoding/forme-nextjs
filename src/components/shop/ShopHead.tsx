@@ -1,15 +1,15 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
-import axios from 'axios'; // ✅ add this
+import React, { useMemo, useState, useEffect } from 'react';
+import axios from 'axios';
 import Image from 'next/image';
 import ProductCard from './ProductCard';
 import WorkerCard from '../listings/WorkerCard';
 import PostCard from '../feed/PostCard';
 import { SafeProduct, SafeUser, SafeShop, SafePost } from '@/app/types';
 import useReservationModal from '@/app/hooks/useReservationModal';
-import HeartButton from '@/components/HeartButton';
 import { categories } from '@/components/Categories';
+import SectionHeader from '@/app/market/SectionHeader';
 
 interface ShopHeadProps {
   shop: SafeShop & {
@@ -47,7 +47,6 @@ const ShopHead: React.FC<ShopHeadProps> = ({
     listingId
   } = shop as any;
 
-  // ✅ Followers state + isFollowing
   const initialFollowers = useMemo<string[]>(
     () => (Array.isArray(followers) ? followers : []),
     [followers]
@@ -55,465 +54,511 @@ const ShopHead: React.FC<ShopHeadProps> = ({
   const [shopFollowers, setShopFollowers] = useState<string[]>(initialFollowers);
   const isFollowing = !!currentUser?.id && shopFollowers.includes(currentUser.id);
 
-  const [activeTab, setActiveTab] = useState<'Products' | 'Team' | 'Reviews' | 'Images' | 'Reels'>('Products');
+  type TabKey = 'About' | 'Products' | 'Team' | 'Posts' | 'Reviews';
+  const [activeTab, setActiveTab] = useState<TabKey | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
-  const [city, state] = (location ?? 'City, State').split(',').map((s: string) => s?.trim()) || [];
+  const [scrollY, setScrollY] = useState(0);
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  // Parallax effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const reservationModal = useReservationModal();
 
-  const mainImage =
-    (galleryImages && galleryImages[0]) ||
-    coverImage ||
-    logo ||
-    '/images/placeholder.jpg';
+  const mainImage = coverImage || logo || galleryImages?.[0] || '/placeholder.jpg';
 
-  const truncatedDescription =
-    description && description.length > 230
-      ? description.substring(0, 230)
-      : description;
+  const isOwner = !!currentUser?.id && currentUser.id === user?.id;
 
-  const followersCount = shopFollowers.length; // ✅ accurate count from state
-
-  // Filter products by category
-  const filteredProducts = useMemo(() => {
-    if (!selectedCategory) return Products;
-    return Products.filter((product: any) => {
-      const productCategory = product?.category?.name || product?.category || '';
-      return productCategory === selectedCategory;
-    });
-  }, [Products, selectedCategory]);
-
-  const handleCategorySelect = (categoryLabel: string) => {
-    if (selectedCategory === categoryLabel) {
-      setSelectedCategory('');
-    } else {
-      setSelectedCategory(categoryLabel);
-    }
+  const handleDropdownToggle = () => {
+    setShowDropdown(!showDropdown);
   };
 
   const handleReserveClick = () => {
+    if (!currentUser) return;
     if (listingId) {
-      window.location.href = `/listings/${listingId}#reserve`;
-      return;
+      window.location.href = `/listings/${listingId}`;
     }
-    console.log('Reservations coming soon for shops');
   };
 
-  // ✅ Follow/Unfollow for shops (optimistic)
   const handleToggleFollow = async () => {
-    if (!currentUser?.id) {
-      console.log('User must be logged in to follow');
-      return;
-    }
-    // optimistic
+    if (isOwner) return;
+    if (!currentUser?.id) return;
+
     setShopFollowers(prev =>
       prev.includes(currentUser.id)
         ? prev.filter(id => id !== currentUser.id)
         : [...prev, currentUser.id]
     );
+
     try {
       const res = await axios.post(`/api/follow/${shop.id}?type=shop`);
       const updated = res.data as { followers?: string[] };
       if (Array.isArray(updated?.followers)) {
         setShopFollowers(updated.followers);
       }
-    } catch (e) {
-      // revert on error
+    } catch (err) {
       setShopFollowers(prev =>
         prev.includes(currentUser.id)
           ? prev.filter(id => id !== currentUser.id)
           : [...prev, currentUser.id]
       );
-      console.error('Failed to follow/unfollow shop:', e);
     }
   };
 
+  const tabs: Array<{ key: TabKey; label: string }> = [
+    { key: 'About', label: 'About Us' },
+    { key: 'Products', label: 'Products' },
+    { key: 'Team', label: 'Team' },
+    { key: 'Posts', label: 'Posts' },
+    { key: 'Reviews', label: 'Reviews' },
+  ];
+
   return (
-    <div className="w-full">
-      {/* Card wrapper identical to ListingHead */}
-      <div className="w-full relative">
-        <div>
-          <div>
-            <div
-              className="rounded-2xl p-6 border border-gray-100/50 backdrop-blur-sm shadow-sm"
-              style={{ background: 'linear-gradient(145deg, #ffffff 0%, #fafbfc 100%)' }}
-            >
-              <div className="flex items-start gap-6 mb-8">
-                {/* Image */}
-                <div className="relative flex-shrink-0">
-                  <div className="w-[130px] h-[130px] rounded-xl overflow-hidden relative shadow-sm">
-                    <Image
-                      src={mainImage}
-                      alt={name}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                </div>
+    <>
+      {/* Dropdown backdrop */}
+      {showDropdown && (
+        <div
+          className="fixed inset-0 z-40"
+          onClick={() => setShowDropdown(false)}
+        />
+      )}
 
-                {/* Meta */}
-                <div className="flex-1 min-w-0">
-                  {/* Name row with badge + heart on the left, 3-dots on the right */}
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <h1
-                        className="text-xl font-bold tracking-tight text-gray-900 leading-tight"
-                        style={{ letterSpacing: '-0.025em' }}
-                      >
-                        {name}
-                      </h1>
-
-                      {/* Badge */}
-                      <div className="drop-shadow-sm text-white inline-flex -mr-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="26" height="26" fill="#60A5FA">
-                          <path d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z" stroke="currentColor" strokeWidth="1.5"/>
-                          <path d="M9 12.8929L10.8 14.5L15 9.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                      </div>
-
-                      <HeartButton
-                        listingId={listingId}
-                        currentUser={currentUser ?? undefined}
-                        variant="listingHead"
-                        favoriteIds={currentUser?.favoriteIds || []}
-                      />
-                    </div>
-
-                    {/* Right group */}
-                    <button className="p-1 rounded-full hover:bg-gray-100 transition text-neutral-600" aria-label="More options" type="button">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="stroke-current fill-current">
-                        <path d="M13.5 4.5C13.5 3.672 12.828 3 12 3s-1.5.672-1.5 1.5S11.172 6 12 6s1.5-.672 1.5-1.5Z" strokeWidth="1.5"/>
-                        <path d="M13.5 12c0-.828-.672-1.5-1.5-1.5s-1.5.672-1.5 1.5.672 1.5 1.5 1.5 1.5-.672 1.5-1.5Z" strokeWidth="1.5"/>
-                        <path d="M13.5 19.5c0-.828-.672-1.5-1.5-1.5s-1.5.672-1.5 1.5.672 1.5 1.5 1.5 1.5-.672 1.5-1.5Z" strokeWidth="1.5"/>
-                      </svg>
-                    </button>
-                  </div>
-
-                  {/* Location badge */}
-                  <div className="mb-3">
-                    <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-50 text-[#60A5FA] border border-[#60A5FA]">
-                      {city}{state ? `, ${state}` : ''}
-                    </span>
-                  </div>
-
-                  {/* Stats line */}
-                  <div className="mb-3 text-sm text-gray-600">
-                    <span className="font-semibold text-gray-900">4.8</span>
-                    <span className="text-gray-500">(156 reviews)</span>
-                    <span className="mx-2">•</span>
-                    <span className="font-semibold text-gray-900">{followersCount}</span>
-                    <span className="text-gray-500"> followers</span>
-                  </div>
-
-                  <div className="text-gray-700 text-sm leading-relaxed">
-                    {truncatedDescription}
-                  </div>
-                </div>
-              </div>
-
-              {/* CTAs */}
-              <div className="flex items-center justify-center pt-6 border-t border-gray-100">
-                <div className="flex gap-4">
-                  {/* ✅ Follow button: same style always, only text changes */}
-                  <button
-                    className="group inline-flex items-center justify-center px-24 py-3 rounded-xl text-sm font-medium bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 shadow-sm transition-all duration-200"
-                    onClick={handleToggleFollow}
-                    type="button"
-                  >
-                    <span>{isFollowing ? 'Following' : 'Follow'}</span>
-                  </button>
-
-                  <button
-                    onClick={handleReserveClick}
-                    className="group inline-flex items-center justify-center px-24 py-3 rounded-xl text-sm font-medium text-white shadow-sm hover:shadow-md transition-all duration-200 border border-[#60A5FA] hover:bg-blue-600"
-                    style={{ backgroundColor: '#60A5FA' }}
-                    type="button"
-                  >
-                    <span>Reserve</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-            {/* /card */}
-          </div>
-        </div>
-      </div>
-
-      {/* Tabs */}
-      <div className="mt-6">
-        <div className="flex border-b border-gray-200 relative justify-center">
-          <div className="flex gap-8">
-            {[
-              { key: 'Products', label: 'Products'},
-              { key: 'Team', label: 'Team'},
-              { key: 'Reviews', label: 'Reviews'},
-              { key: 'Images', label: 'Images'},
-              { key: 'Reels', label: 'Reels'},
-            ].map(({ key, label}) => (
+      {/* Dropdown Menu */}
+      {showDropdown && (
+        <div
+          className="fixed top-20 right-6 md:right-24 w-48 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-50"
+          style={{ maxHeight: 'calc(100vh - 100px)', overflowY: 'auto' }}
+        >
+          {!isOwner && currentUser && (
+            <>
               <button
-                key={key}
-                onClick={() => setActiveTab(key as 'Products' | 'Team' | 'Reviews' | 'Images' | 'Reels')}
-                className={`pb-4 pt-3 px-6 flex items-center justify-center text-sm gap-2.5 transition-all duration-200 relative group ${
-                  activeTab === key ? 'font-semibold' : 'text-gray-500 hover:text-gray-700'
-                }`}
-                style={activeTab === key ? { color: '#60A5FA' } : {}}
+                onClick={() => {
+                  handleToggleFollow();
+                  setShowDropdown(false);
+                }}
+                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3"
                 type="button"
               >
-
-                <span className={`transition-all duration-200 ${activeTab === key ? 'transform -translate-y-px' : ''}`}>
-                  {label}
-                </span>
-                {activeTab === key && (
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full" style={{ backgroundColor: '#60A5FA' }} />
-                )}
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                  <circle cx="9" cy="7" r="4"/>
+                  <line x1="19" y1="8" x2="19" y2="14"/>
+                  <line x1="22" y1="11" x2="16" y2="11"/>
+                </svg>
+                {isFollowing ? 'Unfollow' : 'Follow'}
               </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Category Navigation - Only show on Products tab */}
-      {activeTab === 'Products' && (
-        <div className="mt-4 py-4 bg-white border-y border-gray-400">
-          <div className="flex items-center justify-center">
-            {categories.map((category, index) => {
-              const isSelected = selectedCategory === category.label;
-              const isLast = index === categories.length - 1;
-
-              return (
-                <div key={category.label} className="relative flex items-center">
-                  {/* Category Button */}
-                  <button
-                    onClick={() => handleCategorySelect(category.label)}
-                    className={`
-                      px-6 py-2.5 text-sm transition-colors duration-150 rounded-lg
-                      ${isSelected
-                        ? 'text-[#60A5FA] hover:text-[#4F94E5]'
-                        : 'text-gray-600/90 hover:text-gray-700'
-                      }
-                    `}
-                    type="button"
-                  >
-                    {category.label}
-                  </button>
-
-                  {/* Vertical Divider */}
-                  {!isLast && (
-                    <div className="h-6 w-px bg-gray-400 mx-3" />
-                  )}
-                </div>
-              );
-            })}
-          </div>
+            </>
+          )}
         </div>
       )}
 
-      {/* Tab Content */}
-      <div className="px-4 sm:px-0 mt-6">
-        {/* PRODUCTS */}
-        {activeTab === 'Products' && (
-          <>
-            {filteredProducts.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredProducts.map((p: any, idx: number) => {
-                  // If it's already a SafeProduct (has id), use it
-                  const isSafe = typeof p?.id === 'string';
+      {/* Hero Section */}
+      <div className="-mx-6 md:-mx-24 -mt-2 md:-mt-8">
+        <div className="relative px-6 md:px-24 pt-10 overflow-hidden">
+          {/* Background Image with Parallax Effect */}
+          <div className="absolute inset-0 -mx-6 md:-mx-24 overflow-hidden">
+            <img
+              src={mainImage}
+              alt={name}
+              className="absolute w-full object-cover will-change-transform"
+              style={{
+                top: '-20%',
+                height: '140%',
+                transform: `translateY(${scrollY * 0.3}px)`
+              }}
+            />
+            {/* Gradient overlay */}
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background:
+                  'linear-gradient(to top,' +
+                  'rgba(0,0,0,0.65) 0%,' +
+                  'rgba(0,0,0,0.55) 15%,' +
+                  'rgba(0,0,0,0.40) 35%,' +
+                  'rgba(0,0,0,0.25) 55%,' +
+                  'rgba(0,0,0,0.15) 75%,' +
+                  'rgba(0,0,0,0.08) 100%)',
+              }}
+            />
+          </div>
 
-                  // Normalize light objects like { name, image, price }
-                  const productForCard = isSafe
-                    ? p
-                    : {
-                        // Required
-                        id: `placeholder-${idx}`,
-                        name: p?.name || 'Product',
-                        price: typeof p?.price === 'number' ? p.price : 0,
+          {/* Three-dot menu button */}
+          <div className="absolute top-6 right-6 md:right-24 z-50">
+            <button
+              onClick={handleDropdownToggle}
+              className="p-1 hover:bg-white/5 rounded-xl transition-colors relative z-50"
+              type="button"
+              aria-label="Options menu"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none">
+                <path d="M21 12C21 11.1716 20.3284 10.5 19.5 10.5C18.6716 10.5 18 11.1716 18 12C18 12.8284 18.6716 13.5 19.5 13.5C20.3284 13.5 21 12.8284 21 12Z" stroke="white" strokeWidth="1.5" fill='white'></path>
+                <path d="M13.5 12C13.5 11.1716 12.8284 10.5 12 10.5C11.1716 10.5 10.5 11.1716 10.5 12C10.5 12.8284 11.1716 13.5 12 13.5C12.8284 13.5 13.5 12.8284 13.5 12Z" stroke="white" strokeWidth="1.5" fill='white'></path>
+                <path d="M6 12C6 11.1716 5.32843 10.5 4.5 10.5C3.67157 10.5 3 11.1716 3 12C3 12.8284 3.67157 13.5 4.5 13.5C5.32843 13.5 6 12.8284 6 12Z" stroke="white" strokeWidth="1.5" fill='white'></path>
+              </svg>
+            </button>
+          </div>
 
-                        // Images
-                        mainImage: p?.mainImage || p?.image || '/images/placeholder.jpg',
-                        galleryImages: [],
+          {/* Content */}
+          <div className="relative z-10 pb-6">
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <h1 className="text-4xl font-bold text-white">
+                  {name}
+                </h1>
+                {/* Verified Badge */}
+                {isVerified && (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    height="24"
+                    fill="#60A5FA"
+                    aria-label="Verified"
+                  >
+                    <path
+                      d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z"
+                      stroke="white"
+                      strokeWidth="1"
+                      fill="#60A5FA"
+                    />
+                    <path
+                      d="M9 12.8929L10.8 14.5L15 9.5"
+                      stroke="white"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                )}
+              </div>
 
-                        // Inventory & misc
-                        inventory: 0,
-                        lowStockThreshold: 0,
-                        favoritedBy: [],
-                        compareAtPrice: null,
-                        isFeatured: false,
-
-                        // Category shape your ProductCard expects
-                        category: p?.category?.name
-                          ? { id: '', name: p.category.name }
-                          : { id: '', name: 'General' },
-                        categoryId: '',
-
-                        // Dates
-                        createdAt: new Date(0).toISOString(),
-                        updatedAt: new Date(0).toISOString(),
-
-                        // Optional fields
-                        description: p?.description || '',
-                        sku: null,
-                        barcode: null,
-                        weight: null,
-                        options: null,
-                        variants: null,
-                        reviews: null,
-
-                        // Shop ref so ProductCard can render "by {data.shop.name}"
-                        shop: { id: shop.id, name: shop.name },
-                        shopId: shop.id,
-                      };
+              <div className="flex items-center gap-3 text-white/80 mb-6">
+                <span className="text-sm">
+                  {location || 'Location'}
+                </span>
+                {storeHours && storeHours.length > 0 && (() => {
+                  const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+                  const todayHours = storeHours.find((h: any) => h.dayOfWeek === today);
+                  const isOpen = todayHours && !todayHours.isClosed;
 
                   return (
-                    <ProductCard
-                      key={productForCard.id}
-                      data={productForCard}
-                      currentUser={currentUser}
-                    />
+                    <>
+                      <span className="text-white/40">·</span>
+                      <span className="flex items-center gap-1.5">
+                        <div className={`w-1.5 h-1.5 rounded-full ${isOpen ? 'bg-emerald-400' : 'bg-red-400'}`} />
+                        <span className="text-sm">
+                          {isOpen ? `We're open until ${todayHours.closeTime}` : `We're closed today`}
+                        </span>
+                      </span>
+                    </>
                   );
-                })}
+                })()}
               </div>
-            ) : (
-              <div className="text-center text-gray-500 py-12">
-                <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm">
-                  <p className="font-medium">No products available</p>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3">
+                {currentUser && (
+                  <>
+                    <button
+                      onClick={handleReserveClick}
+                      className="bg-transparent border border-white/30 hover:border-white/50 text-white hover:text-white py-2.5 px-4 rounded-xl transition-all duration-300 text-sm flex items-center justify-center space-x-2"
+                      type="button"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <path d="M18 2V4M6 2V4" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M11.9955 13H12.0045M11.9955 17H12.0045M15.991 13H16M8 13H8.00897M8 17H8.00897" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M3.5 8H20.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M2.5 12.2432C2.5 7.88594 2.5 5.70728 3.75212 4.35364C5.00424 3 7.01949 3 11.05 3H12.95C16.9805 3 18.9958 3 20.2479 4.35364C21.5 5.70728 21.5 7.88594 21.5 12.2432V12.7568C21.5 17.1141 21.5 19.2927 20.2479 20.6464C18.9958 22 16.9805 22 12.95 22H11.05C7.01949 22 5.00424 22 3.75212 20.6464C2.5 19.2927 2.5 17.1141 2.5 12.7568V12.2432Z" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M3 8H21" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      <span>Reserve</span>
+                    </button>
+
+                    {!isOwner && (
+                      <button
+                        onClick={handleToggleFollow}
+                        className="bg-transparent border border-white/30 hover:border-white/50 text-white hover:text-white py-2.5 px-4 rounded-xl transition-all duration-300 text-sm flex items-center justify-center space-x-2"
+                        type="button"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.5">
+                          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                          <circle cx="9" cy="7" r="4"/>
+                          <line x1="19" y1="8" x2="19" y2="14"/>
+                          <line x1="22" y1="11" x2="16" y2="11"/>
+                        </svg>
+                        <span>{isFollowing ? 'Following' : 'Follow'}</span>
+                      </button>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Navigation Tabs */}
+          <div className="-mx-6 md:-mx-24 pb-3 relative z-10">
+            <div className="flex items-center justify-center">
+              {tabs.map(({ key, label }, index) => {
+                const isSelected = activeTab === key;
+                const selectedIndex = tabs.findIndex(t => t.key === activeTab);
+                const hasSelection = selectedIndex !== -1;
+
+                const handleTabClick = () => {
+                  setActiveTab(activeTab === key ? null : key);
+                };
+
+                const getDividerState = () => {
+                  if (!hasSelection) return 'vertical';
+                  if (index === selectedIndex - 1 || index === selectedIndex) return 'horizontal';
+                  return 'hidden';
+                };
+                const dividerState = getDividerState();
+
+                return (
+                  <div key={key} className="relative flex items-center">
+                    <button
+                      onClick={handleTabClick}
+                      className={`
+                        px-8 py-3.5 text-sm transition-all duration-200
+                        ${isSelected
+                          ? 'text-[#60A5FA] font-medium'
+                          : 'text-white/80 hover:text-white'
+                        }
+                      `}
+                      type="button"
+                    >
+                      {label}
+                    </button>
+
+                    {index < tabs.length - 1 && (
+                      <span
+                        className={`
+                          bg-white/60 transition-all duration-300 ease-out
+                          ${dividerState === 'horizontal' ? 'w-3 h-[0.5px] bg-[#60A5FA]' : ''}
+                          ${dividerState === 'vertical' ? 'w-[0.5px] h-4' : ''}
+                          ${dividerState === 'hidden' ? 'w-[0.5px] h-4 opacity-0' : ''}
+                        `}
+                      />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Tab Content */}
+      <div>
+        {/* About Section */}
+        {(activeTab === null || activeTab === 'About') && (
+          <>
+            {description && (
+              <>
+                <SectionHeader title="What We're All About" />
+                <div className="mb-6">
+                  <p className="text-gray-700 leading-relaxed text-[15px]">{description}</p>
+                </div>
+
+                {/* Engagement Metrics */}
+                {(shopFollowers.length > 0 || (posts?.length || 0) > 0) && (
+                  <div className="flex items-center gap-6 pb-8 mb-8 text-sm border-b border-gray-100">
+                    {shopFollowers.length > 0 && (
+                      <>
+                        <div className="flex items-baseline gap-1.5">
+                          <span className="font-semibold text-gray-700">{shopFollowers.length}</span>
+                          <span className="text-gray-500">followers</span>
+                        </div>
+                        <span className="text-gray-300">·</span>
+                      </>
+                    )}
+
+                    {(posts?.length || 0) > 0 && (
+                      <>
+                        <div className="flex items-baseline gap-1.5">
+                          <span className="font-semibold text-gray-700">{posts?.length || 0}</span>
+                          <span className="text-gray-500">posts</span>
+                        </div>
+                        <span className="text-gray-300">·</span>
+                      </>
+                    )}
+
+                    <div className="flex items-center gap-1.5">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="#FBBF24" stroke="#FBBF24" strokeWidth="1.5">
+                        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+                      </svg>
+                      <span className="font-semibold text-gray-700">4.8</span>
+                      <span className="text-gray-500">rating</span>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* Store Hours */}
+            {storeHours && storeHours.length > 0 && (
+              <div className="mb-12">
+                <SectionHeader title="Store Hours" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 max-w-4xl">
+                  {storeHours.map((hours: any, index: number) => {
+                    const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+                    const isToday = hours.dayOfWeek === today;
+
+                    return (
+                      <div
+                        key={index}
+                        className={`
+                          rounded-lg border transition-all duration-200
+                          ${isToday
+                            ? 'bg-gray-900 border-gray-900 text-white shadow-sm'
+                            : 'bg-white border-gray-200 hover:border-gray-300'
+                          }
+                        `}
+                      >
+                        <div className="px-3 py-2.5">
+                          <div className={`text-xs font-semibold mb-1 uppercase tracking-wide ${isToday ? 'text-white/70' : 'text-gray-500'}`}>
+                            {hours.dayOfWeek}
+                          </div>
+
+                          {hours.isClosed ? (
+                            <div className={`text-sm font-medium ${isToday ? 'text-white/80' : 'text-gray-400'}`}>
+                              Closed
+                            </div>
+                          ) : (
+                            <div className={`text-sm font-semibold tabular-nums ${isToday ? 'text-white' : 'text-gray-900'}`}>
+                              {hours.openTime}
+                              <span className={`text-xs mx-1 ${isToday ? 'text-white/50' : 'text-gray-400'}`}>→</span>
+                              {hours.closeTime}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
           </>
         )}
 
-        {/* TEAM */}
-        {activeTab === 'Team' && (shop.employees?.length ?? 0) > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {(shop.employees || []).map((employee: any, index: number) => (
-              <WorkerCard
-                key={employee.id || index}
-                employee={employee}
-                listingTitle={name}
-                data={{ title: name, imageSrc: mainImage, category: (shop as any)?.category }}
-                listing={shop as any}
-                currentUser={currentUser}
-                onFollow={() => console.log('Follow clicked for:', employee.fullName)}
-                onBook={() => console.log('Book clicked for:', employee.fullName)}
-              />
-            ))}
+        {/* Products Section */}
+        {(activeTab === null || activeTab === 'Products') && (
+          <div className="mb-12">
+            <SectionHeader title="Our Products" />
+
+            {Products.length === 0 ? (
+              <div className="text-center py-16">
+                <p className="text-base font-medium text-gray-600 mb-1">No products yet</p>
+                <p className="text-sm text-gray-500">Products will be listed here once added</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {Products.map((product, idx) => (
+                  <ProductCard
+                    key={product.id || idx}
+                    data={product}
+                    currentUser={currentUser}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         )}
 
-        {/* REVIEWS */}
-        {activeTab === 'Reviews' && (
-          <div className="text-center text-gray-500 py-12">
-            <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm">
-              <p className="font-medium">Reviews will be displayed here</p>
+        {/* Team Section */}
+        {(activeTab === null || activeTab === 'Team') && (
+          <div className="mb-12">
+            <SectionHeader title="Our Team" />
+
+            {employees.length === 0 ? (
+              <div className="text-center py-16">
+                <p className="text-base font-medium text-gray-600 mb-1">No team members yet</p>
+                <p className="text-sm text-gray-500">Team members will appear here once added</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {employees.map((employee: any, index: number) => (
+                  <WorkerCard
+                    key={employee.id || index}
+                    employee={employee}
+                    listingTitle={name}
+                    data={{ title: name, imageSrc: mainImage, category: (shop as any)?.category }}
+                    listing={shop as any}
+                    currentUser={currentUser}
+                    onFollow={() => {}}
+                    onBook={() => {}}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Posts Section */}
+        {(activeTab === null || activeTab === 'Posts') && (
+          <div className="mb-12">
+            <SectionHeader title="Gallery" />
+
+            {(!galleryImages || galleryImages.length === 0) && (!posts || posts.length === 0) ? (
+              <div className="text-center py-16">
+                <p className="text-base font-medium text-gray-600 mb-1">No posts yet</p>
+                <p className="text-sm text-gray-500">Share photos and videos to showcase your work</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                {galleryImages && galleryImages.length > 0 && (
+                  galleryImages.map((image: string, index: number) => (
+                    <div
+                      key={`image-${index}`}
+                      className="relative rounded-2xl overflow-hidden border border-gray-100 hover:shadow-md transition-all duration-200 group"
+                      style={{ aspectRatio: '1 / 1' }}
+                    >
+                      <img
+                        src={image}
+                        alt={`${name} - Image ${index + 1}`}
+                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                    </div>
+                  ))
+                )}
+
+                {posts && posts.length > 0 && (
+                  posts.map(post => (
+                    <PostCard
+                      key={post.id}
+                      post={post}
+                      currentUser={currentUser}
+                      categories={categories}
+                      variant="listing"
+                    />
+                  ))
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Reviews Section */}
+        {(activeTab === null || activeTab === 'Reviews') && (
+          <div className="mb-12">
+            <SectionHeader title="Reviews" />
+            <div className="text-center py-16">
+              <p className="text-base font-medium text-gray-600 mb-1">No reviews yet</p>
+              <p className="text-sm text-gray-500">Reviews from customers will appear here</p>
             </div>
           </div>
         )}
-
-        {/* IMAGES */}
-        {activeTab === 'Images' && (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {galleryImages && galleryImages.length > 0 ? (
-              galleryImages.map((image: string, index: number) => (
-                <div
-                  key={index}
-                  className="aspect-square relative rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 group"
-                >
-                  <Image
-                    src={image}
-                    alt={`${name} - Image ${index + 1}`}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-              ))
-            ) : (
-              <div className="col-span-full text-center text-gray-500 py-12">
-                <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm">
-                  <p className="font-medium">No images available</p>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* REELS */}
-        {activeTab === 'Reels' && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {posts && posts.length > 0 ? (
-              posts.map((post) => (
-                <PostCard
-                  key={post.id}
-                  post={post}
-                  currentUser={currentUser}
-                  categories={categories}
-                />
-              ))
-            ) : (
-              <div className="col-span-full text-center text-gray-500 py-12">
-                <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm">
-                  <p className="font-medium">No reels available</p>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
       </div>
-    </div>
+    </>
   );
 };
-
-// --- tiny inline icons to keep file self-contained, same as your ListingHead vibe ---
-function IconProducts() {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-         viewBox="0 0 24 24" color="currentColor" fill="none">
-      <path d="M7.998 16H11.998M7.998 11H15.998" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-      <path d="M7.5 3.5C5.944 3.547 5.017 3.72 4.375 4.362C3.496 5.242 3.496 6.657 3.496 9.488V15.994C3.496 18.826 3.496 20.241 4.375 21.121C5.253 22 6.668 22 9.496 22H14.496C17.324 22 18.739 22 19.617 21.121C20.496 20.241 20.496 18.826 20.496 15.994V9.488C20.496 6.657 20.496 5.242 19.617 4.362C18.976 3.72 18.048 3.547 16.492 3.5" stroke="currentColor" strokeWidth="1.5"/>
-      <path d="M7.496 3.75C7.496 2.784 8.28 2 9.246 2H14.746C15.713 2 16.496 2.784 16.496 3.75C16.496 4.717 15.713 5.5 14.746 5.5H9.246C8.28 5.5 7.496 4.717 7.496 3.75Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
-    </svg>
-  );
-}
-function IconTeam() {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-         viewBox="0 0 24 24" color="currentColor" fill="none">
-      <path d="M15 8C15 9.657 13.657 11 12 11C10.343 11 9 9.657 9 8C9 6.343 10.343 5 12 5C13.657 5 15 6.343 15 8Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M16 4C17.657 4 19 5.343 19 7C19 8.223 18.268 9.275 17.218 9.742" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M13.714 14H10.286C7.919 14 6 15.919 6 18.286C6 19.233 6.767 20 7.714 20H16.286C17.233 20 18 19.233 18 18.286C18 15.919 16.081 14 13.714 14Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M17.714 13C20.081 13 22 14.919 22 17.286C22 18.233 21.233 19 20.286 19" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M8 4C6.343 4 5 5.343 5 7C5 8.223 5.732 9.275 6.782 9.742" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M3.714 19C2.768 19 2 18.233 2 17.286C2 14.919 3.919 13 6.286 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  );
-}
-function IconReviews() {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-         viewBox="0 0 24 24" color="currentColor" fill="none">
-      <path d="M13.728 3.444L15.487 6.993C15.727 7.487 16.367 7.961 16.907 8.051L20.097 8.586C22.137 8.929 22.617 10.421 21.147 11.892L18.667 14.393C18.247 14.816 18.017 15.633 18.147 16.218L18.857 19.312C19.417 21.762 18.127 22.71 15.977 21.43L12.988 19.645C12.448 19.323 11.558 19.323 11.008 19.645L8.018 21.43C5.879 22.71 4.579 21.752 5.139 19.312L5.849 16.218C5.978 15.633 5.749 14.816 5.329 14.393L2.849 11.892C1.389 10.421 1.859 8.929 3.899 8.586L7.088 8.051C7.618 7.961 8.258 7.487 8.498 6.993L10.258 3.444C11.218 1.519 12.778 1.519 13.728 3.444Z"
-            stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  );
-}
-function IconImages() {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-         viewBox="0 0 24 24" color="currentColor" fill="none">
-      <path d="M3 16L7.47 11.53C7.809 11.191 8.27 11 8.75 11C9.23 11 9.691 11.191 10.03 11.53L14 15.5M15.5 17L14 15.5M21 16L18.53 13.53C18.191 13.191 17.73 13 17.25 13C16.77 13 16.309 13.191 15.97 13.53L14 15.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M15.5 8C15.776 8 16 7.776 16 7.5C16 7.224 15.776 7 15.5 7M15.5 8C15.224 8 15 7.776 15 7.5C15 7.224 15.224 7 15.5 7M15.5 8V7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M3.698 19.747C2.5 18.345 2.5 16.23 2.5 12C2.5 7.77 2.5 5.655 3.698 4.253C3.868 4.054 4.054 3.868 4.253 3.698C5.655 2.5 7.77 2.5 12 2.5C16.23 2.5 18.345 2.5 19.747 3.698C19.946 3.868 20.132 4.054 20.302 4.253C21.5 5.655 21.5 7.77 21.5 12C21.5 16.23 21.5 18.345 20.302 19.747C20.132 19.946 19.946 20.132 19.747 20.302C18.345 21.5 16.23 21.5 12 21.5C7.77 21.5 5.655 21.5 4.253 20.302C4.054 20.132 3.868 19.946 3.698 19.747Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  );
-}
-function IconReels() {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-         viewBox="0 0 24 24" color="currentColor" fill="none">
-      <path d="M18.974 15.022C18.98 14.993 19.021 14.993 19.026 15.022C19.33 16.508 20.492 17.67 21.979 17.974C22.007 17.98 22.007 18.021 21.979 18.026C20.492 18.33 19.33 19.492 19.026 20.979C19.021 21.007 18.98 21.007 18.974 20.979C18.67 19.492 17.508 18.33 16.022 18.026C15.993 18.021 15.993 17.98 16.022 17.974C17.508 17.67 18.67 16.508 18.974 15.022Z" stroke="currentColor" strokeWidth="1.5"/>
-      <path d="M14.647 12.673C15.388 12.153 15.759 11.893 15.907 11.516C16.031 11.202 16.031 10.798 15.907 10.484C15.759 10.107 15.388 9.847 14.647 9.327C14.127 8.963 13.589 8.602 13.117 8.316C12.723 8.079 12.259 7.823 11.793 7.578C11.005 7.163 10.611 6.956 10.23 7.008C9.913 7.051 9.583 7.252 9.388 7.52C9.154 7.843 9.124 8.307 9.066 9.235C9.027 9.846 9 10.466 9 11C9 11.534 9.027 12.155 9.066 12.765C9.124 13.693 9.154 14.157 9.388 14.48C9.583 14.748 9.913 14.949 10.23 14.992C10.611 15.044 11.005 14.837 11.793 14.422C12.259 14.177 12.723 13.922 13.117 13.683C13.589 13.398 14.127 13.037 14.647 12.673Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-      <path d="M21.872 14.836C22 13.923 22 12.728 22 11C22 8.2 22 6.8 21.455 5.73C20.976 4.789 20.211 4.024 19.27 3.545C18.2 3 16.8 3 14 3H10C7.2 3 5.8 3 4.73 3.545C3.789 4.024 3.024 4.789 2.545 5.73C2 6.8 2 8.2 2 11C2 13.8 2 15.2 2.545 16.27C3.024 17.211 3.789 17.976 4.73 18.455C5.8 19 7.2 19 10 19H13.426" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  );
-}
 
 export default ShopHead;

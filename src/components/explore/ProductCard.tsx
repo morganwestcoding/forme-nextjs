@@ -1,6 +1,8 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import SmartBadgeProduct from './SmartBadgeProduct';
 
 interface Product {
   id: string;
@@ -25,76 +27,94 @@ const ProductCard: React.FC<ProductCardProps> = ({
   onAddToCart
 }) => {
   const router = useRouter();
-  
-  const handleAddToCart = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (onAddToCart && product.inStock) {
-      onAddToCart(product.id);
-    }
-  };
-  
+
   return (
-    <div 
-      className="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-100 hover:shadow-md transition cursor-pointer"
+    <div
       onClick={() => router.push(`/products/${product.id}`)}
+      className="
+        group cursor-pointer relative overflow-hidden
+        rounded-xl bg-white transition-all duration-300
+        hover:-translate-y-1 hover:scale-[1.01] hover:shadow-md
+        max-w-[250px]"
     >
-      <div className="relative aspect-square w-full overflow-hidden">
+      {/* Background image + product-specific gradient (more balanced) */}
+      <div className="absolute inset-0 z-0">
+        <Image
+          src={product.imageSrc}
+          alt={product.title}
+          fill
+          className="object-cover"
+          sizes="(max-width:768px) 100vw, 33vw"
+          priority={false}
+        />
+        {/* Product card has a more balanced gradient - darker at both top and bottom */}
         <div
-          className="h-full w-full"
-          style={{ 
-            backgroundImage: `url(${product.imageSrc})`, 
-            backgroundSize: 'cover', 
-            backgroundPosition: 'center'
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              'linear-gradient(to bottom,' +
+              'rgba(0,0,0,0.50) 0%,' +
+              'rgba(0,0,0,0.30) 15%,' +
+              'rgba(0,0,0,0.10) 30%,' +
+              'rgba(0,0,0,0.00) 45%,' +
+              'rgba(0,0,0,0.00) 55%,' +
+              'rgba(0,0,0,0.10) 70%,' +
+              'rgba(0,0,0,0.40) 85%,' +
+              'rgba(0,0,0,0.75) 100%)',
           }}
         />
-        {!product.inStock && (
-          <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-medium py-0.5 px-2 rounded">
-            Out of stock
-          </div>
-        )}
-        <div className="absolute bottom-2 left-2 flex items-center bg-white bg-opacity-90 rounded-full px-2 py-0.5">
-          <span className="text-amber-500 mr-1">★</span>
-          <span className="text-xs font-medium">{product.rating.toFixed(1)}</span>
-        </div>
-        
-        {onAddToCart && (
-          <button
-            onClick={handleAddToCart}
-            disabled={!product.inStock}
-            className={`
-              absolute bottom-2 right-2 p-2 rounded-full
-              ${product.inStock 
-                ? 'bg-[#F08080] hover:bg-[#E57373] text-white' 
-                : 'bg-gray-200 text-gray-400 cursor-not-allowed'}
-              transition
-            `}
-          >
-            <svg 
-              xmlns="http://www.w3.org/2000/svg" 
-              width="16" 
-              height="16" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
-              strokeWidth="2" 
-              strokeLinecap="round" 
-              strokeLinejoin="round"
-            >
-              <circle cx="9" cy="21" r="1"></circle>
-              <circle cx="20" cy="21" r="1"></circle>
-              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-            </svg>
-          </button>
-        )}
       </div>
-      
-      <div className="p-3">
-        <p className="text-xs text-gray-500 mb-1">{product.brand}</p>
-        <h3 className="font-medium text-sm mb-1 truncate">{product.title}</h3>
-        <div className="flex items-center justify-between">
-          <p className="font-semibold text-sm">${product.price.toFixed(2)}</p>
-          <p className="text-xs text-gray-500 truncate max-w-[100px]">{product.vendorName}</p>
+
+      <div className="relative z-10">
+        <div className="relative h-[350px]">
+          {/* Price tag - distinctive product card feature */}
+          <div className="absolute top-4 left-4 z-20">
+            <div className="bg-white/95 backdrop-blur-sm text-gray-900 font-semibold text-sm px-3 py-1.5 rounded-lg shadow-lg">
+              ${product.price.toFixed(2)}
+            </div>
+          </div>
+
+          {/* Out of stock badge */}
+          {!product.inStock && (
+            <div className="absolute top-4 right-4 z-20 bg-rose-500 text-white text-xs font-medium py-1.5 px-3 rounded-lg shadow-lg">
+              Out of stock
+            </div>
+          )}
+
+          {/* Bottom info */}
+          <div className="absolute bottom-5 left-5 right-5 z-20">
+            {/* Brand */}
+            <div className="text-white/80 text-[10px] font-light mb-1 uppercase tracking-wide">
+              {product.brand}
+            </div>
+
+            {/* Title */}
+            <div className="mb-1">
+              <h1 className="text-white text-md leading-6 font-semibold drop-shadow line-clamp-2">
+                {product.title}
+              </h1>
+            </div>
+
+            {/* Vendor */}
+            <div className="text-white/90 text-[11px] leading-4 mb-4">
+              <div className="flex items-center gap-1">
+                <span className="truncate">by {product.vendorName}</span>
+              </div>
+            </div>
+
+            {/* Smart Badge with Rating and Checkout */}
+            <div className="flex items-center">
+              <SmartBadgeProduct
+                rating={product.rating}
+                inStock={product.inStock}
+                onRatingClick={() => {}}
+                onCheckoutClick={onAddToCart ? () => onAddToCart(product.id) : undefined}
+              />
+            </div>
+          </div>
         </div>
+
+        <div className="pb-2" />
       </div>
     </div>
   );

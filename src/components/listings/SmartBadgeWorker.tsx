@@ -63,7 +63,7 @@ const SmartBadgeWorker: React.FC<SmartBadgeWorkerProps> = ({
       {/* Book */}
       <button
         onClick={handleBookNowClick}
-        className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-white/90 hover:text-white transition-colors"
+        className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-white/90 hover:text-white transition-colors"
         type="button"
       >
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round">
