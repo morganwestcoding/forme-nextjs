@@ -759,7 +759,7 @@ const RegisterModal = () => {
           register={register}
           errors={errors}
           required
-          maxLength={300}
+          maxLength={1000}
           type="textarea"
           inputClassName="pt-8"
         />
