@@ -81,9 +81,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ data, currentUser, disabled =
       </div>
 
       <div className="relative z-10">
-        <div className="relative h-[350px]">
+        <div className="relative h-[280px]">
           {/* Heart Button - Using HeartButton component */}
-          <div className="absolute top-4 right-4 z-20">
+          <div className="absolute top-3 right-3 z-20">
             <HeartButton
               listingId={data.id}
               currentUser={currentUser}
@@ -93,31 +93,29 @@ const ProductCard: React.FC<ProductCardProps> = ({ data, currentUser, disabled =
 
           {/* Out of stock badge - moved below heart */}
           {!inStock && (
-            <div className="absolute top-16 right-4 z-20 bg-rose-500 text-white text-xs font-medium py-1.5 px-3 rounded-lg shadow-lg">
+            <div className="absolute top-12 right-3 z-20 bg-rose-500 text-white text-[10px] font-medium py-1 px-2 rounded-md shadow-lg">
               Out of stock
             </div>
           )}
 
           {/* Bottom info */}
-          <div className="absolute bottom-5 left-5 right-5 z-20">
+          <div className="absolute bottom-4 left-4 right-4 z-20">
             {/* Product Name */}
-            <div className="mb-1">
-              <h1 className="text-white text-md leading-6 font-semibold drop-shadow line-clamp-2">
+            <div className="mb-0.5">
+              <h1 className="text-white text-[15px] leading-tight font-semibold drop-shadow line-clamp-1">
                 {data.name}
               </h1>
             </div>
 
             {/* Shop Name */}
-            <div className="text-white/90 text-[11px] leading-4 mb-4">
-              <div className="flex items-center gap-1">
-                <span className="truncate">by {shopName}</span>
-              </div>
+            <div className="text-white/90 text-[10px] leading-tight mb-2.5">
+              <span className="truncate">by {shopName}</span>
             </div>
 
             {/* Badges: Price and Checkout */}
             <div className="flex items-center gap-2">
               {/* Price badge */}
-              <div className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-white/90">
+              <div className="flex items-center gap-1 text-xs text-white/90">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="12" height="12" className="text-emerald-400" fill="none">
                   <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5"></circle>
                   <path d="M15 9.5C15 8.11929 13.8807 7 12.5 7C11.1193 7 10 8.11929 10 9.5C10 10.8807 11.1193 12 12.5 12C13.8807 12 15 13.1193 15 14.5C15 15.8807 13.8807 17 12.5 17C11.1193 17 10 15.8807 10 14.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"></path>
@@ -126,7 +124,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ data, currentUser, disabled =
                 <span className="font-semibold">{priceLabel}</span>
               </div>
 
-              <span className="w-px h-4 bg-white/30" />
+              <span className="w-px h-3 bg-white/30" />
 
               {/* Checkout */}
               <button
@@ -135,25 +133,25 @@ const ProductCard: React.FC<ProductCardProps> = ({ data, currentUser, disabled =
                   handleAddToCart();
                 }}
                 disabled={!inStock}
-                className={`flex items-center gap-1 px-2.5 py-1.5 text-xs transition-colors ${
+                className={`flex items-center gap-1 text-xs transition-colors ${
                   inStock
                     ? 'text-white/90 hover:text-white'
                     : 'text-white/40 cursor-not-allowed'
                 }`}
                 type="button"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round">
                   <circle cx="9" cy="21" r="1"></circle>
                   <circle cx="20" cy="21" r="1"></circle>
                   <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
                 </svg>
-                <span>Checkout</span>
+                <span>Add</span>
               </button>
             </div>
           </div>
         </div>
 
-        <div className="pb-2" />
+        <div className="pb-1" />
       </div>
     </div>
   );

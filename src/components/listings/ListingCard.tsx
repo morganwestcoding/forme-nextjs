@@ -123,9 +123,9 @@ className="
       </div>
 
       <div className="relative z-10">
-        <div className="relative h-[350px]">
+        <div className="relative h-[280px]">
           {/* Heart - Using HeartButton component */}
-          <div className="absolute top-4 right-4 z-20">
+          <div className="absolute top-3 right-3 z-20">
             <HeartButton
               listingId={data.id}
               currentUser={currentUser}
@@ -134,26 +134,19 @@ className="
           </div>
 
           {/* Bottom info */}
-          <div className="absolute bottom-5 left-5 right-5 z-20">
+          <div className="absolute bottom-4 left-4 right-4 z-20">
             {/* Title with verification badge that stays with last word */}
-            <div className="mb-1">
-              <h1 className="text-white text-md leading-6 font-semibold drop-shadow">
+            <div className="mb-0.5">
+              <h1 className="text-white text-[15px] leading-tight font-semibold drop-shadow">
                 {renderTitleWithBadge(data.title)}
               </h1>
             </div>
 
             {/* Location - improved formatting */}
-            <div className="text-white/90 text-[11px] leading-4 mb-4">
-              {/* City, State on one line with better spacing */}
-              <div className="flex items-center gap-1 mb-1">
-                <span className="truncate">
-                  {city && state ? `${city}, ${state}` : city || state || 'Location not specified'}
-                </span>
-              </div>
-              {/* Distance below with subtle styling */}
-              <div className="opacity-80 mt-0.5 font-light text-[10px]">
-                2.3 miles away
-              </div>
+            <div className="text-white/90 text-[10px] leading-tight mb-2.5">
+              <span className="line-clamp-1">
+                {city && state ? `${city}, ${state}` : city || state || 'Location not specified'}
+              </span>
             </div>
 
             {/* Rating + open status */}
@@ -169,7 +162,7 @@ className="
           </div>
         </div>
 
-        <div className="pb-2" />
+        <div className="pb-1" />
       </div>
     </div>
   );

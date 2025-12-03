@@ -73,7 +73,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
   listing,
   currentUser,
 }) => {
-  const [/*isFollowing*/, setIsFollowing] = useState(false);
+  const [/*isFollowing*/, /*setIsFollowing*/] = useState(false);
   const [imageError, setImageError] = useState(false);
   const router = useRouter();
   const reservationModal = useReservationModal();
@@ -177,25 +177,6 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
     );
   };
 
-  // Function to format job title with smart line breaking
-  const formatJobTitle = (jobTitle: string | null | undefined, location: string) => {
-    if (!jobTitle) {
-      return `Specialist at ${location}`;
-    }
-
-    // If job title is long (> 15 characters), break after job title
-    if (jobTitle.length > 15) {
-      return (
-        <>
-          {jobTitle}
-          <br />
-          <span>at {location}</span>
-        </>
-      );
-    }
-
-    return `${jobTitle} at ${location}`;
-  };
 
   const shouldShowImage = profileImage && !imageError;
 
@@ -276,7 +257,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
 
       <div className="relative z-10">
         {/* Match ListingCard height structure */}
-        <div className="relative h-[350px]">
+        <div className="relative h-[280px]">
         {/* Heart - Using HeartButton component */}
         <div className="absolute top-4 right-4 z-20">
           <HeartButton
@@ -287,11 +268,11 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
         </div>
 
         {/* Avatar - Centered towards middle */}
-        <div className="absolute top-[32%] left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+        <div className="absolute top-[28%] left-1/2 transform -translate-x-1/2 -translate-y-1/2">
           <div className="relative transition-transform duration-300">
             {/* Profile Image or Initials Circle */}
             {shouldShowImage ? (
-              <div className="w-28 h-28 rounded-full overflow-hidden shadow-lg border-2 border-white relative">
+              <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg border-2 border-white relative">
                 <Image
                   src={profileImage}
                   alt={employee.fullName}
@@ -300,12 +281,12 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
                   onError={handleImageError}
                   onLoad={handleImageLoad}
                   priority={false}
-                  sizes="112px"
+                  sizes="80px"
                 />
               </div>
             ) : (
               <div
-                className="w-28 h-28 rounded-full flex items-center justify-center text-white text-2xl font-semibold shadow-lg border-2 border-white"
+                className="w-20 h-20 rounded-full flex items-center justify-center text-white text-xl font-semibold shadow-lg border-2 border-white"
                 style={{ backgroundColor: avatarBg }}
                 aria-label="Employee initials"
                 title={employee.fullName}
@@ -317,26 +298,17 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
         </div>
 
         {/* Bottom info - positioned like ListingCard */}
-        <div className="absolute bottom-5 left-5 right-5 z-20">
+        <div className="absolute bottom-4 left-4 right-4 z-20">
           {/* Name with verification badge */}
-          <div className="mb-1">
-            <h3 className="text-lg font-semibold text-white drop-shadow">
+          <div className="mb-0.5">
+            <h3 className="text-[15px] font-semibold text-white drop-shadow leading-tight">
               {renderNameWithBadge(employee.fullName)}
             </h3>
           </div>
 
           {/* Job title and location - improved formatting */}
-          <div className="text-white/90 text-[11px] leading-4 mb-4">
-            {/* Job title with smart line breaking */}
-            <div className="flex items-start gap-1 mb-1">
-              <span className="leading-4">
-                {formatJobTitle(employee.jobTitle, listingTitle)}
-              </span>
-            </div>
-            {/* Distance with same styling as ListingCard */}
-            <div className="opacity-80 mt-0.5 font-light text-[10px]">
-              2.3 miles away
-            </div>
+          <div className="text-white/90 text-[10px] leading-tight mb-2.5">
+            <span className="line-clamp-1">{employee.jobTitle || 'Specialist'} at {listingTitle}</span>
           </div>
 
           {/* SmartBadge */}
@@ -347,7 +319,6 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
               followerCount={employee.followerCount || 1247}
               onTimeClick={(e?: React.MouseEvent) => {
                 e?.stopPropagation();
-                // Open reservation modal with this employee pre-selected
                 if (currentUser) {
                   reservationModal.onOpen(listing, currentUser, undefined, employee.id);
                 }

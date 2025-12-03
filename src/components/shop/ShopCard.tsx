@@ -69,9 +69,9 @@ const ShopCard: React.FC<ShopCardProps> = ({
 
       <div className="relative z-10">
         {/* Match ListingCard height exactly */}
-        <div className="relative h-[350px]">
+        <div className="relative h-[280px]">
           {/* Heart - Using HeartButton component */}
-          <div className="absolute top-4 right-4 z-20">
+          <div className="absolute top-3 right-3 z-20">
             <HeartButton
               listingId={data.id}
               currentUser={currentUser}
@@ -80,18 +80,18 @@ const ShopCard: React.FC<ShopCardProps> = ({
           </div>
 
           {/* Bottom info */}
-          <div className="absolute bottom-5 left-5 right-5 z-20">
+          <div className="absolute bottom-4 left-4 right-4 z-20">
             {/* Title + inline badge (stays with last word) */}
-            <div className="mb-1">
-              <h1 className="text-white text-md leading-6 font-semibold drop-shadow inline">
+            <div className="mb-0.5">
+              <h1 className="text-white text-[15px] leading-tight font-semibold drop-shadow inline">
                 <span className="align-middle">{data.name}</span>
                 {data.isVerified && (
                   <span className="inline-flex items-center align-middle ml-1 translate-y-[1px]">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
-                      width="18"
-                      height="18"
+                      width="16"
+                      height="16"
                       className="text-white/90 shrink-0"
                       aria-label="Verified"
                     >
@@ -115,17 +115,10 @@ const ShopCard: React.FC<ShopCardProps> = ({
             </div>
 
             {/* Location - improved formatting */}
-            <div className="text-white/90 text-[11px] leading-4 mb-4">
-              {/* City, State on one line with better spacing */}
-              <div className="flex items-center gap-1 mb-1">
-                <span className="truncate">
-                  {city && state ? `${city}, ${state}` : city || state || 'Location not specified'}
-                </span>
-              </div>
-              {/* Product count below with subtle styling */}
-              <div className="opacity-80 mt-0.5 font-light text-[10px]">
-                {productCount} products
-              </div>
+            <div className="text-white/90 text-[10px] leading-tight mb-2.5">
+              <span className="line-clamp-1">
+                {city && state ? `${city}, ${state}` : city || state || 'Location not specified'} · {productCount} products
+              </span>
             </div>
 
             {/* Rating + followers */}
@@ -139,7 +132,7 @@ const ShopCard: React.FC<ShopCardProps> = ({
           </div>
         </div>
 
-        <div className="pb-2" />
+        <div className="pb-1" />
       </div>
     </div>
   );

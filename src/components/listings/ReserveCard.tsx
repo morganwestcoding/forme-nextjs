@@ -137,7 +137,7 @@ const ReserveCard: React.FC<ReserveCardProps> = ({
       className="group cursor-pointer rounded-xl bg-white border border-gray-200 overflow-hidden transition-all duration-300 hover:scale-[1.01] hover:-translate-y-1 hover:shadow-md hover:border-gray-300 max-w-[250px]"
     >
       {/* Header Image with Gradient Overlay */}
-      <div className="relative h-[120px] overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className="relative h-[100px] overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
         <img
           src={listing.imageSrc}
           alt={listing.title}
@@ -150,28 +150,23 @@ const ReserveCard: React.FC<ReserveCardProps> = ({
           style={{
             background: `linear-gradient(to top,
               rgba(0,0,0,0.60) 0%,
-              rgba(0,0,0,0.45) 20%,
-              rgba(0,0,0,0.25) 50%,
-              rgba(0,0,0,0.10) 75%,
+              rgba(0,0,0,0.35) 40%,
               rgba(0,0,0,0.00) 100%)`
           }}
         />
 
         {/* Business info overlay at bottom */}
-        <div className="absolute bottom-0 left-0 right-0 p-3">
-          <h3 className="text-sm font-semibold text-white drop-shadow leading-tight tracking-tight truncate">
+        <div className="absolute bottom-0 left-0 right-0 p-2.5">
+          <h3 className="text-[13px] font-semibold text-white drop-shadow leading-tight tracking-tight truncate">
             {listing.title}
           </h3>
-          <p className="text-[11px] text-white/90 drop-shadow truncate font-light mt-0.5">
-            {listing.location}
-          </p>
         </div>
 
         {/* Note indicator - top right */}
         {hasNote && (
           <div className="absolute top-2 right-2">
-            <div className="w-6 h-6 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+            <div className="w-5 h-5 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
                 <path d="M12 5H11C7.72876 5 5.84315 5 4.67157 6.17157C3.5 7.34315 3.5 9.22876 3.5 13V14C3.5 17.7712 3.5 19.6569 4.67157 20.8284C5.84315 22 7.72876 22 11 22L12 22C15.7712 22 17.6569 22 18.8284 20.8284C20 19.6569 20 17.7712 20 14V13C20 9.22876 20 7.34315 18.8284 6.17157C17.6569 5 15.7712 5 12 5Z" stroke="white" strokeWidth="2" strokeLinecap="round"/>
                 <path d="M7 17H12M7 13H16" stroke="white" strokeWidth="2" strokeLinecap="round"/>
               </svg>
@@ -181,84 +176,56 @@ const ReserveCard: React.FC<ReserveCardProps> = ({
       </div>
 
       {/* Content Section */}
-      <div className="p-5 space-y-4">
+      <div className="p-3 space-y-2">
 
-        {/* Status Badge */}
+        {/* Status + Price Row */}
         <div className="flex items-center justify-between">
-          <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md ${config.bg} transition-all duration-200`}>
-            <div className={`w-1.5 h-1.5 rounded-full ${config.dot} animate-pulse`} />
-            <span className={`text-[11px] font-semibold ${config.text} tracking-wide`}>
+          <div className={`flex items-center gap-1 px-2 py-0.5 rounded-md ${config.bg} transition-all duration-200`}>
+            <div className={`w-1.5 h-1.5 rounded-full ${config.dot}`} />
+            <span className={`text-[10px] font-semibold ${config.text}`}>
               {config.label}
             </span>
           </div>
-
-          {/* Price */}
-          <div className="flex items-center gap-1">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" className="text-emerald-500" fill="none">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5"></circle>
-              <path d="M15 9.5C15 8.11929 13.8807 7 12.5 7C11.1193 7 10 8.11929 10 9.5C10 10.8807 11.1193 12 12.5 12C13.8807 12 15 13.1193 15 14.5C15 15.8807 13.8807 17 12.5 17C11.1193 17 10 15.8807 10 14.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"></path>
-              <path d="M12.5 7V5.5M12.5 18.5V17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"></path>
-            </svg>
-            <span className="text-lg font-semibold text-gray-900 tracking-tight">
-              ${reservation.totalPrice}
-            </span>
-          </div>
-        </div>
-
-        {/* Divider */}
-        <div className="h-px bg-gray-100" />
-
-        {/* Service Name */}
-        <div>
-          <p className="text-[13px] font-semibold text-gray-900 leading-snug tracking-tight">
-            {reservation.serviceName}
-          </p>
-        </div>
-
-        {/* Employee */}
-        <div className="flex items-center gap-2">
-          <div className="w-5 h-5 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center flex-shrink-0">
-            <UserFullViewIcon size={12} color="#6b7280" />
-          </div>
-          <span className="text-xs text-gray-600 font-medium truncate">
-            {employeeName}
+          <span className="text-sm font-semibold text-gray-900">
+            ${reservation.totalPrice}
           </span>
         </div>
 
-        {/* Date & Time */}
-        <div className="flex items-center gap-2">
-          <div className="w-5 h-5 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center flex-shrink-0">
-            <Calendar02Icon size={11} color="#6b7280" />
+        {/* Service Name */}
+        <p className="text-[12px] font-semibold text-gray-900 leading-tight truncate">
+          {reservation.serviceName}
+        </p>
+
+        {/* Employee + Date inline */}
+        <div className="flex items-center justify-between text-[10px] text-gray-500">
+          <div className="flex items-center gap-1.5">
+            <UserFullViewIcon size={10} color="#9ca3af" />
+            <span className="truncate max-w-[80px]">{employeeName}</span>
           </div>
-          <div className="flex flex-col">
-            <span className="text-[11px] text-gray-900 font-medium leading-tight">
-              {format(new Date(reservation.date), 'MMM d, yyyy')}
-            </span>
-            <span className="text-[10px] text-gray-500 font-medium leading-tight">
-              {formatTime(reservation.time)}
-            </span>
+          <div className="flex items-center gap-1">
+            <Calendar02Icon size={10} color="#9ca3af" />
+            <span>{format(new Date(reservation.date), 'MMM d')} · {formatTime(reservation.time)}</span>
           </div>
         </div>
 
         {/* Action Buttons */}
         {showActions && (
-          <div className="pt-3 border-t border-gray-100">
+          <div className="pt-2 border-t border-gray-100">
             {isPending && !isTransitioning ? (
-              // Pending state - show both buttons
-              <div className="flex gap-2">
+              <div className="flex gap-1.5">
                 <button
                   disabled={disabled}
                   onClick={(e) => {
                     e.stopPropagation();
                     handleAccept();
                   }}
-                  className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-lg text-xs font-semibold transition-all duration-200 ${
+                  className={`flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-md text-[10px] font-semibold transition-all duration-200 ${
                     disabled
                       ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                      : 'bg-emerald-500/10 text-emerald-700 border border-emerald-500/20 hover:bg-emerald-500/20 hover:shadow-md hover:scale-[1.02]'
+                      : 'bg-emerald-500/10 text-emerald-700 border border-emerald-500/20 hover:bg-emerald-500/20'
                   }`}
                 >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
                     <path d="M8 12.5L10.5 15L16 9" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                   Accept
@@ -269,33 +236,32 @@ const ReserveCard: React.FC<ReserveCardProps> = ({
                     e.stopPropagation();
                     handleReject();
                   }}
-                  className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-lg text-xs font-semibold transition-all duration-200 ${
+                  className={`flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-md text-[10px] font-semibold transition-all duration-200 ${
                     disabled
                       ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                      : 'bg-rose-500/10 text-rose-700 border border-rose-500/20 hover:bg-rose-500/20 hover:shadow-md hover:scale-[1.02]'
+                      : 'bg-rose-500/10 text-rose-700 border border-rose-500/20 hover:bg-rose-500/20'
                   }`}
                 >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
                     <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                   {showAcceptDecline ? 'Decline' : 'Cancel'}
                 </button>
               </div>
             ) : (
-              // Confirmed/Declined state - show only cancel
               <button
                 disabled={disabled}
                 onClick={(e) => {
                   e.stopPropagation();
                   handleReject();
                 }}
-                className={`w-full flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-lg text-xs font-semibold transition-all duration-200 ${
+                className={`w-full flex items-center justify-center gap-1 py-1.5 px-2 rounded-md text-[10px] font-semibold transition-all duration-200 ${
                   disabled
                     ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                    : 'bg-gray-500/10 text-gray-700 border border-gray-500/20 hover:bg-gray-500/20 hover:shadow-md hover:scale-[1.02]'
+                    : 'bg-gray-500/10 text-gray-700 border border-gray-500/20 hover:bg-gray-500/20'
                 }`}
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
                   <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
                 Cancel

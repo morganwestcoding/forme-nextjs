@@ -221,17 +221,17 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
       </div>
 
       <div className="relative z-10">
-        <div className="relative h-[350px]">
+        <div className="relative h-[280px]">
           {/* Popular/New badges - top left */}
           {(service.popular || service.isNew) && (
-            <div className="absolute left-4 top-4 flex items-center gap-1.5 z-20">
+            <div className="absolute left-3 top-3 flex items-center gap-1.5 z-20">
               {service.popular && (
-                <span className="px-2.5 py-1 text-[10px] font-medium rounded-full backdrop-blur-md bg-white/15 text-white border border-white/30">
+                <span className="px-2 py-0.5 text-[9px] font-medium rounded-full backdrop-blur-md bg-white/15 text-white border border-white/30">
                   Popular
                 </span>
               )}
               {service.isNew && (
-                <span className="px-2.5 py-1 text-[10px] font-medium rounded-full backdrop-blur-md bg-white/15 text-white border border-white/30">
+                <span className="px-2 py-0.5 text-[9px] font-medium rounded-full backdrop-blur-md bg-white/15 text-white border border-white/30">
                   New
                 </span>
               )}
@@ -239,7 +239,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
           )}
 
           {/* Heart - top right */}
-          <div className="absolute top-4 right-4 z-20">
+          <div className="absolute top-3 right-3 z-20">
             <HeartButton
               listingId={service.id}
               currentUser={currentUser}
@@ -249,13 +249,13 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
 
           {/* Edit/Duplicate actions for owners - appears on hover */}
           {(isOwner || onEdit || onDuplicate) && (
-            <div className="absolute right-4 top-12 flex flex-col gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-20">
+            <div className="absolute right-3 top-11 flex flex-col gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-20">
               <button
                 aria-label={`Edit ${service.serviceName || 'service'}`}
                 onClick={goToEditThisService}
-                className="inline-flex h-8 w-8 items-center justify-center rounded-full backdrop-blur-md bg-white/15 text-white border border-white/30 hover:bg-white/25 transition"
+                className="inline-flex h-7 w-7 items-center justify-center rounded-full backdrop-blur-md bg-white/15 text-white border border-white/30 hover:bg-white/25 transition"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none">
                   <path d="M16.425 4.605L17.415 3.615c.82-.82 2.149-.82 2.97 0 .82.82.82 2.15 0 2.97l-0.99.99M16.425 4.605L9.766 11.264c-.508.508-.868 1.144-1.042 1.84L8 16l2.896-.724c.696-.174 1.332-.534 1.84-1.041l6.659-6.66M16.425 4.605l2.97 2.97" stroke="currentColor" strokeWidth="1.5" />
                   <path d="M19 13.5c0 3.288 0 4.931-0.908 6.038-.166.203-.352.389-.555.555C16.431 21 14.787 21 11.5 21H11c-3.771 0-5.657 0-6.828-1.172C3 18.657 3 16.771 3 13.5V13c0-3.287 0-4.931.908-6.038.166-.202.352-.388.555-.555C5.569 5.5 7.213 5.5 10.5 5.5" stroke="currentColor" strokeWidth="1.5" />
                 </svg>
@@ -265,9 +265,9 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                 <button
                   aria-label={`Duplicate ${service.serviceName || 'service'}`}
                   onClick={handleDuplicate}
-                  className="inline-flex h-8 w-8 items-center justify-center rounded-full backdrop-blur-md bg-white/15 text-white border border-white/30 hover:bg-white/25 transition"
+                  className="inline-flex h-7 w-7 items-center justify-center rounded-full backdrop-blur-md bg-white/15 text-white border border-white/30 hover:bg-white/25 transition"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none">
                     <path d="M8 8.5C8 7.12 9.12 6 10.5 6H16.5C17.88 6 19 7.12 19 8.5V14.5C19 15.88 17.88 17 16.5 17H10.5C9.12 17 8 15.88 8 14.5V8.5Z" stroke="currentColor" strokeWidth="1.5"/>
                     <path d="M6 10.5V15.5C6 17.985 8.015 20 10.5 20H15.5" stroke="currentColor" strokeWidth="1.5"/>
                   </svg>
@@ -278,10 +278,10 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
 
 
           {/* Bottom info - matches ListingCard/WorkerCard structure */}
-          <div className="absolute bottom-5 left-5 right-5 z-20">
+          <div className="absolute bottom-4 left-4 right-4 z-20">
             {/* Service Name with verification badge */}
-            <div className="mb-1">
-              <h3 className="text-white text-md leading-6 font-semibold drop-shadow">
+            <div className="mb-0.5">
+              <h3 className="text-white text-[15px] leading-tight font-semibold drop-shadow">
                 <span className="whitespace-nowrap">
                   {service.serviceName || 'Untitled Service'}
                   <VerificationBadge />
@@ -290,15 +290,8 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
             </div>
 
             {/* Category and location info */}
-            <div className="text-white/90 text-[11px] leading-4 mb-4">
-              <div className="flex items-center gap-1 mb-1">
-                <span className="truncate">
-                  {service.category} at {listingName}
-                </span>
-              </div>
-              <div className="opacity-80 mt-0.5 font-light text-[10px]">
-                {durationDisplay} • Available today
-              </div>
+            <div className="text-white/90 text-[10px] leading-tight mb-2.5">
+              <span className="line-clamp-1">{service.category} · {durationDisplay}</span>
             </div>
 
             {/* SmartBadgePrice - using dark variant for image background */}
@@ -323,7 +316,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
         </div>
 
         {/* Bottom padding to match ListingCard */}
-        <div className="pb-2" />
+        <div className="pb-1" />
       </div>
     </div>
   );
