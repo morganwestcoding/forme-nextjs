@@ -38,51 +38,30 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams, onNavigate }) =
     }
   };
 
-  const selectedIndex = categories.findIndex(c => c.label === currentCategory);
-  const hasSelection = selectedIndex !== -1;
-
-  // Determine divider state: adjacent to selected rotates horizontal, others disappear
-  const getDividerState = (index: number) => {
-    if (!hasSelection) return 'vertical'; // No selection = all vertical
-    if (index === selectedIndex - 1 || index === selectedIndex) return 'horizontal'; // Adjacent = rotate
-    return 'hidden'; // Others = disappear
-  };
-
   return (
-    <div className="-mx-6 md:-mx-24 pb-3 border-b-[0.75px] border-gray-400">
-      <div className="flex items-center justify-center">
-        {categories.map((category, index) => {
+    <div className="-mx-6 md:-mx-24 border-b border-neutral-200/50">
+      <div className="flex items-center justify-center gap-8">
+        {categories.map((category) => {
           const isSelected = currentCategory === category.label;
-          const dividerState = getDividerState(index);
 
           return (
-            <div key={category.label} className="relative flex items-center">
-              <button
-                onClick={() => handleCategorySelect(category.label)}
-                className={`
-                  px-8 py-3.5 text-sm transition-all duration-200
-                  ${isSelected
-                    ? 'text-[#60A5FA] font-medium'
-                    : 'text-gray-500 hover:text-gray-700'
-                  }
-                `}
-                type="button"
-              >
-                {category.label}
-              </button>
-
-              {/* Divider: vertical by default, rotates horizontal when adjacent to selected, disappears otherwise */}
-              {index < categories.length - 1 && (
-                <span
-                  className={`
-                    bg-gray-300 transition-all duration-300 ease-out
-                    ${dividerState === 'horizontal' ? 'w-3 h-[0.5px] bg-[#60A5FA]' : ''}
-                    ${dividerState === 'vertical' ? 'w-[0.5px] h-4' : ''}
-                    ${dividerState === 'hidden' ? 'w-[0.5px] h-4 opacity-0' : ''}
-                  `}
-                />
+            <button
+              key={category.label}
+              onClick={() => handleCategorySelect(category.label)}
+              className={`
+                relative pb-3 text-[13px] font-medium transition-all duration-200
+                ${isSelected
+                  ? 'text-neutral-900'
+                  : 'text-neutral-500 hover:text-neutral-700'
+                }
+              `}
+              type="button"
+            >
+              {category.label}
+              {isSelected && (
+                <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-neutral-900" />
               )}
-            </div>
+            </button>
           );
         })}
       </div>

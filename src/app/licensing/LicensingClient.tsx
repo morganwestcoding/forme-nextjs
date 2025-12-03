@@ -161,27 +161,36 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
 
           {/* Tab Navigation */}
           <div className="flex justify-center mt-12">
-            <div className="inline-flex items-center gap-3">
+            <div className="relative inline-flex items-center bg-gray-50 rounded-lg p-1 gap-1">
+              <div
+                className={`absolute top-1 bottom-1 bg-gray-900 rounded-md transition-all duration-300 ease-out ${
+                  activeTab === 'upload' ? 'left-1' : 'left-[calc(50%)]'
+                }`}
+                style={{
+                  width: 'calc(50% - 4px)',
+                }}
+              />
+
               <button
                 onClick={() => setActiveTab('upload')}
-                className={`px-6 py-3 rounded-xl border text-sm font-semibold tracking-tight transition-all duration-200 flex items-center gap-2 ${
+                className={`relative z-10 px-12 py-2.5 text-sm font-medium transition-colors duration-200 flex items-center gap-2 rounded-md ${
                   activeTab === 'upload'
-                    ? "bg-white border-blue-300 text-gray-900 shadow-sm"
-                    : "bg-white border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-900"
+                    ? "text-white"
+                    : "text-gray-600 hover:text-gray-900"
                 }`}
               >
-                <Upload01Icon size={14} strokeWidth={2.5} />
+                <Upload01Icon size={16} strokeWidth={2} color={activeTab === 'upload' ? 'white' : 'currentColor'} />
                 I Have a License
               </button>
               <button
                 onClick={() => setActiveTab('training')}
-                className={`px-6 py-3 rounded-xl border text-sm font-semibold tracking-tight transition-all duration-200 flex items-center gap-2 ${
+                className={`relative z-10 px-12 py-2.5 text-sm font-medium transition-colors duration-200 flex items-center gap-2 rounded-md ${
                   activeTab === 'training'
-                    ? "bg-white border-blue-300 text-gray-900 shadow-sm"
-                    : "bg-white border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-900"
+                    ? "text-white"
+                    : "text-gray-600 hover:text-gray-900"
                 }`}
               >
-                <SchoolIcon size={14} strokeWidth={2.5} />
+                <SchoolIcon size={16} strokeWidth={2} color={activeTab === 'training' ? 'white' : 'currentColor'} />
                 Need Training
               </button>
             </div>
@@ -192,51 +201,6 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
       {/* Upload Tab */}
       {activeTab === 'upload' && (
         <div className="max-w-6xl mx-auto px-8 lg:px-12 py-16">
-          {/* Benefits Grid */}
-          <div className="grid md:grid-cols-3 gap-4 mb-12">
-            <div className="group relative rounded-xl border p-8 transition-all duration-300 bg-white border-gray-200 hover:border-blue-300 hover:shadow-sm">
-              <div className="mb-8">
-                <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center mb-4 group-hover:bg-blue-100 transition-colors">
-                  <ShieldUserIcon size={20} color="#60A5FA" strokeWidth={2} />
-                </div>
-                <h3 className="text-xs font-semibold uppercase tracking-wider mb-4 text-gray-400">
-                  Build Trust
-                </h3>
-                <p className="text-[13px] text-gray-600">
-                  Verified badge increases booking rates by 3x
-                </p>
-              </div>
-            </div>
-
-            <div className="group relative rounded-xl border p-8 transition-all duration-300 bg-white border-gray-200 hover:border-blue-300 hover:shadow-sm">
-              <div className="mb-8">
-                <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center mb-4 group-hover:bg-blue-100 transition-colors">
-                  <StarIcon size={20} color="#60A5FA" strokeWidth={2} />
-                </div>
-                <h3 className="text-xs font-semibold uppercase tracking-wider mb-4 text-gray-400">
-                  Stand Out
-                </h3>
-                <p className="text-[13px] text-gray-600">
-                  Appear higher in search results and recommendations
-                </p>
-              </div>
-            </div>
-
-            <div className="group relative rounded-xl border p-8 transition-all duration-300 bg-white border-gray-200 hover:border-blue-300 hover:shadow-sm">
-              <div className="mb-8">
-                <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center mb-4 group-hover:bg-blue-100 transition-colors">
-                  <TimeScheduleIcon size={20} color="#60A5FA" strokeWidth={2} />
-                </div>
-                <h3 className="text-xs font-semibold uppercase tracking-wider mb-4 text-gray-400">
-                  Fast Process
-                </h3>
-                <p className="text-[13px] text-gray-600">
-                  Reviewed within 24-48 hours of submission
-                </p>
-              </div>
-            </div>
-          </div>
-
           {/* Status Messages */}
           {verificationStatus === 'pending' && (
             <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 flex items-start gap-4 mb-8">
@@ -279,6 +243,51 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
               </div>
             </div>
           )}
+
+          {/* Benefits Grid - Matching subscription card style */}
+          <div className="grid md:grid-cols-3 gap-4 mb-8">
+            <div className="group relative rounded-2xl border p-8 transition-all duration-300 bg-white border-gray-200 hover:border-gray-300 hover:shadow-md">
+              <div className="mb-8">
+                <h3 className="text-xs font-semibold uppercase tracking-wider mb-4 text-gray-400">
+                  Build Trust
+                </h3>
+                <div className="mb-4">
+                  <ShieldUserIcon size={26} color="#6b7280" strokeWidth={1.5} />
+                </div>
+                <p className="text-[13px] text-gray-600">
+                  Verified badge increases booking rates by 3x
+                </p>
+              </div>
+            </div>
+
+            <div className="group relative rounded-2xl border p-8 transition-all duration-300 bg-white border-gray-200 hover:border-gray-300 hover:shadow-md">
+              <div className="mb-8">
+                <h3 className="text-xs font-semibold uppercase tracking-wider mb-4 text-gray-400">
+                  Stand Out
+                </h3>
+                <div className="mb-4">
+                  <StarIcon size={26} color="#6b7280" strokeWidth={1.5} />
+                </div>
+                <p className="text-[13px] text-gray-600">
+                  Appear higher in search results and recommendations
+                </p>
+              </div>
+            </div>
+
+            <div className="group relative rounded-2xl border p-8 transition-all duration-300 bg-white border-gray-200 hover:border-gray-300 hover:shadow-md">
+              <div className="mb-8">
+                <h3 className="text-xs font-semibold uppercase tracking-wider mb-4 text-gray-400">
+                  Fast Process
+                </h3>
+                <div className="mb-4">
+                  <TimeScheduleIcon size={26} color="#6b7280" strokeWidth={1.5} />
+                </div>
+                <p className="text-[13px] text-gray-600">
+                  Reviewed within 24-48 hours of submission
+                </p>
+              </div>
+            </div>
+          </div>
 
           {/* Upload Section */}
           <div className="bg-white rounded-xl border border-gray-200 p-8 mb-8">
@@ -325,7 +334,7 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
 
             {/* Info Grid */}
             <div className="grid md:grid-cols-2 gap-4">
-              <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+              <div className="bg-gray-50 border border-gray-200 rounded-xl p-6">
                 <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2 text-sm tracking-tight">
                   <BookOpen02Icon size={16} color="#60A5FA" strokeWidth={2} />
                   Acceptable Documents
@@ -350,7 +359,7 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
                 </ul>
               </div>
 
-              <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+              <div className="bg-gray-50 border border-gray-200 rounded-xl p-6">
                 <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2 text-sm tracking-tight">
                   <Clock01Icon size={16} color="#60A5FA" strokeWidth={2} />
                   Verification Timeline
@@ -414,27 +423,27 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
       {activeTab === 'training' && (
         <div className="max-w-6xl mx-auto px-8 lg:px-12 py-16">
           {/* Hero Section */}
-          <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-8 text-white mb-12">
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-8 mb-12">
             <div className="flex items-start gap-6">
-              <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                <SchoolIcon size={24} />
+              <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center flex-shrink-0 border border-blue-200">
+                <SchoolIcon size={20} color="#60A5FA" strokeWidth={1.5} />
               </div>
               <div className="flex-1">
-                <h2 className="text-2xl font-semibold mb-2 tracking-tight">Get Verified Through Our Trusted Partners</h2>
-                <p className="text-white/90 mb-6 text-[13px]">
+                <h2 className="text-xl font-semibold mb-2 tracking-tight text-gray-900">Get Verified Through Our Trusted Partners</h2>
+                <p className="text-gray-600 mb-4 text-[13px]">
                   Don&apos;t have a license? No problem! Partner with accredited institutions to get certified and verified on our platform.
                 </p>
                 <div className="flex flex-wrap gap-2 text-[13px]">
-                  <div className="flex items-center gap-2 bg-white/20 px-3 py-1.5 rounded-full">
-                    <CheckmarkCircle02Icon size={14} />
+                  <div className="flex items-center gap-2 bg-white border border-blue-200 text-gray-700 px-3 py-1.5 rounded-full">
+                    <CheckmarkCircle02Icon size={14} color="#60A5FA" />
                     <span>Accredited Programs</span>
                   </div>
-                  <div className="flex items-center gap-2 bg-white/20 px-3 py-1.5 rounded-full">
-                    <StarIcon size={14} />
+                  <div className="flex items-center gap-2 bg-white border border-blue-200 text-gray-700 px-3 py-1.5 rounded-full">
+                    <StarIcon size={14} color="#60A5FA" />
                     <span>Direct Verification</span>
                   </div>
-                  <div className="flex items-center gap-2 bg-white/20 px-3 py-1.5 rounded-full">
-                    <CheckmarkCircle02Icon size={14} />
+                  <div className="flex items-center gap-2 bg-white border border-blue-200 text-gray-700 px-3 py-1.5 rounded-full">
+                    <CheckmarkCircle02Icon size={14} color="#60A5FA" />
                     <span>Special Discounts</span>
                   </div>
                 </div>
@@ -442,7 +451,7 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
             </div>
           </div>
 
-          {/* Partner Academies Grid */}
+          {/* Partner Academies Grid - Matching subscription card style */}
           <div className="grid md:grid-cols-2 gap-4 mb-12">
             {partnerAcademies.map((academy) => {
               const isSelected = selectedAcademy === academy.id;
@@ -450,99 +459,103 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
               return (
                 <div
                   key={academy.id}
-                  className={`group relative rounded-xl border p-8 transition-all duration-300 cursor-pointer ${
+                  className={`group relative rounded-2xl border p-8 transition-all duration-300 cursor-pointer ${
                     isSelected
-                      ? "bg-blue-50 border-blue-300 shadow-lg"
-                      : "bg-white border-gray-200 hover:border-blue-300 hover:shadow-sm"
+                      ? "bg-gradient-to-br from-gray-900 to-gray-800 border-gray-700 shadow-xl scale-[1.02]"
+                      : "bg-white border-gray-200 hover:border-gray-300 hover:shadow-md"
                   }`}
                   onClick={() => setSelectedAcademy(isSelected ? '' : academy.id)}
                 >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <h3 className="text-lg font-semibold text-gray-900 tracking-tight">{academy.name}</h3>
-                        {academy.verified && (
-                          <CheckmarkCircle02Icon size={16} color="#60A5FA" strokeWidth={2} />
-                        )}
+                  {isSelected && (
+                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                      <span className="bg-gradient-to-r from-gray-700 to-gray-600 text-white px-4 py-1.5 rounded-full text-[10px] font-medium tracking-wide uppercase shadow-lg">
+                        Selected
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="mb-8">
+                    <h3 className="text-xs font-semibold uppercase tracking-wider mb-4 text-gray-400">
+                      {academy.name}
+                    </h3>
+                    <p className={`text-[13px] ${isSelected ? 'text-gray-300' : 'text-gray-600'}`}>{academy.description}</p>
+                  </div>
+
+                  <div className={`space-y-2 mb-4 text-[13px] ${isSelected ? 'text-gray-300' : 'text-gray-600'}`}>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Clock01Icon size={14} strokeWidth={2} />
+                        <span>{academy.duration}</span>
                       </div>
-                      <p className="text-[13px] text-gray-600">{academy.description}</p>
+                      <div className="flex items-center gap-1">
+                        <StarIcon size={14} color={isSelected ? '#d1d5db' : '#9ca3af'} />
+                        <span className={`font-semibold ${isSelected ? 'text-white' : 'text-gray-900'}`}>{academy.rating}</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1 bg-blue-50 px-2.5 py-1 rounded-full border border-blue-200 ml-3">
-                      <StarIcon size={14} color="#60A5FA" />
-                      <span className="font-semibold text-gray-900 text-xs">{academy.rating}</span>
-                    </div>
+                    <div className={`font-semibold ${isSelected ? 'text-white' : 'text-gray-900'}`}>{academy.price}</div>
                   </div>
 
-                  <div className="mb-6">
-                    <div className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">
-                      Available Programs
-                    </div>
-                    <ul className="space-y-2">
-                      {academy.courses.map((course, idx) => (
-                        <li key={idx} className="flex items-start text-[13px] text-gray-600">
-                          <CheckmarkCircle02Icon size={14} color="#60A5FA" className="mr-2.5 flex-shrink-0 mt-0.5" strokeWidth={2.5} />
-                          {course}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className="flex items-center justify-between text-[13px] mb-6 pt-4 border-t border-gray-200">
-                    <div className="flex items-center gap-2 text-gray-600">
-                      <Clock01Icon size={14} strokeWidth={2} />
-                      <span>{academy.duration}</span>
-                    </div>
-                    <div className="font-semibold text-gray-900">{academy.price}</div>
-                  </div>
+                  <ul className="space-y-3 mb-8">
+                    {academy.courses.map((course, idx) => (
+                      <li key={idx} className={`flex items-start text-[13px] ${isSelected ? 'text-gray-300' : 'text-gray-600'}`}>
+                        <CheckmarkCircle02Icon size={14} color={isSelected ? '#d1d5db' : '#9ca3af'} className="mr-2.5 flex-shrink-0 mt-0.5" strokeWidth={2} />
+                        {course}
+                      </li>
+                    ))}
+                  </ul>
 
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       handleViewProgramDetails();
                     }}
-                    className="w-full py-3 px-5 bg-gray-900 text-white rounded-lg font-semibold text-[13px] tracking-tight hover:bg-black transition-all duration-200 flex items-center justify-center gap-2"
+                    className={`w-full py-3 px-5 rounded-lg font-medium text-[13px] transition-all duration-200 flex items-center justify-center gap-2 ${
+                      isSelected
+                        ? "bg-white text-gray-900 hover:bg-gray-100"
+                        : "bg-gray-900 text-white hover:bg-gray-800"
+                    }`}
                   >
                     View Program Details
-                    <Link01Icon size={14} strokeWidth={2.5} />
+                    <Link01Icon size={14} strokeWidth={2} />
                   </button>
                 </div>
               );
             })}
           </div>
 
-          {/* Why Choose Section */}
+          {/* Why Choose Section - Matching subscription card style */}
           <div className="grid md:grid-cols-3 gap-4">
-            <div className="group relative rounded-xl border p-8 transition-all duration-300 bg-white border-gray-200 hover:border-blue-300 hover:shadow-sm">
-              <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center mb-4 group-hover:bg-blue-100 transition-colors">
-                <CheckmarkCircle02Icon size={20} color="#60A5FA" strokeWidth={2} />
-              </div>
+            <div className="group relative rounded-2xl border p-8 transition-all duration-300 bg-white border-gray-200 hover:border-gray-300 hover:shadow-md">
               <h3 className="text-xs font-semibold uppercase tracking-wider mb-4 text-gray-400">
                 Instant Verification
               </h3>
+              <div className="mb-4">
+                <CheckmarkCircle02Icon size={22} color="#6b7280" strokeWidth={1.5} />
+              </div>
               <p className="text-[13px] text-gray-600">
                 Get verified immediately upon course completion
               </p>
             </div>
 
-            <div className="group relative rounded-xl border p-8 transition-all duration-300 bg-white border-gray-200 hover:border-blue-300 hover:shadow-sm">
-              <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center mb-4 group-hover:bg-blue-100 transition-colors">
-                <StarIcon size={20} color="#60A5FA" strokeWidth={2} />
-              </div>
+            <div className="group relative rounded-2xl border p-8 transition-all duration-300 bg-white border-gray-200 hover:border-gray-300 hover:shadow-md">
               <h3 className="text-xs font-semibold uppercase tracking-wider mb-4 text-gray-400">
                 Special Pricing
               </h3>
+              <div className="mb-4">
+                <StarIcon size={22} color="#6b7280" strokeWidth={1.5} />
+              </div>
               <p className="text-[13px] text-gray-600">
                 Exclusive discounts for our community members
               </p>
             </div>
 
-            <div className="group relative rounded-xl border p-8 transition-all duration-300 bg-white border-gray-200 hover:border-blue-300 hover:shadow-sm">
-              <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center mb-4 group-hover:bg-blue-100 transition-colors">
-                <BookOpen02Icon size={20} color="#60A5FA" strokeWidth={2} />
-              </div>
+            <div className="group relative rounded-2xl border p-8 transition-all duration-300 bg-white border-gray-200 hover:border-gray-300 hover:shadow-md">
               <h3 className="text-xs font-semibold uppercase tracking-wider mb-4 text-gray-400">
                 Flexible Learning
               </h3>
+              <div className="mb-4">
+                <BookOpen02Icon size={22} color="#6b7280" strokeWidth={1.5} />
+              </div>
               <p className="text-[13px] text-gray-600">
                 Online, in-person, and hybrid options available
               </p>
@@ -554,7 +567,7 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
       {/* Privacy Notice */}
       <div className="border-t border-gray-100 bg-gray-50/30">
         <div className="max-w-6xl mx-auto px-8 lg:px-12 py-16">
-          <div className="bg-white border border-blue-200 rounded-xl p-8 text-center">
+          <div className="bg-white border border-gray-200 rounded-xl p-8 text-center">
             <div className="flex items-center justify-center gap-2 mb-3">
               <ShieldUserIcon size={20} color="#60A5FA" strokeWidth={2} />
               <h4 className="font-semibold text-gray-900 tracking-tight">Your Privacy is Protected</h4>

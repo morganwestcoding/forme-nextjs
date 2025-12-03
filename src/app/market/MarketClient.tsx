@@ -30,7 +30,7 @@ interface MarketClientProps {
 }
 
 
-const MIN_LOADER_MS = 1200;
+const MIN_LOADER_MS = 300;
 const FADE_OUT_DURATION = 200;
 
 const MarketClient: React.FC<MarketClientProps> = ({
@@ -54,6 +54,22 @@ const MarketClient: React.FC<MarketClientProps> = ({
     const t = setTimeout(() => setIsLoading(false), MIN_LOADER_MS);
     return () => clearTimeout(t);
   }, [listings]);
+
+  // Sticky nav border effect on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      const navWrapper = document.getElementById('category-nav-wrapper');
+      if (navWrapper) {
+        if (window.scrollY > 100) {
+          navWrapper.style.borderBottomColor = 'rgb(229 231 235 / 0.5)';
+        } else {
+          navWrapper.style.borderBottomColor = 'transparent';
+        }
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     const checkSidebarState = () => {
@@ -201,40 +217,42 @@ const MarketClient: React.FC<MarketClientProps> = ({
   return (
     <div className="min-h-screen">
       <Container>
-        {/* Hero Section - Frosted Glass Effect */}
+        {/* Hero Section - Clean minimal design */}
         <div className="-mx-6 md:-mx-24 -mt-2 md:-mt-8">
-        <div
-          className="relative px-6 md:px-24 pt-10 overflow-hidden"
-          style={{
-            background: 'linear-gradient(to bottom, #FFFFFF 0%, #F8F8F8 100%)'
-          }}
-        >
+        <div className="relative px-6 md:px-24 pt-12 pb-8 bg-white">
 
           {/* Content */}
           <div className="relative z-10 pb-6">
             {/* Main Market Title */}
-            <div className="">
-              <h1 className="text-4xl md:text-4xl font-extrabold text-gray-900 leading-tight tracking-tight">
+            <div className="text-center">
+              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight tracking-tight">
                 Market
               </h1>
-              <p className="text-gray-600 text-lg mt-1">Discover unique places from our vendors</p>
+              <p className="text-gray-500 text-base mt-3 max-w-2xl mx-auto">Discover unique places from our vendors</p>
             </div>
 
             {/* Search and Controls */}
-            <div className="mt-5">
-              <MarketSearch isHeroMode={false} />
+            <div className="mt-8 max-w-3xl mx-auto">
+              <MarketSearch
+                isHeroMode={false}
+              />
             </div>
-                  {/* Category Navigation */}
+
+            {/* Category Navigation - Sticky */}
+            <div className="mt-5 -mx-6 md:-mx-24">
+              <div className="sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-transparent transition-all duration-300" id="category-nav-wrapper">
+                <div className="px-6 md:px-24">
+                  <CategoryNav searchParams={searchParams} />
+                </div>
+              </div>
+            </div>
 
           </div>
-            <CategoryNav searchParams={searchParams} />
         </div>
       </div>
 
-
-
       {/* Content + loader overlay */}
-      <div className="relative">
+      <div className="relative -mt-[69px]">
         {isLoading && (
           <div className="pointer-events-none absolute inset-0 z-10 flex items-start justify-center">
             <div className="mt-40 md:mt-40">
@@ -260,7 +278,7 @@ const MarketClient: React.FC<MarketClientProps> = ({
                       viewAllLabel="← Back to Market"
                     />
 
-                    <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
+                    <div className={`grid ${gridColsClass} gap-5 transition-all duration-300`}>
                       {listings
                         .filter(l => l.category !== 'Personal')
                         .map((listing, idx) => (
@@ -290,7 +308,7 @@ const MarketClient: React.FC<MarketClientProps> = ({
                       viewAllLabel="← Back to Market"
                     />
                     
-                    <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
+                    <div className={`grid ${gridColsClass} gap-5 transition-all duration-300`}>
                       {finalTrending.map(({ employee, listing }, idx) => {
                         const li: any = listing as any;
                         const imageSrc =
@@ -349,7 +367,7 @@ const MarketClient: React.FC<MarketClientProps> = ({
                     {/* Listings Row - Dynamic columns based on sidebar */}
                     {!viewAllMode && (
                       <div id="featured-rail">
-                        <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
+                        <div className={`grid ${gridColsClass} gap-5 transition-all duration-300`}>
                           {currentFeaturedListings.map((listing, idx) => (
                             <div
                               key={`${listing.id}-${featuredIndex}`}
@@ -386,7 +404,7 @@ const MarketClient: React.FC<MarketClientProps> = ({
                         />
 
                         <div id="trending-rail">
-                          <div className={`grid ${gridColsClass} gap-4 transition-all pb-8 duration-300`}>
+                          <div className={`grid ${gridColsClass} gap-5 transition-all pb-8 duration-300`}>
                             {currentTrendingItems.map(({ employee, listing }, idx) => {
                               const li: any = listing as any;
                               const imageSrc =

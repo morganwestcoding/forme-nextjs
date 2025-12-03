@@ -66,12 +66,14 @@ interface GlobalSearchProps {
   placeholder?: string;
   className?: string;
   isHeroMode?: boolean;
+  showShortcut?: boolean;
 }
 
 const GlobalSearch: React.FC<GlobalSearchProps> = ({
   placeholder = "Search posts, users, listings, shops, products, employees, services…",
   className,
   isHeroMode = false,
+  showShortcut = false,
 }) => {
   const isMac = typeof navigator !== "undefined" && /Mac|iPhone|iPad|iPod/.test(navigator.userAgent);
   const router = useRouter();
@@ -226,8 +228,8 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
   }, []);
 
   const inputClasses = isHeroMode
-    ? "w-full h-12 pl-12 pr-16 text-sm backdrop-blur-md bg-white/10 border border-white/30 rounded-xl outline-none focus:ring-2 focus:ring-white/40 focus:border-white/50 focus:bg-white/15 text-white placeholder-white/60 transition-all duration-300"
-    : "w-full h-12 pl-12 pr-16 text-sm bg-transparent border border-gray-300 rounded-xl outline-none hover:border-gray-400 focus:border-[#60A5FA] focus:ring-0 text-gray-700 placeholder-gray-400 transition-all duration-300";
+    ? "w-full h-12 pl-12 pr-4 text-sm backdrop-blur-md bg-white/10 border border-white/30 rounded-xl outline-none focus:ring-2 focus:ring-white/40 focus:border-white/50 focus:bg-white/15 text-white placeholder-white/60 transition-all duration-300"
+    : "w-full h-12 pl-12 pr-4 text-sm bg-transparent border border-gray-200 rounded-xl outline-none focus:border-gray-300 focus:bg-gray-50/50 text-gray-700 placeholder-gray-400 transition-all duration-200";
 
   const iconClasses = isHeroMode
     ? "w-5 h-5 text-white/80 group-hover:text-white transition-colors duration-300"
@@ -249,7 +251,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
         className={inputClasses}
       />
       {/* Keyboard shortcut hint */}
-      {!q && (
+      {showShortcut && !q && (
         <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
           <kbd className={`hidden sm:inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-md border transition-all duration-200 ${
             isHeroMode

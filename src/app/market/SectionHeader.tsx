@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface SectionHeaderProps {
   title: string;
@@ -23,7 +22,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
   const hasNavigation = onPrev || onNext;
 
   return (
-    <div className={`mt-8 mb-4 ${className}`}>
+    <div className={`mt-8 mb-6 ${className}`}>
       <div className="flex items-center justify-between">
         {/* LEFT: title */}
         <h2 className="text-2xl font-bold tracking-tight text-gray-900">
@@ -35,7 +34,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
           {onViewAll && (
             <button
               onClick={onViewAll}
-              className="p-1 text-sm text-gray-600/90 hover:text-gray-700 transition-colors inline-flex items-center gap-1"
+              className="text-[13px] font-medium text-gray-400 hover:text-gray-500 transition-colors duration-300"
               aria-label={viewAllLabel}
             >
               {viewAllLabel}

@@ -17,54 +17,28 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ activeTab, setActiveTab }) =>
     { key: 'Posts', label: 'Posts' },
   ];
 
-  const selectedIndex = tabs.findIndex(t => t.key === activeTab);
-  const hasSelection = selectedIndex !== -1;
-
-  // Determine divider state: adjacent to selected rotates horizontal, others disappear
-  const getDividerState = (index: number) => {
-    if (!hasSelection) return 'vertical'; // No selection = all vertical
-    if (index === selectedIndex - 1 || index === selectedIndex) return 'horizontal'; // Adjacent = rotate
-    return 'hidden'; // Others = disappear
-  };
-
   return (
-    <div className="-mx-6 md:-mx-24 pb-3 border-b-[0.75px] border-gray-400">
-      <div className="flex items-center justify-center">
-        {tabs.map((tab, index) => {
-          const isSelected = activeTab === tab.key;
-          const dividerState = getDividerState(index);
+    <div className="flex items-center justify-center gap-1.5 py-3">
+      {tabs.map((tab) => {
+        const isSelected = activeTab === tab.key;
 
-          return (
-            <div key={tab.key} className="relative flex items-center">
-              <button
-                onClick={() => setActiveTab(isSelected ? null : tab.key)}
-                className={`
-                  px-8 py-3.5 text-sm transition-all duration-200
-                  ${isSelected
-                    ? 'text-[#60A5FA] font-medium'
-                    : 'text-gray-500 hover:text-gray-700'
-                  }
-                `}
-                type="button"
-              >
-                {tab.label}
-              </button>
-
-              {/* Divider: vertical by default, rotates horizontal when adjacent to selected, disappears otherwise */}
-              {index < tabs.length - 1 && (
-                <span
-                  className={`
-                    bg-gray-300 transition-all duration-300 ease-out
-                    ${dividerState === 'horizontal' ? 'w-3 h-[0.5px] bg-[#60A5FA]' : ''}
-                    ${dividerState === 'vertical' ? 'w-[0.5px] h-4' : ''}
-                    ${dividerState === 'hidden' ? 'w-[0.5px] h-4 opacity-0' : ''}
-                  `}
-                />
-              )}
-            </div>
-          );
-        })}
-      </div>
+        return (
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(isSelected ? null : tab.key)}
+            className={`
+              relative px-3.5 py-1.5 text-[13px] font-medium rounded-lg border transition-all duration-500 ease-out active:scale-[0.97]
+              ${isSelected
+                ? 'bg-gradient-to-b from-[#60A5FA] to-[#4A90E2] border-[#4A90E2] text-white shadow-sm shadow-[#60A5FA]/20'
+                : 'bg-gradient-to-b from-white to-gray-50 border-gray-200/60 text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }
+            `}
+            type="button"
+          >
+            <span className="relative z-10">{tab.label}</span>
+          </button>
+        );
+      })}
     </div>
   );
 };

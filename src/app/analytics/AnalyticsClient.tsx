@@ -35,9 +35,9 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
     value: string | number;
     growth?: number;
   }) => (
-    <div className="group bg-gray-50/50 rounded-2xl p-8 border border-gray-100/50 hover:bg-gray-50 hover:shadow-sm transition-all duration-300">
+    <div className="group relative rounded-2xl border p-8 transition-all duration-300 bg-white border-gray-200 hover:border-gray-300 hover:shadow-md">
       <div className="flex items-center justify-between mb-3">
-        <p className="text-xs font-medium text-gray-400 uppercase tracking-wider">{title}</p>
+        <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">{title}</p>
         {growth !== undefined && (
           <div className={`flex items-center gap-1 text-xs font-semibold ${
             growth >= 0 ? 'text-green-600' : 'text-red-600'
@@ -47,7 +47,7 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
           </div>
         )}
       </div>
-      <div className="text-4xl font-semibold tracking-tight text-gray-900 group-hover:text-black transition-colors">{value}</div>
+      <div className="text-4xl font-semibold tracking-tight text-gray-900">{value}</div>
     </div>
   );
 
@@ -70,52 +70,74 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Clean, Spacious Header */}
+      {/* Clean Header */}
       <div className="border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-8 lg:px-12">
-          {/* Top Bar */}
-          <div className="flex items-center justify-between pt-12 pb-8">
-            <div>
-              <h1 className="text-4xl font-semibold tracking-tight text-gray-900">Analytics</h1>
-              <p className="text-base text-gray-500 mt-2">Welcome back, {currentUser.name}</p>
-            </div>
-            <div className="text-sm text-gray-400">
-              {new Date().toLocaleDateString('en-US', {
-                month: 'long',
-                day: 'numeric',
-                year: 'numeric'
-              })}
-            </div>
+        <div className="max-w-6xl mx-auto px-8 lg:px-12 pt-16 pb-16">
+          <div className="text-center max-w-2xl mx-auto">
+            <h1 className="text-4xl font-semibold tracking-tight text-gray-900 mb-4">
+              Analytics
+            </h1>
+            <p className="text-base text-gray-500">
+              Welcome back, {currentUser.name}
+            </p>
           </div>
 
-          {/* Minimal Tab Navigation */}
-          <div className="flex items-center gap-10">
-            {[
-              { key: 'overview', label: 'Overview' },
-              { key: 'listings', label: 'Listings' },
-              { key: 'revenue', label: 'Revenue' },
-              { key: 'engagement', label: 'Engagement' },
-            ].map(({ key, label }) => {
-              const isSelected = activeTab === key;
+          {/* Tab Toggle */}
+          <div className="flex justify-center mt-12">
+            <div className="relative inline-flex items-center bg-gray-50 rounded-lg p-1 gap-1">
+              <div
+                className={`absolute top-1 bottom-1 bg-gray-900 rounded-md transition-all duration-300 ease-out ${
+                  activeTab === 'overview' ? 'left-1' :
+                  activeTab === 'listings' ? 'left-[calc(25%)]' :
+                  activeTab === 'revenue' ? 'left-[calc(50%)]' :
+                  'left-[calc(75%)]'
+                }`}
+                style={{
+                  width: 'calc(25% - 4px)',
+                }}
+              />
 
-              return (
-                <button
-                  key={key}
-                  onClick={() => setActiveTab(key as any)}
-                  className={`
-                    pb-4 text-[15px] font-semibold tracking-tight
-                    border-b-[3px] transition-all duration-300 ease-out
-                    ${isSelected
-                      ? 'border-gray-900 text-gray-900'
-                      : 'border-transparent text-gray-400 hover:text-gray-700 hover:border-gray-200'
-                    }
-                  `}
-                  type="button"
-                >
-                  {label}
-                </button>
-              );
-            })}
+              <button
+                onClick={() => setActiveTab('overview')}
+                className={`relative z-10 px-10 py-2.5 text-sm font-medium transition-colors duration-200 rounded-md ${
+                  activeTab === 'overview'
+                    ? "text-white"
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
+              >
+                Overview
+              </button>
+              <button
+                onClick={() => setActiveTab('listings')}
+                className={`relative z-10 px-10 py-2.5 text-sm font-medium transition-colors duration-200 rounded-md ${
+                  activeTab === 'listings'
+                    ? "text-white"
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
+              >
+                Listings
+              </button>
+              <button
+                onClick={() => setActiveTab('revenue')}
+                className={`relative z-10 px-10 py-2.5 text-sm font-medium transition-colors duration-200 rounded-md ${
+                  activeTab === 'revenue'
+                    ? "text-white"
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
+              >
+                Revenue
+              </button>
+              <button
+                onClick={() => setActiveTab('engagement')}
+                className={`relative z-10 px-10 py-2.5 text-sm font-medium transition-colors duration-200 rounded-md ${
+                  activeTab === 'engagement'
+                    ? "text-white"
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
+              >
+                Engagement
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -158,8 +180,8 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
             {/* Charts Row */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
               {/* Revenue & Reservations Chart */}
-              <div className="bg-gray-50/50 rounded-2xl p-8 border border-gray-100/50 hover:shadow-sm transition-shadow duration-300">
-                <h3 className="text-sm font-semibold mb-8 tracking-tight uppercase text-gray-500">Revenue & Reservations</h3>
+              <div className="bg-white rounded-2xl p-8 border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all duration-300">
+                <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-gray-400">Revenue & Reservations</h3>
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={monthlyData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
@@ -194,8 +216,8 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
               </div>
 
               {/* Top Services */}
-              <div className="bg-gray-50/50 rounded-2xl p-8 border border-gray-100/50 hover:shadow-sm transition-shadow duration-300">
-                <h3 className="text-sm font-semibold mb-8 tracking-tight uppercase text-gray-500">Top Services</h3>
+              <div className="bg-white rounded-2xl p-8 border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all duration-300">
+                <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-gray-400">Top Services</h3>
                 <div className="space-y-3">
                   {topServices.slice(0, 5).map((service) => (
                     <div key={service.serviceName} className="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
@@ -216,8 +238,8 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
             {/* Recent Activity */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
               {/* Recent Reservations */}
-              <div className="bg-gray-50/50 rounded-2xl p-8 border border-gray-100/50 hover:shadow-sm transition-shadow duration-300">
-                <h3 className="text-sm font-semibold mb-8 tracking-tight uppercase text-gray-500">Recent Reservations</h3>
+              <div className="bg-white rounded-2xl p-8 border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all duration-300">
+                <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-gray-400">Recent Reservations</h3>
                 <div className="space-y-1">
                   {recentActivity.reservations.slice(0, 5).map((reservation) => (
                     <div key={reservation.id} className="flex items-center gap-4 py-3 border-b border-gray-100 last:border-0">
@@ -243,8 +265,8 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
               </div>
 
               {/* Recent Posts */}
-              <div className="bg-gray-50/50 rounded-2xl p-8 border border-gray-100/50 hover:shadow-sm transition-shadow duration-300">
-                <h3 className="text-sm font-semibold mb-8 tracking-tight uppercase text-gray-500">Recent Posts</h3>
+              <div className="bg-white rounded-2xl p-8 border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all duration-300">
+                <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-gray-400">Recent Posts</h3>
                 <div className="space-y-1">
                   {recentActivity.posts.slice(0, 5).map((post) => (
                     <div key={post.id} className="py-3 border-b border-gray-100 last:border-0">
@@ -270,7 +292,7 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
 
         {/* Listings Tab */}
         {activeTab === 'listings' && (
-          <div className="bg-gray-50/50 rounded-2xl border border-gray-100/50 overflow-hidden hover:shadow-sm transition-shadow duration-300">
+          <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:border-gray-300 hover:shadow-md transition-all duration-300">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
@@ -314,8 +336,8 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
         {activeTab === 'revenue' && (
           <div className="space-y-5">
             {/* Revenue Chart */}
-            <div className="bg-gray-50/50 rounded-2xl p-8 border border-gray-100/50 hover:shadow-sm transition-shadow duration-300">
-              <h3 className="text-sm font-semibold mb-8 tracking-tight uppercase text-gray-500">Monthly Revenue</h3>
+            <div className="bg-white rounded-2xl p-8 border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all duration-300">
+              <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-gray-400">Monthly Revenue</h3>
               <ResponsiveContainer width="100%" height={400}>
                 <AreaChart data={monthlyData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
@@ -343,8 +365,8 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
             </div>
 
             {/* Revenue by Service */}
-            <div className="bg-gray-50/50 rounded-2xl p-8 border border-gray-100/50 hover:shadow-sm transition-shadow duration-300">
-              <h3 className="text-sm font-semibold mb-8 tracking-tight uppercase text-gray-500">Revenue by Service</h3>
+            <div className="bg-white rounded-2xl p-8 border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all duration-300">
+              <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-gray-400">Revenue by Service</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={topServices}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
@@ -385,8 +407,8 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
             </div>
 
             {/* Posts Chart */}
-            <div className="bg-gray-50/50 rounded-2xl p-8 border border-gray-100/50 hover:shadow-sm transition-shadow duration-300">
-              <h3 className="text-sm font-semibold mb-8 tracking-tight uppercase text-gray-500">Monthly Posts</h3>
+            <div className="bg-white rounded-2xl p-8 border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all duration-300">
+              <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-gray-400">Monthly Posts</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={monthlyData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />

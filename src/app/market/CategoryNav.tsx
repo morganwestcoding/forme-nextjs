@@ -8,9 +8,10 @@ interface CategoryNavProps {
   searchParams: {
     category?: string;
   };
+  basePath?: string;  // Optional base path for navigation (default: '/market')
 }
 
-const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams }) => {
+const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams, basePath = '/market' }) => {
   const router = useRouter();
   const params = useSearchParams();
 
@@ -28,57 +29,31 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams }) => {
 
     const search = current.toString();
     const query = search ? `?${search}` : '';
-    router.push(`/market${query}`);
-  };
-
-  const selectedIndex = categories.findIndex(c => c.label === currentCategory);
-  const hasSelection = selectedIndex !== -1;
-
-  // Determine divider state: adjacent to selected rotates horizontal, others disappear
-  const getDividerState = (index: number) => {
-    if (!hasSelection) return 'vertical'; // No selection = all vertical
-    if (index === selectedIndex - 1 || index === selectedIndex) return 'horizontal'; // Adjacent = rotate
-    return 'hidden'; // Others = disappear
+    router.push(`${basePath}${query}`);
   };
 
   return (
-    <div className="-mx-6 md:-mx-24 pb-3 border-b-[0.75px] border-gray-400">
-      <div className="flex items-center justify-center">
-        {categories.map((category, index) => {
-          const isSelected = currentCategory === category.label;
-          const dividerState = getDividerState(index);
+    <div className="flex items-center justify-center gap-1.5 py-3">
+      {categories.map((category) => {
+        const isSelected = currentCategory === category.label;
 
-          return (
-            <div key={category.label} className="relative flex items-center">
-              <button
-                onClick={() => handleCategorySelect(category.label)}
-                className={`
-                  px-8 py-3.5 text-sm transition-all duration-200
-                  ${isSelected
-                    ? 'text-[#60A5FA] font-medium'
-                    : 'text-gray-500 hover:text-gray-700'
-                  }
-                `}
-                type="button"
-              >
-                {category.label}
-              </button>
-
-              {/* Divider: vertical by default, rotates horizontal when adjacent to selected, disappears otherwise */}
-              {index < categories.length - 1 && (
-                <span
-                  className={`
-                    bg-gray-300 transition-all duration-300 ease-out
-                    ${dividerState === 'horizontal' ? 'w-3 h-[0.5px] bg-[#60A5FA]' : ''}
-                    ${dividerState === 'vertical' ? 'w-[0.5px] h-4' : ''}
-                    ${dividerState === 'hidden' ? 'w-[0.5px] h-4 opacity-0' : ''}
-                  `}
-                />
-              )}
-            </div>
-          );
-        })}
-      </div>
+        return (
+          <button
+            key={category.label}
+            onClick={() => handleCategorySelect(category.label)}
+            className={`
+              relative px-3.5 py-1.5 text-[13px] font-medium rounded-lg border transition-all duration-500 ease-out active:scale-[0.97]
+              ${isSelected
+                ? 'bg-gradient-to-b from-[#60A5FA] to-[#4A90E2] border-[#4A90E2] text-white shadow-sm shadow-[#60A5FA]/20'
+                : 'bg-gradient-to-b from-white to-gray-50 border-gray-200/60 text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }
+            `}
+            type="button"
+          >
+            <span className="relative z-10">{category.label}</span>
+          </button>
+        );
+      })}
     </div>
   );
 };

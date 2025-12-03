@@ -125,16 +125,16 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
   return (
     <div className="min-h-0">
       {/* Search and Controls */}
-      <div className="flex mt-4 gap-2">
+      <div className="flex mt-4 gap-2 items-center">
         {/* Search Bar */}
-        <div className="relative flex-grow">
+        <div className="relative w-[70%]">
           <GlobalSearch
             placeholder="Search posts, users, listings, shops, products…"
             isHeroMode={isHeroMode}
           />
         </div>
 
-
+        <div className="flex gap-2 ml-auto">
 {/* Filters Button */}
 <button
   onClick={handleOpenFilters}
@@ -202,6 +202,7 @@ const MarketExplorer: React.FC<MarketExplorerProps> = ({
   </svg>
   <span className="relative z-10 text-[13px] font-semibold tracking-[-0.02em]">Create</span>
 </button>
+        </div>
       </div>
     </div>
   );

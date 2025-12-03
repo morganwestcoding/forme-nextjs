@@ -11,8 +11,8 @@ import { useCategory } from '@/CategoryContext';
 import { useFilter } from '@/FilterContext';
 import { useViewMode } from '@/app/hooks/useViewMode';
 import Container from './Container';
-import DiscoverSearch from './feed/DiscoverSearch';
-import CategoryNav from './feed/CategoryNav';
+import MarketSearch from '@/app/market/MarketSearch';
+import CategoryNav from '@/app/market/CategoryNav';
 import PostCard from './feed/PostCard';
 import TikTokView from './feed/TikTokView';
 import ListingCard from '@/components/listings/ListingCard';
@@ -30,6 +30,10 @@ interface DiscoverClientProps {
   shops?: SafeShop[];
 }
 
+const MIN_LOADER_MS = 300;
+const FADE_OUT_DURATION = 200;
+const ITEMS_PER_PAGE = 8;
+
 const DiscoverClient: React.FC<DiscoverClientProps> = ({
   initialPosts,
   currentUser,
@@ -44,12 +48,25 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
   const { filters } = useFilter();
   const { viewMode, setViewMode } = useViewMode();
 
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isPending, startTransition] = useTransition();
-  const [postsOffset, setPostsOffset] = useState(0);
-  const [listingsOffset, setListingsOffset] = useState(0);
-  const [employeesOffset, setEmployeesOffset] = useState(0);
-  const [shopsOffset, setShopsOffset] = useState(0);
+
+  // Pagination state
+  const [postsIndex, setPostsIndex] = useState(0);
+  const [listingsIndex, setListingsIndex] = useState(0);
+  const [employeesIndex, setEmployeesIndex] = useState(0);
+  const [shopsIndex, setShopsIndex] = useState(0);
+
+  // Animation state
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [postsVisible, setPostsVisible] = useState(true);
+  const [listingsVisible, setListingsVisible] = useState(true);
+  const [employeesVisible, setEmployeesVisible] = useState(true);
+  const [shopsVisible, setShopsVisible] = useState(true);
+
+  // View all mode
+  const [viewAllMode, setViewAllMode] = useState<'posts' | 'listings' | 'professionals' | 'shops' | null>(null);
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -58,6 +75,42 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
   const handleNavigation = (url: string) => {
     router.push(url, { scroll: false });
   };
+
+  // Sidebar collapse detection
+  useEffect(() => {
+    const checkSidebarState = () => {
+      const collapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+      setIsSidebarCollapsed(collapsed);
+    };
+
+    checkSidebarState();
+    window.addEventListener('sidebarToggle', checkSidebarState);
+    return () => window.removeEventListener('sidebarToggle', checkSidebarState);
+  }, []);
+
+  // Reset pagination on sidebar change
+  useEffect(() => {
+    setPostsIndex(0);
+    setListingsIndex(0);
+    setEmployeesIndex(0);
+    setShopsIndex(0);
+  }, [isSidebarCollapsed]);
+
+  // Sticky nav border effect on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      const navWrapper = document.getElementById('discover-category-nav-wrapper');
+      if (navWrapper) {
+        if (window.scrollY > 100) {
+          navWrapper.style.borderBottomColor = 'rgb(229 231 235 / 0.5)';
+        } else {
+          navWrapper.style.borderBottomColor = 'transparent';
+        }
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const headerSearchParams = {
     userId: searchParams?.get('userId') || undefined,
@@ -72,6 +125,8 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
   };
 
   const typeFilter = searchParams?.get('type') as 'posts' | 'listings' | 'professionals' | 'shops' | null;
+
+  const gridColsClass = isSidebarCollapsed ? 'grid-cols-5' : 'grid-cols-4';
 
   const filterInfo = useMemo(() => {
     const currentCategory = headerSearchParams?.category || '';
@@ -104,7 +159,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
   }, [headerSearchParams, typeFilter]);
 
   useEffect(() => {
-    const t = setTimeout(() => setIsLoading(false), 1200);
+    const t = setTimeout(() => setIsLoading(false), MIN_LOADER_MS);
     return () => clearTimeout(t);
   }, []);
 
@@ -135,47 +190,103 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
     fetchPosts();
   }, [selectedCategory, filterParam, filters, setPosts, searchParams]);
 
-  const getPaginatedItems = <T,>(array: T[], offset: number, count: number = 4): T[] => {
-    const start = offset * count;
-    return array.slice(start, start + count);
+  // Animated transition helper (matching market pattern)
+  const animateTransition = (
+    setVisible: (visible: boolean) => void,
+    setIndex: (index: number) => void,
+    currentIndex: number,
+    totalPages: number,
+    direction: 'left' | 'right'
+  ) => {
+    if (totalPages <= 1 || isAnimating) return;
+
+    setIsAnimating(true);
+    setVisible(false);
+
+    setTimeout(() => {
+      const newIndex = direction === 'right'
+        ? (currentIndex + 1) % totalPages
+        : currentIndex === 0 ? totalPages - 1 : currentIndex - 1;
+
+      setIndex(newIndex);
+      setTimeout(() => {
+        setVisible(true);
+        setIsAnimating(false);
+      }, 50);
+    }, FADE_OUT_DURATION);
   };
 
-  const scrollTrendingPosts = (dir: 'left' | 'right') => {
-    setPostsOffset(prev => {
-      const maxOffset = Math.max(0, Math.ceil((storePosts?.length || 0) / 4) - 1);
-      if (dir === 'left') return Math.max(0, prev - 1);
-      return Math.min(maxOffset, prev + 1);
-    });
+  // Paginated items
+  const currentPosts = useMemo(() => {
+    if ((storePosts?.length || 0) <= ITEMS_PER_PAGE) return storePosts || [];
+    const start = postsIndex * ITEMS_PER_PAGE;
+    return (storePosts || []).slice(start, start + ITEMS_PER_PAGE);
+  }, [storePosts, postsIndex]);
+
+  const currentListings = useMemo(() => {
+    const visibleListings = listings.filter(l => l.category !== 'Personal');
+    if (visibleListings.length <= ITEMS_PER_PAGE) return visibleListings;
+    const start = listingsIndex * ITEMS_PER_PAGE;
+    return visibleListings.slice(start, start + ITEMS_PER_PAGE);
+  }, [listings, listingsIndex]);
+
+  const currentEmployees = useMemo(() => {
+    if (employees.length <= ITEMS_PER_PAGE) return employees;
+    const start = employeesIndex * ITEMS_PER_PAGE;
+    return employees.slice(start, start + ITEMS_PER_PAGE);
+  }, [employees, employeesIndex]);
+
+  const currentShops = useMemo(() => {
+    if (shops.length <= ITEMS_PER_PAGE) return shops;
+    const start = shopsIndex * ITEMS_PER_PAGE;
+    return shops.slice(start, start + ITEMS_PER_PAGE);
+  }, [shops, shopsIndex]);
+
+  // Total pages
+  const totalPostsPages = Math.max(1, Math.ceil((storePosts?.length || 0) / ITEMS_PER_PAGE));
+  const totalListingsPages = Math.max(1, Math.ceil(listings.filter(l => l.category !== 'Personal').length / ITEMS_PER_PAGE));
+  const totalEmployeesPages = Math.max(1, Math.ceil(employees.length / ITEMS_PER_PAGE));
+  const totalShopsPages = Math.max(1, Math.ceil(shops.length / ITEMS_PER_PAGE));
+
+  // Scroll handlers
+  const scrollPosts = (dir: 'left' | 'right') =>
+    animateTransition(setPostsVisible, setPostsIndex, postsIndex, totalPostsPages, dir);
+
+  const scrollListings = (dir: 'left' | 'right') =>
+    animateTransition(setListingsVisible, setListingsIndex, listingsIndex, totalListingsPages, dir);
+
+  const scrollEmployees = (dir: 'left' | 'right') =>
+    animateTransition(setEmployeesVisible, setEmployeesIndex, employeesIndex, totalEmployeesPages, dir);
+
+  const scrollShops = (dir: 'left' | 'right') =>
+    animateTransition(setShopsVisible, setShopsIndex, shopsIndex, totalShopsPages, dir);
+
+  // View all handlers
+  const handleViewAllPosts = () => {
+    setViewAllMode('posts');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const scrollTrendingListings = (dir: 'left' | 'right') => {
-    setListingsOffset(prev => {
-      const maxOffset = Math.max(0, Math.ceil(listings.length / 4) - 1);
-      if (dir === 'left') return Math.max(0, prev - 1);
-      return Math.min(maxOffset, prev + 1);
-    });
+  const handleViewAllListings = () => {
+    setViewAllMode('listings');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const scrollTrendingEmployees = (dir: 'left' | 'right') => {
-    setEmployeesOffset(prev => {
-      const maxOffset = Math.max(0, Math.ceil(employees.length / 4) - 1);
-      if (dir === 'left') return Math.max(0, prev - 1);
-      return Math.min(maxOffset, prev + 1);
-    });
+  const handleViewAllProfessionals = () => {
+    setViewAllMode('professionals');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const scrollTrendingShops = (dir: 'left' | 'right') => {
-    setShopsOffset(prev => {
-      const maxOffset = Math.max(0, Math.ceil(shops.length / 4) - 1);
-      if (dir === 'left') return Math.max(0, prev - 1);
-      return Math.min(maxOffset, prev + 1);
-    });
+  const handleViewAllShops = () => {
+    setViewAllMode('shops');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const trendingPosts = useMemo(() => getPaginatedItems(storePosts || [], postsOffset, 4), [storePosts, postsOffset]);
-  const trendingListings = useMemo(() => getPaginatedItems(listings, listingsOffset, 4), [listings, listingsOffset]);
-  const trendingEmployees = useMemo(() => getPaginatedItems(employees, employeesOffset, 4), [employees, employeesOffset]);
-  const trendingShops = useMemo(() => getPaginatedItems(shops, shopsOffset, 4), [shops, shopsOffset]);
+  const handleBackToMain = () => {
+    setViewAllMode(null);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const hasContent = useMemo(() => Array.isArray(storePosts) && storePosts.length > 0, [storePosts]);
 
   const allContentItems = useMemo(() => {
@@ -213,42 +324,43 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
     <ClientProviders>
       <div className="min-h-screen">
         <Container>
-          {/* Hero Section - Frosted Glass Effect */}
+          {/* Hero Section - Clean minimal design (matching Market) */}
           <div className="-mx-6 md:-mx-24 -mt-2 md:-mt-8">
-          <div
-            className="relative px-6 md:px-24 pt-10 overflow-hidden"
-            style={{
-              background: 'linear-gradient(to bottom, #FFFFFF 0%, #F8F8F8 100%)'
-            }}
-          >
+            <div className="relative px-6 md:px-24 pt-12 pb-8 bg-white">
 
-            {/* Content */}
-            <div className="relative z-10 pb-6">
-              {/* Main Discover Title */}
-              <div className="">
-                <h1 className="text-4xl md:text-4xl font-extrabold text-gray-900 leading-tight tracking-tight">
-                  Discover
-                </h1>
-                <p className="text-gray-600 text-lg mt-1">Share whats new with you and your business</p>
+              {/* Content */}
+              <div className="relative z-10 pb-6">
+                {/* Main Discover Title */}
+                <div className="text-center">
+                  <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight tracking-tight">
+                    Discover
+                  </h1>
+                  <p className="text-gray-500 text-base mt-3 max-w-2xl mx-auto">Share what&apos;s new with you and your business</p>
+                </div>
+
+                {/* Search and Controls */}
+                <div className="mt-8 max-w-3xl mx-auto">
+                  <MarketSearch
+                    isHeroMode={false}
+                    basePath="/"
+                  />
+                </div>
+
+                {/* Category Navigation - Sticky */}
+                <div className="mt-5 -mx-6 md:-mx-24">
+                  <div className="sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-transparent transition-all duration-300" id="discover-category-nav-wrapper">
+                    <div className="px-6 md:px-24">
+                      <CategoryNav searchParams={headerSearchParams} basePath="/" />
+                    </div>
+                  </div>
+                </div>
+
               </div>
-
-              {/* Search and Controls */}
-              <div className="mt-5">
-                <DiscoverSearch isHeroMode={false} />
-              </div>
-                    {/* Category Navigation */}
-
             </div>
-              <CategoryNav
-                searchParams={headerSearchParams}
-                onNavigate={handleNavigation}
-              />
           </div>
-        </div>
 
-
-
-          <div className="relative">
+          {/* Content + loader overlay */}
+          <div className="relative -mt-[69px]">
             {isLoading && (
               <div className="pointer-events-none absolute inset-0 z-10 flex items-start justify-center">
                 <div className="mt-40 md:mt-40">
@@ -264,237 +376,329 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
             >
             {hasContent ? (
               <>
-                {/* Grid View Mode */}
-                {viewMode === 'grid' ? (
+                {/* View All Posts Mode */}
+                {viewAllMode === 'posts' && (
                   <>
-                    {/* Trending Sections - Only show when not filtered */}
-                    {!filterInfo.isFiltered && (
+                    <SectionHeader
+                      title="All Posts"
+                      className="mb-6"
+                      onViewAll={handleBackToMain}
+                      viewAllLabel="← Back to Discover"
+                    />
+                    <div className={`grid ${gridColsClass} gap-5 transition-all duration-300`}>
+                      {(storePosts || []).map((post, idx) => (
+                        <div
+                          key={post.id}
+                          style={{
+                            opacity: 0,
+                            animation: `fadeInUp 520ms ease-out forwards`,
+                            animationDelay: `${Math.min(idx * 30, 300)}ms`,
+                            willChange: 'transform, opacity',
+                          }}
+                        >
+                          <PostCard post={post} currentUser={currentUser} categories={categories} />
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+
+                {/* View All Listings Mode */}
+                {viewAllMode === 'listings' && (
                   <>
-                    {/* Trending Posts */}
-                    {trendingPosts.length > 0 && (
-                      <div className="mb-8">
+                    <SectionHeader
+                      title="All Storefronts"
+                      className="mb-6"
+                      onViewAll={handleBackToMain}
+                      viewAllLabel="← Back to Discover"
+                    />
+                    <div className={`grid ${gridColsClass} gap-5 transition-all duration-300`}>
+                      {listings.filter(l => l.category !== 'Personal').map((listing, idx) => (
+                        <div
+                          key={listing.id}
+                          style={{
+                            opacity: 0,
+                            animation: `fadeInUp 520ms ease-out forwards`,
+                            animationDelay: `${Math.min(idx * 30, 300)}ms`,
+                            willChange: 'transform, opacity',
+                          }}
+                        >
+                          <ListingCard currentUser={currentUser} data={listing} />
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+
+                {/* View All Professionals Mode */}
+                {viewAllMode === 'professionals' && (
+                  <>
+                    <SectionHeader
+                      title="All Teammates"
+                      className="mb-6"
+                      onViewAll={handleBackToMain}
+                      viewAllLabel="← Back to Discover"
+                    />
+                    <div className={`grid ${gridColsClass} gap-5 transition-all duration-300`}>
+                      {employees.map((employee, idx) => {
+                        const listing = listings.find(l => l.id === employee.listingId) || listings[0];
+                        const li: any = listing as any;
+                        const imageSrc = li?.imageSrc || (Array.isArray(li?.galleryImages) ? li.galleryImages[0] : undefined) || '/placeholder.jpg';
+
+                        return (
+                          <div
+                            key={employee.id}
+                            style={{
+                              opacity: 0,
+                              animation: `fadeInUp 520ms ease-out forwards`,
+                              animationDelay: `${Math.min(idx * 30, 300)}ms`,
+                              willChange: 'transform, opacity',
+                            }}
+                          >
+                            <WorkerCard
+                              employee={employee}
+                              listingTitle={listing?.title || ''}
+                              data={{
+                                title: listing?.title || '',
+                                imageSrc,
+                                category: (listing as any)?.category ?? 'General',
+                              }}
+                              listing={listing}
+                              currentUser={currentUser ?? undefined}
+                            />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
+
+                {/* View All Shops Mode */}
+                {viewAllMode === 'shops' && (
+                  <>
+                    <SectionHeader
+                      title="All Vendors"
+                      className="mb-6"
+                      onViewAll={handleBackToMain}
+                      viewAllLabel="← Back to Discover"
+                    />
+                    <div className={`grid ${gridColsClass} gap-5 transition-all duration-300`}>
+                      {shops.map((shop, idx) => (
+                        <div
+                          key={shop.id}
+                          style={{
+                            opacity: 0,
+                            animation: `fadeInUp 520ms ease-out forwards`,
+                            animationDelay: `${Math.min(idx * 30, 300)}ms`,
+                            willChange: 'transform, opacity',
+                          }}
+                        >
+                          <ShopCard data={shop} currentUser={currentUser} />
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+
+                {/* Normal View - Show sections with pagination */}
+                {!viewAllMode && (
+                  <>
+                    {/* ===== Trending Posts Section ===== */}
+                    {!filterInfo.isFiltered && currentPosts.length > 0 && (
+                      <>
                         <SectionHeader
                           title="Curated for You"
-                          onPrev={() => scrollTrendingPosts('left')}
-                          onNext={() => scrollTrendingPosts('right')}
-                          onViewAll={() => handleNavigation('/?type=posts')}
+                          onPrev={() => scrollPosts('left')}
+                          onNext={() => scrollPosts('right')}
+                          onViewAll={handleViewAllPosts}
                         />
-                        <div className="grid grid-cols-4 gap-4">
-                          {trendingPosts.map((post, idx) => (
-                            <div
-                              key={`trending-post-${post.id}`}
-                              style={{
-                                opacity: 0,
-                                animation: `fadeInUp 520ms ease-out forwards`,
-                                animationDelay: `${idx * 30}ms`,
-                                willChange: 'transform, opacity',
-                              }}
-                              className="group/card relative"
-                            >
-                              <PostCard post={post} currentUser={currentUser} categories={categories} />
-                            </div>
-                          ))}
+                        <div id="posts-rail">
+                          <div className={`grid ${gridColsClass} gap-5 transition-all duration-300`}>
+                            {currentPosts.map((post, idx) => (
+                              <div
+                                key={`${post.id}-${postsIndex}`}
+                                style={{
+                                  opacity: postsVisible ? 0 : 0,
+                                  animation: postsVisible ? `fadeInUp 520ms ease-out forwards` : 'none',
+                                  animationDelay: postsVisible ? `${140 + idx * 30}ms` : '0ms',
+                                  willChange: 'transform, opacity',
+                                  transition: !postsVisible ? `opacity ${FADE_OUT_DURATION}ms ease-out` : 'none',
+                                }}
+                                className={!postsVisible ? 'opacity-0' : ''}
+                              >
+                                <PostCard post={post} currentUser={currentUser} categories={categories} />
+                              </div>
+                            ))}
+                          </div>
                         </div>
-                      </div>
+                      </>
                     )}
 
-                    {/* Trending Listings */}
-                    {trendingListings.length > 0 && (
-                      <div className="mb-8">
+                    {/* ===== Trending Listings Section ===== */}
+                    {!filterInfo.isFiltered && currentListings.length > 0 && (
+                      <>
                         <SectionHeader
                           title="Handpicked Experiences"
-                          onPrev={() => scrollTrendingListings('left')}
-                          onNext={() => scrollTrendingListings('right')}
-                          onViewAll={() => handleNavigation('/?type=listings')}
+                          onPrev={() => scrollListings('left')}
+                          onNext={() => scrollListings('right')}
+                          onViewAll={handleViewAllListings}
                         />
-                        <div className="grid grid-cols-4 gap-4">
-                          {trendingListings.map((listing, idx) => (
-                            <div
-                              key={`trending-listing-${listing.id}`}
-                              style={{
-                                opacity: 0,
-                                animation: `fadeInUp 520ms ease-out forwards`,
-                                animationDelay: `${idx * 30}ms`,
-                                willChange: 'transform, opacity',
-                              }}
-                              className="group/card relative"
-                            >
-                              <ListingCard currentUser={currentUser} data={listing} categories={categories} />
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Trending Teammates */}
-                    {trendingEmployees.length > 0 && (
-                      <div className="mb-8">
-                        <SectionHeader
-                          title="Your Perfect Match"
-                          onPrev={() => scrollTrendingEmployees('left')}
-                          onNext={() => scrollTrendingEmployees('right')}
-                          onViewAll={() => handleNavigation('/?type=professionals')}
-                        />
-                        <div className="grid grid-cols-4 gap-4">
-                          {trendingEmployees.map((employee, idx) => {
-                            const listing = listings[idx % listings.length] || listings[0];
-                            return (
+                        <div id="listings-rail">
+                          <div className={`grid ${gridColsClass} gap-5 transition-all duration-300`}>
+                            {currentListings.map((listing, idx) => (
                               <div
-                                key={`trending-employee-${employee.id}`}
+                                key={`${listing.id}-${listingsIndex}`}
                                 style={{
-                                  opacity: 0,
-                                  animation: `fadeInUp 520ms ease-out forwards`,
-                                  animationDelay: `${idx * 30}ms`,
+                                  opacity: listingsVisible ? 0 : 0,
+                                  animation: listingsVisible ? `fadeInUp 520ms ease-out forwards` : 'none',
+                                  animationDelay: listingsVisible ? `${140 + idx * 30}ms` : '0ms',
                                   willChange: 'transform, opacity',
+                                  transition: !listingsVisible ? `opacity ${FADE_OUT_DURATION}ms ease-out` : 'none',
                                 }}
-                                className="group/card relative"
+                                className={!listingsVisible ? 'opacity-0' : ''}
                               >
-                                <WorkerCard
-                                  employee={employee}
-                                  listingTitle={listing?.title || 'Professional'}
-                                  data={{
-                                    title: listing?.title || '',
-                                    imageSrc: listing?.imageSrc || '',
-                                    category: listing?.category || ''
-                                  }}
-                                  listing={listing}
-                                  currentUser={currentUser}
-                                />
+                                <ListingCard currentUser={currentUser} data={listing} />
                               </div>
-                            );
-                          })}
+                            ))}
+                          </div>
                         </div>
-                      </div>
+                      </>
                     )}
 
-                    {/* Trending Vendors */}
-                    {trendingShops.length > 0 && (
-                      <div className="mb-8">
+                    {/* ===== Trending Professionals Section ===== */}
+                    {!filterInfo.isFiltered && currentEmployees.length > 0 && (
+                      <>
+                        <SectionHeader
+                          title="Trending Professionals"
+                          onPrev={() => scrollEmployees('left')}
+                          onNext={() => scrollEmployees('right')}
+                          onViewAll={handleViewAllProfessionals}
+                        />
+                        <div id="employees-rail">
+                          <div className={`grid ${gridColsClass} gap-5 transition-all duration-300`}>
+                            {currentEmployees.map((employee, idx) => {
+                              const listing = listings.find(l => l.id === employee.listingId) || listings[0];
+                              const li: any = listing as any;
+                              const imageSrc = li?.imageSrc || (Array.isArray(li?.galleryImages) ? li.galleryImages[0] : undefined) || '/placeholder.jpg';
+
+                              return (
+                                <div
+                                  key={`${employee.id}-${employeesIndex}`}
+                                  style={{
+                                    opacity: employeesVisible ? 0 : 0,
+                                    animation: employeesVisible ? `fadeInUp 520ms ease-out forwards` : 'none',
+                                    animationDelay: employeesVisible ? `${160 + idx * 30}ms` : '0ms',
+                                    willChange: 'transform, opacity',
+                                    transition: !employeesVisible ? `opacity ${FADE_OUT_DURATION}ms ease-out` : 'none',
+                                  }}
+                                  className={!employeesVisible ? 'opacity-0' : ''}
+                                >
+                                  <WorkerCard
+                                    employee={employee}
+                                    listingTitle={listing?.title || ''}
+                                    data={{
+                                      title: listing?.title || '',
+                                      imageSrc,
+                                      category: (listing as any)?.category ?? 'General',
+                                    }}
+                                    listing={listing}
+                                    currentUser={currentUser ?? undefined}
+                                  />
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    {/* ===== Trending Shops Section ===== */}
+                    {!filterInfo.isFiltered && currentShops.length > 0 && (
+                      <>
                         <SectionHeader
                           title="Recommended Vendors"
-                          onPrev={() => scrollTrendingShops('left')}
-                          onNext={() => scrollTrendingShops('right')}
-                          onViewAll={() => handleNavigation('/?type=shops')}
+                          onPrev={() => scrollShops('left')}
+                          onNext={() => scrollShops('right')}
+                          onViewAll={handleViewAllShops}
                         />
-                        <div className="grid grid-cols-4 gap-4">
-                          {trendingShops.map((shop, idx) => (
-                            <div
-                              key={`trending-shop-${shop.id}`}
-                              style={{
-                                opacity: 0,
-                                animation: `fadeInUp 520ms ease-out forwards`,
-                                animationDelay: `${idx * 30}ms`,
-                                willChange: 'transform, opacity',
-                              }}
-                              className="group/card relative"
-                            >
-                              <ShopCard data={shop} currentUser={currentUser} />
-                            </div>
-                          ))}
+                        <div id="shops-rail">
+                          <div className={`grid ${gridColsClass} gap-5 pb-8 transition-all duration-300`}>
+                            {currentShops.map((shop, idx) => (
+                              <div
+                                key={`${shop.id}-${shopsIndex}`}
+                                style={{
+                                  opacity: shopsVisible ? 0 : 0,
+                                  animation: shopsVisible ? `fadeInUp 520ms ease-out forwards` : 'none',
+                                  animationDelay: shopsVisible ? `${160 + idx * 30}ms` : '0ms',
+                                  willChange: 'transform, opacity',
+                                  transition: !shopsVisible ? `opacity ${FADE_OUT_DURATION}ms ease-out` : 'none',
+                                }}
+                                className={!shopsVisible ? 'opacity-0' : ''}
+                              >
+                                <ShopCard data={shop} currentUser={currentUser} />
+                              </div>
+                            ))}
+                          </div>
                         </div>
+                      </>
+                    )}
+
+                    {/* ===== Results Section Header (when filtered) ===== */}
+                    {filterInfo.isFiltered && filterInfo.resultsHeaderText && (
+                      <SectionHeader
+                        title={filterInfo.resultsHeaderText}
+                        onViewAll={handleBackToMain}
+                        viewAllLabel="← Back to Discover"
+                      />
+                    )}
+
+                    {/* ===== Filtered Results Grid ===== */}
+                    {filterInfo.isFiltered && (
+                      <div className={`grid ${gridColsClass} gap-5 transition-all duration-300`}>
+                        {allContentItems.map((item, idx) => (
+                          <div
+                            key={`${item.type}-${item.data.id}`}
+                            style={{
+                              opacity: 0,
+                              animation: `fadeInUp 520ms ease-out forwards`,
+                              animationDelay: `${Math.min(idx * 30, 300)}ms`,
+                              willChange: 'transform, opacity',
+                            }}
+                          >
+                            {item.type === 'post' && (
+                              <PostCard post={item.data} currentUser={currentUser} categories={categories} />
+                            )}
+                            {item.type === 'listing' && (
+                              <ListingCard currentUser={currentUser} data={item.data} />
+                            )}
+                            {item.type === 'employee' && (
+                              <WorkerCard
+                                employee={item.data}
+                                listingTitle={item.listingContext?.title || 'Professional'}
+                                data={{
+                                  title: item.listingContext?.title || '',
+                                  imageSrc: item.listingContext?.imageSrc || '',
+                                  category: item.listingContext?.category || ''
+                                }}
+                                listing={item.listingContext}
+                                currentUser={currentUser}
+                              />
+                            )}
+                            {item.type === 'shop' && (
+                              <ShopCard data={item.data} currentUser={currentUser} />
+                            )}
+                          </div>
+                        ))}
                       </div>
                     )}
                   </>
                 )}
-
-                {/* Filtered Results Section - Unified Grid */}
-                {filterInfo.isFiltered && (() => {
-                  // Combine all items into a single array with type information
-                  let allItems: Array<{type: 'post' | 'listing' | 'employee' | 'shop', data: any, listingContext?: any}> = [];
-
-                  // If type filter is active, only include items of that type
-                  if (filterInfo.typeFilter) {
-                    if (filterInfo.typeFilter === 'posts') {
-                      allItems = (storePosts || []).map(post => ({ type: 'post' as const, data: post }));
-                    } else if (filterInfo.typeFilter === 'listings') {
-                      allItems = (listings || []).map(listing => ({ type: 'listing' as const, data: listing }));
-                    } else if (filterInfo.typeFilter === 'professionals') {
-                      allItems = (employees || []).map(employee => {
-                        const listing = listings.find(l => l.id === employee.listingId) || listings[0];
-                        return { type: 'employee' as const, data: employee, listingContext: listing };
-                      });
-                    } else if (filterInfo.typeFilter === 'shops') {
-                      allItems = (shops || []).map(shop => ({ type: 'shop' as const, data: shop }));
-                    }
-                  } else {
-                    // Otherwise, show all types mixed together
-                    allItems = [
-                      ...(storePosts || []).map(post => ({ type: 'post' as const, data: post })),
-                      ...(listings || []).map(listing => ({ type: 'listing' as const, data: listing })),
-                      ...(employees || []).map(employee => {
-                        const listing = listings.find(l => l.id === employee.listingId) || listings[0];
-                        return { type: 'employee' as const, data: employee, listingContext: listing };
-                      }),
-                      ...(shops || []).map(shop => ({ type: 'shop' as const, data: shop })),
-                    ];
-                  }
-
-                  if (allItems.length === 0) return null;
-
-                  return (
-                    <div key={`${filterInfo.currentCategory}-${filterInfo.typeFilter}`}>
-                      {/* Results Section Header */}
-                      {filterInfo.resultsHeaderText && (
-                        <SectionHeader
-                          title={filterInfo.resultsHeaderText}
-                          className="mb-6"
-                          onViewAll={() => handleNavigation('/')}
-                          viewAllLabel="← Back to Discover"
-                        />
-                      )}
-
-                      {/* Unified Grid */}
-                      <div className="mb-8">
-                        <div className="grid grid-cols-4 gap-4">
-                          {allItems.map((item, idx) => (
-                            <div
-                              key={`${item.type}-${item.data.id}`}
-                              style={{
-                                opacity: 0,
-                                animation: `fadeInUp 520ms ease-out forwards`,
-                                animationDelay: `${idx * 30}ms`,
-                                willChange: 'transform, opacity',
-                              }}
-                              className="group/card relative"
-                            >
-                              {item.type === 'post' && (
-                                <PostCard post={item.data} currentUser={currentUser} categories={categories} />
-                              )}
-                              {item.type === 'listing' && (
-                                <ListingCard currentUser={currentUser} data={item.data} categories={categories} />
-                              )}
-                              {item.type === 'employee' && (
-                                <WorkerCard
-                                  employee={item.data}
-                                  listingTitle={item.listingContext?.title || 'Professional'}
-                                  data={{
-                                    title: item.listingContext?.title || '',
-                                    imageSrc: item.listingContext?.imageSrc || '',
-                                    category: item.listingContext?.category || ''
-                                  }}
-                                  listing={item.listingContext}
-                                  currentUser={currentUser}
-                                />
-                              )}
-                              {item.type === 'shop' && (
-                                <ShopCard data={item.data} currentUser={currentUser} />
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })()}
-                  </>
-                ) : null}
               </>
             ) : (
-              <div className="px-8 pt-32 text-center text-gray-500 ">
+              <div className="px-8 pt-32 text-center text-gray-500">
                 No posts found. Try adjusting your filters.
               </div>
-            )
-          }
+            )}
           </div>
         </div>
         </Container>

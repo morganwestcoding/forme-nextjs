@@ -6,7 +6,7 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import { SafeUser } from "@/app/types";
 import FeatureComparison from "@/components/subscription/FeatureComparison";
-import { Check, ArrowRight } from "lucide-react";
+import { CheckmarkCircle02Icon, ArrowRight01Icon } from "hugeicons-react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
@@ -157,8 +157,18 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
       }
 
       const { loadStripe } = await import("@stripe/stripe-js");
-      const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
-      if (!stripe) throw new Error("Stripe failed to load");
+      const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+
+      if (!publishableKey) {
+        toast.error("Stripe configuration error. Please contact support.");
+        return;
+      }
+
+      const stripe = await loadStripe(publishableKey);
+      if (!stripe) {
+        toast.error("Failed to load payment system. Please try again.");
+        return;
+      }
 
       // Redirect to Stripe checkout - after payment, they'll come back to success URL
       await stripe.redirectToCheckout({ sessionId });
@@ -184,39 +194,42 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
             <p className="text-base text-gray-500">
               {isOnboarding
                 ? "Start free, upgrade as you grow"
-                : <>You're on <span className="font-semibold text-gray-900">{cleanLabel(currentUser?.subscriptionTier)}</span>. Change plans anytime.</>
+                : <>You&apos;re on <span className="font-semibold text-gray-900">{cleanLabel(currentUser?.subscriptionTier)}</span>. Change plans anytime.</>
               }
             </p>
           </div>
 
           {/* Billing Toggle */}
           <div className="flex justify-center mt-12">
-            <div className="inline-flex items-center gap-3">
+            <div className="relative inline-flex items-center bg-gray-50 rounded-lg p-1 gap-1">
+              <div
+                className={`absolute top-1 bottom-1 bg-gray-900 rounded-md transition-all duration-300 ease-out ${
+                  billing === 'monthly' ? 'left-1' : 'left-[calc(50%)]'
+                }`}
+                style={{
+                  width: 'calc(50% - 4px)',
+                }}
+              />
+
               <button
                 onClick={() => setBilling("monthly")}
-                className={`px-6 py-3 rounded-xl border text-sm font-semibold tracking-tight transition-all duration-200 flex items-center gap-2 ${
+                className={`relative z-10 px-16 py-2.5 text-sm font-medium transition-colors duration-200 rounded-md ${
                   billing === "monthly"
-                    ? "bg-white border-gray-300 text-gray-900 shadow-sm"
-                    : "bg-white border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-900"
+                    ? "text-white"
+                    : "text-gray-600 hover:text-gray-900"
                 }`}
               >
                 Monthly
-                <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-blue-500 text-white">
-                  No Lock-In
-                </span>
               </button>
               <button
                 onClick={() => setBilling("yearly")}
-                className={`px-6 py-3 rounded-xl border text-sm font-semibold tracking-tight transition-all duration-200 flex items-center gap-2 ${
+                className={`relative z-10 px-16 py-2.5 text-sm font-medium transition-colors duration-200 rounded-md ${
                   billing === "yearly"
-                    ? "bg-white border-gray-300 text-gray-900 shadow-sm"
-                    : "bg-white border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-900"
+                    ? "text-white"
+                    : "text-gray-600 hover:text-gray-900"
                 }`}
               >
                 Yearly
-                <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-green-500 text-white">
-                  Save 17%
-                </span>
               </button>
             </div>
           </div>
@@ -234,38 +247,38 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
             return (
               <div
                 key={plan.id}
-                className={`group relative rounded-xl border p-8 transition-all duration-300 ${
+                className={`group relative rounded-2xl border p-8 transition-all duration-300 ${
                   isPopular
-                    ? "bg-gray-50 border-gray-300 shadow-lg scale-[1.02]"
+                    ? "bg-gradient-to-br from-gray-900 to-gray-800 border-gray-700 shadow-xl scale-[1.02]"
                     : isCurrentPlan
-                    ? "bg-white border-gray-200"
-                    : "bg-white border-gray-200 hover:border-gray-300 hover:shadow-sm"
+                    ? "bg-white border-gray-200 shadow-sm"
+                    : "bg-white border-gray-200 hover:border-gray-300 hover:shadow-md"
                 }`}
               >
                 {plan.badge && (
-                  <div className="absolute -top-2.5 left-1/2 transform -translate-x-1/2">
-                    <span className="bg-gray-900 text-white px-3 py-1 rounded-full text-[10px] font-semibold tracking-tight uppercase">
+                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                    <span className="bg-gradient-to-r from-gray-700 to-gray-600 text-white px-4 py-1.5 rounded-full text-[10px] font-medium tracking-wide uppercase shadow-lg">
                       {plan.badge}
                     </span>
                   </div>
                 )}
 
                 <div className="mb-8">
-                  <h3 className="text-xs font-semibold uppercase tracking-wider mb-4 text-gray-400">
+                  <h3 className={`text-xs font-semibold uppercase tracking-wider mb-4 ${isPopular ? 'text-gray-400' : 'text-gray-400'}`}>
                     {plan.name}
                   </h3>
                   <div className="mb-1">
-                    <span className="text-4xl font-semibold tracking-tight text-gray-900">
+                    <span className={`text-4xl font-semibold tracking-tight ${isPopular ? 'text-white' : 'text-gray-900'}`}>
                       {price === 0 ? "Free" : `$${price}`}
                     </span>
                     {price > 0 && (
-                      <span className="text-sm ml-1.5 text-gray-400">
+                      <span className={`text-sm ml-1.5 ${isPopular ? 'text-gray-400' : 'text-gray-400'}`}>
                         /{billing === "yearly" ? "yr" : "mo"}
                       </span>
                     )}
                   </div>
                   {billing === "yearly" && price > 0 && (
-                    <p className="text-[11px] font-medium text-green-600">
+                    <p className={`text-[11px] font-medium ${isPopular ? 'text-gray-300' : 'text-gray-500'}`}>
                       Save ${(plan.price.monthly * 12) - plan.price.yearly} annually
                     </p>
                   )}
@@ -273,8 +286,8 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
 
                 <ul className="space-y-3 mb-8">
                   {plan.features.map((feature, idx) => (
-                    <li key={idx} className="flex items-start text-[13px] text-gray-600">
-                      <Check className="w-3.5 h-3.5 mr-2.5 flex-shrink-0 mt-0.5 text-gray-900" strokeWidth={2.5} />
+                    <li key={idx} className={`flex items-start text-[13px] ${isPopular ? 'text-gray-300' : 'text-gray-600'}`}>
+                      <CheckmarkCircle02Icon size={14} color={isPopular ? '#d1d5db' : '#9ca3af'} className="mr-2.5 flex-shrink-0 mt-0.5" strokeWidth={2} />
                       {feature}
                     </li>
                   ))}
@@ -283,23 +296,25 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
                 <button
                   onClick={() => handleSelect(plan.id)}
                   disabled={saving || isCurrentPlan}
-                  className={`w-full py-3 px-5 rounded-lg font-semibold text-[13px] tracking-tight transition-all duration-200 flex items-center justify-center gap-2 ${
-                    isCurrentPlan
-                      ? "bg-gray-900 text-white cursor-default"
-                      : "bg-gray-900 text-white hover:bg-black"
+                  className={`w-full py-3 px-5 rounded-lg font-medium text-[13px] transition-all duration-200 flex items-center justify-center gap-2 ${
+                    isPopular
+                      ? "bg-white text-gray-900 hover:bg-gray-100"
+                      : isCurrentPlan
+                      ? "bg-gray-100 text-gray-500 cursor-default border border-gray-200"
+                      : "bg-gray-900 text-white hover:bg-gray-800"
                   }`}
                 >
                   {saving ? (
                     "Processing..."
                   ) : isCurrentPlan ? (
                     <>
-                      <Check className="w-3.5 h-3.5" strokeWidth={2.5} />
+                      <CheckmarkCircle02Icon size={14} strokeWidth={2} />
                       Current Plan
                     </>
                   ) : (
                     <>
                       {plan.cta}
-                      <ArrowRight className="w-3.5 h-3.5" strokeWidth={2.5} />
+                      <ArrowRight01Icon size={14} strokeWidth={2} />
                     </>
                   )}
                 </button>

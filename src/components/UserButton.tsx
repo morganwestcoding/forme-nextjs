@@ -94,7 +94,7 @@ const UserButton: React.FC<UserButtonProps> = ({
 
   const buttonClass = noBg
     ? "flex items-center justify-start cursor-pointer outline-none touch-manipulation"
-    : "w-44 py-3 px-3 bg-white flex items-center mt-1 gap-3 mb-5 cursor-pointer rounded-xl relative transition-all duration-200 outline-none group hover:bg-white/80 border-[0.75px] border-gray-400/55 hover:border-gray-600";
+    : "w-44 py-3 px-3 flex items-center mt-1 gap-3 mb-5 cursor-pointer rounded-xl relative transition-all duration-500 ease-out outline-none group bg-gradient-to-b from-white to-gray-50 border border-gray-200/60 hover:border-gray-300 active:scale-[0.97]";
 
 
   const dropdownWidthClass = noBg ? "min-w-44" : "w-44";
@@ -139,7 +139,7 @@ const UserButton: React.FC<UserButtonProps> = ({
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
-        className={`bg-white rounded-xl p-2 shadow-[0_20px_60px_-12px_rgba(0,0,0,0.25)] border border-gray-200/80 z-[100] ${dropdownWidthClass}`}
+        className={`bg-gradient-to-b from-white to-gray-50/50 rounded-xl p-1.5 shadow-lg shadow-gray-200/50 border border-gray-200/60 z-[100] ${dropdownWidthClass}`}
         side="bottom"
         align="start"
         sideOffset={8}
