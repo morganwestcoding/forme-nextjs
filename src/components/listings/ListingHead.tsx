@@ -7,7 +7,8 @@ import ServiceCard from './ServiceCard';
 import WorkerCard from './WorkerCard';
 import PostCard from '../feed/PostCard';
 import QRModal from '../modals/QRModal';
-import ListingLocalSearch from './ListingLocalSearch';
+import ListingSearch from './ListingSearch';
+import ListingCategoryNav from './ListingCategoryNav';
 import { SafePost, SafeUser, SafeListing } from '@/app/types';
 import useReservationModal from '@/app/hooks/useReservationModal';
 import useRentModal from '@/app/hooks/useListingModal';
@@ -126,10 +127,6 @@ const ListingHead: React.FC<ListingHeadProps> = ({
     rentModal.onOpen(listing);
   };
 
-  const handleGalleryClick = () => {
-    setActiveTab('Posts');
-  };
-
   const validServices = useMemo(
     () =>
       (Services || []).filter(
@@ -192,14 +189,6 @@ const ListingHead: React.FC<ListingHeadProps> = ({
     url.searchParams.set('addMedia', '1');
     router.push(`${url.pathname}?${url.searchParams.toString()}`, { scroll: false });
   };
-
-  const tabs: Array<{ key: TabKey; label: string }> = [
-    { key: 'About', label: 'About Us' },
-    { key: 'Services', label: 'Services' },
-    { key: 'Team', label: 'Team' },
-    { key: 'Posts', label: 'Posts' },
-    { key: 'Reviews', label: 'Reviews' },
-  ];
 
   return (
     <>
@@ -379,21 +368,19 @@ const ListingHead: React.FC<ListingHeadProps> = ({
         </div>
       )}
 
-      {/* Hero Section */}
+      {/* Hero Section - Market-style with background image */}
       <div className="-mx-6 md:-mx-24 -mt-2 md:-mt-8">
-        <div
-          className="relative px-6 md:px-24 pt-10 overflow-hidden"
-        >
+        <div className="relative px-6 md:px-24 pt-12 pb-4 overflow-hidden">
           {/* Background Image with Parallax Effect */}
-          <div className="absolute inset-0 -mx-6 md:-mx-24 overflow-hidden">
+          <div className="absolute inset-0 overflow-hidden">
             <img
               src={mainImage}
               alt={title}
               className="absolute w-full object-cover will-change-transform"
               style={{
-                top: '-20%',
-                height: '140%',
-                transform: `translateY(${scrollY * 0.3}px)`
+                top: '-10%',
+                height: '120%',
+                transform: `translateY(${scrollY * 0.2}px)`
               }}
             />
             {/* Gradient overlay */}
@@ -402,12 +389,11 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               style={{
                 background:
                   'linear-gradient(to top,' +
-                  'rgba(0,0,0,0.65) 0%,' +
-                  'rgba(0,0,0,0.55) 15%,' +
-                  'rgba(0,0,0,0.40) 35%,' +
-                  'rgba(0,0,0,0.25) 55%,' +
-                  'rgba(0,0,0,0.15) 75%,' +
-                  'rgba(0,0,0,0.08) 100%)',
+                  'rgba(0,0,0,0.70) 0%,' +
+                  'rgba(0,0,0,0.55) 20%,' +
+                  'rgba(0,0,0,0.35) 50%,' +
+                  'rgba(0,0,0,0.20) 80%,' +
+                  'rgba(0,0,0,0.10) 100%)',
               }}
             />
           </div>
@@ -416,7 +402,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
           <div className="absolute top-6 right-6 md:right-24 z-50">
             <button
               onClick={handleDropdownToggle}
-              className="p-1 hover:bg-white/5 rounded-xl transition-colors relative z-50"
+              className="p-2 hover:bg-white/10 rounded-xl transition-colors relative z-50"
               type="button"
               aria-label="Options menu"
             >
@@ -428,41 +414,48 @@ const ListingHead: React.FC<ListingHeadProps> = ({
             </button>
           </div>
 
-          {/* Content */}
-          <div className="relative z-10 pb-6">
-            {/* Single Column Layout */}
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-1">
-                <h1 className="text-4xl font-bold text-white">
+          {/* Content - Centered like MarketClient */}
+          <div className="relative z-10 pb-2">
+            {/* Main Title - Centered */}
+            <div className="text-center">
+              <div className="inline-flex items-center gap-2 justify-center">
+                <h1 className="text-4xl md:text-5xl font-bold text-white leading-tight tracking-tight">
                   {title}
                 </h1>
-                {/* Verified Badge */}
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  height="24"
-                  fill="#60A5FA"
-                  aria-label="Verified"
-                >
-                  <path
-                    d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z"
-                    stroke="white"
-                    strokeWidth="1"
-                    fill="#60A5FA"
-                  />
-                  <path
-                    d="M9 12.8929L10.8 14.5L15 9.5"
-                    stroke="white"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+                {/* Verified Badge - Gradient style from ListingCard */}
+                <span className="inline-flex items-center align-middle" aria-label="Verified">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    width="28"
+                    height="28"
+                    className="shrink-0"
+                  >
+                    <path
+                      d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z"
+                      fill="url(#heroVerifiedGradient)"
+                    />
+                    <path
+                      d="M9 12.8929C9 12.8929 10.2 13.5447 10.8 14.5C10.8 14.5 12.6 10.75 15 9.5"
+                      stroke="white"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      fill="none"
+                    />
+                    <defs>
+                      <linearGradient id="heroVerifiedGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stopColor="#60A5FA" />
+                        <stop offset="100%" stopColor="#4A90E2" />
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                </span>
               </div>
 
-              <div className="flex items-center gap-3 text-white/80 mb-6">
-                <span className="text-sm">
+              {/* Subtitle - Location and status */}
+              <div className="flex items-center justify-center gap-3 text-white/80 mt-3">
+                <span className="text-base">
                   {address && location ? `${address}, ${location}` : address || location}
                 </span>
                 {/* Operating Status */}
@@ -476,129 +469,38 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                       <span className="text-white/40">·</span>
                       <span className="flex items-center gap-1.5">
                         <div className={`w-1.5 h-1.5 rounded-full ${isOpen ? 'bg-emerald-400' : 'bg-red-400'}`} />
-                        <span className="text-sm">
-                          {isOpen ? `We're open until ${todayHours.closeTime}` : `We're closed today`}
+                        <span className="text-base">
+                          {isOpen ? `Open until ${todayHours.closeTime}` : `Closed today`}
                         </span>
                       </span>
                     </>
                   );
                 })()}
               </div>
-
-              {/* Search Bar and Buttons Row */}
-              <div className="flex gap-3">
-                <div className="flex-grow">
-                  <ListingLocalSearch
-                    placeholder="Search..."
-                    onSearchChange={setSearchQuery}
-                  />
-                </div>
-
-                {/* Action Buttons - Side by Side */}
-                {currentUser && (
-                  <>
-                    {/* Reserve Button */}
-                    <button
-                      onClick={handleReserveClick}
-                      className="bg-transparent border border-white/30 hover:border-white/50 text-white hover:text-white py-2.5 px-4 rounded-xl transition-all duration-300 text-sm flex items-center justify-center space-x-2"
-                      type="button"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.5">
-                        <path d="M18 2V4M6 2V4" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M11.9955 13H12.0045M11.9955 17H12.0045M15.991 13H16M8 13H8.00897M8 17H8.00897" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M3.5 8H20.5" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M2.5 12.2432C2.5 7.88594 2.5 5.70728 3.75212 4.35364C5.00424 3 7.01949 3 11.05 3H12.95C16.9805 3 18.9958 3 20.2479 4.35364C21.5 5.70728 21.5 7.88594 21.5 12.2432V12.7568C21.5 17.1141 21.5 19.2927 20.2479 20.6464C18.9958 22 16.9805 22 12.95 22H11.05C7.01949 22 5.00424 22 3.75212 20.6464C2.5 19.2927 2.5 17.1141 2.5 12.7568V12.2432Z" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M3 8H21" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                      <span>Reserve</span>
-                    </button>
-
-                    {/* Follow Button for non-owners/non-employees OR Edit Button for owners/employees */}
-                    {isOwner || isEmployee ? (
-                      <button
-                        onClick={handleEditListing}
-                        className="bg-transparent border border-white/30 hover:border-white/50 text-white hover:text-white py-2.5 px-4 rounded-xl transition-all duration-300 text-sm flex items-center justify-center space-x-2"
-                        type="button"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.5">
-                          <path d="M16.4249 4.60509L17.4149 3.6151C18.2351 2.79497 19.5648 2.79497 20.3849 3.6151C21.205 4.43524 21.205 5.76493 20.3849 6.58507L19.3949 7.57506M16.4249 4.60509L9.76558 11.2644C9.25807 11.772 8.89804 12.4078 8.72397 13.1041L8 16L10.8959 15.276C11.5922 15.102 12.228 14.7419 12.7356 14.2344L19.3949 7.57506M16.4249 4.60509L19.3949 7.57506" strokeLinejoin="round"/>
-                          <path d="M18.9999 13.5C18.9999 16.7875 18.9999 18.4312 18.092 19.5376C17.9258 19.7401 17.7401 19.9258 17.5375 20.092C16.4312 21 14.7874 21 11.4999 21H11C7.22876 21 5.34316 21 4.17159 19.8284C3.00003 18.6569 3 16.7712 3 13V12.5C3 9.21252 3 7.56879 3.90794 6.46244C4.07417 6.2599 4.2599 6.07417 4.46244 5.90794C5.56879 5 7.21252 5 10.5 5" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                        <span>Edit</span>
-                      </button>
-                    ) : (
-                      <button
-                        onClick={handleToggleFollow}
-                        className="bg-transparent border border-white/30 hover:border-white/50 text-white hover:text-white py-2.5 px-4 rounded-xl transition-all duration-300 text-sm flex items-center justify-center space-x-2"
-                        type="button"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.5">
-                          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                          <circle cx="9" cy="7" r="4"/>
-                          <line x1="19" y1="8" x2="19" y2="14"/>
-                          <line x1="22" y1="11" x2="16" y2="11"/>
-                        </svg>
-                        <span>{isFollowing ? 'Following' : 'Follow'}</span>
-                      </button>
-                    )}
-                  </>
-                )}
-              </div>
             </div>
 
+            {/* Search and Controls - MarketSearch Style */}
+            <div className="mt-8 max-w-3xl mx-auto">
+              <ListingSearch
+                onSearchChange={setSearchQuery}
+                onReserveClick={handleReserveClick}
+                onEditClick={handleEditListing}
+                onFollowClick={handleToggleFollow}
+                isOwner={isOwner}
+                isEmployee={isEmployee}
+                isFollowing={isFollowing}
+                currentUser={!!currentUser}
+              />
+            </div>
 
-          </div>
-          {/* Navigation Tabs */}
-          <div className="-mx-6 md:-mx-24 pb-3 relative z-10">
-            <div className="flex items-center justify-center">
-              {tabs.map(({ key, label }, index) => {
-                const isSelected = activeTab === key;
-                const selectedIndex = tabs.findIndex(t => t.key === activeTab);
-                const hasSelection = selectedIndex !== -1;
-
-                // Toggle behavior: click to select, click again to deselect (show all)
-                const handleTabClick = () => {
-                  setActiveTab(activeTab === key ? null : key);
-                };
-
-                // Determine divider state: adjacent to selected rotates horizontal, others disappear
-                const getDividerState = () => {
-                  if (!hasSelection) return 'vertical';
-                  if (index === selectedIndex - 1 || index === selectedIndex) return 'horizontal';
-                  return 'hidden';
-                };
-                const dividerState = getDividerState();
-
-                return (
-                  <div key={key} className="relative flex items-center">
-                    <button
-                      onClick={handleTabClick}
-                      className={`
-                        px-8 py-3.5 text-sm transition-all duration-200
-                        ${isSelected
-                          ? 'text-[#60A5FA] font-medium'
-                          : 'text-white/80 hover:text-white'
-                        }
-                      `}
-                      type="button"
-                    >
-                      {label}
-                    </button>
-
-                    {/* Divider: vertical by default, rotates horizontal when adjacent to selected, disappears otherwise */}
-                    {index < tabs.length - 1 && (
-                      <span
-                        className={`
-                          bg-white/60 transition-all duration-300 ease-out
-                          ${dividerState === 'horizontal' ? 'w-3 h-[0.5px] bg-[#60A5FA]' : ''}
-                          ${dividerState === 'vertical' ? 'w-[0.5px] h-4' : ''}
-                          ${dividerState === 'hidden' ? 'w-[0.5px] h-4 opacity-0' : ''}
-                        `}
-                      />
-                    )}
-                  </div>
-                );
-              })}
+            {/* Category Navigation - Separate like Market */}
+            <div className="mt-5 -mx-6 md:-mx-24">
+              <div className="px-6 md:px-24">
+                <ListingCategoryNav
+                  activeTab={activeTab}
+                  onTabChange={setActiveTab}
+                />
+              </div>
             </div>
           </div>
         </div>
