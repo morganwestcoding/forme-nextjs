@@ -18,7 +18,6 @@ import TikTokView from './feed/TikTokView';
 import ListingCard from '@/components/listings/ListingCard';
 import WorkerCard from '@/components/listings/WorkerCard';
 import ShopCard from '@/components/shop/ShopCard';
-import PropagateLoaderWrapper from '@/components/loaders/PropagateLoaderWrapper';
 import SectionHeader from '@/app/market/SectionHeader';
 
 interface DiscoverClientProps {
@@ -30,7 +29,6 @@ interface DiscoverClientProps {
   shops?: SafeShop[];
 }
 
-const MIN_LOADER_MS = 300;
 const FADE_OUT_DURATION = 200;
 const ITEMS_PER_PAGE = 8;
 
@@ -49,7 +47,6 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
   const { viewMode, setViewMode } = useViewMode();
 
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const [isPending, startTransition] = useTransition();
 
   // Pagination state
@@ -157,11 +154,6 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
 
     return { isFiltered, categoryIsActive, resultsHeaderText, currentCategory, typeFilter: hasTypeFilter ? typeFilter : null };
   }, [headerSearchParams, typeFilter]);
-
-  useEffect(() => {
-    const t = setTimeout(() => setIsLoading(false), MIN_LOADER_MS);
-    return () => clearTimeout(t);
-  }, []);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -359,21 +351,9 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
             </div>
           </div>
 
-          {/* Content + loader overlay */}
+          {/* Content */}
           <div className="relative -mt-[69px]">
-            {isLoading && (
-              <div className="pointer-events-none absolute inset-0 z-10 flex items-start justify-center">
-                <div className="mt-40 md:mt-40">
-                  <PropagateLoaderWrapper size={12} speedMultiplier={1.15} />
-                </div>
-              </div>
-            )}
-
-            <div
-              className={`transition-opacity duration-700 ease-out ${
-                isLoading ? 'opacity-0' : 'opacity-100'
-              }`}
-            >
+            <div>
             {hasContent ? (
               <>
                 {/* View All Posts Mode */}

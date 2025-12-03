@@ -10,14 +10,12 @@ import ReserveCard from "@/components/listings/ReserveCard";
 import MarketSearch from "@/app/market/MarketSearch";
 import CategoryNav from "@/app/bookings/CategoryNav";
 import SectionHeader from "@/app/market/SectionHeader";
-import PropagateLoaderWrapper from "@/components/loaders/PropagateLoaderWrapper";
 
 interface ReservationsClientProps {
   reservations: SafeReservation[];
   currentUser?: SafeUser | null;
 }
 
-const MIN_LOADER_MS = 300;
 const FADE_OUT_DURATION = 200;
 const ITEMS_PER_PAGE = 8;
 
@@ -28,7 +26,6 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
   const router = useRouter();
   const searchParams = useSearchParams();
   const [processingId, setProcessingId] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   // Pagination state
@@ -72,12 +69,6 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Initialize loader
-  useEffect(() => {
-    const t = setTimeout(() => setIsLoading(false), MIN_LOADER_MS);
-    return () => clearTimeout(t);
   }, []);
 
   // Get selected categories from URL
@@ -242,21 +233,9 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
         </div>
       </div>
 
-      {/* Content + loader overlay */}
+      {/* Content */}
       <div className="relative -mt-[69px]">
-        {isLoading && (
-          <div className="pointer-events-none absolute inset-0 z-10 flex items-start justify-center">
-            <div className="mt-40 md:mt-40">
-              <PropagateLoaderWrapper size={12} speedMultiplier={1.15} />
-            </div>
-          </div>
-        )}
-
-        <div
-          className={`transition-opacity duration-700 ease-out ${
-            isLoading ? 'opacity-0' : 'opacity-100'
-          }`}
-        >
+        <div>
           {hasReservations ? (
             <>
               {/* View All Mode */}

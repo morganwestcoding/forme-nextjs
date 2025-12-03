@@ -7,7 +7,6 @@ import ShopCard from '@/components/shop/ShopCard';
 import ProductCard from '@/components/shop/ProductCard';
 import MarketSearch from '@/app/market/MarketSearch';
 import CategoryNav from '@/app/market/CategoryNav';
-import PropagateLoaderWrapper from '@/components/loaders/PropagateLoaderWrapper';
 import SectionHeader from '@/app/market/SectionHeader';
 
 interface ShopClientProps {
@@ -17,7 +16,6 @@ interface ShopClientProps {
   currentUser: SafeUser | null;
 }
 
-const MIN_LOADER_MS = 300;
 const FADE_OUT_DURATION = 200;
 const ITEMS_PER_PAGE = 8;
 
@@ -29,7 +27,6 @@ const ShopClient: React.FC<ShopClientProps> = ({
   const params = useSearchParams();
 
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
 
   // Pagination state
   const [shopsIndex, setShopsIndex] = useState(0);
@@ -87,11 +84,6 @@ const ShopClient: React.FC<ShopClientProps> = ({
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Loader (nice UX delay)
-  useEffect(() => {
-    const t = setTimeout(() => setIsLoading(false), MIN_LOADER_MS);
-    return () => clearTimeout(t);
-  }, [initialShops]);
 
   // Filtering logic to determine when to show section headers
   const filterInfo = useMemo(() => {
@@ -241,21 +233,9 @@ const ShopClient: React.FC<ShopClientProps> = ({
         </div>
       </div>
 
-      {/* Content + loader overlay */}
+      {/* Content */}
       <div className="relative -mt-[69px]">
-        {isLoading && (
-          <div className="pointer-events-none absolute inset-0 z-10 flex items-start justify-center">
-            <div className="mt-40 md:mt-40">
-              <PropagateLoaderWrapper size={12} speedMultiplier={1.15} />
-            </div>
-          </div>
-        )}
-
-        <div
-          className={`transition-opacity duration-700 ease-out ${
-            isLoading ? 'opacity-0' : 'opacity-100'
-          }`}
-        >
+        <div>
           {hasContent ? (
             <>
               {/* View All Shops Mode */}

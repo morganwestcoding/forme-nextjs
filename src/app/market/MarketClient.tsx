@@ -3,7 +3,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Container from '@/components/Container';
 import { SafeListing, SafeUser, SafeEmployee } from '@/app/types';
-import PropagateLoaderWrapper from '@/components/loaders/PropagateLoaderWrapper';
 import ListingCard from '@/components/listings/ListingCard';
 import MarketSearch from './MarketSearch';
 import CategoryNav from './CategoryNav';
@@ -30,7 +29,6 @@ interface MarketClientProps {
 }
 
 
-const MIN_LOADER_MS = 300;
 const FADE_OUT_DURATION = 200;
 
 const MarketClient: React.FC<MarketClientProps> = ({
@@ -49,11 +47,6 @@ const MarketClient: React.FC<MarketClientProps> = ({
   const [featuredVisible, setFeaturedVisible] = useState(true);
   const [trendingVisible, setTrendingVisible] = useState(true);
   const [viewAllMode, setViewAllMode] = useState<'storefronts' | 'professionals' | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  useEffect(() => {
-    const t = setTimeout(() => setIsLoading(false), MIN_LOADER_MS);
-    return () => clearTimeout(t);
-  }, [listings]);
 
   // Sticky nav border effect on scroll
   useEffect(() => {
@@ -251,21 +244,9 @@ const MarketClient: React.FC<MarketClientProps> = ({
         </div>
       </div>
 
-      {/* Content + loader overlay */}
+      {/* Content */}
       <div className="relative -mt-[69px]">
-        {isLoading && (
-          <div className="pointer-events-none absolute inset-0 z-10 flex items-start justify-center">
-            <div className="mt-40 md:mt-40">
-              <PropagateLoaderWrapper size={12} speedMultiplier={1.15} />
-            </div>
-          </div>
-        )}
-
-        <div
-          className={`transition-opacity duration-700 ease-out ${
-            isLoading ? 'opacity-0' : 'opacity-100'
-          }`}
-        >
+        <div>
           {hasListings ? (
             <>
               {/* View All Storefronts Mode */}

@@ -11,7 +11,6 @@ import { SafeListing, SafeUser, SafeEmployee, SafeShop, SafePost } from '@/app/t
 import MarketSearch from '../market/MarketSearch';
 import CategoryNav from '@/components/favorites/CategoryNav';
 import SectionHeader from '../market/SectionHeader';
-import PropagateLoaderWrapper from '@/components/loaders/PropagateLoaderWrapper';
 
 type FavoriteTab = 'Market' | 'Professionals' | 'Shops' | 'Posts';
 
@@ -23,7 +22,6 @@ interface FavoritesClientProps {
   currentUser?: SafeUser | null;
 }
 
-const MIN_LOADER_MS = 300;
 const FADE_OUT_DURATION = 200;
 const ITEMS_PER_PAGE = 8;
 
@@ -35,7 +33,6 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
   currentUser,
 }) => {
   const [activeTab, setActiveTab] = useState<FavoriteTab | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   // Pagination state for each section
@@ -97,12 +94,6 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Initialize loader
-  useEffect(() => {
-    const t = setTimeout(() => setIsLoading(false), MIN_LOADER_MS);
-    return () => clearTimeout(t);
   }, []);
 
   // Check content availability
@@ -258,21 +249,9 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
         </div>
       </div>
 
-      {/* Content + loader overlay */}
+      {/* Content */}
       <div className="relative -mt-[69px]">
-        {isLoading && (
-          <div className="pointer-events-none absolute inset-0 z-10 flex items-start justify-center">
-            <div className="mt-40 md:mt-40">
-              <PropagateLoaderWrapper size={12} speedMultiplier={1.15} />
-            </div>
-          </div>
-        )}
-
-        <div
-          className={`transition-opacity duration-700 ease-out ${
-            isLoading ? 'opacity-0' : 'opacity-100'
-          }`}
-        >
+        <div>
           {hasContent ? (
             <>
               {/* View All Listings Mode */}
