@@ -209,7 +209,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, var
         <div className={isListingVariant ? 'relative w-full h-full' : 'relative h-[280px]'}>
           {/* Heart Button - top right - only show for default variant */}
           {!isListingVariant && (
-            <div className="absolute top-6 right-6 z-20">
+            <div className="absolute top-4 right-4 z-20">
               <HeartButton
                 listingId={post.id}
                 currentUser={currentUser}
@@ -220,9 +220,9 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, var
 
           {/* Bottom info - user details - only show for default variant */}
           {!isListingVariant && (
-            <div className="absolute bottom-6 left-6 right-6 z-20">
+            <div className="absolute bottom-4 left-4 right-4 z-20">
               {/* User info */}
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-center gap-2">
                 <div
                   className="relative h-9 w-9 overflow-hidden rounded-full border-2 border-white/30 cursor-pointer flex-shrink-0"
                   onClick={handleUserClick}
@@ -236,10 +236,10 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, var
                   />
                 </div>
 
-                <div className="flex flex-col justify-center min-w-0">
+                <div className="flex flex-col justify-center min-w-0 -mt-2">
                   {/* Name with verification badge */}
-                  <div className="mb-0.5">
-                    <h1 className="text-white text-[15px] leading-tight font-semibold drop-shadow inline">
+                  <div>
+                    <h1 className="text-white text-xs leading-none font-semibold drop-shadow inline">
                       <span
                         className="cursor-pointer hover:text-white/80 align-middle"
                         onClick={handleUserClick}
@@ -280,7 +280,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, var
                   </div>
 
                   {/* Time and views */}
-                  <div className="text-white/90 text-[10px] leading-tight">
+                  <div className="text-white/90 text-[10px] leading-none mt-0.5">
                     <span className="line-clamp-1">{prettyTime} · {viewsLabel}</span>
                   </div>
                 </div>

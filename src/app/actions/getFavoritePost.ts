@@ -48,6 +48,7 @@ export default async function getFavoritePosts(): Promise<SafePost[]> {
       createdAt: post.createdAt.toISOString(),
       mediaUrl: post.mediaUrl || null,
       mediaType: post.mediaType as any,
+      mediaOverlay: post.mediaOverlay as any,
       likes: post.likes || [],
       bookmarks: post.bookmarks || [],
       hiddenBy: post.hiddenBy || [],

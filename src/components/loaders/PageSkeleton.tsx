@@ -10,23 +10,24 @@ interface PageSkeletonProps {
   cardCount?: number;
 }
 
-// Simple card placeholder - no animation
+// Card skeleton matching actual card dimensions (max-w-[250px], h-[280px])
 const CardSkeleton = () => (
-  <div className="relative overflow-hidden rounded-xl max-w-[250px] h-[360px] bg-gray-100/80">
+  <div className="relative overflow-hidden rounded-xl max-w-[250px] h-[280px] bg-gray-100/80">
     <div
       className="absolute inset-0"
       style={{
-        background: 'linear-gradient(to top, rgba(80,80,80,0.15) 0%, transparent 50%)',
+        background: 'linear-gradient(to top, rgba(80,80,80,0.18) 0%, rgba(80,80,80,0.08) 40%, transparent 70%)',
       }}
     />
+    {/* Heart button placeholder - top-4 right-4 */}
     <div className="absolute top-4 right-4">
-      <div className="w-7 h-7 rounded-full bg-white/50" />
+      <div className="w-6 h-6 rounded-full bg-white/40" />
     </div>
-    <div className="absolute bottom-5 left-5 right-5 space-y-2">
-      <div className="h-4 bg-white/60 rounded w-3/4" />
-      <div className="h-3 bg-white/40 rounded w-1/2" />
-      <div className="h-2.5 bg-white/30 rounded w-1/3" />
-      <div className="mt-3 h-6 bg-white/50 rounded-lg w-24" />
+    {/* Bottom content - matching card layout */}
+    <div className="absolute bottom-4 left-4 right-4 space-y-1.5">
+      <div className="h-[15px] bg-white/50 rounded w-3/4" />
+      <div className="h-[10px] bg-white/35 rounded w-1/2" />
+      <div className="mt-2 h-5 bg-white/40 rounded-lg w-20" />
     </div>
   </div>
 );
@@ -106,8 +107,8 @@ const PageSkeleton: React.FC<PageSkeletonProps> = ({
           </div>
         </div>
 
-        {/* Cards grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+        {/* Cards grid - matching DiscoverClient grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
           {[...Array(cardCount)].map((_, i) => (
             <CardSkeleton key={i} />
           ))}
@@ -125,7 +126,7 @@ const PageSkeleton: React.FC<PageSkeletonProps> = ({
               </div>
             </div>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 pb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 pb-8">
             {[...Array(cardCount)].map((_, i) => (
               <CardSkeleton key={i} />
             ))}

@@ -12,8 +12,6 @@ import axios from 'axios';
 
 interface SidebarProps {
   currentUser?: SafeUser | null;
-  onMobileClose?: () => void;
-  isMobile?: boolean;
 }
 
 interface NavItemProps {
@@ -73,8 +71,6 @@ const ModalItem: React.FC<ModalItemProps> = ({ icon, label, isActive, onClick })
 
 const Sidebar: React.FC<SidebarProps> = ({
   currentUser,
-  onMobileClose,
-  isMobile = false
 }) => {
   const pathname = usePathname();
   const notificationsModal = useNotificationsModal();
@@ -111,13 +107,8 @@ const Sidebar: React.FC<SidebarProps> = ({
     fetchReservationCount();
   }, [currentUser]);
 
-  const handleLinkClick = () => {
-    if (isMobile && onMobileClose) onMobileClose();
-  };
-
   const handleModalOpen = (modalFunction: () => void, modalId: string) => {
     setSelectedModal(modalId);
-    if (isMobile && onMobileClose) onMobileClose();
     setTimeout(() => {
       modalFunction();
     }, 10);
@@ -200,7 +191,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   return (
     <>
       {/* Expand zone - shown when collapsed */}
-      {!isMobile && isCollapsed && (
+      {isCollapsed && (
         <div
           className="fixed top-0 left-0 w-3 h-screen z-[60] flex items-center cursor-pointer"
           onMouseEnter={() => setIsEdgeHovered(true)}
@@ -242,7 +233,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         `}
       >
         {/* Right edge hover zone with animated arrows */}
-        {!isMobile && !isCollapsed && (
+        {!isCollapsed && (
           <div
             className="absolute top-0 right-0 w-3 h-full z-20 flex items-center cursor-pointer"
             onMouseEnter={() => setIsEdgeHovered(true)}
@@ -259,8 +250,8 @@ const Sidebar: React.FC<SidebarProps> = ({
                   key={i}
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
-                  width="10"
-                  height="10"
+                  width="14"
+                  height="14"
                   fill="none"
                   className="text-neutral-400"
                   style={{
@@ -278,25 +269,6 @@ const Sidebar: React.FC<SidebarProps> = ({
           <Logo variant="vertical" />
           <UserButton currentUser={currentUser} />
 
-          {isMobile && (
-            <div
-              className="absolute top-4 right-6 cursor-pointer md:hidden"
-              onClick={onMobileClose}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                width="20"
-                height="20"
-                color="currentColor"
-                fill="none"
-              >
-                <path d="M3.99982 11.9998L19.9998 11.9998" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M8.99963 17C8.99963 17 3.99968 13.3176 3.99966 12C3.99965 10.6824 8.99966 7 8.99966 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-          )}
-
           <div className="flex flex-col w-full px-6 flex-1">
             <ul className="list-none m-0 p-0 flex flex-col items-center space-y-4 flex-1">
               <NavItem
@@ -304,35 +276,30 @@ const Sidebar: React.FC<SidebarProps> = ({
                 icon={DiscoverIcon}
                 label="Discover"
                 isActive={isActive('/') && pathname === '/'}
-                onClick={handleLinkClick}
               />
               <NavItem
                 href="/market"
                 icon={MarketIcon}
                 label="Market"
                 isActive={isActive('/market')}
-                onClick={handleLinkClick}
               />
               <NavItem
                 href="/shops"
                 icon={VendorsIcon}
                 label="Vendors"
                 isActive={isActive('/shops')}
-                onClick={handleLinkClick}
               />
               <NavItem
                 href="/favorites"
                 icon={FavoritesIcon}
                 label="Favorites"
                 isActive={isActive('/favorites')}
-                onClick={handleLinkClick}
               />
               <NavItem
                 href="/bookings/reservations"
                 icon={AppointmentsIcon}
                 label="Appointments"
                 isActive={isActive('/bookings')}
-                onClick={handleLinkClick}
               />
               <ModalItem
                 icon={InboxIcon}
@@ -351,11 +318,11 @@ const Sidebar: React.FC<SidebarProps> = ({
                 icon={SettingsIcon}
                 label="Settings"
                 isActive={isActive('/settings')}
-                onClick={handleLinkClick}
               />
             </ul>
           </div>
         </div>
+
       </div>
     </>
   );

@@ -83,7 +83,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ data, currentUser, disabled =
       <div className="relative z-10">
         <div className="relative h-[280px]">
           {/* Heart Button - Using HeartButton component */}
-          <div className="absolute top-6 right-6 z-20">
+          <div className="absolute top-4 right-4 z-20">
             <HeartButton
               listingId={data.id}
               currentUser={currentUser}

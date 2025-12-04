@@ -129,7 +129,10 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
 
   const typeFilter = searchParams?.get('type') as 'posts' | 'listings' | 'professionals' | 'shops' | null;
 
-  const gridColsClass = isSidebarCollapsed ? 'grid-cols-5' : 'grid-cols-4';
+  // Responsive grid - adds 1 column when sidebar is collapsed
+  const gridColsClass = isSidebarCollapsed
+    ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6'
+    : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5';
 
   const filterInfo = useMemo(() => {
     const currentCategory = headerSearchParams?.category || '';
@@ -331,21 +334,21 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
       <div className="min-h-screen">
         <Container>
           {/* Hero Section - Clean minimal design (matching Market) */}
-          <div className="-mx-6 md:-mx-24 -mt-2 md:-mt-8">
-            <div className="relative px-6 md:px-24 pt-12 pb-8 bg-white">
+          <div className="-mx-4 sm:-mx-6 lg:-mx-8 xl:-mx-12 -mt-4 sm:-mt-6 lg:-mt-8">
+            <div className="relative px-4 sm:px-6 lg:px-8 xl:px-12 pt-8 sm:pt-10 lg:pt-12 pb-6 sm:pb-8 bg-white">
 
               {/* Content */}
               <div className="relative z-10 pb-6">
                 {/* Main Discover Title */}
                 <div className="text-center">
-                  <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight tracking-tight">
+                  <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight tracking-tight">
                     Discover
                   </h1>
-                  <p className="text-gray-500 text-base mt-3 max-w-2xl mx-auto">Share what&apos;s new with you and your business</p>
+                  <p className="text-gray-500 text-sm sm:text-base mt-2 sm:mt-3 max-w-2xl mx-auto px-4">Share what&apos;s new with you and your business</p>
                 </div>
 
                 {/* Search and Controls */}
-                <div className="mt-8 max-w-3xl mx-auto">
+                <div className="mt-6 sm:mt-8 max-w-3xl mx-auto px-2 sm:px-0">
                   <MarketSearch
                     isHeroMode={false}
                     basePath="/"
@@ -354,9 +357,9 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                 </div>
 
                 {/* Category Navigation - Sticky */}
-                <div className="mt-5 -mx-6 md:-mx-24">
+                <div className="mt-4 sm:mt-5 -mx-4 sm:-mx-6 lg:-mx-8 xl:-mx-12">
                   <div className="sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-transparent transition-all duration-300" id="discover-category-nav-wrapper">
-                    <div className="px-6 md:px-24">
+                    <div className="px-4 sm:px-6 lg:px-8 xl:px-12">
                       <CategoryNav searchParams={headerSearchParams} basePath="/" />
                     </div>
                   </div>

@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Avatar from "./ui/avatar";
 import { signOut } from "next-auth/react";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import useRegisterModal from "@/app/hooks/useRegisterModal";
 import useLoginModal from "@/app/hooks/useLoginModal";
@@ -22,14 +22,12 @@ import { clearEarlyAccess } from "@/app/utils/earlyAccess";
 interface UserButtonProps {
   currentUser?: SafeUser | null;
   data?: SafePost;
-  onMobileClose?: () => void;
   noBg?: boolean;
 }
 
 const UserButton: React.FC<UserButtonProps> = ({
   currentUser,
   data,
-  onMobileClose,
   noBg = false,
 }) => {
   const router = useRouter();
@@ -71,7 +69,6 @@ const UserButton: React.FC<UserButtonProps> = ({
     e.preventDefault();
     e.stopPropagation();
     setIsOpen(false);
-    if (onMobileClose) onMobileClose();
     callback();
   };
 

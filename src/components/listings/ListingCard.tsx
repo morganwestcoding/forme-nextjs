@@ -90,8 +90,8 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser }) => {
       onClick={() => router.push(`/listings/${data.id}`)}
 className="
   group cursor-pointer relative overflow-hidden
-  rounded-xl  bg-white transition-all duration-300 ease-out
-  hover:-translate-y-2 hover:scale-[1.02] hover:shadow-xl hover:shadow-black/10
+  rounded-xl bg-white transition-all duration-300 ease-out
+  hover:-translate-y-1 hover:scale-[1.01] hover:shadow-md
   max-w-[250px]"
     >
       {/* Background image + lighter-at-top, bottom-heavy gradient */}
@@ -121,7 +121,7 @@ className="
       <div className="relative z-10">
         <div className="relative h-[280px]">
           {/* Heart - Using HeartButton component */}
-          <div className="absolute top-6 right-6 z-20">
+          <div className="absolute top-4 right-4 z-20">
             <HeartButton
               listingId={data.id}
               currentUser={currentUser}
@@ -133,13 +133,13 @@ className="
           <div className="absolute bottom-4 left-4 right-4 z-20">
             {/* Title with verification badge that stays with last word */}
             <div className="mb-0.5">
-              <h1 className="text-white text-lg leading-tight font-semibold drop-shadow">
+              <h1 className="text-white text-[15px] leading-tight font-semibold drop-shadow">
                 {renderTitleWithBadge(data.title)}
               </h1>
             </div>
 
             {/* Location - improved formatting */}
-            <div className="text-white/90 text-xs leading-tight mb-2.5">
+            <div className="text-white/90 text-[10px] leading-tight mb-2.5">
               <span className="line-clamp-1">
                 {city && state ? `${city}, ${state}` : city || state || 'Location not specified'}
               </span>

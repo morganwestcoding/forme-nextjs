@@ -9,7 +9,7 @@ interface LayoutContentProps {
 
 export default function LayoutContent({ children }: LayoutContentProps) {
   const [collapsed, setCollapsed] = useState(false);
-  
+
   useEffect(() => {
     const check = () => setCollapsed(localStorage.getItem('sidebarCollapsed') === 'true');
     check();
@@ -18,8 +18,8 @@ export default function LayoutContent({ children }: LayoutContentProps) {
   }, []);
 
   return (
-    <div className={`flex-1 transition-all duration-300 ease-in-out ${collapsed ? 'md:pl-0' : 'md:pl-56'}`}>
-      <main className="md:pt-0 pb-16 md:pb-0">
+    <div className={`flex-1 transition-all duration-300 ease-in-out ${collapsed ? 'pl-0' : 'pl-56'}`}>
+      <main className="pt-0 pb-8">
         {children}
       </main>
     </div>
