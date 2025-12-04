@@ -12,7 +12,7 @@ const Avatar: React.FC<AvatarProps> = ({ src, className = "rounded-full"  }) => 
   const imageSrc = src || defaultImage;
 
   return (
-    <div className={`relative border border-gray-400 w-10 h-10 overflow-hidden ${className}`}>
+    <div className={`relative border border-neutral-200 w-10 h-10 overflow-hidden ${className}`}>
       <Image
         fill
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

@@ -261,7 +261,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
         {/* Match ListingCard height structure */}
         <div className="relative h-[280px]">
         {/* Heart - Using HeartButton component */}
-        <div className="absolute top-4 right-4 z-20">
+        <div className="absolute top-6 right-6 z-20">
           <HeartButton
             listingId={employee.id}
             currentUser={currentUser}

@@ -10,9 +10,10 @@ interface MarketSearchProps {
   isHeroMode?: boolean;
   categoryNav?: React.ReactNode;
   basePath?: string;  // Optional base path for navigation (default: '/market')
+  onCreateClick?: () => void;  // Optional custom create action
 }
 
-const MarketSearch: React.FC<MarketSearchProps> = ({ isHeroMode = false, categoryNav, basePath = '/market' }) => {
+const MarketSearch: React.FC<MarketSearchProps> = ({ isHeroMode = false, categoryNav, basePath = '/market', onCreateClick }) => {
   const router = useRouter();
   const params = useSearchParams();
   const rentModal = useRentModal();
@@ -22,7 +23,11 @@ const MarketSearch: React.FC<MarketSearchProps> = ({ isHeroMode = false, categor
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleCreateListing = () => {
-    rentModal.onOpen();
+    if (onCreateClick) {
+      onCreateClick();
+    } else {
+      rentModal.onOpen();
+    }
   };
 
   const handleOpenFilters = () => {

@@ -10,6 +10,7 @@ import { usePostStore } from '@/app/hooks/usePostStore';
 import { useCategory } from '@/CategoryContext';
 import { useFilter } from '@/FilterContext';
 import { useViewMode } from '@/app/hooks/useViewMode';
+import useCreatePostModal from '@/app/hooks/useCreatePostModal';
 import Container from './Container';
 import MarketSearch from '@/app/market/MarketSearch';
 import CategoryNav from '@/app/market/CategoryNav';
@@ -45,6 +46,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
   const { selectedCategory } = useCategory();
   const { filters } = useFilter();
   const { viewMode, setViewMode } = useViewMode();
+  const createPostModal = useCreatePostModal();
 
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -61,6 +63,10 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
   const [listingsVisible, setListingsVisible] = useState(true);
   const [employeesVisible, setEmployeesVisible] = useState(true);
   const [shopsVisible, setShopsVisible] = useState(true);
+
+  // Content fade state for filter changes
+  const [isContentReady, setIsContentReady] = useState(true);
+
 
   // View all mode
   const [viewAllMode, setViewAllMode] = useState<'posts' | 'listings' | 'professionals' | 'shops' | null>(null);
@@ -155,8 +161,11 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
     return { isFiltered, categoryIsActive, resultsHeaderText, currentCategory, typeFilter: hasTypeFilter ? typeFilter : null };
   }, [headerSearchParams, typeFilter]);
 
+
   useEffect(() => {
     const fetchPosts = async () => {
+      setIsContentReady(false);
+
       try {
         const params: Record<string, string | number> = {};
         const categoryParam = searchParams?.get('category');
@@ -173,9 +182,14 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
         if (filters.sort?.order) params.order = filters.sort.order;
 
         const { data } = await axios.get('/api/post', { params });
-        startTransition(() => setPosts(data));
+        startTransition(() => {
+          setPosts(data);
+          // Small delay to let React batch the state update before showing content
+          setTimeout(() => setIsContentReady(true), 50);
+        });
       } catch (error) {
         console.error('Error fetching posts:', error);
+        setIsContentReady(true);
       }
     };
 
@@ -335,6 +349,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                   <MarketSearch
                     isHeroMode={false}
                     basePath="/"
+                    onCreateClick={() => createPostModal.onOpen()}
                   />
                 </div>
 
@@ -353,7 +368,12 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
 
           {/* Content */}
           <div className="relative -mt-[69px]">
-            <div>
+            <div
+              style={{
+                opacity: isContentReady ? 1 : 0,
+                transition: 'opacity 200ms ease-out',
+              }}
+            >
             {hasContent ? (
               <>
                 {/* View All Posts Mode */}

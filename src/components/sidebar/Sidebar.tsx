@@ -31,8 +31,8 @@ const NavItem: React.FC<NavItemProps> = ({ href, icon, label, isActive, onClick 
       prefetch={true}
       onClick={onClick}
       className={`
-        flex items-center w-full px-5 py-2.5 rounded-xl transition-all duration-500 ease-out cursor-pointer border border-transparent
-        ${isActive ? 'text-[#4F9EF8]' : 'text-gray-600/90 hover:text-gray-700 hover:bg-white/30'}
+        flex items-center w-full px-5 py-2.5 transition-colors duration-150 cursor-pointer
+        ${isActive ? 'text-[#4F9EF8]' : 'text-neutral-500 hover:text-neutral-900'}
       `}
     >
       <div className="w-8 flex justify-center">
@@ -57,8 +57,8 @@ const ModalItem: React.FC<ModalItemProps> = ({ icon, label, isActive, onClick })
     <div
       onClick={onClick}
       className={`
-        flex items-center w-full px-5 py-2.5 rounded-xl transition-all duration-500 ease-out cursor-pointer border border-transparent
-        ${isActive ? 'text-[#4F9EF8]' : 'text-gray-600/90 hover:text-gray-700 hover:bg-white/30'}
+        flex items-center w-full px-5 py-2.5 transition-colors duration-150 cursor-pointer
+        ${isActive ? 'text-[#4F9EF8]' : 'text-neutral-500 hover:text-neutral-900'}
       `}
     >
       <div className="w-8 flex justify-center">
@@ -82,7 +82,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   const [reservationCount, setReservationCount] = useState(0);
   const inboxModal = useInboxModal();
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [isHoveringEdge, setIsHoveringEdge] = useState(false);
+  const [isEdgeHovered, setIsEdgeHovered] = useState(false);
 
   // Load collapsed state from localStorage
   useEffect(() => {
@@ -199,34 +199,36 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <>
-      {/* Expand button - shown when collapsed */}
+      {/* Expand zone - shown when collapsed */}
       {!isMobile && isCollapsed && (
         <div
-          className="fixed top-0 left-0 h-screen w-8 z-[60] flex items-center"
-          onMouseEnter={() => setIsHoveringEdge(true)}
-          onMouseLeave={() => setIsHoveringEdge(false)}
+          className="fixed top-0 left-0 w-3 h-screen z-[60] flex items-center cursor-pointer"
+          onMouseEnter={() => setIsEdgeHovered(true)}
+          onMouseLeave={() => setIsEdgeHovered(false)}
+          onClick={toggleCollapse}
         >
-          <button
-            onClick={toggleCollapse}
-            className={`
-              ml-0 bg-white border border-gray-200 rounded-r-lg px-1.5 py-6 shadow-sm
-              hover:bg-gray-50 transition-all duration-200
-              ${isHoveringEdge ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-full'}
-            `}
-            style={{ transition: 'opacity 0.2s, transform 0.2s' }}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              width="16"
-              height="16"
-              fill="none"
-              className="text-neutral-400"
-            >
-              <path d="M20.0001 11.9998L4.00012 11.9998" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M15.0003 7C15.0003 7 20.0002 10.6824 20.0002 12C20.0002 13.3176 15.0002 17 15.0002 17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
+          <div className={`
+            flex flex-col items-center gap-1 ml-1
+            transition-all duration-300 ease-out
+            ${isEdgeHovered ? 'opacity-100' : 'opacity-0'}
+          `}>
+            {[0, 1, 2].map((i) => (
+              <svg
+                key={i}
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                width="14"
+                height="14"
+                fill="none"
+                className="text-neutral-400"
+                style={{
+                  animation: isEdgeHovered ? `pulseRight 1s ease-in-out ${i * 0.15}s infinite` : 'none',
+                }}
+              >
+                <path d="M9 6L15 12L9 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            ))}
+          </div>
         </div>
       )}
 
@@ -234,43 +236,41 @@ const Sidebar: React.FC<SidebarProps> = ({
       <div
         className={`
           h-screen overflow-y-auto w-56
-          fixed top-0 left-0 border-r-[0.75px] border-gray-400 bottom-0 z-50
-          transition-transform duration-300 ease-in-out
+          fixed top-0 left-0 border-r border-neutral-200/40 bottom-0 z-50
+          transition-transform duration-300 ease-in-out bg-neutral-100
           ${isCollapsed ? '-translate-x-full' : 'translate-x-0'}
         `}
-        style={{
-          background: '#f5f5f5',
-          boxShadow: 'inset -2px 0 8px rgba(0, 0, 0, 0.0090)'
-        }}
       >
-        {/* Collapse button hover zone - only on right edge */}
+        {/* Right edge hover zone with animated arrows */}
         {!isMobile && !isCollapsed && (
           <div
-            className="absolute top-0 right-0 h-full w-8 z-10 flex items-center justify-end"
-            onMouseEnter={() => setIsHoveringEdge(true)}
-            onMouseLeave={() => setIsHoveringEdge(false)}
+            className="absolute top-0 right-0 w-3 h-full z-20 flex items-center cursor-pointer"
+            onMouseEnter={() => setIsEdgeHovered(true)}
+            onMouseLeave={() => setIsEdgeHovered(false)}
+            onClick={toggleCollapse}
           >
-            <button
-              onClick={toggleCollapse}
-              className={`
-                mr-0 bg-white border border-gray-200 rounded-l-lg px-1.5 py-6 shadow-md
-                hover:bg-gray-50 transition-all duration-200
-                ${isHoveringEdge ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-full'}
-              `}
-              style={{ transition: 'opacity 0.2s, transform 0.2s' }}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                width="16"
-                height="16"
-                fill="none"
-                className="text-neutral-400"
-              >
-                <path d="M3.99982 11.9998L19.9998 11.9998" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M8.99963 17C8.99963 17 3.99968 13.3176 3.99966 12C3.99965 10.6824 8.99966 7 8.99966 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </button>
+            <div className={`
+              flex flex-col items-center gap-1 mr-1
+              transition-all duration-300 ease-out
+              ${isEdgeHovered ? 'opacity-100' : 'opacity-0'}
+            `}>
+              {[0, 1, 2].map((i) => (
+                <svg
+                  key={i}
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  width="10"
+                  height="10"
+                  fill="none"
+                  className="text-neutral-400"
+                  style={{
+                    animation: isEdgeHovered ? `pulseLeft 1s ease-in-out ${i * 0.15}s infinite` : 'none',
+                  }}
+                >
+                  <path d="M15 6L9 12L15 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              ))}
+            </div>
           </div>
         )}
 

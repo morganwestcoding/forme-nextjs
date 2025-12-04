@@ -227,8 +227,8 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
             </div>
           )}
 
-          {/* Heart - top right */}
-          <div className="absolute top-3 right-3 z-20">
+          {/* Heart - top left */}
+          <div className="absolute top-6 right-6 z-20">
             <HeartButton
               listingId={service.id}
               currentUser={currentUser}

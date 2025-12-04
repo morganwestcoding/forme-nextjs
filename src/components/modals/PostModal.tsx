@@ -51,7 +51,7 @@ import usePostModal from '@/app/hooks/usePostModal';
 import Avatar from '@/components/ui/avatar';
 import ListingCard from '@/components/listings/ListingCard';
 import ShopCard from '@/components/shop/ShopCard';
-import { SafeListing, SafeShop, SafeComment, SafePost } from '@/app/types';
+import { SafeListing, SafeShop, SafeComment, SafePost, MediaOverlay } from '@/app/types';
 import { usePostStore } from '@/app/hooks/usePostStore';
 
 const PostModal = () => {
@@ -448,7 +448,7 @@ useEffect(() => {
     }
   }, [currentPostIndex, posts]);
 
-  const isReel = currentPost?.tag === 'reel' || currentPost?.postType === 'reel';
+  const isReel = currentPost?.tag?.toLowerCase() === 'reel' || currentPost?.postType?.toLowerCase() === 'reel';
   const isAd = currentPost?.postType === 'ad';
 
   // Trigger modal animation when opening
@@ -838,8 +838,15 @@ useEffect(() => {
         >
           {posts.map((postData, index) => {
             const formattedDate = format(new Date(postData.createdAt), 'PPP');
-            const isReelPost = postData?.tag === 'reel' || postData?.postType === 'reel';
+            const isReelPost = postData?.tag?.toLowerCase() === 'reel' || postData?.postType?.toLowerCase() === 'reel';
             const videoState = getVideoState(postData.id);
+
+            // Debug: log mediaOverlay data
+            if (isReelPost && index === currentPostIndex) {
+              console.log('Post ID:', postData.id);
+              console.log('Post mediaOverlay:', postData.mediaOverlay);
+              console.log('Full post data keys:', Object.keys(postData));
+            }
 
             return (
               <div 
@@ -852,36 +859,76 @@ useEffect(() => {
                 }}
               >
                 {isReelPost ? (
-                  <div className="w-full h-full relative">
-                    {postData.mediaUrl ? (
-                      postData.mediaType === 'video' ? (
-                        <video
-                          ref={createVideoRefCallback(postData.id)}
-                          src={postData.mediaUrl}
-                          autoPlay={index === currentPostIndex}
-                          muted={videoState.isMuted}
-                          loop
-                          className="w-full h-full object-cover"
-                          controls={false}
-                          playsInline
-                        />
+                  <div className="w-full h-full flex items-center justify-center">
+                    <div className="relative overflow-hidden w-full max-w-md mx-auto h-[700px] flex flex-col rounded-2xl">
+                      {postData.mediaUrl ? (
+                        postData.mediaType === 'video' ? (
+                          <video
+                            ref={createVideoRefCallback(postData.id)}
+                            src={postData.mediaUrl}
+                            autoPlay={index === currentPostIndex}
+                            muted={videoState.isMuted}
+                            loop
+                            className="w-full flex-1 object-cover"
+                            controls={false}
+                            playsInline
+                          />
+                        ) : (
+                          <div className="relative flex-1">
+                            <Image
+                              src={postData.mediaUrl}
+                              alt="Reel media"
+                              fill
+                              className="object-cover"
+                              priority={Math.abs(index - currentPostIndex) <= 1}
+                            />
+                          </div>
+                        )
                       ) : (
-                        <Image
-                          src={postData.mediaUrl}
-                          alt="Reel media"
-                          fill
-                          className="object-cover"
-                          priority={Math.abs(index - currentPostIndex) <= 1}
-                        />
-                      )
-                    ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-purple-900 to-blue-900 flex items-center justify-center">
-                        <p className="text-white text-2xl text-center px-8 max-w-2xl leading-relaxed">{postData.content}</p>
-                      </div>
-                    )}
+                        <div className="flex-1 bg-gradient-to-br from-purple-900 to-blue-900 flex items-center justify-center">
+                          <p className="text-white text-2xl text-center px-8 max-w-2xl leading-relaxed">{postData.content}</p>
+                        </div>
+                      )}
 
-                    <div className="absolute bottom-0 left-0 right-0 px-6 pb-8 z-20">
-                      <div className="video-controls px-4 py-3 rounded-xl max-w-lg">
+                      {/* Text Overlay - rendered via CSS to match preview exactly */}
+                      {postData.mediaOverlay && (postData.mediaOverlay as MediaOverlay).text && (
+                        <div
+                          className="pointer-events-none absolute inset-0 flex p-6 z-10"
+                          style={{
+                            justifyContent:
+                              (postData.mediaOverlay as MediaOverlay).pos.endsWith('left') ? 'flex-start' :
+                              (postData.mediaOverlay as MediaOverlay).pos.endsWith('right') ? 'flex-end' :
+                              'center',
+                            alignItems:
+                              (postData.mediaOverlay as MediaOverlay).pos.startsWith('top') ? 'flex-start' :
+                              (postData.mediaOverlay as MediaOverlay).pos.startsWith('bottom') ? 'flex-end' :
+                              'center',
+                          }}
+                        >
+                          <div
+                            style={{
+                              fontSize: `${(postData.mediaOverlay as MediaOverlay).size}px`,
+                              color: (postData.mediaOverlay as MediaOverlay).color === 'ffffff' ? '#fff' : '#000',
+                              textShadow: (postData.mediaOverlay as MediaOverlay).color === 'ffffff'
+                                ? '2px 2px 4px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.5)'
+                                : '2px 2px 4px rgba(255,255,255,0.8), 0 0 20px rgba(255,255,255,0.5)',
+                              lineHeight: 1.2,
+                              fontWeight: 700,
+                              maxWidth: '85%',
+                              wordBreak: 'break-word',
+                              textAlign:
+                                (postData.mediaOverlay as MediaOverlay).pos.endsWith('left') ? 'left' :
+                                (postData.mediaOverlay as MediaOverlay).pos.endsWith('right') ? 'right' :
+                                'center',
+                            }}
+                          >
+                            {(postData.mediaOverlay as MediaOverlay).text}
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="absolute bottom-4 left-0 right-0 px-4 z-30">
+                        <div className="video-controls rounded-xl px-4 py-3 text-white">
                         {/* Caption with truncation */}
                         {postData.content && (
                           <div className="mb-3">
@@ -947,6 +994,7 @@ useEffect(() => {
                             </div>
                           </div>
                         )}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -956,9 +1004,9 @@ useEffect(() => {
                       {postData.mediaUrl ? (
                         postData.mediaType === 'video' ? (
                           <>
-                            <video 
+                            <video
                               ref={createVideoRefCallback(postData.id)}
-                              src={postData.mediaUrl} 
+                              src={postData.mediaUrl}
                               className="w-full flex-1 object-cover"
                               controls={false}
                               autoPlay={index === currentPostIndex}
@@ -966,7 +1014,44 @@ useEffect(() => {
                               loop
                               playsInline
                             />
-                            
+
+                            {/* Text Overlay for non-reel video posts */}
+                            {postData.mediaOverlay && (postData.mediaOverlay as MediaOverlay).text && (
+                              <div
+                                className="pointer-events-none absolute inset-0 flex p-6 z-10"
+                                style={{
+                                  justifyContent:
+                                    (postData.mediaOverlay as MediaOverlay).pos.endsWith('left') ? 'flex-start' :
+                                    (postData.mediaOverlay as MediaOverlay).pos.endsWith('right') ? 'flex-end' :
+                                    'center',
+                                  alignItems:
+                                    (postData.mediaOverlay as MediaOverlay).pos.startsWith('top') ? 'flex-start' :
+                                    (postData.mediaOverlay as MediaOverlay).pos.startsWith('bottom') ? 'flex-end' :
+                                    'center',
+                                }}
+                              >
+                                <div
+                                  style={{
+                                    fontSize: `${(postData.mediaOverlay as MediaOverlay).size}px`,
+                                    color: (postData.mediaOverlay as MediaOverlay).color === 'ffffff' ? '#fff' : '#000',
+                                    textShadow: (postData.mediaOverlay as MediaOverlay).color === 'ffffff'
+                                      ? '2px 2px 4px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.5)'
+                                      : '2px 2px 4px rgba(255,255,255,0.8), 0 0 20px rgba(255,255,255,0.5)',
+                                    lineHeight: 1.2,
+                                    fontWeight: 700,
+                                    maxWidth: '85%',
+                                    wordBreak: 'break-word',
+                                    textAlign:
+                                      (postData.mediaOverlay as MediaOverlay).pos.endsWith('left') ? 'left' :
+                                      (postData.mediaOverlay as MediaOverlay).pos.endsWith('right') ? 'right' :
+                                      'center',
+                                  }}
+                                >
+                                  {(postData.mediaOverlay as MediaOverlay).text}
+                                </div>
+                              </div>
+                            )}
+
                             <div className="absolute bottom-4 left-0 right-0 px-4 z-30">
                               <div className="video-controls rounded-xl px-4 py-3 text-white">
                                 {/* Caption with truncation */}
@@ -1038,7 +1123,44 @@ useEffect(() => {
                         ) : (
                           <div className="relative flex-1">
                             <Image src={postData.mediaUrl} alt="Post media" fill className="object-cover" />
-                            
+
+                            {/* Text Overlay for non-reel image posts */}
+                            {postData.mediaOverlay && (postData.mediaOverlay as MediaOverlay).text && (
+                              <div
+                                className="pointer-events-none absolute inset-0 flex p-6 z-10"
+                                style={{
+                                  justifyContent:
+                                    (postData.mediaOverlay as MediaOverlay).pos.endsWith('left') ? 'flex-start' :
+                                    (postData.mediaOverlay as MediaOverlay).pos.endsWith('right') ? 'flex-end' :
+                                    'center',
+                                  alignItems:
+                                    (postData.mediaOverlay as MediaOverlay).pos.startsWith('top') ? 'flex-start' :
+                                    (postData.mediaOverlay as MediaOverlay).pos.startsWith('bottom') ? 'flex-end' :
+                                    'center',
+                                }}
+                              >
+                                <div
+                                  style={{
+                                    fontSize: `${(postData.mediaOverlay as MediaOverlay).size}px`,
+                                    color: (postData.mediaOverlay as MediaOverlay).color === 'ffffff' ? '#fff' : '#000',
+                                    textShadow: (postData.mediaOverlay as MediaOverlay).color === 'ffffff'
+                                      ? '2px 2px 4px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.5)'
+                                      : '2px 2px 4px rgba(255,255,255,0.8), 0 0 20px rgba(255,255,255,0.5)',
+                                    lineHeight: 1.2,
+                                    fontWeight: 700,
+                                    maxWidth: '85%',
+                                    wordBreak: 'break-word',
+                                    textAlign:
+                                      (postData.mediaOverlay as MediaOverlay).pos.endsWith('left') ? 'left' :
+                                      (postData.mediaOverlay as MediaOverlay).pos.endsWith('right') ? 'right' :
+                                      'center',
+                                  }}
+                                >
+                                  {(postData.mediaOverlay as MediaOverlay).text}
+                                </div>
+                              </div>
+                            )}
+
                             <div className="absolute bottom-4 left-0 right-0 px-4 z-30">
                               <div className="video-controls rounded-2xl p-6 text-white shadow-2xl">
                                 <div className="flex items-center gap-3 mb-4">
@@ -1128,7 +1250,7 @@ useEffect(() => {
         {/* Side action buttons */}
         <div
           className={`fixed top-1/2 transform -translate-y-1/2 flex flex-col items-center gap-6 text-white z-30 transition-opacity duration-300 ${
-            currentPost?.tag === 'reel' || currentPost?.postType === 'reel' ? 'right-6' : 'left-1/2 ml-[calc(192px+60px)]'
+            currentPost?.tag?.toLowerCase() === 'reel' || currentPost?.postType?.toLowerCase() === 'reel' ? 'right-6' : 'left-1/2 ml-[calc(192px+60px)]'
           }`}
           style={{ opacity: showModal ? 1 : 0 }}
         >

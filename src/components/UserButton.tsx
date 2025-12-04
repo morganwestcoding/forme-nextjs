@@ -94,7 +94,7 @@ const UserButton: React.FC<UserButtonProps> = ({
 
   const buttonClass = noBg
     ? "flex items-center justify-start cursor-pointer outline-none touch-manipulation"
-    : "w-44 py-3 px-3 flex items-center mt-1 gap-3 mb-5 cursor-pointer rounded-xl relative transition-all duration-500 ease-out outline-none group bg-gradient-to-b from-white to-gray-50 border border-gray-200/60 hover:border-gray-300 active:scale-[0.97]";
+    : "w-44 py-2.5 px-3 flex items-center mt-1 gap-3 mb-5 cursor-pointer rounded-2xl relative transition-colors duration-150 outline-none bg-white/70 border border-neutral-200/50 hover:bg-white/90 active:bg-white";
 
 
   const dropdownWidthClass = noBg ? "min-w-44" : "w-44";
@@ -113,24 +113,24 @@ const UserButton: React.FC<UserButtonProps> = ({
       >
         <div className="ml-0.5 relative">
           <Avatar src={currentUser?.image ?? undefined} />
-          <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full" />
+          <div className="absolute bottom-0 right-0.5 w-2 h-2 bg-emerald-400 rounded-full ring-[1.5px] ring-white" />
         </div>
         <div className="flex flex-col items-start flex-1 min-w-0 pl-0.5">
           {currentUser ? (
             <>
-              <span className="text-gray-700 font-medium text-xs truncate w-full text-left">
+              <span className="text-neutral-900 font-medium text-xs truncate w-full text-left">
                 {displayName}
               </span>
-              <span className="text-gray-400 text-xs text-left">
+              <span className="text-neutral-500 text-xs text-left">
                 {planLabel}
               </span>
             </>
           ) : (
             <>
-              <span className="text-gray-700 text-xs font-medium text-left">
+              <span className="text-neutral-900 text-xs font-medium text-left">
                 Login
               </span>
-              <span className="text-gray-400 text-[11px] text-left">
+              <span className="text-neutral-500 text-[11px] text-left">
                 {`${formatTier(undefined)} Tier`}
               </span>
             </>
@@ -139,7 +139,7 @@ const UserButton: React.FC<UserButtonProps> = ({
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
-        className={`bg-gradient-to-b from-white to-gray-50/50 rounded-xl p-1.5 shadow-lg shadow-gray-200/50 border border-gray-200/60 z-[100] ${dropdownWidthClass}`}
+        className={`bg-neutral-100 rounded-2xl p-1 border border-neutral-200 z-[100] ${dropdownWidthClass}`}
         side="bottom"
         align="start"
         sideOffset={8}

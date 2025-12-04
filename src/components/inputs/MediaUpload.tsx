@@ -13,7 +13,7 @@ declare global {
 
 const UPLOAD_PRESET = 'cs0am6m7';
 
-type Ratio = 'square' | 'landscape' | 'portrait' | 'wide' | 'tall' | 'free';
+type Ratio = 'square' | 'landscape' | 'portrait' | 'wide' | 'tall' | 'free' | 'reel';
 
 interface MediaUploadProps {
   onMediaUpload: (data: MediaData) => void;
@@ -97,6 +97,12 @@ const MediaUpload: React.FC<MediaUploadProps> = ({
           ...baseOptions,
           croppingAspectRatio: 1.33, // 4:3
           croppingDefaultSelectionRatio: 1.33,
+        };
+      case 'reel':
+        return {
+          ...baseOptions,
+          croppingAspectRatio: 0.5625, // 9:16 (vertical video)
+          croppingDefaultSelectionRatio: 0.5625,
         };
       case 'free':
       default:

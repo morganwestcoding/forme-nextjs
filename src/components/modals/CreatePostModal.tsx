@@ -13,85 +13,12 @@ import { categories } from '@/components/Categories';
 import { MediaData } from '@/app/types';
 import { Search, X, User, Building2, Store } from 'lucide-react';
 
-/** ================== Cloudinary text overlay helpers ================== */
+/** ================== Overlay Position Type ================== */
 
 type OverlayPos =
   | 'top-left' | 'top-center' | 'top-right'
   | 'center-left' | 'center' | 'center-right'
   | 'bottom-left' | 'bottom-center' | 'bottom-right';
-
-const OVERLAY_MARGIN_PX = 20;   // Increased margin for better visibility
-const WRAP_PERCENT = 0.85;      // Reduced for better text wrapping
-
-function encodeTextForOverlay(text: string) {
-  return encodeURIComponent(text)
-    .replace(/%20/g, '%2520')  // Double-encode spaces
-    .replace(/%2C/g, '%252C')
-    .replace(/%2F/g, '%252F');
-}
-
-function posToGravity(pos: OverlayPos) {
-  switch (pos) {
-    case 'top-left': return 'north_west';
-    case 'top-center': return 'north';
-    case 'top-right': return 'north_east';
-    case 'center-left': return 'west';
-    case 'center': return 'center';
-    case 'center-right': return 'east';
-    case 'bottom-left': return 'south_west';
-    case 'bottom-center': return 'south';
-    case 'bottom-right': return 'south_east';
-  }
-}
-
-function buildCloudinaryOverlayUrl(
-  originalUrl: string,
-  {
-    text,
-    sizePx,
-    color = 'ffffff',
-    pos = 'bottom-center' as OverlayPos,
-    font = 'Arial',
-    weight = 'bold',
-  }: {
-    text: string;
-    sizePx: number;
-    color?: string;
-    pos?: OverlayPos;
-    font?: string;
-    weight?: 'thin' | 'light' | 'normal' | 'bold' | 'black';
-  }
-) {
-  if (!originalUrl.includes('/upload/')) return originalUrl;
-
-  const i = originalUrl.indexOf('/upload/');
-  const prefix = originalUrl.slice(0, i + '/upload/'.length);
-  const suffix = originalUrl.slice(i + '/upload/'.length);
-
-  const encodedText = encodeTextForOverlay(text);
-  const gravity = posToGravity(pos);
-  
-  // Calculate proper offsets based on position
-  let xOffset = '';
-  let yOffset = '';
-  
-  if (pos.includes('left')) xOffset = `,x_${OVERLAY_MARGIN_PX}`;
-  if (pos.includes('right')) xOffset = `,x_-${OVERLAY_MARGIN_PX}`;
-  if (pos.includes('top')) yOffset = `,y_${OVERLAY_MARGIN_PX}`;
-  if (pos.includes('bottom')) yOffset = `,y_-${OVERLAY_MARGIN_PX}`;
-
-  const clampedSize = Math.max(16, Math.min(200, Math.floor(sizePx)));
-  
-  // Build the text layer with proper encoding
-  const textLayer = `l_text:${font}_${clampedSize}_${weight}:${encodedText}`;
-  const colorLayer = `co_rgb:${color}`;
-  const wrapLayer = `c_fit,w_${WRAP_PERCENT},fl_relative`;
-  
-  // Apply positioning
-  const positionLayer = `fl_layer_apply,g_${gravity}${xOffset}${yOffset}`;
-
-  return `${prefix}${textLayer},${colorLayer},${wrapLayer}/${positionLayer}/${suffix}`;
-}
 
 /** ================== Tag Types & Interfaces ================== */
 
@@ -116,46 +43,97 @@ enum STEPS {
   CATEGORY = 4,
 }
 
-const postTypes = [
-  {
-    label: 'Reel',
-    color: 'bg-[#60A5FA]',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none">
-        <path d="M2.50012 7.5H21.5001" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-        <path d="M17.0001 2.5L14.0001 7.5" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-        <path d="M10.0001 2.5L7.00012 7.5" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-        <path d="M2.5 12C2.5 7.52166 2.5 5.28249 3.89124 3.89124C5.28249 2.5 7.52166 2.5 12 2.5C16.4783 2.5 18.7175 2.5 20.1088 3.89124C21.5 5.28249 21.5 7.52166 21.5 12C21.5 16.4783 21.5 18.7175 20.1088 20.1088C18.7175 21.5 16.4783 21.5 12 21.5C7.52166 21.5 5.28249 21.5 3.89124 20.1088C2.5 18.7175 2.5 16.4783 2.5 12Z" stroke="currentColor" strokeWidth="1.5" />
-        <path d="M14.9531 14.8948C14.8016 15.5215 14.0857 15.9644 12.6539 16.8502C11.2697 17.7064 10.5777 18.1346 10.0199 17.9625C9.78934 17.8913 9.57925 17.7562 9.40982 17.57C9 17.1198 9 16.2465 9 14.5C9 12.7535 9 11.8802 9.40982 11.4299C9.57925 11.2438 9.78934 11.1087 10.0199 11.0375C10.5777 10.8654 11.2697 11.2936 12.6539 12.1498C14.0857 13.0356 14.8016 13.4785 14.9531 14.1052C15.0156 14.3639 15.0156 14.6361 14.9531 14.8948Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-      </svg>
-    )
-  },
-  {
-    label: 'Text Post',
-    color: 'bg-[#10B981]',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none">
-        <path d="M20 18V6M6 20H18M18 4H6M4 6V18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M7.99901 10C7.70512 8.43128 8.73403 8.05948 11.9564 8M11.9564 8C14.9534 8.06735 16.1887 8.30534 15.9138 10M11.9564 8V16M10.4724 16H13.4405" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M21 2H19C18.4477 2 18 2.44772 18 3V5C18 5.55228 18.4477 6 19 6H21C21.5523 6 22 5.55228 22 5V3C22 2.44772 21.5523 2 21 2Z" stroke="currentColor" strokeWidth="1.5" />
-        <path d="M5 2H3C2.44772 2 2 2.44772 2 3V5C2 5.55228 2.44772 6 3 6H5C5.55228 6 6 5.55228 6 5V3C6 2.44772 5.55228 2 5 2Z" stroke="currentColor" strokeWidth="1.5" />
-        <path d="M21 18H19C18.4477 18 18 18.4477 18 19V21C18 21.5523 18.4477 22 19 22H21C21.5523 22 22 21.5523 22 21V19C22 18.4477 21.5523 18 21 18Z" stroke="currentColor" strokeWidth="1.5" />
-        <path d="M5 18H3C2.44772 18 2 18.4477 2 19V21C2 21.5523 2.44772 22 3 22H5C5.55228 22 6 21.55228 6 21V19C6 18.44772 5.55228 18 5 18Z" stroke="currentColor" strokeWidth="1.5" />
-      </svg>
-    )
-  },
-  {
-    label: 'Ad',
-    color: 'bg-[#F59E0B]',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none">
-        <path d="M5.50586 16.9916L8.03146 10.0288C8.49073 9.06222 9.19305 8.26286 9.99777 10.18C10.7406 11.9497 11.8489 15.1903 12.5031 16.9954M6.65339 14.002H11.3215" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M3.46447 5.31802C2 6.63604 2 8.75736 2 13C2 17.2426 2 19.364 3.46447 20.682C4.92893 22 7.28596 22 12 22C16.714 22 19.0711 22 20.5355 20.682C22 19.364 22 17.2426 22 13C22 8.75736 22 6.63604 20.5355 5.31802C19.0711 4 16.714 4 12 4C7.28596 4 4.92893 4 3.46447 5.31802Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M18.4843 9.98682V12.9815M18.4843 12.9815V16.9252M18.4843 12.9815H16.466C16.2263 12.9815 15.9885 13.0261 15.7645 13.113C14.0707 13.7702 14.0707 16.2124 15.7645 16.8696C15.9885 16.9565 16.2263 17.0011 16.466 17.0011H18.4843" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    )
+const postTypes = ['Reel', 'Text Post', 'Ad'] as const;
+
+/** Post Type Input - matches CategoryInput styling */
+interface PostTypeInputProps {
+  label: string;
+  selected?: boolean;
+  onClick: (value: string) => void;
+}
+
+const PostTypeIcon: React.FC<{ label: string; className?: string }> = ({ label, className }) => {
+  switch (label) {
+    case 'Reel':
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className={className} fill="none">
+          <path d="M2.50012 7.5H21.5001" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+          <path d="M17.0001 2.5L14.0001 7.5" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+          <path d="M10.0001 2.5L7.00012 7.5" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+          <path d="M2.5 12C2.5 7.52166 2.5 5.28249 3.89124 3.89124C5.28249 2.5 7.52166 2.5 12 2.5C16.4783 2.5 18.7175 2.5 20.1088 3.89124C21.5 5.28249 21.5 7.52166 21.5 12C21.5 16.4783 21.5 18.7175 20.1088 20.1088C18.7175 21.5 16.4783 21.5 12 21.5C7.52166 21.5 5.28249 21.5 3.89124 20.1088C2.5 18.7175 2.5 16.4783 2.5 12Z" stroke="currentColor" strokeWidth="1.5" />
+          <path d="M14.9531 14.8948C14.8016 15.5215 14.0857 15.9644 12.6539 16.8502C11.2697 17.7064 10.5777 18.1346 10.0199 17.9625C9.78934 17.8913 9.57925 17.7562 9.40982 17.57C9 17.1198 9 16.2465 9 14.5C9 12.7535 9 11.8802 9.40982 11.4299C9.57925 11.2438 9.78934 11.1087 10.0199 11.0375C10.5777 10.8654 11.2697 11.2936 12.6539 12.1498C14.0857 13.0356 14.8016 13.4785 14.9531 14.1052C15.0156 14.3639 15.0156 14.6361 14.9531 14.8948Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+        </svg>
+      );
+    case 'Text Post':
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className={className} fill="none">
+          <path d="M20 18V6M6 20H18M18 4H6M4 6V18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M7.99901 10C7.70512 8.43128 8.73403 8.05948 11.9564 8M11.9564 8C14.9534 8.06735 16.1887 8.30534 15.9138 10M11.9564 8V16M10.4724 16H13.4405" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M21 2H19C18.4477 2 18 2.44772 18 3V5C18 5.55228 18.4477 6 19 6H21C21.5523 6 22 5.55228 22 5V3C22 2.44772 21.5523 2 21 2Z" stroke="currentColor" strokeWidth="1.5" />
+          <path d="M5 2H3C2.44772 2 2 2.44772 2 3V5C2 5.55228 2.44772 6 3 6H5C5.55228 6 6 5.55228 6 5V3C6 2.44772 5.55228 2 5 2Z" stroke="currentColor" strokeWidth="1.5" />
+          <path d="M21 18H19C18.4477 18 18 18.4477 18 19V21C18 21.5523 18.4477 22 19 22H21C21.5523 22 22 21.5523 22 21V19C22 18.4477 21.5523 18 21 18Z" stroke="currentColor" strokeWidth="1.5" />
+          <path d="M5 18H3C2.44772 18 2 18.4477 2 19V21C2 21.5523 2.44772 22 3 22H5C5.55228 22 6 21.5523 6 21V19C6 18.4477 5.55228 18 5 18Z" stroke="currentColor" strokeWidth="1.5" />
+        </svg>
+      );
+    case 'Ad':
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className={className} fill="none">
+          <path d="M5.50586 16.9916L8.03146 10.0288C8.49073 9.06222 9.19305 8.26286 9.99777 10.18C10.7406 11.9497 11.8489 15.1903 12.5031 16.9954M6.65339 14.002H11.3215" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M3.46447 5.31802C2 6.63604 2 8.75736 2 13C2 17.2426 2 19.364 3.46447 20.682C4.92893 22 7.28596 22 12 22C16.714 22 19.0711 22 20.5355 20.682C22 19.364 22 17.2426 22 13C22 8.75736 22 6.63604 20.5355 5.31802C19.0711 4 16.714 4 12 4C7.28596 4 4.92893 4 3.46447 5.31802Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M18.4843 9.98682V12.9815M18.4843 12.9815V16.9252M18.4843 12.9815H16.466C16.2263 12.9815 15.9885 13.0261 15.7645 13.113C14.0707 13.7702 14.0707 16.2124 15.7645 16.8696C15.9885 16.9565 16.2263 17.0011 16.466 17.0011H18.4843" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      );
+    default:
+      return null;
   }
-];
+};
+
+const PostTypeInput: React.FC<PostTypeInputProps> = ({ label, selected, onClick }) => {
+  return (
+    <button
+      type="button"
+      onClick={() => onClick(label)}
+      className={`
+        group relative overflow-hidden
+        rounded-xl flex flex-col items-center justify-center gap-2.5 p-4
+        cursor-pointer select-none
+        transition-all duration-300 ease-out
+        will-change-transform transform-gpu
+        focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#60A5FA]
+        ${selected
+          ? 'bg-gradient-to-br from-[#60A5FA] to-[#3b82f6] text-white shadow-md hover:shadow-lg border border-[#60A5FA]/50'
+          : 'bg-white border border-gray-300 text-gray-600 hover:border-gray-400 hover:shadow-sm hover:text-gray-700'
+        }
+      `}
+    >
+      <div className="relative z-10 flex flex-col items-center gap-2">
+        <div className={`
+          transition-all duration-300
+          ${selected
+            ? 'text-white'
+            : 'text-gray-500 group-hover:text-[#60A5FA]'
+          }
+        `}>
+          <PostTypeIcon
+            label={label}
+            className="w-5 h-5 transition-transform duration-300 ease-out group-hover:scale-110 transform-gpu"
+          />
+        </div>
+
+        <span
+          className={`
+            text-xs font-medium leading-tight
+            transition-all duration-300 ease-out
+            ${selected ? 'text-white' : 'text-gray-700 group-hover:text-gray-900'}
+            transform-gpu
+          `}
+        >
+          {label}
+        </span>
+      </div>
+    </button>
+  );
+};
 
 /** ================== Component ================== */
 
@@ -278,51 +256,24 @@ const CreatePostModal = () => {
 
     setIsLoading(true);
 
-    // Better scaling calculation for Cloudinary
-    const assetW = mediaData?.width || 1080; // Default width if not available
-    const previewW = previewDimensions.width || 400; // Default preview width
-    
-    // Calculate scaled font size with better ratio
-    const scaleFactor = assetW / previewW;
-    const sizePx = Math.round(overlaySize * scaleFactor * 0.8); // Slight reduction for better appearance
-
-    let finalMediaUrl = mediaData?.url || null;
-    let overlayMeta: any = null;
-
-    if (postType === 'Reel' && mediaData && overlayText.trim()) {
-      overlayMeta = {
-        text: overlayText.trim(),
-        sizeCssPx: overlaySize,
-        sizePx,
-        color: overlayColor,
-        pos: overlayPos,
-        font: 'Arial',
-        weight: 'bold',
-        assetWidth: assetW,
-        previewWidth: previewW,
-        scaleFactor,
-      };
-      
-      finalMediaUrl = buildCloudinaryOverlayUrl(mediaData.url, {
-        text: overlayMeta.text,
-        sizePx,
-        color: overlayMeta.color,
-        pos: overlayMeta.pos,
-        font: 'Arial',
-        weight: 'bold',
-      });
-    }
+    // Store overlay data separately - will be rendered via CSS on display
+    const overlayData = (postType === 'Reel' && overlayText.trim()) ? {
+      text: overlayText.trim(),
+      size: overlaySize,
+      color: overlayColor,
+      pos: overlayPos,
+    } : null;
 
     const postData = {
       content: content || '',
       category,
-      mediaUrl: finalMediaUrl,
+      mediaUrl: mediaData?.url || null, // Raw URL without Cloudinary text transformation
       mediaType: mediaData?.type || null,
-      imageSrc: mediaData?.type === 'image' ? finalMediaUrl : null,
+      imageSrc: mediaData?.type === 'image' ? mediaData?.url : null,
       location: null,
       tag: postType,
       postType,
-      mediaOverlay: overlayMeta,
+      mediaOverlay: overlayData,
       mentions: selectedTags.map(tag => ({
         id: tag.id,
         type: tag.type,
@@ -396,17 +347,12 @@ const CreatePostModal = () => {
           <Heading title="What type of post?" subtitle="Choose one to get started" />
           <div className="grid grid-cols-3 gap-3">
             {postTypes.map((type) => (
-              <div
-                key={type.label}
-                onClick={() => setPostType(type.label)}
-                className={`
-                  rounded-xl p-4 shadow flex flex-col items-center justify-center gap-2 cursor-pointer transition-all
-                  ${postType === type.label ? 'bg-[#60A5FA] text-white' : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'}
-                `}
-              >
-                <div className="w-5 h-5">{type.icon}</div>
-                <span className="text-xs">{type.label}</span>
-              </div>
+              <PostTypeInput
+                key={type}
+                label={type}
+                selected={postType === type}
+                onClick={(value) => setPostType(value)}
+              />
             ))}
           </div>
         </div>
@@ -414,32 +360,58 @@ const CreatePostModal = () => {
     }
 
     if (step === STEPS.MEDIA) {
-      const showOverlayControls = postType === 'Reel';
-      return (
-        <div className="space-y-6">
-          {/* Heading */}
-          <Heading title="Media" subtitle="Upload your content" />
+      const isReel = postType === 'Reel';
 
-          {/* Upload Area with Controls */}
-          <div className="flex gap-6 items-center">
-            {/* Upload Rectangle */}
-            <div ref={previewRef} className="flex-shrink-0" style={{ width: '240px' }}>
-              <div className="relative" style={{ aspectRatio: '9/16' }}>
+      return (
+        <div className="flex flex-col gap-5">
+          {/* Header */}
+          <div className="text-center">
+            <h3 className="text-lg font-semibold text-gray-900">
+              {isReel ? 'Add your reel' : 'Add media'}
+            </h3>
+            <p className="text-sm text-gray-500 mt-1">
+              {isReel ? 'Vertical format works best (9:16)' : 'Add an image, video, or GIF'}
+            </p>
+          </div>
+
+          {/* Main Content Area */}
+          <div className={`flex ${isReel ? 'gap-5 items-start' : 'justify-center'}`}>
+            {/* Preview Container */}
+            <div
+              ref={previewRef}
+              className={`relative group ${isReel ? 'flex-shrink-0' : ''}`}
+              style={{ width: isReel ? '180px' : '100%', maxWidth: isReel ? '180px' : '320px' }}
+            >
+              {/* Phone Frame for Reels */}
+              {isReel && (
+                <div className="absolute -inset-1.5 rounded-[1.75rem] bg-gradient-to-b from-gray-700 via-gray-800 to-gray-900 shadow-lg -z-10" />
+              )}
+
+              <div
+                className={`
+                  relative overflow-hidden cursor-pointer
+                  ${isReel ? 'rounded-[1.25rem]' : 'rounded-2xl border-2 border-dashed border-gray-200 hover:border-[#60A5FA]/50'}
+                  ${mediaData ? '' : 'bg-gray-50'}
+                  transition-all duration-200
+                `}
+                style={{ aspectRatio: isReel ? '9/16' : '4/3' }}
+              >
                 <MediaUpload
                   onMediaUpload={setMediaData}
                   currentMedia={mediaData}
-                  ratio="free"
+                  ratio={isReel ? 'reel' : 'landscape'}
                   heightClass="h-full"
-                  className="!h-full"
+                  className="!h-full [&>div:first-child]:hidden [&_[role=button]]:!border-0 [&_[role=button]]:!bg-transparent"
                   label=""
                   hint=""
-                  rounded="2xl"
+                  rounded={isReel ? '2xl' : '2xl'}
+                  showReplaceRemove={false}
                 />
 
-                {/* Improved overlay preview */}
+                {/* Text Overlay Preview */}
                 {mediaData && overlayText.trim().length > 0 && (
                   <div
-                    className="pointer-events-none absolute inset-0 flex items-center justify-center p-5"
+                    className="pointer-events-none absolute inset-0 flex p-3"
                     style={{
                       justifyContent:
                         overlayPos.endsWith('left') ? 'flex-start' :
@@ -452,112 +424,166 @@ const CreatePostModal = () => {
                     }}
                   >
                     <div
-                      className="relative"
                       style={{
-                        fontSize: `${overlaySize}px`,
+                        fontSize: `${Math.max(10, overlaySize * 0.4)}px`,
                         color: overlayColor === 'ffffff' ? '#fff' : '#000',
                         textShadow: overlayColor === 'ffffff'
-                          ? '2px 2px 4px rgba(0,0,0,0.7), 0 0 8px rgba(0,0,0,0.3)'
-                          : '2px 2px 4px rgba(255,255,255,0.7), 0 0 8px rgba(255,255,255,0.3)',
+                          ? '1px 1px 2px rgba(0,0,0,0.8)'
+                          : '1px 1px 2px rgba(255,255,255,0.8)',
                         lineHeight: 1.2,
                         fontWeight: 700,
-                        maxWidth: `${WRAP_PERCENT * 100}%`,
+                        maxWidth: '90%',
                         wordBreak: 'break-word',
                         textAlign:
                           overlayPos.endsWith('left') ? 'left' :
                           overlayPos.endsWith('right') ? 'right' :
                           'center',
-                        padding: '4px 8px',
                       }}
                     >
                       {overlayText}
                     </div>
                   </div>
                 )}
+
+                {/* Media Type Badge */}
+                {mediaData && (
+                  <div className="absolute top-2 left-2 px-1.5 py-0.5 bg-black/60 backdrop-blur-sm rounded-md">
+                    <span className="text-[9px] font-medium text-white uppercase tracking-wide">
+                      {mediaData.type === 'video' ? 'Video' : mediaData.type === 'gif' ? 'GIF' : 'Photo'}
+                    </span>
+                  </div>
+                )}
+
+                {/* Hover Replace Button */}
+                {mediaData && (
+                  <div className="absolute inset-0 bg-black/0 hover:bg-black/40 transition-all duration-200 flex items-center justify-center opacity-0 hover:opacity-100">
+                    <span className="text-white text-xs font-medium px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-lg">
+                      Click to replace
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* Overlay controls on the right */}
-            {showOverlayControls && (
-              <div className="flex-1 space-y-4">
-                {/* Text Input */}
+            {/* Overlay Controls Panel (Reels only) */}
+            {isReel && (
+              <div className={`flex-1 min-w-0 space-y-3 transition-all duration-300 ${mediaData ? 'opacity-100' : 'opacity-30 pointer-events-none'}`}>
+                {/* Text Overlay Input */}
                 <div>
+                  <label className="block text-[11px] font-medium text-gray-600 mb-1">Text overlay</label>
                   <input
                     type="text"
                     value={overlayText}
                     onChange={(e) => setOverlayText(e.target.value)}
-                    placeholder="Add text overlay (optional)"
-                    className="w-full rounded-xl border border-neutral-300 bg-white px-4 py-3 text-sm placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="Add text to your reel..."
+                    disabled={!mediaData}
+                    className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#60A5FA]/40 focus:border-[#60A5FA] transition-all placeholder:text-gray-400"
                   />
                 </div>
 
-                {/* Size Control */}
-                <div className="bg-neutral-50 rounded-xl p-3 border border-neutral-200">
-                  <div className="text-xs font-medium text-neutral-600 mb-2">Size</div>
-                  <input
-                    type="range"
-                    min={20}
-                    max={80}
-                    step={2}
-                    value={overlaySize}
-                    onChange={(e) => setOverlaySize(Number(e.target.value))}
-                    className="w-full accent-blue-500"
-                  />
-                  <div className="text-xs text-neutral-500 text-center mt-1">{overlaySize}px</div>
-                </div>
+                {/* Size & Color Row */}
+                <div className="flex gap-3">
+                  {/* Size Slider */}
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="text-[11px] font-medium text-gray-600">Size</label>
+                      <span className="text-[10px] text-gray-400 tabular-nums">{overlaySize}</span>
+                    </div>
+                    <input
+                      type="range"
+                      min={16}
+                      max={72}
+                      step={2}
+                      value={overlaySize}
+                      onChange={(e) => setOverlaySize(Number(e.target.value))}
+                      disabled={!mediaData}
+                      className="w-full h-1 bg-gray-200 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#60A5FA] [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:shadow-sm [&::-webkit-slider-thumb]:cursor-pointer"
+                    />
+                  </div>
 
-                {/* Color Control */}
-                <div className="bg-neutral-50 rounded-xl p-3 border border-neutral-200">
-                  <div className="text-xs font-medium text-neutral-600 mb-2">Color</div>
-                  <div className="flex gap-2 mt-2">
-                    <button
-                      onClick={() => setOverlayColor('ffffff')}
-                      className={`flex-1 h-10 rounded-lg border-2 transition-all ${
-                        overlayColor === 'ffffff'
-                          ? 'border-blue-500 bg-white shadow-sm'
-                          : 'border-neutral-300 bg-white hover:border-neutral-400'
-                      }`}
-                      title="White"
-                    />
-                    <button
-                      onClick={() => setOverlayColor('000000')}
-                      className={`flex-1 h-10 rounded-lg border-2 transition-all ${
-                        overlayColor === '000000'
-                          ? 'border-blue-500 bg-black shadow-sm'
-                          : 'border-neutral-300 bg-black hover:border-neutral-400'
-                      }`}
-                      title="Black"
-                    />
+                  {/* Color Selection */}
+                  <div className="w-20">
+                    <label className="block text-[11px] font-medium text-gray-600 mb-1">Color</label>
+                    <div className="flex gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => setOverlayColor('ffffff')}
+                        disabled={!mediaData}
+                        className={`
+                          flex-1 h-6 rounded-md border transition-all duration-150
+                          ${overlayColor === 'ffffff'
+                            ? 'border-[#60A5FA] bg-white ring-1 ring-[#60A5FA]/30'
+                            : 'border-gray-300 bg-white hover:border-gray-400'
+                          }
+                        `}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setOverlayColor('000000')}
+                        disabled={!mediaData}
+                        className={`
+                          flex-1 h-6 rounded-md border transition-all duration-150
+                          ${overlayColor === '000000'
+                            ? 'border-[#60A5FA] bg-gray-900 ring-1 ring-[#60A5FA]/30'
+                            : 'border-gray-300 bg-gray-900 hover:border-gray-400'
+                          }
+                        `}
+                      />
+                    </div>
                   </div>
                 </div>
 
-                {/* Position Control */}
-                <div className="bg-neutral-50 rounded-xl p-3 border border-neutral-200">
-                  <div className="text-xs font-medium text-neutral-600 mb-2">Position</div>
-                  <select
-                    value={overlayPos}
-                    onChange={(e) => setOverlayPos(e.target.value as OverlayPos)}
-                    className="w-full rounded-lg border border-neutral-300 bg-white px-2 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all mt-1"
-                  >
-                    <option value="top-left">Top Left</option>
-                    <option value="top-center">Top</option>
-                    <option value="top-right">Top Right</option>
-                    <option value="center-left">Left</option>
-                    <option value="center">Center</option>
-                    <option value="center-right">Right</option>
-                    <option value="bottom-left">Bottom Left</option>
-                    <option value="bottom-center">Bottom</option>
-                    <option value="bottom-right">Bottom Right</option>
-                  </select>
+                {/* Position Grid */}
+                <div>
+                  <label className="block text-[11px] font-medium text-gray-600 mb-1">Position</label>
+                  <div className="inline-grid grid-cols-3 gap-0.5 p-0.5 bg-gray-100 rounded-lg">
+                    {(['top-left', 'top-center', 'top-right', 'center-left', 'center', 'center-right', 'bottom-left', 'bottom-center', 'bottom-right'] as OverlayPos[]).map((pos) => (
+                      <button
+                        key={pos}
+                        type="button"
+                        onClick={() => setOverlayPos(pos)}
+                        disabled={!mediaData}
+                        className={`
+                          w-7 h-6 rounded text-[10px] transition-all duration-150
+                          ${overlayPos === pos
+                            ? 'bg-white text-gray-800 shadow-sm font-medium'
+                            : 'text-gray-400 hover:text-gray-600 hover:bg-white/50'
+                          }
+                        `}
+                      >
+                        {pos === 'top-left' && '↖'}
+                        {pos === 'top-center' && '↑'}
+                        {pos === 'top-right' && '↗'}
+                        {pos === 'center-left' && '←'}
+                        {pos === 'center' && '•'}
+                        {pos === 'center-right' && '→'}
+                        {pos === 'bottom-left' && '↙'}
+                        {pos === 'bottom-center' && '↓'}
+                        {pos === 'bottom-right' && '↘'}
+                      </button>
+                    ))}
+                  </div>
                 </div>
+
+                {/* Tip */}
+                {!mediaData && (
+                  <p className="text-[11px] text-gray-400 italic">
+                    Upload media to customize text overlay
+                  </p>
+                )}
               </div>
             )}
           </div>
 
+          {/* Success indicator */}
           {mediaData && (
-            <div className="text-center text-sm text-neutral-600">
-              {mediaData.type === 'video' ? 'Video' :
-               mediaData.type === 'gif' ? 'GIF' : 'Image'} uploaded successfully
+            <div className="flex items-center justify-center gap-1.5 py-1">
+              <div className="w-4 h-4 rounded-full bg-emerald-100 flex items-center justify-center">
+                <svg className="w-2.5 h-2.5 text-emerald-600" viewBox="0 0 24 24" fill="none">
+                  <path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              <span className="text-xs text-emerald-600 font-medium">Media added</span>
             </div>
           )}
         </div>

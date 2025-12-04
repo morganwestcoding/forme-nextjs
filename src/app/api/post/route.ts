@@ -11,32 +11,34 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { 
-        content, 
-        imageSrc, 
-        mediaUrl, 
-        mediaType, 
-        location, 
-        tag, 
+    const {
+        content,
+        imageSrc,
+        mediaUrl,
+        mediaType,
+        mediaOverlay,
+        location,
+        tag,
         category,
         postType,
         mentions = [] // NEW: Handle mentions/tags
     } = body;
 
-    console.log("Received fields in POST request:", { 
-        content, 
-        imageSrc, 
-        mediaUrl, 
-        mediaType, 
-        location, 
-        tag, 
+    console.log("Received fields in POST request:", {
+        content,
+        imageSrc,
+        mediaUrl,
+        mediaType,
+        mediaOverlay,
+        location,
+        tag,
         category,
         postType,
         mentions
     });
 
-    // Check if content exists
-    if (!content) {
+    // Check if content exists (allow empty content for Reels)
+    if (content === undefined || content === null) {
         return new Response("Missing required field: content", { status: 400 });
     }
 
@@ -75,6 +77,7 @@ export async function POST(request: Request) {
                 imageSrc,
                 mediaUrl,
                 mediaType,
+                mediaOverlay: mediaOverlay || undefined,
                 location,
                 tag,
                 category: finalCategory,

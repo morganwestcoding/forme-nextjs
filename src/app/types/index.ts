@@ -130,6 +130,13 @@ export type SafeUser = Omit<
 };
 
 
+export interface MediaOverlay {
+  text: string;
+  size: number;      // CSS px size for display
+  color: 'ffffff' | '000000';
+  pos: 'top-left' | 'top-center' | 'top-right' | 'center-left' | 'center' | 'center-right' | 'bottom-left' | 'bottom-center' | 'bottom-right';
+}
+
 export type SafePost = Omit<
   Post,
   "createdAt" | "updatedAt" | "userId" | "categoryId"
@@ -139,11 +146,12 @@ export type SafePost = Omit<
   user: SafeUser;
   imageSrc: string | null;
   mediaType?: MediaType | null;
-  likes: string[]; 
+  mediaOverlay?: MediaOverlay | null;
+  likes: string[];
   postType?: 'ad' | 'text' | 'reel';
   listing?: SafeListing;
   shop?: SafeShop;
-  bookmarks: string[]; 
+  bookmarks: string[];
   hiddenBy: string[];
   comments: SafeComment[];
   mentions?: PostMention[] | null;

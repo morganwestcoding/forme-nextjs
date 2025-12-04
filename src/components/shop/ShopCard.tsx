@@ -71,7 +71,7 @@ const ShopCard: React.FC<ShopCardProps> = ({
         {/* Match ListingCard height exactly */}
         <div className="relative h-[280px]">
           {/* Heart - Using HeartButton component */}
-          <div className="absolute top-3 right-3 z-20">
+          <div className="absolute top-6 right-6 z-20">
             <HeartButton
               listingId={data.id}
               currentUser={currentUser}

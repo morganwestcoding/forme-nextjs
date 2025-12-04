@@ -159,7 +159,8 @@ model Post {
   userId    String   @db.ObjectId
   createdAt DateTime @default(now())
   mediaUrl    String?
-  mediaType   String? 
+  mediaType   String?
+  mediaOverlay Json?  // Stores text overlay settings {text, size, color, pos}
   likes     String[] @db.ObjectId 
   bookmarks String[] @db.ObjectId 
   hiddenBy  String[] @db.ObjectId  
