@@ -35,17 +35,13 @@ const ListingClient: React.FC<ListingClientProps> = ({
 
   return (
     <Container>
-      <div className="max-w-screen-lg">
-        <div className="flex flex-col">
-<ListingHead
-  key={`${listing.id}-${listing.imageSrc}-${(listing.galleryImages || []).join('|')}`}
-  listing={listing}
-  currentUser={currentUser}
-  Services={listing.services}
-  posts={posts}
-/>
-        </div>
-      </div>
+      <ListingHead
+        key={`${listing.id}-${listing.imageSrc}-${(listing.galleryImages || []).join('|')}`}
+        listing={listing}
+        currentUser={currentUser}
+        Services={listing.services}
+        posts={posts}
+      />
     </Container>
   );
 }

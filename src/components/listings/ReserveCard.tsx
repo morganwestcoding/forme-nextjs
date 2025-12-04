@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import { format } from 'date-fns';
 import { SafeReservation, SafeUser } from '@/app/types';
-import { Calendar02Icon, UserFullViewIcon } from 'hugeicons-react';
 
 interface ReserveCardListing {
   id: string;
@@ -51,6 +50,7 @@ interface ReserveCardProps {
 }
 
 type UiStatus = 'pending' | 'accepted' | 'declined';
+
 const normalizeStatus = (status: string): UiStatus => {
   if (status === 'accepted') return 'accepted';
   if (status === 'declined') return 'declined';
@@ -60,7 +60,6 @@ const normalizeStatus = (status: string): UiStatus => {
 const ReserveCard: React.FC<ReserveCardProps> = ({
   reservation,
   listing,
-  currentUser,
   onAccept,
   onDecline,
   onCancel,
@@ -73,10 +72,8 @@ const ReserveCard: React.FC<ReserveCardProps> = ({
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [localStatus, setLocalStatus] = useState<UiStatus>(uiStatus);
 
-  const hasNote = Boolean(reservation.note && reservation.note.trim().length > 0);
-  const employeeName = listing.employees?.find(emp => emp.id === reservation.employeeId)?.fullName || 'Not assigned';
+  const employeeName = listing.employees?.find(emp => emp.id === reservation.employeeId)?.fullName;
 
-  // Format time
   const formatTime = (time: string) => {
     const [hours, minutes] = time.split(':');
     const hour = parseInt(hours, 10);
@@ -85,7 +82,6 @@ const ReserveCard: React.FC<ReserveCardProps> = ({
     return `${hour12}:${minutes} ${period}`;
   };
 
-  // Handle accept with optimistic UI
   const handleAccept = () => {
     setIsTransitioning(true);
     setTimeout(() => {
@@ -95,7 +91,6 @@ const ReserveCard: React.FC<ReserveCardProps> = ({
     }, 150);
   };
 
-  // Handle decline/cancel
   const handleReject = () => {
     if (onDecline) onDecline();
     else if (onCancel) onCancel();
@@ -104,130 +99,77 @@ const ReserveCard: React.FC<ReserveCardProps> = ({
   const showActions = showAcceptDecline || showCancel;
   const isPending = localStatus === 'pending';
 
-  // Status configuration
   const statusConfig = {
-    accepted: {
-      dot: 'bg-emerald-500',
-      ring: 'ring-emerald-500/20',
-      text: 'text-emerald-700',
-      label: 'Confirmed',
-      bg: 'bg-emerald-50',
-    },
-    declined: {
-      dot: 'bg-rose-500',
-      ring: 'ring-rose-500/20',
-      text: 'text-rose-700',
-      label: 'Declined',
-      bg: 'bg-rose-50',
-    },
-    pending: {
-      dot: 'bg-amber-500',
-      ring: 'ring-amber-500/20',
-      text: 'text-amber-700',
-      label: 'Pending',
-      bg: 'bg-amber-50',
-    },
+    accepted: { label: 'Confirmed', color: 'text-emerald-600', bg: 'bg-emerald-50' },
+    declined: { label: 'Declined', color: 'text-neutral-500', bg: 'bg-neutral-100' },
+    pending: { label: 'Pending', color: 'text-amber-600', bg: 'bg-amber-50' },
   };
 
-  const config = statusConfig[localStatus];
+  const status = statusConfig[localStatus];
 
   return (
     <div
       onClick={onCardClick}
-      className="group cursor-pointer rounded-xl bg-white border border-gray-200 overflow-hidden transition-all duration-300 hover:scale-[1.01] hover:-translate-y-1 hover:shadow-md hover:border-gray-300 max-w-[250px]"
+      className="group cursor-pointer overflow-hidden rounded-xl bg-white border border-neutral-200 transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.01] hover:shadow-md max-w-[250px]"
     >
-      {/* Header Image with Gradient Overlay */}
-      <div className="relative h-[100px] overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
-        <img
-          src={listing.imageSrc}
-          alt={listing.title}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-        />
-
-        {/* Gradient overlay */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background: `linear-gradient(to top,
-              rgba(0,0,0,0.60) 0%,
-              rgba(0,0,0,0.35) 40%,
-              rgba(0,0,0,0.00) 100%)`
-          }}
-        />
-
-        {/* Business info overlay at bottom */}
-        <div className="absolute bottom-0 left-0 right-0 p-2.5">
-          <h3 className="text-[13px] font-semibold text-white drop-shadow leading-tight tracking-tight truncate">
-            {listing.title}
-          </h3>
-        </div>
-
-        {/* Note indicator - top right */}
-        {hasNote && (
-          <div className="absolute top-2 right-2">
-            <div className="w-5 h-5 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
-                <path d="M12 5H11C7.72876 5 5.84315 5 4.67157 6.17157C3.5 7.34315 3.5 9.22876 3.5 13V14C3.5 17.7712 3.5 19.6569 4.67157 20.8284C5.84315 22 7.72876 22 11 22L12 22C15.7712 22 17.6569 22 18.8284 20.8284C20 19.6569 20 17.7712 20 14V13C20 9.22876 20 7.34315 18.8284 6.17157C17.6569 5 15.7712 5 12 5Z" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-                <path d="M7 17H12M7 13H16" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Content Section */}
-      <div className="p-3 space-y-2">
-
-        {/* Status + Price Row */}
+      <div className="h-[280px] flex flex-col p-4">
+        {/* Top row - Status & Price */}
         <div className="flex items-center justify-between">
-          <div className={`flex items-center gap-1 px-2 py-0.5 rounded-md ${config.bg} transition-all duration-200`}>
-            <div className={`w-1.5 h-1.5 rounded-full ${config.dot}`} />
-            <span className={`text-[10px] font-semibold ${config.text}`}>
-              {config.label}
-            </span>
-          </div>
-          <span className="text-sm font-semibold text-gray-900">
+          <span className={`text-[11px] font-semibold uppercase tracking-wide px-2 py-1 rounded-md ${status.color} ${status.bg}`}>
+            {status.label}
+          </span>
+          <span className="text-lg font-semibold text-neutral-900">
             ${reservation.totalPrice}
           </span>
         </div>
 
-        {/* Service Name */}
-        <p className="text-[12px] font-semibold text-gray-900 leading-tight truncate">
-          {reservation.serviceName}
-        </p>
-
-        {/* Employee + Date inline */}
-        <div className="flex items-center justify-between text-[10px] text-gray-500">
-          <div className="flex items-center gap-1.5">
-            <UserFullViewIcon size={10} color="#9ca3af" />
-            <span className="truncate max-w-[80px]">{employeeName}</span>
+        {/* Date & Time - Hero */}
+        <div className="mt-5">
+          <div className="text-2xl font-bold text-neutral-900 leading-tight">
+            {format(new Date(reservation.date), 'EEE, MMM d')}
           </div>
-          <div className="flex items-center gap-1">
-            <Calendar02Icon size={10} color="#9ca3af" />
-            <span>{format(new Date(reservation.date), 'MMM d')} · {formatTime(reservation.time)}</span>
+          <div className="text-base text-neutral-600 mt-0.5">
+            {formatTime(reservation.time)}
           </div>
         </div>
 
-        {/* Action Buttons */}
+        {/* Spacer */}
+        <div className="flex-1" />
+
+        {/* Service */}
+        <div className="text-sm font-semibold text-neutral-900 truncate">
+          {reservation.serviceName}
+        </div>
+
+        {/* Business */}
+        <div className="text-xs text-neutral-500 truncate mt-1">
+          {listing.title}
+        </div>
+
+        {/* Employee */}
+        {employeeName && (
+          <div className="text-xs text-neutral-500 truncate mt-0.5">
+            with {employeeName}
+          </div>
+        )}
+
+        {/* Actions */}
         {showActions && (
-          <div className="pt-2 border-t border-gray-100">
+          <div className="mt-4">
             {isPending && !isTransitioning ? (
-              <div className="flex gap-1.5">
+              <div className="flex gap-2">
                 <button
                   disabled={disabled}
                   onClick={(e) => {
                     e.stopPropagation();
                     handleAccept();
                   }}
-                  className={`flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-md text-[10px] font-semibold transition-all duration-200 ${
+                  className={`flex-1 py-2.5 rounded-lg text-xs font-semibold transition-colors ${
                     disabled
-                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                      : 'bg-emerald-500/10 text-emerald-700 border border-emerald-500/20 hover:bg-emerald-500/20'
+                      ? 'bg-neutral-100 text-neutral-400'
+                      : 'bg-neutral-900 text-white hover:bg-neutral-800'
                   }`}
                 >
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
-                    <path d="M8 12.5L10.5 15L16 9" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
                   Accept
                 </button>
                 <button
@@ -236,15 +178,12 @@ const ReserveCard: React.FC<ReserveCardProps> = ({
                     e.stopPropagation();
                     handleReject();
                   }}
-                  className={`flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-md text-[10px] font-semibold transition-all duration-200 ${
+                  className={`flex-1 py-2.5 rounded-lg text-xs font-semibold transition-colors ${
                     disabled
-                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                      : 'bg-rose-500/10 text-rose-700 border border-rose-500/20 hover:bg-rose-500/20'
+                      ? 'bg-neutral-100 text-neutral-400'
+                      : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
                   }`}
                 >
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
-                    <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
                   {showAcceptDecline ? 'Decline' : 'Cancel'}
                 </button>
               </div>
@@ -255,15 +194,12 @@ const ReserveCard: React.FC<ReserveCardProps> = ({
                   e.stopPropagation();
                   handleReject();
                 }}
-                className={`w-full flex items-center justify-center gap-1 py-1.5 px-2 rounded-md text-[10px] font-semibold transition-all duration-200 ${
+                className={`w-full py-2.5 rounded-lg text-xs font-semibold transition-colors ${
                   disabled
-                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                    : 'bg-gray-500/10 text-gray-700 border border-gray-500/20 hover:bg-gray-500/20'
+                    ? 'bg-neutral-100 text-neutral-400'
+                    : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
                 }`}
               >
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
-                  <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
                 Cancel
               </button>
             )}

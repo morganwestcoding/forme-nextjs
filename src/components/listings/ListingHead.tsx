@@ -55,6 +55,20 @@ const ListingHead: React.FC<ListingHeadProps> = ({
   const [chatInput, setChatInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'About' | 'Services' | 'Professionals' | 'Posts' | 'Reviews' | null>(null);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  // Listen for sidebar collapse changes
+  React.useEffect(() => {
+    const checkSidebar = () => setSidebarCollapsed(localStorage.getItem('sidebarCollapsed') === 'true');
+    checkSidebar();
+    window.addEventListener('sidebarToggle', checkSidebar);
+    return () => window.removeEventListener('sidebarToggle', checkSidebar);
+  }, []);
+
+  // Responsive grid - matches Market pattern, adds 1 column when sidebar is collapsed
+  const gridColsClass = sidebarCollapsed
+    ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6'
+    : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5';
 
   const isFollowing = !!currentUser?.id && followers.includes(currentUser.id);
 
@@ -321,43 +335,44 @@ const ListingHead: React.FC<ListingHeadProps> = ({
             </p>
 
             {/* Social Stats */}
-            <div className="flex items-center justify-center gap-5 mt-4 text-[15px] text-gray-500">
-              <span className="flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18">
-                  <defs>
-                    <linearGradient id="starGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stopColor="#FBBF24" />
-                      <stop offset="100%" stopColor="#F59E0B" />
-                    </linearGradient>
-                  </defs>
-                  <path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z" fill="url(#starGradient)" />
+            <div className="flex items-center justify-center gap-4 sm:gap-5 mt-4 text-[13px] sm:text-[14px] text-neutral-500">
+              {/* Rating */}
+              <span className="flex items-center gap-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
-                <span className="font-semibold text-gray-900">4.8</span>
+                <span className="font-semibold text-neutral-900">4.8</span>
               </span>
-              <span><span className="font-semibold text-gray-900">{followers.length}</span> followers</span>
-              <span><span className="font-semibold text-gray-900">{posts.length}</span> posts</span>
+
+              {/* Followers */}
+              <span className="flex items-center gap-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M12 12C14.4853 12 16.5 9.98528 16.5 7.5C16.5 5.01472 14.4853 3 12 3C9.51472 3 7.5 5.01472 7.5 7.5C7.5 9.98528 9.51472 12 12 12Z" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M20 21C20 17.134 16.4183 14 12 14C7.58172 14 4 17.134 4 21" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                <span><span className="font-semibold text-neutral-900">{followers.length}</span> followers</span>
+              </span>
+
+              {/* Posts */}
+              <span className="flex items-center gap-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M2.5 12C2.5 7.52166 2.5 5.28249 3.89124 3.89124C5.28249 2.5 7.52166 2.5 12 2.5C16.4783 2.5 18.7175 2.5 20.1088 3.89124C21.5 5.28249 21.5 7.52166 21.5 12C21.5 16.4783 21.5 18.7175 20.1088 20.1088C18.7175 21.5 16.4783 21.5 12 21.5C7.52166 21.5 5.28249 21.5 3.89124 20.1088C2.5 18.7175 2.5 16.4783 2.5 12Z" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M2.5 12L21.5 12" strokeLinecap="round"/>
+                  <path d="M12 21.5V12" strokeLinecap="round"/>
+                </svg>
+                <span><span className="font-semibold text-neutral-900">{posts.length}</span> posts</span>
+              </span>
+
+              {/* Likes */}
               <button
                 onClick={(e: any) => toggleFavorite(e)}
-                className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+                className="flex items-center gap-1.5 hover:opacity-70 transition-opacity"
                 type="button"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18">
-                  <defs>
-                    <linearGradient id="heartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stopColor="#FB7185" />
-                      <stop offset="100%" stopColor="#E11D48" />
-                    </linearGradient>
-                    <linearGradient id="heartGradientInactive" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stopColor="#9CA3AF" />
-                      <stop offset="100%" stopColor="#6B7280" />
-                    </linearGradient>
-                  </defs>
-                  <path
-                    d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z"
-                    fill={hasFavorited ? "url(#heartGradient)" : "url(#heartGradientInactive)"}
-                  />
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className={`w-[18px] h-[18px] ${hasFavorited ? 'text-rose-500' : ''}`} fill={hasFavorited ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.5">
+                  <path d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
-<span><span className="font-semibold text-gray-900">{(listing as any).favoriteCount || 0}</span> likes</span>
+                <span><span className="font-semibold text-neutral-900">{(listing as any).favoriteCount || 0}</span> likes</span>
               </button>
             </div>
 
@@ -365,38 +380,38 @@ const ListingHead: React.FC<ListingHeadProps> = ({
             <div className="mt-6 max-w-3xl mx-auto">
               <form onSubmit={handleChatSubmit}>
                 <div className="bg-neutral-100 border border-neutral-200 rounded-2xl overflow-hidden">
-                  <div className="flex items-center gap-1.5 px-3 py-2.5">
+                  <div className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5">
                     <input
                       type="text"
                       value={chatInput}
                       onChange={(e) => setChatInput(e.target.value)}
-                      placeholder="Looking for something? I can help you find it..."
-                      className="flex-1 text-[14px] bg-transparent border-none outline-none text-neutral-900 placeholder-neutral-400 font-normal pl-3"
+                      placeholder="Looking for something?"
+                      className="flex-1 text-[13px] sm:text-[14px] bg-transparent border-none outline-none text-neutral-900 placeholder-neutral-400 font-normal pl-2 sm:pl-3"
                     />
 
                     <div className="w-px h-5 bg-neutral-300" />
 
                     {/* Attach Button */}
                     <button
-                      className="p-2 rounded-xl hover:bg-neutral-200 text-neutral-600 hover:text-neutral-900 transition-all duration-200"
+                      className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl hover:bg-neutral-200 text-neutral-600 hover:text-neutral-900 transition-all duration-200"
                       type="button"
                       title="Attach"
                     >
-                      <Link02Icon size={22} strokeWidth={1.5} />
+                      <Link02Icon size={20} strokeWidth={1.5} className="sm:w-[22px] sm:h-[22px]" />
                     </button>
 
                     {/* Follow Button */}
                     {currentUser && !isOwner && (
                       <button
                         onClick={handleToggleFollow}
-                        className="p-2 rounded-xl hover:bg-neutral-200 text-neutral-600 hover:text-neutral-900 transition-all duration-200"
+                        className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl hover:bg-neutral-200 text-neutral-600 hover:text-neutral-900 transition-all duration-200"
                         type="button"
                         title={isFollowing ? 'Following' : 'Follow'}
                       >
                         {isFollowing ? (
-                          <UserCheck01Icon size={22} color="currentColor" />
+                          <UserCheck01Icon size={20} className="sm:w-[22px] sm:h-[22px]" />
                         ) : (
-                          <UserAdd01Icon size={22} color="currentColor" />
+                          <UserAdd01Icon size={20} className="sm:w-[22px] sm:h-[22px]" />
                         )}
                       </button>
                     )}
@@ -405,11 +420,11 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                     {currentUser && (
                       <button
                         onClick={handleReserveClick}
-                        className="p-2 rounded-xl hover:bg-neutral-200 text-neutral-600 hover:text-neutral-900 transition-all duration-200"
+                        className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl hover:bg-neutral-200 text-neutral-600 hover:text-neutral-900 transition-all duration-200"
                         type="button"
                         title="Book Appointment"
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5 sm:w-[22px] sm:h-[22px]" fill="none" stroke="currentColor" strokeWidth="1.5">
                           <path d="M18 2V4M6 2V4" strokeLinecap="round" strokeLinejoin="round"/>
                           <path d="M11.9955 13H12.0045M11.9955 17H12.0045M15.991 13H16M8 13H8.00897M8 17H8.00897" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                           <path d="M3.5 8H20.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -444,7 +459,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               viewAllLabel={validServices.length > 8 ? `View all ${validServices.length}` : undefined}
               className="!-mt-2 !mb-6"
             />
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
               {validServices.slice(0, 8).map((service, idx) => (
                 <div
                   key={service.id}
@@ -491,7 +506,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               title="Meet Our Team"
               className="!-mt-2 !mb-6"
             />
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
               {employees.slice(0, 8).map((employee: any, idx: number) => (
                 <div
                   key={employee.id || idx}
@@ -541,7 +556,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               title="Photos & Gallery"
               className="!-mt-2 !mb-6"
             />
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+            <div className={`grid ${gridColsClass} gap-3 transition-all duration-300`}>
               {galleryImages && galleryImages.map((image, idx) => (
                 <div
                   key={`image-${idx}`}

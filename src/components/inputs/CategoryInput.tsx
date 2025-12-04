@@ -1,7 +1,16 @@
 'use client';
 
 import React, { memo } from 'react';
-import { Waves, Anchor, Rocket, Palette, Droplet, User } from 'lucide-react';
+import {
+  WavingHand01Icon,
+  Yoga01Icon,
+  Dumbbell01Icon,
+  PaintBrush01Icon,
+  HotTubeIcon,
+  ChairBarberIcon,
+  SparklesIcon,
+  HairDryerIcon,
+} from 'hugeicons-react';
 
 interface CategoryInputProps {
   label: string;
@@ -14,18 +23,18 @@ interface CategoryInputProps {
  * Keep this outside the component to avoid re-creation on every render.
  */
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-  Massage: Waves,
-  Wellness: Anchor,
-  Fitness: Rocket,
-  Nails: Palette,
-  Spa: Droplet,
-  Barber: User,
-  Beauty: Palette,
-  Salon: Waves,
+  Massage: WavingHand01Icon,
+  Wellness: Yoga01Icon,
+  Fitness: Dumbbell01Icon,
+  Nails: PaintBrush01Icon,
+  Spa: HotTubeIcon,
+  Barber: ChairBarberIcon,
+  Beauty: SparklesIcon,
+  Salon: HairDryerIcon,
 };
 
 const CategoryInputBase: React.FC<CategoryInputProps> = ({ label, selected, onClick }) => {
-  const Icon = iconMap[label] || Waves;
+  const Icon = iconMap[label] || SparklesIcon;
 
   return (
     <button
