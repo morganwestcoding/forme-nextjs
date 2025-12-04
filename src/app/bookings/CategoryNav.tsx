@@ -71,7 +71,7 @@ const CategoryNav: React.FC<CategoryNavProps> = ({
   const allCategories = [...directionalCategories, ...statusCategories];
 
   return (
-    <div className="flex items-center justify-center gap-1.5 py-3">
+    <div className="flex items-center sm:justify-center gap-1.5 py-2 sm:py-3 overflow-x-auto scrollbar-hide -mx-2 px-2 sm:mx-0 sm:px-0">
       {allCategories.map((category) => {
         const isSelected = activeCategories.includes(category.value);
 
@@ -80,10 +80,10 @@ const CategoryNav: React.FC<CategoryNavProps> = ({
             key={category.value}
             onClick={() => handleCategorySelect(category.value)}
             className={`
-              relative px-3.5 py-1.5 text-[13px] font-medium rounded-lg border transition-all duration-500 ease-out active:scale-[0.97]
+              relative px-3 sm:px-4 py-1 sm:py-1.5 text-[12px] sm:text-[13px] font-medium rounded-lg sm:rounded-xl border transition-all duration-300 ease-out active:scale-[0.97] whitespace-nowrap flex-shrink-0
               ${isSelected
-                ? 'bg-gradient-to-b from-[#60A5FA] to-[#4A90E2] border-[#4A90E2] text-white shadow-sm shadow-[#60A5FA]/20'
-                : 'bg-gradient-to-b from-white to-gray-50 border-gray-200/60 text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                ? 'bg-[#60A5FA] border-[#60A5FA] text-white shadow-md shadow-[#60A5FA]/25'
+                : 'bg-transparent border-neutral-300 text-neutral-500 hover:border-[#60A5FA] hover:text-[#60A5FA] hover:bg-[#60A5FA]/5'
               }
             `}
             type="button"
