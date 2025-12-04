@@ -135,6 +135,7 @@ export default async function getListings(params: IListingsParams = {}): Promise
             serviceName: true,
             price: true,
             category: true,
+            imageSrc: true,
           }
         },
         employees: {
@@ -197,6 +198,7 @@ export default async function getListings(params: IListingsParams = {}): Promise
         serviceName: service.serviceName,
         price: service.price,
         category: service.category,
+        imageSrc: service.imageSrc,
       })),
       employees: listing.employees
         .filter(employee => employee.user) // Ensure user exists

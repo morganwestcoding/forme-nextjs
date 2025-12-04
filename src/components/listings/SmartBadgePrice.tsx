@@ -84,12 +84,10 @@ const SmartBadgePrice: React.FC<SmartBadgePriceProps> = ({
       {/* Book Now button - minimalistic style matching SmartBadgeWorker */}
       <button
         onClick={handleBookNowClick}
-        className={`flex items-center gap-1 px-2.5 py-1.5 text-xs ${textClasses} transition-colors`}
+        className={`flex items-center gap-1.5 px-2.5 py-1.5 text-xs ${textClasses} transition-colors`}
         type="button"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" className={variant === 'dark' ? 'text-white/70' : 'text-gray-600'} fill="none">
-          <path d="M9 6.65032C9 6.65032 15.9383 6.10759 16.9154 7.08463C17.8924 8.06167 17.3496 15 17.3496 15M16.5 7.5L6.5 17.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-violet-400"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>
         <span>Reserve</span>
       </button>
     </div>

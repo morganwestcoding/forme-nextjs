@@ -3,11 +3,13 @@
 import React, { useMemo, useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import { ArrowBigUpDash } from 'lucide-react';
+import { Link02Icon, UserAdd01Icon, UserCheck01Icon, Location01Icon, Call02Icon, Globe02Icon, Mail01Icon, Share08Icon } from 'hugeicons-react';
 import ServiceCard from './ServiceCard';
 import WorkerCard from './WorkerCard';
 import PostCard from '../feed/PostCard';
 import QRModal from '../modals/QRModal';
+import ListingCategoryNav from './ListingCategoryNav';
+import SectionHeader from '@/app/market/SectionHeader';
 import { SafePost, SafeUser, SafeListing } from '@/app/types';
 import useReservationModal from '@/app/hooks/useReservationModal';
 import useRentModal from '@/app/hooks/useListingModal';
@@ -52,6 +54,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
   const [showDropdown, setShowDropdown] = useState(false);
   const [chatInput, setChatInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<'About' | 'Services' | 'Professionals' | 'Posts' | 'Reviews' | null>(null);
 
   const isFollowing = !!currentUser?.id && followers.includes(currentUser.id);
 
@@ -264,16 +267,17 @@ const ListingHead: React.FC<ListingHeadProps> = ({
 
       {/* ========== LISTING HEADER ========== */}
       <div className="-mx-6 md:-mx-24 -mt-2 md:-mt-8">
-        <div className="relative bg-white px-6 md:px-24 pt-8 pb-4">
+        <div className="relative px-6 md:px-24 pt-12 pb-8">
 
-          {/* Title Section - Market-inspired */}
-          <div className="text-center mb-5">
-            <div className="flex items-center justify-center gap-2.5 mb-1">
+          {/* Centered Layout - Like Market */}
+          <div className="text-center">
+
+            {/* Title + Verified Badge + 3 Dots Menu */}
+            <div className="flex items-center justify-center gap-3 relative">
               <h1 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight tracking-tight">
                 {title}
               </h1>
-              {/* Verified Badge */}
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="flex-shrink-0">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" className="flex-shrink-0">
                 <path
                   d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z"
                   fill="url(#verifiedGrad)"
@@ -286,178 +290,160 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   </linearGradient>
                 </defs>
               </svg>
-            </div>
-            <p className="text-gray-500 text-base">
-              {address && location ? `${address}, ${location}` : address || location}
-            </p>
-          </div>
 
-          {/* Search Bar with integrated actions */}
-          <div className="max-w-3xl mx-auto">
-            <form onSubmit={handleChatSubmit}>
-              <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
-                <div className="flex items-center gap-1.5 px-3 py-2.5">
-                  {/* Book Button */}
-                  {currentUser && (
-                    <button
-                      onClick={handleReserveClick}
-                      className="p-2 rounded-xl hover:bg-gray-50 text-gray-600 hover:text-gray-900 transition-all"
-                      type="button"
-                      title="Book Appointment"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.5">
-                        <path d="M18 2V4M6 2V4" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M11.9955 13H12.0045M11.9955 17H12.0045M15.991 13H16M8 13H8.00897M8 17H8.00897" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M3.5 8H20.5" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M2.5 12.2432C2.5 7.88594 2.5 5.70728 3.75212 4.35364C5.00424 3 7.01949 3 11.05 3H12.95C16.9805 3 18.9958 3 20.2479 4.35364C21.5 5.70728 21.5 7.88594 21.5 12.2432V12.7568C21.5 17.1141 21.5 19.2927 20.2479 20.6464C18.9958 22 16.9805 22 12.95 22H11.05C7.01949 22 5.00424 22 3.75212 20.6464C2.5 19.2927 2.5 17.1141 2.5 12.7568V12.2432Z" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </button>
-                  )}
-
-                  {/* Call Button */}
-                  {phoneNumber && (
-                    <a
-                      href={`tel:${phoneNumber}`}
-                      className="p-2 rounded-xl hover:bg-gray-50 text-gray-600 hover:text-gray-900 transition-all"
-                      title="Call"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.5">
-                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
-                      </svg>
-                    </a>
-                  )}
-
-                  <div className="w-px h-5 bg-gray-200" />
-
-                  <input
-                    type="text"
-                    value={chatInput}
-                    onChange={(e) => setChatInput(e.target.value)}
-                    placeholder={`Ask ${title} anything...`}
-                    className="flex-1 text-[14px] bg-transparent border-none outline-none text-gray-900 placeholder-gray-400 font-normal px-2"
-                  />
-
-                  {/* Inline quick prompts - only show when input is empty */}
-                  {!chatInput && quickActions.length > 0 && (
-                    <div className="hidden md:flex items-center gap-1.5 mr-2">
-                      {quickActions.slice(0, 2).map((action, idx) => (
-                        <button
-                          key={idx}
-                          onClick={() => setChatInput(action)}
-                          className="px-2.5 py-1 text-xs text-gray-500 bg-gray-50 hover:bg-gray-100 rounded-lg transition-all whitespace-nowrap"
-                          type="button"
-                        >
-                          {action.length > 20 ? action.slice(0, 20) + '...' : action}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-
-                  <button
-                    type="submit"
-                    disabled={!chatInput.trim() || isLoading}
-                    className={`group flex-shrink-0 p-2 rounded-xl border transition-all duration-500 ease-out active:scale-[0.97] ${
-                      chatInput.trim()
-                        ? 'bg-gradient-to-b from-[#60A5FA] to-[#4A90E2] border-[#4A90E2]'
-                        : 'bg-gradient-to-b from-white to-gray-100 border-gray-200'
-                    }`}
-                  >
-                    {isLoading ? (
-                      <div className="w-[22px] h-[22px] border-2 border-[#60A5FA] border-t-transparent rounded-full animate-spin" />
-                    ) : (
-                      <ArrowBigUpDash
-                        className={`w-[22px] h-[22px] transition-all duration-500 ease-out group-hover:-translate-y-0.5 ${
-                          chatInput.trim() ? 'text-white' : 'text-gray-400'
-                        }`}
-                        strokeWidth={1.5}
-                      />
-                    )}
-                  </button>
-                </div>
-              </div>
-            </form>
-          </div>
-
-          {/* Compact Stats & Actions Row */}
-          <div className="flex items-center justify-center gap-4 mt-4">
-            {/* Stats */}
-            <div className="flex items-center gap-4 text-sm">
-              {operatingStatus && (
-                <div className="flex items-center gap-1.5">
-                  <div className={`w-2 h-2 rounded-full ${operatingStatus.isOpen ? 'bg-emerald-500' : 'bg-rose-500'}`} />
-                  <span className={operatingStatus.isOpen ? 'text-emerald-600' : 'text-rose-600'}>
-                    {operatingStatus.isOpen ? 'Open' : 'Closed'}
-                  </span>
-                </div>
-              )}
-              {validServices.length > 0 && (
-                <span className="text-gray-500">
-                  <span className="font-medium text-gray-700">{validServices.length}</span> services
-                </span>
-              )}
-              {employees.length > 0 && (
-                <span className="text-gray-500">
-                  <span className="font-medium text-gray-700">{employees.length}</span> team
-                </span>
-              )}
-              <div className="flex items-center gap-1">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="#FBBF24" stroke="#FBBF24" strokeWidth="1.5">
-                  <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
-                </svg>
-                <span className="font-medium text-gray-700">4.8</span>
-                <span className="text-gray-400">(128)</span>
-              </div>
-            </div>
-
-            <div className="w-px h-4 bg-gray-200" />
-
-            {/* Action buttons */}
-            <div className="flex items-center gap-1.5">
-              {currentUser && !isOwner && !isEmployee && (
-                <button
-                  onClick={handleToggleFollow}
-                  className={`px-3 py-1.5 text-sm font-medium rounded-lg border transition-all active:scale-[0.97] ${
-                    isFollowing
-                      ? 'bg-gray-100 border-gray-200 text-gray-700'
-                      : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
-                  }`}
-                  type="button"
-                >
-                  {isFollowing ? 'Following' : 'Follow'}
-                </button>
-              )}
-
-              <button
-                onClick={(e: any) => toggleFavorite(e)}
-                className="p-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 transition-all"
-                type="button"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill={hasFavorited ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" className={hasFavorited ? "text-rose-500" : "text-gray-500"}>
-                  <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
-                </svg>
-              </button>
-
+              {/* 3 Dots Menu - Right Aligned */}
               <button
                 onClick={handleDropdownToggle}
-                className="p-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 transition-all"
+                className="absolute right-0 top-1/2 -translate-y-1/2 p-2 rounded-xl hover:bg-gray-50 text-gray-500 hover:text-gray-900 transition-all duration-200"
                 type="button"
+                title="More options"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/>
                 </svg>
               </button>
             </div>
+
+            {/* Address & Status */}
+            <p className="text-gray-500 text-base mt-3 max-w-2xl mx-auto">
+              {address && location ? `${address}, ${location}` : address || location}
+              {operatingStatus && (
+                <>
+                  <span className="text-gray-300 mx-2">·</span>
+                  <span className={operatingStatus.isOpen ? 'text-emerald-600' : 'text-rose-600'}>
+                    {operatingStatus.isOpen
+                      ? `Open til ${operatingStatus.closeTime}`
+                      : `Closed · Opens ${operatingStatus.openTime}`
+                    }
+                  </span>
+                </>
+              )}
+            </p>
+
+            {/* Social Stats */}
+            <div className="flex items-center justify-center gap-5 mt-4 text-[15px] text-gray-500">
+              <span className="flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18">
+                  <defs>
+                    <linearGradient id="starGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stopColor="#FBBF24" />
+                      <stop offset="100%" stopColor="#F59E0B" />
+                    </linearGradient>
+                  </defs>
+                  <path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z" fill="url(#starGradient)" />
+                </svg>
+                <span className="font-semibold text-gray-900">4.8</span>
+              </span>
+              <span><span className="font-semibold text-gray-900">{followers.length}</span> followers</span>
+              <span><span className="font-semibold text-gray-900">{posts.length}</span> posts</span>
+              <button
+                onClick={(e: any) => toggleFavorite(e)}
+                className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+                type="button"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18">
+                  <defs>
+                    <linearGradient id="heartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stopColor="#FB7185" />
+                      <stop offset="100%" stopColor="#E11D48" />
+                    </linearGradient>
+                    <linearGradient id="heartGradientInactive" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stopColor="#9CA3AF" />
+                      <stop offset="100%" stopColor="#6B7280" />
+                    </linearGradient>
+                  </defs>
+                  <path
+                    d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z"
+                    fill={hasFavorited ? "url(#heartGradient)" : "url(#heartGradientInactive)"}
+                  />
+                </svg>
+<span><span className="font-semibold text-gray-900">{(listing as any).favoriteCount || 0}</span> likes</span>
+              </button>
+            </div>
+
+            {/* Search Bar - Centered */}
+            <div className="mt-6 max-w-3xl mx-auto">
+              <form onSubmit={handleChatSubmit}>
+                <div className="bg-neutral-100 border border-neutral-200 rounded-2xl overflow-hidden">
+                  <div className="flex items-center gap-1.5 px-3 py-2.5">
+                    <input
+                      type="text"
+                      value={chatInput}
+                      onChange={(e) => setChatInput(e.target.value)}
+                      placeholder="Looking for something? I can help you find it..."
+                      className="flex-1 text-[14px] bg-transparent border-none outline-none text-neutral-900 placeholder-neutral-400 font-normal pl-3"
+                    />
+
+                    <div className="w-px h-5 bg-neutral-300" />
+
+                    {/* Attach Button */}
+                    <button
+                      className="p-2 rounded-xl hover:bg-neutral-200 text-neutral-600 hover:text-neutral-900 transition-all duration-200"
+                      type="button"
+                      title="Attach"
+                    >
+                      <Link02Icon size={22} strokeWidth={1.5} />
+                    </button>
+
+                    {/* Follow Button */}
+                    {currentUser && !isOwner && (
+                      <button
+                        onClick={handleToggleFollow}
+                        className="p-2 rounded-xl hover:bg-neutral-200 text-neutral-600 hover:text-neutral-900 transition-all duration-200"
+                        type="button"
+                        title={isFollowing ? 'Following' : 'Follow'}
+                      >
+                        {isFollowing ? (
+                          <UserCheck01Icon size={22} color="currentColor" />
+                        ) : (
+                          <UserAdd01Icon size={22} color="currentColor" />
+                        )}
+                      </button>
+                    )}
+
+                    {/* Book Button */}
+                    {currentUser && (
+                      <button
+                        onClick={handleReserveClick}
+                        className="p-2 rounded-xl hover:bg-neutral-200 text-neutral-600 hover:text-neutral-900 transition-all duration-200"
+                        type="button"
+                        title="Book Appointment"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.5">
+                          <path d="M18 2V4M6 2V4" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M11.9955 13H12.0045M11.9955 17H12.0045M15.991 13H16M8 13H8.00897M8 17H8.00897" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M3.5 8H20.5" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M2.5 12.2432C2.5 7.88594 2.5 5.70728 3.75212 4.35364C5.00424 3 7.01949 3 11.05 3H12.95C16.9805 3 18.9958 3 20.2479 4.35364C21.5 5.70728 21.5 7.88594 21.5 12.2432V12.7568C21.5 17.1141 21.5 19.2927 20.2479 20.6464C18.9958 22 16.9805 22 12.95 22H11.05C7.01949 22 5.00424 22 3.75212 20.6464C2.5 19.2927 2.5 17.1141 2.5 12.7568V12.2432Z" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            {/* Category Nav */}
+            <div className="mt-5 flex justify-center">
+              <ListingCategoryNav activeTab={activeTab} onTabChange={setActiveTab} />
+            </div>
+
           </div>
+
         </div>
       </div>
 
       {/* ========== SIMPLE CONTENT SECTIONS ========== */}
-      <div className="pt-8 space-y-12">
+      <div className="space-y-12">
 
         {/* Services */}
-        {validServices.length > 0 && (
+        {validServices.length > 0 && (!activeTab || activeTab === 'Services') && (
           <section>
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Services</h2>
+            <SectionHeader
+              title="Our Services & Offerings"
+              onViewAll={validServices.length > 8 ? () => {} : undefined}
+              viewAllLabel={validServices.length > 8 ? `View all ${validServices.length}` : undefined}
+              className="!-mt-2 !mb-6"
+            />
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {validServices.slice(0, 8).map((service, idx) => (
                 <div
@@ -477,29 +463,34 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 </div>
               ))}
               {isOwner && (
-                <button
-                  onClick={handleAddService}
-                  type="button"
-                  className="group relative h-[350px] max-w-[250px] rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 hover:border-gray-300 hover:bg-gray-100 transition-all"
-                >
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-                    <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-400">
-                        <path d="M12 5v14M5 12h14"/>
-                      </svg>
+                <div className="max-w-[250px]">
+                  <button
+                    onClick={handleAddService}
+                    type="button"
+                    className="group relative h-[284px] w-full rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 hover:border-gray-300 hover:bg-gray-100 transition-all"
+                  >
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+                      <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-400">
+                          <path d="M12 5v14M5 12h14"/>
+                        </svg>
+                      </div>
+                      <span className="text-sm font-medium text-gray-500">Add Service</span>
                     </div>
-                    <span className="text-sm font-medium text-gray-500">Add Service</span>
-                  </div>
-                </button>
+                  </button>
+                </div>
               )}
             </div>
           </section>
         )}
 
         {/* Team */}
-        {employees.length > 0 && (
+        {employees.length > 0 && (!activeTab || activeTab === 'Professionals') && (
           <section>
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Team</h2>
+            <SectionHeader
+              title="Meet Our Team"
+              className="!-mt-2 !mb-6"
+            />
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {employees.slice(0, 8).map((employee: any, idx: number) => (
                 <div
@@ -522,30 +513,34 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 </div>
               ))}
               {isOwner && (
-                <button
-                  onClick={handleAddWorker}
-                  type="button"
-                  className="group relative rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 hover:border-gray-300 hover:bg-gray-100 transition-all"
-                  style={{ height: '358px' }}
-                >
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-                    <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-400">
-                        <path d="M12 5v14M5 12h14"/>
-                      </svg>
+                <div className="max-w-[250px]">
+                  <button
+                    onClick={handleAddWorker}
+                    type="button"
+                    className="group relative h-[288px] w-full rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 hover:border-gray-300 hover:bg-gray-100 transition-all"
+                  >
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+                      <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-400">
+                          <path d="M12 5v14M5 12h14"/>
+                        </svg>
+                      </div>
+                      <span className="text-sm font-medium text-gray-500">Add Team Member</span>
                     </div>
-                    <span className="text-sm font-medium text-gray-500">Add Team Member</span>
-                  </div>
-                </button>
+                  </button>
+                </div>
               )}
             </div>
           </section>
         )}
 
-        {/* Gallery */}
-        {((galleryImages && galleryImages.length > 0) || (posts && posts.length > 0) || isOwner) && (
+        {/* Gallery / Posts */}
+        {((galleryImages && galleryImages.length > 0) || (posts && posts.length > 0) || isOwner) && (!activeTab || activeTab === 'Posts') && (
           <section>
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Gallery</h2>
+            <SectionHeader
+              title="Photos & Gallery"
+              className="!-mt-2 !mb-6"
+            />
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
               {galleryImages && galleryImages.map((image, idx) => (
                 <div
@@ -576,87 +571,173 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               ))}
 
               {isOwner && (
-                <button
-                  onClick={handleAddMedia}
-                  type="button"
-                  className="group relative rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 hover:border-gray-300 hover:bg-gray-100 transition-all aspect-square"
-                >
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-                    <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-400">
-                        <path d="M12 5v14M5 12h14"/>
-                      </svg>
+                <div className="relative aspect-square min-h-[200px]">
+                  <button
+                    onClick={handleAddMedia}
+                    type="button"
+                    className="group absolute inset-0 rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 hover:border-gray-300 hover:bg-gray-100 transition-all"
+                  >
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+                      <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-400">
+                          <path d="M12 5v14M5 12h14"/>
+                        </svg>
+                      </div>
+                      <span className="text-sm font-medium text-gray-500">Add Media</span>
                     </div>
-                    <span className="text-sm font-medium text-gray-500">Add Media</span>
-                  </div>
-                </button>
+                  </button>
+                </div>
               )}
             </div>
           </section>
         )}
 
         {/* About & Hours */}
-        {(description || (storeHours && storeHours.length > 0)) && (
+        {(description || (storeHours && storeHours.length > 0)) && (!activeTab || activeTab === 'About') && (
           <section>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {description && (
-                <div>
-                  <h2 className="text-lg font-semibold text-gray-900 mb-3">About</h2>
-                  <p className="text-gray-600 leading-relaxed">{description}</p>
+            <SectionHeader
+              title="Info & Business Hours"
+              className="!-mt-2 !mb-6"
+            />
+            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8">
+              {/* Left - Description & Contact */}
+              <div className="flex-1 max-w-lg">
+                {/* Description */}
+                {description && (
+                  <p className="text-sm text-gray-600 leading-relaxed">{description}</p>
+                )}
 
-                  {/* Contact Links */}
-                  <div className="flex flex-wrap gap-2 mt-4">
-                    {phoneNumber && (
-                      <a href={`tel:${phoneNumber}`} className="inline-flex items-center gap-2 px-3 py-1.5 text-sm text-gray-600 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-400">
-                          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
-                        </svg>
-                        {phoneNumber}
-                      </a>
-                    )}
-                    {website && (
-                      <a href={website} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-3 py-1.5 text-sm text-gray-600 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-400">
-                          <circle cx="12" cy="12" r="10"/><line x1="2" x2="22" y1="12" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                        </svg>
-                        Website
-                      </a>
-                    )}
-                  </div>
+                {/* Contact Actions */}
+                <div className="flex flex-wrap gap-2 mt-6">
+                  {address ? (
+                    <a
+                      href={`https://maps.google.com/?q=${encodeURIComponent(address + (location ? ', ' + location : ''))}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-xl text-sm text-gray-700 transition-colors"
+                    >
+                      <Location01Icon size={18} strokeWidth={1.5} />
+                      Directions
+                    </a>
+                  ) : (
+                    <button
+                      type="button"
+                      className="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-xl text-sm text-gray-400 transition-colors cursor-not-allowed"
+                      disabled
+                    >
+                      <Location01Icon size={18} strokeWidth={1.5} />
+                      Directions
+                    </button>
+                  )}
+                  {phoneNumber ? (
+                    <a
+                      href={`tel:${phoneNumber}`}
+                      className="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-xl text-sm text-gray-700 transition-colors"
+                    >
+                      <Call02Icon size={18} strokeWidth={1.5} />
+                      Call
+                    </a>
+                  ) : (
+                    <button
+                      type="button"
+                      className="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-xl text-sm text-gray-400 transition-colors cursor-not-allowed"
+                      disabled
+                    >
+                      <Call02Icon size={18} strokeWidth={1.5} />
+                      Call
+                    </button>
+                  )}
+                  {website ? (
+                    <a
+                      href={website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-xl text-sm text-gray-700 transition-colors"
+                    >
+                      <Globe02Icon size={18} strokeWidth={1.5} />
+                      Website
+                    </a>
+                  ) : (
+                    <button
+                      type="button"
+                      className="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-xl text-sm text-gray-400 transition-colors cursor-not-allowed"
+                      disabled
+                    >
+                      <Globe02Icon size={18} strokeWidth={1.5} />
+                      Website
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-xl text-sm text-gray-700 transition-colors"
+                    onClick={() => {
+                      if (navigator.share) {
+                        navigator.share({ title, url: window.location.href });
+                      } else {
+                        navigator.clipboard.writeText(window.location.href);
+                      }
+                    }}
+                  >
+                    <Share08Icon size={18} strokeWidth={1.5} />
+                    Share
+                  </button>
                 </div>
-              )}
+              </div>
 
-              {storeHours && storeHours.length > 0 && (
-                <div>
-                  <h2 className="text-lg font-semibold text-gray-900 mb-3">Hours</h2>
-                  <div className="space-y-1.5">
-                    {storeHours.map((hours, idx) => {
-                      const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
-                      const isToday = hours.dayOfWeek === today;
+              {/* Right - Hours Card */}
+              {storeHours && storeHours.length > 0 && (() => {
+                const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+                const todayData = storeHours.find(h => h.dayOfWeek === today);
+                const isOpenNow = todayData && !todayData.isClosed;
 
-                      return (
-                        <div
-                          key={idx}
-                          className={`flex items-center justify-between py-2 px-3 rounded-lg ${isToday ? 'bg-gray-900 text-white' : ''}`}
-                        >
-                          <span className={`text-sm font-medium ${isToday ? 'text-white' : 'text-gray-700'}`}>
-                            {hours.dayOfWeek}
-                          </span>
-                          <span className={`text-sm ${isToday ? 'text-white/80' : 'text-gray-500'}`}>
-                            {hours.isClosed ? 'Closed' : `${hours.openTime} - ${hours.closeTime}`}
-                          </span>
-                        </div>
-                      );
-                    })}
+                return (
+                  <div className="flex-shrink-0 flex-1 max-w-[480px]">
+                    {/* Header */}
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-sm font-medium text-gray-900">
+                        {isOpenNow ? 'Open Now' : 'Closed'}
+                        {todayData && !todayData.isClosed && (
+                          <span className="text-gray-400 font-normal"> · until {todayData.closeTime?.replace(':00', '')}</span>
+                        )}
+                      </span>
+                    </div>
+
+                    {/* Week Row */}
+                    <div className="flex gap-2">
+                      {storeHours.map((hours, idx) => {
+                        const isToday = hours.dayOfWeek === today;
+                        const dayAbbrev = hours.dayOfWeek.slice(0, 3);
+
+                        return (
+                          <div
+                            key={idx}
+                            className={`
+                              flex-1 flex flex-col items-center py-3 rounded-xl transition-all
+                              ${isToday
+                                ? 'bg-gray-900'
+                                : 'bg-gray-50'
+                              }
+                            `}
+                          >
+                            <span className={`text-[11px] font-medium ${isToday ? 'text-white' : hours.isClosed ? 'text-gray-300' : 'text-gray-500'}`}>
+                              {dayAbbrev}
+                            </span>
+                            <span className={`text-[10px] mt-1 ${isToday ? 'text-white/60' : hours.isClosed ? 'text-gray-300' : 'text-gray-400'}`}>
+                              {hours.isClosed ? '—' : hours.openTime?.replace(':00', '').replace(' ', '')}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
-              )}
+                );
+              })()}
             </div>
           </section>
         )}
 
         {/* Empty States for owner */}
-        {validServices.length === 0 && employees.length === 0 && isOwner && (
+        {validServices.length === 0 && employees.length === 0 && isOwner && !activeTab && (
           <section className="text-center py-12">
             <div className="max-w-md mx-auto">
               <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">

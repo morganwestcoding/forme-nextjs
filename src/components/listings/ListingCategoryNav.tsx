@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-type TabKey = 'About' | 'Services' | 'Team' | 'Posts' | 'Reviews';
+type TabKey = 'About' | 'Services' | 'Professionals' | 'Posts' | 'Reviews';
 
 interface ListingCategoryNavProps {
   activeTab: TabKey | null;
@@ -12,14 +12,14 @@ interface ListingCategoryNavProps {
 const tabs: Array<{ key: TabKey; label: string }> = [
   { key: 'About', label: 'About Us' },
   { key: 'Services', label: 'Services' },
-  { key: 'Team', label: 'Team' },
+  { key: 'Professionals', label: 'Professionals' },
   { key: 'Posts', label: 'Posts' },
   { key: 'Reviews', label: 'Reviews' },
 ];
 
 const ListingCategoryNav: React.FC<ListingCategoryNavProps> = ({ activeTab, onTabChange }) => {
   return (
-    <div className="flex items-center justify-center gap-1.5 py-3">
+    <div className="flex items-center gap-1.5 py-3">
       {tabs.map((tab) => {
         const isSelected = activeTab === tab.key;
 
@@ -32,10 +32,10 @@ const ListingCategoryNav: React.FC<ListingCategoryNavProps> = ({ activeTab, onTa
             key={tab.key}
             onClick={handleTabClick}
             className={`
-              relative px-3.5 py-1.5 text-[13px] font-medium rounded-lg border transition-all duration-500 ease-out active:scale-[0.97]
+              relative px-4 py-1.5 text-[13px] font-medium rounded-xl border transition-all duration-300 ease-out active:scale-[0.97]
               ${isSelected
-                ? 'bg-gradient-to-b from-[#60A5FA] to-[#4A90E2] border-[#4A90E2] text-white shadow-sm shadow-[#60A5FA]/20'
-                : 'bg-gradient-to-b from-white/15 to-white/5 border-white/20 text-white/80 hover:text-white hover:border-white/40'
+                ? 'bg-[#60A5FA] border-[#60A5FA] text-white shadow-md shadow-[#60A5FA]/25'
+                : 'bg-transparent border-neutral-300 text-neutral-500 hover:border-[#60A5FA] hover:text-[#60A5FA] hover:bg-[#60A5FA]/5'
               }
             `}
             type="button"

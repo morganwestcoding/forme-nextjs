@@ -60,53 +60,46 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
     }
   };
 
-  const goToEditThisService = (e: React.MouseEvent | React.KeyboardEvent) => {
-    e.stopPropagation();
-    if (onEdit) return onEdit();
-    if (!service.id) return;
-    const params = new URLSearchParams(window.location.search);
-    params.set('editServiceId', service.id);
-    router.push(`?${params.toString()}`, { scroll: false });
-  };
-
-  const handleDuplicate = (e: React.MouseEvent | React.KeyboardEvent) => {
-    e.stopPropagation();
-    onDuplicate?.();
-  };
-
   const priceNum = Number(service.price ?? 0);
   const durationDisplay = service.unit || '60 min';
   const listingName = listing?.title || 'Service';
 
-  // Background image - only use service-specific image
+  // Background image - use service image or fall back to listing image
   const hasServiceImage = service.imageSrc && service.imageSrc !== '/images/placeholder.jpg';
-  const backgroundImageSrc = service.imageSrc;
+  const listingImageSrc = listing?.imageSrc || listing?.galleryImages?.[0];
+  const backgroundImageSrc = hasServiceImage ? service.imageSrc : listingImageSrc;
+  const hasImage = hasServiceImage || !!listingImageSrc;
 
-  // Verification badge component (matches ListingCard/WorkerCard)
+  // Verification badge component (matches WorkerCard gradient style)
   const VerificationBadge = () => (
-    <span className="inline-flex items-center align-middle ml-1.5 translate-y-[-1px]">
+    <span className="inline-flex items-center align-middle ml-1" aria-label="Verified">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
-        width="20"
-        height="20"
-        fill="#60A5FA"
-        className="shrink-0 text-white/20 drop-shadow-sm"
-        aria-label="Verified"
+        width="16"
+        height="16"
+        className="shrink-0"
       >
+        {/* Badge shape with gradient fill */}
         <path
           d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z"
-          stroke="white"
-          strokeWidth="1"
-          fill="#60A5FA"
+          fill="url(#serviceBadgeGradient)"
         />
+        {/* Checkmark */}
         <path
-          d="M9 12.8929L10.8 14.5L15 9.5"
+          d="M9 12.8929C9 12.8929 10.2 13.5447 10.8 14.5C10.8 14.5 12.6 10.75 15 9.5"
           stroke="white"
-          strokeWidth="1.5"
+          strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
+          fill="none"
         />
+        <defs>
+          <linearGradient id="serviceBadgeGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#60A5FA" />
+            <stop offset="100%" stopColor="#4A90E2" />
+          </linearGradient>
+        </defs>
       </svg>
     </span>
   );
@@ -118,7 +111,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
     >
       {/* Background with image or empty state */}
       <div className="absolute inset-0 z-0">
-        {hasServiceImage ? (
+        {hasImage ? (
           <>
             <Image
               src={backgroundImageSrc!}
@@ -148,15 +141,11 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
               style={{
                 background:
                   'linear-gradient(to top,' +
-                  'rgba(0,0,0,0.75) 0%,' +
-                  'rgba(0,0,0,0.70) 12%,' +
-                  'rgba(0,0,0,0.60) 26%,' +
-                  'rgba(0,0,0,0.45) 42%,' +
-                  'rgba(0,0,0,0.30) 56%,' +
-                  'rgba(0,0,0,0.15) 70%,' +
-                  'rgba(0,0,0,0.04) 82%,' +
-                  'rgba(0,0,0,0.00) 90%,' +
-                  'rgba(0,0,0,0.00) 100%)',
+                  'rgba(0,0,0,0.72) 0%,' +
+                  'rgba(0,0,0,0.55) 18%,' +
+                  'rgba(0,0,0,0.32) 38%,' +
+                  'rgba(0,0,0,0.12) 55%,' +
+                  'rgba(0,0,0,0.00) 70%)',
               }}
             />
           </>
@@ -247,41 +236,12 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
             />
           </div>
 
-          {/* Edit/Duplicate actions for owners - appears on hover */}
-          {(isOwner || onEdit || onDuplicate) && (
-            <div className="absolute right-3 top-11 flex flex-col gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-20">
-              <button
-                aria-label={`Edit ${service.serviceName || 'service'}`}
-                onClick={goToEditThisService}
-                className="inline-flex h-7 w-7 items-center justify-center rounded-full backdrop-blur-md bg-white/15 text-white border border-white/30 hover:bg-white/25 transition"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none">
-                  <path d="M16.425 4.605L17.415 3.615c.82-.82 2.149-.82 2.97 0 .82.82.82 2.15 0 2.97l-0.99.99M16.425 4.605L9.766 11.264c-.508.508-.868 1.144-1.042 1.84L8 16l2.896-.724c.696-.174 1.332-.534 1.84-1.041l6.659-6.66M16.425 4.605l2.97 2.97" stroke="currentColor" strokeWidth="1.5" />
-                  <path d="M19 13.5c0 3.288 0 4.931-0.908 6.038-.166.203-.352.389-.555.555C16.431 21 14.787 21 11.5 21H11c-3.771 0-5.657 0-6.828-1.172C3 18.657 3 16.771 3 13.5V13c0-3.287 0-4.931.908-6.038.166-.202.352-.388.555-.555C5.569 5.5 7.213 5.5 10.5 5.5" stroke="currentColor" strokeWidth="1.5" />
-                </svg>
-              </button>
-
-              {onDuplicate && (
-                <button
-                  aria-label={`Duplicate ${service.serviceName || 'service'}`}
-                  onClick={handleDuplicate}
-                  className="inline-flex h-7 w-7 items-center justify-center rounded-full backdrop-blur-md bg-white/15 text-white border border-white/30 hover:bg-white/25 transition"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none">
-                    <path d="M8 8.5C8 7.12 9.12 6 10.5 6H16.5C17.88 6 19 7.12 19 8.5V14.5C19 15.88 17.88 17 16.5 17H10.5C9.12 17 8 15.88 8 14.5V8.5Z" stroke="currentColor" strokeWidth="1.5"/>
-                    <path d="M6 10.5V15.5C6 17.985 8.015 20 10.5 20H15.5" stroke="currentColor" strokeWidth="1.5"/>
-                  </svg>
-                </button>
-              )}
-            </div>
-          )}
-
 
           {/* Bottom info - matches ListingCard/WorkerCard structure */}
           <div className="absolute bottom-4 left-4 right-4 z-20">
             {/* Service Name with verification badge */}
             <div className="mb-0.5">
-              <h3 className="text-white text-[15px] leading-tight font-semibold drop-shadow">
+              <h3 className="text-white text-lg leading-tight font-semibold drop-shadow">
                 <span className="whitespace-nowrap">
                   {service.serviceName || 'Untitled Service'}
                   <VerificationBadge />
@@ -290,7 +250,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
             </div>
 
             {/* Category and location info */}
-            <div className="text-white/90 text-[10px] leading-tight mb-2.5">
+            <div className="text-white/90 text-xs leading-tight mb-2.5">
               <span className="line-clamp-1">{service.category} · {durationDisplay}</span>
             </div>
 

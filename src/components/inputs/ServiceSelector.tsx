@@ -227,12 +227,12 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
                   onChange={(url) => setRow(i, { imageSrc: url })}
                   onRemove={() => setRow(i, { imageSrc: '' })}
                   label="Upload Photo"
-                  ratio="landscape"
-                  rounded="lg"
+                  rounded="xl"
                   enableCrop={true}
                   cropMode="fixed"
+                  customAspectRatio={250 / 280}
                   uploadId={`service-${svc.id || i}`}
-                  className="w-full max-w-xs h-32"
+                  className="w-[180px] aspect-[250/280]"
                 />
               </div>
             </div>

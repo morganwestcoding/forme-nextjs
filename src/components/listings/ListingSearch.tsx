@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import { ArrowBigUpDash } from 'lucide-react';
 
 interface ListingSearchProps {
   onSearchChange: (query: string) => void;
@@ -39,13 +38,25 @@ const ListingSearch: React.FC<ListingSearchProps> = ({
     }
   };
 
-  const containerClasses = "bg-white/[0.08] backdrop-blur-sm border border-white/20 rounded-2xl";
-  const iconButtonClasses = "p-2 rounded-xl hover:bg-white/10 text-white/80 hover:text-white transition-all duration-200";
+  const containerClasses = "bg-neutral-100 border border-neutral-200 rounded-2xl";
+  const iconButtonClasses = "p-2 rounded-xl hover:bg-neutral-200 text-neutral-600 hover:text-neutral-900 transition-all duration-200";
 
   return (
     <div className={`${containerClasses} mt-3 overflow-hidden`}>
       {/* Top Half - Search Input */}
       <div className="flex items-center gap-1.5 px-3 py-2.5">
+        <input
+          ref={inputRef}
+          type="text"
+          value={input}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
+          placeholder="Looking for something? I can help you find it..."
+          className="flex-1 text-[14px] bg-transparent border-none outline-none text-neutral-900 placeholder-neutral-400 font-normal pl-3"
+        />
+
+        {currentUser && <div className="w-px h-5 bg-white/20" />}
+
         {/* Reserve Button */}
         {currentUser && onReserveClick && (
           <button
@@ -94,34 +105,6 @@ const ListingSearch: React.FC<ListingSearchProps> = ({
             </button>
           )
         )}
-
-        {currentUser && <div className="w-px h-5 bg-white/20" />}
-
-        <input
-          ref={inputRef}
-          type="text"
-          value={input}
-          onChange={handleInputChange}
-          onKeyDown={handleKeyDown}
-          placeholder="Search services, team, posts..."
-          className="flex-1 text-[14px] bg-transparent border-none outline-none text-white placeholder-white/50 font-normal px-2"
-        />
-
-        <button
-          type="button"
-          className={`group flex-shrink-0 p-2 rounded-xl border transition-all duration-500 ease-out active:scale-[0.97] ${
-            input.trim()
-              ? 'bg-gradient-to-b from-[#60A5FA] to-[#4A90E2] border-[#4A90E2]'
-              : 'bg-gradient-to-b from-white/15 to-white/5 border-white/20'
-          }`}
-        >
-          <ArrowBigUpDash
-            className={`w-[22px] h-[22px] transition-all duration-500 ease-out group-hover:-translate-y-0.5 ${
-              input.trim() ? 'text-white' : 'text-white/40'
-            }`}
-            strokeWidth={1.5}
-          />
-        </button>
       </div>
 
     </div>

@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ArrowBigUpDash } from 'lucide-react';
+import { Link02Icon } from 'hugeicons-react';
 import useRentModal from '@/app/hooks/useListingModal';
 import useFilterModal from '@/app/hooks/useFilterModal';
 
@@ -67,17 +67,37 @@ const MarketSearch: React.FC<MarketSearchProps> = ({ isHeroMode = false, categor
 
   const containerClasses = isHeroMode
     ? "bg-white/[0.08] backdrop-blur-sm border border-white/20 rounded-2xl"
-    : "bg-white border border-neutral-200 rounded-2xl";
+    : "bg-neutral-100 border border-neutral-200 rounded-2xl";
 
   const iconButtonClasses = isHeroMode
     ? "p-2 rounded-xl hover:bg-white/10 text-white/80 hover:text-white transition-all duration-200"
-    : "p-2 rounded-xl hover:bg-neutral-50 text-neutral-600 hover:text-neutral-900 transition-all duration-200";
+    : "p-2 rounded-xl hover:bg-neutral-200 text-neutral-600 hover:text-neutral-900 transition-all duration-200";
 
   return (
     <form onSubmit={handleSubmit}>
       <div className={`${containerClasses} mt-3 overflow-hidden`}>
         {/* Top Half - Search Input */}
         <div className="flex items-center gap-1.5 px-3 py-2.5">
+          <input
+            ref={inputRef}
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Looking for something? I can help you find it..."
+            className={`flex-1 text-[14px] bg-transparent border-none outline-none font-normal pl-3 ${isHeroMode ? 'text-white placeholder-white/50' : 'text-neutral-900 placeholder-neutral-400'}`}
+          />
+
+          <div className={`w-px h-5 ${isHeroMode ? 'bg-white/20' : 'bg-neutral-300'}`} />
+
+          <button
+            className={iconButtonClasses}
+            type="button"
+            title="Attach"
+          >
+            <Link02Icon size={22} strokeWidth={1.5} />
+          </button>
+
           <button
             onClick={handleOpenFilters}
             className={`${iconButtonClasses} relative`}
@@ -109,49 +129,12 @@ const MarketSearch: React.FC<MarketSearchProps> = ({ isHeroMode = false, categor
               <path d="M18.9999 13.5C18.9999 16.7875 18.9999 18.4312 18.092 19.5376C17.9258 19.7401 17.7401 19.9258 17.5375 20.092C16.4312 21 14.7874 21 11.4999 21H11C7.22876 21 5.34316 21 4.17159 19.8284C3.00003 18.6569 3 16.7712 3 13V12.5C3 9.21252 3 7.56879 3.90794 6.46244C4.07417 6.2599 4.2599 6.07417 4.46244 5.90794C5.56879 5 7.21252 5 10.5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </button>
-
-          <div className="w-px h-5 bg-neutral-200" />
-
-          <input
-            ref={inputRef}
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Search posts, listings, shops, products…"
-            className="flex-1 text-[14px] bg-transparent border-none outline-none text-neutral-900 placeholder-neutral-400 font-normal px-2"
-          />
-
-          <button
-            type="submit"
-            disabled={!input.trim() || isLoading}
-            className={`group flex-shrink-0 p-2 rounded-xl border transition-all duration-500 ease-out active:scale-[0.97] ${
-              input.trim()
-                ? 'bg-gradient-to-b from-[#60A5FA] to-[#4A90E2] border-[#4A90E2]'
-                : isHeroMode
-                  ? 'bg-gradient-to-b from-white/15 to-white/5 border-white/20'
-                  : 'bg-gradient-to-b from-white to-gray-100 border-gray-200'
-            }`}
-          >
-            {isLoading ? (
-              <div className="w-[22px] h-[22px] border-2 border-[#60A5FA] border-t-transparent rounded-full animate-spin" />
-            ) : (
-              <ArrowBigUpDash
-                className={`w-[22px] h-[22px] transition-all duration-500 ease-out group-hover:-translate-y-0.5 ${
-                  input.trim()
-                    ? 'text-white'
-                    : isHeroMode ? 'text-white/40' : 'text-gray-400'
-                }`}
-                strokeWidth={1.5}
-              />
-            )}
-          </button>
         </div>
 
         {/* Divider */}
         {categoryNav && (
           <>
-            <div className="h-px bg-neutral-200/50" />
+            <div className={`h-px ${isHeroMode ? 'bg-white/20' : 'bg-neutral-300'}`} />
 
             {/* Bottom Half - Category Nav */}
             <div className="px-3">

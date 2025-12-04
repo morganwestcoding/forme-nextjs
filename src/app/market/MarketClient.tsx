@@ -212,7 +212,7 @@ const MarketClient: React.FC<MarketClientProps> = ({
       <Container>
         {/* Hero Section - Clean minimal design */}
         <div className="-mx-6 md:-mx-24 -mt-2 md:-mt-8">
-        <div className="relative px-6 md:px-24 pt-12 pb-8 bg-white">
+        <div className="relative px-6 md:px-24 pt-12 pb-8">
 
           {/* Content */}
           <div className="relative z-10 pb-6">

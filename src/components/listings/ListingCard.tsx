@@ -109,15 +109,11 @@ className="
           style={{
             background:
               'linear-gradient(to top,' +
-              'rgba(0,0,0,0.75) 0%,' +
-              'rgba(0,0,0,0.70) 12%,' +
-              'rgba(0,0,0,0.60) 26%,' +
-              'rgba(0,0,0,0.45) 42%,' +
-              'rgba(0,0,0,0.30) 56%,' +
-              'rgba(0,0,0,0.15) 70%,' +
-              'rgba(0,0,0,0.04) 82%,' +
-              'rgba(0,0,0,0.00) 90%,' +
-              'rgba(0,0,0,0.00) 100%)',
+              'rgba(0,0,0,0.72) 0%,' +
+              'rgba(0,0,0,0.55) 18%,' +
+              'rgba(0,0,0,0.32) 38%,' +
+              'rgba(0,0,0,0.12) 55%,' +
+              'rgba(0,0,0,0.00) 70%)',
           }}
         />
       </div>
@@ -137,13 +133,13 @@ className="
           <div className="absolute bottom-4 left-4 right-4 z-20">
             {/* Title with verification badge that stays with last word */}
             <div className="mb-0.5">
-              <h1 className="text-white text-[15px] leading-tight font-semibold drop-shadow">
+              <h1 className="text-white text-lg leading-tight font-semibold drop-shadow">
                 {renderTitleWithBadge(data.title)}
               </h1>
             </div>
 
             {/* Location - improved formatting */}
-            <div className="text-white/90 text-[10px] leading-tight mb-2.5">
+            <div className="text-white/90 text-xs leading-tight mb-2.5">
               <span className="line-clamp-1">
                 {city && state ? `${city}, ${state}` : city || state || 'Location not specified'}
               </span>

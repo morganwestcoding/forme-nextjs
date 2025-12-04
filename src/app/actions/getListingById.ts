@@ -23,6 +23,7 @@ export default async function getListingById(params: IParams): Promise<(SafeList
             serviceName: true,
             price: true,
             category: true,
+            imageSrc: true,
           }
         },
         employees: {
@@ -75,6 +76,7 @@ export default async function getListingById(params: IParams): Promise<(SafeList
         serviceName: service.serviceName,
         price: service.price,
         category: service.category,
+        imageSrc: service.imageSrc,
       })),
       employees: listing.employees
         .filter(employee => employee.user)
