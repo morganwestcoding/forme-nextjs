@@ -143,15 +143,15 @@ const Modal = forwardRef<ModalHandle, ModalProps>(({
           >
             <div
               id={id}
-              className="relative flex flex-col w-full bg-white/95 backdrop-blur-xl border border-gray-200/60 rounded-2xl shadow-2xl shadow-gray-900/20 overflow-hidden"
+              className="relative flex flex-col w-full bg-white/95 dark:bg-neutral-900/95 backdrop-blur-xl border border-gray-200/60 dark:border-neutral-700/60 rounded-2xl shadow-2xl shadow-gray-900/20 overflow-hidden"
             >
               {/* Close (X) */}
               <button
                 aria-label="Close"
                 onClick={(e) => { e.stopPropagation(); handleClose(); }}
-                className="absolute right-5 top-5 p-2 rounded-xl hover:bg-gray-100/80 active:bg-gray-200/80 transition-all duration-200 z-10 group"
+                className="absolute right-5 top-5 p-2 rounded-xl hover:bg-gray-100/80 dark:hover:bg-neutral-700/80 active:bg-gray-200/80 dark:active:bg-neutral-600/80 transition-all duration-200 z-10 group"
               >
-                <X size={20} className="text-gray-400 group-hover:text-gray-600 transition-colors duration-200" />
+                <X size={20} className="text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors duration-200" />
               </button>
 
               {/* Content */}
@@ -162,7 +162,7 @@ const Modal = forwardRef<ModalHandle, ModalProps>(({
                   </h2>
                 )}
                 <div id={modalContentId || "modal-content"} className="flex flex-col">
-                  <div className="relative px-8 pt-8 pb-6 text-gray-800">
+                  <div className="relative px-8 pt-8 pb-6 text-gray-800 dark:text-gray-200">
                     {body}
                   </div>
                 </div>

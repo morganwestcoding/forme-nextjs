@@ -22,8 +22,10 @@ import SubscribeModal from '@/components/modals/SubscribeModal';
 import InboxModal from '@/components/modals/InboxModal';
 import PostModal from '@/components/modals/PostModal';
 import { ColorProvider } from './context/ColorContext';
+import { ThemeProvider } from './context/ThemeContext';
 import StripeCheckoutModal from '@/components/modals/StripeCheckoutModal';
 import ShopModal from '@/components/modals/ShopModal';
+import SettingsModal from '@/components/modals/SettingsModal';
 import CreatePostModal from '@/components/modals/CreatePostModal';
 import ReservationModal from '@/components/modals/ReservationModal';
 import ReviewModal from '@/components/modals/ReviewModal';
@@ -60,8 +62,9 @@ export default async function RootLayout({
     <FilterProvider>
       <CategoryProvider>
         <ClientProviders>
-          <html lang="en">
-            <body className={inter.className}>
+          <ThemeProvider>
+            <html lang="en">
+              <body className={inter.className}>
               <ComingSoonGate>
                 <div className="min-h-screen flex">
                   <Sidebar currentUser={currentUser ?? null} />
@@ -91,9 +94,11 @@ export default async function RootLayout({
                 <FilterModal/>
                 <LoginModal />
                 <RegisterModal />
+                <SettingsModal />
               </ComingSoonGate>
-            </body>
-          </html>
+              </body>
+            </html>
+          </ThemeProvider>
         </ClientProviders>
       </CategoryProvider>
     </FilterProvider>

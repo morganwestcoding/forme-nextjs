@@ -1,6 +1,7 @@
 'use client';
 
 import { IconType } from "react-icons";
+import { useTheme } from "@/app/context/ThemeContext";
 
 interface ModalButtonProps {
   label: string;
@@ -21,7 +22,21 @@ const ModalButton: React.FC<ModalButtonProps> = ({
   icon: Icon,
   id
 }) => {
+  const { accentColor } = useTheme();
   const isEditButton = label.toLowerCase().includes('edit');
+  const isPrimary = !isEditButton && !outline;
+
+  // Calculate hover color (slightly darker)
+  const getHoverColor = (hex: string): string => {
+    const num = parseInt(hex.replace('#', ''), 16);
+    const amt = -15;
+    const R = Math.max(0, Math.min(255, (num >> 16) + Math.round(2.55 * amt)));
+    const G = Math.max(0, Math.min(255, ((num >> 8) & 0x00FF) + Math.round(2.55 * amt)));
+    const B = Math.max(0, Math.min(255, (num & 0x0000FF) + Math.round(2.55 * amt)));
+    return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
+  };
+
+  const hoverColor = getHoverColor(accentColor);
 
   return (
     <button
@@ -39,13 +54,32 @@ const ModalButton: React.FC<ModalButtonProps> = ({
         font-medium
         active:scale-[0.98]
         ${isEditButton
-          ? 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400'
+          ? 'bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-neutral-700 hover:border-gray-400'
           : outline
-            ? 'bg-transparent border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400'
-            : 'bg-[#60A5FA] text-white hover:bg-[#3b82f6] border border-[#60A5FA] hover:border-[#3b82f6] shadow-lg shadow-[#60A5FA]/25 hover:shadow-xl hover:shadow-[#60A5FA]/30'
+            ? 'bg-transparent border border-gray-300 dark:border-neutral-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-neutral-800 hover:border-gray-400'
+            : 'text-white'
         }
         ${small ? 'text-sm py-2 px-4' : 'text-sm py-3.5 px-6'}
       `}
+      style={isPrimary ? {
+        backgroundColor: accentColor,
+        borderColor: accentColor,
+        boxShadow: `0 10px 15px -3px ${accentColor}40, 0 4px 6px -4px ${accentColor}40`
+      } : undefined}
+      onMouseEnter={(e) => {
+        if (isPrimary && !disabled) {
+          e.currentTarget.style.backgroundColor = hoverColor;
+          e.currentTarget.style.borderColor = hoverColor;
+          e.currentTarget.style.boxShadow = `0 20px 25px -5px ${accentColor}4D, 0 8px 10px -6px ${accentColor}4D`;
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (isPrimary && !disabled) {
+          e.currentTarget.style.backgroundColor = accentColor;
+          e.currentTarget.style.borderColor = accentColor;
+          e.currentTarget.style.boxShadow = `0 10px 15px -3px ${accentColor}40, 0 4px 6px -4px ${accentColor}40`;
+        }
+      }}
     >
       {Icon && (
         <Icon
@@ -57,5 +91,5 @@ const ModalButton: React.FC<ModalButtonProps> = ({
     </button>
    );
 }
- 
+
 export default ModalButton;

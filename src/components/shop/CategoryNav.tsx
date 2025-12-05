@@ -3,6 +3,7 @@
 import React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { categories } from '@/components/Categories';
+import { useTheme } from '@/app/context/ThemeContext';
 
 interface CategoryNavProps {
   searchParams: {
@@ -13,6 +14,7 @@ interface CategoryNavProps {
 const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams }) => {
   const router = useRouter();
   const params = useSearchParams();
+  const { accentColor } = useTheme();
 
   const currentCategory = searchParams.category || '';
 
@@ -42,7 +44,7 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams }) => {
   };
 
   return (
-    <div className="-mx-6 md:-mx-24 pb-3 border-b-[0.75px] border-gray-400">
+    <div className="-mx-6 md:-mx-24 pb-3 border-b-[0.75px] border-gray-400 dark:border-gray-600">
       <div className="flex items-center justify-center">
         {categories.map((category, index) => {
           const isSelected = currentCategory === category.label;
@@ -55,10 +57,11 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams }) => {
                 className={`
                   px-8 py-3.5 text-sm transition-all duration-200
                   ${isSelected
-                    ? 'text-[#60A5FA] font-medium'
-                    : 'text-gray-500 hover:text-gray-700'
+                    ? 'font-medium'
+                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
                   }
                 `}
+                style={isSelected ? { color: accentColor } : undefined}
                 type="button"
               >
                 {category.label}
@@ -68,11 +71,12 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams }) => {
               {index < categories.length - 1 && (
                 <span
                   className={`
-                    bg-gray-300 transition-all duration-300 ease-out
-                    ${dividerState === 'horizontal' ? 'w-3 h-[0.5px] bg-[#60A5FA]' : ''}
+                    bg-gray-300 dark:bg-gray-600 transition-all duration-300 ease-out
+                    ${dividerState === 'horizontal' ? 'w-3 h-[0.5px]' : ''}
                     ${dividerState === 'vertical' ? 'w-[0.5px] h-4' : ''}
                     ${dividerState === 'hidden' ? 'w-[0.5px] h-4 opacity-0' : ''}
                   `}
+                  style={dividerState === 'horizontal' ? { backgroundColor: accentColor } : undefined}
                 />
               )}
             </div>

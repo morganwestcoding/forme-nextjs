@@ -136,7 +136,7 @@ export async function GET(request: Request) {
     });
 
     // Get user info for each review
-    const userIds = [...new Set(reviews.map(r => r.userId))];
+    const userIds = Array.from(new Set(reviews.map(r => r.userId)));
     const users = await prisma.user.findMany({
       where: { id: { in: userIds } },
       select: {

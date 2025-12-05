@@ -6,6 +6,8 @@ import { useState, useEffect } from "react";
 import { SafeUser } from "@/app/types";
 import useNotificationsModal from '@/app/hooks/useNotificationsModal';
 import useInboxModal from '@/app/hooks/useInboxModal';
+import useSettingsModal from '@/app/hooks/useSettingsModal';
+import { useTheme } from '@/app/context/ThemeContext';
 import Logo from "../header/Logo";
 import UserButton from "../UserButton";
 import axios from 'axios';
@@ -19,10 +21,11 @@ interface NavItemProps {
   icon: React.ReactNode;
   label: string;
   isActive: boolean;
+  accentColor?: string;
   onClick?: () => void;
 }
 
-const NavItem: React.FC<NavItemProps> = ({ href, icon, label, isActive, onClick }) => (
+const NavItem: React.FC<NavItemProps> = ({ href, icon, label, isActive, accentColor, onClick }) => (
   <li className="relative w-full">
     <Link
       href={href}
@@ -30,8 +33,9 @@ const NavItem: React.FC<NavItemProps> = ({ href, icon, label, isActive, onClick 
       onClick={onClick}
       className={`
         flex items-center w-full px-5 py-2.5 transition-colors duration-150 cursor-pointer
-        ${isActive ? 'text-[#4F9EF8]' : 'text-neutral-500 hover:text-neutral-900'}
+        ${isActive ? '' : 'text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'}
       `}
+      style={isActive ? { color: accentColor || 'var(--accent-color)' } : undefined}
     >
       <div className="w-8 flex justify-center">
         {icon}
@@ -47,17 +51,19 @@ interface ModalItemProps {
   icon: React.ReactNode;
   label: string;
   isActive: boolean;
+  accentColor?: string;
   onClick: () => void;
 }
 
-const ModalItem: React.FC<ModalItemProps> = ({ icon, label, isActive, onClick }) => (
+const ModalItem: React.FC<ModalItemProps> = ({ icon, label, isActive, accentColor, onClick }) => (
   <li className="relative w-full">
     <div
       onClick={onClick}
       className={`
         flex items-center w-full px-5 py-2.5 transition-colors duration-150 cursor-pointer
-        ${isActive ? 'text-[#4F9EF8]' : 'text-neutral-500 hover:text-neutral-900'}
+        ${isActive ? '' : 'text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'}
       `}
+      style={isActive ? { color: accentColor || 'var(--accent-color)' } : undefined}
     >
       <div className="w-8 flex justify-center">
         {icon}
@@ -74,6 +80,8 @@ const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const pathname = usePathname();
   const notificationsModal = useNotificationsModal();
+  const settingsModal = useSettingsModal();
+  const { accentColor } = useTheme();
   const [selectedModal, setSelectedModal] = useState<string | null>(null);
   const [reservationCount, setReservationCount] = useState(0);
   const inboxModal = useInboxModal();
@@ -227,8 +235,8 @@ const Sidebar: React.FC<SidebarProps> = ({
       <div
         className={`
           h-screen overflow-y-auto w-56
-          fixed top-0 left-0 border-r border-neutral-200/40 bottom-0 z-50
-          transition-transform duration-300 ease-in-out bg-neutral-100
+          fixed top-0 left-0 border-r border-neutral-200/40 dark:border-neutral-700/40 bottom-0 z-50
+          transition-transform duration-300 ease-in-out bg-neutral-100 dark:bg-neutral-900
           ${isCollapsed ? '-translate-x-full' : 'translate-x-0'}
         `}
       >
@@ -276,48 +284,56 @@ const Sidebar: React.FC<SidebarProps> = ({
                 icon={DiscoverIcon}
                 label="Discover"
                 isActive={isActive('/') && pathname === '/'}
+                accentColor={accentColor}
               />
               <NavItem
                 href="/market"
                 icon={MarketIcon}
                 label="Market"
                 isActive={isActive('/market')}
+                accentColor={accentColor}
               />
               <NavItem
                 href="/shops"
                 icon={VendorsIcon}
                 label="Vendors"
                 isActive={isActive('/shops')}
+                accentColor={accentColor}
               />
               <NavItem
                 href="/favorites"
                 icon={FavoritesIcon}
                 label="Favorites"
                 isActive={isActive('/favorites')}
+                accentColor={accentColor}
               />
               <NavItem
                 href="/bookings/reservations"
                 icon={AppointmentsIcon}
                 label="Appointments"
                 isActive={isActive('/bookings')}
+                accentColor={accentColor}
               />
               <ModalItem
                 icon={InboxIcon}
                 label="Inbox"
                 isActive={selectedModal === 'inbox'}
+                accentColor={accentColor}
                 onClick={() => handleModalOpen(() => inboxModal.onOpen(currentUser), 'inbox')}
               />
               <ModalItem
                 icon={NotificationsIcon}
                 label="Notifications"
                 isActive={selectedModal === 'notifications'}
+                accentColor={accentColor}
                 onClick={() => handleModalOpen(() => notificationsModal.onOpen(), 'notifications')}
               />
-              <NavItem
-                href="/settings"
+              <ModalItem
                 icon={SettingsIcon}
                 label="Settings"
-                isActive={isActive('/settings')}
+                isActive={selectedModal === 'settings'}
+                accentColor={accentColor}
+                onClick={() => handleModalOpen(() => settingsModal.onOpen(), 'settings')}
               />
             </ul>
           </div>
