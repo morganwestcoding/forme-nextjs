@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { useTheme } from '@/app/context/ThemeContext';
 
 const directionalCategories = [
   { label: 'Incoming', value: 'incoming', isDirection: true },
@@ -28,6 +29,7 @@ const CategoryNav: React.FC<CategoryNavProps> = ({
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
+  const { accentColor } = useTheme();
 
   const activeCategories = params?.get('categories')?.split(',').filter(Boolean) || propSelectedCategories || [];
 
@@ -82,10 +84,30 @@ const CategoryNav: React.FC<CategoryNavProps> = ({
             className={`
               relative px-3 sm:px-4 py-1 sm:py-1.5 text-[12px] sm:text-[13px] font-medium rounded-lg sm:rounded-xl border transition-all duration-300 ease-out active:scale-[0.97] whitespace-nowrap flex-shrink-0
               ${isSelected
-                ? 'bg-[#60A5FA] border-[#60A5FA] text-white shadow-md shadow-[#60A5FA]/25'
-                : 'bg-transparent border-neutral-300 text-neutral-500 hover:border-[#60A5FA] hover:text-[#60A5FA] hover:bg-[#60A5FA]/5'
+                ? 'text-white'
+                : 'bg-transparent border-neutral-300 dark:border-neutral-600 text-neutral-500 dark:text-neutral-400'
               }
             `}
+            style={isSelected ? {
+              backgroundColor: accentColor,
+              borderColor: accentColor,
+              boxShadow: `0 4px 6px -1px ${accentColor}40`,
+              color: 'white'
+            } : undefined}
+            onMouseEnter={(e) => {
+              if (!isSelected) {
+                e.currentTarget.style.borderColor = accentColor;
+                e.currentTarget.style.color = accentColor;
+                e.currentTarget.style.backgroundColor = `${accentColor}0D`;
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!isSelected) {
+                e.currentTarget.style.borderColor = '';
+                e.currentTarget.style.color = '';
+                e.currentTarget.style.backgroundColor = '';
+              }
+            }}
             type="button"
           >
             <span className="relative z-10">{category.label}</span>

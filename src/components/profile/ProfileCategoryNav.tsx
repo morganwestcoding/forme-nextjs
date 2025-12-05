@@ -50,7 +50,8 @@ const ProfileCategoryNav: React.FC<ProfileCategoryNavProps> = ({
             style={isSelected ? {
               backgroundColor: accentColor,
               borderColor: accentColor,
-              boxShadow: `0 4px 6px -1px ${accentColor}40`
+              boxShadow: `0 4px 6px -1px ${accentColor}40`,
+              color: 'white'
             } : undefined}
             onMouseEnter={(e) => {
               if (!isSelected) {

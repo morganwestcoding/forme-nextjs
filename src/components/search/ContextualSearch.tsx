@@ -4,6 +4,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
+import { useTheme } from "@/app/context/ThemeContext";
 
 type ItemType =
   | "user"
@@ -88,6 +89,7 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
   enableLocalFilter = false,
 }) => {
   const router = useRouter();
+  const { isDarkMode } = useTheme();
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
   const debouncedQ = useDebounced(q, 250);
@@ -244,7 +246,14 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
 
   return (
     <div className={`relative w-full ${className || ""}`} ref={containerRef}>
-      <div className="bg-neutral-100 border border-neutral-200 rounded-2xl overflow-hidden">
+      <div
+        className="border border-neutral-200 dark:border-neutral-700 rounded-2xl overflow-hidden"
+        style={{
+          background: isDarkMode
+            ? 'linear-gradient(to right, rgb(38 38 38) 0%, rgb(35 35 35) 100%)'
+            : 'linear-gradient(to right, rgb(245 245 245) 0%, rgb(241 241 241) 100%)'
+        }}
+      >
         <div className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5">
           <input
             ref={inputRef}
@@ -254,12 +263,12 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
             onFocus={() => results.length && setOpen(true)}
             onKeyDown={onKeyDown}
             placeholder={placeholder}
-            className="flex-1 text-[13px] sm:text-[14px] bg-transparent border-none outline-none text-neutral-900 placeholder-neutral-400 font-normal pl-2 sm:pl-3"
+            className="flex-1 text-[13px] sm:text-[14px] bg-transparent border-none outline-none text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 font-normal pl-2 sm:pl-3"
           />
 
           {actionButtons && (
             <>
-              <div className="w-px h-5 bg-neutral-300" />
+              <div className="w-px h-5 bg-neutral-300 dark:bg-neutral-600" />
               {actionButtons}
             </>
           )}

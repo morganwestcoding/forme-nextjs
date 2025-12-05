@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import useCreatePostModal from '@/app/hooks/useCreatePostModal';
 import useFilterModal from '@/app/hooks/useFilterModal';
 import GlobalSearch from '../search/GlobalSearch';
+import { useTheme } from '@/app/context/ThemeContext';
 
 interface DiscoverSearchProps {
   isHeroMode?: boolean;
@@ -16,6 +17,7 @@ const DiscoverSearch: React.FC<DiscoverSearchProps> = ({
   const params = useSearchParams();
   const createPostModal = useCreatePostModal();
   const filterModal = useFilterModal();
+  const { accentColor } = useTheme();
 
   const handleCreatePost = () => {
     createPostModal.onOpen();
@@ -69,7 +71,10 @@ const DiscoverSearch: React.FC<DiscoverSearchProps> = ({
           <path d="M7.5 11.5563C8.5 10.4029 10.0994 11.2343 12 12.3182C14.5 13.7439 16 12.65 16.5 11.6152" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" fill="#F5F5F5"/>
         </svg>
         {activeFilterCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 bg-[#60A5FA] text-white text-[9px] font-bold rounded-full min-w-[15px] h-[15px] flex items-center justify-center shadow-sm">
+          <span
+            className="absolute -top-0.5 -right-0.5 text-white text-[9px] font-bold rounded-full min-w-[15px] h-[15px] flex items-center justify-center shadow-sm"
+            style={{ backgroundColor: accentColor }}
+          >
             {activeFilterCount}
           </span>
         )}
