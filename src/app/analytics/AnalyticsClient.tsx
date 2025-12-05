@@ -539,7 +539,7 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
                       ))}
                     </div>
                     <p className="text-xl font-semibold text-gray-900">Perfect 5-Star Rating!</p>
-                    <p className="text-sm text-gray-500 mt-2">You've achieved the highest possible rating</p>
+                    <p className="text-sm text-gray-500 mt-2">You&apos;ve achieved the highest possible rating</p>
                   </div>
                 ) : (
                   <div className="space-y-6">
