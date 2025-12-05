@@ -256,7 +256,7 @@ const ShopClient: React.FC<ShopClientProps> = ({
                         key={shop.id}
                         style={{
                           opacity: 0,
-                          animation: `fadeInUp 520ms ease-out forwards`,
+                          animation: `fadeInUp 520ms ease-out both`,
                           animationDelay: `${Math.min(idx * 30, 300)}ms`,
                           willChange: 'transform, opacity',
                         }}
@@ -283,7 +283,7 @@ const ShopClient: React.FC<ShopClientProps> = ({
                         key={product.id}
                         style={{
                           opacity: 0,
-                          animation: `fadeInUp 520ms ease-out forwards`,
+                          animation: `fadeInUp 520ms ease-out both`,
                           animationDelay: `${Math.min(idx * 30, 300)}ms`,
                           willChange: 'transform, opacity',
                         }}
@@ -314,7 +314,7 @@ const ShopClient: React.FC<ShopClientProps> = ({
                               key={`${shop.id}-${shopsIndex}`}
                               style={{
                                 opacity: shopsVisible ? 0 : 0,
-                                animation: shopsVisible ? `fadeInUp 520ms ease-out forwards` : 'none',
+                                animation: shopsVisible ? `fadeInUp 520ms ease-out both` : 'none',
                                 animationDelay: shopsVisible ? `${140 + idx * 30}ms` : '0ms',
                                 willChange: 'transform, opacity',
                                 transition: !shopsVisible ? `opacity ${FADE_OUT_DURATION}ms ease-out` : 'none',
@@ -345,7 +345,7 @@ const ShopClient: React.FC<ShopClientProps> = ({
                               key={`${product.id}-${productsIndex}`}
                               style={{
                                 opacity: productsVisible ? 0 : 0,
-                                animation: productsVisible ? `fadeInUp 520ms ease-out forwards` : 'none',
+                                animation: productsVisible ? `fadeInUp 520ms ease-out both` : 'none',
                                 animationDelay: productsVisible ? `${160 + idx * 30}ms` : '0ms',
                                 willChange: 'transform, opacity',
                                 transition: !productsVisible ? `opacity ${FADE_OUT_DURATION}ms ease-out` : 'none',
@@ -377,7 +377,7 @@ const ShopClient: React.FC<ShopClientProps> = ({
                           key={shop.id}
                           style={{
                             opacity: 0,
-                            animation: `fadeInUp 520ms ease-out forwards`,
+                            animation: `fadeInUp 520ms ease-out both`,
                             animationDelay: `${Math.min(idx * 30, 300)}ms`,
                             willChange: 'transform, opacity',
                           }}
@@ -396,7 +396,7 @@ const ShopClient: React.FC<ShopClientProps> = ({
                           key={product.id}
                           style={{
                             opacity: 0,
-                            animation: `fadeInUp 520ms ease-out forwards`,
+                            animation: `fadeInUp 520ms ease-out both`,
                             animationDelay: `${Math.min(idx * 30, 300)}ms`,
                             willChange: 'transform, opacity',
                           }}

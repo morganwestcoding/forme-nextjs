@@ -270,7 +270,7 @@ const MarketClient: React.FC<MarketClientProps> = ({
                             key={listing.id}
                             style={{
                               opacity: 0,
-                              animation: `fadeInUp 520ms ease-out forwards`,
+                              animation: `fadeInUp 520ms ease-out both`,
                               animationDelay: `${Math.min(idx * 30, 300)}ms`,
                               willChange: 'transform, opacity',
                             }}
@@ -305,7 +305,7 @@ const MarketClient: React.FC<MarketClientProps> = ({
                             key={(employee as any).id ?? `${(employee as any).fullName}-${idx}`}
                             style={{
                               opacity: 0,
-                              animation: `fadeInUp 520ms ease-out forwards`,
+                              animation: `fadeInUp 520ms ease-out both`,
                               animationDelay: `${Math.min(idx * 30, 300)}ms`,
                               willChange: 'transform, opacity',
                             }}
@@ -358,7 +358,7 @@ const MarketClient: React.FC<MarketClientProps> = ({
                               style={{
                                 opacity: featuredVisible ? 0 : 0,
                                 animation: featuredVisible 
-                                  ? `fadeInUp 520ms ease-out forwards`
+                                  ? `fadeInUp 520ms ease-out both`
                                   : 'none',
                                 animationDelay: featuredVisible 
                                   ? `${140 + idx * 30}ms`
@@ -402,7 +402,7 @@ const MarketClient: React.FC<MarketClientProps> = ({
                                   style={{
                                     opacity: trendingVisible ? 0 : 0,
                                     animation: trendingVisible 
-                                      ? `fadeInUp 520ms ease-out forwards`
+                                      ? `fadeInUp 520ms ease-out both`
                                       : 'none',
                                     animationDelay: trendingVisible 
                                       ? `${160 + idx * 30}ms`

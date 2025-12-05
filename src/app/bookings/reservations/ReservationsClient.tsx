@@ -256,7 +256,7 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
                         key={reservation.id}
                         style={{
                           opacity: 0,
-                          animation: `fadeInUp 520ms ease-out forwards`,
+                          animation: `fadeInUp 520ms ease-out both`,
                           animationDelay: `${Math.min(idx * 30, 300)}ms`,
                           willChange: 'transform, opacity',
                         }}
@@ -294,7 +294,7 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
                           key={`${reservation.id}-${reservationsIndex}`}
                           style={{
                             opacity: reservationsVisible ? 0 : 0,
-                            animation: reservationsVisible ? `fadeInUp 520ms ease-out forwards` : 'none',
+                            animation: reservationsVisible ? `fadeInUp 520ms ease-out both` : 'none',
                             animationDelay: reservationsVisible ? `${140 + idx * 30}ms` : '0ms',
                             willChange: 'transform, opacity',
                             transition: !reservationsVisible ? `opacity ${FADE_OUT_DURATION}ms ease-out` : 'none',

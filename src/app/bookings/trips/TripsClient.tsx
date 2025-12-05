@@ -232,7 +232,7 @@ const TripsClient: React.FC<TripsClientProps> = ({
                         key={reservation.id}
                         style={{
                           opacity: 0,
-                          animation: `fadeInUp 520ms ease-out forwards`,
+                          animation: `fadeInUp 520ms ease-out both`,
                           animationDelay: `${Math.min(idx * 30, 300)}ms`,
                           willChange: 'transform, opacity',
                         }}
@@ -268,7 +268,7 @@ const TripsClient: React.FC<TripsClientProps> = ({
                           key={`${reservation.id}-${tripsIndex}`}
                           style={{
                             opacity: tripsVisible ? 0 : 0,
-                            animation: tripsVisible ? `fadeInUp 520ms ease-out forwards` : 'none',
+                            animation: tripsVisible ? `fadeInUp 520ms ease-out both` : 'none',
                             animationDelay: tripsVisible ? `${140 + idx * 30}ms` : '0ms',
                             willChange: 'transform, opacity',
                             transition: !tripsVisible ? `opacity ${FADE_OUT_DURATION}ms ease-out` : 'none',

@@ -7,8 +7,12 @@ interface SectionHeaderProps {
   onPrev?: () => void;
   onNext?: () => void;
   onViewAll?: () => void;
-  viewAllLabel?: string;  // Custom label for view all button
+  viewAllLabel?: string;
   className?: string;
+  /** Enable fadeInUp animation (default: true) */
+  animate?: boolean;
+  /** Animation delay in ms (default: 0) - header animates before cards */
+  animationDelay?: number;
 }
 
 const SectionHeader: React.FC<SectionHeaderProps> = ({
@@ -16,13 +20,20 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
   onPrev,
   onNext,
   onViewAll,
-  viewAllLabel = 'View all',  // Default to "View all"
+  viewAllLabel = 'View all',
   className = '',
+  animate = true,
+  animationDelay = 0,
 }) => {
-  const hasNavigation = onPrev || onNext;
+  const animationStyle = animate
+    ? {
+        animation: `fadeIn 400ms ease-out both`,
+        animationDelay: `${animationDelay}ms`,
+      }
+    : undefined;
 
   return (
-    <div className={`mt-8 mb-6 ${className}`}>
+    <div className={`mt-8 mb-6 ${className}`} style={animationStyle}>
       <div className="flex items-center justify-between">
         {/* LEFT: title */}
         <h2 className="text-2xl font-bold tracking-tight text-gray-900">

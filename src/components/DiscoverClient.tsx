@@ -64,8 +64,8 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
   const [employeesVisible, setEmployeesVisible] = useState(true);
   const [shopsVisible, setShopsVisible] = useState(true);
 
-  // Content fade state for filter changes
-  const [isContentReady, setIsContentReady] = useState(true);
+  // Track if we've done initial fetch
+  const [hasInitialized, setHasInitialized] = useState(false);
 
 
   // View all mode
@@ -165,10 +165,19 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
   }, [headerSearchParams, typeFilter]);
 
 
+  // Initialize with server-provided posts on first render
   useEffect(() => {
-    const fetchPosts = async () => {
-      setIsContentReady(false);
+    if (!hasInitialized && initialPosts.length > 0) {
+      setPosts(initialPosts);
+      setHasInitialized(true);
+    }
+  }, [initialPosts, hasInitialized, setPosts]);
 
+  // Only refetch when filters change (not on initial mount)
+  useEffect(() => {
+    if (!hasInitialized) return;
+
+    const fetchPosts = async () => {
       try {
         const params: Record<string, string | number> = {};
         const categoryParam = searchParams?.get('category');
@@ -187,17 +196,14 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
         const { data } = await axios.get('/api/post', { params });
         startTransition(() => {
           setPosts(data);
-          // Small delay to let React batch the state update before showing content
-          setTimeout(() => setIsContentReady(true), 50);
         });
       } catch (error) {
         console.error('Error fetching posts:', error);
-        setIsContentReady(true);
       }
     };
 
     fetchPosts();
-  }, [selectedCategory, filterParam, filters, setPosts, searchParams]);
+  }, [selectedCategory, filterParam, filters, setPosts, searchParams, hasInitialized]);
 
   // Animated transition helper (matching market pattern)
   const animateTransition = (
@@ -226,11 +232,16 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
   };
 
   // Paginated items
+  // Use store posts if available, otherwise fall back to initial posts from server
+  const activePosts = useMemo(() => {
+    return (storePosts?.length || 0) > 0 ? storePosts : initialPosts;
+  }, [storePosts, initialPosts]);
+
   const currentPosts = useMemo(() => {
-    if ((storePosts?.length || 0) <= ITEMS_PER_PAGE) return storePosts || [];
+    if ((activePosts?.length || 0) <= ITEMS_PER_PAGE) return activePosts || [];
     const start = postsIndex * ITEMS_PER_PAGE;
-    return (storePosts || []).slice(start, start + ITEMS_PER_PAGE);
-  }, [storePosts, postsIndex]);
+    return (activePosts || []).slice(start, start + ITEMS_PER_PAGE);
+  }, [activePosts, postsIndex]);
 
   const currentListings = useMemo(() => {
     const visibleListings = listings.filter(l => l.category !== 'Personal');
@@ -252,7 +263,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
   }, [shops, shopsIndex]);
 
   // Total pages
-  const totalPostsPages = Math.max(1, Math.ceil((storePosts?.length || 0) / ITEMS_PER_PAGE));
+  const totalPostsPages = Math.max(1, Math.ceil((activePosts?.length || 0) / ITEMS_PER_PAGE));
   const totalListingsPages = Math.max(1, Math.ceil(listings.filter(l => l.category !== 'Personal').length / ITEMS_PER_PAGE));
   const totalEmployeesPages = Math.max(1, Math.ceil(employees.length / ITEMS_PER_PAGE));
   const totalShopsPages = Math.max(1, Math.ceil(shops.length / ITEMS_PER_PAGE));
@@ -296,14 +307,21 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const hasContent = useMemo(() => Array.isArray(storePosts) && storePosts.length > 0, [storePosts]);
+  // Check all content types
+  const hasContent = useMemo(() => {
+    const hasPosts = (activePosts?.length || 0) > 0;
+    const hasListings = listings.length > 0;
+    const hasEmployees = employees.length > 0;
+    const hasShops = shops.length > 0;
+    return hasPosts || hasListings || hasEmployees || hasShops;
+  }, [activePosts, listings, employees, shops]);
 
   const allContentItems = useMemo(() => {
     let items: Array<{type: 'post' | 'listing' | 'employee' | 'shop', data: any, listingContext?: any}> = [];
 
     if (filterInfo.typeFilter) {
       if (filterInfo.typeFilter === 'posts') {
-        items = (storePosts || []).map(post => ({ type: 'post' as const, data: post }));
+        items = (activePosts || []).map(post => ({ type: 'post' as const, data: post }));
       } else if (filterInfo.typeFilter === 'listings') {
         items = (listings || []).map(listing => ({ type: 'listing' as const, data: listing }));
       } else if (filterInfo.typeFilter === 'professionals') {
@@ -316,7 +334,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
       }
     } else {
       items = [
-        ...(storePosts || []).map(post => ({ type: 'post' as const, data: post })),
+        ...(activePosts || []).map(post => ({ type: 'post' as const, data: post })),
         ...(listings || []).map(listing => ({ type: 'listing' as const, data: listing })),
         ...(employees || []).map(employee => {
           const listing = listings.find(l => l.id === employee.listingId) || listings[0];
@@ -327,7 +345,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
     }
 
     return items;
-  }, [storePosts, listings, employees, shops, filterInfo.typeFilter]);
+  }, [activePosts, listings, employees, shops, filterInfo.typeFilter]);
 
   return (
     <ClientProviders>
@@ -371,12 +389,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
 
           {/* Content */}
           <div className="relative -mt-[69px]">
-            <div
-              style={{
-                opacity: isContentReady ? 1 : 0,
-                transition: 'opacity 200ms ease-out',
-              }}
-            >
+            <div>
             {hasContent ? (
               <>
                 {/* View All Posts Mode */}
@@ -389,12 +402,12 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                       viewAllLabel="← Back to Discover"
                     />
                     <div className={`grid ${gridColsClass} gap-5 transition-all duration-300`}>
-                      {(storePosts || []).map((post, idx) => (
+                      {(activePosts || []).map((post, idx) => (
                         <div
                           key={post.id}
                           style={{
                             opacity: 0,
-                            animation: `fadeInUp 520ms ease-out forwards`,
+                            animation: `fadeInUp 520ms ease-out both`,
                             animationDelay: `${Math.min(idx * 30, 300)}ms`,
                             willChange: 'transform, opacity',
                           }}
@@ -421,7 +434,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                           key={listing.id}
                           style={{
                             opacity: 0,
-                            animation: `fadeInUp 520ms ease-out forwards`,
+                            animation: `fadeInUp 520ms ease-out both`,
                             animationDelay: `${Math.min(idx * 30, 300)}ms`,
                             willChange: 'transform, opacity',
                           }}
@@ -453,7 +466,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                             key={employee.id}
                             style={{
                               opacity: 0,
-                              animation: `fadeInUp 520ms ease-out forwards`,
+                              animation: `fadeInUp 520ms ease-out both`,
                               animationDelay: `${Math.min(idx * 30, 300)}ms`,
                               willChange: 'transform, opacity',
                             }}
@@ -491,7 +504,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                           key={shop.id}
                           style={{
                             opacity: 0,
-                            animation: `fadeInUp 520ms ease-out forwards`,
+                            animation: `fadeInUp 520ms ease-out both`,
                             animationDelay: `${Math.min(idx * 30, 300)}ms`,
                             willChange: 'transform, opacity',
                           }}
@@ -522,7 +535,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                                 key={`${post.id}-${postsIndex}`}
                                 style={{
                                   opacity: postsVisible ? 0 : 0,
-                                  animation: postsVisible ? `fadeInUp 520ms ease-out forwards` : 'none',
+                                  animation: postsVisible ? `fadeInUp 520ms ease-out both` : 'none',
                                   animationDelay: postsVisible ? `${140 + idx * 30}ms` : '0ms',
                                   willChange: 'transform, opacity',
                                   transition: !postsVisible ? `opacity ${FADE_OUT_DURATION}ms ease-out` : 'none',
@@ -553,7 +566,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                                 key={`${listing.id}-${listingsIndex}`}
                                 style={{
                                   opacity: listingsVisible ? 0 : 0,
-                                  animation: listingsVisible ? `fadeInUp 520ms ease-out forwards` : 'none',
+                                  animation: listingsVisible ? `fadeInUp 520ms ease-out both` : 'none',
                                   animationDelay: listingsVisible ? `${140 + idx * 30}ms` : '0ms',
                                   willChange: 'transform, opacity',
                                   transition: !listingsVisible ? `opacity ${FADE_OUT_DURATION}ms ease-out` : 'none',
@@ -589,7 +602,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                                   key={`${employee.id}-${employeesIndex}`}
                                   style={{
                                     opacity: employeesVisible ? 0 : 0,
-                                    animation: employeesVisible ? `fadeInUp 520ms ease-out forwards` : 'none',
+                                    animation: employeesVisible ? `fadeInUp 520ms ease-out both` : 'none',
                                     animationDelay: employeesVisible ? `${160 + idx * 30}ms` : '0ms',
                                     willChange: 'transform, opacity',
                                     transition: !employeesVisible ? `opacity ${FADE_OUT_DURATION}ms ease-out` : 'none',
@@ -631,7 +644,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                                 key={`${shop.id}-${shopsIndex}`}
                                 style={{
                                   opacity: shopsVisible ? 0 : 0,
-                                  animation: shopsVisible ? `fadeInUp 520ms ease-out forwards` : 'none',
+                                  animation: shopsVisible ? `fadeInUp 520ms ease-out both` : 'none',
                                   animationDelay: shopsVisible ? `${160 + idx * 30}ms` : '0ms',
                                   willChange: 'transform, opacity',
                                   transition: !shopsVisible ? `opacity ${FADE_OUT_DURATION}ms ease-out` : 'none',
@@ -663,7 +676,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                             key={`${item.type}-${item.data.id}`}
                             style={{
                               opacity: 0,
-                              animation: `fadeInUp 520ms ease-out forwards`,
+                              animation: `fadeInUp 520ms ease-out both`,
                               animationDelay: `${Math.min(idx * 30, 300)}ms`,
                               willChange: 'transform, opacity',
                             }}

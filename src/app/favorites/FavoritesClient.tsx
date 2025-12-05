@@ -272,7 +272,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
                         key={listing.id}
                         style={{
                           opacity: 0,
-                          animation: `fadeInUp 520ms ease-out forwards`,
+                          animation: `fadeInUp 520ms ease-out both`,
                           animationDelay: `${Math.min(idx * 30, 300)}ms`,
                           willChange: 'transform, opacity',
                         }}
@@ -305,7 +305,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
                           key={worker.id}
                           style={{
                             opacity: 0,
-                            animation: `fadeInUp 520ms ease-out forwards`,
+                            animation: `fadeInUp 520ms ease-out both`,
                             animationDelay: `${Math.min(idx * 30, 300)}ms`,
                             willChange: 'transform, opacity',
                           }}
@@ -343,7 +343,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
                         key={shop.id}
                         style={{
                           opacity: 0,
-                          animation: `fadeInUp 520ms ease-out forwards`,
+                          animation: `fadeInUp 520ms ease-out both`,
                           animationDelay: `${Math.min(idx * 30, 300)}ms`,
                           willChange: 'transform, opacity',
                         }}
@@ -370,7 +370,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
                         key={post.id}
                         style={{
                           opacity: 0,
-                          animation: `fadeInUp 520ms ease-out forwards`,
+                          animation: `fadeInUp 520ms ease-out both`,
                           animationDelay: `${Math.min(idx * 30, 300)}ms`,
                           willChange: 'transform, opacity',
                         }}
@@ -405,7 +405,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
                               key={`${listing.id}-${listingsIndex}`}
                               style={{
                                 opacity: listingsVisible ? 0 : 0,
-                                animation: listingsVisible ? `fadeInUp 520ms ease-out forwards` : 'none',
+                                animation: listingsVisible ? `fadeInUp 520ms ease-out both` : 'none',
                                 animationDelay: listingsVisible ? `${140 + idx * 30}ms` : '0ms',
                                 willChange: 'transform, opacity',
                                 transition: !listingsVisible ? `opacity ${FADE_OUT_DURATION}ms ease-out` : 'none',
@@ -442,7 +442,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
                                 key={`${worker.id}-${workersIndex}`}
                                 style={{
                                   opacity: workersVisible ? 0 : 0,
-                                  animation: workersVisible ? `fadeInUp 520ms ease-out forwards` : 'none',
+                                  animation: workersVisible ? `fadeInUp 520ms ease-out both` : 'none',
                                   animationDelay: workersVisible ? `${140 + idx * 30}ms` : '0ms',
                                   willChange: 'transform, opacity',
                                   transition: !workersVisible ? `opacity ${FADE_OUT_DURATION}ms ease-out` : 'none',
@@ -484,7 +484,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
                               key={`${shop.id}-${shopsIndex}`}
                               style={{
                                 opacity: shopsVisible ? 0 : 0,
-                                animation: shopsVisible ? `fadeInUp 520ms ease-out forwards` : 'none',
+                                animation: shopsVisible ? `fadeInUp 520ms ease-out both` : 'none',
                                 animationDelay: shopsVisible ? `${140 + idx * 30}ms` : '0ms',
                                 willChange: 'transform, opacity',
                                 transition: !shopsVisible ? `opacity ${FADE_OUT_DURATION}ms ease-out` : 'none',
@@ -515,7 +515,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
                               key={`${post.id}-${postsIndex}`}
                               style={{
                                 opacity: postsVisible ? 0 : 0,
-                                animation: postsVisible ? `fadeInUp 520ms ease-out forwards` : 'none',
+                                animation: postsVisible ? `fadeInUp 520ms ease-out both` : 'none',
                                 animationDelay: postsVisible ? `${140 + idx * 30}ms` : '0ms',
                                 willChange: 'transform, opacity',
                                 transition: !postsVisible ? `opacity ${FADE_OUT_DURATION}ms ease-out` : 'none',

@@ -428,8 +428,8 @@ const ShopHead: React.FC<ShopHeadProps> = ({
                   key={product.id}
                   style={{
                     opacity: 0,
-                    animation: `fadeInUp 520ms ease-out forwards`,
-                    animationDelay: `${Math.min(idx * 30, 300)}ms`,
+                    animation: `fadeInUp 520ms ease-out both`,
+                    animationDelay: `${Math.min(60 + idx * 30, 360)}ms`,
                   }}
                 >
                   <ProductCard
@@ -473,8 +473,8 @@ const ShopHead: React.FC<ShopHeadProps> = ({
                   key={employee.id || idx}
                   style={{
                     opacity: 0,
-                    animation: `fadeInUp 520ms ease-out forwards`,
-                    animationDelay: `${Math.min(idx * 30, 300)}ms`,
+                    animation: `fadeInUp 520ms ease-out both`,
+                    animationDelay: `${Math.min(60 + idx * 30, 360)}ms`,
                   }}
                 >
                   <WorkerCard
@@ -524,8 +524,8 @@ const ShopHead: React.FC<ShopHeadProps> = ({
                   className="relative rounded-xl overflow-hidden bg-gray-100 aspect-square group cursor-pointer"
                   style={{
                     opacity: 0,
-                    animation: `fadeInUp 520ms ease-out forwards`,
-                    animationDelay: `${Math.min(idx * 30, 300)}ms`,
+                    animation: `fadeInUp 520ms ease-out both`,
+                    animationDelay: `${Math.min(60 + idx * 30, 360)}ms`,
                   }}
                 >
                   <img
