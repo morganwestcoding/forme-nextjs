@@ -103,7 +103,7 @@ const MarketSearch: React.FC<MarketSearchProps> = ({ isHeroMode = false, categor
     <div className="mt-3">
       <ContextualSearch
         placeholder="Looking for something?"
-        filterTypes={['listing', 'shop', 'service', 'employee']}
+        filterTypes={['listing', 'shop', 'service', 'employee', 'user']}
         actionButtons={actionButtons}
       />
 

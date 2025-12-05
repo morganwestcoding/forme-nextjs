@@ -468,6 +468,11 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                       <Link02Icon size={20} strokeWidth={1.5} className="sm:w-[22px] sm:h-[22px]" />
                     </button>
 
+                    {/* Message Button */}
+                    {currentUser && !isOwner && (
+                      <CreateChatButton currentUser={currentUser} otherUserId={id} variant="icon" />
+                    )}
+
                     {/* Follow Button */}
                     {currentUser && !isOwner && (
                       <button
@@ -482,11 +487,6 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                           <UserAdd01Icon size={20} className="sm:w-[22px] sm:h-[22px]" />
                         )}
                       </button>
-                    )}
-
-                    {/* Message Button */}
-                    {currentUser && !isOwner && (
-                      <CreateChatButton currentUser={currentUser} otherUserId={id} variant="icon" />
                     )}
 
                     {/* Edit Button for owners */}

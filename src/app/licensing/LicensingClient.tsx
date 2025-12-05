@@ -9,9 +9,11 @@ import {
   Link01Icon,
   BookOpen02Icon,
   StarIcon,
-  Upload01Icon,
   ShieldUserIcon,
-  TimeScheduleIcon
+  TimeScheduleIcon,
+  Certificate01Icon,
+  Mortarboard01Icon,
+  Upload01Icon
 } from "hugeicons-react";
 import { SafeUser } from "@/app/types";
 
@@ -143,54 +145,51 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Clean Header */}
+      {/* Clean Header - matches Market page */}
       <div className="border-b border-gray-100">
-        <div className="max-w-6xl mx-auto px-8 lg:px-12 pt-16 pb-16">
-          <div className="text-center max-w-2xl mx-auto">
+        <div className="max-w-6xl mx-auto px-6 md:px-24 pt-12 pb-8">
+          <div className="text-center">
             {isOnboarding && (
-              <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-6">Step 1 of 2</p>
+              <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-4">Step 1 of 2</p>
             )}
-            <h1 className="text-4xl font-semibold tracking-tight text-gray-900 mb-4">
-              Professional Verification
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight tracking-tight">
+              Licensing
             </h1>
-            <p className="text-base text-gray-500 mb-8">
+            <p className="text-gray-500 text-base mt-3 max-w-2xl mx-auto">
               Build trust with clients by verifying your credentials
             </p>
-            {getStatusBadge()}
+            <div className="mt-4">
+              {getStatusBadge()}
+            </div>
           </div>
 
-          {/* Tab Navigation */}
-          <div className="flex justify-center mt-12">
-            <div className="relative inline-flex items-center bg-gray-50 rounded-lg p-1 gap-1">
-              <div
-                className={`absolute top-1 bottom-1 bg-gray-900 rounded-md transition-all duration-300 ease-out ${
-                  activeTab === 'upload' ? 'left-1' : 'left-[calc(50%)]'
-                }`}
-                style={{
-                  width: 'calc(50% - 4px)',
-                }}
-              />
-
+          {/* Tab Navigation - matches Analytics tab style */}
+          <div className="flex justify-center mt-8">
+            <div className="flex items-center gap-1.5">
               <button
                 onClick={() => setActiveTab('upload')}
-                className={`relative z-10 px-12 py-2.5 text-sm font-medium transition-colors duration-200 flex items-center gap-2 rounded-md ${
-                  activeTab === 'upload'
-                    ? "text-white"
-                    : "text-gray-600 hover:text-gray-900"
-                }`}
+                className={`
+                  px-4 py-1.5 text-[13px] font-medium rounded-xl border transition-all duration-300 ease-out active:scale-[0.97] flex items-center gap-2
+                  ${activeTab === 'upload'
+                    ? 'bg-[#60A5FA] border-[#60A5FA] text-white shadow-md shadow-[#60A5FA]/25'
+                    : 'bg-transparent border-neutral-300 text-neutral-500 hover:border-[#60A5FA] hover:text-[#60A5FA] hover:bg-[#60A5FA]/5'
+                  }
+                `}
               >
-                <Upload01Icon size={16} strokeWidth={2} color={activeTab === 'upload' ? 'white' : 'currentColor'} />
+                <Certificate01Icon size={14} strokeWidth={2} />
                 I Have a License
               </button>
               <button
                 onClick={() => setActiveTab('training')}
-                className={`relative z-10 px-12 py-2.5 text-sm font-medium transition-colors duration-200 flex items-center gap-2 rounded-md ${
-                  activeTab === 'training'
-                    ? "text-white"
-                    : "text-gray-600 hover:text-gray-900"
-                }`}
+                className={`
+                  px-4 py-1.5 text-[13px] font-medium rounded-xl border transition-all duration-300 ease-out active:scale-[0.97] flex items-center gap-2
+                  ${activeTab === 'training'
+                    ? 'bg-[#60A5FA] border-[#60A5FA] text-white shadow-md shadow-[#60A5FA]/25'
+                    : 'bg-transparent border-neutral-300 text-neutral-500 hover:border-[#60A5FA] hover:text-[#60A5FA] hover:bg-[#60A5FA]/5'
+                  }
+                `}
               >
-                <SchoolIcon size={16} strokeWidth={2} color={activeTab === 'training' ? 'white' : 'currentColor'} />
+                <Mortarboard01Icon size={14} strokeWidth={2} />
                 Need Training
               </button>
             </div>
@@ -200,7 +199,7 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
 
       {/* Upload Tab */}
       {activeTab === 'upload' && (
-        <div className="max-w-6xl mx-auto px-8 lg:px-12 py-16">
+        <div className="max-w-7xl mx-auto px-6 md:px-24 py-12">
           {/* Status Messages */}
           {verificationStatus === 'pending' && (
             <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 flex items-start gap-4 mb-8">
@@ -421,7 +420,7 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
 
       {/* Training Tab */}
       {activeTab === 'training' && (
-        <div className="max-w-6xl mx-auto px-8 lg:px-12 py-16">
+        <div className="max-w-7xl mx-auto px-6 md:px-24 py-12">
           {/* Hero Section */}
           <div className="bg-blue-50 border border-blue-200 rounded-xl p-8 mb-12">
             <div className="flex items-start gap-6">
@@ -566,7 +565,7 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
 
       {/* Privacy Notice */}
       <div className="border-t border-gray-100 bg-gray-50/30">
-        <div className="max-w-6xl mx-auto px-8 lg:px-12 py-16">
+        <div className="max-w-7xl mx-auto px-6 md:px-24 py-12">
           <div className="bg-white border border-gray-200 rounded-xl p-8 text-center">
             <div className="flex items-center justify-center gap-2 mb-3">
               <ShieldUserIcon size={20} color="#60A5FA" strokeWidth={2} />

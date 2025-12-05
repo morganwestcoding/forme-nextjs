@@ -181,17 +181,17 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Clean Header */}
+      {/* Clean Header - matches Market page */}
       <div className="border-b border-gray-100">
-        <div className="max-w-6xl mx-auto px-8 lg:px-12 pt-16 pb-16">
-          <div className="text-center max-w-2xl mx-auto">
+        <div className="max-w-6xl mx-auto px-6 md:px-24 pt-12 pb-8">
+          <div className="text-center">
             {isOnboarding && (
-              <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-6">Step 2 of 2</p>
+              <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-4">Step 2 of 2</p>
             )}
-            <h1 className="text-4xl font-semibold tracking-tight text-gray-900 mb-4">
-              {isOnboarding ? "Choose Your Plan" : "Plans that scale with your business"}
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight tracking-tight">
+              {isOnboarding ? "Choose Your Plan" : "Subscription"}
             </h1>
-            <p className="text-base text-gray-500">
+            <p className="text-gray-500 text-base mt-3 max-w-2xl mx-auto">
               {isOnboarding
                 ? "Start free, upgrade as you grow"
                 : <>You&apos;re on <span className="font-semibold text-gray-900">{cleanLabel(currentUser?.subscriptionTier)}</span>. Change plans anytime.</>
@@ -199,35 +199,30 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
             </p>
           </div>
 
-          {/* Billing Toggle */}
-          <div className="flex justify-center mt-12">
-            <div className="relative inline-flex items-center bg-gray-50 rounded-lg p-1 gap-1">
-              <div
-                className={`absolute top-1 bottom-1 bg-gray-900 rounded-md transition-all duration-300 ease-out ${
-                  billing === 'monthly' ? 'left-1' : 'left-[calc(50%)]'
-                }`}
-                style={{
-                  width: 'calc(50% - 4px)',
-                }}
-              />
-
+          {/* Billing Toggle - matches Analytics tab style */}
+          <div className="flex justify-center mt-8">
+            <div className="flex items-center gap-1.5">
               <button
                 onClick={() => setBilling("monthly")}
-                className={`relative z-10 px-16 py-2.5 text-sm font-medium transition-colors duration-200 rounded-md ${
-                  billing === "monthly"
-                    ? "text-white"
-                    : "text-gray-600 hover:text-gray-900"
-                }`}
+                className={`
+                  px-4 py-1.5 text-[13px] font-medium rounded-xl border transition-all duration-300 ease-out active:scale-[0.97]
+                  ${billing === 'monthly'
+                    ? 'bg-[#60A5FA] border-[#60A5FA] text-white shadow-md shadow-[#60A5FA]/25'
+                    : 'bg-transparent border-neutral-300 text-neutral-500 hover:border-[#60A5FA] hover:text-[#60A5FA] hover:bg-[#60A5FA]/5'
+                  }
+                `}
               >
                 Monthly
               </button>
               <button
                 onClick={() => setBilling("yearly")}
-                className={`relative z-10 px-16 py-2.5 text-sm font-medium transition-colors duration-200 rounded-md ${
-                  billing === "yearly"
-                    ? "text-white"
-                    : "text-gray-600 hover:text-gray-900"
-                }`}
+                className={`
+                  px-4 py-1.5 text-[13px] font-medium rounded-xl border transition-all duration-300 ease-out active:scale-[0.97]
+                  ${billing === 'yearly'
+                    ? 'bg-[#60A5FA] border-[#60A5FA] text-white shadow-md shadow-[#60A5FA]/25'
+                    : 'bg-transparent border-neutral-300 text-neutral-500 hover:border-[#60A5FA] hover:text-[#60A5FA] hover:bg-[#60A5FA]/5'
+                  }
+                `}
               >
                 Yearly
               </button>
@@ -237,7 +232,7 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
       </div>
 
       {/* Plans Grid */}
-      <div className="max-w-6xl mx-auto px-8 lg:px-12 py-16">
+      <div className="max-w-7xl mx-auto px-6 md:px-24 py-12">
         <div className="grid md:grid-cols-3 gap-4">
           {plans.map((plan) => {
             const price = billing === "monthly" ? plan.price.monthly : plan.price.yearly;
@@ -326,7 +321,7 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
 
       {/* Feature Comparison */}
       <div className="border-t border-gray-100 bg-gray-50/30">
-        <div className="max-w-6xl mx-auto px-8 lg:px-12 py-16">
+        <div className="max-w-7xl mx-auto px-6 md:px-24 py-12">
           <FeatureComparison />
         </div>
       </div>

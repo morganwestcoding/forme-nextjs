@@ -10,6 +10,11 @@ export interface AnalyticsData {
     totalFollowers: number;
     totalFollowing: number;
   };
+  reviews: {
+    totalReviews: number;
+    averageRating: number;
+    ratingDistribution: { rating: number; count: number }[];
+  };
   recentActivity: {
     reservations: Array<{
       id: string;
@@ -77,6 +82,7 @@ export default async function getAnalyticsData(userId: string): Promise<Analytic
       monthlyReservations,
       monthlyPosts,
       userListings,
+      userReviews,
     ] = await Promise.all([
       // Total listings
       prisma.listing.count({
@@ -208,6 +214,17 @@ export default async function getAnalyticsData(userId: string): Promise<Analytic
         orderBy: {
           createdAt: 'desc'
         }
+      }),
+
+      // Reviews for the user (as a provider)
+      prisma.review.findMany({
+        where: {
+          targetType: 'user',
+          targetUserId: userId
+        },
+        select: {
+          rating: true
+        }
       })
     ]);
 
@@ -215,6 +232,16 @@ export default async function getAnalyticsData(userId: string): Promise<Analytic
     const totalRevenue = totalRevenueResult._sum.totalPrice || 0;
     const totalFollowers = userWithCounts?.followers.length || 0;
     const totalFollowing = userWithCounts?.following.length || 0;
+
+    // Calculate review statistics
+    const totalReviews = userReviews.length;
+    const averageRating = totalReviews > 0
+      ? Math.round((userReviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews) * 10) / 10
+      : 0;
+    const ratingDistribution = [1, 2, 3, 4, 5].map(rating => ({
+      rating,
+      count: userReviews.filter(r => r.rating === rating).length,
+    }));
 
     // Process monthly data
     const monthlyData = [];
@@ -299,6 +326,11 @@ export default async function getAnalyticsData(userId: string): Promise<Analytic
         totalPosts,
         totalFollowers,
         totalFollowing
+      },
+      reviews: {
+        totalReviews,
+        averageRating,
+        ratingDistribution
       },
       recentActivity: {
         reservations: recentReservations.map(reservation => ({

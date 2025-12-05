@@ -280,9 +280,12 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
           >
             {/* Loading */}
             {loading && (
-              <div className="px-4 py-4 text-sm text-neutral-400 flex items-center gap-2">
-                <div className="w-4 h-4 border-2 border-neutral-300 border-t-neutral-600 rounded-full animate-spin" />
-                Searching...
+              <div className="px-4 py-6 flex flex-col items-center justify-center gap-3">
+                <div className="flex items-center gap-1">
+                  <div className="w-1.5 h-1.5 rounded-full bg-neutral-400 animate-[bounce_1s_ease-in-out_infinite]" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-neutral-400 animate-[bounce_1s_ease-in-out_0.15s_infinite]" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-neutral-400 animate-[bounce_1s_ease-in-out_0.3s_infinite]" />
+                </div>
               </div>
             )}
 
