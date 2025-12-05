@@ -1,14 +1,10 @@
 'use client';
 
-import React, { useEffect, useMemo, useState, useTransition } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import axios from 'axios';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import ClientProviders from '@/components/ClientProviders';
 import { categories } from '@/components/Categories';
 import { SafePost, SafeUser, SafeListing, SafeEmployee, SafeShop } from '@/app/types';
-import { usePostStore } from '@/app/hooks/usePostStore';
-import { useCategory } from '@/CategoryContext';
-import { useFilter } from '@/FilterContext';
 import { useViewMode } from '@/app/hooks/useViewMode';
 import useCreatePostModal from '@/app/hooks/useCreatePostModal';
 import Container from './Container';
@@ -41,15 +37,10 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
   employees = [],
   shops = [],
 }) => {
-  const setPosts = usePostStore((state) => state.setPosts);
-  const storePosts = usePostStore((state) => state.posts);
-  const { selectedCategory } = useCategory();
-  const { filters } = useFilter();
   const { viewMode, setViewMode } = useViewMode();
   const createPostModal = useCreatePostModal();
 
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const [isPending, startTransition] = useTransition();
 
   // Pagination state
   const [postsIndex, setPostsIndex] = useState(0);
@@ -64,20 +55,10 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
   const [employeesVisible, setEmployeesVisible] = useState(true);
   const [shopsVisible, setShopsVisible] = useState(true);
 
-  // Track if we've done initial fetch
-  const [hasInitialized, setHasInitialized] = useState(false);
-
-
   // View all mode
   const [viewAllMode, setViewAllMode] = useState<'posts' | 'listings' | 'professionals' | 'shops' | null>(null);
 
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const filterParam = searchParams?.get('filter') || 'for-you';
-
-  const handleNavigation = (url: string) => {
-    router.push(url, { scroll: false });
-  };
 
   // Sidebar collapse detection
   useEffect(() => {
@@ -165,46 +146,6 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
   }, [headerSearchParams, typeFilter]);
 
 
-  // Initialize with server-provided posts on first render
-  useEffect(() => {
-    if (!hasInitialized && initialPosts.length > 0) {
-      setPosts(initialPosts);
-      setHasInitialized(true);
-    }
-  }, [initialPosts, hasInitialized, setPosts]);
-
-  // Only refetch when filters change (not on initial mount)
-  useEffect(() => {
-    if (!hasInitialized) return;
-
-    const fetchPosts = async () => {
-      try {
-        const params: Record<string, string | number> = {};
-        const categoryParam = searchParams?.get('category');
-
-        if (categoryParam) {
-          params.category = categoryParam;
-        } else if (selectedCategory && selectedCategory !== 'Default') {
-          params.category = selectedCategory;
-        }
-
-        if (filterParam) params.filter = filterParam;
-        if (filters.location?.state) params.state = filters.location.state;
-        if (filters.location?.city) params.city = filters.location.city;
-        if (filters.sort?.order) params.order = filters.sort.order;
-
-        const { data } = await axios.get('/api/post', { params });
-        startTransition(() => {
-          setPosts(data);
-        });
-      } catch (error) {
-        console.error('Error fetching posts:', error);
-      }
-    };
-
-    fetchPosts();
-  }, [selectedCategory, filterParam, filters, setPosts, searchParams, hasInitialized]);
-
   // Animated transition helper (matching market pattern)
   const animateTransition = (
     setVisible: (visible: boolean) => void,
@@ -231,17 +172,12 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
     }, FADE_OUT_DURATION);
   };
 
-  // Paginated items
-  // Use store posts if available, otherwise fall back to initial posts from server
-  const activePosts = useMemo(() => {
-    return (storePosts?.length || 0) > 0 ? storePosts : initialPosts;
-  }, [storePosts, initialPosts]);
-
+  // Paginated items - use server-provided data directly (like MarketClient)
   const currentPosts = useMemo(() => {
-    if ((activePosts?.length || 0) <= ITEMS_PER_PAGE) return activePosts || [];
+    if (initialPosts.length <= ITEMS_PER_PAGE) return initialPosts;
     const start = postsIndex * ITEMS_PER_PAGE;
-    return (activePosts || []).slice(start, start + ITEMS_PER_PAGE);
-  }, [activePosts, postsIndex]);
+    return initialPosts.slice(start, start + ITEMS_PER_PAGE);
+  }, [initialPosts, postsIndex]);
 
   const currentListings = useMemo(() => {
     const visibleListings = listings.filter(l => l.category !== 'Personal');
@@ -263,7 +199,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
   }, [shops, shopsIndex]);
 
   // Total pages
-  const totalPostsPages = Math.max(1, Math.ceil((activePosts?.length || 0) / ITEMS_PER_PAGE));
+  const totalPostsPages = Math.max(1, Math.ceil((initialPosts?.length || 0) / ITEMS_PER_PAGE));
   const totalListingsPages = Math.max(1, Math.ceil(listings.filter(l => l.category !== 'Personal').length / ITEMS_PER_PAGE));
   const totalEmployeesPages = Math.max(1, Math.ceil(employees.length / ITEMS_PER_PAGE));
   const totalShopsPages = Math.max(1, Math.ceil(shops.length / ITEMS_PER_PAGE));
@@ -309,19 +245,19 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
 
   // Check all content types
   const hasContent = useMemo(() => {
-    const hasPosts = (activePosts?.length || 0) > 0;
+    const hasPosts = (initialPosts?.length || 0) > 0;
     const hasListings = listings.length > 0;
     const hasEmployees = employees.length > 0;
     const hasShops = shops.length > 0;
     return hasPosts || hasListings || hasEmployees || hasShops;
-  }, [activePosts, listings, employees, shops]);
+  }, [initialPosts, listings, employees, shops]);
 
   const allContentItems = useMemo(() => {
     let items: Array<{type: 'post' | 'listing' | 'employee' | 'shop', data: any, listingContext?: any}> = [];
 
     if (filterInfo.typeFilter) {
       if (filterInfo.typeFilter === 'posts') {
-        items = (activePosts || []).map(post => ({ type: 'post' as const, data: post }));
+        items = (initialPosts || []).map(post => ({ type: 'post' as const, data: post }));
       } else if (filterInfo.typeFilter === 'listings') {
         items = (listings || []).map(listing => ({ type: 'listing' as const, data: listing }));
       } else if (filterInfo.typeFilter === 'professionals') {
@@ -334,7 +270,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
       }
     } else {
       items = [
-        ...(activePosts || []).map(post => ({ type: 'post' as const, data: post })),
+        ...(initialPosts || []).map(post => ({ type: 'post' as const, data: post })),
         ...(listings || []).map(listing => ({ type: 'listing' as const, data: listing })),
         ...(employees || []).map(employee => {
           const listing = listings.find(l => l.id === employee.listingId) || listings[0];
@@ -345,7 +281,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
     }
 
     return items;
-  }, [activePosts, listings, employees, shops, filterInfo.typeFilter]);
+  }, [initialPosts, listings, employees, shops, filterInfo.typeFilter]);
 
   return (
     <ClientProviders>
@@ -402,7 +338,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                       viewAllLabel="← Back to Discover"
                     />
                     <div className={`grid ${gridColsClass} gap-5 transition-all duration-300`}>
-                      {(activePosts || []).map((post, idx) => (
+                      {(initialPosts || []).map((post, idx) => (
                         <div
                           key={post.id}
                           style={{
