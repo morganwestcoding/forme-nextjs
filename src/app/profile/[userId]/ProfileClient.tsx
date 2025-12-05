@@ -1,5 +1,6 @@
 'use client';
 
+import Container from '@/components/Container';
 import ProfileHead from '@/components/profile/ProfileHead';
 import { SafeListing, SafePost, SafeUser } from '@/app/types';
 
@@ -19,12 +20,14 @@ const ProfileClient: React.FC<ProfileClientProps> = ({
   if (!user) return null;
 
   return (
-    <ProfileHead
-      user={user}
-      currentUser={currentUser}
-      posts={posts}
-      listings={listings}
-    />
+    <Container>
+      <ProfileHead
+        user={user}
+        currentUser={currentUser}
+        posts={posts}
+        listings={listings}
+      />
+    </Container>
   );
 };
 

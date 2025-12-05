@@ -1,15 +1,16 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import { Link02Icon, UserAdd01Icon, UserCheck01Icon, Location01Icon, Call02Icon, Globe02Icon, Mail01Icon, Share08Icon } from 'hugeicons-react';
+import { Link02Icon, UserAdd01Icon, UserCheck01Icon, Location01Icon, Call02Icon, Globe02Icon, Share08Icon } from 'hugeicons-react';
 import ServiceCard from './ServiceCard';
 import WorkerCard from './WorkerCard';
 import PostCard from '../feed/PostCard';
 import QRModal from '../modals/QRModal';
 import ListingCategoryNav from './ListingCategoryNav';
 import SectionHeader from '@/app/market/SectionHeader';
+import ContextualSearch from '@/components/search/ContextualSearch';
 import { SafePost, SafeUser, SafeListing } from '@/app/types';
 import useReservationModal from '@/app/hooks/useReservationModal';
 import useRentModal from '@/app/hooks/useListingModal';
@@ -52,10 +53,14 @@ const ListingHead: React.FC<ListingHeadProps> = ({
   const [followers, setFollowers] = useState<string[]>(initialFollowers);
   const [showQRModal, setShowQRModal] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [chatInput, setChatInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'About' | 'Services' | 'Professionals' | 'Posts' | 'Reviews' | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  // Handle search query changes for local filtering
+  const handleSearchChange = useCallback((query: string) => {
+    setSearchQuery(query);
+  }, []);
 
   // Listen for sidebar collapse changes
   React.useEffect(() => {
@@ -174,28 +179,35 @@ const ListingHead: React.FC<ListingHeadProps> = ({
 
   const operatingStatus = getOperatingStatus();
 
-  // AI chat submit handler
-  const handleChatSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!chatInput.trim() || isLoading) return;
-    setIsLoading(true);
-    // TODO: Integrate with AI endpoint
-    console.log('Chat query:', chatInput);
-    setTimeout(() => {
-      setIsLoading(false);
-      setChatInput('');
-    }, 500);
-  };
+  // Filter services based on search query
+  const filteredServices = useMemo(() => {
+    if (!searchQuery.trim()) return validServices;
+    const query = searchQuery.toLowerCase();
+    return validServices.filter((service) =>
+      service.serviceName?.toLowerCase().includes(query) ||
+      service.category?.toLowerCase().includes(query) ||
+      service.description?.toLowerCase().includes(query)
+    );
+  }, [validServices, searchQuery]);
 
-  // Quick action suggestions based on listing content
-  const quickActions = useMemo(() => {
-    const actions: string[] = [];
-    if (validServices.length > 0) actions.push('What services do you offer?');
-    if (employees.length > 0) actions.push('Who should I book with?');
-    if (storeHours.length > 0) actions.push('What are your hours?');
-    actions.push('Help me book an appointment');
-    return actions.slice(0, 4);
-  }, [validServices.length, employees.length, storeHours.length]);
+  // Filter employees based on search query
+  const filteredEmployees = useMemo(() => {
+    if (!searchQuery.trim()) return employees;
+    const query = searchQuery.toLowerCase();
+    return employees.filter((emp: any) =>
+      emp.fullName?.toLowerCase().includes(query) ||
+      emp.jobTitle?.toLowerCase().includes(query)
+    );
+  }, [employees, searchQuery]);
+
+  // Filter posts based on search query
+  const filteredPosts = useMemo(() => {
+    if (!searchQuery.trim()) return posts;
+    const query = searchQuery.toLowerCase();
+    return posts.filter((post) =>
+      post.content?.toLowerCase().includes(query)
+    );
+  }, [posts, searchQuery]);
 
   return (
     <>
@@ -344,25 +356,6 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 <span className="font-semibold text-neutral-900">4.8</span>
               </span>
 
-              {/* Followers */}
-              <span className="flex items-center gap-1.5">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <path d="M12 12C14.4853 12 16.5 9.98528 16.5 7.5C16.5 5.01472 14.4853 3 12 3C9.51472 3 7.5 5.01472 7.5 7.5C7.5 9.98528 9.51472 12 12 12Z" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M20 21C20 17.134 16.4183 14 12 14C7.58172 14 4 17.134 4 21" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                <span><span className="font-semibold text-neutral-900">{followers.length}</span> followers</span>
-              </span>
-
-              {/* Posts */}
-              <span className="flex items-center gap-1.5">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <path d="M2.5 12C2.5 7.52166 2.5 5.28249 3.89124 3.89124C5.28249 2.5 7.52166 2.5 12 2.5C16.4783 2.5 18.7175 2.5 20.1088 3.89124C21.5 5.28249 21.5 7.52166 21.5 12C21.5 16.4783 21.5 18.7175 20.1088 20.1088C18.7175 21.5 16.4783 21.5 12 21.5C7.52166 21.5 5.28249 21.5 3.89124 20.1088C2.5 18.7175 2.5 16.4783 2.5 12Z" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M2.5 12L21.5 12" strokeLinecap="round"/>
-                  <path d="M12 21.5V12" strokeLinecap="round"/>
-                </svg>
-                <span><span className="font-semibold text-neutral-900">{posts.length}</span> posts</span>
-              </span>
-
               {/* Likes */}
               <button
                 onClick={(e: any) => toggleFavorite(e)}
@@ -374,23 +367,25 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 </svg>
                 <span><span className="font-semibold text-neutral-900">{(listing as any).favoriteCount || 0}</span> likes</span>
               </button>
+
+              {/* Followers */}
+              <span><span className="font-semibold text-neutral-900">{followers.length}</span> followers</span>
+
+              {/* Posts */}
+              <span><span className="font-semibold text-neutral-900">{posts.length}</span> posts</span>
             </div>
 
             {/* Search Bar - Centered */}
             <div className="mt-6 max-w-3xl mx-auto">
-              <form onSubmit={handleChatSubmit}>
-                <div className="bg-neutral-100 border border-neutral-200 rounded-2xl overflow-hidden">
-                  <div className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5">
-                    <input
-                      type="text"
-                      value={chatInput}
-                      onChange={(e) => setChatInput(e.target.value)}
-                      placeholder="Looking for something?"
-                      className="flex-1 text-[13px] sm:text-[14px] bg-transparent border-none outline-none text-neutral-900 placeholder-neutral-400 font-normal pl-2 sm:pl-3"
-                    />
-
-                    <div className="w-px h-5 bg-neutral-300" />
-
+              <ContextualSearch
+                placeholder="Looking for something?"
+                filterTypes={['service', 'employee', 'post']}
+                entityId={listing.id}
+                entityType="listing"
+                onSearchChange={handleSearchChange}
+                enableLocalFilter
+                actionButtons={
+                  <>
                     {/* Attach Button */}
                     <button
                       className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl hover:bg-neutral-200 text-neutral-600 hover:text-neutral-900 transition-all duration-200"
@@ -432,9 +427,9 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                         </svg>
                       </button>
                     )}
-                  </div>
-                </div>
-              </form>
+                  </>
+                }
+              />
             </div>
 
             {/* Category Nav */}
@@ -455,12 +450,18 @@ const ListingHead: React.FC<ListingHeadProps> = ({
           <section>
             <SectionHeader
               title="Our Services & Offerings"
-              onViewAll={validServices.length > 8 ? () => {} : undefined}
-              viewAllLabel={validServices.length > 8 ? `View all ${validServices.length}` : undefined}
+              onViewAll={filteredServices.length > 8 ? () => {} : undefined}
+              viewAllLabel={filteredServices.length > 8 ? `View all ${filteredServices.length}` : undefined}
               className="!-mt-2 !mb-6"
             />
+            {filteredServices.length === 0 && searchQuery.trim() ? (
+              <div className="text-center py-16">
+                <p className="text-base font-medium text-gray-600 mb-1">No services found</p>
+                <p className="text-sm text-gray-500">Try a different search term</p>
+              </div>
+            ) : (
             <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
-              {validServices.slice(0, 8).map((service, idx) => (
+              {filteredServices.slice(0, 8).map((service, idx) => (
                 <div
                   key={service.id}
                   style={{
@@ -496,6 +497,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 </div>
               )}
             </div>
+            )}
           </section>
         )}
 
@@ -506,8 +508,14 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               title="Meet Our Team"
               className="!-mt-2 !mb-6"
             />
+            {filteredEmployees.length === 0 && searchQuery.trim() ? (
+              <div className="text-center py-16">
+                <p className="text-base font-medium text-gray-600 mb-1">No team members found</p>
+                <p className="text-sm text-gray-500">Try a different search term</p>
+              </div>
+            ) : (
             <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
-              {employees.slice(0, 8).map((employee: any, idx: number) => (
+              {filteredEmployees.slice(0, 8).map((employee: any, idx: number) => (
                 <div
                   key={employee.id || idx}
                   style={{
@@ -546,6 +554,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 </div>
               )}
             </div>
+            )}
           </section>
         )}
 
@@ -575,7 +584,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 </div>
               ))}
 
-              {posts && posts.map((post) => (
+              {filteredPosts && filteredPosts.map((post) => (
                 <PostCard
                   key={post.id}
                   post={post}
