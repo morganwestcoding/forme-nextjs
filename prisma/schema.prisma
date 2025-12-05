@@ -351,3 +351,29 @@ model ProductCategory {
   subCategories  ProductCategory[] @relation("SubCategories")
   products       Product[]
 }
+
+model Review {
+  id             String     @id @default(auto()) @map("_id") @db.ObjectId
+  rating         Int        // 1-5 stars
+  comment        String?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  // Author of the review
+  userId         String     @db.ObjectId
+
+  // Target - can be a user (provider) or a listing
+  targetType     String     // "user" | "listing"
+  targetUserId   String?    @db.ObjectId
+  targetListingId String?   @db.ObjectId
+
+  // Optional: link to a reservation/booking for verified reviews
+  reservationId  String?    @db.ObjectId
+
+  // Helpful votes
+  helpfulVotes   String[]   @db.ObjectId
+
+  @@index([targetType, targetUserId])
+  @@index([targetType, targetListingId])
+  @@index([userId])
+}

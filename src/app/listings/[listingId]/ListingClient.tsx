@@ -1,12 +1,10 @@
 'use client';
 
-import { useMemo, useState } from "react";
-import { SafeListing, SafeReservation, SafeUser, SafeService, SafePost } from "@/app/types";
+import { useMemo } from "react";
+import { SafeListing, SafeReservation, SafeUser, SafeService, SafePost, SafeReview } from "@/app/types";
 
 import Container from "@/components/Container";
 import ListingHead from "@/components/listings/ListingHead";
-import ReservationModal from "@/components/modals/ReservationModal";
-import RentModal from "@/components/modals/ListingModal"; // mount so Edit works on this page too
 
 interface ListingClientProps {
   listing: SafeListing & {
@@ -16,6 +14,11 @@ interface ListingClientProps {
   currentUser?: SafeUser | null;
   reservations?: SafeReservation[];
   posts?: SafePost[];
+  reviews?: SafeReview[];
+  reviewStats?: {
+    totalCount: number;
+    averageRating: number;
+  };
 }
 
 const ListingClient: React.FC<ListingClientProps> = ({
@@ -23,6 +26,8 @@ const ListingClient: React.FC<ListingClientProps> = ({
   currentUser,
   reservations = [],
   posts = [],
+  reviews = [],
+  reviewStats,
 }) => {
   // disabledDates kept if you use them elsewhere
   const disabledDates = useMemo(() => {
@@ -41,6 +46,8 @@ const ListingClient: React.FC<ListingClientProps> = ({
         currentUser={currentUser}
         Services={listing.services}
         posts={posts}
+        reviews={reviews}
+        reviewStats={reviewStats}
       />
     </Container>
   );

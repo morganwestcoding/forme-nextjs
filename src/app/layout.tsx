@@ -26,6 +26,7 @@ import StripeCheckoutModal from '@/components/modals/StripeCheckoutModal';
 import ShopModal from '@/components/modals/ShopModal';
 import CreatePostModal from '@/components/modals/CreatePostModal';
 import ReservationModal from '@/components/modals/ReservationModal';
+import ReviewModal from '@/components/modals/ReviewModal';
 import AuthModalController from '@/components/AuthModalController';
 import ComingSoonGate from '@/ComingSoonGate';
 import LayoutContent from '@/LayoutContent';
@@ -73,6 +74,7 @@ export default async function RootLayout({
                 <ShopModal/>
                 <ToasterProvider/>
                 <ReservationModal/>
+                <ReviewModal/>
                 <RentModal/>
                 <CreatePostModal />
                 <InboxModal/>

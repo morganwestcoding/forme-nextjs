@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { Link02Icon, UserAdd01Icon, UserCheck01Icon } from 'hugeicons-react';
-import { SafeListing, SafePost, SafeUser } from '@/app/types';
+import { SafeListing, SafePost, SafeUser, SafeReview } from '@/app/types';
 import CreateChatButton from '@/components/profile/CreateChatButton';
 import PostCard from '@/components/feed/PostCard';
 import ListingCard from '@/components/listings/ListingCard';
@@ -14,23 +14,32 @@ import ProfileCategoryNav from '@/components/profile/ProfileCategoryNav';
 import ContextualSearch from '@/components/search/ContextualSearch';
 import { categories } from '@/components/Categories';
 import useRegisterModal from '@/app/hooks/useRegisterModal';
+import useReviewModal from '@/app/hooks/useReviewModal';
 import ServiceSelector, { Service } from '@/components/inputs/ServiceSelector';
 import Modal from '@/components/modals/Modal';
+import ReviewCard from '@/components/reviews/ReviewCard';
 
 interface ProfileHeadProps {
   user: SafeUser;
   currentUser: SafeUser | null;
   posts: SafePost[];
   listings: SafeListing[];
+  reviews?: SafeReview[];
+  reviewStats?: {
+    totalCount: number;
+    averageRating: number;
+  };
 }
 
-type TabKey = 'About' | 'Posts' | 'Listings' | 'Images' | 'Services';
+type TabKey = 'About' | 'Posts' | 'Listings' | 'Images' | 'Services' | 'Reviews';
 
 const ProfileHead: React.FC<ProfileHeadProps> = ({
   user,
   currentUser,
   posts = [],
   listings = [],
+  reviews = [],
+  reviewStats,
 }) => {
   const {
     id,
@@ -47,6 +56,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
   } = user;
 
   const registerModal = useRegisterModal();
+  const reviewModal = useReviewModal();
 
   const [activeTab, setActiveTab] = useState<TabKey | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -332,6 +342,23 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                   <line x1="22" y1="11" x2="16" y2="11"/>
                 </svg>
                 {isFollowing ? 'Unfollow' : 'Follow'}
+              </button>
+              <button
+                onClick={() => {
+                  setShowDropdown(false);
+                  reviewModal.onOpen({
+                    targetType: 'user',
+                    targetUser: user,
+                    currentUser,
+                  });
+                }}
+                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3"
+                type="button"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
+                  <path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z"/>
+                </svg>
+                Add Review
               </button>
               <hr className="my-1 border-gray-200" />
               <button
@@ -659,6 +686,39 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
               <div className="text-center py-16">
                 <p className="text-base font-medium text-gray-600 mb-1">No services yet</p>
                 <p className="text-sm text-gray-500">Services will appear here once added</p>
+              </div>
+            )}
+          </section>
+        )}
+
+        {/* Reviews Section */}
+        {(activeTab === null || activeTab === 'Reviews') && (
+          <section>
+            <SectionHeader
+              title={`${firstName}'s Reviews`}
+              onViewAll={reviews.length > 8 ? () => {} : undefined}
+              viewAllLabel={reviews.length > 8 ? `View all ${reviews.length}` : undefined}
+              className="!-mt-2 !mb-6"
+            />
+            {reviews.length > 0 ? (
+              <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
+                {reviews.slice(0, 8).map((review, idx) => (
+                  <div
+                    key={review.id}
+                    style={{
+                      opacity: 0,
+                      animation: `fadeInUp 520ms ease-out both`,
+                      animationDelay: `${Math.min(60 + idx * 30, 360)}ms`,
+                    }}
+                  >
+                    <ReviewCard review={review} currentUser={currentUser} />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-16">
+                <p className="text-base font-medium text-gray-600 mb-1">No reviews yet</p>
+                <p className="text-sm text-gray-500">Reviews will appear here once shared</p>
               </div>
             )}
           </section>

@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-type TabKey = 'About' | 'Posts' | 'Listings' | 'Images' | 'Services';
+type TabKey = 'About' | 'Posts' | 'Listings' | 'Images' | 'Services' | 'Reviews';
 
 interface ProfileCategoryNavProps {
   activeTab: TabKey | null;
@@ -21,6 +21,7 @@ const ProfileCategoryNav: React.FC<ProfileCategoryNavProps> = ({
     { key: 'Listings', label: 'Listings' },
     { key: 'Images', label: 'Gallery' },
     ...(showServices ? [{ key: 'Services' as TabKey, label: 'Services' }] : []),
+    { key: 'Reviews', label: 'Reviews' },
   ];
 
   return (

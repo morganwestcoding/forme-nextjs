@@ -344,3 +344,25 @@ export type SafeProductCategory = {
   parentId?: string | null;
   productCount?: number;
 };
+
+export type SafeReview = {
+  id: string;
+  rating: number;
+  comment?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  userId: string;
+  targetType: 'user' | 'listing';
+  targetUserId?: string | null;
+  targetListingId?: string | null;
+  reservationId?: string | null;
+  helpfulVotes: string[];
+  user: {
+    id: string;
+    name: string | null;
+    image: string | null;
+    imageSrc?: string | null;
+    verificationStatus?: string | null;
+  };
+  isVerifiedBooking?: boolean;
+};

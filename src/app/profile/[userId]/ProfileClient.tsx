@@ -2,13 +2,18 @@
 
 import Container from '@/components/Container';
 import ProfileHead from '@/components/profile/ProfileHead';
-import { SafeListing, SafePost, SafeUser } from '@/app/types';
+import { SafeListing, SafePost, SafeUser, SafeReview } from '@/app/types';
 
 interface ProfileClientProps {
   currentUser: SafeUser | null;
   posts: SafePost[];
   user: SafeUser;
   listings: SafeListing[];
+  reviews?: SafeReview[];
+  reviewStats?: {
+    totalCount: number;
+    averageRating: number;
+  };
 }
 
 const ProfileClient: React.FC<ProfileClientProps> = ({
@@ -16,6 +21,8 @@ const ProfileClient: React.FC<ProfileClientProps> = ({
   posts,
   listings,
   currentUser,
+  reviews = [],
+  reviewStats,
 }) => {
   if (!user) return null;
 
@@ -26,6 +33,8 @@ const ProfileClient: React.FC<ProfileClientProps> = ({
         currentUser={currentUser}
         posts={posts}
         listings={listings}
+        reviews={reviews}
+        reviewStats={reviewStats}
       />
     </Container>
   );

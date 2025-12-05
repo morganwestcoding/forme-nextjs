@@ -11,10 +11,12 @@ import QRModal from '../modals/QRModal';
 import ListingCategoryNav from './ListingCategoryNav';
 import SectionHeader from '@/app/market/SectionHeader';
 import ContextualSearch from '@/components/search/ContextualSearch';
-import { SafePost, SafeUser, SafeListing } from '@/app/types';
+import { SafePost, SafeUser, SafeListing, SafeReview } from '@/app/types';
 import useReservationModal from '@/app/hooks/useReservationModal';
 import useRentModal from '@/app/hooks/useListingModal';
+import useReviewModal from '@/app/hooks/useReviewModal';
 import useFavorite from '@/app/hooks/useFavorite';
+import ReviewCard from '@/components/reviews/ReviewCard';
 
 interface ServiceItem {
   id: string;
@@ -32,6 +34,11 @@ interface ListingHeadProps {
   Services: ServiceItem[];
   posts?: SafePost[];
   categories?: any[];
+  reviews?: SafeReview[];
+  reviewStats?: {
+    totalCount: number;
+    averageRating: number;
+  };
 }
 
 const ListingHead: React.FC<ListingHeadProps> = ({
@@ -39,7 +46,9 @@ const ListingHead: React.FC<ListingHeadProps> = ({
   currentUser,
   Services,
   posts = [],
-  categories = []
+  categories = [],
+  reviews = [],
+  reviewStats,
 }) => {
   const router = useRouter();
 
@@ -79,6 +88,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
 
   const reservationModal = useReservationModal();
   const rentModal = useRentModal();
+  const reviewModal = useReviewModal();
   const { hasFavorited, toggleFavorite } = useFavorite({
     listingId: listing.id,
     currentUser
@@ -285,6 +295,23 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
                 </svg>
                 {hasFavorited ? 'Saved' : 'Save Listing'}
+              </button>
+              <button
+                onClick={() => {
+                  setShowDropdown(false);
+                  reviewModal.onOpen({
+                    targetType: 'listing',
+                    targetListing: listing,
+                    currentUser,
+                  });
+                }}
+                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3"
+                type="button"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
+                  <path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z"/>
+                </svg>
+                Add Review
               </button>
             </>
           )}
@@ -613,6 +640,39 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 </div>
               )}
             </div>
+          </section>
+        )}
+
+        {/* Reviews Section */}
+        {(!activeTab || activeTab === 'Reviews') && (
+          <section>
+            <SectionHeader
+              title="Reviews"
+              onViewAll={reviews.length > 8 ? () => {} : undefined}
+              viewAllLabel={reviews.length > 8 ? `View all ${reviews.length}` : undefined}
+              className="!-mt-2 !mb-6"
+            />
+            {reviews.length > 0 ? (
+              <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
+                {reviews.slice(0, 8).map((review, idx) => (
+                  <div
+                    key={review.id}
+                    style={{
+                      opacity: 0,
+                      animation: `fadeInUp 520ms ease-out both`,
+                      animationDelay: `${Math.min(60 + idx * 30, 360)}ms`,
+                    }}
+                  >
+                    <ReviewCard review={review} currentUser={currentUser} />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-16">
+                <p className="text-base font-medium text-gray-600 mb-1">No reviews yet</p>
+                <p className="text-sm text-gray-500">Reviews will appear here once shared</p>
+              </div>
+            )}
           </section>
         )}
 
