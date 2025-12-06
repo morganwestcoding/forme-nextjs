@@ -10,7 +10,7 @@ import PostCard from '../feed/PostCard';
 import QRModal from '../modals/QRModal';
 import ListingCategoryNav from './ListingCategoryNav';
 import SectionHeader from '@/app/market/SectionHeader';
-import ContextualSearch from '@/components/search/ContextualSearch';
+import PageSearch from '@/components/search/PageSearch';
 import { SafePost, SafeUser, SafeListing, SafeReview } from '@/app/types';
 import useReservationModal from '@/app/hooks/useReservationModal';
 import useRentModal from '@/app/hooks/useListingModal';
@@ -323,18 +323,56 @@ const ListingHead: React.FC<ListingHeadProps> = ({
       <div className="-mx-6 md:-mx-24 -mt-2 md:-mt-8">
         <div className="relative px-6 md:px-24 pt-12 pb-8">
 
-          {/* Centered Layout - Like Market */}
-          <div className="text-center">
+          {/* Content */}
+          <div className="relative z-10 pb-6">
+            {/* Main Listing Title - Compact with spacing compensation */}
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-2 relative mt-3">
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white leading-tight tracking-tight">
+                  {title}
+                </h1>
+                <VerificationBadge size={18} />
 
-            {/* Search Bar - Centered */}
-            <div className="max-w-3xl mx-auto">
-              <ContextualSearch
+                {/* 3 Dots Menu - Absolute Right */}
+                <button
+                  onClick={handleDropdownToggle}
+                  className="absolute right-0 top-1/2 -translate-y-1/2 p-2 rounded-xl hover:bg-gray-50 text-gray-500 hover:text-gray-900 transition-all duration-200"
+                  type="button"
+                  title="More options"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/>
+                  </svg>
+                </button>
+              </div>
+
+              {/* Address & Status */}
+              <p className="text-gray-500 text-base mt-3 max-w-2xl mx-auto">
+                {address && location ? `${address}, ${location}` : address || location}
+                {operatingStatus && (
+                  <>
+                    <span className="text-gray-300 mx-2">·</span>
+                    <span className={operatingStatus.isOpen ? 'text-emerald-600' : 'text-rose-600'}>
+                      {operatingStatus.isOpen
+                        ? `Open til ${operatingStatus.closeTime}`
+                        : `Closed · Opens ${operatingStatus.openTime}`
+                      }
+                    </span>
+                  </>
+                )}
+              </p>
+            </div>
+
+            {/* Search and Controls */}
+            <div className="mt-8 max-w-3xl mx-auto">
+              <PageSearch
                 placeholder="Looking for something?"
                 filterTypes={['service', 'employee', 'post']}
                 entityId={listing.id}
                 entityType="listing"
                 onSearchChange={handleSearchChange}
                 enableLocalFilter
+                showDefaultActions={false}
                 actionButtons={
                   <>
                     {/* Attach Button */}
@@ -383,81 +421,37 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               />
             </div>
 
-            {/* Category Nav */}
-            <div className="mt-5 flex justify-center">
-              <ListingCategoryNav activeTab={activeTab} onTabChange={setActiveTab} />
+            {/* Category Navigation with Stats - Sticky */}
+            <div className="mt-5 -mx-6 md:-mx-24">
+              <div className="sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-transparent transition-all duration-300" id="listing-category-nav-wrapper">
+                <div className="px-6 md:px-24 flex items-center justify-between">
+                  {/* Stats - Left */}
+                  <div className="hidden md:flex items-center gap-4 text-[13px] text-neutral-500">
+                    <span className="flex items-center gap-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      <span className="font-semibold text-neutral-900">4.8</span>
+                    </span>
+                    <button onClick={(e: any) => toggleFavorite(e)} className="flex items-center gap-1 hover:opacity-70 transition-opacity" type="button">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className={`w-4 h-4 ${hasFavorited ? 'text-rose-500' : ''}`} fill={hasFavorited ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.5">
+                        <path d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      <span className="font-semibold text-neutral-900">{(listing as any).favoriteCount || 0}</span>
+                    </button>
+                    <span><span className="font-semibold text-neutral-900">{followers.length}</span> followers</span>
+                  </div>
+
+                  {/* Nav - Center */}
+                  <ListingCategoryNav activeTab={activeTab} onTabChange={setActiveTab} />
+
+                  {/* Stats - Right (mobile) / Empty spacer (desktop) */}
+                  <div className="hidden md:block w-[180px]" />
+                </div>
+              </div>
             </div>
 
           </div>
-
-          {/* Title, Address & Stats - Left Aligned */}
-          <div className="mt-8">
-            {/* Title + Verified Badge + 3 Dots Menu */}
-            <div className="flex items-center gap-3 relative">
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white leading-tight tracking-tight">
-                {title}
-              </h1>
-              <VerificationBadge size={22} />
-
-              {/* 3 Dots Menu - Right Aligned */}
-              <button
-                onClick={handleDropdownToggle}
-                className="absolute right-0 top-1/2 -translate-y-1/2 p-2 rounded-xl hover:bg-gray-50 text-gray-500 hover:text-gray-900 transition-all duration-200"
-                type="button"
-                title="More options"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/>
-                </svg>
-              </button>
-            </div>
-
-            {/* Address & Status */}
-            <p className="text-gray-500 text-base mt-2">
-              {address && location ? `${address}, ${location}` : address || location}
-              {operatingStatus && (
-                <>
-                  <span className="text-gray-300 mx-2">·</span>
-                  <span className={operatingStatus.isOpen ? 'text-emerald-600' : 'text-rose-600'}>
-                    {operatingStatus.isOpen
-                      ? `Open til ${operatingStatus.closeTime}`
-                      : `Closed · Opens ${operatingStatus.openTime}`
-                    }
-                  </span>
-                </>
-              )}
-            </p>
-
-            {/* Social Stats */}
-            <div className="flex items-center gap-4 sm:gap-5 mt-3 text-[13px] sm:text-[14px] text-neutral-500">
-              {/* Rating */}
-              <span className="flex items-center gap-1.5">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                <span className="font-semibold text-neutral-900">4.8</span>
-              </span>
-
-              {/* Likes */}
-              <button
-                onClick={(e: any) => toggleFavorite(e)}
-                className="flex items-center gap-1.5 hover:opacity-70 transition-opacity"
-                type="button"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className={`w-[18px] h-[18px] ${hasFavorited ? 'text-rose-500' : ''}`} fill={hasFavorited ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.5">
-                  <path d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                <span><span className="font-semibold text-neutral-900">{(listing as any).favoriteCount || 0}</span> likes</span>
-              </button>
-
-              {/* Followers */}
-              <span><span className="font-semibold text-neutral-900">{followers.length}</span> followers</span>
-
-              {/* Posts */}
-              <span><span className="font-semibold text-neutral-900">{posts.length}</span> posts</span>
-            </div>
-          </div>
-
         </div>
       </div>
 

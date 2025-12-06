@@ -11,7 +11,7 @@ import ListingCard from '@/components/listings/ListingCard';
 import ServiceCard from '@/components/listings/ServiceCard';
 import SectionHeader from '@/app/market/SectionHeader';
 import ProfileCategoryNav from '@/components/profile/ProfileCategoryNav';
-import ContextualSearch from '@/components/search/ContextualSearch';
+import PageSearch from '@/components/search/PageSearch';
 import { categories } from '@/components/Categories';
 import useRegisterModal from '@/app/hooks/useRegisterModal';
 import useReviewModal from '@/app/hooks/useReviewModal';
@@ -380,72 +380,67 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
 
       {/* ========== PROFILE HEADER ========== */}
       <div className="-mx-6 md:-mx-24 -mt-2 md:-mt-8">
-        <div className="relative px-6 md:px-24 pt-8 pb-5">
+        <div className="relative px-6 md:px-24 pt-12 pb-8">
 
-          {/* Centered Layout */}
-          <div className="text-center relative">
+          {/* Content */}
+          <div className="relative z-10 pb-6">
+            {/* Centered Layout - Matching Market structure exactly */}
+            <div className="text-center relative">
 
-            {/* 3 Dots Menu - Top Right */}
-            <button
-              onClick={handleDropdownToggle}
-              className="absolute right-0 top-0 p-1.5 rounded-xl hover:bg-gray-50 text-gray-500 hover:text-gray-900 transition-all duration-200"
-              type="button"
-              title="More options"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/>
-              </svg>
-            </button>
+              {/* 3 Dots Menu - Top Right */}
+              <button
+                onClick={handleDropdownToggle}
+                className="absolute right-0 top-0 p-1.5 rounded-xl hover:bg-gray-50 text-gray-500 hover:text-gray-900 transition-all duration-200"
+                type="button"
+                title="More options"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/>
+                </svg>
+              </button>
 
-            {/* Profile Picture - Centered */}
-            <div className="w-20 h-20 md:w-[88px] md:h-[88px] rounded-full overflow-hidden border-2 border-gray-100 mx-auto mt-5 mb-2">
-              <img
-                src={image || imageSrc || '/placeholder.jpg'}
-                alt={name ?? 'User'}
-                className="w-full h-full object-cover"
-              />
-            </div>
+              {/* Avatar + Name + Badge - Compact inline */}
+              <div className="flex items-center justify-center gap-3 mt-1">
+                <div className="w-10 h-10 md:w-11 md:h-11 rounded-full overflow-hidden border-2 border-gray-100 flex-shrink-0">
+                  <img
+                    src={image || imageSrc || '/placeholder.jpg'}
+                    alt={name ?? 'User'}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white leading-tight tracking-tight">
+                  {name ?? 'User'}
+                </h1>
+                <VerificationBadge size={18} />
+              </div>
 
-            {/* Name + Verified Badge */}
-            <div className="flex items-center justify-center gap-1.5">
-              <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white leading-tight tracking-tight">
-                {name ?? 'User'}
-              </h1>
-              <VerificationBadge size={18} />
-            </div>
-
-            {/* Location & Status */}
-            <p className="text-gray-500 text-sm mt-1">
-              {city || 'City'}{state ? `, ${state}` : ''}
-              {operatingStatus && (
-                <>
-                  <span className="text-gray-300 mx-1.5">·</span>
-                  <span className={operatingStatus.isOpen ? 'text-emerald-600' : 'text-rose-600'}>
-                    {operatingStatus.isOpen
-                      ? `Open til ${operatingStatus.closeTime}`
-                      : `Closed · Opens ${operatingStatus.openTime}`
-                    }
-                  </span>
-                </>
-              )}
-            </p>
-
-            {/* Social Stats */}
-            <div className="flex items-center justify-center gap-4 mt-2 text-sm text-neutral-500">
-              <span><span className="font-semibold text-neutral-900">{followersCount}</span> followers</span>
-              <span><span className="font-semibold text-neutral-900">{posts.length}</span> posts</span>
-              <span><span className="font-semibold text-neutral-900">{following.length}</span> following</span>
+              {/* Location & Status - Same as Market subtitle */}
+              <p className="text-gray-500 text-base mt-3 max-w-2xl mx-auto">
+                {city || 'City'}{state ? `, ${state}` : ''}
+                {operatingStatus && (
+                  <>
+                    <span className="text-gray-300 mx-2">·</span>
+                    <span className={operatingStatus.isOpen ? 'text-emerald-600' : 'text-rose-600'}>
+                      {operatingStatus.isOpen
+                        ? `Open til ${operatingStatus.closeTime}`
+                        : `Closed · Opens ${operatingStatus.openTime}`
+                      }
+                    </span>
+                  </>
+                )}
+              </p>
             </div>
 
             {/* Search Bar - Centered */}
-            <div className="mt-4 max-w-3xl mx-auto">
-              <ContextualSearch
+            <div className="mt-8 max-w-3xl mx-auto">
+              <PageSearch
                 placeholder="Looking for something?"
                 filterTypes={['listing', 'post', 'service']}
                 entityId={id}
                 entityType="user"
                 onSearchChange={handleSearchChange}
                 enableLocalFilter
+                showDefaultActions={false}
                 actionButtons={
                   <>
                     {/* Attach Button */}
@@ -497,17 +492,31 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
               />
             </div>
 
-            {/* Category Nav */}
-            <div className="mt-3 flex justify-center">
-              <ProfileCategoryNav
-                activeTab={activeTab}
-                onTabChange={setActiveTab}
-                showServices={isProvider}
-              />
+            {/* Category Navigation with Stats - Sticky */}
+            <div className="mt-5 -mx-6 md:-mx-24">
+              <div className="sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-transparent transition-all duration-300" id="profile-category-nav-wrapper">
+                <div className="px-6 md:px-24 flex items-center justify-between">
+                  {/* Stats - Left */}
+                  <div className="hidden md:flex items-center gap-4 text-[13px] text-neutral-500">
+                    <span><span className="font-semibold text-neutral-900">{followersCount}</span> followers</span>
+                    <span><span className="font-semibold text-neutral-900">{posts.length}</span> posts</span>
+                    <span><span className="font-semibold text-neutral-900">{following.length}</span> following</span>
+                  </div>
+
+                  {/* Nav - Center */}
+                  <ProfileCategoryNav
+                    activeTab={activeTab}
+                    onTabChange={setActiveTab}
+                    showServices={isProvider}
+                  />
+
+                  {/* Empty spacer (desktop) */}
+                  <div className="hidden md:block w-[200px]" />
+                </div>
+              </div>
             </div>
 
           </div>
-
         </div>
       </div>
 

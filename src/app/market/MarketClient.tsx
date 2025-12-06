@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import Container from '@/components/Container';
 import { SafeListing, SafeUser, SafeEmployee } from '@/app/types';
 import ListingCard from '@/components/listings/ListingCard';
-import MarketSearch from './MarketSearch';
+import PageSearch from '@/components/search/PageSearch';
 import CategoryNav from './CategoryNav';
 import WorkerCard from '@/components/listings/WorkerCard';
 import SectionHeader from './SectionHeader';
@@ -229,9 +229,7 @@ const MarketClient: React.FC<MarketClientProps> = ({
 
             {/* Search and Controls */}
             <div className="mt-8 max-w-3xl mx-auto">
-              <MarketSearch
-                isHeroMode={false}
-              />
+              <PageSearch />
             </div>
 
             {/* Category Navigation - Sticky */}

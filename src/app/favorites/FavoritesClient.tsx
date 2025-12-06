@@ -8,7 +8,7 @@ import ShopCard from '@/components/shop/ShopCard';
 import PostCard from '@/components/feed/PostCard';
 import { categories } from '@/components/Categories';
 import { SafeListing, SafeUser, SafeEmployee, SafeShop, SafePost } from '@/app/types';
-import MarketSearch from '../market/MarketSearch';
+import PageSearch from '@/components/search/PageSearch';
 import CategoryNav from '@/components/favorites/CategoryNav';
 import SectionHeader from '../market/SectionHeader';
 
@@ -233,10 +233,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
 
             {/* Search and Controls */}
             <div className="mt-8 max-w-3xl mx-auto">
-              <MarketSearch
-                isHeroMode={false}
-                basePath="/favorites"
-              />
+              <PageSearch />
             </div>
 
             {/* Category Navigation - Sticky */}

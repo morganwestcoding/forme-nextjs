@@ -16,6 +16,7 @@ import useLoginModal from "@/app/hooks/useLoginModal";
 import useRentModal from "@/app/hooks/useListingModal";
 import useProfileModal from "@/app/hooks/useProfileModal";
 import useSubscribeModal from "@/app/hooks/useSubscribeModal";
+import useSettingsModal from "@/app/hooks/useSettingsModal";
 import { SafePost, SafeUser } from "@/app/types";
 import { clearEarlyAccess } from "@/app/utils/earlyAccess";
 
@@ -36,6 +37,7 @@ const UserButton: React.FC<UserButtonProps> = ({
   const rentModal = useRentModal();
   const profileModal = useProfileModal();
   const subscribeModal = useSubscribeModal();
+  const settingsModal = useSettingsModal();
   const [isOpen, setIsOpen] = useState(false);
 
   const formatTier = (tier?: string | null) => {
@@ -83,6 +85,7 @@ const UserButton: React.FC<UserButtonProps> = ({
   const handleListings = handleClick(() => router.push("/properties"));
   const handleLicensing = handleClick(() => router.push("/licensing"));
   const handleAnalytics = handleClick(() => router.push("/analytics"));
+  const handleSettings = handleClick(() => settingsModal.onOpen());
   const handleClearEarlyAccess = handleClick(() => {
     if (window.confirm('Are you sure you want to clear early access? You will need the access code to re-enter the app.')) {
       clearEarlyAccess();
@@ -91,7 +94,7 @@ const UserButton: React.FC<UserButtonProps> = ({
 
   const buttonClass = noBg
     ? "flex items-center justify-start cursor-pointer outline-none touch-manipulation"
-    : "w-44 py-2.5 px-3 flex items-center mt-1 gap-3 mb-5 cursor-pointer rounded-2xl relative transition-colors duration-150 outline-none bg-white/70 border border-neutral-200/50 hover:bg-white/90 active:bg-white";
+    : "w-44 py-1.5 px-3 flex items-center mt-1 gap-3 mb-5 cursor-pointer rounded-2xl relative transition-colors duration-150 outline-none bg-white/70 border border-neutral-200/50 hover:bg-white/90 active:bg-white";
 
 
   const dropdownWidthClass = noBg ? "min-w-44" : "w-44";
@@ -148,6 +151,7 @@ const UserButton: React.FC<UserButtonProps> = ({
             <DropdownMenuItem onClick={handleAnalytics}>My Analytics</DropdownMenuItem>
             <DropdownMenuItem onClick={handleSubscribe}>Subscription</DropdownMenuItem>
             <DropdownMenuItem onClick={handleLicensing}>Licensing</DropdownMenuItem>
+            <DropdownMenuItem onClick={handleSettings}>Settings</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={handleClearEarlyAccess}

@@ -7,7 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { SafeReservation, SafeUser } from "@/app/types";
 import Container from "@/components/Container";
 import ReserveCard from "@/components/listings/ReserveCard";
-import MarketSearch from "@/app/market/MarketSearch";
+import PageSearch from "@/components/search/PageSearch";
 import CategoryNav from "@/app/bookings/CategoryNav";
 import SectionHeader from "@/app/market/SectionHeader";
 
@@ -217,10 +217,7 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
 
             {/* Search and Controls */}
             <div className="mt-8 max-w-3xl mx-auto">
-              <MarketSearch
-                isHeroMode={false}
-                basePath="/bookings/reservations"
-              />
+              <PageSearch />
             </div>
 
             {/* Category Navigation - Sticky */}

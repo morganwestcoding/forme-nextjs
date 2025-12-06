@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { SafeUser, SafeShop, SafeProduct, SafeProductCategory } from '@/app/types';
 import ShopCard from '@/components/shop/ShopCard';
 import ProductCard from '@/components/shop/ProductCard';
-import MarketSearch from '@/app/market/MarketSearch';
+import PageSearch from '@/components/search/PageSearch';
 import CategoryNav from '@/app/market/CategoryNav';
 import SectionHeader from '@/app/market/SectionHeader';
 
@@ -217,10 +217,7 @@ const ShopClient: React.FC<ShopClientProps> = ({
 
             {/* Search and Controls */}
             <div className="mt-8 max-w-3xl mx-auto">
-              <MarketSearch
-                isHeroMode={false}
-                basePath="/shops"
-              />
+              <PageSearch />
             </div>
 
             {/* Category Navigation - Sticky */}
