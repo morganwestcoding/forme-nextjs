@@ -6,11 +6,11 @@ import { useSearchParams } from 'next/navigation';
 import { Plus, Store, PenSquare, Building2, Package, Search } from 'lucide-react';
 import useRentModal from '@/app/hooks/useListingModal';
 import useFilterModal from '@/app/hooks/useFilterModal';
+import { useTheme } from '@/app/context/ThemeContext';
 import useCreatePostModal from '@/app/hooks/useCreatePostModal';
 import useShopModal from '@/app/hooks/useShopModal';
 import useProductModal from '@/app/hooks/useProductModal';
 import ContextualSearch from '@/components/search/ContextualSearch';
-import { useTheme } from '@/app/context/ThemeContext';
 
 type ActionContext = 'market' | 'shops' | 'discover' | 'properties';
 
