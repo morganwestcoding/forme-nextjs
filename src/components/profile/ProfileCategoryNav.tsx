@@ -3,7 +3,7 @@
 import React from 'react';
 import { useTheme } from '@/app/context/ThemeContext';
 
-type TabKey = 'About' | 'Posts' | 'Listings' | 'Images' | 'Services' | 'Reviews';
+type TabKey = 'About' | 'Posts' | 'Businesses' | 'Images' | 'Services' | 'Reviews';
 
 interface ProfileCategoryNavProps {
   activeTab: TabKey | null;
@@ -21,7 +21,7 @@ const ProfileCategoryNav: React.FC<ProfileCategoryNavProps> = ({
   const tabs: Array<{ key: TabKey; label: string }> = [
     { key: 'About', label: 'About' },
     { key: 'Posts', label: 'Posts' },
-    { key: 'Listings', label: 'Listings' },
+    { key: 'Businesses', label: 'Businesses' },
     { key: 'Images', label: 'Gallery' },
     ...(showServices ? [{ key: 'Services' as TabKey, label: 'Services' }] : []),
     { key: 'Reviews', label: 'Reviews' },

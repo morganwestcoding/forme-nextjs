@@ -8,6 +8,7 @@ import ProductCard from '@/components/shop/ProductCard';
 import PageSearch from '@/components/search/PageSearch';
 import CategoryNav from '@/app/market/CategoryNav';
 import SectionHeader from '@/app/market/SectionHeader';
+import { useSidebarState } from '@/app/hooks/useSidebarState';
 
 interface ShopClientProps {
   initialShops: SafeShop[];
@@ -25,8 +26,7 @@ const ShopClient: React.FC<ShopClientProps> = ({
   currentUser,
 }) => {
   const params = useSearchParams();
-
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const isSidebarCollapsed = useSidebarState();
 
   // Pagination state
   const [shopsIndex, setShopsIndex] = useState(0);
@@ -52,18 +52,6 @@ const ShopClient: React.FC<ShopClientProps> = ({
   const gridColsClass = isSidebarCollapsed
     ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6'
     : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5';
-
-  // Sidebar collapse detection
-  useEffect(() => {
-    const checkSidebarState = () => {
-      const collapsed = localStorage.getItem('sidebarCollapsed') === 'true';
-      setIsSidebarCollapsed(collapsed);
-    };
-
-    checkSidebarState();
-    window.addEventListener('sidebarToggle', checkSidebarState);
-    return () => window.removeEventListener('sidebarToggle', checkSidebarState);
-  }, []);
 
   // Reset pagination on sidebar change
   useEffect(() => {
@@ -207,17 +195,17 @@ const ShopClient: React.FC<ShopClientProps> = ({
 
           {/* Content */}
           <div className="relative z-10 pb-6">
-            {/* Main Vendors Title */}
+            {/* Main Shops Title */}
             <div className="text-center">
               <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight tracking-tight">
-                Vendors
+                Shops
               </h1>
-              <p className="text-gray-500 text-base mt-3 max-w-2xl mx-auto">Discover unique shops and products from our vendors</p>
+              <p className="text-gray-500 text-base mt-3 max-w-2xl mx-auto">Discover unique shops and products</p>
             </div>
 
             {/* Search and Controls */}
             <div className="mt-8 max-w-3xl mx-auto">
-              <PageSearch />
+              <PageSearch actionContext="shops" />
             </div>
 
             {/* Category Navigation - Sticky */}
@@ -242,10 +230,10 @@ const ShopClient: React.FC<ShopClientProps> = ({
               {viewAllMode === 'shops' && (
                 <>
                   <SectionHeader
-                    title="All Vendors"
+                    title="All Shops"
                     className="mb-6"
                     onViewAll={handleBackToMain}
-                    viewAllLabel="← Back to Vendors"
+                    viewAllLabel="← Back to Shops"
                   />
                   <div className={`grid ${gridColsClass} gap-5 transition-all duration-300`}>
                     {shops.map((shop, idx) => (
@@ -272,7 +260,7 @@ const ShopClient: React.FC<ShopClientProps> = ({
                     title="All Products"
                     className="mb-6"
                     onViewAll={handleBackToMain}
-                    viewAllLabel="← Back to Vendors"
+                    viewAllLabel="← Back to Shops"
                   />
                   <div className={`grid ${gridColsClass} gap-5 transition-all duration-300`}>
                     {products.map((product, idx) => (
@@ -362,7 +350,7 @@ const ShopClient: React.FC<ShopClientProps> = ({
                     <SectionHeader
                       title={filterInfo.resultsHeaderText}
                       onViewAll={handleBackToMain}
-                      viewAllLabel="← Back to Vendors"
+                      viewAllLabel="← Back to Shops"
                     />
                   )}
 

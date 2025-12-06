@@ -8,6 +8,7 @@ import PageSearch from '@/components/search/PageSearch';
 import CategoryNav from './CategoryNav';
 import WorkerCard from '@/components/listings/WorkerCard';
 import SectionHeader from './SectionHeader';
+import { useSidebarState } from '@/app/hooks/useSidebarState';
 
 interface MarketClientProps {
   searchParams: {
@@ -37,8 +38,7 @@ const MarketClient: React.FC<MarketClientProps> = ({
   currentUser,
   trendingEmployees = [],
 }) => {
-
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const isSidebarCollapsed = useSidebarState();
   const ITEMS_PER_PAGE = 8;
 
   const [featuredIndex, setFeaturedIndex] = useState(0);
@@ -46,7 +46,7 @@ const MarketClient: React.FC<MarketClientProps> = ({
   const [isAnimating, setIsAnimating] = useState(false);
   const [featuredVisible, setFeaturedVisible] = useState(true);
   const [trendingVisible, setTrendingVisible] = useState(true);
-  const [viewAllMode, setViewAllMode] = useState<'storefronts' | 'professionals' | null>(null);
+  const [viewAllMode, setViewAllMode] = useState<'businesses' | 'professionals' | null>(null);
 
   // Sticky nav border effect on scroll
   useEffect(() => {
@@ -62,17 +62,6 @@ const MarketClient: React.FC<MarketClientProps> = ({
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  useEffect(() => {
-    const checkSidebarState = () => {
-      const collapsed = localStorage.getItem('sidebarCollapsed') === 'true';
-      setIsSidebarCollapsed(collapsed);
-    };
-
-    checkSidebarState();
-    window.addEventListener('sidebarToggle', checkSidebarState);
-    return () => window.removeEventListener('sidebarToggle', checkSidebarState);
   }, []);
 
   useEffect(() => {
@@ -195,8 +184,8 @@ const MarketClient: React.FC<MarketClientProps> = ({
   const scrollTrendingRail = (dir: 'left' | 'right') =>
     animateTransition(setTrendingVisible, setTrendingIndex, trendingIndex, totalTrendingPages, dir);
 
-  const handleViewAllStorefronts = () => {
-    setViewAllMode('storefronts');
+  const handleViewAllBusinesses = () => {
+    setViewAllMode('businesses');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -219,17 +208,19 @@ const MarketClient: React.FC<MarketClientProps> = ({
 
           {/* Content */}
           <div className="relative z-10 pb-6">
-            {/* Main Market Title */}
+            {/* Main Businesses Title */}
             <div className="text-center">
               <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight tracking-tight">
-                Market
+                Businesses
               </h1>
-              <p className="text-gray-500 text-base mt-3 max-w-2xl mx-auto">Discover unique places from our vendors</p>
+              <p className="text-gray-500 text-base mt-3 max-w-2xl mx-auto">Discover unique places from our businesses</p>
             </div>
 
-            {/* Search and Controls */}
-            <div className="mt-8 max-w-3xl mx-auto">
-              <PageSearch />
+            {/* Search */}
+            <div className="mt-8 flex justify-center">
+              <div className="w-full max-w-3xl">
+                <PageSearch actionContext="market" />
+              </div>
             </div>
 
             {/* Category Navigation - Sticky */}
@@ -250,14 +241,14 @@ const MarketClient: React.FC<MarketClientProps> = ({
         <div>
           {hasListings ? (
             <>
-              {/* View All Storefronts Mode */}
-                {viewAllMode === 'storefronts' && (
+              {/* View All Businesses Mode */}
+                {viewAllMode === 'businesses' && (
                   <>
                     <SectionHeader
-                      title="All Storefronts"
+                      title="All Businesses"
                       className="mb-6"
                       onViewAll={handleBackToMain}
-                      viewAllLabel="← Back to Market"
+                      viewAllLabel="← Back to Businesses"
                     />
 
                     <div className={`grid ${gridColsClass} gap-5 transition-all duration-300`}>
@@ -284,10 +275,10 @@ const MarketClient: React.FC<MarketClientProps> = ({
                 {viewAllMode === 'professionals' && (
                   <>
                     <SectionHeader
-                      title="All Teammates"
+                      title="All Professionals"
                       className="mb-6"
                       onViewAll={handleBackToMain}
-                      viewAllLabel="← Back to Market"
+                      viewAllLabel="← Back to Businesses"
                     />
                     
                     <div className={`grid ${gridColsClass} gap-5 transition-all duration-300`}>
@@ -329,13 +320,13 @@ const MarketClient: React.FC<MarketClientProps> = ({
                 {/* Normal View - Show sections with pagination */}
                 {!viewAllMode && (
                   <>
-                    {/* ===== Featured Storefronts Section ===== */}
+                    {/* ===== Featured Businesses Section ===== */}
                     {!filterInfo.isFiltered && (
                       <SectionHeader
-                        title="Trending Storefronts"
+                        title="Trending Businesses"
                         onPrev={() => scrollFeaturedRail('left')}
                         onNext={() => scrollFeaturedRail('right')}
-                        onViewAll={handleViewAllStorefronts}
+                        onViewAll={handleViewAllBusinesses}
                       />
                     )}
 

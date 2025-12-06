@@ -6,7 +6,7 @@ import ClientProviders from '@/components/ClientProviders';
 import { categories } from '@/components/Categories';
 import { SafePost, SafeUser, SafeListing, SafeEmployee, SafeShop } from '@/app/types';
 import { useViewMode } from '@/app/hooks/useViewMode';
-import useCreatePostModal from '@/app/hooks/useCreatePostModal';
+import { useSidebarState } from '@/app/hooks/useSidebarState';
 import Container from './Container';
 import PageSearch from '@/components/search/PageSearch';
 import CategoryNav from '@/app/market/CategoryNav';
@@ -38,9 +38,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
   shops = [],
 }) => {
   const { viewMode, setViewMode } = useViewMode();
-  const createPostModal = useCreatePostModal();
-
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const isSidebarCollapsed = useSidebarState();
 
   // Pagination state
   const [postsIndex, setPostsIndex] = useState(0);
@@ -59,18 +57,6 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
   const [viewAllMode, setViewAllMode] = useState<'posts' | 'listings' | 'professionals' | 'shops' | null>(null);
 
   const searchParams = useSearchParams();
-
-  // Sidebar collapse detection
-  useEffect(() => {
-    const checkSidebarState = () => {
-      const collapsed = localStorage.getItem('sidebarCollapsed') === 'true';
-      setIsSidebarCollapsed(collapsed);
-    };
-
-    checkSidebarState();
-    window.addEventListener('sidebarToggle', checkSidebarState);
-    return () => window.removeEventListener('sidebarToggle', checkSidebarState);
-  }, []);
 
   // Reset pagination on sidebar change
   useEffect(() => {
@@ -303,7 +289,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
 
                 {/* Search and Controls */}
                 <div className="mt-8 max-w-3xl mx-auto">
-                  <PageSearch onCreateClick={() => createPostModal.onOpen()} />
+                  <PageSearch actionContext="discover" />
                 </div>
 
                 {/* Category Navigation - Sticky */}
@@ -355,7 +341,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                 {viewAllMode === 'listings' && (
                   <>
                     <SectionHeader
-                      title="All Storefronts"
+                      title="All Businesses"
                       className="mb-6"
                       onViewAll={handleBackToMain}
                       viewAllLabel="← Back to Discover"
@@ -382,7 +368,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                 {viewAllMode === 'professionals' && (
                   <>
                     <SectionHeader
-                      title="All Teammates"
+                      title="All Professionals"
                       className="mb-6"
                       onViewAll={handleBackToMain}
                       viewAllLabel="← Back to Discover"
@@ -425,7 +411,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                 {viewAllMode === 'shops' && (
                   <>
                     <SectionHeader
-                      title="All Vendors"
+                      title="All Shops"
                       className="mb-6"
                       onViewAll={handleBackToMain}
                       viewAllLabel="← Back to Discover"
@@ -564,7 +550,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                     {!filterInfo.isFiltered && currentShops.length > 0 && (
                       <>
                         <SectionHeader
-                          title="Recommended Vendors"
+                          title="Recommended Shops"
                           onPrev={() => scrollShops('left')}
                           onNext={() => scrollShops('right')}
                           onViewAll={handleViewAllShops}

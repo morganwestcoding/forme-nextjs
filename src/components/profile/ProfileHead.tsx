@@ -15,6 +15,7 @@ import PageSearch from '@/components/search/PageSearch';
 import { categories } from '@/components/Categories';
 import useRegisterModal from '@/app/hooks/useRegisterModal';
 import useReviewModal from '@/app/hooks/useReviewModal';
+import { useSidebarState } from '@/app/hooks/useSidebarState';
 import ServiceSelector, { Service } from '@/components/inputs/ServiceSelector';
 import Modal from '@/components/modals/Modal';
 import ReviewCard from '@/components/reviews/ReviewCard';
@@ -32,7 +33,7 @@ interface ProfileHeadProps {
   };
 }
 
-type TabKey = 'About' | 'Posts' | 'Listings' | 'Images' | 'Services' | 'Reviews';
+type TabKey = 'About' | 'Posts' | 'Businesses' | 'Images' | 'Services' | 'Reviews';
 
 const ProfileHead: React.FC<ProfileHeadProps> = ({
   user,
@@ -62,19 +63,11 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
   const [activeTab, setActiveTab] = useState<TabKey | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const sidebarCollapsed = useSidebarState();
 
   // Handle search query changes for local filtering
   const handleSearchChange = useCallback((query: string) => {
     setSearchQuery(query);
-  }, []);
-
-  // Listen for sidebar collapse changes
-  useEffect(() => {
-    const checkSidebar = () => setSidebarCollapsed(localStorage.getItem('sidebarCollapsed') === 'true');
-    checkSidebar();
-    window.addEventListener('sidebarToggle', checkSidebar);
-    return () => window.removeEventListener('sidebarToggle', checkSidebar);
   }, []);
 
   // Responsive grid - matches Market pattern
@@ -380,7 +373,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
 
       {/* ========== PROFILE HEADER ========== */}
       <div className="-mx-6 md:-mx-24 -mt-2 md:-mt-8">
-        <div className="relative px-6 md:px-24 pt-12 pb-8">
+        <div className="relative px-6 md:px-24 pt-11 pb-8">
 
           {/* Content */}
           <div className="relative z-10 pb-6">
@@ -400,7 +393,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
               </button>
 
               {/* Avatar + Name + Badge - Compact inline */}
-              <div className="flex items-center justify-center gap-3 mt-1">
+              <div className="flex items-center justify-center gap-3 mt-2">
                 <div className="w-10 h-10 md:w-11 md:h-11 rounded-full overflow-hidden border-2 border-gray-100 flex-shrink-0">
                   <img
                     src={image || imageSrc || '/placeholder.jpg'}
@@ -408,23 +401,24 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white leading-tight tracking-tight">
+                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white leading-tight tracking-tight">
                   {name ?? 'User'}
                 </h1>
-                <VerificationBadge size={18} />
+                <VerificationBadge size={20} />
               </div>
 
-              {/* Location & Status - Same as Market subtitle */}
+              {/* All info in ONE line */}
               <p className="text-gray-500 text-base mt-3 max-w-2xl mx-auto">
+                <span className="font-semibold text-neutral-900">{followersCount}</span> followers
+                <span className="mx-1.5 text-gray-300">·</span>
+                <span className="font-semibold text-neutral-900">{posts.length}</span> posts
+                <span className="mx-1.5 text-gray-300">·</span>
                 {city || 'City'}{state ? `, ${state}` : ''}
                 {operatingStatus && (
                   <>
-                    <span className="text-gray-300 mx-2">·</span>
+                    <span className="text-gray-300 mx-1.5">·</span>
                     <span className={operatingStatus.isOpen ? 'text-emerald-600' : 'text-rose-600'}>
-                      {operatingStatus.isOpen
-                        ? `Open til ${operatingStatus.closeTime}`
-                        : `Closed · Opens ${operatingStatus.openTime}`
-                      }
+                      {operatingStatus.isOpen ? `Open` : `Closed`}
                     </span>
                   </>
                 )}
@@ -492,26 +486,15 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
               />
             </div>
 
-            {/* Category Navigation with Stats - Sticky */}
+            {/* Category Navigation - Sticky */}
             <div className="mt-5 -mx-6 md:-mx-24">
               <div className="sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-transparent transition-all duration-300" id="profile-category-nav-wrapper">
-                <div className="px-6 md:px-24 flex items-center justify-between">
-                  {/* Stats - Left */}
-                  <div className="hidden md:flex items-center gap-4 text-[13px] text-neutral-500">
-                    <span><span className="font-semibold text-neutral-900">{followersCount}</span> followers</span>
-                    <span><span className="font-semibold text-neutral-900">{posts.length}</span> posts</span>
-                    <span><span className="font-semibold text-neutral-900">{following.length}</span> following</span>
-                  </div>
-
-                  {/* Nav - Center */}
+                <div className="px-6 md:px-24 flex justify-center">
                   <ProfileCategoryNav
                     activeTab={activeTab}
                     onTabChange={setActiveTab}
                     showServices={isProvider}
                   />
-
-                  {/* Empty spacer (desktop) */}
-                  <div className="hidden md:block w-[200px]" />
                 </div>
               </div>
             </div>
@@ -565,8 +548,8 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
           </section>
         )}
 
-        {/* Listings Section */}
-        {(activeTab === null || activeTab === 'Listings') && (
+        {/* Businesses Section */}
+        {(activeTab === null || activeTab === 'Businesses') && (
           <section>
             <SectionHeader
               title={`${firstName}'s Listings`}

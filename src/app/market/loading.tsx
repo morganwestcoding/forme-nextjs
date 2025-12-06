@@ -5,8 +5,8 @@ export default function Loading() {
   return (
     <Container>
       <PageSkeleton
-        title="Market"
-        subtitle="Discover unique places from our vendors"
+        title="Businesses"
+        subtitle="Discover unique places from our businesses"
       />
     </Container>
   );

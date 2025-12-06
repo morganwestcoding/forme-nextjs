@@ -3,7 +3,7 @@
 import React from 'react';
 import { useTheme } from '@/app/context/ThemeContext';
 
-type FavoriteTab = 'Market' | 'Professionals' | 'Shops' | 'Posts';
+type FavoriteTab = 'Businesses' | 'Professionals' | 'Shops' | 'Posts';
 
 interface CategoryNavProps {
   activeTab: FavoriteTab | null;
@@ -14,7 +14,7 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ activeTab, setActiveTab }) =>
   const { accentColor } = useTheme();
 
   const tabs: { key: FavoriteTab; label: string }[] = [
-    { key: 'Market', label: 'Market' },
+    { key: 'Businesses', label: 'Businesses' },
     { key: 'Professionals', label: 'Professionals' },
     { key: 'Shops', label: 'Shops' },
     { key: 'Posts', label: 'Posts' },

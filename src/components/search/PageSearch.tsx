@@ -1,12 +1,18 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useSearchParams } from 'next/navigation';
-import { Link02Icon } from 'hugeicons-react';
+import { Plus, Store, PenSquare, Building2, Package, Search } from 'lucide-react';
 import useRentModal from '@/app/hooks/useListingModal';
 import useFilterModal from '@/app/hooks/useFilterModal';
+import useCreatePostModal from '@/app/hooks/useCreatePostModal';
+import useShopModal from '@/app/hooks/useShopModal';
+import useProductModal from '@/app/hooks/useProductModal';
 import ContextualSearch from '@/components/search/ContextualSearch';
 import { useTheme } from '@/app/context/ThemeContext';
+
+type ActionContext = 'market' | 'shops' | 'discover' | 'properties';
 
 interface PageSearchProps {
   /** Placeholder text for the search input */
@@ -33,6 +39,14 @@ interface PageSearchProps {
   onSearchChange?: (query: string) => void;
   /** Enable local filtering mode */
   enableLocalFilter?: boolean;
+  /** Context for action button dropdown */
+  actionContext?: ActionContext;
+}
+
+interface ActionItem {
+  label: string;
+  icon: React.ElementType;
+  action: () => void;
 }
 
 const PageSearch: React.FC<PageSearchProps> = ({
@@ -48,11 +62,100 @@ const PageSearch: React.FC<PageSearchProps> = ({
   entityType,
   onSearchChange,
   enableLocalFilter = false,
+  actionContext,
 }) => {
   const params = useSearchParams();
   const rentModal = useRentModal();
   const filterModal = useFilterModal();
+  const createPostModal = useCreatePostModal();
+  const shopModal = useShopModal();
+  const productModal = useProductModal();
   const { accentColor } = useTheme();
+
+  // Action dropdown state
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState<{ top: number; right: number } | null>(null);
+  const actionButtonRef = useRef<HTMLButtonElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Get context-specific actions
+  const getActions = (): ActionItem[] => {
+    if (!actionContext) return [];
+
+    switch (actionContext) {
+      case 'market':
+        return [
+          { label: 'Create Listing', icon: Store, action: () => rentModal.onOpen() },
+          { label: 'Create Post', icon: PenSquare, action: () => createPostModal.onOpen() },
+        ];
+      case 'shops':
+        return [
+          { label: 'Create Shop', icon: Building2, action: () => shopModal.onOpen() },
+          { label: 'Create Product', icon: Package, action: () => productModal.onOpen() },
+          { label: 'Create Post', icon: PenSquare, action: () => createPostModal.onOpen() },
+        ];
+      case 'discover':
+        return [
+          { label: 'Create Post', icon: PenSquare, action: () => createPostModal.onOpen() },
+        ];
+      case 'properties':
+        return [
+          { label: 'Create Listing', icon: Store, action: () => rentModal.onOpen() },
+        ];
+      default:
+        return [];
+    }
+  };
+
+  const actions = getActions();
+  const hasActionContext = actionContext && actions.length > 0;
+
+  // Update dropdown position
+  useEffect(() => {
+    if (isDropdownOpen && actionButtonRef.current) {
+      const rect = actionButtonRef.current.getBoundingClientRect();
+      setDropdownPosition({
+        top: rect.bottom + 8,
+        right: window.innerWidth - rect.right,
+      });
+    }
+  }, [isDropdownOpen]);
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        actionButtonRef.current &&
+        !dropdownRef.current.contains(e.target as Node) &&
+        !actionButtonRef.current.contains(e.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    if (isDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isDropdownOpen]);
+
+  // Close dropdown on Escape
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsDropdownOpen(false);
+    };
+
+    if (isDropdownOpen) {
+      document.addEventListener('keydown', handleEscape);
+    }
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isDropdownOpen]);
+
+  const handleActionClick = (action: () => void) => {
+    action();
+    setIsDropdownOpen(false);
+  };
 
   const handleCreateListing = () => {
     if (onCreateClick) {
@@ -94,9 +197,9 @@ const PageSearch: React.FC<PageSearchProps> = ({
         <button
           className={iconButtonClasses}
           type="button"
-          title="Attach"
+          title="Search"
         >
-          <Link02Icon size={20} strokeWidth={1.5} className="sm:w-[22px] sm:h-[22px]" />
+          <Search className="w-5 h-5 sm:w-[22px] sm:h-[22px]" strokeWidth={1.5} />
         </button>
       )}
 
@@ -125,7 +228,7 @@ const PageSearch: React.FC<PageSearchProps> = ({
         </button>
       )}
 
-      {showCreate && (
+      {showCreate && !hasActionContext && (
         <button
           onClick={handleCreateListing}
           className={iconButtonClasses}
@@ -138,19 +241,63 @@ const PageSearch: React.FC<PageSearchProps> = ({
           </svg>
         </button>
       )}
+
+      {hasActionContext && (
+        <button
+          ref={actionButtonRef}
+          onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+          className={`${iconButtonClasses} ${isDropdownOpen ? 'bg-neutral-200 text-neutral-900' : ''}`}
+          type="button"
+          title="Create"
+        >
+          <Plus
+            className={`w-5 h-5 sm:w-[22px] sm:h-[22px] transition-transform duration-200 ${isDropdownOpen ? 'rotate-45' : ''}`}
+            strokeWidth={1.5}
+          />
+        </button>
+      )}
     </>
   ) : null;
 
   return (
-    <ContextualSearch
-      placeholder={placeholder}
-      filterTypes={filterTypes}
-      actionButtons={actionButtons || defaultActionButtons}
-      entityId={entityId}
-      entityType={entityType}
-      onSearchChange={onSearchChange}
-      enableLocalFilter={enableLocalFilter}
-    />
+    <>
+      <ContextualSearch
+        placeholder={placeholder}
+        filterTypes={filterTypes}
+        actionButtons={actionButtons || defaultActionButtons}
+        entityId={entityId}
+        entityType={entityType}
+        onSearchChange={onSearchChange}
+        enableLocalFilter={enableLocalFilter}
+      />
+
+      {/* Action dropdown portal */}
+      {isDropdownOpen && dropdownPosition && typeof window !== 'undefined' &&
+        createPortal(
+          <div
+            ref={dropdownRef}
+            className="fixed z-[9999] bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl shadow-lg shadow-neutral-900/10 py-1.5 min-w-[180px] animate-in fade-in slide-in-from-top-2 duration-150"
+            style={{
+              top: `${dropdownPosition.top}px`,
+              right: `${dropdownPosition.right}px`,
+            }}
+          >
+            {actions.map((item) => (
+              <button
+                key={item.label}
+                onClick={() => handleActionClick(item.action)}
+                className="w-full px-3 py-2.5 flex items-center gap-2.5 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors duration-150 text-left"
+                type="button"
+              >
+                <item.icon className="w-4 h-4 text-neutral-500 dark:text-neutral-400" strokeWidth={1.5} />
+                <span className="text-[13px] font-medium text-neutral-700 dark:text-neutral-200">{item.label}</span>
+              </button>
+            ))}
+          </div>,
+          document.body
+        )
+      }
+    </>
   );
 };
 

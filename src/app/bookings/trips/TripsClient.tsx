@@ -10,6 +10,7 @@ import ReserveCard from "@/components/listings/ReserveCard";
 import PageSearch from "@/components/search/PageSearch";
 import CategoryNav from "@/app/bookings/CategoryNav";
 import SectionHeader from "@/app/market/SectionHeader";
+import { useSidebarState } from "@/app/hooks/useSidebarState";
 
 interface TripsClientProps {
   reservations: SafeReservation[];
@@ -26,7 +27,7 @@ const TripsClient: React.FC<TripsClientProps> = ({
   const router = useRouter();
   const searchParams = useSearchParams();
   const [deletingId, setDeletingId] = useState('');
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const isSidebarCollapsed = useSidebarState();
 
   // Pagination state
   const [tripsIndex, setTripsIndex] = useState(0);
@@ -40,18 +41,6 @@ const TripsClient: React.FC<TripsClientProps> = ({
   const gridColsClass = isSidebarCollapsed
     ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6'
     : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5';
-
-  // Sidebar collapse detection
-  useEffect(() => {
-    const checkSidebarState = () => {
-      const collapsed = localStorage.getItem('sidebarCollapsed') === 'true';
-      setIsSidebarCollapsed(collapsed);
-    };
-
-    checkSidebarState();
-    window.addEventListener('sidebarToggle', checkSidebarState);
-    return () => window.removeEventListener('sidebarToggle', checkSidebarState);
-  }, []);
 
   // Reset pagination on sidebar change
   useEffect(() => {

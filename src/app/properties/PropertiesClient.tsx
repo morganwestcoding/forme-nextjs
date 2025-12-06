@@ -12,6 +12,7 @@ import useRentModal from "@/app/hooks/useListingModal";
 import Heading from "@/components/Heading";
 import ListingCard from "@/components/listings/ListingCard";
 import Container from "@/components/Container";
+import PageSearch from "@/components/search/PageSearch";
 
 interface PropertiesClientProps {
   listings: SafeListing[],
@@ -51,15 +52,18 @@ const PropertiesClient: React.FC<PropertiesClientProps> = ({
     })
   }, [router]);
 
-  return ( 
+  return (
     <Container>
       <ClientProviders>
-        <div className="pt-2 flex-1">
-          <div 
+        <div className="pt-2 flex-1 relative">
+          {/* Search with action button */}
+          <div className="max-w-3xl mx-auto mb-6">
+            <PageSearch actionContext="properties" />
+          </div>
+          <div
             className="
-              pt-6
               flex-1
-              grid 
+              grid
               grid-cols-1
               lg:grid-cols-2
               xl:grid-cols-3

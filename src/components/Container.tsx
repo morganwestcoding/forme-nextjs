@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useSidebarState } from '@/app/hooks/useSidebarState';
 
 interface ContainerProps {
     children: React.ReactNode;
@@ -9,21 +9,7 @@ interface ContainerProps {
 const Container: React.FC<ContainerProps> = ({
     children
 }) => {
-    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-
-    useEffect(() => {
-        const checkSidebarState = () => {
-            const collapsed = localStorage.getItem('sidebarCollapsed') === 'true';
-            setIsSidebarCollapsed(collapsed);
-        };
-
-        checkSidebarState();
-        window.addEventListener('sidebarToggle', checkSidebarState);
-
-        return () => {
-            window.removeEventListener('sidebarToggle', checkSidebarState);
-        };
-    }, []);
+    const isSidebarCollapsed = useSidebarState();
 
     return (
         <div className={`

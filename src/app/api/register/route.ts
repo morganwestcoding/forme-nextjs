@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import prisma from "@/app/libs/prismadb";
+import { apiError, apiErrorCode } from "@/app/utils/api";
+import { registerSchema, validateBody } from "@/app/utils/validations";
 
 type CanonicalTier = 'bronze' | 'professional' | 'enterprise';
 type UserType = 'customer' | 'individual' | 'team';
@@ -22,6 +24,12 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
+    // Validate request body
+    const validation = validateBody(registerSchema, body);
+    if (!validation.success) {
+      return apiError(validation.error, 400);
+    }
+
     const {
       name,
       email,
@@ -37,23 +45,19 @@ export async function POST(request: Request) {
       jobTitle,
       isOwnerManager,
       selectedServices,
-      individualServices, // Services array for individual providers
-    } = body || {};
-
-    if (!email || !password || !name) {
-      return new NextResponse('Missing required fields', { status: 400 });
-    }
+      individualServices,
+    } = validation.data;
 
     const existing = await prisma.user.findUnique({ where: { email } });
     if (existing) {
-      return new NextResponse('Email already exists', { status: 409 });
+      return apiErrorCode('EMAIL_EXISTS');
     }
 
     // Validate team member data
     if (userType === 'team') {
       // Job title required unless owner/manager (business selection is now optional)
       if (!isOwnerManager && !jobTitle?.trim()) {
-        return new NextResponse('Job title required for team members', { status: 400 });
+        return apiError('Job title required for team members', 400);
       }
 
       // Only validate business/services if a listing was selected
@@ -63,7 +67,7 @@ export async function POST(request: Request) {
         });
 
         if (!listing) {
-          return new NextResponse('Selected business not found', { status: 400 });
+          return apiErrorCode('LISTING_NOT_FOUND');
         }
 
         if (selectedServices && selectedServices.length > 0) {
@@ -75,7 +79,7 @@ export async function POST(request: Request) {
           });
 
           if (validServices.length !== selectedServices.length) {
-            return new NextResponse('Some selected services are invalid', { status: 400 });
+            return apiError('Some selected services are invalid', 400);
           }
         }
       }
@@ -122,7 +126,7 @@ export async function POST(request: Request) {
 
         if (existingEmployee) {
           await prisma.user.delete({ where: { id: user.id } });
-          return new NextResponse('You are already registered at this business', { status: 409 });
+          return apiError('You are already registered at this business', 409);
         }
 
         // Create employee record - removed profileImage field
@@ -153,7 +157,7 @@ export async function POST(request: Request) {
       } catch (employeeError) {
         console.error('Error creating employee record:', employeeError);
         await prisma.user.delete({ where: { id: user.id } });
-        return new NextResponse('Failed to create employee record', { status: 500 });
+        return apiError('Failed to create employee record', 500);
       }
     }
 
@@ -217,6 +221,6 @@ export async function POST(request: Request) {
     });
   } catch (err) {
     console.error('REGISTER_ERROR', err);
-    return new NextResponse('Internal Error', { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }

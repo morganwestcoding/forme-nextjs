@@ -5,7 +5,7 @@ export default function Loading() {
   return (
     <Container>
       <PageSkeleton
-        title="Favorites"
+        title="Favorite"
         subtitle="A one stop shop for all of your favorite things"
       />
     </Container>

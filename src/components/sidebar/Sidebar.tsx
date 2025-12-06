@@ -282,21 +282,21 @@ const Sidebar: React.FC<SidebarProps> = ({
               <NavItem
                 href="/market"
                 icon={MarketIcon}
-                label="Market"
+                label="Businesses"
                 isActive={isActive('/market')}
                 accentColor={accentColor}
               />
               <NavItem
                 href="/shops"
                 icon={VendorsIcon}
-                label="Vendors"
+                label="Shops"
                 isActive={isActive('/shops')}
                 accentColor={accentColor}
               />
               <NavItem
                 href="/favorites"
                 icon={FavoritesIcon}
-                label="Favorites"
+                label="Favorite"
                 isActive={isActive('/favorites')}
                 accentColor={accentColor}
               />

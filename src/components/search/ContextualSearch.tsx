@@ -26,11 +26,11 @@ type ResultItem = {
 
 const typeLabel: Record<ItemType, string> = {
   user: "Users",
-  listing: "Listings",
+  listing: "Businesses",
   post: "Posts",
   shop: "Shops",
   product: "Products",
-  employee: "Employees",
+  employee: "Professionals",
   service: "Services",
 };
 

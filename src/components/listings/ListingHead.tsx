@@ -16,6 +16,7 @@ import useReservationModal from '@/app/hooks/useReservationModal';
 import useRentModal from '@/app/hooks/useListingModal';
 import useReviewModal from '@/app/hooks/useReviewModal';
 import useFavorite from '@/app/hooks/useFavorite';
+import { useSidebarState } from '@/app/hooks/useSidebarState';
 import ReviewCard from '@/components/reviews/ReviewCard';
 import VerificationBadge from '@/components/VerificationBadge';
 
@@ -65,19 +66,11 @@ const ListingHead: React.FC<ListingHeadProps> = ({
   const [showDropdown, setShowDropdown] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'About' | 'Services' | 'Professionals' | 'Posts' | 'Reviews' | null>(null);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const sidebarCollapsed = useSidebarState();
 
   // Handle search query changes for local filtering
   const handleSearchChange = useCallback((query: string) => {
     setSearchQuery(query);
-  }, []);
-
-  // Listen for sidebar collapse changes
-  React.useEffect(() => {
-    const checkSidebar = () => setSidebarCollapsed(localStorage.getItem('sidebarCollapsed') === 'true');
-    checkSidebar();
-    window.addEventListener('sidebarToggle', checkSidebar);
-    return () => window.removeEventListener('sidebarToggle', checkSidebar);
   }, []);
 
   // Responsive grid - matches Market pattern, adds 1 column when sidebar is collapsed
@@ -276,7 +269,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
                       <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/>
                     </svg>
-                    Add Team Member
+                    Add Professional
                   </button>
                 </>
               )}
@@ -295,7 +288,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill={hasFavorited ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={hasFavorited ? "text-rose-500" : "text-gray-500"}>
                   <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
                 </svg>
-                {hasFavorited ? 'Saved' : 'Save Listing'}
+                {hasFavorited ? 'Favorited' : 'Favorite'}
               </button>
               <button
                 onClick={() => {
@@ -321,17 +314,17 @@ const ListingHead: React.FC<ListingHeadProps> = ({
 
       {/* ========== LISTING HEADER ========== */}
       <div className="-mx-6 md:-mx-24 -mt-2 md:-mt-8">
-        <div className="relative px-6 md:px-24 pt-12 pb-8">
+        <div className="relative px-6 md:px-24 pt-11 pb-8">
 
           {/* Content */}
           <div className="relative z-10 pb-6">
             {/* Main Listing Title - Compact with spacing compensation */}
             <div className="text-center">
               <div className="flex items-center justify-center gap-2 relative mt-3">
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white leading-tight tracking-tight">
+                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white leading-tight tracking-tight">
                   {title}
                 </h1>
-                <VerificationBadge size={18} />
+                <VerificationBadge size={20} />
 
                 {/* 3 Dots Menu - Absolute Right */}
                 <button
@@ -346,17 +339,22 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 </button>
               </div>
 
-              {/* Address & Status */}
+              {/* All info in ONE line */}
               <p className="text-gray-500 text-base mt-3 max-w-2xl mx-auto">
-                {address && location ? `${address}, ${location}` : address || location}
+                <span className="font-semibold text-neutral-900">4.8</span> ★
+                <span className="mx-1.5 text-gray-300">·</span>
+                <button onClick={(e: any) => toggleFavorite(e)} className="hover:opacity-70 transition-opacity" type="button">
+                  <span className="font-semibold text-neutral-900">{(listing as any).favoriteCount || 0}</span> likes
+                </button>
+                <span className="mx-1.5 text-gray-300">·</span>
+                <span className="font-semibold text-neutral-900">{followers.length}</span> followers
+                <span className="mx-1.5 text-gray-300">·</span>
+                {location || address}
                 {operatingStatus && (
                   <>
-                    <span className="text-gray-300 mx-2">·</span>
+                    <span className="text-gray-300 mx-1.5">·</span>
                     <span className={operatingStatus.isOpen ? 'text-emerald-600' : 'text-rose-600'}>
-                      {operatingStatus.isOpen
-                        ? `Open til ${operatingStatus.closeTime}`
-                        : `Closed · Opens ${operatingStatus.openTime}`
-                      }
+                      {operatingStatus.isOpen ? `Open` : `Closed`}
                     </span>
                   </>
                 )}
@@ -421,32 +419,11 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               />
             </div>
 
-            {/* Category Navigation with Stats - Sticky */}
+            {/* Category Navigation - Sticky */}
             <div className="mt-5 -mx-6 md:-mx-24">
               <div className="sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-transparent transition-all duration-300" id="listing-category-nav-wrapper">
-                <div className="px-6 md:px-24 flex items-center justify-between">
-                  {/* Stats - Left */}
-                  <div className="hidden md:flex items-center gap-4 text-[13px] text-neutral-500">
-                    <span className="flex items-center gap-1">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5">
-                        <path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                      <span className="font-semibold text-neutral-900">4.8</span>
-                    </span>
-                    <button onClick={(e: any) => toggleFavorite(e)} className="flex items-center gap-1 hover:opacity-70 transition-opacity" type="button">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className={`w-4 h-4 ${hasFavorited ? 'text-rose-500' : ''}`} fill={hasFavorited ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.5">
-                        <path d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                      <span className="font-semibold text-neutral-900">{(listing as any).favoriteCount || 0}</span>
-                    </button>
-                    <span><span className="font-semibold text-neutral-900">{followers.length}</span> followers</span>
-                  </div>
-
-                  {/* Nav - Center */}
+                <div className="px-6 md:px-24 flex justify-center">
                   <ListingCategoryNav activeTab={activeTab} onTabChange={setActiveTab} />
-
-                  {/* Stats - Right (mobile) / Empty spacer (desktop) */}
-                  <div className="hidden md:block w-[180px]" />
                 </div>
               </div>
             </div>
@@ -518,7 +495,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
         {employees.length > 0 && (!activeTab || activeTab === 'Professionals') && (
           <section>
             <SectionHeader
-              title="Meet Our Team"
+              title="Our Professionals"
               className="!-mt-2 !mb-6"
             />
             {filteredEmployees.length === 0 && searchQuery.trim() ? (
@@ -561,7 +538,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                           <path d="M12 5v14M5 12h14"/>
                         </svg>
                       </div>
-                      <span className="text-sm font-medium text-gray-500">Add Team Member</span>
+                      <span className="text-sm font-medium text-gray-500">Add Professional</span>
                     </div>
                   </button>
                 </div>
@@ -830,7 +807,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   className="px-4 py-2 bg-white border border-gray-200 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-colors"
                   type="button"
                 >
-                  Add Team Member
+                  Add Professional
                 </button>
               </div>
             </div>

@@ -11,8 +11,9 @@ import { SafeListing, SafeUser, SafeEmployee, SafeShop, SafePost } from '@/app/t
 import PageSearch from '@/components/search/PageSearch';
 import CategoryNav from '@/components/favorites/CategoryNav';
 import SectionHeader from '../market/SectionHeader';
+import { useSidebarState } from '@/app/hooks/useSidebarState';
 
-type FavoriteTab = 'Market' | 'Professionals' | 'Shops' | 'Posts';
+type FavoriteTab = 'Businesses' | 'Professionals' | 'Shops' | 'Posts';
 
 interface FavoritesClientProps {
   listings: SafeListing[];
@@ -33,7 +34,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
   currentUser,
 }) => {
   const [activeTab, setActiveTab] = useState<FavoriteTab | null>(null);
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const isSidebarCollapsed = useSidebarState();
 
   // Pagination state for each section
   const [listingsIndex, setListingsIndex] = useState(0);
@@ -62,18 +63,6 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
   const gridColsClass = isSidebarCollapsed
     ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6'
     : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5';
-
-  // Sidebar collapse detection
-  useEffect(() => {
-    const checkSidebarState = () => {
-      const collapsed = localStorage.getItem('sidebarCollapsed') === 'true';
-      setIsSidebarCollapsed(collapsed);
-    };
-
-    checkSidebarState();
-    window.addEventListener('sidebarToggle', checkSidebarState);
-    return () => window.removeEventListener('sidebarToggle', checkSidebarState);
-  }, []);
 
   // Reset pagination on sidebar change
   useEffect(() => {
@@ -210,7 +199,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
   };
 
   // Determine if we should show sections based on active tab
-  const shouldShowListings = !activeTab || activeTab === 'Market';
+  const shouldShowListings = !activeTab || activeTab === 'Businesses';
   const shouldShowWorkers = !activeTab || activeTab === 'Professionals';
   const shouldShowShops = !activeTab || activeTab === 'Shops';
   const shouldShowPosts = !activeTab || activeTab === 'Posts';
@@ -532,7 +521,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
                   )}
 
                   {/* Empty state for filtered tab */}
-                  {activeTab === 'Market' && !hasListings && (
+                  {activeTab === 'Businesses' && !hasListings && (
                     <div className="px-8 pt-32 text-center text-gray-500">
                       No favorite listings yet
                     </div>

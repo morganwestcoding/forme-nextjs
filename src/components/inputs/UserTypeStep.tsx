@@ -209,7 +209,7 @@ const UserTypeStep: React.FC<UserTypeStepProps> = ({
                 <h4 className="text-sm font-semibold text-gray-900 mb-1">
                   {userType === 'customer' && "What's a Simple Shopper?"}
                   {userType === 'individual' && "What's an Individual Provider?"}
-                  {userType === 'team' && "What's a Team Member?"}
+                  {userType === 'team' && "What's a Professional?"}
                 </h4>
                 <p className="text-sm text-gray-700 leading-relaxed">
                   {options.find(opt => opt.type === userType)?.info}
