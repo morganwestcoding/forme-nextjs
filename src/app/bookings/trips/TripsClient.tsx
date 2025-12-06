@@ -180,13 +180,15 @@ const TripsClient: React.FC<TripsClientProps> = ({
               <p className="text-gray-500 text-base mt-3 max-w-2xl mx-auto">Bookings you&apos;ve made with other businesses</p>
             </div>
 
-            {/* Search and Controls */}
-            <div className="mt-8 max-w-3xl mx-auto">
-              <PageSearch />
+            {/* Search */}
+            <div className="mt-8 flex justify-center">
+              <div className="w-full max-w-3xl">
+                <PageSearch />
+              </div>
             </div>
 
             {/* Category Navigation - Sticky */}
-            <div className="mt-5 -mx-6 md:-mx-24">
+            <div className="mt-3 -mx-6 md:-mx-24">
               <div className="sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-transparent transition-all duration-300" id="trips-category-nav-wrapper">
                 <div className="px-6 md:px-24">
                   <CategoryNav />

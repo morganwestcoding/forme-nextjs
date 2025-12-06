@@ -52,15 +52,15 @@ const UserButton: React.FC<UserButtonProps> = ({
 
   const formatUserName = (name?: string | null) => {
     if (!name) return null;
-    
+
     const nameParts = name.trim().split(/\s+/);
     if (nameParts.length === 1) {
       return nameParts[0];
     }
-    
+
     const firstName = nameParts[0];
     const lastNameInitial = nameParts[nameParts.length - 1]?.[0]?.toUpperCase();
-    
+
     return lastNameInitial ? `${firstName} ${lastNameInitial}.` : firstName;
   };
 
@@ -92,10 +92,33 @@ const UserButton: React.FC<UserButtonProps> = ({
     }
   });
 
+  // Logged out state - simple Login | Signup pill matching PageSearch style
+  if (!currentUser) {
+    return (
+      <div className="bg-white border border-neutral-300 rounded-2xl overflow-hidden">
+        <div className="flex items-center px-4 py-3">
+          <button
+            onClick={handleLogin}
+            className="text-[14px] font-medium text-neutral-700 hover:text-neutral-900 transition-colors duration-150 px-3"
+          >
+            Login
+          </button>
+          <div className="w-px h-6 bg-neutral-300" />
+          <button
+            onClick={handleRegister}
+            className="text-[14px] font-medium text-neutral-700 hover:text-neutral-900 transition-colors duration-150 px-3"
+          >
+            Signup
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Logged in state - dropdown with user info
   const buttonClass = noBg
     ? "flex items-center justify-start cursor-pointer outline-none touch-manipulation"
-    : "w-44 py-1.5 px-3 flex items-center mt-1 gap-3 mb-5 cursor-pointer rounded-2xl relative transition-colors duration-150 outline-none bg-white/70 border border-neutral-200/50 hover:bg-white/90 active:bg-white";
-
+    : "bg-white border border-neutral-300 rounded-2xl overflow-hidden cursor-pointer transition-colors duration-150 outline-none hover:bg-neutral-50";
 
   const dropdownWidthClass = noBg ? "min-w-44" : "w-44";
 
@@ -103,7 +126,6 @@ const UserButton: React.FC<UserButtonProps> = ({
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger
         className={buttonClass}
-     
         onClick={(e) => {
           e.stopPropagation();
           setIsOpen(!isOpen);
@@ -111,30 +133,29 @@ const UserButton: React.FC<UserButtonProps> = ({
         aria-expanded={isOpen}
         data-state={isOpen ? "open" : "closed"}
       >
-        <div className="ml-0.5 relative">
-          <Avatar src={currentUser?.image ?? undefined} />
-          <div className="absolute bottom-0 right-0.5 w-2 h-2 bg-emerald-400 rounded-full ring-[1.5px] ring-white" />
-        </div>
-        <div className="flex flex-col items-start flex-1 min-w-0 pl-0.5">
-          {currentUser ? (
-            <>
-              <span className="text-neutral-900 font-medium text-xs truncate w-full text-left">
-                {displayName}
-              </span>
-              <span className="text-neutral-500 text-xs text-left">
-                {planLabel}
-              </span>
-            </>
-          ) : (
-            <>
-              <span className="text-neutral-900 text-xs font-medium text-left">
-                Login
-              </span>
-              <span className="text-neutral-500 text-[11px] text-left">
-                {`${formatTier(undefined)} Tier`}
-              </span>
-            </>
-          )}
+        <div className="flex items-center gap-3 px-4 py-2.5">
+          <div className="relative">
+            <Avatar src={currentUser?.image ?? undefined} />
+            <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-400 rounded-full ring-2 ring-white" />
+          </div>
+          <div className="flex flex-col items-start min-w-0">
+            <span className="text-neutral-800 font-medium text-[14px] truncate max-w-[100px] text-left leading-tight">
+              {displayName}
+            </span>
+            <span className="text-neutral-500 text-xs text-left leading-tight">
+              {planLabel}
+            </span>
+          </div>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            width="18"
+            height="18"
+            fill="none"
+            className={`text-neutral-500 flex-shrink-0 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+          >
+            <path d="M18 9L12 15L6 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
         </div>
       </DropdownMenuTrigger>
 
@@ -144,36 +165,20 @@ const UserButton: React.FC<UserButtonProps> = ({
         align="start"
         sideOffset={8}
       >
-        {currentUser ? (
-          <>
-            <DropdownMenuItem onClick={handleProfile}>My Profile</DropdownMenuItem>
-            <DropdownMenuItem onClick={handleListings}>My Listings</DropdownMenuItem>
-            <DropdownMenuItem onClick={handleAnalytics}>My Analytics</DropdownMenuItem>
-            <DropdownMenuItem onClick={handleSubscribe}>Subscription</DropdownMenuItem>
-            <DropdownMenuItem onClick={handleLicensing}>Licensing</DropdownMenuItem>
-            <DropdownMenuItem onClick={handleSettings}>Settings</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={handleClearEarlyAccess}
-              className="text-red-600 hover:text-red-700 hover:bg-red-50 px-2 py-2"
-            >
-              Clean
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleSignOut}>Sign Out</DropdownMenuItem>
-          </>
-        ) : (
-          <>
-            <DropdownMenuItem onClick={handleLogin}>Login</DropdownMenuItem>
-            <DropdownMenuItem onClick={handleRegister}>Signup</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={handleClearEarlyAccess}
-              className="text-red-600 hover:text-red-700 hover:bg-red-50 px-2 py-2"
-            >
-              Clean
-            </DropdownMenuItem>
-          </>
-        )}
+        <DropdownMenuItem onClick={handleProfile}>My Profile</DropdownMenuItem>
+        <DropdownMenuItem onClick={handleListings}>My Listings</DropdownMenuItem>
+        <DropdownMenuItem onClick={handleAnalytics}>My Analytics</DropdownMenuItem>
+        <DropdownMenuItem onClick={handleSubscribe}>Subscription</DropdownMenuItem>
+        <DropdownMenuItem onClick={handleLicensing}>Licensing</DropdownMenuItem>
+        <DropdownMenuItem onClick={handleSettings}>Settings</DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          onClick={handleClearEarlyAccess}
+          className="text-red-600 hover:text-red-700 hover:bg-red-50 px-2 py-2"
+        >
+          Clean
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={handleSignOut}>Sign Out</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

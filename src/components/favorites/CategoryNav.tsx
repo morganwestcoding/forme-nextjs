@@ -21,7 +21,8 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ activeTab, setActiveTab }) =>
   ];
 
   return (
-    <div className="flex items-center sm:justify-center gap-1.5 py-2 sm:py-3 overflow-x-auto scrollbar-hide -mx-2 px-2 sm:mx-0 sm:px-0">
+    <div className="relative flex items-center justify-center py-2 sm:py-3 -mx-2 px-2 sm:mx-0 sm:px-0">
+      <div className="flex items-center justify-center gap-1.5 overflow-x-auto scrollbar-hide py-1">
       {tabs.map((tab) => {
         const isSelected = activeTab === tab.key;
 
@@ -62,6 +63,7 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ activeTab, setActiveTab }) =>
           </button>
         );
       })}
+      </div>
     </div>
   );
 };

@@ -37,7 +37,7 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams, basePath = '/ma
   return (
     <div className="relative flex items-center justify-center py-2 sm:py-3 -mx-2 px-2 sm:mx-0 sm:px-0">
       {/* Categories - centered */}
-      <div className="flex items-center justify-center gap-1.5 overflow-x-auto scrollbar-hide">
+      <div className="flex items-center justify-center gap-1.5 overflow-x-auto scrollbar-hide pt-1 pb-3 -mb-2">
         {categories.map((category) => {
           const isSelected = currentCategory === category.label;
 
@@ -46,10 +46,10 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams, basePath = '/ma
               key={category.label}
               onClick={() => handleCategorySelect(category.label)}
               className={`
-                relative px-3 sm:px-4 h-9 flex items-center text-[12px] sm:text-[13px] font-medium rounded-xl border transition-all duration-300 ease-out active:scale-[0.97] whitespace-nowrap flex-shrink-0
+                relative px-3 sm:px-4 h-9 flex items-center text-[12px] sm:text-[13px] font-medium rounded-xl border transition-all duration-200 active:scale-[0.97] whitespace-nowrap flex-shrink-0
                 ${isSelected
                   ? 'text-white'
-                  : 'bg-transparent border-neutral-300 dark:border-neutral-500 text-neutral-600 dark:text-neutral-400'
+                  : 'bg-white border-neutral-300 text-neutral-600 hover:bg-neutral-50 hover:border-neutral-400 hover:shadow-sm'
                 }
               `}
               style={isSelected ? {
@@ -58,20 +58,6 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams, basePath = '/ma
                 boxShadow: `0 4px 6px -1px ${accentColor}40`,
                 color: 'white'
               } : undefined}
-              onMouseEnter={(e) => {
-                if (!isSelected) {
-                  e.currentTarget.style.borderColor = accentColor;
-                  e.currentTarget.style.color = accentColor;
-                  e.currentTarget.style.backgroundColor = `${accentColor}0D`;
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!isSelected) {
-                  e.currentTarget.style.borderColor = '';
-                  e.currentTarget.style.color = '';
-                  e.currentTarget.style.backgroundColor = '';
-                }
-              }}
               type="button"
             >
               <span className="relative z-10">{category.label}</span>

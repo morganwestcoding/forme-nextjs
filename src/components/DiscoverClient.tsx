@@ -293,7 +293,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                 </div>
 
                 {/* Category Navigation - Sticky */}
-                <div className="mt-5 -mx-6 md:-mx-24">
+                <div className="mt-3 -mx-6 md:-mx-24">
                   <div className="sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-transparent transition-all duration-300" id="discover-category-nav-wrapper">
                     <div className="px-6 md:px-24">
                       <CategoryNav searchParams={headerSearchParams} basePath="/" />
