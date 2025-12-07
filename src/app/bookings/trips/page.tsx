@@ -16,7 +16,11 @@ export const dynamic = 'force-dynamic';
 
 const TripsPage = async ({ searchParams }: TripsPageProps) => {
   const currentUser = await getCurrentUser();
-  const reservations = await getReservations({ userId: currentUser?.id });
+
+  // Only fetch reservations if user is logged in
+  const reservations = currentUser?.id
+    ? await getReservations({ userId: currentUser.id })
+    : [];
 
   return (
     <ClientOnly>

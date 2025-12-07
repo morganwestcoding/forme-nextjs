@@ -12,17 +12,21 @@ interface ReservationsPageProps {
 
 const ReservationsPage = async ({ searchParams }: ReservationsPageProps) => {
   const currentUser = await getCurrentUser();
-  const reservations = await getReservations({ authorId: currentUser?.id });
+
+  // Only fetch reservations if user is logged in
+  const reservations = currentUser?.id
+    ? await getReservations({ authorId: currentUser.id })
+    : [];
 
   return (
     <ClientOnly>
-  
-        
+
+
         <ReservationsClient
           reservations={reservations || []}
           currentUser={currentUser}
         />
-  
+
     </ClientOnly>
   );
 }

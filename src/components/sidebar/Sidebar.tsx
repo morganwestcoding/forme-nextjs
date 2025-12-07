@@ -66,6 +66,14 @@ const formatUserName = (name?: string | null) => {
   return lastNameInitial ? `${firstName} ${lastNameInitial}.` : firstName;
 };
 
+const ROTATING_PHRASES = [
+  "Psst.",
+  "Hey you.",
+  "Looking good.",
+  "Welcome back.",
+  "Let's go.",
+];
+
 const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
   const pathname = usePathname();
   const router = useRouter();
@@ -74,11 +82,24 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
   const registerModal = useRegisterModal();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [phraseIndex, setPhraseIndex] = useState(0);
 
   useEffect(() => {
     const savedState = localStorage.getItem("sidebarCollapsed");
     if (savedState !== null) {
       setIsCollapsed(savedState === "true");
+    }
+  }, []);
+
+  // Pick a random phrase once per session
+  useEffect(() => {
+    const savedPhrase = sessionStorage.getItem("sidebarPhrase");
+    if (savedPhrase !== null) {
+      setPhraseIndex(parseInt(savedPhrase, 10));
+    } else {
+      const randomIndex = Math.floor(Math.random() * ROTATING_PHRASES.length);
+      setPhraseIndex(randomIndex);
+      sessionStorage.setItem("sidebarPhrase", String(randomIndex));
     }
   }, []);
 
@@ -298,7 +319,9 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
 
         {/* Brand Text */}
         <div className="px-3 pt-1.5 text-center">
-          <span className="text-base text-gray-500">Psst.</span>
+          <span className="text-base text-gray-500 transition-opacity duration-300">
+            {ROTATING_PHRASES[phraseIndex]}
+          </span>
         </div>
 
         {/* User Info */}
