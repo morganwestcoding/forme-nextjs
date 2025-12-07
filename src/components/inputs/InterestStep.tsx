@@ -10,24 +10,8 @@ interface InterestsStepProps {
 }
 
 const categories = [
-  // Service categories
-  { label: 'Massage', color: 'bg-[#D4B185]' },
-  { label: 'Wellness', color: 'bg-[#C4D4A9]' },
-  { label: 'Fitness', color: 'bg-[#86A4BB]' },
-  { label: 'Nails', color: 'bg-[#E5B9AD]' },
-  { label: 'Spa', color: 'bg-[#D8C3CE]' },
-  { label: 'Barber', color: 'bg-[#D6C3B6]' },
-  { label: 'Beauty', color: 'bg-[#E6C9B3]' },
-  { label: 'Salon', color: 'bg-[#B3C5D1]' },
-  
-  // Product categories
-  { label: 'Clothing', color: 'bg-[#A8C5DD]' },
-  { label: 'Accessories', color: 'bg-[#E8B5C3]' },
-  { label: 'Electronics', color: 'bg-[#9DB5C8]' },
-  { label: 'Home & Garden', color: 'bg-[#B8D4B8]' },
-  { label: 'Sports & Outdoors', color: 'bg-[#8EADC4]' },
-  { label: 'Toys & Games', color: 'bg-[#F5C6A5]' },
-  { label: 'Books & Media', color: 'bg-[#C9B8D4]' },
+  'Massage', 'Wellness', 'Fitness', 'Nails', 'Spa', 'Barber', 'Beauty', 'Salon',
+  'Clothing', 'Accessories', 'Electronics', 'Home & Garden', 'Sports', 'Toys & Games', 'Books & Media',
 ];
 
 const InterestsStep: React.FC<InterestsStepProps> = ({
@@ -44,62 +28,49 @@ const InterestsStep: React.FC<InterestsStepProps> = ({
   };
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-4">
       <Heading
         title="What interests you?"
-        subtitle="Select the categories you'd like to see in your feed"
+        subtitle="Select categories to personalize your feed"
       />
-      
-      <div className="flex flex-wrap gap-3 justify-center max-h-[400px]  px-2">
-        {categories.map((category) => {
-          const isSelected = selectedInterests.includes(category.label);
-          
+
+      <div className="grid grid-cols-2 gap-1">
+        {categories.map((label) => {
+          const isSelected = selectedInterests.includes(label);
+
           return (
             <button
-              key={category.label}
+              key={label}
               type="button"
-              onClick={() => !isLoading && toggleInterest(category.label)}
+              onClick={() => !isLoading && toggleInterest(label)}
               disabled={isLoading}
               className={`
-                relative px-6 py-3 rounded-full font-medium text-sm
-                transition-all duration-200 transform
-                ${isSelected 
-                  ? `${category.color} scale-105 shadow-lg ring-2 ring-offset-2 ring-black/20` 
-                  : 'bg-neutral-100 hover:bg-neutral-200 hover:scale-105'
+                flex items-center gap-3 px-3 py-2.5 rounded-md text-left
+                transition-colors duration-100
+                ${isSelected
+                  ? 'bg-neutral-100'
+                  : 'hover:bg-neutral-50'
                 }
                 ${isLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-                active:scale-95
               `}
             >
-              <span className={`${isSelected ? 'text-white' : 'text-neutral-700'}`}>
-                {category.label}
-              </span>
-              
-              {isSelected && (
-                <span className="absolute -top-1 -right-1 bg-white rounded-full p-0.5 shadow-md">
-                  <Check className="w-4 h-4 text-black" strokeWidth={3} />
-                </span>
-              )}
+              <div
+                className={`
+                  w-4 h-4 rounded flex items-center justify-center flex-shrink-0
+                  transition-colors duration-100 border
+                  ${isSelected
+                    ? 'bg-blue-500 border-blue-500'
+                    : 'border-neutral-300'
+                  }
+                `}
+              >
+                {isSelected && <Check className="w-3 h-3 text-white" strokeWidth={2.5} />}
+              </div>
+              <span className="text-sm text-neutral-700">{label}</span>
             </button>
           );
         })}
       </div>
-
-      {selectedInterests.length > 0 && (
-        <div className="text-center">
-          <p className="text-sm text-neutral-500">
-            {selectedInterests.length} {selectedInterests.length === 1 ? 'interest' : 'interests'} selected
-          </p>
-        </div>
-      )}
-
-      {selectedInterests.length === 0 && (
-        <div className="text-center">
-          <p className="text-xs text-neutral-400">
-            Select at least one interest to personalize your experience
-          </p>
-        </div>
-      )}
     </div>
   );
 };

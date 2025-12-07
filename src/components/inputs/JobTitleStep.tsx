@@ -1,13 +1,11 @@
 'use client';
 
 import React from 'react';
-import { Crown } from 'lucide-react';
+import { Check } from 'lucide-react';
 import Heading from '../Heading';
-import Input from '../inputs/Input';
 import { FieldErrors, UseFormRegister } from 'react-hook-form';
 
 interface JobTitleStepProps {
-  jobTitle: string;
   isOwnerManager: boolean;
   userType?: 'customer' | 'individual' | 'team';
   onOwnerManagerChange: (isOwnerManager: boolean) => void;
@@ -17,7 +15,6 @@ interface JobTitleStepProps {
 }
 
 const JobTitleStep: React.FC<JobTitleStepProps> = ({
-  jobTitle,
   isOwnerManager,
   userType = 'team',
   onOwnerManagerChange,
@@ -28,97 +25,66 @@ const JobTitleStep: React.FC<JobTitleStepProps> = ({
   const isIndividual = userType === 'individual';
   const isTeam = userType === 'team';
 
-  const handleOwnerManagerToggle = () => {
-    onOwnerManagerChange(!isOwnerManager);
-  };
-
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
       <Heading
-        title={isIndividual ? "What's your professional title?" : "What's your role?"}
-        subtitle={
-          isIndividual 
-            ? "Let clients know your expertise and specialization."
-            : "Help us understand your position at the business."
-        }
+        title="What's your job title?"
+        subtitle="This appears on your profile and helps clients find the right provider"
       />
-      
-      <div className="space-y-4">
+
+      <div className="space-y-3">
         {/* Owner/Manager Option - Only show for team members */}
         {isTeam && (
           <button
             type="button"
-            onClick={handleOwnerManagerToggle}
+            onClick={() => onOwnerManagerChange(!isOwnerManager)}
             disabled={isLoading}
             className={`
-              w-full rounded-xl shadow flex items-center justify-center p-4 space-x-3
-              cursor-pointer select-none
-              transition-[transform,background-color,color] duration-200 ease-out
-              ${isOwnerManager ? 'bg-[#60A5FA] text-white' : 'bg-neutral-100 text-neutral-700 hover:bg-blue-50'}
-              ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}
-              will-change-transform transform-gpu
-              focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#60A5FA]
+              flex items-center gap-3 w-full px-3 py-3 rounded-md text-left
+              transition-colors duration-100
+              ${isOwnerManager ? 'bg-neutral-100' : 'hover:bg-neutral-50'}
+              ${isLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
             `}
           >
-            <Crown
+            <div
               className={`
-                w-6 h-6
-                transition-transform duration-200 ease-out
-                ${isOwnerManager ? 'scale-110' : 'scale-100'}
-                transform-gpu
+                w-4 h-4 rounded flex items-center justify-center flex-shrink-0
+                transition-colors duration-100 border
+                ${isOwnerManager
+                  ? 'bg-blue-500 border-blue-500'
+                  : 'border-neutral-300'
+                }
               `}
-            />
-            <div className="text-center">
-              <h3
-                className={`
-                  font-medium text-sm leading-none
-                  transition-transform duration-200 ease-out
-                  ${isOwnerManager ? 'scale-105' : 'scale-100'}
-                  transform-gpu
-                `}
-              >
-                I&apos;m the owner/manager
-              </h3>
+            >
+              {isOwnerManager && <Check className="w-3 h-3 text-white" strokeWidth={2.5} />}
+            </div>
+            <div className="flex flex-col">
+              <span className="text-sm font-medium text-neutral-800">I&apos;m the owner or manager</span>
+              <span className="text-xs text-neutral-500">You&apos;ll have full control of this business</span>
             </div>
           </button>
         )}
 
-        {/* Job Title Input - show for individuals always, or for team if not owner/manager */}
+        {/* Job Title Input */}
         {(isIndividual || !isOwnerManager) && (
           <div>
-            <Input
+            <input
               id="jobTitle"
-              label={isIndividual ? "Professional Title" : "Job Title"}
+              type="text"
+              placeholder="Hair Stylist, Barber, Massage Therapist..."
               disabled={isLoading}
-              register={register}
-              errors={errors}
-              required={isIndividual || !isOwnerManager}
+              {...register('jobTitle', { required: isIndividual || !isOwnerManager })}
+              className={`
+                w-full px-4 py-3 rounded-lg border border-neutral-300
+                text-sm text-neutral-800 placeholder:text-neutral-400
+                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                disabled:opacity-50 disabled:cursor-not-allowed
+                ${errors.jobTitle ? 'border-red-500' : ''}
+              `}
             />
-            <p className="mt-2 text-xs text-neutral-500">
-              {isIndividual 
-                ? "Enter your professional title or specialty area"
-                : "Enter your specific role (e.g., Hair Stylist, Barber, Nail Technician, Massage Therapist)"
-              }
-            </p>
-          </div>
-        )}
-
-        {/* Info Box */}
-        {isTeam && isOwnerManager && (
-          <div className="bg-blue-50 rounded-lg p-4">
-            <p className="text-sm text-blue-700">
-              <strong>Owner/Manager selected.</strong> You&apos;ll have full access to manage this business account, 
-              including services, employees, and bookings.
-            </p>
-          </div>
-        )}
-
-        {isIndividual && (
-          <div className="bg-blue-50 rounded-lg p-4">
-            <p className="text-sm text-blue-700">
-              <strong>Why we ask:</strong> Your professional title helps clients understand your expertise 
-              and find the right service provider for their needs.
-            </p>
+            {errors.jobTitle && (
+              <p className="mt-1 text-xs text-red-500">Job title is required</p>
+            )}
           </div>
         )}
       </div>

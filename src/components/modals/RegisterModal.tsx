@@ -22,7 +22,6 @@ import BusinessSelectStep from "../inputs/BusinessSelectStep";
 import ServiceSelectStep from "../inputs/ServiceSelectStep";
 import InterestsStep from "../inputs/InterestStep";
 import ServiceSelector, { Service } from "../inputs/ServiceSelector";
-import ServiceCard from "../listings/ServiceCard";
 
 type UserType = 'customer' | 'individual' | 'team';
 
@@ -164,30 +163,28 @@ const RegisterModal = () => {
       return STEPS.USER_TYPE;
     }
     if (currentStep === STEPS.USER_TYPE) {
-      if (userType === 'team' || userType === 'individual') {
-        return STEPS.JOB_TITLE;
-      } else {
+      if (userType === 'customer') {
         return STEPS.LOCATION;
       }
+      if (userType === 'team') {
+        return STEPS.BUSINESS_SELECT;
+      }
+      // Individual goes to job title
+      return STEPS.JOB_TITLE;
+    }
+    if (currentStep === STEPS.BUSINESS_SELECT && userType === 'team') {
+      return STEPS.JOB_TITLE;
     }
     if (currentStep === STEPS.JOB_TITLE) {
       if (userType === 'team') {
-        return STEPS.BUSINESS_SELECT;
-      } else if (userType === 'individual') {
-        // Individual providers go to services list (skippable)
-        return STEPS.SERVICES_LIST;
-      } else {
+        const currentListing = listing ?? selectedListing;
+        if (currentListing && currentListing !== 'SKIP' && currentListing.trim() !== '') {
+          return STEPS.SERVICE_SELECT;
+        }
         return STEPS.LOCATION;
       }
-    }
-    if (currentStep === STEPS.BUSINESS_SELECT && userType === 'team') {
-      // If they skipped business selection or left it empty, go directly to location
-      const currentListing = listing ?? selectedListing;
-      // Check for SKIP, empty string, null, undefined
-      if (!currentListing || currentListing === 'SKIP' || currentListing.trim() === '') {
-        return STEPS.LOCATION;
-      }
-      return STEPS.SERVICE_SELECT;
+      // Individual goes to their own services list
+      return STEPS.SERVICES_LIST;
     }
     if (currentStep === STEPS.SERVICE_SELECT) {
       return STEPS.LOCATION;
@@ -205,18 +202,17 @@ const RegisterModal = () => {
     if (currentStep === STEPS.USER_TYPE) {
       return STEPS.INTERESTS;
     }
-    if (currentStep === STEPS.LOCATION) {
+    if (currentStep === STEPS.BUSINESS_SELECT && userType === 'team') {
+      return STEPS.USER_TYPE;
+    }
+    if (currentStep === STEPS.JOB_TITLE) {
       if (userType === 'team') {
-        // If they skipped business selection, go back to business select
-        if (!selectedListing || selectedListing === 'SKIP' || selectedListing.trim() === '') {
-          return STEPS.BUSINESS_SELECT;
-        }
-        return STEPS.SERVICE_SELECT;
-      } else if (userType === 'individual') {
-        return STEPS.SERVICES_LIST;
-      } else {
-        return STEPS.USER_TYPE;
+        return STEPS.BUSINESS_SELECT;
       }
+      return STEPS.USER_TYPE;
+    }
+    if (currentStep === STEPS.SERVICE_SELECT && userType === 'team') {
+      return STEPS.JOB_TITLE;
     }
     if (currentStep === STEPS.SERVICES_LIST && userType === 'individual') {
       return STEPS.JOB_TITLE;
@@ -224,14 +220,18 @@ const RegisterModal = () => {
     if (currentStep === STEPS.SERVICES_FORM && userType === 'individual') {
       return STEPS.SERVICES_LIST;
     }
-    if (currentStep === STEPS.SERVICE_SELECT && userType === 'team') {
-      return STEPS.BUSINESS_SELECT;
-    }
-    if (currentStep === STEPS.BUSINESS_SELECT && userType === 'team') {
-      return STEPS.JOB_TITLE;
-    }
-    if (currentStep === STEPS.JOB_TITLE) {
-      return STEPS.USER_TYPE;
+    if (currentStep === STEPS.LOCATION) {
+      if (userType === 'customer') {
+        return STEPS.USER_TYPE;
+      }
+      if (userType === 'team') {
+        const hasSelectedBusiness = selectedListing && selectedListing !== 'SKIP' && selectedListing.trim() !== '';
+        if (hasSelectedBusiness) {
+          return STEPS.SERVICE_SELECT;
+        }
+        return STEPS.JOB_TITLE;
+      }
+      return STEPS.SERVICES_LIST;
     }
     return currentStep - 1;
   };
@@ -422,13 +422,11 @@ const RegisterModal = () => {
         // Force router refresh to update server-side session
         router.refresh();
 
-        // UPDATED: Route based on user type
+        // Route based on user type
         setTimeout(() => {
           if (data.userType === 'individual' || data.userType === 'team') {
-            // Professionals go to licensing first
             router.push('/licensing?onboarding=true');
           } else {
-            // Customers go straight to subscription
             router.push('/subscription');
           }
         }, 250);
@@ -518,10 +516,18 @@ const RegisterModal = () => {
             },
             {
               key: STEPS.USER_TYPE,
-              title: 'User Type',
-              description: 'Customer, individual, or team member',
+              title: 'Account Type',
+              description: 'How you use Forme',
               complete: Boolean(userType),
             },
+            ...(userType === 'team' ? [
+              {
+                key: STEPS.BUSINESS_SELECT,
+                title: 'Business',
+                description: 'Select your business',
+                complete: Boolean(selectedListing),
+              },
+            ] : []),
             ...(userType === 'team' || userType === 'individual' ? [
               {
                 key: STEPS.JOB_TITLE,
@@ -530,13 +536,7 @@ const RegisterModal = () => {
                 complete: Boolean(jobTitle || (userType === 'team' && isOwnerManager)),
               },
             ] : []),
-            ...(userType === 'team' ? [
-              {
-                key: STEPS.BUSINESS_SELECT,
-                title: 'Business',
-                description: 'Select your business',
-                complete: Boolean(selectedListing),
-              },
+            ...(userType === 'team' && selectedListing && selectedListing !== 'SKIP' ? [
               {
                 key: STEPS.SERVICE_SELECT,
                 title: 'Services',
@@ -600,7 +600,6 @@ const RegisterModal = () => {
   if (step === STEPS.JOB_TITLE) {
     bodyContent = (
       <JobTitleStep
-        jobTitle={jobTitle}
         isOwnerManager={isOwnerManager}
         userType={userType}
         onOwnerManagerChange={(value) => {
@@ -648,83 +647,58 @@ const RegisterModal = () => {
     );
 
     bodyContent = (
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-4">
         <Heading
-          title="What services do you provide?"
-          subtitle="Add the services you offer (optional - you can skip and add later)"
+          title="Add your services"
+          subtitle="List what you offer so clients can book with you"
         />
 
-        {validServices.length > 0 ? (
-          <div className="grid grid-cols-2 gap-3">
-            {validServices.map((s, i) => (
-              <ServiceCard
-                key={`svc-card-${s.id ?? i}`}
-                service={{
-                  id: String(s.id ?? i),
-                  serviceName: s.serviceName || 'Untitled Service',
-                  price: Number(s.price) || 0,
-                  category: s.category || '',
-                }}
-                currentUser={undefined}
-                onClick={() => openEditForIndex(i)}
-                onEdit={() => openEditForIndex(i)}
-              />
-            ))}
+        <div className="grid grid-cols-2 gap-2">
+          {validServices.map((s, i) => (
+            <button
+              key={`svc-${s.id ?? i}`}
+              type="button"
+              onClick={() => openEditForIndex(i)}
+              className="flex flex-col p-3 rounded-lg border border-neutral-200 text-left hover:border-neutral-300 hover:bg-neutral-50 transition-all duration-100"
+            >
+              <span className="text-sm font-medium text-neutral-800 truncate">{s.serviceName || 'Untitled'}</span>
+              <span className="text-xs text-neutral-500 truncate">{s.category || 'No category'}</span>
+              <span className="text-sm font-semibold text-neutral-900 mt-2">${Number(s.price) || 0}</span>
+            </button>
+          ))}
 
-            {/* Add Service tile */}
-            <button
-              type="button"
-              onClick={addNewService}
-              className={[
-                'group relative w-full',
-                'rounded-2xl border-2 border-gray-200 bg-white p-4',
-                'flex flex-col items-center justify-center text-center gap-2.5',
-                'hover:border-blue-500 hover:shadow-md transition-all duration-200',
-                'h-[140px]',
-              ].join(' ')}
-            >
-              <div className="rounded-full flex items-center justify-center bg-gray-100 text-gray-600 group-hover:bg-blue-50 group-hover:text-blue-600">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
-                  <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                </svg>
-              </div>
-              <div className="min-w-0">
-                <p className="text-sm font-medium text-gray-900">Add a service</p>
-                <p className="text-xs text-gray-500">Name, price, category</p>
-              </div>
-            </button>
-          </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center py-12 px-4 border-2 border-dashed border-gray-300 rounded-lg">
-            <div className="rounded-full flex items-center justify-center bg-gray-100 text-gray-400 w-16 h-16 mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none">
-                <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              </svg>
-            </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No services yet</h3>
-            <p className="text-sm text-gray-500 mb-6 text-center max-w-sm">
-              Add services you provide to help clients find you. You can skip this step and add services later.
-            </p>
-            <button
-              type="button"
-              onClick={addNewService}
-              className="inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              </svg>
-              Add your first service
-            </button>
-          </div>
-        )}
+          <button
+            type="button"
+            onClick={addNewService}
+            className="flex flex-col items-center justify-center p-4 rounded-lg border-2 border-dashed border-neutral-200 text-center hover:border-blue-400 hover:bg-blue-50 transition-all duration-100 min-h-[88px]"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" className="text-neutral-400 mb-1">
+              <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+            <span className="text-sm text-neutral-500">Add service</span>
+          </button>
+        </div>
+
+        <p className="text-xs text-neutral-400 text-center">
+          Optional — you can add services later
+        </p>
       </div>
     );
   }
 
   if (step === STEPS.SERVICES_FORM) {
     bodyContent = (
-      <div className="flex flex-col gap-8">
-        <Heading title="Edit service" subtitle="Update name, price, and category." />
+      <div className="flex flex-col gap-5">
+        <div className="text-center">
+          <h3 className="text-lg font-semibold text-gray-900">
+            {editingServiceIndex !== null && services[editingServiceIndex]?.serviceName
+              ? 'Edit service'
+              : 'Add a service'}
+          </h3>
+          <p className="text-sm text-gray-500 mt-1">
+            See a live preview as you build your service card
+          </p>
+        </div>
         <ServiceSelector
           key={`svc-${editingServiceIndex ?? 'all'}`}
           id="service-selector"
@@ -774,23 +748,122 @@ const RegisterModal = () => {
   }
 
   if (step === STEPS.IMAGES) {
-    bodyContent = (
-      <div className="flex flex-col gap-4">
-        <Heading
-          title={isEdit ? "Update your photos" : "Add your photos"}
-          subtitle={isEdit ? "Show the world your best self" : "Make a great first impression"}
-        />
+    // Get user initials for fallback
+    const getInitials = (fullName?: string) => {
+      if (!fullName) return 'U';
+      const parts = fullName.trim().split(/\s+/).filter(Boolean);
+      if (parts.length === 1) return (parts[0][0]?.toUpperCase() ?? 'U');
+      return (parts[0][0]?.toUpperCase() ?? '') + (parts[parts.length - 1][0]?.toUpperCase() ?? '');
+    };
 
-        {/* Profile Picture Section */}
-        <div className="bg-gradient-to-br from-blue-50/50 to-indigo-50/30 rounded-2xl p-6 border border-blue-100/50">
-          <div className="flex items-center gap-5">
+    bodyContent = (
+      <div className="flex flex-col gap-5">
+        <div className="text-center">
+          <h3 className="text-lg font-semibold text-gray-900">
+            {isEdit ? 'Update your photos' : 'Add your photos'}
+          </h3>
+          <p className="text-sm text-gray-500 mt-1">
+            See how your profile card will look
+          </p>
+        </div>
+
+        <div className="flex gap-5 items-start">
+          {/* Left: Worker Card Preview */}
+          <div className="flex-shrink-0">
+            {/* Card Preview - exact WorkerCard dimensions 250x280 */}
+            <div
+              className="rounded-xl overflow-hidden relative max-w-[250px]"
+              style={{ width: '250px', height: '280px' }}
+            >
+              {/* Background */}
+              <div className="absolute inset-0 z-0">
+                {backgroundImage ? (
+                  <>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={backgroundImage}
+                      alt="Background"
+                      className="w-full h-full object-cover grayscale"
+                      style={{ opacity: 0.75 }}
+                    />
+                    <div className="absolute inset-0 bg-gray-600/15" style={{ mixBlendMode: 'multiply' }} />
+                  </>
+                ) : (
+                  <div className="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300" />
+                )}
+
+                {/* Radial gradient from avatar */}
+                <div
+                  className="absolute inset-0 opacity-12"
+                  style={{ background: 'radial-gradient(circle at 50% 28%, rgba(96, 165, 250, 0.18) 0%, transparent 55%)' }}
+                />
+
+                {/* Top gradient */}
+                <div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    background: 'linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.20) 15%, rgba(0,0,0,0.10) 30%, rgba(0,0,0,0.00) 45%)',
+                  }}
+                />
+
+                {/* Bottom gradient */}
+                <div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    background: 'linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.55) 18%, rgba(0,0,0,0.32) 38%, rgba(0,0,0,0.12) 55%, rgba(0,0,0,0.00) 70%)',
+                  }}
+                />
+              </div>
+
+              {/* Content */}
+              <div className="relative z-10 h-full">
+                {/* Avatar - Centered at 40% */}
+                <div className="absolute top-[40%] left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                  {image ? (
+                    <div className="w-24 h-24 rounded-full overflow-hidden shadow-lg border-2 border-white">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={image} alt="Profile" className="w-full h-full object-cover" />
+                    </div>
+                  ) : (
+                    <div
+                      className="w-24 h-24 rounded-full flex items-center justify-center text-white text-2xl font-semibold shadow-lg border-2 border-white"
+                      style={{ backgroundColor: '#60A5FA' }}
+                    >
+                      {getInitials(name)}
+                    </div>
+                  )}
+                </div>
+
+                {/* Bottom info */}
+                <div className="absolute bottom-4 left-4 right-4">
+                  <h3 className="text-lg font-semibold text-white drop-shadow leading-tight mb-0.5">
+                    {name || 'Your Name'}
+                  </h3>
+                  <div className="text-white/90 text-xs leading-tight mb-2.5">
+                    {jobTitle || 'Your Title'}
+                  </div>
+                  <div className="flex items-center">
+                    <span className="px-3 py-1.5 bg-white/20 backdrop-blur-md rounded-lg text-white text-xs font-medium">
+                      Preview
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right: Upload Controls */}
+          <div className="flex-1 min-w-0 space-y-4">
             {/* Profile Picture Upload */}
-            <div className="flex-shrink-0">
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-2">
+                Profile picture
+              </label>
               <ImageUpload
                 uploadId="profile-picture"
                 onChange={(v) => setCustomValue('image', v)}
                 value={image}
-                className="w-28 h-28"
+                className="w-20 h-20"
                 ratio="square"
                 rounded="full"
                 enableCrop={true}
@@ -799,44 +872,42 @@ const RegisterModal = () => {
                 maxFileSizeMB={5}
                 onRemove={() => setCustomValue('image', '')}
               />
+              <p className="text-[11px] text-gray-400 mt-1.5">
+                Displayed as a circle
+              </p>
             </div>
 
-            {/* Profile Picture Info */}
-            <div className="flex-1">
-              <h3 className="text-base font-semibold text-neutral-900 mb-1.5">
-                Profile Picture
-              </h3>
-              <p className="text-sm text-neutral-600 leading-relaxed">
-                Upload a photo that represents you. It&apos;ll be displayed as a circle throughout the app.
+            {/* Background Upload */}
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-2">
+                Background image
+              </label>
+              <ImageUpload
+                uploadId="background-image"
+                onChange={(v) => setCustomValue('backgroundImage', v)}
+                value={backgroundImage}
+                className="w-full h-24"
+                ratio="wide"
+                rounded="xl"
+                enableCrop={true}
+                cropMode="fixed"
+                customAspectRatio={250 / 280}
+                label=""
+                maxFileSizeMB={5}
+                onRemove={() => setCustomValue('backgroundImage', '')}
+              />
+              <p className="text-[11px] text-gray-400 mt-1.5">
+                Used on your profile and cards
+              </p>
+            </div>
+
+            {/* Tip */}
+            <div className="pt-2">
+              <p className="text-xs text-gray-500">
+                Your photos help clients recognize you and build trust.
               </p>
             </div>
           </div>
-        </div>
-
-        {/* Background Image Section */}
-        <div className="bg-gradient-to-br from-purple-50/50 to-pink-50/30 rounded-2xl p-6 border border-purple-100/50 -mb-6">
-          <div className="mb-4">
-            <h3 className="text-base font-semibold text-neutral-900 mb-1.5">
-              Background Image
-            </h3>
-            <p className="text-sm text-neutral-600 leading-relaxed">
-              Choose a backdrop for your profile header and worker cards. This helps you stand out.
-            </p>
-          </div>
-
-          <ImageUpload
-            uploadId="background-image"
-            onChange={(v) => setCustomValue('backgroundImage', v)}
-            value={backgroundImage}
-            className="w-full h-36"
-            ratio="wide"
-            rounded="2xl"
-            enableCrop={true}
-            cropMode="fixed"
-            label=""
-            maxFileSizeMB={5}
-            onRemove={() => setCustomValue('backgroundImage', '')}
-          />
         </div>
       </div>
     );
