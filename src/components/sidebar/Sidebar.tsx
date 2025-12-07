@@ -277,16 +277,15 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
           </nav>
 
           {/* Help icon */}
-          <Link
-            href="/help"
-            className="p-2.5 rounded-xl transition-colors text-neutral-400 hover:text-neutral-600 hover:bg-neutral-50 mb-2"
+          <div
+            className="p-2.5 rounded-xl text-neutral-300 cursor-not-allowed mb-2"
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none">
               <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5"/>
               <path d="M10 9C10 7.89543 10.8954 7 12 7C13.1046 7 14 7.89543 14 9C14 9.39815 13.8837 9.76913 13.6831 10.0808C13.0854 11.0097 12 11.8954 12 13V13.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
               <circle cx="12" cy="16.5" r="1" fill="currentColor"/>
             </svg>
-          </Link>
+          </div>
         </div>
       </div>
     );
@@ -453,9 +452,8 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
 
         {/* Help & Support */}
         <div className="px-3 pb-4 mt-auto">
-          <Link
-            href="/help"
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100"
+          <div
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-neutral-300 cursor-not-allowed"
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none">
               <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5"/>
@@ -463,7 +461,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
               <circle cx="12" cy="16.5" r="1" fill="currentColor"/>
             </svg>
             <span className="text-sm">Help & Support</span>
-          </Link>
+          </div>
         </div>
       </div>
     </div>

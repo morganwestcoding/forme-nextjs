@@ -104,6 +104,7 @@
   body {
     @apply text-foreground bg-white dark:bg-neutral-950;
     min-height: 100vh;
+    overflow-x: hidden;
     transition: background-color 0.3s ease, color 0.3s ease;
   }
 }

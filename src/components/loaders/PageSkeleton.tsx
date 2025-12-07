@@ -25,8 +25,8 @@ const CardSkeleton = () => (
   </div>
 );
 
-// Category pill widths matching actual labels
-const categoryWidths = [70, 72, 62, 52, 46, 60, 58, 54];
+// Category pill widths matching actual label widths (Massage, Wellness, Fitness, Nails, Spa, Barber, Beauty, Salon)
+const categoryWidths = [72, 74, 60, 50, 40, 58, 56, 52];
 
 const PageSkeleton: React.FC<PageSkeletonProps> = ({
   title = 'Loading',
@@ -51,39 +51,51 @@ const PageSkeleton: React.FC<PageSkeletonProps> = ({
               )}
             </div>
 
-            {/* Search skeleton - matching MarketSearch exactly */}
+            {/* Search skeleton - matching ContextualSearch exactly */}
             {showSearch && (
               <div className="mt-8 max-w-3xl mx-auto">
-                <div className="bg-neutral-100 border border-neutral-200 rounded-2xl overflow-hidden mt-3">
+                <div
+                  className="border border-neutral-200 rounded-2xl overflow-hidden"
+                  style={{
+                    background: 'linear-gradient(to right, rgb(245 245 245) 0%, rgb(241 241 241) 100%)'
+                  }}
+                >
                   <div className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5">
-                    <div className="flex-1 h-[14px] bg-neutral-200/60 rounded ml-2 sm:ml-3" />
+                    {/* Input placeholder skeleton */}
+                    <div className="flex-1 h-[14px] bg-neutral-300/40 rounded ml-2 sm:ml-3" />
+                    {/* Divider */}
                     <div className="w-px h-5 bg-neutral-300" />
+                    {/* Search icon button */}
                     <div className="p-1.5 sm:p-2">
-                      <div className="w-5 h-5 sm:w-[22px] sm:h-[22px] rounded-lg sm:rounded-xl bg-neutral-200/50" />
+                      <div className="w-5 h-5 sm:w-[22px] sm:h-[22px] rounded-lg sm:rounded-xl bg-neutral-300/40" />
                     </div>
+                    {/* Filter icon button */}
                     <div className="p-1.5 sm:p-2">
-                      <div className="w-5 h-5 sm:w-[22px] sm:h-[22px] rounded-lg sm:rounded-xl bg-neutral-200/50" />
+                      <div className="w-5 h-5 sm:w-[22px] sm:h-[22px] rounded-lg sm:rounded-xl bg-neutral-300/40" />
                     </div>
+                    {/* Create icon button */}
                     <div className="p-1.5 sm:p-2">
-                      <div className="w-5 h-5 sm:w-[22px] sm:h-[22px] rounded-lg sm:rounded-xl bg-neutral-200/50" />
+                      <div className="w-5 h-5 sm:w-[22px] sm:h-[22px] rounded-lg sm:rounded-xl bg-neutral-300/40" />
                     </div>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* Category Nav - matching actual styling */}
+            {/* Category Nav - matching CategoryNav exactly: h-9, rounded-xl, gap-1.5 */}
             {showCategoryNav && (
-              <div className="mt-5 -mx-6 md:-mx-24">
+              <div className="mt-3 -mx-6 md:-mx-24">
                 <div className="px-6 md:px-24">
-                  <div className="flex items-center sm:justify-center gap-1.5 py-2 sm:py-3 -mx-2 px-2 sm:mx-0 sm:px-0">
-                    {categoryWidths.map((width, i) => (
-                      <div
-                        key={i}
-                        style={{ width: `${width}px` }}
-                        className="h-[24px] sm:h-[28px] bg-transparent border border-neutral-300 rounded-lg sm:rounded-xl flex-shrink-0"
-                      />
-                    ))}
+                  <div className="relative flex items-center justify-center py-2 sm:py-3 -mx-2 px-2 sm:mx-0 sm:px-0">
+                    <div className="flex items-center justify-center gap-1.5 overflow-x-auto scrollbar-hide pt-1 pb-3 -mb-2">
+                      {categoryWidths.map((width, i) => (
+                        <div
+                          key={i}
+                          style={{ width: `${width}px` }}
+                          className="h-9 bg-white border border-neutral-300 rounded-xl flex-shrink-0"
+                        />
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
