@@ -84,11 +84,6 @@ const PostModal = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState(0);
 
-  // Update currentPostIndex when initialIndex changes (new post clicked)
-  useEffect(() => {
-    setCurrentPostIndex(initialIndex);
-  }, [initialIndex]);
-
   const containerRef = useRef<HTMLDivElement>(null);
   const touchVelocityRef = useRef(0);
   const lastTouchY = useRef(0);
@@ -100,14 +95,22 @@ const PostModal = () => {
   const accumulatedDelta = useRef(0);
 
   const [localPost, setLocalPost] = useState<SafePost | null>(post);
-  const currentPost = posts[currentPostIndex] || localPost;
 
-  // Update local post when post changes
+  // Ensure we always have posts to render - fallback to localPost if posts array is empty
+  const postsToRender = posts.length > 0 ? posts : (localPost ? [localPost] : []);
+  const currentPost = postsToRender[currentPostIndex] || localPost;
+
+  // Reset state when a different post is clicked - use post.id to detect changes
   useEffect(() => {
     if (post) {
       setLocalPost(post);
+      setCurrentPostIndex(initialIndex);
+      // Reset UI state for new post
+      setShowComments(false);
+      setShowFullCaption(false);
+      setShowMenu(false);
     }
-  }, [post]);
+  }, [post?.id, initialIndex]);
 
   const [likes, setLikes] = useState<string[]>([]);
   const [liked, setLiked] = useState(false);
@@ -144,7 +147,7 @@ const PostModal = () => {
     const targetIndex = currentPostIndex + direction;
 
     // Check bounds and if scroll is allowed
-    if (targetIndex < 0 || targetIndex >= posts.length || !canScrollRef.current) {
+    if (targetIndex < 0 || targetIndex >= postsToRender.length || !canScrollRef.current) {
       return;
     }
 
@@ -154,8 +157,8 @@ const PostModal = () => {
     setIsScrolling(true);
     setCurrentPostIndex(targetIndex);
 
-    if (posts[targetIndex]) {
-      postModal.setPost?.(posts[targetIndex]);
+    if (postsToRender[targetIndex]) {
+      postModal.setPost?.(postsToRender[targetIndex]);
     }
 
     // Re-enable scrolling after transition completes
@@ -163,11 +166,11 @@ const PostModal = () => {
       setIsScrolling(false);
       canScrollRef.current = true;
     }, 600); // Match the 600ms transition exactly
-  }, [currentPostIndex, posts.length, postModal]);
+  }, [currentPostIndex, postsToRender.length, postModal]);
 
   // TikTok-style wheel handling - each scroll gesture = one post
   useEffect(() => {
-    if (!containerRef.current || posts.length <= 1) return;
+    if (!containerRef.current || postsToRender.length <= 1) return;
 
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
@@ -219,7 +222,7 @@ const PostModal = () => {
         clearTimeout(scrollTimeoutRef.current);
       }
     };
-  }, [navigateToPost, posts.length]);
+  }, [navigateToPost, postsToRender.length]);
 
 // Replace your keyboard navigation useEffect with this fixed version:
 
@@ -275,7 +278,7 @@ useEffect(() => {
 
   // Touch handling for continuous scroll
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    if (posts.length <= 1 || !canScrollRef.current) return;
+    if (postsToRender.length <= 1 || !canScrollRef.current) return;
 
     const touch = e.touches[0];
     setTouchStartY(touch.clientY);
@@ -286,10 +289,10 @@ useEffect(() => {
     lastTouchY.current = touch.clientY;
     lastTouchTime.current = Date.now();
     touchVelocityRef.current = 0;
-  }, [posts.length]);
+  }, [postsToRender.length]);
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    if (!isDragging || posts.length <= 1 || !canScrollRef.current) return;
+    if (!isDragging || postsToRender.length <= 1 || !canScrollRef.current) return;
 
     const touch = e.touches[0];
     const currentTime = Date.now();
@@ -304,8 +307,8 @@ useEffect(() => {
     let offset = rawOffset;
 
     // Light resistance at boundaries for smoother feel
-    if ((currentPostIndex === 0 && offset > 0) || 
-        (currentPostIndex === posts.length - 1 && offset < 0)) {
+    if ((currentPostIndex === 0 && offset > 0) ||
+        (currentPostIndex === postsToRender.length - 1 && offset < 0)) {
       offset = rawOffset * 0.3;
     }
 
@@ -313,7 +316,7 @@ useEffect(() => {
     
     lastTouchY.current = touch.clientY;
     lastTouchTime.current = currentTime;
-  }, [isDragging, touchStartY, currentPostIndex, posts.length]);
+  }, [isDragging, touchStartY, currentPostIndex, postsToRender.length]);
 
   const handleTouchEnd = useCallback(() => {
     if (!isDragging || !canScrollRef.current) return;
@@ -440,13 +443,6 @@ useEffect(() => {
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
-
-  // Update post when index changes
-  useEffect(() => {
-    if (posts[currentPostIndex]) {
-      postModal.setPost?.(posts[currentPostIndex]);
-    }
-  }, [currentPostIndex, posts]);
 
   const isReel = currentPost?.tag?.toLowerCase() === 'reel' || currentPost?.postType?.toLowerCase() === 'reel';
   const isAd = currentPost?.postType === 'ad';
@@ -766,12 +762,12 @@ useEffect(() => {
       <>
         <style jsx>{styles}</style>
         <div
-          className={`fixed inset-0 z-40 bg-neutral-900/70 transition-opacity duration-300 ${
+          className={`fixed inset-0 z-[60] bg-neutral-900/70 transition-opacity duration-300 ${
             showModal ? 'opacity-100' : 'opacity-0'
           }`}
           onClick={handleClose}
         />
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
           <div
             className={`relative max-w-lg w-full duration-300 transform transition-all ${
               showModal ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
@@ -800,7 +796,7 @@ useEffect(() => {
 
       {/* Backdrop with fade */}
       <div
-        className={`fixed inset-0 z-40 bg-neutral-900/70 transition-opacity duration-300 ${
+        className={`fixed inset-0 z-[60] bg-neutral-900/70 transition-opacity duration-300 ${
           showModal ? 'opacity-100' : 'opacity-0'
         }`}
         style={{ pointerEvents: showModal ? 'auto' : 'none' }}
@@ -810,7 +806,7 @@ useEffect(() => {
       {/* Modal content with slide-up animation */}
       <div
         ref={containerRef}
-        className={`fixed inset-0 z-50 overflow-hidden ultra-smooth duration-300 transform transition-all ${
+        className={`fixed inset-0 z-[70] overflow-hidden ultra-smooth duration-300 transform transition-all ${
           showModal ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
         }`}
         onTouchStart={handleTouchStart}
@@ -826,7 +822,7 @@ useEffect(() => {
         <div
           className="relative w-full ultra-smooth transition-opacity duration-300"
           style={{
-            height: `${posts.length * 100}vh`,
+            height: `${postsToRender.length * 100}vh`,
             // This creates the continuous scroll effect - you can see adjacent posts during transition
             transform: `translate3d(0, ${(-currentPostIndex * 100) + (isDragging ? (dragOffset / window.innerHeight) * 100 : 0)}vh, 0)`,
             // Only apply transition after initial load, not on first render
@@ -836,17 +832,10 @@ useEffect(() => {
             opacity: showModal ? 1 : 0
           }}
         >
-          {posts.map((postData, index) => {
+          {postsToRender.map((postData, index) => {
             const formattedDate = format(new Date(postData.createdAt), 'PPP');
             const isReelPost = postData?.tag?.toLowerCase() === 'reel' || postData?.postType?.toLowerCase() === 'reel';
             const videoState = getVideoState(postData.id);
-
-            // Debug: log mediaOverlay data
-            if (isReelPost && index === currentPostIndex) {
-              console.log('Post ID:', postData.id);
-              console.log('Post mediaOverlay:', postData.mediaOverlay);
-              console.log('Full post data keys:', Object.keys(postData));
-            }
 
             return (
               <div 
@@ -1199,12 +1188,12 @@ useEffect(() => {
                           </div>
                         )
                       ) : (
-                        <div className="flex-1 bg-white flex items-center justify-center p-8 relative">
-                          <p className="text-gray-900 text-lg text-center leading-relaxed">{postData.content}</p>
-                          
+                        <div className="flex-1 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-8 relative">
+                          <p className="text-gray-900 text-xl text-center leading-relaxed max-w-sm font-medium">{postData.content}</p>
+
                           <div className="absolute bottom-4 left-0 right-0 px-4 z-30">
-                            <div className="video-controls rounded-2xl p-6 text-white shadow-2xl">
-                              <div className="flex items-center gap-3 mb-4">
+                            <div className="rounded-2xl p-4 bg-white/90 backdrop-blur-sm shadow-lg border border-gray-200/50">
+                              <div className="flex items-center gap-3">
                                 <button
                                   onClick={() => handleProfileClick(postData.user.id)}
                                   className="relative w-10 h-10 hover:scale-110 transition-transform duration-200 cursor-pointer flex-shrink-0"
@@ -1213,27 +1202,13 @@ useEffect(() => {
                                     src={postData.user.image || '/images/placeholder.jpg'}
                                     alt={postData.user.name || 'User'}
                                     fill
-                                    className="rounded-full object-cover border-2 border-white/20"
+                                    className="rounded-full object-cover border-2 border-gray-200"
                                   />
                                 </button>
                                 <div className="flex-1">
-                                  <p className="font-semibold text-sm">{postData.user.name || 'Anonymous'}</p>
-                                  <p className="text-xs text-white/70">{formattedDate}</p>
+                                  <p className="font-semibold text-sm text-gray-900">{postData.user.name || 'Anonymous'}</p>
+                                  <p className="text-xs text-gray-500">{formattedDate}</p>
                                 </div>
-                              </div>
-                              
-                              <div className="flex items-start gap-2">
-                                <p className={`text-sm leading-relaxed text-white/90 flex-1 ${showFullCaption ? '' : 'line-clamp-1'}`}>
-                                  {postData.content}
-                                </p>
-                                {postData.content && postData.content.length > 80 && (
-                                  <button
-                                    onClick={() => setShowFullCaption(!showFullCaption)}
-                                    className="text-white/70 text-xs font-semibold hover:text-white transition-colors flex-shrink-0 drop-shadow-lg px-2 py-1 rounded-full hover:bg-white/10"
-                                  >
-                                    {showFullCaption ? 'less' : 'more'}
-                                  </button>
-                                )}
                               </div>
                             </div>
                           </div>
@@ -1247,12 +1222,13 @@ useEffect(() => {
           })}
         </div>
 
-        {/* Side action buttons */}
+        {/* Side action buttons - positioned right next to the post */}
         <div
-          className={`fixed top-1/2 transform -translate-y-1/2 flex flex-col items-center gap-6 text-white z-30 transition-opacity duration-300 ${
-            currentPost?.tag?.toLowerCase() === 'reel' || currentPost?.postType?.toLowerCase() === 'reel' ? 'right-6' : 'left-1/2 ml-[calc(192px+60px)]'
-          }`}
-          style={{ opacity: showModal ? 1 : 0 }}
+          className="fixed top-1/2 transform -translate-y-1/2 flex flex-col items-center gap-6 text-white z-30 transition-opacity duration-300 left-1/2"
+          style={{
+            opacity: showModal ? 1 : 0,
+            marginLeft: 'calc(224px + 24px)' // half of max-w-md (448px/2) + 24px gap
+          }}
         >
           <div className="flex flex-col items-center gap-2">
             <button onClick={handleClose} className="hover:scale-110 transition-transform duration-200">
@@ -1338,15 +1314,7 @@ useEffect(() => {
                   onClick={() => setShowMenu(false)}
                 />
                 <div className="absolute right-full mr-4 bottom-0 z-50 w-48 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden max-h-96 overflow-y-auto">
-                  {(() => {
-                    const isOwner = currentUser && currentPost.user.id === currentUser.id;
-                    console.log('Menu Debug:', {
-                      currentUserId: currentUser?.id,
-                      postUserId: currentPost.user.id,
-                      isOwner
-                    });
-                    return isOwner;
-                  })() ? (
+                  {currentUser && currentPost.user.id === currentUser.id ? (
                     <>
                       <button
                         onClick={() => {

@@ -46,6 +46,7 @@ export async function GET(
     imageSrc: post.imageSrc,
     mediaUrl: post.mediaUrl,
     mediaType: post.mediaType,
+    mediaOverlay: (post as any).mediaOverlay || null,
     location: post.location,
     tag: post.tag,
     photo: post.photo,
@@ -55,7 +56,7 @@ export async function GET(
     likes: post.likes || [],
     bookmarks: post.bookmarks || [],
     hiddenBy: post.hiddenBy || [],
-    mentions: mentions.length > 0 ? mentions : null, // NEW: Include processed mentions
+    mentions: mentions.length > 0 ? mentions : null,
     user: {
       id: post.user.id,
       name: post.user.name,
