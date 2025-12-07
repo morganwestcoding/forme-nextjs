@@ -13,7 +13,7 @@ import useForgotPasswordModal from "@/app/hooks/useForgotPasswordModal";
 import Modal, { ModalHandle } from "./Modal";
 import Input from "../inputs/Input";
 import Heading from "../Heading";
-import Logo from "../header/Logo";
+import Image from "next/image";
 
 const ANIM_MS = 300;
 
@@ -89,8 +89,14 @@ const LoginModal = () => {
 
   const bodyContent = (
     <div className="flex flex-col gap-4">
-      <div className="flex justify-center mb-2">
-        <Logo variant="horizontal" />
+      <div className="flex justify-center pt-4 mb-2">
+        <Image
+          src="/logos/forme-long.png"
+          alt="ForMe"
+          width={140}
+          height={32}
+          className="object-contain"
+        />
       </div>
       <Heading title="Welcome back" subtitle="Login to your account!" />
       <Input

@@ -83,10 +83,10 @@ const CategoryNav: React.FC<CategoryNavProps> = ({
             key={category.value}
             onClick={() => handleCategorySelect(category.value)}
             className={`
-              relative px-3 sm:px-4 py-1 sm:py-1.5 text-[12px] sm:text-[13px] font-medium rounded-lg sm:rounded-xl border transition-all duration-300 ease-out active:scale-[0.97] whitespace-nowrap flex-shrink-0
+              relative px-3 sm:px-4 h-9 flex items-center text-[12px] sm:text-[13px] font-medium rounded-xl border transition-all duration-200 active:scale-[0.97] whitespace-nowrap flex-shrink-0
               ${isSelected
                 ? 'text-white'
-                : 'bg-transparent border-neutral-300 dark:border-neutral-600 text-neutral-500 dark:text-neutral-400'
+                : 'bg-white border-neutral-300 text-neutral-600 hover:bg-neutral-50 hover:border-neutral-400 hover:shadow-sm'
               }
             `}
             style={isSelected ? {
@@ -95,20 +95,6 @@ const CategoryNav: React.FC<CategoryNavProps> = ({
               boxShadow: `0 4px 6px -1px ${accentColor}40`,
               color: 'white'
             } : undefined}
-            onMouseEnter={(e) => {
-              if (!isSelected) {
-                e.currentTarget.style.borderColor = accentColor;
-                e.currentTarget.style.color = accentColor;
-                e.currentTarget.style.backgroundColor = `${accentColor}0D`;
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!isSelected) {
-                e.currentTarget.style.borderColor = '';
-                e.currentTarget.style.color = '';
-                e.currentTarget.style.backgroundColor = '';
-              }
-            }}
             type="button"
           >
             <span className="relative z-10">{category.label}</span>

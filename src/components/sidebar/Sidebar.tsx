@@ -13,6 +13,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import useSettingsModal from "@/app/hooks/useSettingsModal";
+import useLoginModal from "@/app/hooks/useLoginModal";
+import useRegisterModal from "@/app/hooks/useRegisterModal";
 import { clearEarlyAccess } from "@/app/utils/earlyAccess";
 
 interface SidebarProps {
@@ -68,6 +70,8 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
   const pathname = usePathname();
   const router = useRouter();
   const settingsModal = useSettingsModal();
+  const loginModal = useLoginModal();
+  const registerModal = useRegisterModal();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
@@ -86,6 +90,8 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
   };
 
   const handleSignOut = handleClick(() => signOut());
+  const handleSignIn = handleClick(() => loginModal.onOpen());
+  const handleSignUp = handleClick(() => registerModal.onOpen());
   const handleProfile = handleClick(() => {
     if (currentUser?.id) router.push(`/profile/${currentUser.id}`);
   });
@@ -314,15 +320,30 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
                       {getFirstName(currentUser?.name)?.[0] || "G"}
                     </div>
                   )}
-                  <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white bg-emerald-500" />
+                  {currentUser?.id && (
+                    <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white bg-emerald-500" />
+                  )}
                 </div>
                 <div className="flex flex-col min-w-0 flex-1">
-                  <span className="text-[14px] font-medium truncate text-neutral-800 text-left">
-                    {formatUserName(currentUser?.name)}
-                  </span>
-                  <span className="text-xs text-neutral-500 text-left">
-                    {formatTier(currentUser?.subscriptionTier)} Tier
-                  </span>
+                  {currentUser?.id ? (
+                    <>
+                      <span className="text-[14px] font-medium truncate text-neutral-800 text-left">
+                        {formatUserName(currentUser?.name)}
+                      </span>
+                      <span className="text-xs text-neutral-500 text-left">
+                        {formatTier(currentUser?.subscriptionTier)} Tier
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-[14px] font-medium text-neutral-800 text-left">
+                        Welcome
+                      </span>
+                      <span className="text-xs text-neutral-400 text-left">
+                        Sign in or join us
+                      </span>
+                    </>
+                  )}
                 </div>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -342,20 +363,29 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
               align="start"
               sideOffset={8}
             >
-              <DropdownMenuItem onClick={handleProfile}>My Profile</DropdownMenuItem>
-              <DropdownMenuItem onClick={handleListings}>My Listings</DropdownMenuItem>
-              <DropdownMenuItem onClick={handleAnalytics}>My Analytics</DropdownMenuItem>
-              <DropdownMenuItem onClick={handleSubscribe}>Subscription</DropdownMenuItem>
-              <DropdownMenuItem onClick={handleLicensing}>Licensing</DropdownMenuItem>
-              <DropdownMenuItem onClick={handleSettings}>Settings</DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={handleClearEarlyAccess}
-                className="text-red-600 hover:text-red-700 hover:bg-red-50"
-              >
-                Clean
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleSignOut}>Sign Out</DropdownMenuItem>
+              {currentUser?.id ? (
+                <>
+                  <DropdownMenuItem onClick={handleProfile}>My Profile</DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleListings}>My Listings</DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleAnalytics}>My Analytics</DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleSubscribe}>Subscription</DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleLicensing}>Licensing</DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleSettings}>Settings</DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={handleClearEarlyAccess}
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                  >
+                    Clean
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleSignOut}>Sign Out</DropdownMenuItem>
+                </>
+              ) : (
+                <>
+                  <DropdownMenuItem onClick={handleSignIn}>Sign in</DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleSignUp}>Sign up</DropdownMenuItem>
+                </>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

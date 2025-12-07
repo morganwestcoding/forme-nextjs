@@ -14,7 +14,7 @@ import Input from "../inputs/Input";
 import Heading from "../Heading";
 import ProfileLocationInput from "../inputs/ProfileLocationInput";
 import ImageUpload from "../inputs/ImageUpload";
-import Logo from "../header/Logo";
+import Image from "next/image";
 import EditOverview from "./EditOverview";
 import UserTypeStep from "../inputs/UserTypeStep";
 import JobTitleStep from "../inputs/JobTitleStep";
@@ -452,11 +452,17 @@ const RegisterModal = () => {
   let bodyContent = (
     <div className="flex flex-col gap-4">
       {!isEdit && (
-        <div className="flex justify-center">
-          <Logo variant="horizontal" />
+        <div className="flex justify-center pt-4 mb-2">
+          <Image
+            src="/logos/forme-long.png"
+            alt="ForMe"
+            width={140}
+            height={32}
+            className="object-contain"
+          />
         </div>
       )}
-      <Heading title={isEdit ? "Edit your profile" : "Welcome to ForMe"} subtitle={isEdit ? "Update your info" : "Create an account!"} />
+      <Heading title={isEdit ? "Edit your profile" : "Welcome"} subtitle={isEdit ? "Update your info" : "Create an account!"} />
       <Input
         id="email"
         label="Email"
