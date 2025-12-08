@@ -276,7 +276,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
         <div className="absolute bottom-4 left-4 right-4 z-20">
           {/* Name with verification badge */}
           <div className="mb-0.5">
-            <h3 className="text-lg font-semibold text-white drop-shadow leading-tight">
+            <h3 className="text-lg font-semibold text-white drop-shadow leading-tight line-clamp-2">
               {renderNameWithBadge(employee.fullName)}
             </h3>
           </div>

@@ -102,7 +102,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ data, currentUser, disabled =
           <div className="absolute bottom-4 left-4 right-4 z-20">
             {/* Product Name */}
             <div className="mb-0.5">
-              <h1 className="text-white text-[15px] leading-tight font-semibold drop-shadow line-clamp-1">
+              <h1 className="text-white text-[15px] leading-tight font-semibold drop-shadow line-clamp-2">
                 {data.name}
               </h1>
             </div>

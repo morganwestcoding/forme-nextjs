@@ -1,20 +1,19 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-import { Link02Icon, UserAdd01Icon, UserCheck01Icon } from 'hugeicons-react';
+import { UserAdd01Icon, UserCheck01Icon } from 'hugeicons-react';
 import { SafeListing, SafePost, SafeUser, SafeReview } from '@/app/types';
-import CreateChatButton from '@/components/profile/CreateChatButton';
 import PostCard from '@/components/feed/PostCard';
 import ListingCard from '@/components/listings/ListingCard';
 import ServiceCard from '@/components/listings/ServiceCard';
 import SectionHeader from '@/app/market/SectionHeader';
 import ProfileCategoryNav from '@/components/profile/ProfileCategoryNav';
-import PageSearch from '@/components/search/PageSearch';
 import { categories } from '@/components/Categories';
 import useRegisterModal from '@/app/hooks/useRegisterModal';
 import useReviewModal from '@/app/hooks/useReviewModal';
+import useMessageModal from '@/app/hooks/useMessageModal';
 import { useSidebarState } from '@/app/hooks/useSidebarState';
 import ServiceSelector, { Service } from '@/components/inputs/ServiceSelector';
 import Modal from '@/components/modals/Modal';
@@ -59,16 +58,11 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
 
   const registerModal = useRegisterModal();
   const reviewModal = useReviewModal();
+  const messageModal = useMessageModal();
 
   const [activeTab, setActiveTab] = useState<TabKey | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
   const sidebarCollapsed = useSidebarState();
-
-  // Handle search query changes for local filtering
-  const handleSearchChange = useCallback((query: string) => {
-    setSearchQuery(query);
-  }, []);
 
   // Responsive grid - matches Market pattern
   const gridColsClass = sidebarCollapsed
@@ -202,41 +196,11 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
     setShowDropdown(!showDropdown);
   };
 
-  // Filter posts based on search query
-  const filteredPosts = useMemo(() => {
-    if (!searchQuery.trim()) return posts;
-    const query = searchQuery.toLowerCase();
-    return posts.filter((post) =>
-      post.content?.toLowerCase().includes(query)
-    );
-  }, [posts, searchQuery]);
-
-  // Filter listings based on search query
-  const filteredListings = useMemo(() => {
-    if (!searchQuery.trim()) return listings.filter(l => l.category !== 'Personal');
-    const query = searchQuery.toLowerCase();
-    return listings
-      .filter(l => l.category !== 'Personal')
-      .filter((listing) =>
-        listing.title?.toLowerCase().includes(query) ||
-        listing.description?.toLowerCase().includes(query) ||
-        listing.location?.toLowerCase().includes(query)
-      );
-  }, [listings, searchQuery]);
-
-  const filteredImages = galleryImages;
-
-  // Filter services based on search query
-  const filteredServices = useMemo(() => {
-    if (!searchQuery.trim()) return services;
-    const query = searchQuery.toLowerCase();
-    return services.filter(
-      (service) =>
-        service.serviceName?.toLowerCase().includes(query) ||
-        service.category?.toLowerCase().includes(query) ||
-        service.description?.toLowerCase().includes(query)
-    );
-  }, [services, searchQuery]);
+  // Filter listings to exclude Personal category
+  const visibleListings = useMemo(() =>
+    listings.filter(l => l.category !== 'Personal'),
+    [listings]
+  );
 
   // Get operating status from first listing
   const getOperatingStatus = () => {
@@ -425,78 +389,64 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
               </p>
             </div>
 
-            {/* Search Bar - Centered */}
-            <div className="mt-8 max-w-3xl mx-auto">
-              <PageSearch
-                placeholder="Looking for something?"
-                filterTypes={['listing', 'post', 'service']}
-                entityId={id}
-                entityType="user"
-                onSearchChange={handleSearchChange}
-                enableLocalFilter
-                showDefaultActions={false}
-                actionButtons={
-                  <>
-                    {/* Attach Button */}
-                    <button
-                      className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl hover:bg-neutral-200 text-neutral-600 hover:text-neutral-900 transition-all duration-200"
-                      type="button"
-                      title="Attach"
-                    >
-                      <Link02Icon size={20} strokeWidth={1.5} className="sm:w-[22px] sm:h-[22px]" />
-                    </button>
+            {/* Action Buttons - Centered with labels */}
+            <div className="mt-8 flex justify-center">
+              <div
+                className="border border-neutral-200 rounded-2xl overflow-hidden"
+                style={{
+                  background: 'linear-gradient(to right, rgb(245 245 245) 0%, rgb(241 241 241) 100%)'
+                }}
+              >
+                <div className="flex items-center gap-0.5 px-1.5 py-1">
+                  {/* Message Button */}
+                  <button
+                    onClick={() => {
+                      if (!currentUser) {
+                        toast.error('You must be logged in to message');
+                        return;
+                      }
+                      axios.post('/api/conversations', { userId: id })
+                        .then(res => {
+                          messageModal.onOpen(res.data.id, id);
+                        })
+                        .catch(() => toast.error('Failed to start conversation'));
+                    }}
+                    className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-white/80 text-neutral-600 hover:text-neutral-900 transition-all duration-200"
+                    type="button"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth="1.5">
+                      <path d="M2 6L8.91302 9.91697C11.4616 11.361 12.5384 11.361 15.087 9.91697L22 6" strokeLinejoin="round" />
+                      <path d="M2.01577 13.4756C2.08114 16.5412 2.11383 18.0739 3.24496 19.2094C4.37608 20.3448 5.95033 20.3843 9.09883 20.4634C11.0393 20.5122 12.9607 20.5122 14.9012 20.4634C18.0497 20.3843 19.6239 20.3448 20.7551 19.2094C21.8862 18.0739 21.9189 16.5412 21.9842 13.4756C22.0053 12.4899 22.0053 11.5101 21.9842 10.5244C21.9189 7.45886 21.8862 5.92609 20.7551 4.79066C19.6239 3.65523 18.0497 3.61568 14.9012 3.53657C12.9607 3.48781 11.0393 3.48781 9.09882 3.53656C5.95033 3.61566 4.37608 3.65521 3.24495 4.79065C2.11382 5.92608 2.08114 7.45885 2.01576 10.5244C1.99474 11.5101 1.99475 12.4899 2.01577 13.4756Z" strokeLinejoin="round" />
+                    </svg>
+                    <span className="text-[13px] font-medium">Inbox</span>
+                  </button>
 
-                    {/* Message Button */}
-                    {currentUser && !isOwner && (
-                      <CreateChatButton currentUser={currentUser} otherUserId={id} variant="icon" />
+                  <div className="w-px h-5 bg-neutral-300" />
+
+                  {/* Follow Button */}
+                  <button
+                    onClick={handleFollow}
+                    className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-white/80 text-neutral-600 hover:text-neutral-900 transition-all duration-200"
+                    type="button"
+                  >
+                    {isFollowing ? (
+                      <UserCheck01Icon size={18} color="currentColor" />
+                    ) : (
+                      <UserAdd01Icon size={18} color="currentColor" />
                     )}
-
-                    {/* Follow Button */}
-                    {currentUser && !isOwner && (
-                      <button
-                        onClick={handleFollow}
-                        className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl hover:bg-neutral-200 text-neutral-600 hover:text-neutral-900 transition-all duration-200"
-                        type="button"
-                        title={isFollowing ? 'Following' : 'Follow'}
-                      >
-                        {isFollowing ? (
-                          <UserCheck01Icon size={20} className="sm:w-[22px] sm:h-[22px]" />
-                        ) : (
-                          <UserAdd01Icon size={20} className="sm:w-[22px] sm:h-[22px]" />
-                        )}
-                      </button>
-                    )}
-
-                    {/* Edit Button for owners */}
-                    {canEdit && (
-                      <button
-                        onClick={openEditProfile}
-                        className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl hover:bg-neutral-200 text-neutral-600 hover:text-neutral-900 transition-all duration-200"
-                        type="button"
-                        title="Edit Profile"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5 sm:w-[22px] sm:h-[22px]" fill="none" stroke="currentColor" strokeWidth="1.5">
-                          <path d="M16.4249 4.60509L17.4149 3.6151C18.2351 2.79497 19.5648 2.79497 20.3849 3.6151C21.205 4.43524 21.205 5.76493 20.3849 6.58507L19.3949 7.57506M16.4249 4.60509L9.76558 11.2644C9.25807 11.772 8.89804 12.4078 8.72397 13.1041L8 16L10.8959 15.276C11.5922 15.102 12.228 14.7419 12.7356 14.2344L19.3949 7.57506M16.4249 4.60509L19.3949 7.57506" strokeLinejoin="round"/>
-                          <path d="M18.9999 13.5C18.9999 16.7875 18.9999 18.4312 18.092 19.5376C17.9258 19.7401 17.7401 19.9258 17.5375 20.092C16.4312 21 14.7874 21 11.4999 21H11C7.22876 21 5.34316 21 4.17159 19.8284C3.00003 18.6569 3 16.7712 3 13V12.5C3 9.21252 3 7.56879 3.90794 6.46244C4.07417 6.2599 4.2599 6.07417 4.46244 5.90794C5.56879 5 7.21252 5 10.5 5" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                      </button>
-                    )}
-                  </>
-                }
-              />
-            </div>
-
-            {/* Category Navigation - Sticky */}
-            <div className="mt-5 -mx-6 md:-mx-24">
-              <div className="sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-transparent transition-all duration-300" id="profile-category-nav-wrapper">
-                <div className="px-6 md:px-24 flex justify-center">
-                  <ProfileCategoryNav
-                    activeTab={activeTab}
-                    onTabChange={setActiveTab}
-                    showServices={isProvider}
-                  />
+                    <span className="text-[13px] font-medium">{isFollowing ? 'Following' : 'Follow'}</span>
+                  </button>
                 </div>
               </div>
+            </div>
+
+            {/* Category Nav - Below, centered */}
+            <div className="mt-4 flex justify-center">
+              <ProfileCategoryNav
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+                showServices={isProvider}
+              />
             </div>
 
           </div>
@@ -511,18 +461,13 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
           <section>
             <SectionHeader
               title={`${firstName}'s Posts`}
-              onViewAll={filteredPosts.length > 8 ? () => {} : undefined}
-              viewAllLabel={filteredPosts.length > 8 ? `View all ${filteredPosts.length}` : undefined}
+              onViewAll={posts.length > 8 ? () => {} : undefined}
+              viewAllLabel={posts.length > 8 ? `View all ${posts.length}` : undefined}
               className="!-mt-2 !mb-6"
             />
-            {filteredPosts.length === 0 && searchQuery.trim() ? (
-              <div className="text-center py-16">
-                <p className="text-base font-medium text-gray-600 mb-1">No posts found</p>
-                <p className="text-sm text-gray-500">Try a different search term</p>
-              </div>
-            ) : filteredPosts.length ? (
+            {posts.length ? (
               <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
-                {filteredPosts.slice(0, 8).map((post, idx) => (
+                {posts.slice(0, 8).map((post, idx) => (
                   <div
                     key={post.id}
                     style={{
@@ -553,18 +498,13 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
           <section>
             <SectionHeader
               title={`${firstName}'s Listings`}
-              onViewAll={filteredListings.length > 8 ? () => {} : undefined}
-              viewAllLabel={filteredListings.length > 8 ? `View all ${filteredListings.length}` : undefined}
+              onViewAll={visibleListings.length > 8 ? () => {} : undefined}
+              viewAllLabel={visibleListings.length > 8 ? `View all ${visibleListings.length}` : undefined}
               className="!-mt-2 !mb-6"
             />
-            {filteredListings.length === 0 && searchQuery.trim() ? (
-              <div className="text-center py-16">
-                <p className="text-base font-medium text-gray-600 mb-1">No listings found</p>
-                <p className="text-sm text-gray-500">Try a different search term</p>
-              </div>
-            ) : filteredListings.length ? (
+            {visibleListings.length ? (
               <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
-                {filteredListings.slice(0, 8).map((listing, idx) => (
+                {visibleListings.slice(0, 8).map((listing, idx) => (
                   <div
                     key={listing.id}
                     style={{
@@ -597,9 +537,9 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
               title={`${firstName}'s Gallery`}
               className="!-mt-2 !mb-6"
             />
-            {filteredImages.length ? (
+            {galleryImages.length ? (
               <div className={`grid ${gridColsClass} gap-3 transition-all duration-300`}>
-                {filteredImages.map((img, idx) => (
+                {galleryImages.map((img, idx) => (
                   <div
                     key={idx}
                     className="relative rounded-xl overflow-hidden bg-gray-100 aspect-square group cursor-pointer"
@@ -631,8 +571,8 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
           <section>
             <SectionHeader
               title={`${firstName}'s Services`}
-              onViewAll={filteredServices.length > 8 ? () => {} : undefined}
-              viewAllLabel={filteredServices.length > 8 ? `View all ${filteredServices.length}` : undefined}
+              onViewAll={services.length > 8 ? () => {} : undefined}
+              viewAllLabel={services.length > 8 ? `View all ${services.length}` : undefined}
               className="!-mt-2 !mb-6"
             />
             {isLoadingServices ? (
@@ -640,14 +580,9 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                 <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                 <p className="mt-4 text-gray-500">Loading services...</p>
               </div>
-            ) : filteredServices.length === 0 && searchQuery.trim() ? (
-              <div className="text-center py-16">
-                <p className="text-base font-medium text-gray-600 mb-1">No services found</p>
-                <p className="text-sm text-gray-500">Try a different search term</p>
-              </div>
-            ) : filteredServices.length > 0 ? (
+            ) : services.length > 0 ? (
               <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
-                {filteredServices.slice(0, 8).map((service, idx) => (
+                {services.slice(0, 8).map((service, idx) => (
                   <div
                     key={service.id}
                     style={{

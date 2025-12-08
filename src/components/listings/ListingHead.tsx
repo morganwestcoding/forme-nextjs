@@ -1,16 +1,15 @@
 'use client';
 
-import React, { useMemo, useState, useCallback } from 'react';
+import React, { useMemo, useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import { Link02Icon, UserAdd01Icon, UserCheck01Icon, Location01Icon, Call02Icon, Globe02Icon, Share08Icon } from 'hugeicons-react';
+import { Location01Icon, Call02Icon, Globe02Icon, Share08Icon, UserAdd01Icon, UserCheck01Icon } from 'hugeicons-react';
 import ServiceCard from './ServiceCard';
 import WorkerCard from './WorkerCard';
 import PostCard from '../feed/PostCard';
 import QRModal from '../modals/QRModal';
 import ListingCategoryNav from './ListingCategoryNav';
 import SectionHeader from '@/app/market/SectionHeader';
-import PageSearch from '@/components/search/PageSearch';
 import { SafePost, SafeUser, SafeListing, SafeReview } from '@/app/types';
 import useReservationModal from '@/app/hooks/useReservationModal';
 import useRentModal from '@/app/hooks/useListingModal';
@@ -64,14 +63,8 @@ const ListingHead: React.FC<ListingHeadProps> = ({
   const [followers, setFollowers] = useState<string[]>(initialFollowers);
   const [showQRModal, setShowQRModal] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'About' | 'Services' | 'Professionals' | 'Posts' | 'Reviews' | null>(null);
   const sidebarCollapsed = useSidebarState();
-
-  // Handle search query changes for local filtering
-  const handleSearchChange = useCallback((query: string) => {
-    setSearchQuery(query);
-  }, []);
 
   // Responsive grid - matches Market pattern, adds 1 column when sidebar is collapsed
   const gridColsClass = sidebarCollapsed
@@ -183,35 +176,6 @@ const ListingHead: React.FC<ListingHeadProps> = ({
 
   const operatingStatus = getOperatingStatus();
 
-  // Filter services based on search query
-  const filteredServices = useMemo(() => {
-    if (!searchQuery.trim()) return validServices;
-    const query = searchQuery.toLowerCase();
-    return validServices.filter((service) =>
-      service.serviceName?.toLowerCase().includes(query) ||
-      service.category?.toLowerCase().includes(query) ||
-      service.description?.toLowerCase().includes(query)
-    );
-  }, [validServices, searchQuery]);
-
-  // Filter employees based on search query
-  const filteredEmployees = useMemo(() => {
-    if (!searchQuery.trim()) return employees;
-    const query = searchQuery.toLowerCase();
-    return employees.filter((emp: any) =>
-      emp.fullName?.toLowerCase().includes(query) ||
-      emp.jobTitle?.toLowerCase().includes(query)
-    );
-  }, [employees, searchQuery]);
-
-  // Filter posts based on search query
-  const filteredPosts = useMemo(() => {
-    if (!searchQuery.trim()) return posts;
-    const query = searchQuery.toLowerCase();
-    return posts.filter((post) =>
-      post.content?.toLowerCase().includes(query)
-    );
-  }, [posts, searchQuery]);
 
   return (
     <>
@@ -361,71 +325,48 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               </p>
             </div>
 
-            {/* Search and Controls */}
-            <div className="mt-8 max-w-3xl mx-auto">
-              <PageSearch
-                placeholder="Looking for something?"
-                filterTypes={['service', 'employee', 'post']}
-                entityId={listing.id}
-                entityType="listing"
-                onSearchChange={handleSearchChange}
-                enableLocalFilter
-                showDefaultActions={false}
-                actionButtons={
-                  <>
-                    {/* Attach Button */}
-                    <button
-                      className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl hover:bg-neutral-200 text-neutral-600 hover:text-neutral-900 transition-all duration-200"
-                      type="button"
-                      title="Attach"
-                    >
-                      <Link02Icon size={20} strokeWidth={1.5} className="sm:w-[22px] sm:h-[22px]" />
-                    </button>
-
-                    {/* Follow Button */}
-                    {currentUser && !isOwner && (
-                      <button
-                        onClick={handleToggleFollow}
-                        className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl hover:bg-neutral-200 text-neutral-600 hover:text-neutral-900 transition-all duration-200"
-                        type="button"
-                        title={isFollowing ? 'Following' : 'Follow'}
-                      >
-                        {isFollowing ? (
-                          <UserCheck01Icon size={20} className="sm:w-[22px] sm:h-[22px]" />
-                        ) : (
-                          <UserAdd01Icon size={20} className="sm:w-[22px] sm:h-[22px]" />
-                        )}
-                      </button>
+            {/* Action Buttons - Centered with labels */}
+            <div className="mt-8 flex justify-center">
+              <div
+                className="border border-neutral-200 rounded-2xl overflow-hidden"
+                style={{
+                  background: 'linear-gradient(to right, rgb(245 245 245) 0%, rgb(241 241 241) 100%)'
+                }}
+              >
+                <div className="flex items-center gap-0.5 px-1.5 py-1">
+                  <button
+                    onClick={handleReserveClick}
+                    className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-white/80 text-neutral-600 hover:text-neutral-900 transition-all duration-200"
+                    type="button"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth="1.5">
+                      <path d="M18 2V4M6 2V4" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M11.9955 13H12.0045M11.9955 17H12.0045M15.991 13H16M8 13H8.00897M8 17H8.00897" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M3.5 8H20.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M2.5 12.2432C2.5 7.88594 2.5 5.70728 3.75212 4.35364C5.00424 3 7.01949 3 11.05 3H12.95C16.9805 3 18.9958 3 20.2479 4.35364C21.5 5.70728 21.5 7.88594 21.5 12.2432V12.7568C21.5 17.1141 21.5 19.2927 20.2479 20.6464C18.9958 22 16.9805 22 12.95 22H11.05C7.01949 22 5.00424 22 3.75212 20.6464C2.5 19.2927 2.5 17.1141 2.5 12.7568V12.2432Z" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    <span className="text-[13px] font-medium">Reserve</span>
+                  </button>
+                  <div className="w-px h-5 bg-neutral-300" />
+                  <button
+                    onClick={handleToggleFollow}
+                    className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-white/80 text-neutral-600 hover:text-neutral-900 transition-all duration-200"
+                    type="button"
+                  >
+                    {isFollowing ? (
+                      <UserCheck01Icon size={18} color="currentColor" />
+                    ) : (
+                      <UserAdd01Icon size={18} color="currentColor" />
                     )}
-
-                    {/* Book Button */}
-                    {currentUser && (
-                      <button
-                        onClick={handleReserveClick}
-                        className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl hover:bg-neutral-200 text-neutral-600 hover:text-neutral-900 transition-all duration-200"
-                        type="button"
-                        title="Book Appointment"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5 sm:w-[22px] sm:h-[22px]" fill="none" stroke="currentColor" strokeWidth="1.5">
-                          <path d="M18 2V4M6 2V4" strokeLinecap="round" strokeLinejoin="round"/>
-                          <path d="M11.9955 13H12.0045M11.9955 17H12.0045M15.991 13H16M8 13H8.00897M8 17H8.00897" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                          <path d="M3.5 8H20.5" strokeLinecap="round" strokeLinejoin="round"/>
-                          <path d="M2.5 12.2432C2.5 7.88594 2.5 5.70728 3.75212 4.35364C5.00424 3 7.01949 3 11.05 3H12.95C16.9805 3 18.9958 3 20.2479 4.35364C21.5 5.70728 21.5 7.88594 21.5 12.2432V12.7568C21.5 17.1141 21.5 19.2927 20.2479 20.6464C18.9958 22 16.9805 22 12.95 22H11.05C7.01949 22 5.00424 22 3.75212 20.6464C2.5 19.2927 2.5 17.1141 2.5 12.7568V12.2432Z" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                      </button>
-                    )}
-                  </>
-                }
-              />
-            </div>
-
-            {/* Category Navigation - Sticky */}
-            <div className="mt-5 -mx-6 md:-mx-24">
-              <div className="sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-transparent transition-all duration-300" id="listing-category-nav-wrapper">
-                <div className="px-6 md:px-24 flex justify-center">
-                  <ListingCategoryNav activeTab={activeTab} onTabChange={setActiveTab} />
+                    <span className="text-[13px] font-medium">{isFollowing ? 'Following' : 'Follow'}</span>
+                  </button>
                 </div>
               </div>
+            </div>
+
+            {/* Category Nav - Below, centered */}
+            <div className="mt-4 flex justify-center">
+              <ListingCategoryNav activeTab={activeTab} onTabChange={setActiveTab} />
             </div>
 
           </div>
@@ -440,18 +381,12 @@ const ListingHead: React.FC<ListingHeadProps> = ({
           <section>
             <SectionHeader
               title="Our Services & Offerings"
-              onViewAll={filteredServices.length > 8 ? () => {} : undefined}
-              viewAllLabel={filteredServices.length > 8 ? `View all ${filteredServices.length}` : undefined}
+              onViewAll={validServices.length > 8 ? () => {} : undefined}
+              viewAllLabel={validServices.length > 8 ? `View all ${validServices.length}` : undefined}
               className="!-mt-2 !mb-6"
             />
-            {filteredServices.length === 0 && searchQuery.trim() ? (
-              <div className="text-center py-16">
-                <p className="text-base font-medium text-gray-600 mb-1">No services found</p>
-                <p className="text-sm text-gray-500">Try a different search term</p>
-              </div>
-            ) : (
             <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
-              {filteredServices.slice(0, 8).map((service, idx) => (
+              {validServices.slice(0, 8).map((service, idx) => (
                 <div
                   key={service.id}
                   style={{
@@ -487,7 +422,6 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 </div>
               )}
             </div>
-            )}
           </section>
         )}
 
@@ -498,14 +432,8 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               title="Our Professionals"
               className="!-mt-2 !mb-6"
             />
-            {filteredEmployees.length === 0 && searchQuery.trim() ? (
-              <div className="text-center py-16">
-                <p className="text-base font-medium text-gray-600 mb-1">No team members found</p>
-                <p className="text-sm text-gray-500">Try a different search term</p>
-              </div>
-            ) : (
             <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
-              {filteredEmployees.slice(0, 8).map((employee: any, idx: number) => (
+              {employees.slice(0, 8).map((employee: any, idx: number) => (
                 <div
                   key={employee.id || idx}
                   style={{
@@ -544,7 +472,6 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 </div>
               )}
             </div>
-            )}
           </section>
         )}
 
@@ -574,7 +501,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 </div>
               ))}
 
-              {filteredPosts && filteredPosts.map((post) => (
+              {posts && posts.map((post) => (
                 <PostCard
                   key={post.id}
                   post={post}

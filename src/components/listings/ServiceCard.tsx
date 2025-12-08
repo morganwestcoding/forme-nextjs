@@ -71,12 +71,39 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   const backgroundImageSrc = hasServiceImage ? service.imageSrc : listingImageSrc;
   const hasImage = hasServiceImage || !!listingImageSrc;
 
-  // Verification badge wrapper
-  const Badge = () => (
-    <span className="inline-flex items-center align-middle ml-1" aria-label="Verified">
-      <VerificationBadge size={16} />
-    </span>
-  );
+  // Function to render title with verification badge that stays with last word
+  const renderTitleWithBadge = (title: string) => {
+    const words = title.trim().split(' ');
+    if (words.length === 0) return null;
+
+    const Badge = () => (
+      <span className="inline-flex items-center align-middle ml-1" aria-label="Verified">
+        <VerificationBadge size={16} />
+      </span>
+    );
+
+    if (words.length === 1) {
+      return (
+        <span className="whitespace-nowrap">
+          {words[0]}
+          <Badge />
+        </span>
+      );
+    }
+
+    const firstWords = words.slice(0, -1);
+    const lastWord = words[words.length - 1];
+
+    return (
+      <>
+        {firstWords.join(' ')}{' '}
+        <span className="whitespace-nowrap">
+          {lastWord}
+          <Badge />
+        </span>
+      </>
+    );
+  };
 
   return (
     <div
@@ -215,11 +242,8 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
           <div className="absolute bottom-4 left-4 right-4 z-20">
             {/* Service Name with verification badge */}
             <div className="mb-0.5">
-              <h3 className="text-white text-lg leading-tight font-semibold drop-shadow">
-                <span className="whitespace-nowrap">
-                  {service.serviceName || 'Untitled Service'}
-                  <Badge />
-                </span>
+              <h3 className="text-white text-lg leading-tight font-semibold drop-shadow line-clamp-2">
+                {renderTitleWithBadge(service.serviceName || 'Untitled Service')}
               </h3>
             </div>
 

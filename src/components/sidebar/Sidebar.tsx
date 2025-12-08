@@ -222,7 +222,10 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
   if (isCollapsed) {
     return (
       <div className="fixed top-0 left-0 z-50 h-screen p-3">
-        <div className="h-full w-[60px] flex flex-col items-center py-4 rounded-2xl bg-neutral-50 border border-neutral-200">
+        <div
+          className="h-full w-[60px] flex flex-col items-center py-4 rounded-2xl border border-neutral-200"
+          style={{ background: 'linear-gradient(to bottom, rgb(245 245 245) 0%, rgb(241 241 241) 100%)' }}
+        >
           {/* Logo */}
           <Link href="/" className="mb-4">
             <Image
@@ -294,7 +297,10 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
   // Expanded sidebar
   return (
     <div className="fixed top-0 left-0 z-50 h-screen p-3">
-      <div className="h-full w-[248px] flex flex-col rounded-2xl bg-neutral-50 border border-neutral-200">
+      <div
+        className="h-full w-[248px] flex flex-col rounded-2xl border border-neutral-200"
+        style={{ background: 'linear-gradient(to bottom, rgb(245 245 245) 0%, rgb(241 241 241) 100%)' }}
+      >
         {/* Header */}
         <div className="relative pt-4 pb-2">
           <button

@@ -107,7 +107,7 @@ className="
           <div className="absolute bottom-4 left-4 right-4 z-20">
             {/* Title with verification badge that stays with last word */}
             <div className="mb-0.5">
-              <h1 className="text-white text-base leading-tight font-semibold drop-shadow">
+              <h1 className="text-white text-base leading-tight font-semibold drop-shadow line-clamp-2">
                 {renderTitleWithBadge(data.title)}
               </h1>
             </div>
