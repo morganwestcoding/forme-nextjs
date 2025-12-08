@@ -22,6 +22,8 @@ import BusinessSelectStep from "../inputs/BusinessSelectStep";
 import ServiceSelectStep from "../inputs/ServiceSelectStep";
 import InterestsStep from "../inputs/InterestStep";
 import ServiceSelector, { Service } from "../inputs/ServiceSelector";
+import CategoryInput from "../inputs/CategoryInput";
+import { categories } from "../Categories";
 
 type UserType = 'customer' | 'individual' | 'team';
 
@@ -46,11 +48,14 @@ enum STEPS {
   JOB_TITLE = 3,
   BUSINESS_SELECT = 4,
   SERVICE_SELECT = 5,
-  SERVICES_FORM = 6,    // For individual providers
-  SERVICES_LIST = 7,    // For individual providers
-  LOCATION = 8,
-  BIOGRAPHY = 9,
-  IMAGES = 10,
+  SERVICES_FORM = 6,      // For individual providers
+  SERVICES_LIST = 7,      // For individual providers
+  LISTING_CATEGORY = 8,   // For individual providers - category selection
+  LISTING_INFO = 9,       // For individual providers - title & description
+  LISTING_IMAGE = 10,     // For individual providers - cover image
+  LOCATION = 11,
+  BIOGRAPHY = 12,
+  IMAGES = 13,
 }
 
 const EDIT_HUB_STEP = -1;
@@ -88,6 +93,11 @@ const RegisterModal = () => {
       jobTitle: '',
       isOwnerManager: false,
       selectedServices: [],
+      // Individual provider listing fields
+      listingCategory: '',
+      listingTitle: '',
+      listingDescription: '',
+      listingImage: '',
     },
   });
 
@@ -103,6 +113,10 @@ const RegisterModal = () => {
   const isOwnerManager = watch('isOwnerManager');
   const selectedServices = watch('selectedServices') || [];
   const interests = watch('interests') || [];
+  const listingCategory = watch('listingCategory');
+  const listingTitle = watch('listingTitle');
+  const listingDescription = watch('listingDescription');
+  const listingImage = watch('listingImage');
 
   const [step, setStep] = useState<number>(isEdit ? EDIT_HUB_STEP : STEPS.ACCOUNT);
   const [isLoading, setIsLoading] = useState(false);
@@ -130,6 +144,10 @@ const RegisterModal = () => {
         jobTitle: '',
         isOwnerManager: false,
         selectedServices: [],
+        listingCategory: '',
+        listingTitle: '',
+        listingDescription: '',
+        listingImage: '',
       });
       setStep(isEdit ? EDIT_HUB_STEP : STEPS.ACCOUNT);
     }
@@ -190,7 +208,19 @@ const RegisterModal = () => {
       return STEPS.LOCATION;
     }
     if (currentStep === STEPS.SERVICES_LIST && userType === 'individual') {
+      return STEPS.LISTING_CATEGORY;
+    }
+    if (currentStep === STEPS.LISTING_CATEGORY && userType === 'individual') {
+      return STEPS.LISTING_INFO;
+    }
+    if (currentStep === STEPS.LISTING_INFO && userType === 'individual') {
       return STEPS.LOCATION;
+    }
+    if (currentStep === STEPS.LOCATION && userType === 'individual') {
+      return STEPS.LISTING_IMAGE;
+    }
+    if (currentStep === STEPS.LISTING_IMAGE && userType === 'individual') {
+      return STEPS.BIOGRAPHY;
     }
     if (currentStep === STEPS.SERVICES_FORM && userType === 'individual') {
       return STEPS.SERVICES_LIST;
@@ -220,6 +250,18 @@ const RegisterModal = () => {
     if (currentStep === STEPS.SERVICES_FORM && userType === 'individual') {
       return STEPS.SERVICES_LIST;
     }
+    if (currentStep === STEPS.LISTING_CATEGORY && userType === 'individual') {
+      return STEPS.SERVICES_LIST;
+    }
+    if (currentStep === STEPS.LISTING_INFO && userType === 'individual') {
+      return STEPS.LISTING_CATEGORY;
+    }
+    if (currentStep === STEPS.LISTING_IMAGE && userType === 'individual') {
+      return STEPS.LOCATION;
+    }
+    if (currentStep === STEPS.BIOGRAPHY && userType === 'individual') {
+      return STEPS.LISTING_IMAGE;
+    }
     if (currentStep === STEPS.LOCATION) {
       if (userType === 'customer') {
         return STEPS.USER_TYPE;
@@ -231,7 +273,8 @@ const RegisterModal = () => {
         }
         return STEPS.JOB_TITLE;
       }
-      return STEPS.SERVICES_LIST;
+      // Individual goes back to listing info
+      return STEPS.LISTING_INFO;
     }
     return currentStep - 1;
   };
@@ -344,7 +387,29 @@ const RegisterModal = () => {
           }
         }
       }
-      
+
+      if (step === STEPS.LISTING_CATEGORY) {
+        if (data.userType === 'individual') {
+          if (!data.listingCategory?.trim()) {
+            toast.error('Please select a category for your listing');
+            return;
+          }
+        }
+      }
+
+      if (step === STEPS.LISTING_INFO) {
+        if (data.userType === 'individual') {
+          if (!data.listingTitle?.trim()) {
+            toast.error('Please enter a title for your listing');
+            return;
+          }
+          if (!data.listingDescription?.trim()) {
+            toast.error('Please enter a description for your listing');
+            return;
+          }
+        }
+      }
+
       onNext();
       return;
     }
@@ -400,8 +465,12 @@ const RegisterModal = () => {
         isOwnerManager: data.isOwnerManager,
         // Don't send services if they skipped business selection
         selectedServices: data.selectedListing === 'SKIP' ? [] : data.selectedServices,
-        // For individual providers, send their services
+        // For individual providers, send their services and listing details
         individualServices: data.userType === 'individual' ? validServices : undefined,
+        listingCategory: data.userType === 'individual' ? data.listingCategory : undefined,
+        listingTitle: data.userType === 'individual' ? data.listingTitle : undefined,
+        listingDescription: data.userType === 'individual' ? data.listingDescription : undefined,
+        listingImage: data.userType === 'individual' ? data.listingImage : undefined,
       });
       toast.success('Registered! Logging you in…');
 
@@ -706,6 +775,92 @@ const RegisterModal = () => {
           existingServices={services}
           singleIndex={editingServiceIndex ?? undefined}
         />
+      </div>
+    );
+  }
+
+  if (step === STEPS.LISTING_CATEGORY) {
+    bodyContent = (
+      <div className="flex flex-col gap-6">
+        <Heading
+          title="What type of services do you offer?"
+          subtitle="Choose a category that best describes your work"
+        />
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {categories.map((item) => (
+            <CategoryInput
+              key={item.label}
+              onClick={(category) => setCustomValue('listingCategory', category)}
+              selected={listingCategory === item.label}
+              label={item.label}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (step === STEPS.LISTING_INFO) {
+    bodyContent = (
+      <div className="flex flex-col gap-6">
+        <Heading
+          title="Tell clients about your listing"
+          subtitle="This helps clients find and choose you"
+        />
+
+        <Input
+          id="listingTitle"
+          label="Listing Title"
+          placeholder={`${name}'s ${jobTitle || 'Services'}`}
+          disabled={isLoading}
+          register={register}
+          errors={errors}
+          required
+        />
+
+        <Input
+          id="listingDescription"
+          label="Description"
+          placeholder="Tell clients about your services, experience, and what makes you unique..."
+          disabled={isLoading}
+          register={register}
+          errors={errors}
+          required
+          maxLength={500}
+          type="textarea"
+          inputClassName="pt-8 min-h-[120px]"
+        />
+      </div>
+    );
+  }
+
+  if (step === STEPS.LISTING_IMAGE) {
+    bodyContent = (
+      <div className="flex flex-col gap-6">
+        <Heading
+          title="Add a cover image"
+          subtitle="This will be shown on your listing card"
+        />
+
+        <ImageUpload
+          uploadId="listing-image"
+          onChange={(v) => setCustomValue('listingImage', v)}
+          value={listingImage}
+          className="w-full h-48"
+          ratio="landscape"
+          rounded="xl"
+          enableCrop={true}
+          cropMode="fixed"
+          customAspectRatio={16 / 9}
+          label="Upload a cover image"
+          maxFileSizeMB={5}
+          onRemove={() => setCustomValue('listingImage', '')}
+        />
+
+        <p className="text-xs text-neutral-400 text-center">
+          Optional — you can add this later
+        </p>
       </div>
     );
   }

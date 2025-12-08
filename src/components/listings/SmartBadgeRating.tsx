@@ -110,7 +110,7 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
       {/* Rating */}
       <button
         onClick={handleRatingClick}
-        className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-white/90 hover:text-white transition-colors"
+        className="flex items-center gap-1 pr-2.5 py-1.5 text-xs text-white/90 hover:text-white transition-colors"
         type="button"
       >
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="12" height="12" className="text-amber-400">

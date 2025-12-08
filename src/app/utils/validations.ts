@@ -25,6 +25,11 @@ export const registerSchema = z.object({
     price: z.number().or(z.string()),
     category: z.string(),
   })).optional(),
+  // Individual provider listing fields
+  listingCategory: z.string().optional(),
+  listingTitle: z.string().optional(),
+  listingDescription: z.string().optional(),
+  listingImage: z.string().optional(),
 });
 
 // Listing creation schema

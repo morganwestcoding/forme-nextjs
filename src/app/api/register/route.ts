@@ -46,6 +46,11 @@ export async function POST(request: Request) {
       isOwnerManager,
       selectedServices,
       individualServices,
+      // Individual provider listing fields
+      listingCategory,
+      listingTitle,
+      listingDescription,
+      listingImage,
     } = validation.data;
 
     const existing = await prisma.user.findUnique({ where: { email } });
@@ -161,19 +166,26 @@ export async function POST(request: Request) {
       }
     }
 
-    // For individual providers - create a hidden personal listing with services and worker card
+    // For individual providers - create their listing with services and worker card
     if (userType === 'individual') {
       try {
-        // Create a hidden personal listing (not shown in Listings tab)
-        // This maintains referential integrity since services require a listingId
+        // Create the individual's listing (visible in Listings tab)
         const listing = await prisma.listing.create({
           data: {
-            title: `${name}'s Personal Services`,
-            description: bio || 'Professional services',
-            imageSrc: image || '',
-            category: 'Personal', // Special category to identify personal listings
+            title: listingTitle || `${name}'s Services`,
+            description: listingDescription || bio || 'Professional services',
+            imageSrc: listingImage || image || '',
+            category: listingCategory || 'Beauty', // Use selected category, default to Beauty
             location: location || '',
             userId: user.id,
+          }
+        });
+
+        // Grant management permissions for their own listing
+        await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            managedListings: [listing.id]
           }
         });
 
@@ -208,7 +220,7 @@ export async function POST(request: Request) {
           }
         });
 
-        console.log('Independent worker card created for:', user.id, 'with', serviceIds.length, 'services');
+        console.log('Independent provider listing created:', listing.id, 'with', serviceIds.length, 'services');
       } catch (listingError) {
         console.error('Error creating listing/worker card for individual provider:', listingError);
         // Don't fail registration if this fails, just log it

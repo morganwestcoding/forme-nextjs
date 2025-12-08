@@ -107,13 +107,13 @@ className="
           <div className="absolute bottom-4 left-4 right-4 z-20">
             {/* Title with verification badge that stays with last word */}
             <div className="mb-0.5">
-              <h1 className="text-white text-[15px] leading-tight font-semibold drop-shadow">
+              <h1 className="text-white text-base leading-tight font-semibold drop-shadow">
                 {renderTitleWithBadge(data.title)}
               </h1>
             </div>
 
             {/* Location - improved formatting */}
-            <div className="text-white/90 text-[10px] leading-tight mb-2.5">
+            <div className="text-white/90 text-xs leading-tight mb-2.5">
               <span className="line-clamp-1">
                 {city && state ? `${city}, ${state}` : city || state || 'Location not specified'}
               </span>

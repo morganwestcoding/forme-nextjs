@@ -38,7 +38,7 @@ const SmartBadgeWorker: React.FC<SmartBadgeWorkerProps> = ({
       {/* Rating - matching SmartBadgeRating style */}
       <button
         onClick={handleRatingClick}
-        className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-white/90 hover:text-white transition-colors"
+        className="flex items-center gap-1 pr-2.5 py-1.5 text-xs text-white/90 hover:text-white transition-colors"
         type="button"
         aria-label={`Rating ${Number(rating).toFixed(1)} stars`}
       >
