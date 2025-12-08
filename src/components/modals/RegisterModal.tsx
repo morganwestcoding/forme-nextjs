@@ -586,7 +586,7 @@ const RegisterModal = () => {
             {
               key: STEPS.USER_TYPE,
               title: 'Account Type',
-              description: 'How you use Forme',
+              description: 'How you use ForMe',
               complete: Boolean(userType),
             },
             ...(userType === 'team' ? [
