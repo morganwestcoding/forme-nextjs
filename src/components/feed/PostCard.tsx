@@ -243,21 +243,31 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, var
                   />
                 </div>
 
-                <div className="flex flex-col justify-center min-w-0 -mt-2">
+                <div className="flex flex-col justify-center min-w-0 flex-1 -mt-2">
                   {/* Name with verification badge */}
                   <div>
-                    <h1 className="text-white text-xs leading-none font-semibold drop-shadow inline">
-                      <span
-                        className="cursor-pointer hover:text-white/80 align-middle"
-                        onClick={handleUserClick}
-                      >
-                        {post.user.name || 'Anonymous'}
-                      </span>
-                      {(post.user.verificationStatus === 'verified' || post.user.isSubscribed) && (
-                        <span className="inline-flex items-center align-middle ml-1" aria-label="Verified">
-                          <VerificationBadge size={16} />
-                        </span>
-                      )}
+                    <h1 className="text-white text-xs leading-tight font-semibold drop-shadow">
+                      {(() => {
+                        const name = post.user.name || 'Anonymous';
+                        const words = name.split(' ');
+                        const isVerified = post.user.verificationStatus === 'verified' || post.user.isSubscribed;
+                        const firstWords = words.slice(0, -1).join(' ');
+                        const lastWord = words[words.length - 1];
+
+                        return (
+                          <span className="cursor-pointer hover:text-white/80" onClick={handleUserClick}>
+                            {firstWords && <>{firstWords} </>}
+                            <span className="whitespace-nowrap">
+                              {lastWord}
+                              {isVerified && (
+                                <span className="inline-flex items-center align-middle ml-1" aria-label="Verified">
+                                  <VerificationBadge size={16} />
+                                </span>
+                              )}
+                            </span>
+                          </span>
+                        );
+                      })()}
                     </h1>
                   </div>
 
