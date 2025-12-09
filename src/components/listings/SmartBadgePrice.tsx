@@ -54,7 +54,7 @@ const SmartBadgePrice: React.FC<SmartBadgePriceProps> = ({
       {/* Left button - Price or Rating (no background/border, just text) */}
       <button
         onClick={handleLeftClick}
-        className={`flex items-center gap-1 px-2.5 py-1.5 text-xs ${textClasses} transition-colors`}
+        className={`flex items-center gap-1 pr-2.5 py-1.5 text-xs ${textClasses} transition-colors`}
         type="button"
       >
         {showPrice ? (

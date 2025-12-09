@@ -274,9 +274,9 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
           <nav className="flex flex-col items-center gap-1 flex-1">
             {navItems.map((item) => {
               const isActive = isActiveNav(item);
-              const className = `p-2.5 rounded-xl transition-all duration-200 ${
+              const baseClassName = `p-2.5 rounded-xl transition-all duration-200 ${
                 isActive
-                  ? "text-neutral-800 bg-neutral-100"
+                  ? "bg-neutral-100"
                   : "text-neutral-400 hover:text-neutral-600 hover:bg-neutral-50"
               }`;
 
@@ -285,7 +285,8 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
                   <button
                     key={item.id}
                     onClick={item.onClick}
-                    className={className}
+                    className={baseClassName}
+                    style={isActive ? { color: 'var(--accent-color)' } : undefined}
                   >
                     {item.icon}
                   </button>
@@ -296,7 +297,8 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
                 <Link
                   key={item.id}
                   href={item.href!}
-                  className={className}
+                  className={baseClassName}
+                  style={isActive ? { color: 'var(--accent-color)' } : undefined}
                 >
                   {item.icon}
                 </Link>
@@ -448,9 +450,9 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
           <div className="space-y-0.5">
             {navItems.map((item) => {
               const isActive = isActiveNav(item);
-              const className = `flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${
+              const baseClassName = `flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${
                 isActive
-                  ? "text-neutral-800 bg-neutral-100"
+                  ? "bg-neutral-100"
                   : "text-neutral-500 hover:text-neutral-700 hover:bg-neutral-50"
               }`;
 
@@ -459,7 +461,8 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
                   <button
                     key={item.id}
                     onClick={item.onClick}
-                    className={`${className} w-full text-left`}
+                    className={`${baseClassName} w-full text-left`}
+                    style={isActive ? { color: 'var(--accent-color)' } : undefined}
                   >
                     <span className={isActive ? "" : "opacity-70"}>{item.icon}</span>
                     <span className={`text-sm ${isActive ? "font-medium" : ""}`}>{item.label}</span>
@@ -471,7 +474,8 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
                 <Link
                   key={item.id}
                   href={item.href!}
-                  className={className}
+                  className={baseClassName}
+                  style={isActive ? { color: 'var(--accent-color)' } : undefined}
                 >
                   <span className={isActive ? "" : "opacity-70"}>{item.icon}</span>
                   <span className={`text-sm ${isActive ? "font-medium" : ""}`}>{item.label}</span>

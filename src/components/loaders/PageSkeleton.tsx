@@ -8,6 +8,7 @@ interface PageSkeletonProps {
   showSearch?: boolean;
   showCategoryNav?: boolean;
   cardCount?: number;
+  sectionCount?: number;
 }
 
 // Card skeleton with shimmer effect
@@ -33,7 +34,8 @@ const PageSkeleton: React.FC<PageSkeletonProps> = ({
   subtitle,
   showSearch = true,
   showCategoryNav = true,
-  cardCount = 4,
+  cardCount = 10,
+  sectionCount = 4,
 }) => {
   return (
     <div className="min-h-screen animate-in fade-in duration-200">
@@ -106,43 +108,28 @@ const PageSkeleton: React.FC<PageSkeletonProps> = ({
 
       {/* Content area */}
       <div className="relative -mt-[69px]">
-        {/* Section header */}
-        <div className="flex items-center justify-between py-6">
-          <div className="h-4 w-24 bg-neutral-200/40 rounded" />
-          <div className="flex items-center gap-2">
-            <div className="h-5 w-10 bg-neutral-100 rounded" />
-            <div className="flex gap-1">
-              <div className="w-6 h-6 bg-neutral-100 rounded-full" />
-              <div className="w-6 h-6 bg-neutral-100 rounded-full" />
-            </div>
-          </div>
-        </div>
-
-        {/* Cards grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
-          {[...Array(cardCount)].map((_, i) => (
-            <CardSkeleton key={i} />
-          ))}
-        </div>
-
-        {/* Second section */}
-        <div className="mt-10">
-          <div className="flex items-center justify-between py-6">
-            <div className="h-4 w-32 bg-neutral-200/40 rounded" />
-            <div className="flex items-center gap-2">
-              <div className="h-5 w-10 bg-neutral-100 rounded" />
-              <div className="flex gap-1">
-                <div className="w-6 h-6 bg-neutral-100 rounded-full" />
-                <div className="w-6 h-6 bg-neutral-100 rounded-full" />
+        {[...Array(sectionCount)].map((_, sectionIdx) => (
+          <div key={sectionIdx} className={sectionIdx > 0 ? 'mt-10' : ''}>
+            {/* Section header */}
+            <div className="flex items-center justify-between py-6">
+              <div className={`h-4 bg-neutral-200/40 rounded ${sectionIdx % 2 === 0 ? 'w-48' : 'w-56'}`} />
+              <div className="flex items-center gap-2">
+                <div className="h-5 w-10 bg-neutral-100 rounded" />
+                <div className="flex gap-1">
+                  <div className="w-6 h-6 bg-neutral-100 rounded-full" />
+                  <div className="w-6 h-6 bg-neutral-100 rounded-full" />
+                </div>
               </div>
             </div>
+
+            {/* Cards grid */}
+            <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 ${sectionIdx === sectionCount - 1 ? 'pb-8' : ''}`}>
+              {[...Array(cardCount)].map((_, i) => (
+                <CardSkeleton key={i} />
+              ))}
+            </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 pb-8">
-            {[...Array(cardCount)].map((_, i) => (
-              <CardSkeleton key={i} />
-            ))}
-          </div>
-        </div>
+        ))}
       </div>
     </div>
   );
