@@ -56,6 +56,7 @@ export async function GET(
     likes: post.likes || [],
     bookmarks: post.bookmarks || [],
     hiddenBy: post.hiddenBy || [],
+    viewedBy: post.viewedBy || [],
     mentions: mentions.length > 0 ? mentions : null,
     user: {
       id: post.user.id,

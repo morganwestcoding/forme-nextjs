@@ -90,6 +90,32 @@ export async function POST(request: Request) {
       },
     });
 
+    // Update the listing's cached rating if this is a listing review
+    if (targetType === 'listing' && targetListingId) {
+      // Get all reviews for this listing to calculate new average
+      const allListingReviews = await prisma.review.findMany({
+        where: {
+          targetType: 'listing',
+          targetListingId,
+        },
+        select: { rating: true },
+      });
+
+      const totalRatings = allListingReviews.length;
+      const avgRating = totalRatings > 0
+        ? allListingReviews.reduce((sum, r) => sum + r.rating, 0) / totalRatings
+        : null;
+
+      // Update the listing with the new rating
+      await prisma.listing.update({
+        where: { id: targetListingId },
+        data: {
+          rating: avgRating ? Math.round(avgRating * 10) / 10 : null,
+          ratingCount: totalRatings,
+        },
+      });
+    }
+
     return NextResponse.json({ success: true, review, isVerifiedBooking: hasVerifiedBooking });
   } catch (error) {
     console.error('Review creation failed:', error);

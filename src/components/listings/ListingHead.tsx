@@ -282,91 +282,106 @@ const ListingHead: React.FC<ListingHeadProps> = ({
 
           {/* Content */}
           <div className="relative z-10 pb-6">
-            {/* Main Listing Title - Compact with spacing compensation */}
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-2 relative mt-3">
-                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white leading-tight tracking-tight">
-                  {title}
-                </h1>
-                <VerificationBadge size={20} />
-
-                {/* 3 Dots Menu - Absolute Right */}
-                <button
-                  onClick={handleDropdownToggle}
-                  className="absolute right-0 top-1/2 -translate-y-1/2 p-2 rounded-xl hover:bg-gray-50 text-gray-500 hover:text-gray-900 transition-all duration-200"
-                  type="button"
-                  title="More options"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/>
-                  </svg>
-                </button>
-              </div>
-
-              {/* All info in ONE line */}
-              <p className="text-gray-500 text-base mt-3 max-w-2xl mx-auto">
-                <span className="font-semibold text-neutral-900">4.8</span> ★
-                <span className="mx-1.5 text-gray-300">·</span>
-                <button onClick={(e: any) => toggleFavorite(e)} className="hover:opacity-70 transition-opacity" type="button">
-                  <span className="font-semibold text-neutral-900">{(listing as any).favoriteCount || 0}</span> likes
-                </button>
-                <span className="mx-1.5 text-gray-300">·</span>
-                <span className="font-semibold text-neutral-900">{followers.length}</span> followers
-                <span className="mx-1.5 text-gray-300">·</span>
-                {location || address}
-                {operatingStatus && (
-                  <>
-                    <span className="text-gray-300 mx-1.5">·</span>
-                    <span className={operatingStatus.isOpen ? 'text-emerald-600' : 'text-rose-600'}>
-                      {operatingStatus.isOpen ? `Open` : `Closed`}
-                    </span>
-                  </>
-                )}
-              </p>
-            </div>
-
-            {/* Action Buttons - Centered with labels */}
-            <div className="mt-8 flex justify-center">
-              <div
-                className="border border-neutral-200 rounded-2xl overflow-hidden"
-                style={{
-                  background: 'linear-gradient(to right, rgb(245 245 245) 0%, rgb(241 241 241) 100%)'
-                }}
+            {/* Centered Layout */}
+            <div className="relative">
+              {/* 3 Dots Menu - Top Right */}
+              <button
+                onClick={handleDropdownToggle}
+                className="absolute right-0 top-0 p-1.5 rounded-xl hover:bg-gray-50 text-gray-500 hover:text-gray-900 transition-all duration-200"
+                type="button"
+                title="More options"
               >
-                <div className="flex items-center gap-0.5 px-1.5 py-1">
-                  <button
-                    onClick={handleReserveClick}
-                    className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-white/80 text-neutral-600 hover:text-neutral-900 transition-all duration-200"
-                    type="button"
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/>
+                </svg>
+              </button>
+
+              {/* Vertically aligned content */}
+              <div className="flex flex-col items-center">
+                {/* Image + Title/Info block */}
+                <div className="flex items-center gap-4 mt-2">
+                  {/* Listing Image - sized to match WorkerCard */}
+                  <div className="w-24 h-24 rounded-xl overflow-hidden border-2 border-gray-100 flex-shrink-0">
+                    <img
+                      src={mainImage}
+                      alt={title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+
+                  {/* Title and Info stacked, left-aligned */}
+                  <div className="flex flex-col items-start">
+                    {/* Title + Badge */}
+                    <div className="flex items-center gap-2">
+                      <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white leading-tight tracking-tight">
+                        {title}
+                      </h1>
+                      <VerificationBadge size={20} />
+                    </div>
+
+                    {/* Info line */}
+                    <p className="text-gray-500 text-base mt-1">
+                      <span className="font-semibold text-neutral-900">{validServices.length}</span> services
+                      <span className="mx-1.5 text-gray-300">·</span>
+                      <span className="font-semibold text-neutral-900">{followers.length}</span> followers
+                      <span className="mx-1.5 text-gray-300">·</span>
+                      {location || address}
+                      {operatingStatus && (
+                        <>
+                          <span className="text-gray-300 mx-1.5">·</span>
+                          <span className={operatingStatus.isOpen ? 'text-emerald-600' : 'text-rose-600'}>
+                            {operatingStatus.isOpen ? `Open` : `Closed`}
+                          </span>
+                        </>
+                      )}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Action Buttons - Centered with labels */}
+                <div className="mt-4">
+                  <div
+                    className="border border-neutral-200 rounded-2xl overflow-hidden"
+                    style={{
+                      background: 'linear-gradient(to right, rgb(245 245 245) 0%, rgb(241 241 241) 100%)'
+                    }}
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth="1.5">
-                      <path d="M18 2V4M6 2V4" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M11.9955 13H12.0045M11.9955 17H12.0045M15.991 13H16M8 13H8.00897M8 17H8.00897" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M3.5 8H20.5" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M2.5 12.2432C2.5 7.88594 2.5 5.70728 3.75212 4.35364C5.00424 3 7.01949 3 11.05 3H12.95C16.9805 3 18.9958 3 20.2479 4.35364C21.5 5.70728 21.5 7.88594 21.5 12.2432V12.7568C21.5 17.1141 21.5 19.2927 20.2479 20.6464C18.9958 22 16.9805 22 12.95 22H11.05C7.01949 22 5.00424 22 3.75212 20.6464C2.5 19.2927 2.5 17.1141 2.5 12.7568V12.2432Z" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                    <span className="text-[13px] font-medium">Reserve</span>
-                  </button>
-                  <div className="w-px h-5 bg-neutral-300" />
-                  <button
-                    onClick={handleToggleFollow}
-                    className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-white/80 text-neutral-600 hover:text-neutral-900 transition-all duration-200"
-                    type="button"
-                  >
-                    {isFollowing ? (
-                      <UserCheck01Icon size={18} color="currentColor" />
-                    ) : (
-                      <UserAdd01Icon size={18} color="currentColor" />
-                    )}
-                    <span className="text-[13px] font-medium">{isFollowing ? 'Following' : 'Follow'}</span>
-                  </button>
+                    <div className="flex items-center gap-0.5 px-1.5 py-1">
+                      <button
+                        onClick={handleReserveClick}
+                        className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-white/80 text-neutral-600 hover:text-neutral-900 transition-all duration-200"
+                        type="button"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth="1.5">
+                          <path d="M18 2V4M6 2V4" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M11.9955 13H12.0045M11.9955 17H12.0045M15.991 13H16M8 13H8.00897M8 17H8.00897" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M3.5 8H20.5" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M2.5 12.2432C2.5 7.88594 2.5 5.70728 3.75212 4.35364C5.00424 3 7.01949 3 11.05 3H12.95C16.9805 3 18.9958 3 20.2479 4.35364C21.5 5.70728 21.5 7.88594 21.5 12.2432V12.7568C21.5 17.1141 21.5 19.2927 20.2479 20.6464C18.9958 22 16.9805 22 12.95 22H11.05C7.01949 22 5.00424 22 3.75212 20.6464C2.5 19.2927 2.5 17.1141 2.5 12.7568V12.2432Z" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                        <span className="text-[13px] font-medium">Reserve</span>
+                      </button>
+                      <div className="w-px h-5 bg-neutral-300" />
+                      <button
+                        onClick={handleToggleFollow}
+                        className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-white/80 text-neutral-600 hover:text-neutral-900 transition-all duration-200"
+                        type="button"
+                      >
+                        {isFollowing ? (
+                          <UserCheck01Icon size={18} color="currentColor" />
+                        ) : (
+                          <UserAdd01Icon size={18} color="currentColor" />
+                        )}
+                        <span className="text-[13px] font-medium">{isFollowing ? 'Following' : 'Follow'}</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Category Nav - Below, centered */}
+                <div className="mt-4">
+                  <ListingCategoryNav activeTab={activeTab} onTabChange={setActiveTab} />
                 </div>
               </div>
-            </div>
-
-            {/* Category Nav - Below, centered */}
-            <div className="mt-4 flex justify-center">
-              <ListingCategoryNav activeTab={activeTab} onTabChange={setActiveTab} />
             </div>
 
           </div>

@@ -107,6 +107,8 @@ export default async function getListingById(params: IParams): Promise<(SafeList
       })),
       city: listing.location?.split(',')[0]?.trim() || null,
       state: listing.location?.split(',')[1]?.trim() || null,
+      rating: listing.rating ?? null,
+      ratingCount: listing.ratingCount ?? 0,
     };
 
     const safeUser: SafeUser = {

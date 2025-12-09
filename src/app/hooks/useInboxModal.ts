@@ -1,11 +1,17 @@
 // app/hooks/useInboxModal.ts
 import { create } from 'zustand';
-import { SafeUser } from '@/app/types';
+
+// Simplified user type that works with both full SafeUser and partial user from Sidebar
+interface InboxUser {
+  id?: string;
+  name?: string | null;
+  image?: string | null;
+}
 
 interface InboxModalStore {
   isOpen: boolean;
-  currentUser: SafeUser | null | undefined;
-  onOpen: (user: SafeUser | null | undefined) => void;
+  currentUser: InboxUser | null | undefined;
+  onOpen: (user: InboxUser | null | undefined) => void;
   onClose: () => void;
 }
 

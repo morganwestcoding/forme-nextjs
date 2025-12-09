@@ -68,6 +68,8 @@ export default async function getFavoriteListings() {
       zipCode: favorite.zipCode || null,
       city: favorite.location?.split(',')[0]?.trim() || null,
       state: favorite.location?.split(',')[1]?.trim() || null,
+      rating: favorite.rating ?? null,
+      ratingCount: favorite.ratingCount ?? 0,
     }));
 
     console.log('Safe favorites:', safeFavorites);

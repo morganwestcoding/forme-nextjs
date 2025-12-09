@@ -98,7 +98,7 @@ model Listing {
   imageSrc      String
   createdAt     DateTime      @default(now())
   category      String
-  location      String?       
+  location      String?
   userId        String        @db.ObjectId
   services      Service[]
   user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -112,6 +112,8 @@ model Listing {
   employees Employee[]
   storeHours     StoreHours[]
   shops         Shop[]
+  rating        Float?
+  ratingCount   Int           @default(0)
 }
 
 model Reservation {
@@ -161,9 +163,10 @@ model Post {
   mediaUrl    String?
   mediaType   String?
   mediaOverlay Json?  // Stores text overlay settings {text, size, color, pos}
-  likes     String[] @db.ObjectId 
-  bookmarks String[] @db.ObjectId 
-  hiddenBy  String[] @db.ObjectId  
+  likes     String[] @db.ObjectId
+  bookmarks String[] @db.ObjectId
+  hiddenBy  String[] @db.ObjectId
+  viewedBy  String[] @db.ObjectId
   comments Comment[]
   mentions PostMention[] // NEW: Proper relational mentions
 

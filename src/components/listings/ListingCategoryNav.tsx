@@ -35,10 +35,10 @@ const ListingCategoryNav: React.FC<ListingCategoryNavProps> = ({ activeTab, onTa
             key={tab.key}
             onClick={handleTabClick}
             className={`
-              relative px-4 py-1.5 text-[13px] font-medium rounded-xl border transition-all duration-300 ease-out active:scale-[0.97]
+              relative px-3 sm:px-4 h-9 flex items-center text-[12px] sm:text-[13px] font-medium rounded-xl border transition-all duration-200 active:scale-[0.97] whitespace-nowrap
               ${isSelected
                 ? 'text-white'
-                : 'bg-transparent border-neutral-300 dark:border-neutral-600 text-neutral-500 dark:text-neutral-400'
+                : 'bg-white border-neutral-300 text-neutral-600 hover:bg-neutral-50 hover:border-neutral-400 hover:shadow-sm'
               }
             `}
             style={isSelected ? {
@@ -47,20 +47,6 @@ const ListingCategoryNav: React.FC<ListingCategoryNavProps> = ({ activeTab, onTa
               boxShadow: `0 4px 6px -1px ${accentColor}40`,
               color: 'white'
             } : undefined}
-            onMouseEnter={(e) => {
-              if (!isSelected) {
-                e.currentTarget.style.borderColor = accentColor;
-                e.currentTarget.style.color = accentColor;
-                e.currentTarget.style.backgroundColor = `${accentColor}0D`;
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!isSelected) {
-                e.currentTarget.style.borderColor = '';
-                e.currentTarget.style.color = '';
-                e.currentTarget.style.backgroundColor = '';
-              }
-            }}
             type="button"
           >
             <span className="relative z-10">{tab.label}</span>

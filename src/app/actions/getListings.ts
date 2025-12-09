@@ -228,6 +228,9 @@ export default async function getListings(params: IListingsParams = {}): Promise
         closeTime: hour.closeTime,
         isClosed: hour.isClosed
       })),
+      // Rating fields
+      rating: listing.rating ?? null,
+      ratingCount: listing.ratingCount ?? 0,
       // Additional computed fields
       city: listing.location?.split(',')[0]?.trim() || null,
       state: listing.location?.split(',')[1]?.trim() || null,

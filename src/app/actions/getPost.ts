@@ -180,6 +180,7 @@ export default async function getPosts(params: IPostsParams) {
         likes: post.likes || [],
         bookmarks: post.bookmarks || [],
         hiddenBy: post.hiddenBy || [],
+        viewedBy: post.viewedBy || [],
         mentions: mentions.length > 0 ? mentions : null, // NEW: Include processed mentions
         comments: post.comments.map((comment) => ({
           id: comment.id,

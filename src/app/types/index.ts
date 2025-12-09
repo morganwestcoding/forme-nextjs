@@ -23,7 +23,7 @@ export type SafeService = {
   category: string;
 };
 
-export type SafeListing = Omit<Listing, "createdAt"> & {
+export type SafeListing = Omit<Listing, "createdAt" | "rating" | "ratingCount"> & {
   createdAt: string;
   services: SafeService[];
   galleryImages: string[]; 
@@ -38,7 +38,8 @@ export type SafeListing = Omit<Listing, "createdAt"> & {
   storeHours: SafeStoreHours[];
   city?: string | null;  
   state?: string | null;
-    rating?: number;
+    rating?: number | null;
+  ratingCount?: number;
   isTrending?: boolean;
   
 };
@@ -153,6 +154,7 @@ export type SafePost = Omit<
   shop?: SafeShop;
   bookmarks: string[];
   hiddenBy: string[];
+  viewedBy: string[];
   comments: SafeComment[];
   mentions?: PostMention[] | null;
 };
@@ -268,6 +270,7 @@ export type SafeShop = {
   products?: Array<{ name: string; image: string; price?: number }>;
   productCount?: number;
   followerCount?: number;
+  rating?: number | null;
   featuredProductItems?: {
     id: string;
     name: string;

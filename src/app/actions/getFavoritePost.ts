@@ -52,6 +52,7 @@ export default async function getFavoritePosts(): Promise<SafePost[]> {
       likes: post.likes || [],
       bookmarks: post.bookmarks || [],
       hiddenBy: post.hiddenBy || [],
+      viewedBy: post.viewedBy || [],
       user: {
         id: post.user.id,
         name: post.user.name,

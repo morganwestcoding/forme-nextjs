@@ -55,7 +55,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, var
   };
 
   const prettyTime = getPrettyTime(post.createdAt);
-  const viewsLabel = `${formatViews((post as any).views) || '0'} views`;
+  const viewsLabel = `${formatViews(post.viewedBy?.length ?? 0)} views`;
 
   /** ---------- Handlers ---------- */
   const handleCardClick = async () => {
@@ -65,9 +65,15 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, var
       const res = await axios.get(`/api/post/${post.id}`);
       const freshPost = res.data;
       postModal.onOpen(freshPost, currentUser, undefined, posts, postIndex >= 0 ? postIndex : 0);
+
+      // Increment view count (fire and forget)
+      axios.post(`/api/post/${post.id}/view`).catch(() => {});
     } catch (err) {
       const postIndex = posts.findIndex((p) => p.id === post.id);
       postModal.onOpen(post, currentUser, undefined, posts, postIndex >= 0 ? postIndex : 0);
+
+      // Still increment view even on error
+      axios.post(`/api/post/${post.id}/view`).catch(() => {});
     }
   };
 
