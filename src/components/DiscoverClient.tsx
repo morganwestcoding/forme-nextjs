@@ -27,7 +27,23 @@ interface DiscoverClientProps {
 }
 
 const FADE_OUT_DURATION = 200;
-const ITEMS_PER_PAGE = 8;
+
+// Shuffle array using Fisher-Yates algorithm (seeded for stability during session)
+function shuffleArray<T>(array: T[], seed?: number): T[] {
+  const shuffled = [...array];
+  let currentSeed = seed ?? Date.now();
+
+  const random = () => {
+    currentSeed = (currentSeed * 9301 + 49297) % 233280;
+    return currentSeed / 233280;
+  };
+
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
 
 const DiscoverClient: React.FC<DiscoverClientProps> = ({
   initialPosts,
@@ -39,6 +55,18 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
 }) => {
   const { viewMode, setViewMode } = useViewMode();
   const isSidebarCollapsed = useSidebarState();
+
+  // Dynamic items per page: 12 when sidebar collapsed, 10 when expanded
+  const ITEMS_PER_PAGE = isSidebarCollapsed ? 12 : 10;
+
+  // Generate a stable seed for this session (changes on page refresh)
+  const [shuffleSeed] = useState(() => Date.now());
+
+  // Randomize data once per session
+  const shuffledPosts = useMemo(() => shuffleArray(initialPosts, shuffleSeed), [initialPosts, shuffleSeed]);
+  const shuffledListings = useMemo(() => shuffleArray(listings.filter(l => l.category !== 'Personal'), shuffleSeed + 1), [listings, shuffleSeed]);
+  const shuffledEmployees = useMemo(() => shuffleArray(employees, shuffleSeed + 2), [employees, shuffleSeed]);
+  const shuffledShops = useMemo(() => shuffleArray(shops, shuffleSeed + 3), [shops, shuffleSeed]);
 
   // Pagination state
   const [postsIndex, setPostsIndex] = useState(0);
@@ -160,35 +188,34 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
 
   // Paginated items - use server-provided data directly (like MarketClient)
   const currentPosts = useMemo(() => {
-    if (initialPosts.length <= ITEMS_PER_PAGE) return initialPosts;
+    if (shuffledPosts.length <= ITEMS_PER_PAGE) return shuffledPosts;
     const start = postsIndex * ITEMS_PER_PAGE;
-    return initialPosts.slice(start, start + ITEMS_PER_PAGE);
-  }, [initialPosts, postsIndex]);
+    return shuffledPosts.slice(start, start + ITEMS_PER_PAGE);
+  }, [shuffledPosts, postsIndex, ITEMS_PER_PAGE]);
 
   const currentListings = useMemo(() => {
-    const visibleListings = listings.filter(l => l.category !== 'Personal');
-    if (visibleListings.length <= ITEMS_PER_PAGE) return visibleListings;
+    if (shuffledListings.length <= ITEMS_PER_PAGE) return shuffledListings;
     const start = listingsIndex * ITEMS_PER_PAGE;
-    return visibleListings.slice(start, start + ITEMS_PER_PAGE);
-  }, [listings, listingsIndex]);
+    return shuffledListings.slice(start, start + ITEMS_PER_PAGE);
+  }, [shuffledListings, listingsIndex, ITEMS_PER_PAGE]);
 
   const currentEmployees = useMemo(() => {
-    if (employees.length <= ITEMS_PER_PAGE) return employees;
+    if (shuffledEmployees.length <= ITEMS_PER_PAGE) return shuffledEmployees;
     const start = employeesIndex * ITEMS_PER_PAGE;
-    return employees.slice(start, start + ITEMS_PER_PAGE);
-  }, [employees, employeesIndex]);
+    return shuffledEmployees.slice(start, start + ITEMS_PER_PAGE);
+  }, [shuffledEmployees, employeesIndex, ITEMS_PER_PAGE]);
 
   const currentShops = useMemo(() => {
-    if (shops.length <= ITEMS_PER_PAGE) return shops;
+    if (shuffledShops.length <= ITEMS_PER_PAGE) return shuffledShops;
     const start = shopsIndex * ITEMS_PER_PAGE;
-    return shops.slice(start, start + ITEMS_PER_PAGE);
-  }, [shops, shopsIndex]);
+    return shuffledShops.slice(start, start + ITEMS_PER_PAGE);
+  }, [shuffledShops, shopsIndex, ITEMS_PER_PAGE]);
 
   // Total pages
-  const totalPostsPages = Math.max(1, Math.ceil((initialPosts?.length || 0) / ITEMS_PER_PAGE));
-  const totalListingsPages = Math.max(1, Math.ceil(listings.filter(l => l.category !== 'Personal').length / ITEMS_PER_PAGE));
-  const totalEmployeesPages = Math.max(1, Math.ceil(employees.length / ITEMS_PER_PAGE));
-  const totalShopsPages = Math.max(1, Math.ceil(shops.length / ITEMS_PER_PAGE));
+  const totalPostsPages = Math.max(1, Math.ceil(shuffledPosts.length / ITEMS_PER_PAGE));
+  const totalListingsPages = Math.max(1, Math.ceil(shuffledListings.length / ITEMS_PER_PAGE));
+  const totalEmployeesPages = Math.max(1, Math.ceil(shuffledEmployees.length / ITEMS_PER_PAGE));
+  const totalShopsPages = Math.max(1, Math.ceil(shuffledShops.length / ITEMS_PER_PAGE));
 
   // Scroll handlers
   const scrollPosts = (dir: 'left' | 'right') =>
@@ -441,7 +468,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                     {!filterInfo.isFiltered && currentPosts.length > 0 && (
                       <>
                         <SectionHeader
-                          title="Curated for You"
+                          title="Posts We Think You'll Love"
                           onPrev={() => scrollPosts('left')}
                           onNext={() => scrollPosts('right')}
                           onViewAll={handleViewAllPosts}
@@ -472,7 +499,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                     {!filterInfo.isFiltered && currentListings.length > 0 && (
                       <>
                         <SectionHeader
-                          title="Handpicked Experiences"
+                          title="Local Businesses Worth Checking Out"
                           onPrev={() => scrollListings('left')}
                           onNext={() => scrollListings('right')}
                           onViewAll={handleViewAllListings}

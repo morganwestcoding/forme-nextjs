@@ -23,7 +23,7 @@ const ShopCard: React.FC<ShopCardProps> = ({
 
   const [city, state] = data.location?.split(',').map((s) => s.trim()) || [];
   const productCount = data.productCount || data.products?.length || 0;
-  const shopRating = (data as any)?.rating ?? 4.8;
+  const shopRating = data.rating ?? 5.0;
   const cardImage = data.logo || '/placeholder.jpg';
 
   const handleCardClick = () => {

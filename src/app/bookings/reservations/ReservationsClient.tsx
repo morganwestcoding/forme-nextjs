@@ -18,7 +18,6 @@ interface ReservationsClientProps {
 }
 
 const FADE_OUT_DURATION = 200;
-const ITEMS_PER_PAGE = 8;
 
 const ReservationsClient: React.FC<ReservationsClientProps> = ({
   reservations,
@@ -28,6 +27,9 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
   const searchParams = useSearchParams();
   const [processingId, setProcessingId] = useState('');
   const isSidebarCollapsed = useSidebarState();
+
+  // Dynamic items per page: 12 when sidebar collapsed, 10 when expanded
+  const ITEMS_PER_PAGE = isSidebarCollapsed ? 12 : 10;
 
   // Pagination state
   const [reservationsIndex, setReservationsIndex] = useState(0);

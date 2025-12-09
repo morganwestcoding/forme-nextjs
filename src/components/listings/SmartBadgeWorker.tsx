@@ -18,7 +18,7 @@ interface SmartBadgeWorkerProps {
 
 const SmartBadgeWorker: React.FC<SmartBadgeWorkerProps> = ({
   employee,
-  rating = (employee as any)?.rating ?? 4.7,
+  rating = (employee as any)?.rating ?? 5.0,
   onRatingClick,
   onTimeClick,
 }) => {

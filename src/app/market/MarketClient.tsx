@@ -10,6 +10,21 @@ import WorkerCard from '@/components/listings/WorkerCard';
 import SectionHeader from './SectionHeader';
 import { useSidebarState } from '@/app/hooks/useSidebarState';
 
+// Shuffle array using Fisher-Yates algorithm (seeded for stability during session)
+function shuffleArray<T>(array: T[], seed: number): T[] {
+  const shuffled = [...array];
+  let currentSeed = seed;
+  const random = () => {
+    currentSeed = (currentSeed * 9301 + 49297) % 233280;
+    return currentSeed / 233280;
+  };
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
 interface MarketClientProps {
   searchParams: {
     userId?: string;
@@ -39,7 +54,9 @@ const MarketClient: React.FC<MarketClientProps> = ({
   trendingEmployees = [],
 }) => {
   const isSidebarCollapsed = useSidebarState();
-  const ITEMS_PER_PAGE = 8;
+
+  // Dynamic items per page: 12 when sidebar collapsed, 10 when expanded
+  const ITEMS_PER_PAGE = isSidebarCollapsed ? 12 : 10;
 
   const [featuredIndex, setFeaturedIndex] = useState(0);
   const [trendingIndex, setTrendingIndex] = useState(0);
@@ -47,6 +64,9 @@ const MarketClient: React.FC<MarketClientProps> = ({
   const [featuredVisible, setFeaturedVisible] = useState(true);
   const [trendingVisible, setTrendingVisible] = useState(true);
   const [viewAllMode, setViewAllMode] = useState<'businesses' | 'professionals' | null>(null);
+
+  // Seed for shuffling (stable during session, changes on page refresh)
+  const [shuffleSeed] = useState(() => Date.now());
 
   // Sticky nav border effect on scroll
   useEffect(() => {
@@ -133,25 +153,30 @@ const MarketClient: React.FC<MarketClientProps> = ({
     }));
   }, [trendingEmployees, derivedTrending, listings]);
 
-  const currentFeaturedListings = useMemo(() => {
+  // Shuffled arrays for randomized display
+  const shuffledListings = useMemo(() => {
     const visibleListings = listings.filter(l => l.category !== 'Personal');
-    if (visibleListings.length <= ITEMS_PER_PAGE) return visibleListings;
+    return shuffleArray(visibleListings, shuffleSeed);
+  }, [listings, shuffleSeed]);
+
+  const shuffledTrending = useMemo(() => {
+    return shuffleArray(finalTrending, shuffleSeed + 1);
+  }, [finalTrending, shuffleSeed]);
+
+  const currentFeaturedListings = useMemo(() => {
+    if (shuffledListings.length <= ITEMS_PER_PAGE) return shuffledListings;
     const start = featuredIndex * ITEMS_PER_PAGE;
-    return visibleListings.slice(start, start + ITEMS_PER_PAGE);
-  }, [listings, featuredIndex, ITEMS_PER_PAGE]);
+    return shuffledListings.slice(start, start + ITEMS_PER_PAGE);
+  }, [shuffledListings, featuredIndex, ITEMS_PER_PAGE]);
 
   const currentTrendingItems = useMemo(() => {
-    if (finalTrending.length <= ITEMS_PER_PAGE) return finalTrending;
+    if (shuffledTrending.length <= ITEMS_PER_PAGE) return shuffledTrending;
     const start = trendingIndex * ITEMS_PER_PAGE;
-    return finalTrending.slice(start, start + ITEMS_PER_PAGE);
-  }, [finalTrending, trendingIndex, ITEMS_PER_PAGE]);
+    return shuffledTrending.slice(start, start + ITEMS_PER_PAGE);
+  }, [shuffledTrending, trendingIndex, ITEMS_PER_PAGE]);
 
-  const visibleListingsCount = useMemo(
-    () => listings.filter(l => l.category !== 'Personal').length,
-    [listings]
-  );
-  const totalFeaturedPages = Math.max(1, Math.ceil(visibleListingsCount / ITEMS_PER_PAGE));
-  const totalTrendingPages = Math.max(1, Math.ceil(finalTrending.length / ITEMS_PER_PAGE));
+  const totalFeaturedPages = Math.max(1, Math.ceil(shuffledListings.length / ITEMS_PER_PAGE));
+  const totalTrendingPages = Math.max(1, Math.ceil(shuffledTrending.length / ITEMS_PER_PAGE));
 
   const animateTransition = (
     setVisible: (visible: boolean) => void,
@@ -252,9 +277,7 @@ const MarketClient: React.FC<MarketClientProps> = ({
                     />
 
                     <div className={`grid ${gridColsClass} gap-5 transition-all duration-300`}>
-                      {listings
-                        .filter(l => l.category !== 'Personal')
-                        .map((listing, idx) => (
+                      {shuffledListings.map((listing, idx) => (
                           <div
                             key={listing.id}
                             style={{
@@ -280,9 +303,9 @@ const MarketClient: React.FC<MarketClientProps> = ({
                       onViewAll={handleBackToMain}
                       viewAllLabel="← Back to Businesses"
                     />
-                    
+
                     <div className={`grid ${gridColsClass} gap-5 transition-all duration-300`}>
-                      {finalTrending.map(({ employee, listing }, idx) => {
+                      {shuffledTrending.map(({ employee, listing }, idx) => {
                         const li: any = listing as any;
                         const imageSrc =
                           li?.imageSrc ||
@@ -367,7 +390,7 @@ const MarketClient: React.FC<MarketClientProps> = ({
                     )}
 
      
-                    {finalTrending.length > 0 && !filterInfo.isFiltered && (
+                    {shuffledTrending.length > 0 && !filterInfo.isFiltered && (
                       <>
                         <SectionHeader
                           title="Trending Professionals"

@@ -199,6 +199,7 @@ export async function POST(request: Request) {
                   serviceName: svc.serviceName.trim(),
                   price: Number(svc.price),
                   category: svc.category.trim(),
+                  imageSrc: svc.imageSrc || null,
                   listingId: listing.id,
                 }
               });

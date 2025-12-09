@@ -13,6 +13,21 @@ import CategoryNav from '@/components/favorites/CategoryNav';
 import SectionHeader from '../market/SectionHeader';
 import { useSidebarState } from '@/app/hooks/useSidebarState';
 
+// Shuffle array using Fisher-Yates algorithm (seeded for stability during session)
+function shuffleArray<T>(array: T[], seed: number): T[] {
+  const shuffled = [...array];
+  let currentSeed = seed;
+  const random = () => {
+    currentSeed = (currentSeed * 9301 + 49297) % 233280;
+    return currentSeed / 233280;
+  };
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
 type FavoriteTab = 'Businesses' | 'Professionals' | 'Shops' | 'Posts';
 
 interface FavoritesClientProps {
@@ -24,7 +39,6 @@ interface FavoritesClientProps {
 }
 
 const FADE_OUT_DURATION = 200;
-const ITEMS_PER_PAGE = 8;
 
 const FavoritesClient: React.FC<FavoritesClientProps> = ({
   listings,
@@ -35,6 +49,9 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<FavoriteTab | null>(null);
   const isSidebarCollapsed = useSidebarState();
+
+  // Dynamic items per page: 12 when sidebar collapsed, 10 when expanded
+  const ITEMS_PER_PAGE = isSidebarCollapsed ? 12 : 10;
 
   // Pagination state for each section
   const [listingsIndex, setListingsIndex] = useState(0);
@@ -53,11 +70,14 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
   // View all mode
   const [viewAllMode, setViewAllMode] = useState<'listings' | 'workers' | 'shops' | 'posts' | null>(null);
 
-  // Safely handle potentially undefined arrays
-  const safeListings = useMemo(() => listings || [], [listings]);
-  const safeWorkers = useMemo(() => workers || [], [workers]);
-  const safeShops = useMemo(() => shops || [], [shops]);
-  const safePosts = useMemo(() => posts || [], [posts]);
+  // Seed for shuffling (stable during session, changes on page refresh)
+  const [shuffleSeed] = useState(() => Date.now());
+
+  // Safely handle potentially undefined arrays and shuffle for randomized display
+  const safeListings = useMemo(() => shuffleArray(listings || [], shuffleSeed), [listings, shuffleSeed]);
+  const safeWorkers = useMemo(() => shuffleArray(workers || [], shuffleSeed + 1), [workers, shuffleSeed]);
+  const safeShops = useMemo(() => shuffleArray(shops || [], shuffleSeed + 2), [shops, shuffleSeed]);
+  const safePosts = useMemo(() => shuffleArray(posts || [], shuffleSeed + 3), [posts, shuffleSeed]);
 
   // Responsive grid - adds 1 column when sidebar is collapsed
   const gridColsClass = isSidebarCollapsed

@@ -11,7 +11,7 @@ interface SmartBadgeShopProps {
 }
 
 const SmartBadgeShop: React.FC<SmartBadgeShopProps> = ({
-  rating = 4.7,
+  rating = 5.0,
   onRatingClick,
   onFollowerClick
 }) => {

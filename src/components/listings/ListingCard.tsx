@@ -122,7 +122,7 @@ className="
             {/* Rating + open status */}
             <div className="flex items-center">
               <SmartBadgeRating
-                rating={data.rating || 4.7}
+                rating={data.rating ?? 5.0}
                 isTrending={data.isTrending || false}
                 onRatingClick={() => {}}
                 onTimeClick={() => {}}

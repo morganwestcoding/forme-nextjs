@@ -24,6 +24,7 @@ export const registerSchema = z.object({
     serviceName: z.string(),
     price: z.number().or(z.string()),
     category: z.string(),
+    imageSrc: z.string().optional(),
   })).optional(),
   // Individual provider listing fields
   listingCategory: z.string().optional(),

@@ -245,7 +245,7 @@ export default function ImageUpload({
         onUpload={handleUpload}
         options={cloudinaryOptions}
       >
-        {({ open }) => (
+        {({ open } = {}) => (
           <div
             role="button"
             tabIndex={0}

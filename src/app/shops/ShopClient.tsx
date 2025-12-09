@@ -10,6 +10,21 @@ import CategoryNav from '@/app/market/CategoryNav';
 import SectionHeader from '@/app/market/SectionHeader';
 import { useSidebarState } from '@/app/hooks/useSidebarState';
 
+// Shuffle array using Fisher-Yates algorithm (seeded for stability during session)
+function shuffleArray<T>(array: T[], seed: number): T[] {
+  const shuffled = [...array];
+  let currentSeed = seed;
+  const random = () => {
+    currentSeed = (currentSeed * 9301 + 49297) % 233280;
+    return currentSeed / 233280;
+  };
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
 interface ShopClientProps {
   initialShops: SafeShop[];
   featuredProducts: SafeProduct[];
@@ -18,7 +33,6 @@ interface ShopClientProps {
 }
 
 const FADE_OUT_DURATION = 200;
-const ITEMS_PER_PAGE = 8;
 
 const ShopClient: React.FC<ShopClientProps> = ({
   initialShops = [],
@@ -27,6 +41,9 @@ const ShopClient: React.FC<ShopClientProps> = ({
 }) => {
   const params = useSearchParams();
   const isSidebarCollapsed = useSidebarState();
+
+  // Dynamic items per page: 12 when sidebar collapsed, 10 when expanded
+  const ITEMS_PER_PAGE = isSidebarCollapsed ? 12 : 10;
 
   // Pagination state
   const [shopsIndex, setShopsIndex] = useState(0);
@@ -39,6 +56,9 @@ const ShopClient: React.FC<ShopClientProps> = ({
 
   // View all mode
   const [viewAllMode, setViewAllMode] = useState<'shops' | 'products' | null>(null);
+
+  // Seed for shuffling (stable during session, changes on page refresh)
+  const [shuffleSeed] = useState(() => Date.now());
 
   // Get category and search from URL params
   const currentCategory = params?.get('category') || '';
@@ -99,7 +119,7 @@ const ShopClient: React.FC<ShopClientProps> = ({
 
   const q = searchQuery.trim().toLowerCase();
 
-  const shops = useMemo(() => {
+  const filteredShops = useMemo(() => {
     if (!q) return initialShops;
     return initialShops.filter(
       (s) =>
@@ -108,7 +128,7 @@ const ShopClient: React.FC<ShopClientProps> = ({
     );
   }, [initialShops, q]);
 
-  const products = useMemo(() => {
+  const filteredProducts = useMemo(() => {
     if (!q) return featuredProducts;
     return featuredProducts.filter(
       (p) =>
@@ -116,6 +136,15 @@ const ShopClient: React.FC<ShopClientProps> = ({
         (p.description || '').toLowerCase().includes(q)
     );
   }, [featuredProducts, q]);
+
+  // Shuffled arrays for randomized display
+  const shops = useMemo(() => {
+    return shuffleArray(filteredShops, shuffleSeed);
+  }, [filteredShops, shuffleSeed]);
+
+  const products = useMemo(() => {
+    return shuffleArray(filteredProducts, shuffleSeed + 1);
+  }, [filteredProducts, shuffleSeed]);
 
   const hasShops = shops.length > 0;
   const hasProducts = products.length > 0;
