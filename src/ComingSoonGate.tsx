@@ -1,34 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Lock, Mail, ArrowRight, Check, Zap, ChevronDown, AlertCircle } from 'lucide-react';
-
-function ExpandableSection({ title, children, defaultOpen = false }: { 
-  title: string; 
-  children: React.ReactNode;
-  defaultOpen?: boolean;
-}) {
-  const [isOpen, setIsOpen] = useState(defaultOpen);
-
-  return (
-    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-white/5 transition-colors"
-      >
-        <span className="text-sm font-medium text-white">{title}</span>
-        <ChevronDown 
-          className={`w-4 h-4 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
-        />
-      </button>
-      {isOpen && (
-        <div className="px-4 pb-4 pt-3 animate-in fade-in slide-in-from-top-2 duration-200">
-          {children}
-        </div>
-      )}
-    </div>
-  );
-}
+import { Lock, Mail, ArrowRight, Check, Zap, AlertCircle, Calendar, Users, ShoppingBag, BarChart3 } from 'lucide-react';
 
 export default function ComingSoonGate({ children }: { children: React.ReactNode }) {
   const [email, setEmail] = useState('');
@@ -39,7 +12,7 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
   const [showPassword, setShowPassword] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [waitlistCount, setWaitlistCount] = useState<number | null>(null); // Start with null to prevent flash
+  const [waitlistCount, setWaitlistCount] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<'waitlist' | 'demo'>('waitlist');
   const [demoEmail, setDemoEmail] = useState('');
   const [demoName, setDemoName] = useState('');
@@ -47,18 +20,17 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
   const [demoError, setDemoError] = useState('');
   const [demoLoading, setDemoLoading] = useState(false);
 
-  // Check authentication status on mount
   useEffect(() => {
     const checkAuth = () => {
       try {
         const auth = localStorage.getItem('forme_early_access');
         const authTimestamp = localStorage.getItem('forme_early_access_timestamp');
-        
+
         if (auth === 'true' && authTimestamp) {
           const timestamp = parseInt(authTimestamp);
           const now = Date.now();
           const oneWeek = 7 * 24 * 60 * 60 * 1000;
-          
+
           if (now - timestamp < oneWeek) {
             setIsAuthenticated(true);
           } else {
@@ -80,7 +52,6 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
     checkAuth();
   }, []);
 
-  // Fetch waitlist count
   useEffect(() => {
     const fetchWaitlistCount = async () => {
       try {
@@ -133,9 +104,8 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
       if (response.ok) {
         setEmailSubmitted(true);
         setEmail('');
-        // Update waitlist count
         setWaitlistCount(prev => (prev || 0) + 1);
-        
+
         setTimeout(() => {
           setEmailSubmitted(false);
         }, 3000);
@@ -227,475 +197,321 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
     }
   };
 
-  // Show loading state while checking authentication
   if (isLoading || isAuthenticated === null) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-white">
-          <img 
-            src="/logos/logo-white.png" 
-            alt="ForMe Logo" 
-            className="h-10 w-auto mx-auto mb-4"
+      <div className="min-h-screen bg-[#09090B] flex items-center justify-center">
+        <div className="text-center">
+          <img
+            src="/logos/logo-white.svg"
+            alt="ForMe Logo"
+            className="h-6 w-auto mx-auto mb-6 opacity-60"
           />
-          <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin mx-auto"></div>
+          <div className="w-4 h-4 border border-neutral-800 border-t-neutral-500 rounded-full animate-spin mx-auto"></div>
         </div>
       </div>
     );
   }
 
-  // If authenticated, show the app
   if (isAuthenticated) {
     return <>{children}</>;
   }
 
-  // Otherwise show coming soon page
   return (
-    <div className="min-h-screen bg-black text-white overflow-hidden relative">
-      {/* Orbiting Cubes Background */}
-      <div className="absolute inset-0">
-        {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-          <div 
-            key={i}
-            className={`cube-orbit cube-orbit-${i}`}
-          >
-            <div className="cube-container-orbit">
-              <div className="cube-face front"></div>
-              <div className="cube-face back"></div>
-              <div className="cube-face right"></div>
-              <div className="cube-face left"></div>
-              <div className="cube-face top"></div>
-              <div className="cube-face bottom"></div>
-            </div>
-          </div>
-        ))}
-      </div>
-      
-      {/* Shimmer Sparkles */}
-      <div className="absolute inset-0 overflow-hidden">
-        {[...Array(20)].map((_, i) => (
-          <div
-            key={i}
-            className="sparkle"
-            style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 3}s`,
-              animationDuration: `${2 + Math.random() * 2}s`
-            }}
-          />
-        ))}
-      </div>
+    <>
+      <style jsx global>{`
+        html, body {
+          background-color: #09090B;
+          overscroll-behavior: none;
+        }
+      `}</style>
 
-      <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-6 py-12">
-        
-        {/* Logo */}
-        <div className="mb-11">
-          <img 
-            src="/logos/logo-white.png" 
-            alt="ForMe Logo" 
-            className="h-10 w-auto"
-          />
+      <div className="min-h-screen bg-[#09090B] text-white">
+        {/* Refined background */}
+        <div className="fixed inset-0">
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:72px_72px]" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-gradient-to-b from-neutral-800/20 via-transparent to-transparent blur-3xl" />
         </div>
 
-        {/* Main Content */}
-        <div className="max-w-2xl w-full space-y-4">
-          
-          {/* Expandable About Section */}
-          <ExpandableSection 
-            title="About"
-            defaultOpen={true}
-          >
-            <p className="text-sm text-gray-400 leading-relaxed mb-4">
-             The complete business ecosystem. Built for the future.
-            </p>
-            <p className="text-sm text-gray-400 leading-relaxed mb-4">
-            Whether you&apos;re a solo entrepreneur or growing a team, ForMe gives you everything you need to run your business your way.
-            </p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-            From client booking and payment processing to storefront creation, team coordination, and community building every tool is unified in one intelligent, all-in-one platform.
-            </p>
-          </ExpandableSection>
+        {/* Content */}
+        <div className="relative z-10">
+          {/* Navigation */}
+          <nav className="px-6 py-6 flex items-center justify-between max-w-5xl mx-auto">
+            <img
+              src="/logos/logo-white.svg"
+              alt="ForMe"
+              className="h-7 w-auto"
+            />
+            <button
+              onClick={() => setShowPassword(!showPassword)}
+              className="text-[11px] text-neutral-500 hover:text-white transition-colors flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-neutral-800 hover:border-neutral-700"
+            >
+              <Lock className="w-3 h-3" />
+              Early Access
+            </button>
+          </nav>
 
-          {/* Expandable Features Section */}
-          <ExpandableSection title="Features">
-            <div className="grid grid-cols-2 gap-2">
-              {[
-                { name: 'Team Management', desc: 'Orchestrate operations' },
-                { name: 'Scheduling', desc: 'Coordinate everything' },
-                { name: 'Payments', desc: 'Process transactions' },
-                { name: 'Ecommerce', desc: 'Build your store' },
-                { name: 'Advertising', desc: 'Grow your reach' },
-                { name: 'Social', desc: 'Connect & engage' }
-              ].map((feature, i) => (
-                <div key={i} className="bg-white/5 border border-white/10 rounded-lg p-3 hover:bg-white/10 transition-colors">
-                  <p className="text-sm font-medium text-white">{feature.name}</p>
-                  <p className="text-xs text-gray-500 mt-1">{feature.desc}</p>
-                </div>
-              ))}
-            </div>
-          </ExpandableSection>
-
-          {/* Expandable Details Section */}
-          <ExpandableSection title="What Makes Us Different">
-            <div className="space-y-3 text-sm text-gray-400">
-              <div>
-                <p className="text-white font-medium mb-1">Command Your Operations</p>
-                <p>Orchestrate your team, schedules, and payments in perfect harmony.</p>
-              </div>
-              <div>
-                <p className="text-white font-medium mb-1">Amplify Your Reach</p>
-                <p>Transform browsers into buyers with integrated ecommerce and campaigns.</p>
-              </div>
-              <div>
-                <p className="text-white font-medium mb-1">Build Your Community</p>
-                <p>Connect authentically and cultivate followers who become advocates.</p>
-              </div>
-            </div>
-          </ExpandableSection>
-
-          {/* Waitlist / Demo Section */}
-          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden">
-            {/* Tab Headers */}
-            <div className="flex border-b border-white/10">
-              <button
-                onClick={() => setActiveTab('waitlist')}
-                className={`flex-1 px-4 py-3 text-xs font-medium transition-colors ${
-                  activeTab === 'waitlist'
-                    ? 'text-white bg-white/5'
-                    : 'text-gray-400 hover:text-white hover:bg-white/5'
-                }`}
-              >
-                Join Waitlist
-              </button>
-              <button
-                onClick={() => setActiveTab('demo')}
-                className={`flex-1 px-4 py-3 text-xs font-medium transition-colors ${
-                  activeTab === 'demo'
-                    ? 'text-white bg-white/5'
-                    : 'text-gray-400 hover:text-white hover:bg-white/5'
-                }`}
-              >
-                Request Demo
-              </button>
+          {/* Hero Section */}
+          <div className="px-6 pt-28 pb-20 max-w-3xl mx-auto">
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2.5 mb-10 px-3 py-1.5 rounded-full border border-neutral-800 bg-neutral-900/50">
+              <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
+              <span className="text-[11px] text-neutral-300 uppercase tracking-wider font-medium">Launching Early 2026</span>
             </div>
 
-            {/* Tab Content */}
-            <div className="p-4">
+            {/* Main headline */}
+            <h1 className="text-4xl sm:text-5xl md:text-[3.5rem] font-medium tracking-tight leading-[1.1] mb-6">
+              <span className="text-white">Stop juggling apps.</span>
+              <br />
+              <span className="text-neutral-500">Run your business from one place.</span>
+            </h1>
+
+            {/* Subheadline */}
+            <p className="text-lg text-neutral-400 max-w-xl mb-12 leading-relaxed">
+              Scheduling, payments, storefront, team management, and marketing — unified in a single platform built for professionals.
+            </p>
+
+            {/* Email signup */}
+            <div className="max-w-md">
               {activeTab === 'waitlist' ? (
-                <>
+                <div className="space-y-4">
                   <div className="flex gap-2">
-                    <div className="flex-1 relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                      <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => {
-                          setEmail(e.target.value);
-                          if (emailError) setEmailError('');
-                        }}
-                        onKeyDown={(e) => e.key === 'Enter' && !emailLoading && handleEmailSubmit()}
-                        placeholder="your@email.com"
-                        disabled={emailLoading || emailSubmitted}
-                        className={`w-full bg-white/5 border rounded-lg pl-10 pr-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none transition-all disabled:opacity-50 ${
-                          emailError
-                            ? 'border-red-500 focus:border-red-500'
-                            : 'border-white/10 focus:border-blue-500'
-                        }`}
-                      />
-                    </div>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                        if (emailError) setEmailError('');
+                      }}
+                      onKeyDown={(e) => e.key === 'Enter' && !emailLoading && handleEmailSubmit()}
+                      placeholder="you@company.com"
+                      disabled={emailLoading || emailSubmitted}
+                      className={`flex-1 bg-transparent border rounded-lg px-4 py-3 text-sm text-white placeholder-neutral-600 focus:outline-none transition-colors disabled:opacity-50 ${
+                        emailError
+                          ? 'border-red-500/50 focus:border-red-500/70'
+                          : 'border-neutral-800 focus:border-neutral-600 hover:border-neutral-700'
+                      }`}
+                    />
                     <button
                       onClick={handleEmailSubmit}
                       disabled={emailLoading || emailSubmitted}
-                      className="bg-white text-black font-medium px-4 py-2.5 rounded-lg hover:bg-blue-500 hover:text-white transition-all disabled:opacity-50 flex items-center"
+                      className="bg-white text-black font-medium px-5 py-3 rounded-lg hover:bg-neutral-200 transition-colors disabled:opacity-50 flex items-center justify-center min-w-[100px] text-sm"
                     >
                       {emailLoading ? (
-                        <div className="w-4 h-4 border-2 border-gray-400 border-t-black rounded-full animate-spin" />
+                        <div className="w-4 h-4 border border-neutral-400 border-t-neutral-700 rounded-full animate-spin" />
                       ) : emailSubmitted ? (
                         <Check className="w-4 h-4" />
                       ) : (
-                        <ArrowRight className="w-4 h-4" />
+                        <>
+                          Join waitlist
+                        </>
                       )}
                     </button>
                   </div>
 
                   {emailError && (
-                    <div className="flex items-center gap-2 mt-2 text-red-400 text-xs">
+                    <p className="text-red-400 text-xs flex items-center gap-1.5">
                       <AlertCircle className="w-3 h-3" />
                       {emailError}
-                    </div>
+                    </p>
                   )}
 
                   {emailSubmitted && (
-                    <p className="text-xs text-green-400 mt-2">
-                      ✓ Successfully joined the waitlist!
+                    <p className="text-emerald-400 text-xs flex items-center gap-1.5">
+                      <Check className="w-3 h-3" />
+                      You&apos;re on the list.
                     </p>
                   )}
 
-                  {waitlistCount !== null && (
-                    <p className="text-xs text-gray-500 mt-2">
-                      {waitlistCount > 0 ? `${waitlistCount.toLocaleString()} already waiting` : 'Be the first to join!'}
-                    </p>
-                  )}
-                </>
+                  <div className="flex items-center gap-4 text-xs text-neutral-500">
+                    {waitlistCount !== null && waitlistCount > 0 && (
+                      <span>{waitlistCount.toLocaleString()} on the waitlist</span>
+                    )}
+                    <span className="text-neutral-700">·</span>
+                    <button
+                      onClick={() => setActiveTab('demo')}
+                      className="hover:text-neutral-300 transition-colors"
+                    >
+                      Request a demo
+                    </button>
+                  </div>
+                </div>
               ) : (
-                <>
-                  <div className="space-y-2">
-                    <div className="relative">
-                      <input
-                        type="text"
-                        value={demoName}
-                        onChange={(e) => {
-                          setDemoName(e.target.value);
-                          if (demoError) setDemoError('');
-                        }}
-                        placeholder="Your name"
-                        disabled={demoLoading || demoSubmitted}
-                        className={`w-full bg-white/5 border rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none transition-all disabled:opacity-50 ${
-                          demoError
-                            ? 'border-red-500 focus:border-red-500'
-                            : 'border-white/10 focus:border-blue-500'
-                        }`}
-                      />
-                    </div>
-                    <div className="flex gap-2">
-                      <div className="flex-1 relative">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                        <input
-                          type="email"
-                          value={demoEmail}
-                          onChange={(e) => {
-                            setDemoEmail(e.target.value);
-                            if (demoError) setDemoError('');
-                          }}
-                          onKeyDown={(e) => e.key === 'Enter' && !demoLoading && handleDemoSubmit()}
-                          placeholder="your@email.com"
-                          disabled={demoLoading || demoSubmitted}
-                          className={`w-full bg-white/5 border rounded-lg pl-10 pr-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none transition-all disabled:opacity-50 ${
-                            demoError
-                              ? 'border-red-500 focus:border-red-500'
-                              : 'border-white/10 focus:border-blue-500'
-                          }`}
-                        />
-                      </div>
-                      <button
-                        onClick={handleDemoSubmit}
-                        disabled={demoLoading || demoSubmitted}
-                        className="bg-white text-black font-medium px-4 py-2.5 rounded-lg hover:bg-blue-500 hover:text-white transition-all disabled:opacity-50 flex items-center"
-                      >
-                        {demoLoading ? (
-                          <div className="w-4 h-4 border-2 border-gray-400 border-t-black rounded-full animate-spin" />
-                        ) : demoSubmitted ? (
-                          <Check className="w-4 h-4" />
-                        ) : (
-                          <ArrowRight className="w-4 h-4" />
-                        )}
-                      </button>
-                    </div>
+                <div className="space-y-3">
+                  <input
+                    type="text"
+                    value={demoName}
+                    onChange={(e) => {
+                      setDemoName(e.target.value);
+                      if (demoError) setDemoError('');
+                    }}
+                    placeholder="Your name"
+                    disabled={demoLoading || demoSubmitted}
+                    className={`w-full bg-transparent border rounded-lg px-4 py-3 text-sm text-white placeholder-neutral-600 focus:outline-none transition-colors disabled:opacity-50 ${
+                      demoError
+                        ? 'border-red-500/50 focus:border-red-500/70'
+                        : 'border-neutral-800 focus:border-neutral-600 hover:border-neutral-700'
+                    }`}
+                  />
+                  <div className="flex gap-2">
+                    <input
+                      type="email"
+                      value={demoEmail}
+                      onChange={(e) => {
+                        setDemoEmail(e.target.value);
+                        if (demoError) setDemoError('');
+                      }}
+                      onKeyDown={(e) => e.key === 'Enter' && !demoLoading && handleDemoSubmit()}
+                      placeholder="Work email"
+                      disabled={demoLoading || demoSubmitted}
+                      className={`flex-1 bg-transparent border rounded-lg px-4 py-3 text-sm text-white placeholder-neutral-600 focus:outline-none transition-colors disabled:opacity-50 ${
+                        demoError
+                          ? 'border-red-500/50 focus:border-red-500/70'
+                          : 'border-neutral-800 focus:border-neutral-600 hover:border-neutral-700'
+                      }`}
+                    />
+                    <button
+                      onClick={handleDemoSubmit}
+                      disabled={demoLoading || demoSubmitted}
+                      className="bg-white text-black font-medium px-5 py-3 rounded-lg hover:bg-neutral-200 transition-colors disabled:opacity-50 flex items-center justify-center min-w-[100px] text-sm"
+                    >
+                      {demoLoading ? (
+                        <div className="w-4 h-4 border border-neutral-400 border-t-neutral-700 rounded-full animate-spin" />
+                      ) : demoSubmitted ? (
+                        <Check className="w-4 h-4" />
+                      ) : (
+                        <>Request</>
+                      )}
+                    </button>
                   </div>
 
                   {demoError && (
-                    <div className="flex items-center gap-2 mt-2 text-red-400 text-xs">
+                    <p className="text-red-400 text-xs flex items-center gap-1.5">
                       <AlertCircle className="w-3 h-3" />
                       {demoError}
-                    </div>
+                    </p>
                   )}
 
                   {demoSubmitted && (
-                    <p className="text-xs text-green-400 mt-2">
-                      ✓ Demo request submitted successfully!
+                    <p className="text-emerald-400 text-xs flex items-center gap-1.5">
+                      <Check className="w-3 h-3" />
+                      We&apos;ll be in touch.
                     </p>
                   )}
-                </>
+
+                  <button
+                    onClick={() => setActiveTab('waitlist')}
+                    className="text-xs text-neutral-500 hover:text-neutral-300 transition-colors"
+                  >
+                    ← Back to waitlist
+                  </button>
+                </div>
               )}
             </div>
           </div>
 
-          {/* Password Section */}
-          <div>
-            <button
-              onClick={() => setShowPassword(!showPassword)}
-              className="text-xs text-gray-500 hover:text-white transition-colors inline-flex items-center gap-2 group"
-            >
-              <Lock className="w-3 h-3" />
-              Early access
-            </button>
-
-            {showPassword && (
-              <div className="mt-3 animate-in fade-in slide-in-from-top-2 duration-200">
-                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4">
-                  <div className="flex gap-2">
-                    <div className="flex-1 relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                      <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && handlePasswordSubmit()}
-                        placeholder="Access code"
-                        className="w-full bg-white/5 border border-white/10 rounded-lg px-10 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
-                      />
-                    </div>
-                    <button
-                      onClick={handlePasswordSubmit}
-                      className="bg-white/10 text-white font-medium px-4 py-2.5 rounded-lg hover:bg-white/20 border border-white/10 transition-all"
-                    >
-                      <Zap className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
+          {/* Divider */}
+          <div className="max-w-5xl mx-auto px-6">
+            <div className="border-t border-neutral-800/50" />
           </div>
 
-        </div>
+          {/* Features Grid */}
+          <div className="px-6 py-24 max-w-5xl mx-auto">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
+              {[
+                { icon: Calendar, label: 'Scheduling', desc: 'Smart booking that syncs across your entire operation' },
+                { icon: ShoppingBag, label: 'Storefront', desc: 'Sell products and services with built-in checkout' },
+                { icon: Users, label: 'Team', desc: 'Manage staff, permissions, and collaboration' },
+                { icon: BarChart3, label: 'Analytics', desc: 'Insights that help you make better decisions' },
+              ].map((feature, i) => (
+                <div key={i} className="group">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-b from-neutral-800 to-neutral-900 border border-neutral-800 flex items-center justify-center mb-4 group-hover:border-neutral-700 group-hover:from-neutral-700/80 transition-all duration-300">
+                    <feature.icon className="w-[18px] h-[18px] text-neutral-300" />
+                  </div>
+                  <h3 className="text-sm font-medium text-white mb-1.5">{feature.label}</h3>
+                  <p className="text-[13px] text-neutral-500 leading-relaxed">{feature.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
 
-        {/* Footer */}
-        <div className="mt-8">
-          <p className="text-xs text-gray-600">
-            © 2025 ForMe • Coming Soon
-          </p>
+          {/* Divider */}
+          <div className="max-w-5xl mx-auto px-6">
+            <div className="border-t border-neutral-800/50" />
+          </div>
+
+          {/* Value Props */}
+          <div className="px-6 py-24 max-w-5xl mx-auto">
+            <div className="grid md:grid-cols-3 gap-16">
+              {[
+                {
+                  num: '01',
+                  title: 'One platform, zero chaos',
+                  desc: 'Replace the patchwork of apps you\'re duct-taping together. Everything works in harmony.'
+                },
+                {
+                  num: '02',
+                  title: 'Built for how you work',
+                  desc: 'Whether you\'re solo or scaling a team, ForMe adapts to your workflow — not the other way around.'
+                },
+                {
+                  num: '03',
+                  title: 'Launch in minutes',
+                  desc: 'No learning curve, no complex setup. Import your data and start running your business immediately.'
+                }
+              ].map((prop, i) => (
+                <div key={i} className="relative">
+                  <span className="text-[10px] text-neutral-700 font-mono tracking-wider">{prop.num}</span>
+                  <h3 className="text-[15px] font-medium text-white mt-3 mb-2">{prop.title}</h3>
+                  <p className="text-[13px] text-neutral-500 leading-relaxed">{prop.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Early Access Modal */}
+          {showPassword && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
+              <div
+                className="absolute inset-0 bg-black/90 backdrop-blur-sm"
+                onClick={() => setShowPassword(false)}
+              />
+              <div className="relative bg-[#09090B] border border-neutral-800 rounded-2xl p-6 max-w-sm w-full shadow-2xl">
+                <h3 className="text-sm font-medium text-white mb-1">Early Access</h3>
+                <p className="text-xs text-neutral-500 mb-5">Enter your access code to preview ForMe.</p>
+                <div className="flex gap-2">
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handlePasswordSubmit()}
+                    placeholder="Access code"
+                    className="flex-1 bg-neutral-900/50 border border-neutral-800 rounded-lg px-4 py-2.5 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-neutral-700 focus:bg-neutral-900 transition-all"
+                    autoFocus
+                  />
+                  <button
+                    onClick={handlePasswordSubmit}
+                    className="bg-white text-black font-medium px-4 py-2.5 rounded-lg hover:bg-neutral-100 transition-colors"
+                  >
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Footer */}
+          <footer className="px-6 py-10 border-t border-neutral-900/50">
+            <div className="max-w-5xl mx-auto flex items-center justify-between">
+              <p className="text-[11px] text-neutral-600">&copy; 2025 ForMe. All rights reserved.</p>
+              <img
+                src="/logos/logo-white.svg"
+                alt="ForMe"
+                className="h-4 w-auto opacity-15"
+              />
+            </div>
+          </footer>
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-in {
-          animation: fadeIn 0.5s ease-out;
-        }
-        
-        @keyframes twinkle {
-          0%, 100% { 
-            opacity: 0;
-            transform: scale(0);
-          }
-          50% { 
-            opacity: 1;
-            transform: scale(1);
-          }
-        }
-        
-        .sparkle {
-          position: absolute;
-          width: 3px;
-          height: 3px;
-          background: #60A5FA;
-          border-radius: 50%;
-          box-shadow: 0 0 10px #60A5FA, 0 0 20px #60A5FA;
-          animation: twinkle linear infinite;
-          pointer-events: none;
-        }
-        
-        @keyframes orbit {
-          100% {
-            transform: translate3d(0, 0, 1px) rotate(360deg);
-          }
-        }
-        
-        .cube-orbit {
-          position: absolute;
-          width: 80px;
-          height: 80px;
-          backface-visibility: hidden;
-          animation: orbit linear infinite;
-          opacity: 0.4;
-        }
-        
-        .cube-container-orbit {
-          width: 100%;
-          height: 100%;
-          position: relative;
-          transform-style: preserve-3d;
-          animation: rotate-cube-orbit 10s linear infinite;
-        }
-        
-        @keyframes rotate-cube-orbit {
-          0% { transform: rotateX(0deg) rotateY(0deg); }
-          100% { transform: rotateX(360deg) rotateY(360deg); }
-        }
-        
-        .cube-face {
-          position: absolute;
-          width: 100%;
-          height: 100%;
-          border: 1px solid #60A5FA;
-          background: rgba(96, 165, 250, 0.05);
-          border-radius: 8px;
-        }
-        
-        .front { transform: rotateY(0deg) translateZ(40px); }
-        .back { transform: rotateY(180deg) translateZ(40px); }
-        .right { transform: rotateY(90deg) translateZ(40px); }
-        .left { transform: rotateY(-90deg) translateZ(40px); }
-        .top { transform: rotateX(90deg) translateZ(40px); }
-        .bottom { transform: rotateX(-90deg) translateZ(40px); }
-        
-        .cube-orbit-1 {
-          top: 15%;
-          left: 20%;
-          animation-duration: 45s;
-          animation-delay: -5s;
-          transform-origin: 20vw 10vh;
-        }
-        
-        .cube-orbit-2 {
-          top: 70%;
-          left: 15%;
-          animation-duration: 38s;
-          animation-delay: -15s;
-          transform-origin: -15vw 5vh;
-        }
-        
-        .cube-orbit-3 {
-          top: 25%;
-          left: 80%;
-          animation-duration: 52s;
-          animation-delay: -25s;
-          transform-origin: -25vw -10vh;
-        }
-        
-        .cube-orbit-4 {
-          top: 60%;
-          left: 70%;
-          animation-duration: 35s;
-          animation-delay: -8s;
-          transform-origin: 10vw -15vh;
-        }
-        
-        .cube-orbit-5 {
-          top: 40%;
-          left: 10%;
-          animation-duration: 48s;
-          animation-delay: -30s;
-          transform-origin: 18vw 8vh;
-        }
-        
-        .cube-orbit-6 {
-          top: 80%;
-          left: 85%;
-          animation-duration: 42s;
-          animation-delay: -18s;
-          transform-origin: -20vw 12vh;
-        }
-        
-        .cube-orbit-7 {
-          top: 10%;
-          left: 50%;
-          animation-duration: 55s;
-          animation-delay: -35s;
-          transform-origin: 8vw -18vh;
-        }
-        
-        .cube-orbit-8 {
-          top: 50%;
-          left: 45%;
-          animation-duration: 40s;
-          animation-delay: -12s;
-          transform-origin: -12vw 6vh;
-        }
-      `}</style>
-    </div>
+    </>
   );
 }

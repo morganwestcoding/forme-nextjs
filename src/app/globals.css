@@ -286,3 +286,42 @@ main {
     transform: translateX(2px);
   }
 }
+
+/* Apple-style subtle ambient glow */
+@keyframes ambient-glow {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.08);
+  }
+}
+
+.animate-ambient-glow {
+  animation: ambient-glow 10s ease-in-out infinite;
+}
+
+/* Apple-style staggered fade in */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+}
+
+.animate-fade-up-1 { animation-delay: 0s; }
+.animate-fade-up-2 { animation-delay: 0.1s; }
+.animate-fade-up-3 { animation-delay: 0.2s; }
+.animate-fade-up-4 { animation-delay: 0.3s; }
+.animate-fade-up-5 { animation-delay: 0.4s; }
