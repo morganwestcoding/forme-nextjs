@@ -266,18 +266,18 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
           }
 
           .loader-logo {
-            animation: logoReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: logoReveal 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
           }
 
           .loader-dots-container {
-            animation: dotsContainer 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+            animation: dotsContainer 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.12s forwards;
             opacity: 0;
           }
 
           .loader-dot {
-            width: 8px;
-            height: 8px;
-            margin: 0 4px;
+            width: 10px;
+            height: 10px;
+            margin: 0 5px;
             border-radius: 50%;
             animation: dotPulse 1.4s ease-in-out infinite;
           }
@@ -291,7 +291,7 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
             <img
               src="/logos/logo-white.svg"
               alt="ForMe Logo"
-              className="loader-logo h-10 w-auto mx-auto mb-10"
+              className="loader-logo h-12 w-auto mx-auto mb-10"
               style={{ opacity: 0 }}
             />
             <div className="loader-dots-container flex justify-center items-center">

@@ -124,32 +124,32 @@ const ConversationCard: React.FC<{
 
   return (
     <div
-      className={`group cursor-pointer rounded-lg border bg-white transition-all duration-300
-                 hover:-translate-y-0.5 hover:shadow-lg
-                 ${hasUnread ? 'border-gray-300 shadow-sm' : 'border-gray-200'}`}
+      className={`group cursor-pointer rounded-xl transition-all duration-200
+                 hover:bg-neutral-50 active:scale-[0.99]
+                 ${hasUnread ? 'bg-neutral-50/50' : ''}`}
       onClick={onClick}
     >
-      <div className="flex items-center gap-3.5 p-3.5">
+      <div className="flex items-center gap-3 p-3">
         {/* Avatar */}
         <div className="relative flex-shrink-0">
           <Avatar
             src={conversation.otherUser.image}
             name={conversation.otherUser.name}
-            size={52}
+            size={48}
           />
         </div>
 
         {/* Content */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-baseline justify-between gap-3 mb-0.5">
-            <h3 className={`font-semibold text-sm tracking-tight truncate ${
-              hasUnread ? 'text-gray-900' : 'text-gray-700'
+          <div className="flex items-center justify-between gap-3 mb-0.5">
+            <h3 className={`font-medium text-[14px] truncate ${
+              hasUnread ? 'text-neutral-900' : 'text-neutral-700'
             }`}>
               {conversation.otherUser.name}
             </h3>
             {conversation.lastMessage?.createdAt && (
-              <span className={`text-[10px] flex-shrink-0 ${
-                hasUnread ? 'text-gray-500 font-medium' : 'text-gray-400'
+              <span className={`text-[11px] flex-shrink-0 ${
+                hasUnread ? 'text-neutral-500 font-medium' : 'text-neutral-400'
               }`}>
                 {formatRelativeTime(conversation.lastMessage.createdAt)}
               </span>
@@ -157,15 +157,15 @@ const ConversationCard: React.FC<{
           </div>
 
           <div className="flex items-center justify-between gap-3">
-            <p className={`text-xs truncate ${
-              hasUnread ? 'text-gray-600 font-medium' : 'text-gray-500'
+            <p className={`text-[13px] truncate ${
+              hasUnread ? 'text-neutral-600' : 'text-neutral-500'
             }`}>
               {conversation.lastMessage?.content || (
-                <span className="italic text-gray-400">Say hello...</span>
+                <span className="italic text-neutral-400">Say hello...</span>
               )}
             </p>
             {hasUnread && (
-              <div className="w-1.5 h-1.5 bg-blue-500 rounded-full flex-shrink-0"></div>
+              <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></div>
             )}
           </div>
         </div>
@@ -349,90 +349,99 @@ const InboxModal = () => {
   `;
 
   const bodyContent = (
-    <div className="flex flex-col h-[580px] pb-2 pt-4 md:pt-6 px-3">
+    <div className="flex flex-col h-[580px] pb-2 pt-6 md:pt-8 px-4">
       <style>{styles}</style>
 
       <div className="mx-auto w-full max-w-[520px]">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-1.5">Messages</h2>
-          <p className="text-sm text-gray-600">Connect with your community</p>
+        <div className="text-center mb-6">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">Messages</h2>
+          <p className="text-gray-500 text-sm mt-2">Connect with your community</p>
         </div>
 
-        {/* Search */}
-        <div ref={containerRef} className="relative mb-5">
-          <div className="relative">
-            <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-              <Search className="w-4 h-4 text-gray-400" />
+        {/* Search - Market style */}
+        <div ref={containerRef} className="relative mb-6">
+          <div
+            className="border border-neutral-200 rounded-2xl overflow-hidden"
+            style={{
+              background: 'linear-gradient(to right, rgb(245 245 245) 0%, rgb(241 241 241) 100%)'
+            }}
+          >
+            <div className="flex items-center gap-2 px-4 py-2.5">
+              <Search className="w-[18px] h-[18px] text-neutral-400 flex-shrink-0" />
+              <input
+                type="text"
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                onFocus={() => results.length && setOpen(true)}
+                onKeyDown={onKeyDown}
+                placeholder="Search for people to message..."
+                className="flex-1 text-[14px] bg-transparent border-none outline-none text-neutral-900 placeholder-neutral-400 font-normal"
+              />
             </div>
-            <input
-              type="text"
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              onFocus={() => results.length && setOpen(true)}
-              onKeyDown={onKeyDown}
-              placeholder="Search for people to message..."
-              className="w-full h-11 pl-11 pr-4 text-sm bg-white border border-gray-200 rounded-lg
-                         outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                         text-gray-700 placeholder:text-gray-400 transition-all duration-200"
-            />
           </div>
 
           {/* Search dropdown */}
           {open && (
             <div
               ref={listRef}
-              className="absolute z-50 mt-2 w-full max-h-72 overflow-auto rounded-lg
-                         border border-gray-200 bg-white shadow-lg custom-scrollbar"
+              className="absolute z-50 mt-2 w-full max-h-72 overflow-auto rounded-2xl
+                         border border-neutral-200 bg-white/95 backdrop-blur-xl shadow-xl shadow-neutral-900/5 custom-scrollbar"
             >
               {loading && (
-                <div className="px-4 py-3 text-sm text-gray-600 flex items-center gap-3">
-                  <div className="animate-spin w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>
-                  Searching...
+                <div className="px-4 py-6 flex flex-col items-center justify-center gap-3">
+                  <div className="flex items-center gap-1">
+                    <div className="w-1.5 h-1.5 rounded-full bg-neutral-400 animate-[bounce_1s_ease-in-out_infinite]" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-neutral-400 animate-[bounce_1s_ease-in-out_0.15s_infinite]" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-neutral-400 animate-[bounce_1s_ease-in-out_0.3s_infinite]" />
+                  </div>
                 </div>
               )}
               {!loading && q.trim().length >= 2 && results.length === 0 && (
-                <div className="px-4 py-8 text-center">
-                  <User className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-                  <div className="text-sm font-medium text-gray-700">No people found</div>
-                  <div className="text-xs text-gray-500 mt-1">Try a different search term</div>
+                <div className="px-4 py-6 text-sm text-neutral-400 text-center">
+                  <div className="w-10 h-10 mx-auto mb-3 rounded-full bg-neutral-100 flex items-center justify-center">
+                    <User className="w-5 h-5 text-neutral-400" />
+                  </div>
+                  No people found for &ldquo;{q}&rdquo;
                 </div>
               )}
               {!loading && results.length > 0 && (
-                <ul className="py-1">
+                <div className="py-2">
                   {results.map((item, idx) => {
                     const active = idx === activeIdx;
                     return (
-                      <li
+                      <div
                         key={`${item.type}-${item.id}`}
                         data-idx={idx}
                         onMouseEnter={() => setActiveIdx(idx)}
                         onClick={() => handleSelect(item)}
-                        className={`px-3 py-2.5 cursor-pointer flex items-center gap-3 transition-colors ${
-                          active ? 'bg-gray-50' : 'hover:bg-gray-50'
+                        className={`mx-2 px-3 py-2.5 cursor-pointer flex items-center gap-3 rounded-xl transition-all duration-150 ${
+                          active ? 'bg-neutral-100' : 'hover:bg-neutral-50'
                         }`}
                       >
-                        <div className="shrink-0">
+                        <div className={`shrink-0 transition-all duration-150 ${active ? 'ring-2 ring-neutral-300 rounded-full' : ''}`}>
                           <Avatar src={item.image} name={item.title} size={36} />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <div className="text-sm font-semibold text-gray-800 truncate">{item.title}</div>
+                          <div className={`text-sm font-medium truncate transition-colors duration-150 ${
+                            active ? 'text-neutral-900' : 'text-neutral-700'
+                          }`}>{item.title}</div>
                           {!!item.subtitle && (
-                            <div className="text-xs text-gray-500 truncate">{item.subtitle}</div>
+                            <div className="text-xs text-neutral-400 truncate">{item.subtitle}</div>
                           )}
                         </div>
-                      </li>
+                      </div>
                     );
                   })}
-                </ul>
+                </div>
               )}
             </div>
           )}
         </div>
 
         {/* Conversations */}
-        <div className="h-[400px] overflow-y-auto custom-scrollbar -mx-3 px-3">
-          <div className="space-y-3 py-1">
+        <div className="h-[380px] overflow-y-auto custom-scrollbar -mx-2 px-2">
+          <div className="space-y-2 py-1">
             {conversations.map((conversation) => (
               <ConversationCard
                 key={conversation.id}
@@ -447,12 +456,12 @@ const InboxModal = () => {
             ))}
 
             {conversations.length === 0 && (
-              <div className="text-center pt-20 pb-16">
-                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <MessageCircle className="w-8 h-8 text-gray-400" />
+              <div className="text-center pt-16 pb-12">
+                <div className="w-14 h-14 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <MessageCircle className="w-7 h-7 text-neutral-400" />
                 </div>
-                <h3 className="text-base font-semibold text-gray-800 mb-2">No conversations yet</h3>
-                <p className="text-sm text-gray-500 max-w-xs mx-auto">
+                <h3 className="text-base font-semibold text-gray-900 mb-1.5">No conversations yet</h3>
+                <p className="text-sm text-neutral-500 max-w-[240px] mx-auto">
                   Search for someone above to start your first conversation
                 </p>
               </div>
