@@ -182,6 +182,14 @@ const CreatePostModal = () => {
   const [overlayColor, setOverlayColor] = useState<'ffffff' | '000000'>('ffffff');
   const [overlayPos, setOverlayPos] = useState<OverlayPos>('bottom-center');
 
+  /** Text Post styling state */
+  const [textBgType, setTextBgType] = useState<'solid' | 'gradient'>('gradient');
+  const [textBgColor, setTextBgColor] = useState('#6366f1');
+  const [textGradientStart, setTextGradientStart] = useState('#6366f1');
+  const [textGradientEnd, setTextGradientEnd] = useState('#ec4899');
+  const [textPosition, setTextPosition] = useState<OverlayPos>('center');
+  const [textFontSize, setTextFontSize] = useState(24);
+
   /** Tags state */
   const [selectedTags, setSelectedTags] = useState<TagItem[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -265,6 +273,12 @@ const CreatePostModal = () => {
     setOverlaySize(36);
     setOverlayColor('ffffff');
     setOverlayPos('bottom-center');
+    setTextBgType('gradient');
+    setTextBgColor('#6366f1');
+    setTextGradientStart('#6366f1');
+    setTextGradientEnd('#ec4899');
+    setTextPosition('center');
+    setTextFontSize(24);
     setSelectedTags([]);
     setSearchQuery('');
     setSearchResults([]);
@@ -293,6 +307,16 @@ const CreatePostModal = () => {
       pos: overlayPos,
     } : null;
 
+    // Store text post styling data
+    const textPostStyle = postType === 'Text Post' ? {
+      bgType: textBgType,
+      bgColor: textBgColor,
+      gradientStart: textGradientStart,
+      gradientEnd: textGradientEnd,
+      textPosition: textPosition,
+      fontSize: textFontSize,
+    } : null;
+
     const postData = {
       content: content || '',
       category,
@@ -303,6 +327,7 @@ const CreatePostModal = () => {
       tag: postType,
       postType,
       mediaOverlay: overlayData,
+      textPostStyle,
       mentions: selectedTags.map(tag => ({
         id: tag.id,
         type: tag.type,
@@ -626,20 +651,294 @@ const CreatePostModal = () => {
     }
 
     if (step === STEPS.CONTENT) {
-      return (
-        <div className="flex flex-col gap-4">
-          <Heading
-            title={postType === 'Reel' ? 'Add a caption' : 'Write your post'}
-            subtitle={postType === 'Reel' ? 'Tell people about your reel (optional)' : 'Share your thoughts'}
-          />
-          <div className="relative w-full">
-            <textarea
-              className="w-full rounded-2xl p-4 shadow-sm text-sm resize-none min-h-[100px] bg-white border border-neutral-200"
-              placeholder={postType === 'Reel' ? 'Write a caption...' : "What's on your mind?"}
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              disabled={isLoading}
+      // Reel caption - simple textarea
+      if (postType === 'Reel') {
+        return (
+          <div className="flex flex-col gap-4">
+            <Heading
+              title="Add a caption"
+              subtitle="Tell people about your reel (optional)"
             />
+            <div className="relative w-full">
+              <textarea
+                className="w-full rounded-2xl p-4 shadow-sm text-sm resize-none min-h-[100px] bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-neutral-100"
+                placeholder="Write a caption..."
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                disabled={isLoading}
+              />
+            </div>
+          </div>
+        );
+      }
+
+      // Text Post - styled card with preview (matching Reel layout)
+      const textPostBackground = textBgType === 'gradient'
+        ? `linear-gradient(135deg, ${textGradientStart}, ${textGradientEnd})`
+        : textBgColor;
+
+      const getTextAlignment = () => {
+        if (textPosition.endsWith('left')) return 'left';
+        if (textPosition.endsWith('right')) return 'right';
+        return 'center';
+      };
+
+      const getJustifyContent = () => {
+        if (textPosition.endsWith('left')) return 'flex-start';
+        if (textPosition.endsWith('right')) return 'flex-end';
+        return 'center';
+      };
+
+      const getAlignItems = () => {
+        if (textPosition.startsWith('top')) return 'flex-start';
+        if (textPosition.startsWith('bottom')) return 'flex-end';
+        return 'center';
+      };
+
+      // Preset gradient options
+      const gradientPresets = [
+        { start: '#6366f1', end: '#ec4899', name: 'Purple Pink' },
+        { start: '#f97316', end: '#eab308', name: 'Orange Yellow' },
+        { start: '#10b981', end: '#06b6d4', name: 'Teal Cyan' },
+        { start: '#8b5cf6', end: '#06b6d4', name: 'Violet Cyan' },
+        { start: '#ef4444', end: '#f97316', name: 'Red Orange' },
+        { start: '#3b82f6', end: '#8b5cf6', name: 'Blue Purple' },
+      ];
+
+      // Preset solid colors
+      const solidPresets = [
+        '#6366f1', '#ec4899', '#f97316', '#eab308',
+        '#10b981', '#06b6d4', '#ef4444', '#3b82f6',
+      ];
+
+      return (
+        <div className="flex flex-col gap-5">
+          {/* Header */}
+          <div className="text-center">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              Create a text post
+            </h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              Style your post with colors and positioning
+            </p>
+          </div>
+
+          {/* Main Content Area */}
+          <div className="flex gap-5 items-start">
+            {/* Preview Container - Phone Frame Style */}
+            <div
+              className="relative flex-shrink-0"
+              style={{ width: '180px' }}
+            >
+              {/* Phone Frame */}
+              <div className="absolute -inset-1.5 rounded-[1.75rem] bg-gradient-to-b from-gray-700 via-gray-800 to-gray-900 shadow-lg -z-10" />
+
+              <div
+                className="relative rounded-[1.25rem] overflow-hidden"
+                style={{
+                  aspectRatio: '9/16',
+                  background: textPostBackground,
+                }}
+              >
+                {/* Text Content */}
+                <div
+                  className="absolute inset-0 flex p-3"
+                  style={{
+                    justifyContent: getJustifyContent(),
+                    alignItems: getAlignItems(),
+                  }}
+                >
+                  <p
+                    className="text-white font-semibold break-words max-w-full"
+                    style={{
+                      fontSize: `${Math.max(10, textFontSize * 0.4)}px`,
+                      textAlign: getTextAlignment(),
+                      textShadow: '0 2px 4px rgba(0,0,0,0.3)',
+                      lineHeight: 1.3,
+                    }}
+                  >
+                    {content || 'Your text here...'}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Controls Panel */}
+            <div className="flex-1 min-w-0 space-y-3">
+              {/* Text Input */}
+              <div>
+                <label className="block text-[11px] font-medium text-gray-600 dark:text-gray-400 mb-1">Your message</label>
+                <textarea
+                  className="w-full rounded-lg p-3 text-sm resize-none h-[70px] bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 transition-all placeholder:text-gray-400"
+                  style={{ '--tw-ring-color': `${accentColor}66` } as React.CSSProperties}
+                  placeholder="What's on your mind?"
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  disabled={isLoading}
+                  onFocus={(e) => { e.currentTarget.style.borderColor = accentColor; }}
+                  onBlur={(e) => { e.currentTarget.style.borderColor = ''; }}
+                />
+              </div>
+
+              {/* Size & Background Row */}
+              <div className="flex gap-3">
+                {/* Size Slider */}
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="text-[11px] font-medium text-gray-600 dark:text-gray-400">Size</label>
+                    <span className="text-[10px] text-gray-400 tabular-nums">{textFontSize}</span>
+                  </div>
+                  <input
+                    type="range"
+                    min={16}
+                    max={48}
+                    step={2}
+                    value={textFontSize}
+                    onChange={(e) => setTextFontSize(Number(e.target.value))}
+                    className="w-full h-1 bg-gray-200 dark:bg-gray-700 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:shadow-sm [&::-webkit-slider-thumb]:cursor-pointer"
+                    style={{ '--thumb-color': accentColor } as React.CSSProperties}
+                  />
+                  <style>{`
+                    input[type="range"]::-webkit-slider-thumb { background-color: var(--thumb-color); }
+                    input[type="range"]::-moz-range-thumb { background-color: var(--thumb-color); }
+                  `}</style>
+                </div>
+
+                {/* Background Type */}
+                <div className="w-24">
+                  <label className="block text-[11px] font-medium text-gray-600 dark:text-gray-400 mb-1">Background</label>
+                  <div className="flex gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setTextBgType('gradient')}
+                      className="flex-1 h-6 rounded-md border transition-all duration-150 text-[10px] font-medium"
+                      style={textBgType === 'gradient' ? {
+                        background: `linear-gradient(135deg, ${textGradientStart}, ${textGradientEnd})`,
+                        borderColor: accentColor,
+                        boxShadow: `0 0 0 2px ${accentColor}30`,
+                        color: 'white'
+                      } : { borderColor: '#d1d5db', color: '#6b7280' }}
+                    >
+
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setTextBgType('solid')}
+                      className="flex-1 h-6 rounded-md border transition-all duration-150"
+                      style={textBgType === 'solid' ? {
+                        backgroundColor: textBgColor,
+                        borderColor: accentColor,
+                        boxShadow: `0 0 0 2px ${accentColor}30`
+                      } : { borderColor: '#d1d5db', backgroundColor: '#f3f4f6' }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Color Selection */}
+              {textBgType === 'gradient' ? (
+                <div>
+                  <label className="block text-[11px] font-medium text-gray-600 dark:text-gray-400 mb-2">Gradient</label>
+                  <div className="flex gap-1.5 flex-wrap">
+                    {gradientPresets.map((preset, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => {
+                          setTextGradientStart(preset.start);
+                          setTextGradientEnd(preset.end);
+                        }}
+                        className="w-7 h-7 rounded-md transition-all hover:scale-105"
+                        style={{
+                          background: `linear-gradient(135deg, ${preset.start}, ${preset.end})`,
+                          boxShadow: textGradientStart === preset.start && textGradientEnd === preset.end
+                            ? `0 0 0 2px white, 0 0 0 3px ${accentColor}`
+                            : 'none',
+                        }}
+                        title={preset.name}
+                      />
+                    ))}
+                    {/* Custom color pickers inline */}
+                    <div className="flex items-center gap-1 ml-1">
+                      <input
+                        type="color"
+                        value={textGradientStart}
+                        onChange={(e) => setTextGradientStart(e.target.value)}
+                        className="w-7 h-7 rounded-md cursor-pointer border border-gray-200"
+                        title="Start color"
+                      />
+                      <span className="text-gray-400 text-xs">→</span>
+                      <input
+                        type="color"
+                        value={textGradientEnd}
+                        onChange={(e) => setTextGradientEnd(e.target.value)}
+                        className="w-7 h-7 rounded-md cursor-pointer border border-gray-200"
+                        title="End color"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <label className="block text-[11px] font-medium text-gray-600 dark:text-gray-400 mb-2">Color</label>
+                  <div className="flex gap-1.5 flex-wrap">
+                    {solidPresets.map((color, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => setTextBgColor(color)}
+                        className="w-7 h-7 rounded-md transition-all hover:scale-105"
+                        style={{
+                          backgroundColor: color,
+                          boxShadow: textBgColor === color
+                            ? `0 0 0 2px white, 0 0 0 3px ${accentColor}`
+                            : 'none',
+                        }}
+                      />
+                    ))}
+                    <input
+                      type="color"
+                      value={textBgColor}
+                      onChange={(e) => setTextBgColor(e.target.value)}
+                      className="w-7 h-7 rounded-md cursor-pointer border border-gray-200 ml-1"
+                      title="Custom color"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Position Grid - Centered like Reel */}
+              <div className="flex flex-col items-center pt-2">
+                <label className="block text-[11px] font-medium text-gray-600 dark:text-gray-400 mb-2 self-start">Position</label>
+                <div className="grid grid-cols-3 gap-1 p-1.5 bg-gray-100 dark:bg-neutral-700 rounded-xl">
+                  {(['top-left', 'top-center', 'top-right', 'center-left', 'center', 'center-right', 'bottom-left', 'bottom-center', 'bottom-right'] as OverlayPos[]).map((pos) => (
+                    <button
+                      key={pos}
+                      type="button"
+                      onClick={() => setTextPosition(pos)}
+                      className={`
+                        w-10 h-10 rounded-lg text-sm transition-all duration-150 flex items-center justify-center
+                        ${textPosition === pos
+                          ? 'text-white font-medium'
+                          : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-white/50 dark:hover:bg-neutral-600'
+                        }
+                      `}
+                      style={textPosition === pos ? { backgroundColor: accentColor } : undefined}
+                    >
+                      {pos === 'top-left' && '↖'}
+                      {pos === 'top-center' && '↑'}
+                      {pos === 'top-right' && '↗'}
+                      {pos === 'center-left' && '←'}
+                      {pos === 'center' && '•'}
+                      {pos === 'center-right' && '→'}
+                      {pos === 'bottom-left' && '↙'}
+                      {pos === 'bottom-center' && '↓'}
+                      {pos === 'bottom-right' && '↘'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       );
@@ -803,7 +1102,7 @@ const CreatePostModal = () => {
         </div>
       </div>
     );
-  }, [step, postType, content, category, mediaData, isLoading, overlayText, overlaySize, overlayColor, overlayPos, previewDimensions, selectedTags, searchQuery, searchResults, isSearching]);
+  }, [step, postType, content, category, mediaData, isLoading, overlayText, overlaySize, overlayColor, overlayPos, previewDimensions, selectedTags, searchQuery, searchResults, isSearching, accentColor, textBgType, textBgColor, textGradientStart, textGradientEnd, textPosition, textFontSize]);
 
   return (
     <Modal

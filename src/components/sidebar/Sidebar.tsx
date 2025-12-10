@@ -267,7 +267,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
           {/* Toggle button */}
           <button
             onClick={toggleCollapse}
-            className="p-2 rounded-lg transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-700 mb-4 text-neutral-400 dark:text-neutral-500"
+            className="p-2 rounded-lg transition-colors hover:bg-neutral-200 dark:hover:bg-neutral-700 mb-4 text-neutral-600 dark:text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-300"
           >
             <SidebarToggleIcon />
           </button>
@@ -278,8 +278,8 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
               const isActive = isActiveNav(item);
               const baseClassName = `p-2.5 rounded-xl transition-all duration-200 ${
                 isActive
-                  ? "bg-neutral-100 dark:bg-neutral-700"
-                  : "text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700"
+                  ? "bg-neutral-200 dark:bg-neutral-700"
+                  : "text-neutral-600 dark:text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700"
               }`;
 
               if (item.onClick) {
@@ -310,7 +310,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
 
           {/* Help icon */}
           <div
-            className="p-2.5 rounded-xl text-neutral-300 dark:text-neutral-600 cursor-not-allowed mb-2"
+            className="p-2.5 rounded-xl text-neutral-400 dark:text-neutral-600 cursor-not-allowed mb-2"
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none">
               <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5"/>
@@ -333,7 +333,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
         <div className="relative pt-4 pb-2">
           <button
             onClick={toggleCollapse}
-            className="absolute top-4 right-5 p-2 rounded-lg transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-700 text-neutral-400 dark:text-neutral-500"
+            className="absolute top-4 right-5 p-2 rounded-lg transition-colors hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-600 dark:text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-300"
           >
             <SidebarToggleIcon />
           </button>
@@ -453,8 +453,8 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
               const isActive = isActiveNav(item);
               const baseClassName = `flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${
                 isActive
-                  ? "bg-neutral-100 dark:bg-neutral-700"
-                  : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-700"
+                  ? "bg-neutral-200 dark:bg-neutral-700"
+                  : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-700"
               }`;
 
               if (item.onClick) {
