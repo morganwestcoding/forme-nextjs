@@ -21,7 +21,10 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
   const [demoLoading, setDemoLoading] = useState(false);
 
   useEffect(() => {
-    const checkAuth = () => {
+    const checkAuth = async () => {
+      // Minimum loading time to show one full animation cycle
+      const minLoadTime = new Promise(resolve => setTimeout(resolve, 1500));
+
       try {
         const auth = localStorage.getItem('forme_early_access');
         const authTimestamp = localStorage.getItem('forme_early_access_timestamp');
@@ -32,17 +35,21 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
           const oneWeek = 7 * 24 * 60 * 60 * 1000;
 
           if (now - timestamp < oneWeek) {
+            await minLoadTime;
             setIsAuthenticated(true);
           } else {
             localStorage.removeItem('forme_early_access');
             localStorage.removeItem('forme_early_access_timestamp');
+            await minLoadTime;
             setIsAuthenticated(false);
           }
         } else {
+          await minLoadTime;
           setIsAuthenticated(false);
         }
       } catch (error) {
         console.error('Error checking authentication:', error);
+        await minLoadTime;
         setIsAuthenticated(false);
       } finally {
         setIsLoading(false);
@@ -204,9 +211,17 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
           <img
             src="/logos/logo-white.svg"
             alt="ForMe Logo"
-            className="h-6 w-auto mx-auto mb-6 opacity-60"
+            className="h-10 w-auto mx-auto mb-10 opacity-80"
           />
-          <div className="w-4 h-4 border border-neutral-800 border-t-neutral-500 rounded-full animate-spin mx-auto"></div>
+          <div className="flex justify-center items-center">
+            <span className="loading-dot" style={{ backgroundColor: '#60A5FA', animationDelay: '-0.9s' }} />
+            <span className="loading-dot" style={{ backgroundColor: '#7AB8FB', animationDelay: '-0.8s' }} />
+            <span className="loading-dot" style={{ backgroundColor: '#93CAFC', animationDelay: '-0.7s' }} />
+            <span className="loading-dot" style={{ backgroundColor: '#ADDBFD', animationDelay: '-0.6s' }} />
+            <span className="loading-dot" style={{ backgroundColor: '#C7ECFE', animationDelay: '-0.5s' }} />
+            <span className="loading-dot" style={{ backgroundColor: '#E0F4FF', animationDelay: '-0.4s' }} />
+            <span className="loading-dot" style={{ backgroundColor: '#FFFFFF', animationDelay: '-0.3s' }} />
+          </div>
         </div>
       </div>
     );
@@ -262,7 +277,7 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
             <h1 className="text-4xl sm:text-5xl md:text-[3.5rem] font-medium tracking-tight leading-[1.1] mb-6">
               <span className="text-white">Stop juggling apps.</span>
               <br />
-              <span className="text-neutral-500">Run your business from one place.</span>
+              <span className="text-neutral-500 whitespace-nowrap">Run your business from one place.</span>
             </h1>
 
             {/* Subheadline */}

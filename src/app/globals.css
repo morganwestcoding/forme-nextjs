@@ -144,6 +144,23 @@ main {
 }
 
 /* ===========================
+   Loading Dots Animation
+   =========================== */
+@keyframes loadingDotPulse {
+  0%, 100% { opacity: 0.3; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1); }
+}
+
+.loading-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin: 0 3px;
+  border-radius: 50%;
+  animation: loadingDotPulse 1s infinite;
+}
+
+/* ===========================
    Shadow Rolling Loader
    =========================== */
 .loader {
