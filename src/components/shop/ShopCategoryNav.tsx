@@ -38,7 +38,7 @@ const ShopCategoryNav: React.FC<ShopCategoryNavProps> = ({ activeTab, onTabChang
               relative px-3 sm:px-4 h-9 flex items-center text-[12px] sm:text-[13px] font-medium rounded-xl border transition-all duration-200 active:scale-[0.97] whitespace-nowrap
               ${isSelected
                 ? 'text-white'
-                : 'bg-white border-neutral-300 text-neutral-600 hover:bg-neutral-50 hover:border-neutral-400'
+                : 'bg-white dark:bg-neutral-800 border-neutral-300 dark:border-neutral-600 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700 hover:border-neutral-400 dark:hover:border-neutral-500'
               }
             `}
             style={isSelected ? {

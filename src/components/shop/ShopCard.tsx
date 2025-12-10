@@ -35,7 +35,7 @@ const ShopCard: React.FC<ShopCardProps> = ({
       onClick={handleCardClick}
       className="
         group cursor-pointer relative overflow-hidden
-        rounded-xl bg-white transition-all duration-300
+        rounded-xl bg-white dark:bg-neutral-950 transition-all duration-300
         hover:-translate-y-1 hover:scale-[1.01] hover:shadow-md
         max-w-[250px]"
     >

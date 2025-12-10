@@ -19,7 +19,7 @@ const Heading: React.FC<HeadingProps> = ({
 
   return (
     <div className={`${center ? 'text-center' : 'text-left'} space-y-1.5`}>
-      <div className="text-xl font-semibold tracking-tight flex items-center justify-start text-gray-900">
+      <div className="text-xl font-semibold tracking-tight flex items-center justify-start text-gray-900 dark:text-white">
         {title}
         {label && category && (
           <div className={`rounded-lg px-3 py-1.5 ml-3 text-xs font-medium shadow-sm ${category ? category.color : defaultBgColor} text-white inline-flex items-center`}>
@@ -29,7 +29,7 @@ const Heading: React.FC<HeadingProps> = ({
       </div>
 
       {subtitle && (
-        <div className="text-sm text-gray-500 leading-relaxed">
+        <div className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
           {subtitle}
         </div>
       )}

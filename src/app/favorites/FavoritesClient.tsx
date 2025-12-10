@@ -92,22 +92,6 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
     setPostsIndex(0);
   }, [isSidebarCollapsed]);
 
-  // Sticky nav border effect on scroll
-  useEffect(() => {
-    const handleScroll = () => {
-      const navWrapper = document.getElementById('favorites-category-nav-wrapper');
-      if (navWrapper) {
-        if (window.scrollY > 100) {
-          navWrapper.style.borderBottomColor = 'rgb(229 231 235 / 0.5)';
-        } else {
-          navWrapper.style.borderBottomColor = 'transparent';
-        }
-      }
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   // Check content availability
   const hasListings = safeListings.length > 0;
   const hasWorkers = safeWorkers.length > 0;
@@ -249,7 +233,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
 
             {/* Category Navigation - Sticky */}
             <div className="mt-3 -mx-6 md:-mx-24">
-              <div className="sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-transparent transition-all duration-300" id="favorites-category-nav-wrapper">
+              <div className="sticky top-0 z-20 transition-all duration-300" id="favorites-category-nav-wrapper">
                 <div className="px-6 md:px-24">
                   <CategoryNav activeTab={activeTab} setActiveTab={setActiveTab} />
                 </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useTheme } from '@/app/context/ThemeContext';
 
 interface PageSkeletonProps {
   title?: string;
@@ -13,15 +14,15 @@ interface PageSkeletonProps {
 
 // Card skeleton with shimmer effect
 const CardSkeleton = () => (
-  <div className="relative overflow-hidden rounded-xl max-w-[250px] h-[280px] bg-gradient-to-b from-neutral-100 to-neutral-50">
-    <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+  <div className="relative overflow-hidden rounded-xl max-w-[250px] h-[280px] bg-gradient-to-b from-neutral-100 to-neutral-50 dark:from-neutral-800 dark:to-neutral-900">
+    <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 dark:via-white/10 to-transparent" />
     <div className="absolute top-4 right-4">
-      <div className="w-5 h-5 rounded-full bg-neutral-200/40" />
+      <div className="w-5 h-5 rounded-full bg-neutral-200/40 dark:bg-neutral-700/40" />
     </div>
     <div className="absolute bottom-4 left-4 right-4 space-y-2">
-      <div className="h-3 bg-neutral-200/50 rounded w-3/4" />
-      <div className="h-2.5 bg-neutral-200/30 rounded w-1/2" />
-      <div className="mt-2 h-4 bg-neutral-200/40 rounded-md w-16" />
+      <div className="h-3 bg-neutral-200/50 dark:bg-neutral-700/50 rounded w-3/4" />
+      <div className="h-2.5 bg-neutral-200/30 dark:bg-neutral-700/30 rounded w-1/2" />
+      <div className="mt-2 h-4 bg-neutral-200/40 dark:bg-neutral-700/40 rounded-md w-16" />
     </div>
   </div>
 );
@@ -37,19 +38,21 @@ const PageSkeleton: React.FC<PageSkeletonProps> = ({
   cardCount = 10,
   sectionCount = 4,
 }) => {
+  const { isDarkMode } = useTheme();
+
   return (
     <div className="min-h-screen animate-in fade-in duration-200">
       {/* Hero Section */}
       <div className="-mx-6 md:-mx-24 -mt-2 md:-mt-8">
-        <div className="relative px-6 md:px-24 pt-12 pb-8 bg-white">
+        <div className="relative px-6 md:px-24 pt-12 pb-8">
           <div className="relative z-10 pb-6">
             {/* Title */}
             <div className="text-center">
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight tracking-tight">
+              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white leading-tight tracking-tight">
                 {title}
               </h1>
               {subtitle && (
-                <p className="text-gray-400 text-base mt-3 max-w-2xl mx-auto">{subtitle}</p>
+                <p className="text-gray-400 dark:text-gray-500 text-base mt-3 max-w-2xl mx-auto">{subtitle}</p>
               )}
             </div>
 
@@ -57,27 +60,29 @@ const PageSkeleton: React.FC<PageSkeletonProps> = ({
             {showSearch && (
               <div className="mt-8 max-w-3xl mx-auto">
                 <div
-                  className="border border-neutral-200 rounded-2xl overflow-hidden"
+                  className="border border-neutral-200 dark:border-neutral-700 rounded-2xl overflow-hidden"
                   style={{
-                    background: 'linear-gradient(to right, rgb(245 245 245) 0%, rgb(241 241 241) 100%)'
+                    background: isDarkMode
+                      ? 'linear-gradient(to right, rgb(38 38 38) 0%, rgb(35 35 35) 100%)'
+                      : 'linear-gradient(to right, rgb(245 245 245) 0%, rgb(241 241 241) 100%)'
                   }}
                 >
                   <div className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5">
                     {/* Input placeholder skeleton */}
-                    <div className="flex-1 h-[14px] bg-neutral-300/40 rounded ml-2 sm:ml-3" />
+                    <div className="flex-1 h-[14px] bg-neutral-300/40 dark:bg-neutral-600/40 rounded ml-2 sm:ml-3" />
                     {/* Divider */}
-                    <div className="w-px h-5 bg-neutral-300" />
+                    <div className="w-px h-5 bg-neutral-300 dark:bg-neutral-600" />
                     {/* Search icon button */}
                     <div className="p-1.5 sm:p-2">
-                      <div className="w-5 h-5 sm:w-[22px] sm:h-[22px] rounded-lg sm:rounded-xl bg-neutral-300/40" />
+                      <div className="w-5 h-5 sm:w-[22px] sm:h-[22px] rounded-lg sm:rounded-xl bg-neutral-300/40 dark:bg-neutral-600/40" />
                     </div>
                     {/* Filter icon button */}
                     <div className="p-1.5 sm:p-2">
-                      <div className="w-5 h-5 sm:w-[22px] sm:h-[22px] rounded-lg sm:rounded-xl bg-neutral-300/40" />
+                      <div className="w-5 h-5 sm:w-[22px] sm:h-[22px] rounded-lg sm:rounded-xl bg-neutral-300/40 dark:bg-neutral-600/40" />
                     </div>
                     {/* Create icon button */}
                     <div className="p-1.5 sm:p-2">
-                      <div className="w-5 h-5 sm:w-[22px] sm:h-[22px] rounded-lg sm:rounded-xl bg-neutral-300/40" />
+                      <div className="w-5 h-5 sm:w-[22px] sm:h-[22px] rounded-lg sm:rounded-xl bg-neutral-300/40 dark:bg-neutral-600/40" />
                     </div>
                   </div>
                 </div>
@@ -94,7 +99,7 @@ const PageSkeleton: React.FC<PageSkeletonProps> = ({
                         <div
                           key={i}
                           style={{ width: `${width}px` }}
-                          className="h-9 bg-white border border-neutral-300 rounded-xl flex-shrink-0"
+                          className="h-9 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 rounded-xl flex-shrink-0"
                         />
                       ))}
                     </div>
@@ -112,12 +117,12 @@ const PageSkeleton: React.FC<PageSkeletonProps> = ({
           <div key={sectionIdx} className={sectionIdx > 0 ? 'mt-10' : ''}>
             {/* Section header */}
             <div className="flex items-center justify-between py-6">
-              <div className={`h-4 bg-neutral-200/40 rounded ${sectionIdx % 2 === 0 ? 'w-48' : 'w-56'}`} />
+              <div className={`h-4 bg-neutral-200/40 dark:bg-neutral-700/40 rounded ${sectionIdx % 2 === 0 ? 'w-48' : 'w-56'}`} />
               <div className="flex items-center gap-2">
-                <div className="h-5 w-10 bg-neutral-100 rounded" />
+                <div className="h-5 w-10 bg-neutral-100 dark:bg-neutral-800 rounded" />
                 <div className="flex gap-1">
-                  <div className="w-6 h-6 bg-neutral-100 rounded-full" />
-                  <div className="w-6 h-6 bg-neutral-100 rounded-full" />
+                  <div className="w-6 h-6 bg-neutral-100 dark:bg-neutral-800 rounded-full" />
+                  <div className="w-6 h-6 bg-neutral-100 dark:bg-neutral-800 rounded-full" />
                 </div>
               </div>
             </div>

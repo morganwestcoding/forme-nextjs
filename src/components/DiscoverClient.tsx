@@ -94,21 +94,6 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
     setShopsIndex(0);
   }, [isSidebarCollapsed]);
 
-  // Sticky nav border effect on scroll
-  useEffect(() => {
-    const handleScroll = () => {
-      const navWrapper = document.getElementById('discover-category-nav-wrapper');
-      if (navWrapper) {
-        if (window.scrollY > 100) {
-          navWrapper.style.borderBottomColor = 'rgb(229 231 235 / 0.5)';
-        } else {
-          navWrapper.style.borderBottomColor = 'transparent';
-        }
-      }
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   const headerSearchParams = {
     userId: searchParams?.get('userId') || undefined,
@@ -308,10 +293,10 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
               <div className="relative z-10 pb-6">
                 {/* Main Discover Title */}
                 <div className="text-center">
-                  <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight tracking-tight">
+                  <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white leading-tight tracking-tight">
                     Discover
                   </h1>
-                  <p className="text-gray-500 text-base mt-3 max-w-2xl mx-auto">Share what&apos;s new with you and your business</p>
+                  <p className="text-gray-500 dark:text-gray-400 text-base mt-3 max-w-2xl mx-auto">Share what&apos;s new with you and your business</p>
                 </div>
 
                 {/* Search and Controls */}
@@ -321,7 +306,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
 
                 {/* Category Navigation - Sticky */}
                 <div className="mt-3 -mx-6 md:-mx-24">
-                  <div className="sticky top-0 z-20 backdrop-blur-md border-b border-transparent transition-all duration-300" id="discover-category-nav-wrapper">
+                  <div className="sticky top-0 z-20 transition-all duration-300" id="discover-category-nav-wrapper">
                     <div className="px-6 md:px-24">
                       <CategoryNav searchParams={headerSearchParams} basePath="/" />
                     </div>

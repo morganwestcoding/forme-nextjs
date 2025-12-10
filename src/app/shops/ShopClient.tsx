@@ -79,22 +79,6 @@ const ShopClient: React.FC<ShopClientProps> = ({
     setProductsIndex(0);
   }, [isSidebarCollapsed]);
 
-  // Sticky nav border effect on scroll
-  useEffect(() => {
-    const handleScroll = () => {
-      const navWrapper = document.getElementById('shops-category-nav-wrapper');
-      if (navWrapper) {
-        if (window.scrollY > 100) {
-          navWrapper.style.borderBottomColor = 'rgb(229 231 235 / 0.5)';
-        } else {
-          navWrapper.style.borderBottomColor = 'transparent';
-        }
-      }
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
 
   // Filtering logic to determine when to show section headers
   const filterInfo = useMemo(() => {
@@ -241,7 +225,7 @@ const ShopClient: React.FC<ShopClientProps> = ({
 
             {/* Category Navigation - Sticky */}
             <div className="mt-3 -mx-6 md:-mx-24">
-              <div className="sticky top-0 z-20 backdrop-blur-md border-b border-transparent transition-all duration-300" id="shops-category-nav-wrapper">
+              <div className="sticky top-0 z-20 transition-all duration-300" id="shops-category-nav-wrapper">
                 <div className="px-6 md:px-24">
                   <CategoryNav searchParams={headerSearchParams} basePath="/shops" />
                 </div>

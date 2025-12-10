@@ -145,7 +145,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, var
       onMouseLeave={handleMouseLeave}
       className={`
         group cursor-pointer relative overflow-hidden
-        ${isListingVariant ? 'rounded-2xl border border-gray-100' : 'rounded-xl bg-white'}
+        ${isListingVariant ? 'rounded-2xl border border-gray-100 dark:border-neutral-800' : 'rounded-xl bg-white dark:bg-neutral-950'}
         transition-all duration-300 ease-out
         ${isListingVariant ? 'hover:shadow-md' : 'hover:-translate-y-2 hover:scale-[1.02] hover:shadow-xl hover:shadow-black/10'}
         ${isListingVariant ? '' : 'max-w-[250px]'}`}

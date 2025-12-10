@@ -68,22 +68,6 @@ const MarketClient: React.FC<MarketClientProps> = ({
   // Seed for shuffling (stable during session, changes on page refresh)
   const [shuffleSeed] = useState(() => Date.now());
 
-  // Sticky nav border effect on scroll
-  useEffect(() => {
-    const handleScroll = () => {
-      const navWrapper = document.getElementById('category-nav-wrapper');
-      if (navWrapper) {
-        if (window.scrollY > 100) {
-          navWrapper.style.borderBottomColor = 'rgb(229 231 235 / 0.5)';
-        } else {
-          navWrapper.style.borderBottomColor = 'transparent';
-        }
-      }
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   useEffect(() => {
     setFeaturedIndex(0);
     setTrendingIndex(0);
@@ -235,10 +219,10 @@ const MarketClient: React.FC<MarketClientProps> = ({
           <div className="relative z-10 pb-6">
             {/* Main Businesses Title */}
             <div className="text-center">
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight tracking-tight">
+              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white leading-tight tracking-tight">
                 Businesses
               </h1>
-              <p className="text-gray-500 text-base mt-3 max-w-2xl mx-auto">Discover unique places from our businesses</p>
+              <p className="text-gray-500 dark:text-gray-400 text-base mt-3 max-w-2xl mx-auto">Discover unique places from our businesses</p>
             </div>
 
             {/* Search */}
@@ -250,7 +234,7 @@ const MarketClient: React.FC<MarketClientProps> = ({
 
             {/* Category Navigation - Sticky */}
             <div className="mt-3 -mx-6 md:-mx-24">
-              <div className="sticky top-0 z-20 backdrop-blur-md border-b border-transparent transition-all duration-300" id="category-nav-wrapper">
+              <div className="sticky top-0 z-20 transition-all duration-300" id="category-nav-wrapper">
                 <div className="px-6 md:px-24">
                   <CategoryNav searchParams={searchParams} />
                 </div>

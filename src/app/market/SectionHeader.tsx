@@ -36,7 +36,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
     <div className={`mt-8 mb-6 ${className}`} style={animationStyle}>
       <div className="flex items-center justify-between">
         {/* LEFT: title */}
-        <h2 className="text-2xl font-bold tracking-tight text-gray-900">
+        <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
           {title}
         </h2>
 
@@ -45,7 +45,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
           {onViewAll && (
             <button
               onClick={onViewAll}
-              className="text-[13px] font-medium text-gray-400 hover:text-gray-500 transition-colors duration-300"
+              className="text-[13px] font-medium text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400 transition-colors duration-300"
               aria-label={viewAllLabel}
             >
               {viewAllLabel}
