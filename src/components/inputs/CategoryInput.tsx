@@ -66,10 +66,14 @@ const CategoryInputBase: React.FC<CategoryInputProps> = ({ label, selected, onCl
           : 'bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-600 text-gray-600 dark:text-gray-300 hover:border-gray-400 hover:shadow-sm hover:text-gray-700 dark:hover:text-white'
         }
       `}
-      style={selected ? {
-        background: `linear-gradient(to bottom right, ${accentColor}, ${darkerColor})`,
-        borderColor: `${accentColor}80`
-      } : undefined}
+      style={{
+        ...(selected ? {
+          background: `linear-gradient(to bottom right, ${accentColor}, ${darkerColor})`,
+          borderColor: `${accentColor}80`
+        } : {}),
+        // @ts-expect-error CSS custom property for focus ring
+        '--tw-ring-color': accentColor
+      }}
     >
       <div className="relative z-10 flex flex-col items-center gap-2">
         {/* Icon container - simpler, cleaner */}

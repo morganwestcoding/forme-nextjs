@@ -63,21 +63,18 @@ const ModalButton: React.FC<ModalButtonProps> = ({
       `}
       style={isPrimary ? {
         backgroundColor: accentColor,
-        borderColor: accentColor,
-        boxShadow: `0 10px 15px -3px ${accentColor}40, 0 4px 6px -4px ${accentColor}40`
+        borderColor: accentColor
       } : undefined}
       onMouseEnter={(e) => {
         if (isPrimary && !disabled) {
           e.currentTarget.style.backgroundColor = hoverColor;
           e.currentTarget.style.borderColor = hoverColor;
-          e.currentTarget.style.boxShadow = `0 20px 25px -5px ${accentColor}4D, 0 8px 10px -6px ${accentColor}4D`;
         }
       }}
       onMouseLeave={(e) => {
         if (isPrimary && !disabled) {
           e.currentTarget.style.backgroundColor = accentColor;
           e.currentTarget.style.borderColor = accentColor;
-          e.currentTarget.style.boxShadow = `0 10px 15px -3px ${accentColor}40, 0 4px 6px -4px ${accentColor}40`;
         }
       }}
     >

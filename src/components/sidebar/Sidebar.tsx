@@ -465,7 +465,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
                     style={isActive ? { color: 'var(--accent-color)' } : undefined}
                   >
                     <span className={isActive ? "" : "opacity-70"}>{item.icon}</span>
-                    <span className={`text-sm ${isActive ? "font-medium" : ""}`}>{item.label}</span>
+                    <span className="text-sm">{item.label}</span>
                   </button>
                 );
               }
@@ -478,7 +478,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
                   style={isActive ? { color: 'var(--accent-color)' } : undefined}
                 >
                   <span className={isActive ? "" : "opacity-70"}>{item.icon}</span>
-                  <span className={`text-sm ${isActive ? "font-medium" : ""}`}>{item.label}</span>
+                  <span className="text-sm">{item.label}</span>
                 </Link>
               );
             })}
