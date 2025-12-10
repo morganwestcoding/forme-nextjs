@@ -361,7 +361,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
         <div className="px-3 pt-7 pb-4">
           <DropdownMenu open={isUserMenuOpen} onOpenChange={setIsUserMenuOpen}>
             <DropdownMenuTrigger className="w-full outline-none">
-              <div className="flex items-center gap-2.5 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl px-3 py-2.5 cursor-pointer hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors">
+              <div className="flex items-center gap-2.5 bg-neutral-200/50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-xl px-3 py-2.5 cursor-pointer hover:bg-neutral-200/70 dark:hover:bg-neutral-800 transition-colors">
                 <div className="relative">
                   {currentUser?.image ? (
                     <Image
@@ -453,8 +453,8 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
               const isActive = isActiveNav(item);
               const baseClassName = `flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${
                 isActive
-                  ? "bg-neutral-100"
-                  : "text-neutral-500 hover:text-neutral-700 hover:bg-neutral-50"
+                  ? "bg-neutral-100 dark:bg-neutral-700"
+                  : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-700"
               }`;
 
               if (item.onClick) {
@@ -489,7 +489,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
         {/* Help & Support */}
         <div className="px-3 pb-4 mt-auto">
           <div
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-neutral-300 cursor-not-allowed"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-neutral-300 dark:text-neutral-600 cursor-not-allowed"
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none">
               <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5"/>
