@@ -12,6 +12,7 @@ import CategoryInput from '@/components/inputs/CategoryInput';
 import { categories } from '@/components/Categories';
 import { MediaData } from '@/app/types';
 import { Search, X, User, Building2, Store } from 'lucide-react';
+import { useTheme } from '@/app/context/ThemeContext';
 
 /** ================== Overlay Position Type ================== */
 
@@ -50,6 +51,7 @@ interface PostTypeInputProps {
   label: string;
   selected?: boolean;
   onClick: (value: string) => void;
+  accentColor: string;
 }
 
 const PostTypeIcon: React.FC<{ label: string; className?: string }> = ({ label, className }) => {
@@ -88,7 +90,19 @@ const PostTypeIcon: React.FC<{ label: string; className?: string }> = ({ label, 
   }
 };
 
-const PostTypeInput: React.FC<PostTypeInputProps> = ({ label, selected, onClick }) => {
+const PostTypeInput: React.FC<PostTypeInputProps> = ({ label, selected, onClick, accentColor }) => {
+  // Calculate a darker shade for the gradient
+  const getDarkerShade = (hex: string): string => {
+    const num = parseInt(hex.replace('#', ''), 16);
+    const amt = -20;
+    const R = Math.max(0, Math.min(255, (num >> 16) + Math.round(2.55 * amt)));
+    const G = Math.max(0, Math.min(255, ((num >> 8) & 0x00FF) + Math.round(2.55 * amt)));
+    const B = Math.max(0, Math.min(255, (num & 0x0000FF) + Math.round(2.55 * amt)));
+    return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
+  };
+
+  const darkerColor = getDarkerShade(accentColor);
+
   return (
     <button
       type="button"
@@ -99,21 +113,35 @@ const PostTypeInput: React.FC<PostTypeInputProps> = ({ label, selected, onClick 
         cursor-pointer select-none
         transition-all duration-300 ease-out
         will-change-transform transform-gpu
-        focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#60A5FA]
+        focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2
         ${selected
-          ? 'bg-gradient-to-br from-[#60A5FA] to-[#3b82f6] text-white shadow-md hover:shadow-lg border border-[#60A5FA]/50'
-          : 'bg-white border border-gray-300 text-gray-600 hover:border-gray-400 hover:shadow-sm hover:text-gray-700'
+          ? 'text-white border'
+          : 'bg-white border border-gray-300 text-gray-600 hover:border-gray-400 hover:text-gray-700'
         }
       `}
+      style={{
+        ...(selected ? {
+          background: `linear-gradient(to bottom right, ${accentColor}, ${darkerColor})`,
+          borderColor: `${accentColor}80`
+        } : {}),
+        // @ts-expect-error CSS custom property for focus ring
+        '--tw-ring-color': accentColor
+      }}
     >
       <div className="relative z-10 flex flex-col items-center gap-2">
-        <div className={`
-          transition-all duration-300
-          ${selected
-            ? 'text-white'
-            : 'text-gray-500 group-hover:text-[#60A5FA]'
-          }
-        `}>
+        <div
+          className={`transition-all duration-300 ${selected ? 'text-white' : 'text-gray-500'}`}
+          onMouseEnter={(e) => {
+            if (!selected) {
+              e.currentTarget.style.color = accentColor;
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!selected) {
+              e.currentTarget.style.color = '';
+            }
+          }}
+        >
           <PostTypeIcon
             label={label}
             className="w-5 h-5 transition-transform duration-300 ease-out group-hover:scale-110 transform-gpu"
@@ -140,6 +168,7 @@ const PostTypeInput: React.FC<PostTypeInputProps> = ({ label, selected, onClick 
 const CreatePostModal = () => {
   const router = useRouter();
   const modal = useCreatePostModal();
+  const { accentColor } = useTheme();
   const [step, setStep] = useState(STEPS.TYPE);
   const [postType, setPostType] = useState('');
   const [content, setContent] = useState('');
@@ -352,6 +381,7 @@ const CreatePostModal = () => {
                 label={type}
                 selected={postType === type}
                 onClick={(value) => setPostType(value)}
+                accentColor={accentColor}
               />
             ))}
           </div>
@@ -390,7 +420,7 @@ const CreatePostModal = () => {
               <div
                 className={`
                   relative overflow-hidden cursor-pointer
-                  ${isReel ? 'rounded-[1.25rem]' : 'rounded-2xl border-2 border-dashed border-gray-200 hover:border-[#60A5FA]/50'}
+                  ${isReel ? 'rounded-[1.25rem]' : 'rounded-2xl border-2 border-dashed border-gray-200'}
                   ${mediaData ? '' : 'bg-gray-50'}
                   transition-all duration-200
                 `}
@@ -477,7 +507,10 @@ const CreatePostModal = () => {
                     onChange={(e) => setOverlayText(e.target.value)}
                     placeholder="Add text to your reel..."
                     disabled={!mediaData}
-                    className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#60A5FA]/40 focus:border-[#60A5FA] transition-all placeholder:text-gray-400"
+                    className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 transition-all placeholder:text-gray-400"
+                    style={{ '--tw-ring-color': `${accentColor}66`, borderColor: undefined } as React.CSSProperties}
+                    onFocus={(e) => { e.currentTarget.style.borderColor = accentColor; }}
+                    onBlur={(e) => { e.currentTarget.style.borderColor = ''; }}
                   />
                 </div>
 
@@ -497,8 +530,13 @@ const CreatePostModal = () => {
                       value={overlaySize}
                       onChange={(e) => setOverlaySize(Number(e.target.value))}
                       disabled={!mediaData}
-                      className="w-full h-1 bg-gray-200 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#60A5FA] [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:shadow-sm [&::-webkit-slider-thumb]:cursor-pointer"
+                      className="w-full h-1 bg-gray-200 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:shadow-sm [&::-webkit-slider-thumb]:cursor-pointer"
+                      style={{ '--thumb-color': accentColor } as React.CSSProperties}
                     />
+                    <style>{`
+                      input[type="range"]::-webkit-slider-thumb { background-color: var(--thumb-color); }
+                      input[type="range"]::-moz-range-thumb { background-color: var(--thumb-color); }
+                    `}</style>
                   </div>
 
                   {/* Color Selection */}
@@ -509,34 +547,30 @@ const CreatePostModal = () => {
                         type="button"
                         onClick={() => setOverlayColor('ffffff')}
                         disabled={!mediaData}
-                        className={`
-                          flex-1 h-6 rounded-md border transition-all duration-150
-                          ${overlayColor === 'ffffff'
-                            ? 'border-[#60A5FA] bg-white ring-1 ring-[#60A5FA]/30'
-                            : 'border-gray-300 bg-white hover:border-gray-400'
-                          }
-                        `}
+                        className="flex-1 h-6 rounded-md border transition-all duration-150 bg-white"
+                        style={overlayColor === 'ffffff' ? {
+                          borderColor: accentColor,
+                          boxShadow: `0 0 0 2px ${accentColor}30`
+                        } : { borderColor: '#d1d5db' }}
                       />
                       <button
                         type="button"
                         onClick={() => setOverlayColor('000000')}
                         disabled={!mediaData}
-                        className={`
-                          flex-1 h-6 rounded-md border transition-all duration-150
-                          ${overlayColor === '000000'
-                            ? 'border-[#60A5FA] bg-gray-900 ring-1 ring-[#60A5FA]/30'
-                            : 'border-gray-300 bg-gray-900 hover:border-gray-400'
-                          }
-                        `}
+                        className="flex-1 h-6 rounded-md border transition-all duration-150 bg-gray-900"
+                        style={overlayColor === '000000' ? {
+                          borderColor: accentColor,
+                          boxShadow: `0 0 0 2px ${accentColor}30`
+                        } : { borderColor: '#d1d5db' }}
                       />
                     </div>
                   </div>
                 </div>
 
                 {/* Position Grid */}
-                <div>
-                  <label className="block text-[11px] font-medium text-gray-600 mb-1">Position</label>
-                  <div className="inline-grid grid-cols-3 gap-0.5 p-0.5 bg-gray-100 rounded-lg">
+                <div className="flex flex-col items-center pt-2">
+                  <label className="block text-[11px] font-medium text-gray-600 mb-2 self-start">Position</label>
+                  <div className="grid grid-cols-3 gap-1 p-1.5 bg-gray-100 rounded-xl">
                     {(['top-left', 'top-center', 'top-right', 'center-left', 'center', 'center-right', 'bottom-left', 'bottom-center', 'bottom-right'] as OverlayPos[]).map((pos) => (
                       <button
                         key={pos}
@@ -544,12 +578,13 @@ const CreatePostModal = () => {
                         onClick={() => setOverlayPos(pos)}
                         disabled={!mediaData}
                         className={`
-                          w-7 h-6 rounded text-[10px] transition-all duration-150
+                          w-10 h-10 rounded-lg text-sm transition-all duration-150 flex items-center justify-center
                           ${overlayPos === pos
-                            ? 'bg-white text-gray-800 shadow-sm font-medium'
+                            ? 'text-white font-medium'
                             : 'text-gray-400 hover:text-gray-600 hover:bg-white/50'
                           }
                         `}
+                        style={overlayPos === pos ? { backgroundColor: accentColor } : undefined}
                       >
                         {pos === 'top-left' && '↖'}
                         {pos === 'top-center' && '↑'}

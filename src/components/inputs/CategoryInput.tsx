@@ -62,8 +62,8 @@ const CategoryInputBase: React.FC<CategoryInputProps> = ({ label, selected, onCl
         will-change-transform transform-gpu
         focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2
         ${selected
-          ? 'text-white shadow-md hover:shadow-lg'
-          : 'bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-600 text-gray-600 dark:text-gray-300 hover:border-gray-400 hover:shadow-sm hover:text-gray-700 dark:hover:text-white'
+          ? 'text-white border'
+          : 'bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-600 text-gray-600 dark:text-gray-300 hover:border-gray-400 hover:text-gray-700 dark:hover:text-white'
         }
       `}
       style={{
