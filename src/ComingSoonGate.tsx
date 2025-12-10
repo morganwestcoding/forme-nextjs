@@ -12,6 +12,7 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
   const [showPassword, setShowPassword] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isFadingOut, setIsFadingOut] = useState(false);
   const [waitlistCount, setWaitlistCount] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<'waitlist' | 'demo'>('waitlist');
   const [demoEmail, setDemoEmail] = useState('');
@@ -206,24 +207,95 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
 
   if (isLoading || isAuthenticated === null) {
     return (
-      <div className="min-h-screen bg-[#09090B] flex items-center justify-center">
-        <div className="text-center">
-          <img
-            src="/logos/logo-white.svg"
-            alt="ForMe Logo"
-            className="h-10 w-auto mx-auto mb-10 opacity-80"
-          />
-          <div className="flex justify-center items-center">
-            <span className="loading-dot" style={{ backgroundColor: '#60A5FA', animationDelay: '-0.9s' }} />
-            <span className="loading-dot" style={{ backgroundColor: '#7AB8FB', animationDelay: '-0.8s' }} />
-            <span className="loading-dot" style={{ backgroundColor: '#93CAFC', animationDelay: '-0.7s' }} />
-            <span className="loading-dot" style={{ backgroundColor: '#ADDBFD', animationDelay: '-0.6s' }} />
-            <span className="loading-dot" style={{ backgroundColor: '#C7ECFE', animationDelay: '-0.5s' }} />
-            <span className="loading-dot" style={{ backgroundColor: '#E0F4FF', animationDelay: '-0.4s' }} />
-            <span className="loading-dot" style={{ backgroundColor: '#FFFFFF', animationDelay: '-0.3s' }} />
+      <>
+        <style jsx global>{`
+          html, body {
+            background-color: #09090B !important;
+            overscroll-behavior: none !important;
+            overflow: hidden !important;
+          }
+
+          @keyframes logoReveal {
+            0% {
+              opacity: 0;
+              transform: scale(0.8) translateY(10px);
+              filter: blur(10px);
+            }
+            100% {
+              opacity: 0.9;
+              transform: scale(1) translateY(0);
+              filter: blur(0);
+            }
+          }
+
+          @keyframes dotsContainer {
+            0% {
+              opacity: 0;
+              transform: translateY(8px);
+            }
+            100% {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+
+          @keyframes dotPulse {
+            0%, 100% {
+              opacity: 0.3;
+              transform: scale(0.8);
+            }
+            50% {
+              opacity: 1;
+              transform: scale(1.1);
+            }
+          }
+
+          @keyframes shimmer {
+            0% {
+              background-position: -200% center;
+            }
+            100% {
+              background-position: 200% center;
+            }
+          }
+
+          .loader-logo {
+            animation: logoReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          }
+
+          .loader-dots-container {
+            animation: dotsContainer 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+            opacity: 0;
+          }
+
+          .loader-dot {
+            width: 8px;
+            height: 8px;
+            margin: 0 4px;
+            border-radius: 50%;
+            animation: dotPulse 1.4s ease-in-out infinite;
+          }
+        `}</style>
+        <div className="min-h-screen bg-[#09090B] flex items-center justify-center">
+          <div className="text-center">
+            <img
+              src="/logos/logo-white.svg"
+              alt="ForMe Logo"
+              className="loader-logo h-10 w-auto mx-auto mb-10"
+              style={{ opacity: 0 }}
+            />
+            <div className="loader-dots-container flex justify-center items-center">
+              <span className="loader-dot" style={{ backgroundColor: '#60A5FA', animationDelay: '0s' }} />
+              <span className="loader-dot" style={{ backgroundColor: '#7AB8FB', animationDelay: '0.1s' }} />
+              <span className="loader-dot" style={{ backgroundColor: '#93CAFC', animationDelay: '0.2s' }} />
+              <span className="loader-dot" style={{ backgroundColor: '#ADDBFD', animationDelay: '0.3s' }} />
+              <span className="loader-dot" style={{ backgroundColor: '#C7ECFE', animationDelay: '0.4s' }} />
+              <span className="loader-dot" style={{ backgroundColor: '#E0F4FF', animationDelay: '0.5s' }} />
+              <span className="loader-dot" style={{ backgroundColor: '#FFFFFF', animationDelay: '0.6s' }} />
+            </div>
           </div>
         </div>
-      </div>
+      </>
     );
   }
 
