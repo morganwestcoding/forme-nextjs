@@ -2,9 +2,17 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { useTheme } from "@/app/context/ThemeContext";
+import {
+  useFloating,
+  autoUpdate,
+  offset,
+  flip,
+  shift,
+  size,
+  FloatingPortal,
+} from "@floating-ui/react";
 
 type ItemType =
   | "user"
@@ -96,15 +104,28 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<ResultItem[]>([]);
   const [activeIdx, setActiveIdx] = useState<number>(-1);
-  const [dropdownPosition, setDropdownPosition] = useState<{
-    top: number;
-    left: number;
-    width: number;
-  } | null>(null);
 
-  const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const listRef = useRef<HTMLDivElement>(null);
+
+  // Floating UI for proper dropdown positioning
+  const { refs, floatingStyles, isPositioned } = useFloating({
+    open,
+    onOpenChange: setOpen,
+    placement: "bottom-start",
+    middleware: [
+      offset(8),
+      flip({ padding: 8 }),
+      shift({ padding: 8 }),
+      size({
+        apply({ rects, elements }) {
+          Object.assign(elements.floating.style, {
+            width: `${rects.reference.width}px`,
+          });
+        },
+      }),
+    ],
+    whileElementsMounted: autoUpdate,
+  });
 
   // Notify parent of search changes for local filtering
   useEffect(() => {
@@ -163,42 +184,20 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
     };
   }, [debouncedQ, filterTypes, entityId, entityType]);
 
-  // Update dropdown position when open or on scroll/resize
-  useEffect(() => {
-    const updatePosition = () => {
-      if (!containerRef.current || !open) return;
-      const rect = containerRef.current.getBoundingClientRect();
-      setDropdownPosition({
-        top: rect.bottom + 8,
-        left: rect.left,
-        width: rect.width,
-      });
-    };
-
-    if (open) {
-      updatePosition();
-      window.addEventListener("scroll", updatePosition, true);
-      window.addEventListener("resize", updatePosition);
-    }
-
-    return () => {
-      window.removeEventListener("scroll", updatePosition, true);
-      window.removeEventListener("resize", updatePosition);
-    };
-  }, [open]);
-
   // Click outside to close
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
-      if (!containerRef.current || !listRef.current) return;
+      const reference = refs.reference.current as HTMLElement | null;
+      const floating = refs.floating.current;
+      if (!reference || !floating) return;
       const target = e.target as Node;
-      if (!containerRef.current.contains(target) && !listRef.current.contains(target)) {
+      if (!reference.contains(target) && !floating.contains(target)) {
         setOpen(false);
       }
     };
     if (open) document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
-  }, [open]);
+  }, [open, refs.reference, refs.floating]);
 
   const flatItems = results;
   const grouped = useMemo(() => groupByType(results), [results]);
@@ -229,8 +228,8 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
 
   // Keep active item in view
   useEffect(() => {
-    if (!listRef.current || activeIdx < 0) return;
-    const dropdown = listRef.current;
+    const dropdown = refs.floating.current;
+    if (!dropdown || activeIdx < 0) return;
     const node = dropdown.querySelector<HTMLElement>(`[data-idx="${activeIdx}"]`);
     if (!node) return;
 
@@ -242,10 +241,10 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
     } else if (nodeRect.bottom > dropdownRect.bottom) {
       dropdown.scrollTop += nodeRect.bottom - dropdownRect.bottom;
     }
-  }, [activeIdx]);
+  }, [activeIdx, refs.floating]);
 
   return (
-    <div className={`relative w-full ${className || ""}`} ref={containerRef}>
+    <div className={`relative w-full ${className || ""}`} ref={refs.setReference}>
       <div
         className="border border-neutral-200 dark:border-neutral-700 rounded-2xl overflow-hidden"
         style={{
@@ -275,16 +274,15 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
         </div>
       </div>
 
-      {/* Dropdown - Portaled to body (only show when there's content to display) */}
-      {open && dropdownPosition && typeof window !== "undefined" && (loading || results.length > 0 || debouncedQ.length >= 2) &&
-        createPortal(
+      {/* Dropdown - Floating UI handles positioning */}
+      {open && (loading || results.length > 0 || debouncedQ.length >= 2) && (
+        <FloatingPortal>
           <div
-            ref={listRef}
-            className="fixed z-[9999] max-h-80 overflow-auto rounded-2xl bg-white/95 backdrop-blur-xl border border-neutral-200 shadow-xl shadow-neutral-900/5 animate-in fade-in slide-in-from-top-2 duration-200"
+            ref={refs.setFloating}
+            className="z-[9999] max-h-80 overflow-auto rounded-2xl bg-white/95 backdrop-blur-xl border border-neutral-200 shadow-xl shadow-neutral-900/5"
             style={{
-              top: `${dropdownPosition.top}px`,
-              left: `${dropdownPosition.left}px`,
-              width: `${dropdownPosition.width}px`,
+              ...floatingStyles,
+              visibility: isPositioned ? 'visible' : 'hidden',
             }}
           >
             {/* Loading */}
@@ -393,10 +391,9 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
                 )}
               </div>
             )}
-          </div>,
-          document.body
-        )
-      }
+          </div>
+        </FloatingPortal>
+      )}
     </div>
   );
 };

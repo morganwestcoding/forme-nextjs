@@ -1,7 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
-import { createPortal } from 'react-dom';
+import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Plus, Store, PenSquare, Building2, Package, Search } from 'lucide-react';
 import useRentModal from '@/app/hooks/useListingModal';
@@ -11,6 +10,14 @@ import useCreatePostModal from '@/app/hooks/useCreatePostModal';
 import useShopModal from '@/app/hooks/useShopModal';
 import useProductModal from '@/app/hooks/useProductModal';
 import ContextualSearch from '@/components/search/ContextualSearch';
+import {
+  useFloating,
+  autoUpdate,
+  offset,
+  flip,
+  shift,
+  FloatingPortal,
+} from "@floating-ui/react";
 
 type ActionContext = 'market' | 'shops' | 'discover' | 'properties';
 
@@ -74,9 +81,19 @@ const PageSearch: React.FC<PageSearchProps> = ({
 
   // Action dropdown state
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [dropdownPosition, setDropdownPosition] = useState<{ top: number; right: number } | null>(null);
-  const actionButtonRef = useRef<HTMLButtonElement>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Floating UI for proper dropdown positioning
+  const { refs, floatingStyles, isPositioned } = useFloating({
+    open: isDropdownOpen,
+    onOpenChange: setIsDropdownOpen,
+    placement: "bottom-end",
+    middleware: [
+      offset(8),
+      flip({ padding: 8 }),
+      shift({ padding: 8 }),
+    ],
+    whileElementsMounted: autoUpdate,
+  });
 
   // Get context-specific actions
   const getActions = (): ActionItem[] => {
@@ -110,26 +127,13 @@ const PageSearch: React.FC<PageSearchProps> = ({
   const actions = getActions();
   const hasActionContext = actionContext && actions.length > 0;
 
-  // Update dropdown position
-  useEffect(() => {
-    if (isDropdownOpen && actionButtonRef.current) {
-      const rect = actionButtonRef.current.getBoundingClientRect();
-      setDropdownPosition({
-        top: rect.bottom + 8,
-        right: window.innerWidth - rect.right,
-      });
-    }
-  }, [isDropdownOpen]);
-
   // Close dropdown on click outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        actionButtonRef.current &&
-        !dropdownRef.current.contains(e.target as Node) &&
-        !actionButtonRef.current.contains(e.target as Node)
-      ) {
+      const reference = refs.reference.current as HTMLElement | null;
+      const floating = refs.floating.current;
+      if (!reference || !floating) return;
+      if (!reference.contains(e.target as Node) && !floating.contains(e.target as Node)) {
         setIsDropdownOpen(false);
       }
     };
@@ -138,7 +142,7 @@ const PageSearch: React.FC<PageSearchProps> = ({
       document.addEventListener('mousedown', handleClickOutside);
     }
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isDropdownOpen]);
+  }, [isDropdownOpen, refs.reference, refs.floating]);
 
   // Close dropdown on Escape
   useEffect(() => {
@@ -152,6 +156,7 @@ const PageSearch: React.FC<PageSearchProps> = ({
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isDropdownOpen]);
 
+  
   const handleActionClick = (action: () => void) => {
     action();
     setIsDropdownOpen(false);
@@ -244,7 +249,7 @@ const PageSearch: React.FC<PageSearchProps> = ({
 
       {hasActionContext && (
         <button
-          ref={actionButtonRef}
+          ref={refs.setReference}
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
           className={`${iconButtonClasses} ${isDropdownOpen ? 'bg-neutral-200 text-neutral-900' : ''}`}
           type="button"
@@ -271,15 +276,15 @@ const PageSearch: React.FC<PageSearchProps> = ({
         enableLocalFilter={enableLocalFilter}
       />
 
-      {/* Action dropdown portal */}
-      {isDropdownOpen && dropdownPosition && typeof window !== 'undefined' &&
-        createPortal(
+      {/* Action dropdown - Floating UI handles positioning */}
+      {isDropdownOpen && (
+        <FloatingPortal>
           <div
-            ref={dropdownRef}
-            className="fixed z-[9999] bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl shadow-lg shadow-neutral-900/10 py-1.5 min-w-[180px] animate-in fade-in slide-in-from-top-2 duration-150"
+            ref={refs.setFloating}
+            className="z-[9999] bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl shadow-lg shadow-neutral-900/10 py-1.5 min-w-[180px]"
             style={{
-              top: `${dropdownPosition.top}px`,
-              right: `${dropdownPosition.right}px`,
+              ...floatingStyles,
+              visibility: isPositioned ? 'visible' : 'hidden',
             }}
           >
             {actions.map((item) => (
@@ -293,10 +298,9 @@ const PageSearch: React.FC<PageSearchProps> = ({
                 <span className="text-[13px] font-medium text-neutral-700 dark:text-neutral-200">{item.label}</span>
               </button>
             ))}
-          </div>,
-          document.body
-        )
-      }
+          </div>
+        </FloatingPortal>
+      )}
     </>
   );
 };
