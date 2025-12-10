@@ -8,8 +8,8 @@ interface PostModalStore {
   posts: SafePost[]; // NEW: Array of all posts for carousel
   initialIndex: number; // NEW: Starting index for the carousel
   onOpen: (
-    post: SafePost, 
-    user: SafeUser, 
+    post: SafePost,
+    user: SafeUser | null | undefined,
     onUpdate?: (updatedPost: SafePost) => void,
     posts?: SafePost[], // NEW: Optional posts array
     initialIndex?: number // NEW: Optional starting index
@@ -26,10 +26,10 @@ const usePostModal = create<PostModalStore>((set) => ({
   posts: [], // NEW: Initialize empty array
   initialIndex: 0, // NEW: Initialize to 0
   syncCallback: undefined,
-  onOpen: (post, user, onUpdate, posts = [], initialIndex = 0) => set({ 
-    isOpen: true, 
-    post, 
-    currentUser: user, 
+  onOpen: (post, user, onUpdate, posts = [], initialIndex = 0) => set({
+    isOpen: true,
+    post,
+    currentUser: user ?? null,
     syncCallback: onUpdate,
     posts, // NEW: Set posts array
     initialIndex // NEW: Set starting index

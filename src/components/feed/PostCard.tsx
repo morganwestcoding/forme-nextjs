@@ -59,7 +59,6 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, var
 
   /** ---------- Handlers ---------- */
   const handleCardClick = async () => {
-    if (!currentUser) return;
     try {
       const postIndex = posts.findIndex((p) => p.id === post.id);
       const res = await axios.get(`/api/post/${post.id}`);
