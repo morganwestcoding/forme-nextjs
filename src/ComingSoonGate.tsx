@@ -53,6 +53,10 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
         await minLoadTime;
         setIsAuthenticated(false);
       } finally {
+        // Start fade out animation
+        setIsFadingOut(true);
+        // Wait for fade out to complete before hiding loader
+        await new Promise(resolve => setTimeout(resolve, 600));
         setIsLoading(false);
       }
     };
@@ -250,12 +254,14 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
             }
           }
 
-          @keyframes shimmer {
+          @keyframes fadeOut {
             0% {
-              background-position: -200% center;
+              opacity: 1;
+              transform: scale(1);
             }
             100% {
-              background-position: 200% center;
+              opacity: 0;
+              transform: scale(1.02);
             }
           }
 
@@ -275,8 +281,12 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
             border-radius: 50%;
             animation: dotPulse 1.4s ease-in-out infinite;
           }
+
+          .loader-fade-out {
+            animation: fadeOut 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+          }
         `}</style>
-        <div className="min-h-screen bg-[#09090B] flex items-center justify-center">
+        <div className={`min-h-screen bg-[#09090B] flex items-center justify-center ${isFadingOut ? 'loader-fade-out' : ''}`}>
           <div className="text-center">
             <img
               src="/logos/logo-white.svg"

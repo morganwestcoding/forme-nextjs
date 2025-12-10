@@ -302,7 +302,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
         <Container>
           {/* Hero Section - Clean minimal design (matching Market) */}
           <div className="-mx-6 md:-mx-24 -mt-2 md:-mt-8">
-            <div className="relative px-6 md:px-24 pt-12 pb-8 bg-white">
+            <div className="relative px-6 md:px-24 pt-12 pb-8">
 
               {/* Content */}
               <div className="relative z-10 pb-6">
@@ -321,7 +321,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
 
                 {/* Category Navigation - Sticky */}
                 <div className="mt-3 -mx-6 md:-mx-24">
-                  <div className="sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-transparent transition-all duration-300" id="discover-category-nav-wrapper">
+                  <div className="sticky top-0 z-20 backdrop-blur-md border-b border-transparent transition-all duration-300" id="discover-category-nav-wrapper">
                     <div className="px-6 md:px-24">
                       <CategoryNav searchParams={headerSearchParams} basePath="/" />
                     </div>
