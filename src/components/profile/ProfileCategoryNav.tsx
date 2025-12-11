@@ -3,18 +3,16 @@
 import React from 'react';
 import { useTheme } from '@/app/context/ThemeContext';
 
-type TabKey = 'About' | 'Posts' | 'Businesses' | 'Images' | 'Services' | 'Reviews';
+type TabKey = 'About' | 'Posts' | 'Businesses' | 'Images' | 'Reviews';
 
 interface ProfileCategoryNavProps {
   activeTab: TabKey | null;
   onTabChange: (tab: TabKey | null) => void;
-  showServices?: boolean;
 }
 
 const ProfileCategoryNav: React.FC<ProfileCategoryNavProps> = ({
   activeTab,
   onTabChange,
-  showServices = false
 }) => {
   const { accentColor } = useTheme();
 
@@ -23,7 +21,6 @@ const ProfileCategoryNav: React.FC<ProfileCategoryNavProps> = ({
     { key: 'Posts', label: 'Posts' },
     { key: 'Businesses', label: 'Businesses' },
     { key: 'Images', label: 'Gallery' },
-    ...(showServices ? [{ key: 'Services' as TabKey, label: 'Services' }] : []),
     { key: 'Reviews', label: 'Reviews' },
   ];
 

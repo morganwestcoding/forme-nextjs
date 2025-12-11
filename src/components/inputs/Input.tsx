@@ -160,7 +160,7 @@ const Input: React.FC<InputProps> = ({
       )}
 
       <div className="relative">
-        {id === 'bio' ? (
+        {type === 'textarea' ? (
           <textarea
             id={id}
             disabled={disabled}

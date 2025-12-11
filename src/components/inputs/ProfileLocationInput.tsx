@@ -20,8 +20,8 @@ interface ProfileLocationInputProps {
 }
 
 /** ---- Dimensions to mirror your <Input> layout ---- **/
-const CONTROL_HEIGHT = 64;   // h-16
-const BORDER_RADIUS  = 8;    // rounded-lg
+const CONTROL_HEIGHT = 58;   // h-[58px]
+const BORDER_RADIUS  = 12;   // rounded-xl
 const PADDING_LEFT   = 16;   // pl-4
 const PADDING_RIGHT  = 40;   // room for chevron
 const PADDING_TOP    = 24;   // pt-6 → baseline under label
@@ -36,12 +36,13 @@ const selectStyles: StylesConfig<LocationSelection, false, GroupBase<LocationSel
     minHeight: CONTROL_HEIGHT,
     height: CONTROL_HEIGHT,
     borderRadius: BORDER_RADIUS,
-    backgroundColor: '#fafafa',                               // bg-neutral-50
-    borderColor: state.isFocused ? '#000000' : '#d4d4d4',     // black vs neutral-300
-    boxShadow: 'none',
-    ':hover': { borderColor: state.isFocused ? '#000000' : '#d4d4d4' },
+    backgroundColor: '#ffffff',                                              // bg-white
+    borderColor: state.isFocused ? '#60A5FA' : 'rgba(229, 231, 235, 0.6)',  // focus: blue-400, default: gray-200/60
+    boxShadow: state.isFocused ? '0 0 0 2px rgba(96, 165, 250, 0.1)' : 'none', // focus:ring-2 focus:ring-[#60A5FA]/10
+    ':hover': { borderColor: state.isFocused ? '#60A5FA' : '#d1d5db' },      // hover:border-gray-300
     padding: 0,
     cursor: 'pointer',
+    transition: 'all 200ms',
   }),
   valueContainer: (base) => ({
     ...base,
@@ -89,17 +90,17 @@ const selectStyles: StylesConfig<LocationSelection, false, GroupBase<LocationSel
   menu: (base) => ({
     ...base,
     borderRadius: BORDER_RADIUS,
-    border: '1px solid #e5e5e5',
+    border: '1px solid rgba(229, 231, 235, 0.6)',
     overflow: 'hidden',
     marginTop: 4,
   }),
   menuList: (base) => ({ ...base, padding: 8 }),
   option: (base, state) => ({
     ...base,
-    borderRadius: 6,
+    borderRadius: 8,
     padding: '10px 14px',
     backgroundColor: state.isSelected
-      ? '#e5e5e5'
+      ? 'rgba(96, 165, 250, 0.15)'
       : state.isFocused
       ? '#f5f5f5'
       : '#ffffff',
@@ -113,8 +114,8 @@ const classNames = {
   container: () => 'relative w-full',
   control: (state: any) =>
     [
-      'bg-neutral-50 border rounded-lg transition outline-none',
-      state.isFocused ? 'border-black' : 'border-neutral-300',
+      'bg-white border rounded-xl transition-all duration-200 outline-none',
+      state.isFocused ? 'border-[#60A5FA]' : 'border-gray-200/60 hover:border-gray-300',
     ].join(' '),
 };
 

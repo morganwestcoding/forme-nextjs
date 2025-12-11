@@ -1,13 +1,12 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { UserAdd01Icon, UserCheck01Icon } from 'hugeicons-react';
 import { SafeListing, SafePost, SafeUser, SafeReview } from '@/app/types';
 import PostCard from '@/components/feed/PostCard';
 import ListingCard from '@/components/listings/ListingCard';
-import ServiceCard from '@/components/listings/ServiceCard';
 import SectionHeader from '@/app/market/SectionHeader';
 import ProfileCategoryNav from '@/components/profile/ProfileCategoryNav';
 import { categories } from '@/components/Categories';
@@ -15,8 +14,6 @@ import useRegisterModal from '@/app/hooks/useRegisterModal';
 import useReviewModal from '@/app/hooks/useReviewModal';
 import useMessageModal from '@/app/hooks/useMessageModal';
 import { useSidebarState } from '@/app/hooks/useSidebarState';
-import ServiceSelector, { Service } from '@/components/inputs/ServiceSelector';
-import Modal from '@/components/modals/Modal';
 import ReviewCard from '@/components/reviews/ReviewCard';
 import VerificationBadge from '@/components/VerificationBadge';
 
@@ -32,7 +29,7 @@ interface ProfileHeadProps {
   };
 }
 
-type TabKey = 'About' | 'Posts' | 'Businesses' | 'Images' | 'Services' | 'Reviews';
+type TabKey = 'About' | 'Posts' | 'Businesses' | 'Images' | 'Reviews';
 
 const ProfileHead: React.FC<ProfileHeadProps> = ({
   user,
@@ -68,14 +65,6 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
   const gridColsClass = sidebarCollapsed
     ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6'
     : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5';
-
-  // State for services
-  const [services, setServices] = useState<any[]>([]);
-  const [isProvider, setIsProvider] = useState(false);
-  const [isLoadingServices, setIsLoadingServices] = useState(false);
-  const [isEditingServices, setIsEditingServices] = useState(false);
-  const [editServicesList, setEditServicesList] = useState<Service[]>([]);
-  const [isSavingServices, setIsSavingServices] = useState(false);
 
   const [isFollowing, setIsFollowing] = useState(
     !!currentUser?.following?.includes(id)
@@ -128,68 +117,6 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
         targetUserId: !isOwner && isMasterUser ? id : undefined,
       },
     });
-  };
-
-  // Fetch services for providers
-  useEffect(() => {
-    const fetchServices = async () => {
-      try {
-        setIsLoadingServices(true);
-        const res = await axios.get(`/api/employees/services?userId=${id}`);
-        if (res.data.services && res.data.services.length > 0) {
-          setServices(res.data.services);
-          setIsProvider(true);
-        } else {
-          setServices([]);
-          setIsProvider(false);
-        }
-      } catch (error) {
-        console.error('Error fetching services:', error);
-        setServices([]);
-        setIsProvider(false);
-      } finally {
-        setIsLoadingServices(false);
-      }
-    };
-
-    fetchServices();
-  }, [id]);
-
-  const handleEditServices = () => {
-    setEditServicesList(services.map(s => ({
-      id: s.id,
-      serviceName: s.serviceName,
-      price: s.price,
-      category: s.category,
-    })));
-    setIsEditingServices(true);
-  };
-
-  const handleSaveServices = async () => {
-    if (!canEdit) return;
-
-    try {
-      setIsSavingServices(true);
-      const res = await axios.post('/api/employees/services', {
-        services: editServicesList,
-      });
-
-      if (res.data.success) {
-        setServices(res.data.services);
-        setIsEditingServices(false);
-        toast.success('Services updated successfully!');
-      }
-    } catch (error) {
-      console.error('Error saving services:', error);
-      toast.error('Failed to update services');
-    } finally {
-      setIsSavingServices(false);
-    }
-  };
-
-  const handleCancelEditServices = () => {
-    setIsEditingServices(false);
-    setEditServicesList([]);
   };
 
   const handleDropdownToggle = () => {
@@ -251,21 +178,6 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                 </svg>
                 Edit Profile
               </button>
-              {isProvider && (
-                <button
-                  onClick={() => {
-                    setShowDropdown(false);
-                    handleEditServices();
-                  }}
-                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3"
-                  type="button"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
-                    <path d="M12 5v14M5 12h14"/>
-                  </svg>
-                  Edit Services
-                </button>
-              )}
               <hr className="my-1 border-gray-200" />
               <button
                 onClick={() => setShowDropdown(false)}
@@ -453,7 +365,6 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                   <ProfileCategoryNav
                     activeTab={activeTab}
                     onTabChange={setActiveTab}
-                    showServices={isProvider}
                   />
                 </div>
               </div>
@@ -572,47 +483,6 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
               <div className="text-center py-16">
                 <p className="text-base font-medium text-gray-600 mb-1">No images yet</p>
                 <p className="text-sm text-gray-500">Gallery images will appear here</p>
-              </div>
-            )}
-          </section>
-        )}
-
-        {/* Services Section */}
-        {(activeTab === null || activeTab === 'Services') && isProvider && (
-          <section>
-            <SectionHeader
-              title={`${firstName}'s Services`}
-              onViewAll={services.length > 8 ? () => {} : undefined}
-              viewAllLabel={services.length > 8 ? `View all ${services.length}` : undefined}
-              className="!-mt-2 !mb-6"
-            />
-            {isLoadingServices ? (
-              <div className="text-center py-16">
-                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                <p className="mt-4 text-gray-500">Loading services...</p>
-              </div>
-            ) : services.length > 0 ? (
-              <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
-                {services.slice(0, 8).map((service, idx) => (
-                  <div
-                    key={service.id}
-                    style={{
-                      opacity: 0,
-                      animation: `fadeInUp 520ms ease-out both`,
-                      animationDelay: `${Math.min(60 + idx * 30, 360)}ms`,
-                    }}
-                  >
-                    <ServiceCard
-                      service={service}
-                      currentUser={currentUser}
-                    />
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-16">
-                <p className="text-base font-medium text-gray-600 mb-1">No services yet</p>
-                <p className="text-sm text-gray-500">Services will appear here once added</p>
               </div>
             )}
           </section>
@@ -777,31 +647,6 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
         )}
         </div>
       </div>
-
-      {/* Services Edit Modal */}
-      {isEditingServices && (
-        <Modal
-          isOpen={isEditingServices}
-          title="Edit Your Services"
-          actionLabel={isSavingServices ? 'Saving...' : 'Save Changes'}
-          secondaryActionLabel="Cancel"
-          onClose={handleCancelEditServices}
-          onSubmit={handleSaveServices}
-          secondaryAction={handleCancelEditServices}
-          disabled={isSavingServices}
-          body={
-            <div className="flex flex-col gap-6">
-              <p className="text-sm text-gray-600">
-                Manage the services you provide. Add, edit, or remove services to keep your profile up to date.
-              </p>
-              <ServiceSelector
-                onServicesChange={setEditServicesList}
-                existingServices={editServicesList}
-              />
-            </div>
-          }
-        />
-      )}
     </>
   );
 };

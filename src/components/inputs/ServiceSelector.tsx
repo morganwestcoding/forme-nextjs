@@ -301,7 +301,7 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
                     value={svc.serviceName}
                     onChange={(e) => setRow(i, { serviceName: e.target.value })}
                     placeholder="e.g. Haircut, Massage..."
-                    className="w-full px-3 py-2.5 text-sm bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 transition-all placeholder:text-gray-400"
+                    className="w-full px-4 py-3 h-[58px] text-base bg-white border border-gray-200/60 rounded-xl outline-none transition-all duration-200 hover:border-gray-300 focus:border-[#60A5FA] focus:ring-2 focus:ring-[#60A5FA]/10 placeholder:text-gray-400"
                   />
                 </div>
 
@@ -311,7 +311,7 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
                     Price
                   </label>
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">$</span>
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-base text-gray-400">$</span>
                     <input
                       id={`servicePrice-${i}`}
                       value={priceInputs[i]}
@@ -319,7 +319,7 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
                       onBlur={() => handlePriceBlur(i)}
                       inputMode="decimal"
                       placeholder="0.00"
-                      className="w-full pl-7 pr-3 py-2.5 text-sm bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 transition-all placeholder:text-gray-400"
+                      className="w-full pl-8 pr-4 py-3 h-[58px] text-base bg-white border border-gray-200/60 rounded-xl outline-none transition-all duration-200 hover:border-gray-300 focus:border-[#60A5FA] focus:ring-2 focus:ring-[#60A5FA]/10 placeholder:text-gray-400"
                     />
                   </div>
                 </div>
@@ -332,10 +332,10 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
                   <select
                     value={svc.category}
                     onChange={(e) => setRow(i, { category: e.target.value })}
-                    className="w-full px-3 py-2.5 text-sm bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 transition-all appearance-none cursor-pointer"
+                    className="w-full px-4 py-3 h-[58px] text-base bg-white border border-gray-200/60 rounded-xl outline-none transition-all duration-200 hover:border-gray-300 focus:border-[#60A5FA] focus:ring-2 focus:ring-[#60A5FA]/10 appearance-none cursor-pointer"
                     style={{
                       backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
-                      backgroundPosition: 'right 0.5rem center',
+                      backgroundPosition: 'right 0.75rem center',
                       backgroundRepeat: 'no-repeat',
                       backgroundSize: '1.5em 1.5em',
                     }}

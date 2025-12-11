@@ -246,227 +246,183 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
     ? browseItems
     : browseItems.filter(item => !['appointments', 'favorites', 'inbox', 'notifications'].includes(item.id));
 
-  // Collapsed sidebar (icons only)
-  if (isCollapsed) {
-    return (
-      <div className="fixed top-0 left-0 z-50 h-screen p-3">
-        <div
-          className="h-full w-[60px] flex flex-col items-center py-4 rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-gradient-to-b from-neutral-100 to-neutral-200 dark:from-neutral-800 dark:to-neutral-900"
-        >
-          {/* Logo */}
-          <Link href="/" className="mb-4">
-            <Image
-              src="/logos/black.png"
-              alt="ForMe Logo"
-              width={20}
-              height={27}
-              className="object-contain dark:invert"
-            />
-          </Link>
-
-          {/* Toggle button */}
-          <button
-            onClick={toggleCollapse}
-            className="p-2 rounded-lg transition-colors hover:bg-neutral-200 dark:hover:bg-neutral-700 mb-4 text-neutral-600 dark:text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-300"
-          >
-            <SidebarToggleIcon />
-          </button>
-
-          {/* Navigation icons */}
-          <nav className="flex flex-col items-center gap-1 flex-1">
-            {navItems.map((item) => {
-              const isActive = isActiveNav(item);
-              const baseClassName = `p-2.5 rounded-xl transition-all duration-200 ${
-                isActive
-                  ? "bg-neutral-200 dark:bg-neutral-700"
-                  : "text-neutral-600 dark:text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700"
-              }`;
-
-              if (item.onClick) {
-                return (
-                  <button
-                    key={item.id}
-                    onClick={item.onClick}
-                    className={baseClassName}
-                    style={isActive ? { color: 'var(--accent-color)' } : undefined}
-                  >
-                    {item.icon}
-                  </button>
-                );
-              }
-
-              return (
-                <Link
-                  key={item.id}
-                  href={item.href!}
-                  className={baseClassName}
-                  style={isActive ? { color: 'var(--accent-color)' } : undefined}
-                >
-                  {item.icon}
-                </Link>
-              );
-            })}
-          </nav>
-
-          {/* Help icon */}
-          <div
-            className="p-2.5 rounded-xl text-neutral-400 dark:text-neutral-600 cursor-not-allowed mb-2"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5"/>
-              <path d="M10 9C10 7.89543 10.8954 7 12 7C13.1046 7 14 7.89543 14 9C14 9.39815 13.8837 9.76913 13.6831 10.0808C13.0854 11.0097 12 11.8954 12 13V13.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-              <circle cx="12" cy="16.5" r="1" fill="currentColor"/>
-            </svg>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Expanded sidebar
   return (
     <div className="fixed top-0 left-0 z-50 h-screen p-3">
       <div
-        className="h-full w-[248px] flex flex-col rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-gradient-to-b from-neutral-100 to-neutral-200 dark:from-neutral-800 dark:to-neutral-900"
+        className={`h-full flex flex-col rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-gradient-to-b from-neutral-100 to-neutral-200 dark:from-neutral-800 dark:to-neutral-900 transition-all duration-300 ease-in-out overflow-hidden ${
+          isCollapsed ? "w-[60px]" : "w-[248px]"
+        }`}
       >
-        {/* Header */}
-        <div className="relative pt-4 pb-2">
+        {/* Toggle button */}
+        <div className={`flex pt-4 transition-all duration-300 ${isCollapsed ? "justify-center px-0" : "justify-end px-3"}`}>
           <button
             onClick={toggleCollapse}
-            className="absolute top-4 right-5 p-2 rounded-lg transition-colors hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-600 dark:text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-300"
+            className="p-2 rounded-lg transition-colors hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-600 dark:text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-300"
           >
             <SidebarToggleIcon />
           </button>
-          <div className="flex justify-center pt-[38px]">
-            <Link href="/">
-              <Image
-                src="/logos/black.png"
-                alt="ForMe Logo"
-                width={26}
-                height={35}
-                className="object-contain dark:invert"
-              />
-            </Link>
-          </div>
         </div>
 
-        {/* Brand Text */}
-        <div className="px-3 pt-1.5 text-center">
-          <span className="text-base text-gray-500 dark:text-gray-400 transition-opacity duration-300">
-            {ROTATING_PHRASES[phraseIndex]}
-          </span>
+        {/* Logo */}
+        <div className="flex justify-center pt-2 pb-1">
+          <Link href="/">
+            <Image
+              src="/logos/black.png"
+              alt="ForMe Logo"
+              width={isCollapsed ? 20 : 26}
+              height={isCollapsed ? 27 : 35}
+              className="object-contain dark:invert transition-all duration-300"
+            />
+          </Link>
         </div>
 
-        {/* User Info */}
-        <div className="px-3 pt-7 pb-4">
-          <DropdownMenu open={isUserMenuOpen} onOpenChange={setIsUserMenuOpen}>
-            <DropdownMenuTrigger className="w-full outline-none">
-              <div className="flex items-center gap-2.5 bg-neutral-200/50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-xl px-3 py-2.5 cursor-pointer hover:bg-neutral-200/70 dark:hover:bg-neutral-800 transition-colors">
-                <div className="relative">
-                  {currentUser?.image ? (
-                    <Image
-                      src={currentUser.image}
-                      alt="Profile"
-                      width={36}
-                      height={36}
-                      className="rounded-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-medium bg-neutral-200 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300">
-                      {getFirstName(currentUser?.name)?.[0] || "G"}
-                    </div>
-                  )}
-                  {currentUser?.id && (
-                    <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white dark:border-neutral-800 bg-emerald-500" />
-                  )}
-                </div>
-                <div className="flex flex-col min-w-0 flex-1">
-                  {currentUser?.id ? (
-                    <>
-                      <span className="text-[14px] font-medium truncate text-neutral-800 dark:text-neutral-100 text-left">
-                        {formatUserName(currentUser?.name)}
-                      </span>
-                      <span className="text-xs text-neutral-500 dark:text-neutral-400 text-left">
-                        {formatTier(currentUser?.subscriptionTier)} Tier
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="text-[14px] font-medium text-neutral-800 dark:text-neutral-100 text-left">
-                        Welcome
-                      </span>
-                      <span className="text-xs text-neutral-400 dark:text-neutral-500 text-left">
-                        Sign in or join us
-                      </span>
-                    </>
-                  )}
-                </div>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  width="16"
-                  height="16"
-                  fill="none"
-                  className={`text-neutral-400 dark:text-neutral-500 flex-shrink-0 transition-transform duration-200 ${isUserMenuOpen ? "rotate-180" : ""}`}
-                >
-                  <path d="M18 9L12 15L6 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              className="bg-white dark:bg-neutral-800 rounded-xl px-1 py-2 border border-neutral-200 dark:border-neutral-700 z-[100] w-[224px]"
-              side="bottom"
-              align="start"
-              sideOffset={8}
-            >
-              {currentUser?.id ? (
-                <>
-                  <DropdownMenuItem onClick={handleProfile}>My Profile</DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleListings}>My Listings</DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleAnalytics}>My Analytics</DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleSubscribe}>Subscription</DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleLicensing}>Licensing</DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleSettings}>Settings</DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onClick={handleClearEarlyAccess}
-                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                  >
-                    Clean
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleSignOut}>Sign Out</DropdownMenuItem>
-                </>
+        {/* Brand Text / Divider */}
+        <div className={`flex justify-center items-center transition-all duration-300 ${isCollapsed ? "py-2" : "px-3 pt-1.5 pb-3"}`}>
+          {isCollapsed ? (
+            <div className="w-8 h-px bg-neutral-300 dark:bg-neutral-600" />
+          ) : (
+            <span className="text-base text-gray-500 dark:text-gray-400 whitespace-nowrap pb-[18px]">
+              {ROTATING_PHRASES[phraseIndex]}
+            </span>
+          )}
+        </div>
+
+        {/* User Info / Avatar */}
+        <div className={`transition-all duration-300 ${isCollapsed ? "flex justify-center pb-3" : "px-3 pb-4"}`}>
+          {isCollapsed ? (
+            // Collapsed: Just avatar
+            <div className="flex-shrink-0">
+              {currentUser?.image ? (
+                <Image
+                  src={currentUser.image}
+                  alt="Profile"
+                  width={32}
+                  height={32}
+                  className="rounded-full object-cover"
+                />
               ) : (
-                <>
-                  <DropdownMenuItem onClick={handleSignIn}>Sign in</DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleSignUp}>Sign up</DropdownMenuItem>
-                </>
+                <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium bg-neutral-200 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300">
+                  {getFirstName(currentUser?.name)?.[0] || "G"}
+                </div>
               )}
-            </DropdownMenuContent>
-          </DropdownMenu>
+            </div>
+          ) : (
+            // Expanded: Full dropdown
+            <DropdownMenu open={isUserMenuOpen} onOpenChange={setIsUserMenuOpen}>
+              <DropdownMenuTrigger className="w-full outline-none">
+                <div className="flex items-center gap-2.5 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-xl px-3 py-2.5 cursor-pointer hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors">
+                  <div className="relative flex-shrink-0">
+                    {currentUser?.image ? (
+                      <Image
+                        src={currentUser.image}
+                        alt="Profile"
+                        width={36}
+                        height={36}
+                        className="rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-medium bg-neutral-200 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300">
+                        {getFirstName(currentUser?.name)?.[0] || "G"}
+                      </div>
+                    )}
+                    {currentUser?.id && (
+                      <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white dark:border-neutral-800 bg-emerald-500" />
+                    )}
+                  </div>
+                  <div className="flex flex-col min-w-0 flex-1">
+                    {currentUser?.id ? (
+                      <>
+                        <span className="text-[14px] font-medium truncate text-neutral-800 dark:text-neutral-100 text-left">
+                          {formatUserName(currentUser?.name)}
+                        </span>
+                        <span className="text-xs text-neutral-500 dark:text-neutral-400 text-left">
+                          {formatTier(currentUser?.subscriptionTier)} Tier
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-[14px] font-medium text-neutral-800 dark:text-neutral-100 text-left">
+                          Welcome
+                        </span>
+                        <span className="text-xs text-neutral-400 dark:text-neutral-500 text-left">
+                          Sign in or join us
+                        </span>
+                      </>
+                    )}
+                  </div>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    width="16"
+                    height="16"
+                    fill="none"
+                    className={`text-neutral-400 dark:text-neutral-500 flex-shrink-0 transition-transform duration-200 ${isUserMenuOpen ? "rotate-180" : ""}`}
+                  >
+                    <path d="M18 9L12 15L6 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className="bg-white dark:bg-neutral-800 rounded-xl px-1 py-2 border border-neutral-200 dark:border-neutral-700 z-[100] w-[224px]"
+                side="bottom"
+                align="start"
+                sideOffset={8}
+              >
+                {currentUser?.id ? (
+                  <>
+                    <DropdownMenuItem onClick={handleProfile}>My Profile</DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleListings}>My Listings</DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleAnalytics}>My Analytics</DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleSubscribe}>Subscription</DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleLicensing}>Licensing</DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleSettings}>Settings</DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={handleClearEarlyAccess}
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    >
+                      Clean
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleSignOut}>Sign Out</DropdownMenuItem>
+                  </>
+                ) : (
+                  <>
+                    <DropdownMenuItem onClick={handleSignIn}>Sign in</DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleSignUp}>Sign up</DropdownMenuItem>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
 
         {/* Navigation List */}
-        <nav className="px-3 pt-[7px] flex-1 overflow-y-auto">
-          <div className="space-y-0.5">
+        <nav className={`flex-1 overflow-y-auto transition-all duration-300 ${isCollapsed ? "px-0" : "px-3 pt-[7px]"}`}>
+          <div className={`${isCollapsed ? "flex flex-col items-center gap-1" : "space-y-0.5"}`}>
             {navItems.map((item) => {
               const isActive = isActiveNav(item);
-              const baseClassName = `flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${
-                isActive
-                  ? "bg-neutral-200 dark:bg-neutral-700"
-                  : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-700"
-              }`;
+              const baseClassName = isCollapsed
+                ? `p-2.5 rounded-xl transition-all duration-200 ${
+                    isActive
+                      ? "bg-neutral-200 dark:bg-neutral-700"
+                      : "text-neutral-600 dark:text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700"
+                  }`
+                : `flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${
+                    isActive
+                      ? "bg-neutral-200 dark:bg-neutral-700"
+                      : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-700"
+                  }`;
 
               if (item.onClick) {
                 return (
                   <button
                     key={item.id}
                     onClick={item.onClick}
-                    className={`${baseClassName} w-full text-left`}
+                    className={`${baseClassName} ${isCollapsed ? "" : "w-full text-left"}`}
                     style={isActive ? { color: 'var(--accent-color)' } : undefined}
                   >
                     <span className={isActive ? "" : "opacity-70"}>{item.icon}</span>
-                    <span className="text-sm">{item.label}</span>
+                    {!isCollapsed && <span className="text-sm whitespace-nowrap">{item.label}</span>}
                   </button>
                 );
               }
@@ -479,7 +435,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
                   style={isActive ? { color: 'var(--accent-color)' } : undefined}
                 >
                   <span className={isActive ? "" : "opacity-70"}>{item.icon}</span>
-                  <span className="text-sm">{item.label}</span>
+                  {!isCollapsed && <span className="text-sm whitespace-nowrap">{item.label}</span>}
                 </Link>
               );
             })}
@@ -487,16 +443,18 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
         </nav>
 
         {/* Help & Support */}
-        <div className="px-3 pb-4 mt-auto">
+        <div className={`pb-4 mt-auto transition-all duration-300 ${isCollapsed ? "flex justify-center" : "px-3"}`}>
           <div
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-neutral-300 dark:text-neutral-600 cursor-not-allowed"
+            className={`flex items-center rounded-xl text-neutral-300 dark:text-neutral-600 cursor-not-allowed ${
+              isCollapsed ? "p-2.5" : "w-full gap-3 px-3 py-2.5"
+            }`}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={isCollapsed ? 18 : 16} height={isCollapsed ? 18 : 16} fill="none">
               <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5"/>
               <path d="M10 9C10 7.89543 10.8954 7 12 7C13.1046 7 14 7.89543 14 9C14 9.39815 13.8837 9.76913 13.6831 10.0808C13.0854 11.0097 12 11.8954 12 13V13.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
               <circle cx="12" cy="16.5" r="1" fill="currentColor"/>
             </svg>
-            <span className="text-sm">Help & Support</span>
+            {!isCollapsed && <span className="text-sm whitespace-nowrap">Help & Support</span>}
           </div>
         </div>
       </div>

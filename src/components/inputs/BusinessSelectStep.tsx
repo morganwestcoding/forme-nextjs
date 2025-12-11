@@ -101,8 +101,10 @@ const BusinessSelectStep: React.FC<BusinessSelectStepProps> = ({
           placeholder="Search for your business..."
           disabled={isLoading}
           className={`
-            w-full h-12 pl-12 pr-4 border text-sm border-gray-200 rounded-xl 
-            outline-none focus:ring-2 focus:ring-[#60A5FA] bg-white
+            w-full h-[58px] pl-12 pr-4 border border-gray-200/60 rounded-xl
+            text-base bg-white outline-none transition-all duration-200
+            hover:border-gray-300 focus:border-[#60A5FA] focus:ring-2 focus:ring-[#60A5FA]/10
+            placeholder:text-gray-400
             ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}
           `}
         />

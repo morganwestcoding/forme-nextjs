@@ -75,11 +75,14 @@ const JobTitleStep: React.FC<JobTitleStepProps> = ({
               disabled={isLoading}
               {...register('jobTitle', { required: isIndividual || !isOwnerManager })}
               className={`
-                w-full px-4 py-3 rounded-lg border border-neutral-300
-                text-sm text-neutral-800 placeholder:text-neutral-400
-                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                w-full p-3 pt-6 pl-4 h-[58px] bg-white border rounded-xl
+                text-base text-neutral-800 placeholder:text-neutral-400
+                outline-none transition-all duration-200
+                hover:border-gray-300
                 disabled:opacity-50 disabled:cursor-not-allowed
-                ${errors.jobTitle ? 'border-red-500' : ''}
+                ${errors.jobTitle
+                  ? 'border-rose-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/10'
+                  : 'border-gray-200/60 focus:border-[#60A5FA] focus:ring-2 focus:ring-[#60A5FA]/10'}
               `}
             />
             {errors.jobTitle && (
