@@ -47,7 +47,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
   posts,
   currentUser,
 }) => {
-  const [activeTab, setActiveTab] = useState<FavoriteTab | null>(null);
+  const [activeTabs, setActiveTabs] = useState<FavoriteTab[]>([]);
   const isSidebarCollapsed = useSidebarState();
 
   // Dynamic items per page: 12 when sidebar collapsed, 10 when expanded
@@ -202,11 +202,11 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
     ) || safeListings[0];
   };
 
-  // Determine if we should show sections based on active tab
-  const shouldShowListings = !activeTab || activeTab === 'Businesses';
-  const shouldShowWorkers = !activeTab || activeTab === 'Professionals';
-  const shouldShowShops = !activeTab || activeTab === 'Shops';
-  const shouldShowPosts = !activeTab || activeTab === 'Posts';
+  // Determine if we should show sections based on active tabs (show all if none selected)
+  const shouldShowListings = activeTabs.length === 0 || activeTabs.includes('Businesses');
+  const shouldShowWorkers = activeTabs.length === 0 || activeTabs.includes('Professionals');
+  const shouldShowShops = activeTabs.length === 0 || activeTabs.includes('Shops');
+  const shouldShowPosts = activeTabs.length === 0 || activeTabs.includes('Posts');
 
   return (
     <Container>
@@ -235,7 +235,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
             <div className="mt-3 -mx-6 md:-mx-24">
               <div className="sticky top-0 z-20 transition-all duration-300" id="favorites-category-nav-wrapper">
                 <div className="px-6 md:px-24">
-                  <CategoryNav activeTab={activeTab} setActiveTab={setActiveTab} />
+                  <CategoryNav activeTabs={activeTabs} setActiveTabs={setActiveTabs} />
                 </div>
               </div>
             </div>
@@ -526,23 +526,23 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
                     </>
                   )}
 
-                  {/* Empty state for filtered tab */}
-                  {activeTab === 'Businesses' && !hasListings && (
+                  {/* Empty state for filtered tabs */}
+                  {activeTabs.includes('Businesses') && !hasListings && (
                     <div className="px-8 pt-32 text-center text-gray-500">
                       No favorite listings yet
                     </div>
                   )}
-                  {activeTab === 'Professionals' && !hasWorkers && (
+                  {activeTabs.includes('Professionals') && !hasWorkers && (
                     <div className="px-8 pt-32 text-center text-gray-500">
                       No favorite professionals yet
                     </div>
                   )}
-                  {activeTab === 'Shops' && !hasShops && (
+                  {activeTabs.includes('Shops') && !hasShops && (
                     <div className="px-8 pt-32 text-center text-gray-500">
                       No favorite shops yet
                     </div>
                   )}
-                  {activeTab === 'Posts' && !hasPosts && (
+                  {activeTabs.includes('Posts') && !hasPosts && (
                     <div className="px-8 pt-32 text-center text-gray-500">
                       No favorite posts yet
                     </div>

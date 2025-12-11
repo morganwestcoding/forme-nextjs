@@ -132,7 +132,7 @@ const ShopCard: React.FC<ShopCardProps> = ({
           </div>
         </div>
 
-        <div className="pb-1" />
+        <div className="pb-2" />
       </div>
     </div>
   );

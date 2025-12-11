@@ -17,16 +17,29 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams, basePath = '/ma
   const params = useSearchParams();
   const { accentColor } = useTheme();
 
-  const currentCategory = searchParams.category || '';
+  // Support both single category (legacy) and multiple categories
+  const currentCategories = params?.get('categories')?.split(',').filter(Boolean) ||
+    (searchParams.category ? [searchParams.category] : []);
 
-  // Toggle: select to set; click again to clear (show all)
+  // Toggle: click to add/remove from selection
   const handleCategorySelect = (categoryLabel: string) => {
     const current = new URLSearchParams(Array.from(params?.entries() || []));
 
-    if (currentCategory === categoryLabel) {
-      current.delete('category');
+    let newCategories: string[];
+    if (currentCategories.includes(categoryLabel)) {
+      // Remove from selection
+      newCategories = currentCategories.filter(cat => cat !== categoryLabel);
     } else {
-      current.set('category', categoryLabel);
+      // Add to selection
+      newCategories = [...currentCategories, categoryLabel];
+    }
+
+    // Update URL params
+    current.delete('category'); // Remove legacy single category param
+    if (newCategories.length > 0) {
+      current.set('categories', newCategories.join(','));
+    } else {
+      current.delete('categories');
     }
 
     const search = current.toString();
@@ -39,7 +52,7 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams, basePath = '/ma
       {/* Categories - centered */}
       <div className="flex items-center justify-center gap-1.5 overflow-x-auto scrollbar-hide pt-1 pb-3 -mb-2">
         {categories.map((category) => {
-          const isSelected = currentCategory === category.label;
+          const isSelected = currentCategories.includes(category.label);
 
           return (
             <button

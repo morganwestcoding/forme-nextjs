@@ -280,7 +280,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, var
           )}
         </div>
 
-        <div className="pb-1" />
+        <div className="pb-2" />
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Container from '@/components/Container';
 import { SafeListing, SafeUser, SafeEmployee } from '@/app/types';
 import ListingCard from '@/components/listings/ListingCard';
@@ -54,6 +55,7 @@ const MarketClient: React.FC<MarketClientProps> = ({
   trendingEmployees = [],
 }) => {
   const isSidebarCollapsed = useSidebarState();
+  const urlParams = useSearchParams();
 
   // Dynamic items per page: 12 when sidebar collapsed, 10 when expanded
   const ITEMS_PER_PAGE = isSidebarCollapsed ? 12 : 10;
@@ -73,14 +75,17 @@ const MarketClient: React.FC<MarketClientProps> = ({
     setTrendingIndex(0);
   }, [isSidebarCollapsed]);
 
+  // Support both legacy single category and new multi-select categories
+  const currentCategories = urlParams?.get('categories')?.split(',').filter(Boolean) ||
+    (searchParams?.category ? [searchParams.category] : []);
+
   // Responsive grid - adds 1 column when sidebar is collapsed
   const gridColsClass = isSidebarCollapsed
     ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6'
     : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5';
 
   const filterInfo = useMemo(() => {
-    const currentCategory = searchParams?.category || '';
-    const categoryIsActive = currentCategory !== '' && currentCategory !== 'featured' && currentCategory !== 'all';
+    const categoryIsActive = currentCategories.length > 0;
     const hasPriceFilter = searchParams.minPrice !== undefined || searchParams.maxPrice !== undefined;
     const hasLocationFilter = !!(
       (searchParams.city as any)?.toString()?.trim() ||
@@ -90,15 +95,19 @@ const MarketClient: React.FC<MarketClientProps> = ({
     const isFiltered = categoryIsActive || hasPriceFilter || hasLocationFilter;
 
     let resultsHeaderText = '';
-    if (categoryIsActive && currentCategory) {
-      const categoryName = currentCategory.charAt(0).toUpperCase() + currentCategory.slice(1);
-      resultsHeaderText = `${categoryName} Listings`;
+    if (categoryIsActive) {
+      if (currentCategories.length === 1) {
+        const categoryName = currentCategories[0].charAt(0).toUpperCase() + currentCategories[0].slice(1);
+        resultsHeaderText = `${categoryName} Listings`;
+      } else {
+        resultsHeaderText = `${currentCategories.length} Categories`;
+      }
     } else if (hasPriceFilter || hasLocationFilter) {
       resultsHeaderText = 'Search Results';
     }
 
-    return { isFiltered, categoryIsActive, resultsHeaderText, currentCategory };
-  }, [searchParams]);
+    return { isFiltered, categoryIsActive, resultsHeaderText, currentCategories };
+  }, [currentCategories, searchParams]);
 
   const hasListings = useMemo(() => Array.isArray(listings) && listings.length > 0, [listings]);
 
@@ -137,15 +146,22 @@ const MarketClient: React.FC<MarketClientProps> = ({
     }));
   }, [trendingEmployees, derivedTrending, listings]);
 
-  // Shuffled arrays for randomized display
+  // Shuffled arrays for randomized display (filtered by selected categories)
   const shuffledListings = useMemo(() => {
-    const visibleListings = listings.filter(l => l.category !== 'Personal');
+    let visibleListings = listings.filter(l => l.category !== 'Personal');
+    if (currentCategories.length > 0) {
+      visibleListings = visibleListings.filter(l => currentCategories.includes(l.category));
+    }
     return shuffleArray(visibleListings, shuffleSeed);
-  }, [listings, shuffleSeed]);
+  }, [listings, shuffleSeed, currentCategories]);
 
   const shuffledTrending = useMemo(() => {
-    return shuffleArray(finalTrending, shuffleSeed + 1);
-  }, [finalTrending, shuffleSeed]);
+    let filtered = finalTrending;
+    if (currentCategories.length > 0) {
+      filtered = finalTrending.filter(({ listing }) => currentCategories.includes(listing.category));
+    }
+    return shuffleArray(filtered, shuffleSeed + 1);
+  }, [finalTrending, shuffleSeed, currentCategories]);
 
   const currentFeaturedListings = useMemo(() => {
     if (shuffledListings.length <= ITEMS_PER_PAGE) return shuffledListings;

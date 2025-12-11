@@ -55,6 +55,11 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
 }) => {
   const { viewMode, setViewMode } = useViewMode();
   const isSidebarCollapsed = useSidebarState();
+  const searchParams = useSearchParams();
+
+  // Support both legacy single category and new multi-select categories
+  const currentCategories = searchParams?.get('categories')?.split(',').filter(Boolean) ||
+    (searchParams?.get('category') ? [searchParams.get('category')!] : []);
 
   // Dynamic items per page: 12 when sidebar collapsed, 10 when expanded
   const ITEMS_PER_PAGE = isSidebarCollapsed ? 12 : 10;
@@ -62,11 +67,42 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
   // Generate a stable seed for this session (changes on page refresh)
   const [shuffleSeed] = useState(() => Date.now());
 
-  // Randomize data once per session
-  const shuffledPosts = useMemo(() => shuffleArray(initialPosts, shuffleSeed), [initialPosts, shuffleSeed]);
-  const shuffledListings = useMemo(() => shuffleArray(listings.filter(l => l.category !== 'Personal'), shuffleSeed + 1), [listings, shuffleSeed]);
-  const shuffledEmployees = useMemo(() => shuffleArray(employees, shuffleSeed + 2), [employees, shuffleSeed]);
-  const shuffledShops = useMemo(() => shuffleArray(shops, shuffleSeed + 3), [shops, shuffleSeed]);
+  // Filter and randomize data based on selected categories
+  const shuffledPosts = useMemo(() => {
+    let filtered = initialPosts;
+    if (currentCategories.length > 0) {
+      filtered = initialPosts.filter(p => currentCategories.includes((p as any).category));
+    }
+    return shuffleArray(filtered, shuffleSeed);
+  }, [initialPosts, shuffleSeed, currentCategories]);
+
+  const shuffledListings = useMemo(() => {
+    let filtered = listings.filter(l => l.category !== 'Personal');
+    if (currentCategories.length > 0) {
+      filtered = filtered.filter(l => currentCategories.includes(l.category));
+    }
+    return shuffleArray(filtered, shuffleSeed + 1);
+  }, [listings, shuffleSeed, currentCategories]);
+
+  const shuffledEmployees = useMemo(() => {
+    let filtered = employees;
+    if (currentCategories.length > 0) {
+      // Filter employees by their associated listing's category
+      filtered = employees.filter(emp => {
+        const empListing = listings.find(l => l.employees?.some(e => e.id === emp.id));
+        return empListing && currentCategories.includes(empListing.category);
+      });
+    }
+    return shuffleArray(filtered, shuffleSeed + 2);
+  }, [employees, listings, shuffleSeed, currentCategories]);
+
+  const shuffledShops = useMemo(() => {
+    let filtered = shops;
+    if (currentCategories.length > 0) {
+      filtered = shops.filter(s => currentCategories.includes((s as any).category));
+    }
+    return shuffleArray(filtered, shuffleSeed + 3);
+  }, [shops, shuffleSeed, currentCategories]);
 
   // Pagination state
   const [postsIndex, setPostsIndex] = useState(0);
@@ -84,8 +120,6 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
   // View all mode
   const [viewAllMode, setViewAllMode] = useState<'posts' | 'listings' | 'professionals' | 'shops' | null>(null);
 
-  const searchParams = useSearchParams();
-
   // Reset pagination on sidebar change
   useEffect(() => {
     setPostsIndex(0);
@@ -93,7 +127,6 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
     setEmployeesIndex(0);
     setShopsIndex(0);
   }, [isSidebarCollapsed]);
-
 
   const headerSearchParams = {
     userId: searchParams?.get('userId') || undefined,
@@ -115,8 +148,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
     : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6';
 
   const filterInfo = useMemo(() => {
-    const currentCategory = headerSearchParams?.category || '';
-    const categoryIsActive = currentCategory !== '' && currentCategory !== 'featured' && currentCategory !== 'all';
+    const categoryIsActive = currentCategories.length > 0;
     const hasPriceFilter = headerSearchParams.minPrice !== undefined || headerSearchParams.maxPrice !== undefined;
     const hasLocationFilter = !!(
       headerSearchParams.city?.toString()?.trim() ||
@@ -134,15 +166,19 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
         shops: 'All Shops'
       };
       resultsHeaderText = typeNames[typeFilter] || 'All Results';
-    } else if (categoryIsActive && currentCategory) {
-      const categoryName = currentCategory.charAt(0).toUpperCase() + currentCategory.slice(1);
-      resultsHeaderText = `${categoryName} Feed`;
+    } else if (categoryIsActive) {
+      if (currentCategories.length === 1) {
+        const categoryName = currentCategories[0].charAt(0).toUpperCase() + currentCategories[0].slice(1);
+        resultsHeaderText = `${categoryName} Feed`;
+      } else {
+        resultsHeaderText = `${currentCategories.length} Categories`;
+      }
     } else if (hasPriceFilter || hasLocationFilter) {
       resultsHeaderText = 'Feed Results';
     }
 
-    return { isFiltered, categoryIsActive, resultsHeaderText, currentCategory, typeFilter: hasTypeFilter ? typeFilter : null };
-  }, [headerSearchParams, typeFilter]);
+    return { isFiltered, categoryIsActive, resultsHeaderText, currentCategories, typeFilter: hasTypeFilter ? typeFilter : null };
+  }, [currentCategories, headerSearchParams, typeFilter]);
 
 
   // Animated transition helper (matching market pattern)

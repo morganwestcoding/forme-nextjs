@@ -273,8 +273,8 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
           </div>
         </div>
 
-        {/* Bottom padding to match ListingCard */}
-        <div className="pb-1" />
+        {/* Bottom padding to match WorkerCard */}
+        <div className="pb-2" />
       </div>
     </div>
   );

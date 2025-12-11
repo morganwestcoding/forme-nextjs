@@ -16,16 +16,29 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams }) => {
   const params = useSearchParams();
   const { accentColor } = useTheme();
 
-  const currentCategory = searchParams.category || '';
+  // Support both single category (legacy) and multiple categories
+  const currentCategories = params?.get('categories')?.split(',').filter(Boolean) ||
+    (searchParams.category ? [searchParams.category] : []);
 
-  // Toggle: select to set; click again to clear (show all)
+  // Toggle: click to add/remove from selection
   const handleCategorySelect = (categoryLabel: string) => {
     const current = new URLSearchParams(Array.from(params?.entries() || []));
 
-    if (currentCategory === categoryLabel) {
-      current.delete('category');
+    let newCategories: string[];
+    if (currentCategories.includes(categoryLabel)) {
+      // Remove from selection
+      newCategories = currentCategories.filter(cat => cat !== categoryLabel);
     } else {
-      current.set('category', categoryLabel);
+      // Add to selection
+      newCategories = [...currentCategories, categoryLabel];
+    }
+
+    // Update URL params
+    current.delete('category'); // Remove legacy single category param
+    if (newCategories.length > 0) {
+      current.set('categories', newCategories.join(','));
+    } else {
+      current.delete('categories');
     }
 
     const search = current.toString();
@@ -33,13 +46,19 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams }) => {
     router.push(`/shops${query}`);
   };
 
-  const selectedIndex = categories.findIndex(c => c.label === currentCategory);
-  const hasSelection = selectedIndex !== -1;
+  const hasSelection = currentCategories.length > 0;
 
   // Determine divider state: adjacent to selected rotates horizontal, others disappear
   const getDividerState = (index: number) => {
     if (!hasSelection) return 'vertical'; // No selection = all vertical
-    if (index === selectedIndex - 1 || index === selectedIndex) return 'horizontal'; // Adjacent = rotate
+
+    const currentLabel = categories[index]?.label;
+    const nextLabel = categories[index + 1]?.label;
+    const isCurrentSelected = currentCategories.includes(currentLabel);
+    const isNextSelected = nextLabel ? currentCategories.includes(nextLabel) : false;
+
+    // Show horizontal if either adjacent item is selected
+    if (isCurrentSelected || isNextSelected) return 'horizontal';
     return 'hidden'; // Others = disappear
   };
 
@@ -47,7 +66,7 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams }) => {
     <div className="-mx-6 md:-mx-24 pb-3 border-b-[0.75px] border-gray-400 dark:border-gray-600">
       <div className="flex items-center justify-center">
         {categories.map((category, index) => {
-          const isSelected = currentCategory === category.label;
+          const isSelected = currentCategories.includes(category.label);
           const dividerState = getDividerState(index);
 
           return (

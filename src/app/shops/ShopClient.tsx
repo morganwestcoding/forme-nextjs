@@ -60,12 +60,13 @@ const ShopClient: React.FC<ShopClientProps> = ({
   // Seed for shuffling (stable during session, changes on page refresh)
   const [shuffleSeed] = useState(() => Date.now());
 
-  // Get category and search from URL params
-  const currentCategory = params?.get('category') || '';
+  // Get categories and search from URL params (support both legacy single and new multi-select)
+  const currentCategories = params?.get('categories')?.split(',').filter(Boolean) ||
+    (params?.get('category') ? [params.get('category')!] : []);
   const searchQuery = params?.get('q') || '';
 
   const headerSearchParams = {
-    category: currentCategory || undefined,
+    category: currentCategories[0] || undefined,
   };
 
   // Responsive grid - adds 1 column when sidebar is collapsed
@@ -82,13 +83,17 @@ const ShopClient: React.FC<ShopClientProps> = ({
 
   // Filtering logic to determine when to show section headers
   const filterInfo = useMemo(() => {
-    const categoryIsActive = currentCategory !== '' && currentCategory !== 'Featured' && currentCategory !== 'All';
+    const categoryIsActive = currentCategories.length > 0;
     const hasSearchFilter = !!searchQuery?.trim();
     const isFiltered = categoryIsActive || hasSearchFilter;
 
     let resultsHeaderText = '';
-    if (categoryIsActive && currentCategory) {
-      resultsHeaderText = `${currentCategory} Results`;
+    if (categoryIsActive) {
+      if (currentCategories.length === 1) {
+        resultsHeaderText = `${currentCategories[0]} Results`;
+      } else {
+        resultsHeaderText = `${currentCategories.length} Categories`;
+      }
     } else if (hasSearchFilter) {
       resultsHeaderText = 'Search Results';
     }
@@ -97,29 +102,45 @@ const ShopClient: React.FC<ShopClientProps> = ({
       isFiltered,
       categoryIsActive,
       resultsHeaderText,
-      currentCategory
+      currentCategories
     };
-  }, [currentCategory, searchQuery]);
+  }, [currentCategories, searchQuery]);
 
   const q = searchQuery.trim().toLowerCase();
 
   const filteredShops = useMemo(() => {
-    if (!q) return initialShops;
-    return initialShops.filter(
-      (s) =>
-        s.name.toLowerCase().includes(q) ||
-        (s.description || '').toLowerCase().includes(q)
-    );
-  }, [initialShops, q]);
+    let result = initialShops;
+    // Filter by search query
+    if (q) {
+      result = result.filter(
+        (s) =>
+          s.name.toLowerCase().includes(q) ||
+          (s.description || '').toLowerCase().includes(q)
+      );
+    }
+    // Filter by selected categories
+    if (currentCategories.length > 0) {
+      result = result.filter((s) => currentCategories.includes((s as any).category));
+    }
+    return result;
+  }, [initialShops, q, currentCategories]);
 
   const filteredProducts = useMemo(() => {
-    if (!q) return featuredProducts;
-    return featuredProducts.filter(
-      (p) =>
-        p.name.toLowerCase().includes(q) ||
-        (p.description || '').toLowerCase().includes(q)
-    );
-  }, [featuredProducts, q]);
+    let result = featuredProducts;
+    // Filter by search query
+    if (q) {
+      result = result.filter(
+        (p) =>
+          p.name.toLowerCase().includes(q) ||
+          (p.description || '').toLowerCase().includes(q)
+      );
+    }
+    // Filter by selected categories
+    if (currentCategories.length > 0) {
+      result = result.filter((p) => currentCategories.includes((p as any).category));
+    }
+    return result;
+  }, [featuredProducts, q, currentCategories]);
 
   // Shuffled arrays for randomized display
   const shops = useMemo(() => {

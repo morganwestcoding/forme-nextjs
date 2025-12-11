@@ -6,11 +6,11 @@ import { useTheme } from '@/app/context/ThemeContext';
 type FavoriteTab = 'Businesses' | 'Professionals' | 'Shops' | 'Posts';
 
 interface CategoryNavProps {
-  activeTab: FavoriteTab | null;
-  setActiveTab: React.Dispatch<React.SetStateAction<FavoriteTab | null>>;
+  activeTabs: FavoriteTab[];
+  setActiveTabs: React.Dispatch<React.SetStateAction<FavoriteTab[]>>;
 }
 
-const CategoryNav: React.FC<CategoryNavProps> = ({ activeTab, setActiveTab }) => {
+const CategoryNav: React.FC<CategoryNavProps> = ({ activeTabs, setActiveTabs }) => {
   const { accentColor } = useTheme();
 
   const tabs: { key: FavoriteTab; label: string }[] = [
@@ -20,16 +20,26 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ activeTab, setActiveTab }) =>
     { key: 'Posts', label: 'Posts' },
   ];
 
+  const handleTabClick = (tabKey: FavoriteTab) => {
+    if (activeTabs.includes(tabKey)) {
+      // Remove from selection
+      setActiveTabs(activeTabs.filter(t => t !== tabKey));
+    } else {
+      // Add to selection
+      setActiveTabs([...activeTabs, tabKey]);
+    }
+  };
+
   return (
     <div className="relative flex items-center justify-center py-2 sm:py-3 -mx-2 px-2 sm:mx-0 sm:px-0">
       <div className="flex items-center justify-center gap-1.5 overflow-x-auto scrollbar-hide py-1">
       {tabs.map((tab) => {
-        const isSelected = activeTab === tab.key;
+        const isSelected = activeTabs.includes(tab.key);
 
         return (
           <button
             key={tab.key}
-            onClick={() => setActiveTab(isSelected ? null : tab.key)}
+            onClick={() => handleTabClick(tab.key)}
             className={`
               relative px-3 sm:px-4 h-9 flex items-center text-[12px] sm:text-[13px] font-medium rounded-xl border transition-all duration-200 active:scale-[0.97] whitespace-nowrap flex-shrink-0
               ${isSelected

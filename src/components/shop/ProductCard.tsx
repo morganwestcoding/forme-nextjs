@@ -151,7 +151,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ data, currentUser, disabled =
           </div>
         </div>
 
-        <div className="pb-1" />
+        <div className="pb-2" />
       </div>
     </div>
   );
