@@ -405,7 +405,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                       background: 'linear-gradient(to right, rgb(245 245 245) 0%, rgb(241 241 241) 100%)'
                     }}
                   >
-                    <div className="flex items-center gap-0.5 px-1.5 py-1">
+                    <div className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5">
                       {/* Message Button */}
                       <button
                         onClick={() => {
@@ -464,7 +464,8 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
       </div>
 
       {/* ========== CONTENT SECTIONS ========== */}
-      <div className="space-y-12">
+      <div className="relative -mt-[30px]">
+        <div className="space-y-12">
 
         {/* Posts Section */}
         {(activeTab === null || activeTab === 'Posts') && (
@@ -774,6 +775,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
             </div>
           </section>
         )}
+        </div>
       </div>
 
       {/* Services Edit Modal */}

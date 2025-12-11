@@ -346,7 +346,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                       background: 'linear-gradient(to right, rgb(245 245 245) 0%, rgb(241 241 241) 100%)'
                     }}
                   >
-                    <div className="flex items-center gap-0.5 px-1.5 py-1">
+                    <div className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5">
                       <button
                         onClick={handleReserveClick}
                         className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-white/80 text-neutral-600 hover:text-neutral-900 transition-all duration-200"
@@ -389,7 +389,8 @@ const ListingHead: React.FC<ListingHeadProps> = ({
       </div>
 
       {/* ========== SIMPLE CONTENT SECTIONS ========== */}
-      <div className="space-y-12">
+      <div className="relative -mt-[30px]">
+        <div className="space-y-12">
 
         {/* Services */}
         {validServices.length > 0 && (!activeTab || activeTab === 'Services') && (
@@ -755,6 +756,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
             </div>
           </section>
         )}
+        </div>
       </div>
     </>
   );
