@@ -289,33 +289,39 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
   const allContentItems = useMemo(() => {
     let items: Array<{type: 'post' | 'listing' | 'employee' | 'shop', data: any, listingContext?: any}> = [];
 
+    // Use category-filtered data when categories are selected
+    const postsToUse = shuffledPosts;
+    const listingsToUse = shuffledListings;
+    const employeesToUse = shuffledEmployees;
+    const shopsToUse = shuffledShops;
+
     if (filterInfo.typeFilter) {
       if (filterInfo.typeFilter === 'posts') {
-        items = (initialPosts || []).map(post => ({ type: 'post' as const, data: post }));
+        items = postsToUse.map(post => ({ type: 'post' as const, data: post }));
       } else if (filterInfo.typeFilter === 'listings') {
-        items = (listings || []).map(listing => ({ type: 'listing' as const, data: listing }));
+        items = listingsToUse.map(listing => ({ type: 'listing' as const, data: listing }));
       } else if (filterInfo.typeFilter === 'professionals') {
-        items = (employees || []).map(employee => {
+        items = employeesToUse.map(employee => {
           const listing = listings.find(l => l.id === employee.listingId) || listings[0];
           return { type: 'employee' as const, data: employee, listingContext: listing };
         });
       } else if (filterInfo.typeFilter === 'shops') {
-        items = (shops || []).map(shop => ({ type: 'shop' as const, data: shop }));
+        items = shopsToUse.map(shop => ({ type: 'shop' as const, data: shop }));
       }
     } else {
       items = [
-        ...(initialPosts || []).map(post => ({ type: 'post' as const, data: post })),
-        ...(listings || []).map(listing => ({ type: 'listing' as const, data: listing })),
-        ...(employees || []).map(employee => {
+        ...postsToUse.map(post => ({ type: 'post' as const, data: post })),
+        ...listingsToUse.map(listing => ({ type: 'listing' as const, data: listing })),
+        ...employeesToUse.map(employee => {
           const listing = listings.find(l => l.id === employee.listingId) || listings[0];
           return { type: 'employee' as const, data: employee, listingContext: listing };
         }),
-        ...(shops || []).map(shop => ({ type: 'shop' as const, data: shop })),
+        ...shopsToUse.map(shop => ({ type: 'shop' as const, data: shop })),
       ];
     }
 
     return items;
-  }, [initialPosts, listings, employees, shops, filterInfo.typeFilter]);
+  }, [shuffledPosts, shuffledListings, shuffledEmployees, shuffledShops, listings, filterInfo.typeFilter]);
 
   return (
     <ClientProviders>
