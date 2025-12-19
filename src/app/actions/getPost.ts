@@ -171,6 +171,7 @@ export default async function getPosts(params: IPostsParams) {
         mediaUrl: post.mediaUrl || null,
         mediaType: (post.mediaType as MediaType) || null,
         mediaOverlay: post.mediaOverlay as any,
+        thumbnailUrl: post.thumbnailUrl || null,
         postType: (post as any).postType || 'text',
         location: post.location,
         tag: post.tag,

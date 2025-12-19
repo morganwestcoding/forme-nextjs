@@ -27,10 +27,13 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, var
   const post = posts.find((p) => p.id === initialPost.id) || initialPost;
 
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
+  const [hasPlayed, setHasPlayed] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const isTextPost = !post.imageSrc && !post.mediaUrl;
   const isVideo = post.mediaType === 'video';
+  const hasThumbnail = isVideo && post.thumbnailUrl;
 
   /** ---------- Helpers ---------- */
   const formatViews = (n: number | undefined | null) => {
@@ -83,11 +86,34 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, var
 
   const handleMouseEnter = () => {
     if (isVideo && videoRef.current) {
+      // Only reset to beginning on first play, otherwise continue from where we left off
+      if (!hasPlayed) {
+        videoRef.current.currentTime = 0;
+      }
       videoRef.current.play().catch(console.error);
+
+      // Mark as played so thumbnail fades out (and stays hidden)
+      if (hasThumbnail && !hasPlayed) {
+        if (videoReady) {
+          setHasPlayed(true);
+        } else {
+          // Wait for video to be ready before fading
+          const checkReady = () => {
+            if (videoRef.current && videoRef.current.readyState >= 2) {
+              setVideoReady(true);
+              setHasPlayed(true);
+            } else {
+              requestAnimationFrame(checkReady);
+            }
+          };
+          checkReady();
+        }
+      }
     }
   };
 
   const handleMouseLeave = () => {
+    // Just pause - don't fade back to thumbnail, leave video on current frame
     if (isVideo && videoRef.current) {
       videoRef.current.pause();
     }
@@ -110,14 +136,42 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, var
     // Media post (image/video)
     if (isVideo) {
       return (
-        <video
-          ref={videoRef}
-          src={post.mediaUrl || post.imageSrc || ''}
-          className="absolute inset-0 w-full h-full object-cover"
-          muted
-          loop
-          playsInline
-        />
+        <>
+          {/* Video element - fades in once played, stays visible after */}
+          <video
+            ref={videoRef}
+            src={post.mediaUrl || post.imageSrc || ''}
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{
+              opacity: hasThumbnail ? (hasPlayed ? 1 : 0) : 1,
+              transition: 'opacity 1000ms cubic-bezier(0.4, 0, 0.2, 1)',
+            }}
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            onCanPlay={() => setVideoReady(true)}
+          />
+          {/* Thumbnail overlay - fades out once video plays, stays hidden */}
+          {hasThumbnail && (
+            <div
+              className="absolute inset-0 w-full h-full pointer-events-none"
+              style={{
+                opacity: hasPlayed ? 0 : 1,
+                transition: 'opacity 1000ms cubic-bezier(0.4, 0, 0.2, 1)',
+              }}
+            >
+              <Image
+                src={post.thumbnailUrl!}
+                alt={`Thumbnail for post by ${post.user.name}`}
+                fill
+                className="object-cover"
+                sizes="(max-width:768px) 100vw, 33vw"
+                priority
+              />
+            </div>
+          )}
+        </>
       );
     }
 

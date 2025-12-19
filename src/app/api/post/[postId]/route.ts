@@ -47,6 +47,7 @@ export async function GET(
     mediaUrl: post.mediaUrl,
     mediaType: post.mediaType,
     mediaOverlay: (post as any).mediaOverlay || null,
+    thumbnailUrl: post.thumbnailUrl || null,
     location: post.location,
     tag: post.tag,
     photo: post.photo,

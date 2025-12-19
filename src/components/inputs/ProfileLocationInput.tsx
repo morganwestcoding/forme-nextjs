@@ -10,6 +10,7 @@ import Select, {
 import useStates from '@/app/hooks/useStates';
 import useCities from '@/app/hooks/useCities';
 import MapComponent from '../MapComponent';
+import { useTheme } from '@/app/context/ThemeContext';
 
 type LocationSelection = { label: string; value: string };
 
@@ -29,17 +30,26 @@ const PADDING_BOTTOM = 12;   // pb-3
 const FONT_SIZE_PX   = 16;   // text-base
 const LINE_HEIGHT_PX = 24;   // leading-6
 
+/** Helper to convert hex to rgba */
+const hexToRgba = (hex: string, alpha: number): string => {
+  const num = parseInt(hex.replace('#', ''), 16);
+  const r = (num >> 16) & 255;
+  const g = (num >> 8) & 255;
+  const b = num & 255;
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
+
 /** Strong styles to enforce exact look/size/alignment */
-const selectStyles: StylesConfig<LocationSelection, false, GroupBase<LocationSelection>> = {
+const createSelectStyles = (accentColor: string): StylesConfig<LocationSelection, false, GroupBase<LocationSelection>> => ({
   control: (base, state) => ({
     ...base,
     minHeight: CONTROL_HEIGHT,
     height: CONTROL_HEIGHT,
     borderRadius: BORDER_RADIUS,
-    backgroundColor: '#ffffff',                                              // bg-white
-    borderColor: state.isFocused ? '#60A5FA' : 'rgba(229, 231, 235, 0.6)',  // focus: blue-400, default: gray-200/60
-    boxShadow: state.isFocused ? '0 0 0 2px rgba(96, 165, 250, 0.1)' : 'none', // focus:ring-2 focus:ring-[#60A5FA]/10
-    ':hover': { borderColor: state.isFocused ? '#60A5FA' : '#d1d5db' },      // hover:border-gray-300
+    backgroundColor: '#ffffff',
+    borderColor: state.isFocused ? accentColor : 'rgba(229, 231, 235, 0.6)',
+    boxShadow: state.isFocused ? `0 0 0 2px ${hexToRgba(accentColor, 0.1)}` : 'none',
+    ':hover': { borderColor: state.isFocused ? accentColor : '#d1d5db' },
     padding: 0,
     cursor: 'pointer',
     transition: 'all 200ms',
@@ -100,22 +110,22 @@ const selectStyles: StylesConfig<LocationSelection, false, GroupBase<LocationSel
     borderRadius: 8,
     padding: '10px 14px',
     backgroundColor: state.isSelected
-      ? 'rgba(96, 165, 250, 0.15)'
+      ? hexToRgba(accentColor, 0.15)
       : state.isFocused
       ? '#f5f5f5'
       : '#ffffff',
     color: '#000000',
     cursor: 'pointer',
   }),
-};
+});
 
-/** Tailwind classNames just to mirror focus border color */
+/** Tailwind classNames - uses CSS variable for theme color */
 const classNames = {
   container: () => 'relative w-full',
   control: (state: any) =>
     [
       'bg-white border rounded-xl transition-all duration-200 outline-none',
-      state.isFocused ? 'border-[#60A5FA]' : 'border-gray-200/60 hover:border-gray-300',
+      state.isFocused ? 'border-[var(--accent-color)]' : 'border-gray-200/60 hover:border-gray-300',
     ].join(' '),
 };
 
@@ -128,13 +138,13 @@ function FloatingLabelSelect(props: {
   isLoading?: boolean;
   isDisabled?: boolean;
   noOptionsMessage?: () => string;
-  styles?: StylesConfig<LocationSelection, false, GroupBase<LocationSelection>>;
+  accentColor: string;
 }) {
   const [focused, setFocused] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const hasValue = !!props.value;
 
-  const styles = useMemo(() => props.styles ?? selectStyles, [props.styles]);
+  const styles = useMemo(() => createSelectStyles(props.accentColor), [props.accentColor]);
   const selectRef = useRef<SelectInstance<LocationSelection, false, GroupBase<LocationSelection>>>(null);
 
   return (
@@ -232,6 +242,7 @@ function findCityOption(cities: LocationSelection[], desiredRaw: string): Locati
 }
 
 const ProfileLocationInput: React.FC<ProfileLocationInputProps> = ({ onLocationSubmit, initialLocation }) => {
+  const { accentColor } = useTheme();
   const [selectedState, setSelectedState] = useState<LocationSelection | null>(null);
   const [selectedCity, setSelectedCity] = useState<LocationSelection | null>(null);
   const [currentLocation, setCurrentLocation] = useState<string | null>(null);
@@ -338,6 +349,7 @@ const ProfileLocationInput: React.FC<ProfileLocationInputProps> = ({ onLocationS
           onChange={handleStateChange}
           isLoading={statesLoading}
           noOptionsMessage={() => 'No states found'}
+          accentColor={accentColor}
         />
         <FloatingLabelSelect
           label="City"
@@ -349,6 +361,7 @@ const ProfileLocationInput: React.FC<ProfileLocationInputProps> = ({ onLocationS
           noOptionsMessage={() =>
             selectedState ? 'No cities found' : 'Please select a state first'
           }
+          accentColor={accentColor}
         />
       </div>
 

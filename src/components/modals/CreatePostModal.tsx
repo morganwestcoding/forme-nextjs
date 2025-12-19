@@ -182,6 +182,38 @@ const CreatePostModal = () => {
   const [overlayColor, setOverlayColor] = useState<'ffffff' | '000000'>('ffffff');
   const [overlayPos, setOverlayPos] = useState<OverlayPos>('bottom-center');
 
+  /** Thumbnail state for video Reels */
+  const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
+  const [selectedThumbnailIndex, setSelectedThumbnailIndex] = useState(0);
+
+  // Generate thumbnail URLs from Cloudinary video URL at different timestamps
+  const generateThumbnailOptions = useCallback((videoUrl: string): string[] => {
+    // Extract Cloudinary URL parts: https://res.cloudinary.com/{cloud}/video/upload/{version}/{public_id}.{ext}
+    const match = videoUrl.match(/^(https:\/\/res\.cloudinary\.com\/[^/]+\/video\/upload\/)([^/]+\/)(.+)$/);
+    if (!match) return [videoUrl.replace(/\.[^.]+$/, '.jpg')]; // Fallback: just change extension
+
+    const [, base, version, rest] = match;
+    const timestamps = [0, 1, 2, 3, 4, 5]; // 6 different frame options
+
+    return timestamps.map(t =>
+      `${base}so_${t}/${version}${rest.replace(/\.[^.]+$/, '.jpg')}`
+    );
+  }, []);
+
+  const thumbnailOptions = useMemo(() => {
+    if (mediaData?.type === 'video' && mediaData.url) {
+      return generateThumbnailOptions(mediaData.url);
+    }
+    return [];
+  }, [mediaData, generateThumbnailOptions]);
+
+  // Update thumbnail when selection changes
+  useEffect(() => {
+    if (thumbnailOptions.length > 0) {
+      setThumbnailUrl(thumbnailOptions[selectedThumbnailIndex]);
+    }
+  }, [selectedThumbnailIndex, thumbnailOptions]);
+
   /** Text Post styling state */
   const [textBgType, setTextBgType] = useState<'solid' | 'gradient'>('gradient');
   const [textBgColor, setTextBgColor] = useState('#6366f1');
@@ -273,6 +305,8 @@ const CreatePostModal = () => {
     setOverlaySize(36);
     setOverlayColor('ffffff');
     setOverlayPos('bottom-center');
+    setThumbnailUrl(null);
+    setSelectedThumbnailIndex(0);
     setTextBgType('gradient');
     setTextBgColor('#6366f1');
     setTextGradientStart('#6366f1');
@@ -323,6 +357,7 @@ const CreatePostModal = () => {
       mediaUrl: mediaData?.url || null, // Raw URL without Cloudinary text transformation
       mediaType: mediaData?.type || null,
       imageSrc: mediaData?.type === 'image' ? mediaData?.url : null,
+      thumbnailUrl: (postType === 'Reel' && mediaData?.type === 'video') ? thumbnailUrl : null,
       location: null,
       tag: postType,
       postType,
@@ -462,6 +497,18 @@ const CreatePostModal = () => {
                   rounded={isReel ? '2xl' : '2xl'}
                   showReplaceRemove={false}
                 />
+
+                {/* Thumbnail Preview Overlay (for videos) */}
+                {mediaData?.type === 'video' && thumbnailUrl && (
+                  <div className="absolute inset-0 pointer-events-none">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={thumbnailUrl}
+                      alt="Selected thumbnail"
+                      className="w-full h-full object-cover rounded-[1.25rem]"
+                    />
+                  </div>
+                )}
 
                 {/* Text Overlay Preview */}
                 {mediaData && overlayText.trim().length > 0 && (
@@ -624,6 +671,65 @@ const CreatePostModal = () => {
                     ))}
                   </div>
                 </div>
+
+                {/* Thumbnail Selection (Videos only) */}
+                {mediaData?.type === 'video' && thumbnailOptions.length > 0 && (
+                  <div className="pt-3 border-t border-gray-100">
+                    <label className="block text-[11px] font-medium text-gray-600 mb-2">Cover thumbnail</label>
+                    <div className="grid grid-cols-3 gap-1.5">
+                      {thumbnailOptions.map((thumb, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => setSelectedThumbnailIndex(idx)}
+                          className={`
+                            relative aspect-video rounded-lg overflow-hidden border-2 transition-all
+                            ${selectedThumbnailIndex === idx
+                              ? 'ring-2 ring-offset-1'
+                              : 'border-transparent hover:border-gray-300'
+                            }
+                          `}
+                          style={selectedThumbnailIndex === idx ? {
+                            borderColor: accentColor,
+                            // @ts-expect-error CSS custom property
+                            '--tw-ring-color': accentColor
+                          } : undefined}
+                        >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={thumb}
+                            alt={`Frame ${idx + 1}`}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              // Hide broken thumbnails
+                              e.currentTarget.style.display = 'none';
+                            }}
+                          />
+                          {selectedThumbnailIndex === idx && (
+                            <div
+                              className="absolute inset-0 flex items-center justify-center bg-black/20"
+                            >
+                              <div
+                                className="w-5 h-5 rounded-full flex items-center justify-center"
+                                style={{ backgroundColor: accentColor }}
+                              >
+                                <svg className="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none">
+                                  <path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                              </div>
+                            </div>
+                          )}
+                          <div className="absolute bottom-0.5 right-0.5 px-1 py-0.5 bg-black/60 rounded text-[8px] text-white">
+                            {idx}s
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                    <p className="text-[10px] text-gray-400 mt-1.5">
+                      Select a frame to use as the cover image
+                    </p>
+                  </div>
+                )}
 
                 {/* Tip */}
                 {!mediaData && (
@@ -1102,7 +1208,7 @@ const CreatePostModal = () => {
         </div>
       </div>
     );
-  }, [step, postType, content, category, mediaData, isLoading, overlayText, overlaySize, overlayColor, overlayPos, previewDimensions, selectedTags, searchQuery, searchResults, isSearching, accentColor, textBgType, textBgColor, textGradientStart, textGradientEnd, textPosition, textFontSize]);
+  }, [step, postType, content, category, mediaData, isLoading, overlayText, overlaySize, overlayColor, overlayPos, previewDimensions, selectedTags, searchQuery, searchResults, isSearching, accentColor, textBgType, textBgColor, textGradientStart, textGradientEnd, textPosition, textFontSize, thumbnailOptions, selectedThumbnailIndex]);
 
   return (
     <Modal

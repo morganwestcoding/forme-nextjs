@@ -342,3 +342,25 @@ main {
 .animate-fade-up-3 { animation-delay: 0.2s; }
 .animate-fade-up-4 { animation-delay: 0.3s; }
 .animate-fade-up-5 { animation-delay: 0.4s; }
+
+/* ===========================
+   Hide Browser Password Icons
+   =========================== */
+/* Edge password reveal button */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
+}
+
+/* Chrome/Safari autofill button */
+input::-webkit-credentials-auto-fill-button {
+  visibility: hidden;
+  display: none !important;
+  pointer-events: none;
+}
+
+/* Chrome password reveal button */
+input[type="password"]::-webkit-textfield-decoration-container {
+  visibility: hidden;
+  pointer-events: none;
+}

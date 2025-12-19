@@ -739,7 +739,7 @@ const RegisterModal = () => {
           <button
             type="button"
             onClick={addNewService}
-            className="flex flex-col items-center justify-center p-4 rounded-lg border-2 border-dashed border-neutral-200 text-center hover:border-blue-400 hover:bg-blue-50 transition-all duration-100 min-h-[88px]"
+            className="flex flex-col items-center justify-center p-4 rounded-lg border-2 border-dashed border-neutral-200 text-center hover:border-[var(--accent-color)] hover:bg-[var(--accent-color-light)] transition-all duration-100 min-h-[88px]"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" className="text-neutral-400 mb-1">
               <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -1015,6 +1015,23 @@ const RegisterModal = () => {
       return (parts[0][0]?.toUpperCase() ?? '') + (parts[parts.length - 1][0]?.toUpperCase() ?? '');
     };
 
+    // Camera icon component
+    const CameraIcon = ({ size = 20 }: { size?: number }) => (
+      <svg
+        width={size}
+        height={size}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+        <circle cx="12" cy="13" r="4" />
+      </svg>
+    );
+
     bodyContent = (
       <div className="flex flex-col gap-5">
         <div className="text-center">
@@ -1022,130 +1039,139 @@ const RegisterModal = () => {
             {isEdit ? 'Update your photos' : 'Add your photos'}
           </h3>
           <p className="text-sm text-gray-500 mt-1">
-            See how your profile card will look
+            Upload your profile and background images
           </p>
         </div>
 
-        <div className="flex gap-5 items-start">
-          {/* Left: Worker Card Preview */}
-          <div className="flex-shrink-0">
-            {/* Card Preview - exact WorkerCard dimensions 250x280 */}
-            <div
-              className="rounded-xl overflow-hidden relative max-w-[250px]"
-              style={{ width: '250px', height: '280px' }}
-            >
-              {/* Background */}
-              <div className="absolute inset-0 z-0">
-                {backgroundImage ? (
-                  <>
+        <div className="flex gap-4 justify-center">
+          {/* Card Preview - matches WorkerCard exactly */}
+          <div
+            className="rounded-xl overflow-hidden relative flex-shrink-0"
+            style={{ width: '250px', height: '280px' }}
+          >
+            {/* Background Visual Layer */}
+            <div className="absolute inset-0 z-0">
+              {backgroundImage ? (
+                <>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={backgroundImage}
+                    alt="Background"
+                    className="w-full h-full object-cover grayscale scale-105"
+                    style={{ opacity: 0.75 }}
+                  />
+                  <div className="absolute inset-0 bg-gray-600/15" style={{ mixBlendMode: 'multiply' }} />
+                </>
+              ) : (
+                <div className="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300" />
+              )}
+
+              {/* Subtle blue radial gradient from avatar position */}
+              <div
+                className="absolute inset-0 opacity-12"
+                style={{ background: 'radial-gradient(circle at 50% 28%, rgba(96, 165, 250, 0.18) 0%, transparent 55%)' }}
+              />
+
+              {/* Top gradient for framing */}
+              <div
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  background: 'linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.20) 15%, rgba(0,0,0,0.10) 30%, rgba(0,0,0,0.00) 45%)',
+                }}
+              />
+
+              {/* Bottom gradient for text readability */}
+              <div
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  background: 'linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.55) 18%, rgba(0,0,0,0.32) 38%, rgba(0,0,0,0.12) 55%, rgba(0,0,0,0.00) 70%)',
+                }}
+              />
+            </div>
+
+            {/* Content */}
+            <div className="relative z-10 h-full">
+              {/* Avatar - positioned at 40% like WorkerCard */}
+              <div className="absolute top-[40%] left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                {image ? (
+                  <div className="w-24 h-24 rounded-full overflow-hidden shadow-lg border-2 border-white">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={backgroundImage}
-                      alt="Background"
-                      className="w-full h-full object-cover grayscale"
-                      style={{ opacity: 0.75 }}
-                    />
-                    <div className="absolute inset-0 bg-gray-600/15" style={{ mixBlendMode: 'multiply' }} />
-                  </>
+                    <img src={image} alt="Profile" className="w-full h-full object-cover" />
+                  </div>
                 ) : (
-                  <div className="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300" />
+                  <div
+                    className="w-24 h-24 rounded-full flex items-center justify-center text-white text-2xl font-semibold shadow-lg border-2 border-white"
+                    style={{ backgroundColor: 'var(--accent-color)' }}
+                  >
+                    {getInitials(name)}
+                  </div>
                 )}
-
-                {/* Radial gradient from avatar */}
-                <div
-                  className="absolute inset-0 opacity-12"
-                  style={{ background: 'radial-gradient(circle at 50% 28%, rgba(96, 165, 250, 0.18) 0%, transparent 55%)' }}
-                />
-
-                {/* Top gradient */}
-                <div
-                  className="absolute inset-0 pointer-events-none"
-                  style={{
-                    background: 'linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.20) 15%, rgba(0,0,0,0.10) 30%, rgba(0,0,0,0.00) 45%)',
-                  }}
-                />
-
-                {/* Bottom gradient */}
-                <div
-                  className="absolute inset-0 pointer-events-none"
-                  style={{
-                    background: 'linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.55) 18%, rgba(0,0,0,0.32) 38%, rgba(0,0,0,0.12) 55%, rgba(0,0,0,0.00) 70%)',
-                  }}
-                />
               </div>
 
-              {/* Content */}
-              <div className="relative z-10 h-full">
-                {/* Avatar - Centered at 40% */}
-                <div className="absolute top-[40%] left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                  {image ? (
-                    <div className="w-24 h-24 rounded-full overflow-hidden shadow-lg border-2 border-white">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={image} alt="Profile" className="w-full h-full object-cover" />
-                    </div>
-                  ) : (
-                    <div
-                      className="w-24 h-24 rounded-full flex items-center justify-center text-white text-2xl font-semibold shadow-lg border-2 border-white"
-                      style={{ backgroundColor: '#60A5FA' }}
-                    >
-                      {getInitials(name)}
-                    </div>
-                  )}
-                </div>
-
-                {/* Bottom info */}
-                <div className="absolute bottom-4 left-4 right-4">
-                  <h3 className="text-lg font-semibold text-white drop-shadow leading-tight mb-0.5">
+              {/* Bottom info - matches WorkerCard positioning */}
+              <div className="absolute bottom-4 left-4 right-4">
+                <div className="mb-0.5">
+                  <h3 className="text-lg font-semibold text-white drop-shadow leading-tight line-clamp-2">
                     {name || 'Your Name'}
                   </h3>
-                  <div className="text-white/90 text-xs leading-tight mb-2.5">
-                    {jobTitle || 'Your Title'}
-                  </div>
-                  <div className="flex items-center">
-                    <span className="px-3 py-1.5 bg-white/20 backdrop-blur-md rounded-lg text-white text-xs font-medium">
-                      Preview
-                    </span>
-                  </div>
+                </div>
+                <div className="text-white/90 text-xs leading-tight mb-2.5">
+                  <span className="line-clamp-1">{jobTitle || 'Your Title'}</span>
+                </div>
+                {/* Placeholder for SmartBadge area */}
+                <div className="flex items-center">
+                  <span className="px-3 py-1.5 bg-white/20 backdrop-blur-md rounded-lg text-white text-xs font-medium">
+                    Preview
+                  </span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Right: Upload Controls */}
-          <div className="flex-1 min-w-0 space-y-4">
-            {/* Profile Picture Upload */}
-            <div>
-              <label className="block text-xs font-medium text-gray-600 mb-2">
-                Profile picture
-              </label>
+          {/* Upload Buttons */}
+          <div className="flex flex-col gap-3 justify-center">
+            {/* Profile Photo Button */}
+            <div className="relative">
               <ImageUpload
                 uploadId="profile-picture"
                 onChange={(v) => setCustomValue('image', v)}
-                value={image}
-                className="w-20 h-20"
+                value=""
+                className="absolute inset-0 opacity-0 z-10 cursor-pointer"
                 ratio="square"
                 rounded="full"
                 enableCrop={true}
                 cropMode="fixed"
                 label=""
                 maxFileSizeMB={5}
-                onRemove={() => setCustomValue('image', '')}
+                showRemove={false}
               />
-              <p className="text-[11px] text-gray-400 mt-1.5">
-                Displayed as a circle
-              </p>
+              <div className={`
+                w-12 h-12 rounded-xl flex items-center justify-center cursor-pointer
+                transition-all duration-200 border
+                ${image
+                  ? 'bg-green-50 border-green-200 text-green-600'
+                  : 'bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100 hover:border-gray-300'}
+              `}>
+                {image ? (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                ) : (
+                  <CameraIcon size={20} />
+                )}
+              </div>
+              <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[10px] text-gray-500 whitespace-nowrap">
+                Profile
+              </span>
             </div>
 
-            {/* Background Upload */}
-            <div>
-              <label className="block text-xs font-medium text-gray-600 mb-2">
-                Background image
-              </label>
+            {/* Background Photo Button */}
+            <div className="relative mt-4">
               <ImageUpload
                 uploadId="background-image"
                 onChange={(v) => setCustomValue('backgroundImage', v)}
-                value={backgroundImage}
-                className="w-full h-24"
+                value=""
+                className="absolute inset-0 opacity-0 z-10 cursor-pointer"
                 ratio="wide"
                 rounded="xl"
                 enableCrop={true}
@@ -1153,21 +1179,37 @@ const RegisterModal = () => {
                 customAspectRatio={250 / 280}
                 label=""
                 maxFileSizeMB={5}
-                onRemove={() => setCustomValue('backgroundImage', '')}
+                showRemove={false}
               />
-              <p className="text-[11px] text-gray-400 mt-1.5">
-                Used on your profile and cards
-              </p>
-            </div>
-
-            {/* Tip */}
-            <div className="pt-2">
-              <p className="text-xs text-gray-500">
-                Your photos help clients recognize you and build trust.
-              </p>
+              <div className={`
+                w-12 h-12 rounded-xl flex items-center justify-center cursor-pointer
+                transition-all duration-200 border
+                ${backgroundImage
+                  ? 'bg-green-50 border-green-200 text-green-600'
+                  : 'bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100 hover:border-gray-300'}
+              `}>
+                {backgroundImage ? (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                ) : (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                    <circle cx="8.5" cy="8.5" r="1.5" />
+                    <polyline points="21 15 16 10 5 21" />
+                  </svg>
+                )}
+              </div>
+              <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[10px] text-gray-500 whitespace-nowrap">
+                Cover
+              </span>
             </div>
           </div>
         </div>
+
+        <p className="text-xs text-gray-400 text-center mt-2">
+          Photos are optional — you can add them later
+        </p>
       </div>
     );
   }

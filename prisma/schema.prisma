@@ -163,6 +163,7 @@ model Post {
   mediaUrl    String?
   mediaType   String?
   mediaOverlay Json?  // Stores text overlay settings {text, size, color, pos}
+  thumbnailUrl String? // Custom thumbnail URL for video reels
   likes     String[] @db.ObjectId
   bookmarks String[] @db.ObjectId
   hiddenBy  String[] @db.ObjectId

@@ -172,7 +172,7 @@ const Input: React.FC<InputProps> = ({
               disabled:opacity-50 disabled:cursor-not-allowed
               hover:border-gray-300
               ${formatPrice ? 'pl-9' : 'pl-4'}
-              ${errors[id] ? 'border-rose-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/10' : 'focus:border-[#60A5FA] focus:ring-2 focus:ring-[#60A5FA]/10'}
+              ${errors[id] ? 'border-rose-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/10' : 'focus:border-[var(--accent-color)] focus:ring-2 focus:ring-[var(--accent-color-light)]'}
               ${inputClassName ?? ''}
             `}
             onChange={handleChange}
@@ -197,7 +197,7 @@ const Input: React.FC<InputProps> = ({
               hover:border-gray-300
               ${formatPrice ? 'pl-9' : 'pl-4'}
               ${type === "password" && showPasswordValidation ? 'pr-24' : type === "password" ? 'pr-12' : 'pr-4'}
-              ${errors[id] ? 'border-rose-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/10' : 'focus:border-[#60A5FA] focus:ring-2 focus:ring-[#60A5FA]/10'}
+              ${errors[id] ? 'border-rose-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/10' : 'focus:border-[var(--accent-color)] focus:ring-2 focus:ring-[var(--accent-color-light)]'}
               ${inputClassName ?? ''}
             `}
             onChange={handleChange}

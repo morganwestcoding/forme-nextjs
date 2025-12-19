@@ -140,7 +140,7 @@ export interface MediaOverlay {
 
 export type SafePost = Omit<
   Post,
-  "createdAt" | "updatedAt" | "userId" | "categoryId"
+  "createdAt" | "updatedAt" | "userId" | "categoryId" | "thumbnailUrl"
 > & {
   createdAt: string;
   category?: string;
@@ -148,6 +148,7 @@ export type SafePost = Omit<
   imageSrc: string | null;
   mediaType?: MediaType | null;
   mediaOverlay?: MediaOverlay | null;
+  thumbnailUrl?: string | null;
   likes: string[];
   postType?: 'ad' | 'text' | 'reel';
   listing?: SafeListing;
