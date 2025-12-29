@@ -3,6 +3,7 @@
 import React from 'react';
 import { Check } from 'lucide-react';
 import Heading from '../Heading';
+import Input from './Input';
 import { FieldErrors, UseFormRegister } from 'react-hook-form';
 import { useTheme } from '@/app/context/ThemeContext';
 
@@ -80,43 +81,16 @@ const JobTitleStep: React.FC<JobTitleStepProps> = ({
           </button>
         )}
 
-        {/* Job Title Input with floating label */}
+        {/* Job Title Input */}
         {(isIndividual || !isOwnerManager) && (
-          <div className="relative">
-            <input
-              id="jobTitle"
-              type="text"
-              placeholder=" "
-              disabled={isLoading}
-              {...register('jobTitle', { required: isIndividual || !isOwnerManager })}
-              className={`
-                peer w-full p-3 pt-6 pl-4 h-[58px] bg-white border rounded-xl
-                text-base text-neutral-800
-                outline-none transition-all duration-200
-                hover:border-gray-300
-                disabled:opacity-50 disabled:cursor-not-allowed
-                ${errors.jobTitle
-                  ? 'border-rose-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/10'
-                  : 'border-gray-200/60 focus:border-[var(--accent-color)] focus:ring-2 focus:ring-[var(--accent-color-light)]'}
-              `}
-            />
-            <label
-              htmlFor="jobTitle"
-              className={`
-                absolute left-4 top-5 origin-[0] text-sm pointer-events-none
-                transition-transform duration-150
-                ${errors.jobTitle
-                  ? 'text-rose-500 scale-75 -translate-y-4'
-                  : 'text-gray-500 -translate-y-3 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4'
-                }
-              `}
-            >
-              Job Title
-            </label>
-            {errors.jobTitle && (
-              <p className="mt-1.5 text-xs text-rose-500 font-medium">Job title is required</p>
-            )}
-          </div>
+          <Input
+            id="jobTitle"
+            label="Job Title"
+            disabled={isLoading}
+            register={register}
+            errors={errors}
+            required={isIndividual || !isOwnerManager}
+          />
         )}
       </div>
     </div>

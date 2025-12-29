@@ -1,9 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { Lock, Mail, ArrowRight, Check, Zap, AlertCircle, Calendar, Users, ShoppingBag, BarChart3 } from 'lucide-react';
 
+// Routes that bypass the coming soon gate
+const BYPASS_ROUTES = ['/register', '/reset-password'];
+
 export default function ComingSoonGate({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailSubmitted, setEmailSubmitted] = useState(false);
@@ -208,6 +213,12 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
       setPassword('');
     }
   };
+
+  // Bypass gate for specific routes - check first before any loading state
+  const shouldBypass = BYPASS_ROUTES.some(route => pathname?.startsWith(route));
+  if (shouldBypass) {
+    return <>{children}</>;
+  }
 
   if (isLoading || isAuthenticated === null) {
     return (

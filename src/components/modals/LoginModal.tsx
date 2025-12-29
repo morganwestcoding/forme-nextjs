@@ -75,9 +75,9 @@ const LoginModal = () => {
     modalRef.current?.close?.();
     setTimeout(() => {
       loginModal.onClose();
-      registerModal.onOpen();
+      router.push('/register');
     }, ANIM_MS);
-  }, [loginModal, registerModal]);
+  }, [loginModal, router]);
 
   const onForgotPassword = useCallback(() => {
     modalRef.current?.close?.();

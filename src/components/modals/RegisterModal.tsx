@@ -24,6 +24,8 @@ import InterestsStep from "../inputs/InterestStep";
 import ServiceSelector, { Service } from "../inputs/ServiceSelector";
 import CategoryInput from "../inputs/CategoryInput";
 import { categories } from "../Categories";
+import { CldUploadWidget, type CldUploadWidgetResults } from 'next-cloudinary';
+import { Check } from 'lucide-react';
 
 type UserType = 'customer' | 'individual' | 'team';
 
@@ -217,10 +219,7 @@ const RegisterModal = () => {
       return STEPS.LOCATION;
     }
     if (currentStep === STEPS.LOCATION && userType === 'individual') {
-      return STEPS.LISTING_IMAGE;
-    }
-    if (currentStep === STEPS.LISTING_IMAGE && userType === 'individual') {
-      return STEPS.BIOGRAPHY;
+      return STEPS.IMAGES;
     }
     if (currentStep === STEPS.SERVICES_FORM && userType === 'individual') {
       return STEPS.SERVICES_LIST;
@@ -256,11 +255,8 @@ const RegisterModal = () => {
     if (currentStep === STEPS.LISTING_INFO && userType === 'individual') {
       return STEPS.LISTING_CATEGORY;
     }
-    if (currentStep === STEPS.LISTING_IMAGE && userType === 'individual') {
+    if (currentStep === STEPS.IMAGES && userType === 'individual') {
       return STEPS.LOCATION;
-    }
-    if (currentStep === STEPS.BIOGRAPHY && userType === 'individual') {
-      return STEPS.LISTING_IMAGE;
     }
     if (currentStep === STEPS.LOCATION) {
       if (userType === 'customer') {
@@ -716,39 +712,44 @@ const RegisterModal = () => {
     );
 
     bodyContent = (
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-5">
         <Heading
           title="Add your services"
           subtitle="List what you offer so clients can book with you"
         />
 
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-3">
           {validServices.map((s, i) => (
             <button
               key={`svc-${s.id ?? i}`}
               type="button"
               onClick={() => openEditForIndex(i)}
-              className="flex flex-col p-3 rounded-lg border border-neutral-200 text-left hover:border-neutral-300 hover:bg-neutral-50 transition-all duration-100"
+              className="group flex flex-col p-4 rounded-xl bg-white border border-gray-200/60 text-left hover:border-gray-300 hover:shadow-sm transition-all duration-200"
             >
-              <span className="text-sm font-medium text-neutral-800 truncate">{s.serviceName || 'Untitled'}</span>
-              <span className="text-xs text-neutral-500 truncate">{s.category || 'No category'}</span>
-              <span className="text-sm font-semibold text-neutral-900 mt-2">${Number(s.price) || 0}</span>
+              <span className="text-sm font-semibold text-gray-900 truncate">{s.serviceName || 'Untitled'}</span>
+              <span className="text-xs text-gray-500 truncate mt-0.5">{s.category || 'No category'}</span>
+              <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
+                <span className="text-base font-semibold text-gray-900">${Number(s.price) || 0}</span>
+                <span className="text-xs text-gray-400 group-hover:text-[var(--accent-color)] transition-colors">Edit</span>
+              </div>
             </button>
           ))}
 
           <button
             type="button"
             onClick={addNewService}
-            className="flex flex-col items-center justify-center p-4 rounded-lg border-2 border-dashed border-neutral-200 text-center hover:border-[var(--accent-color)] hover:bg-[var(--accent-color-light)] transition-all duration-100 min-h-[88px]"
+            className="flex flex-col items-center justify-center p-4 rounded-xl border-2 border-dashed border-gray-200 bg-gray-50/50 text-center hover:border-[var(--accent-color)] hover:bg-[var(--accent-color-light)] transition-all duration-200 min-h-[106px]"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" className="text-neutral-400 mb-1">
-              <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            </svg>
-            <span className="text-sm text-neutral-500">Add service</span>
+            <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center mb-2 shadow-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" className="text-gray-400">
+                <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </div>
+            <span className="text-sm font-medium text-gray-600">Add service</span>
           </button>
         </div>
 
-        <p className="text-xs text-neutral-400 text-center">
+        <p className="text-xs text-gray-400 text-center">
           Optional — you can add services later
         </p>
       </div>
@@ -802,167 +803,178 @@ const RegisterModal = () => {
   }
 
   if (step === STEPS.LISTING_INFO) {
+    // Listing card aspect ratio: 250/280
+    const LISTING_CARD_ASPECT = 250 / 280;
+    const UPLOAD_PRESET = 'cs0am6m7';
+
+    const handleListingImageUpload = (result: CldUploadWidgetResults) => {
+      const info = result?.info;
+      if (info && typeof info === 'object' && 'secure_url' in info) {
+        const publicId = info.public_id;
+        let cloudName: string | null = null;
+
+        if (typeof info.secure_url === 'string') {
+          const urlMatch = info.secure_url.match(/res\.cloudinary\.com\/([^/]+)/);
+          cloudName = urlMatch ? urlMatch[1] : null;
+        }
+
+        if (publicId && cloudName) {
+          const width = 500;
+          const height = Math.round(width / LISTING_CARD_ASPECT);
+          const transformations = `q_auto:good,f_auto,w_${width},h_${height},c_fill,g_auto`;
+          const finalUrl = `https://res.cloudinary.com/${cloudName}/image/upload/${transformations}/${publicId}`;
+          setCustomValue('listingImage', finalUrl);
+        } else {
+          setCustomValue('listingImage', info.secure_url as string);
+        }
+      }
+    };
+
     bodyContent = (
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-5">
         <Heading
           title="Tell clients about your listing"
           subtitle="This helps clients find and choose you"
         />
 
-        <Input
-          id="listingTitle"
-          label="Listing Title"
-          placeholder={`${name}'s ${jobTitle || 'Services'}`}
-          disabled={isLoading}
-          register={register}
-          errors={errors}
-          required
-        />
-
-        <Input
-          id="listingDescription"
-          label="Description"
-          placeholder="Tell clients about your services, experience, and what makes you unique..."
-          disabled={isLoading}
-          register={register}
-          errors={errors}
-          required
-          maxLength={500}
-          type="textarea"
-          inputClassName="pt-8 min-h-[120px]"
-        />
-      </div>
-    );
-  }
-
-  if (step === STEPS.LISTING_IMAGE) {
-    // Listing card aspect ratio: 250/280
-    const LISTING_CARD_ASPECT = 250 / 280;
-
-    bodyContent = (
-      <div className="flex flex-col gap-5">
-        <div className="text-center">
-          <h3 className="text-lg font-semibold text-gray-900">Add a cover image</h3>
-          <p className="text-sm text-gray-500 mt-1">See how your listing card will look</p>
-        </div>
-
         <div className="flex gap-5 items-start">
-          {/* Left: Listing Card Preview - exact 250x280 dimensions */}
+          {/* Left: Listing Card Preview with integrated upload */}
           <div className="flex-shrink-0">
-            <div
-              className="rounded-xl overflow-hidden relative"
-              style={{ width: '250px', height: '280px' }}
+            <CldUploadWidget
+              uploadPreset={UPLOAD_PRESET}
+              onUpload={handleListingImageUpload}
+              options={{
+                multiple: false,
+                maxFiles: 1,
+                sources: ['local', 'camera'],
+                resourceType: 'image',
+                clientAllowedFormats: ['png', 'jpg', 'jpeg', 'webp'],
+                maxImageFileSize: 10_000_000,
+                cropping: true,
+                croppingAspectRatio: LISTING_CARD_ASPECT,
+                croppingShowBackButton: true,
+                showSkipCropButton: false,
+                folder: 'uploads/listings',
+              }}
             >
-              {/* Background */}
-              <div className="absolute inset-0 z-0">
-                {listingImage ? (
-                  <>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={listingImage}
-                      alt="Listing preview"
-                      className="w-full h-full object-cover"
-                    />
-                    {/* Bottom gradient */}
-                    <div
-                      className="absolute inset-0 pointer-events-none"
-                      style={{
-                        background:
-                          'linear-gradient(to top,' +
-                          'rgba(0,0,0,0.72) 0%,' +
-                          'rgba(0,0,0,0.55) 18%,' +
-                          'rgba(0,0,0,0.32) 38%,' +
-                          'rgba(0,0,0,0.12) 55%,' +
-                          'rgba(0,0,0,0.00) 70%)',
-                      }}
-                    />
-                  </>
-                ) : (
-                  <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200">
-                    {/* Centered camera icon */}
-                    <div className="absolute top-[35%] left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                      <div className="w-16 h-16 rounded-full bg-white/80 backdrop-blur-sm shadow-md flex items-center justify-center border border-gray-200">
+              {(props) => (
+                <div
+                  onClick={() => props?.open?.()}
+                  className={`group cursor-pointer rounded-xl overflow-hidden relative transition-all duration-300 hover:-translate-y-1 max-w-[250px] ${listingImage ? 'hover:shadow-lg' : 'border-2 border-dashed border-neutral-200 hover:border-neutral-300 bg-neutral-50'}`}
+                  style={{ width: '250px', height: '280px' }}
+                >
+                  {listingImage ? (
+                    <>
+                      {/* Image state */}
+                      <div className="absolute inset-0 z-0">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={listingImage}
+                          alt="Listing preview"
+                          className="w-full h-full object-cover"
+                        />
+                        {/* Top gradient */}
+                        <div
+                          className="absolute inset-0 pointer-events-none"
+                          style={{
+                            background:
+                              'linear-gradient(to bottom,' +
+                              'rgba(0,0,0,0.35) 0%,' +
+                              'rgba(0,0,0,0.20) 15%,' +
+                              'rgba(0,0,0,0.10) 30%,' +
+                              'rgba(0,0,0,0.00) 45%)',
+                          }}
+                        />
+                        {/* Bottom gradient */}
+                        <div
+                          className="absolute inset-0 pointer-events-none"
+                          style={{
+                            background:
+                              'linear-gradient(to top,' +
+                              'rgba(0,0,0,0.72) 0%,' +
+                              'rgba(0,0,0,0.55) 18%,' +
+                              'rgba(0,0,0,0.32) 38%,' +
+                              'rgba(0,0,0,0.12) 55%,' +
+                              'rgba(0,0,0,0.00) 70%)',
+                          }}
+                        />
+                      </div>
+
+                      {/* Content overlay */}
+                      <div className="absolute bottom-4 left-4 right-4 z-10">
+                        <h3 className="text-white text-lg leading-tight font-semibold drop-shadow mb-0.5 truncate">
+                          {listingTitle || `${name}'s Services`}
+                        </h3>
+                        <div className="text-white/90 text-xs leading-tight mb-2.5">
+                          <span className="line-clamp-1">{locationVal || 'Your location'}</span>
+                        </div>
+                        <div className="flex items-center">
+                          <span className="px-3 py-1.5 bg-white/20 backdrop-blur-md rounded-lg text-white text-sm font-semibold">
+                            Preview
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Hover overlay */}
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100 z-20">
+                        <span className="text-white text-sm font-medium px-4 py-2 bg-white/20 backdrop-blur-sm rounded-lg">
+                          Change photo
+                        </span>
+                      </div>
+                    </>
+                  ) : (
+                    /* Empty state - clean upload prompt */
+                    <div className="h-full flex flex-col items-center justify-center text-center p-4">
+                      <div className="w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center mb-3 group-hover:bg-neutral-200 transition-colors">
                         <svg
-                          className="w-7 h-7 text-gray-400"
+                          className="w-6 h-6 text-neutral-400"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
                           strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
                         >
-                          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-                          <circle cx="12" cy="13" r="4" />
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                         </svg>
                       </div>
+                      <span className="text-sm font-medium text-neutral-500 group-hover:text-neutral-600 transition-colors">Add photo</span>
+                      <span className="text-xs text-neutral-400 mt-1">Click to upload</span>
                     </div>
-                    {/* Bottom gradient for text readability */}
-                    <div
-                      className="absolute inset-0 pointer-events-none"
-                      style={{
-                        background:
-                          'linear-gradient(to top,' +
-                          'rgba(0,0,0,0.55) 0%,' +
-                          'rgba(0,0,0,0.40) 20%,' +
-                          'rgba(0,0,0,0.20) 40%,' +
-                          'rgba(0,0,0,0.00) 60%)',
-                      }}
-                    />
-                  </div>
-                )}
-              </div>
+                  )}
+                </div>
+              )}
+            </CldUploadWidget>
 
-              {/* Content overlay - matches ListingCard */}
-              <div className="absolute bottom-4 left-4 right-4 z-10">
-                <h3 className="text-white text-base leading-tight font-semibold drop-shadow line-clamp-2 mb-0.5">
-                  {listingTitle || `${name}'s Services`}
-                </h3>
-                <div className="text-white/90 text-xs leading-tight mb-2.5">
-                  <span className="line-clamp-1">{locationVal || 'Your location'}</span>
+            {/* Success indicator */}
+            {listingImage && (
+              <div className="flex items-center justify-center gap-1.5 mt-3">
+                <div className="w-4 h-4 rounded-full bg-emerald-100 flex items-center justify-center">
+                  <Check className="w-2.5 h-2.5 text-emerald-600" />
                 </div>
-                <div className="flex items-center">
-                  <span className="px-3 py-1.5 bg-white/20 backdrop-blur-md rounded-lg text-white text-xs font-medium">
-                    Preview
-                  </span>
-                </div>
+                <span className="text-xs text-emerald-600 font-medium">Photo added</span>
               </div>
-            </div>
+            )}
           </div>
 
-          {/* Right: Upload Control */}
-          <div className="flex-1 min-w-0 space-y-4">
-            <div>
-              <label className="block text-xs font-medium text-gray-600 mb-2">
-                Cover image
-              </label>
-              <ImageUpload
-                uploadId="listing-image"
-                onChange={(v) => setCustomValue('listingImage', v)}
-                value={listingImage}
-                className="w-full h-32"
-                ratio="square"
-                rounded="xl"
-                enableCrop={true}
-                cropMode="fixed"
-                customAspectRatio={LISTING_CARD_ASPECT}
-                label=""
-                maxFileSizeMB={5}
-                onRemove={() => setCustomValue('listingImage', '')}
-              />
-              <p className="text-[11px] text-gray-400 mt-1.5">
-                Cropped to fit listing cards (250x280)
-              </p>
-            </div>
+          {/* Right: Form inputs */}
+          <div className="flex-1 min-w-0 flex flex-col gap-4">
+            <Input
+              id="listingTitle"
+              label="Listing Title"
+              disabled={isLoading}
+              register={register}
+              errors={errors}
+              required
+            />
 
-            <div className="pt-2">
-              <p className="text-xs text-gray-500">
-                A great cover image helps your listing stand out and attract clients.
-              </p>
-            </div>
-
-            <p className="text-xs text-neutral-400">
-              Optional — you can add this later
-            </p>
+            <Input
+              id="listingDescription"
+              label="Description"
+              disabled={isLoading}
+              register={register}
+              errors={errors}
+              required
+              maxLength={500}
+            />
           </div>
         </div>
       </div>
@@ -1007,209 +1019,196 @@ const RegisterModal = () => {
   }
 
   if (step === STEPS.IMAGES) {
-    // Get user initials for fallback
-    const getInitials = (fullName?: string) => {
-      if (!fullName) return 'U';
-      const parts = fullName.trim().split(/\s+/).filter(Boolean);
-      if (parts.length === 1) return (parts[0][0]?.toUpperCase() ?? 'U');
-      return (parts[0][0]?.toUpperCase() ?? '') + (parts[parts.length - 1][0]?.toUpperCase() ?? '');
-    };
-
-    // Camera icon component
-    const CameraIcon = ({ size = 20 }: { size?: number }) => (
-      <svg
-        width={size}
-        height={size}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-        <circle cx="12" cy="13" r="4" />
-      </svg>
-    );
+    const UPLOAD_PRESET = 'cs0am6m7';
 
     bodyContent = (
       <div className="flex flex-col gap-5">
-        <div className="text-center">
-          <h3 className="text-lg font-semibold text-gray-900">
-            {isEdit ? 'Update your photos' : 'Add your photos'}
-          </h3>
-          <p className="text-sm text-gray-500 mt-1">
-            Upload your profile and background images
-          </p>
-        </div>
+        <Heading
+          title={isEdit ? 'Update your profile' : 'Almost done!'}
+          subtitle="Add your photos and bio"
+        />
 
-        <div className="flex gap-4 justify-center">
-          {/* Card Preview - matches WorkerCard exactly */}
-          <div
-            className="rounded-xl overflow-hidden relative flex-shrink-0"
-            style={{ width: '250px', height: '280px' }}
-          >
-            {/* Background Visual Layer */}
-            <div className="absolute inset-0 z-0">
-              {backgroundImage ? (
-                <>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={backgroundImage}
-                    alt="Background"
-                    className="w-full h-full object-cover grayscale scale-105"
-                    style={{ opacity: 0.75 }}
-                  />
-                  <div className="absolute inset-0 bg-gray-600/15" style={{ mixBlendMode: 'multiply' }} />
-                </>
-              ) : (
-                <div className="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300" />
+        <div className="flex gap-5 items-start">
+          {/* Left: Background Card with Profile Photo centered */}
+          <div className="flex-shrink-0">
+            <div
+              onClick={() => {}}
+              className={`group rounded-xl overflow-hidden relative transition-all duration-300 ${backgroundImage ? '' : 'border-2 border-dashed border-neutral-200 bg-neutral-50'}`}
+              style={{ width: '250px', height: '280px' }}
+            >
+              {/* Background upload area */}
+              <CldUploadWidget
+                uploadPreset={UPLOAD_PRESET}
+                onSuccess={(result: CldUploadWidgetResults) => {
+                  const info = result?.info;
+                  if (info && typeof info === 'object' && 'secure_url' in info) {
+                    const publicId = (info as any).public_id;
+                    let cloudName: string | null = null;
+                    if (typeof info.secure_url === 'string') {
+                      const urlMatch = info.secure_url.match(/res\.cloudinary\.com\/([^/]+)/);
+                      cloudName = urlMatch ? urlMatch[1] : null;
+                    }
+                    if (publicId && cloudName) {
+                      const finalUrl = `https://res.cloudinary.com/${cloudName}/image/upload/q_auto:good,f_auto,w_500,h_560,c_fill,g_auto/${publicId}`;
+                      setCustomValue('backgroundImage', finalUrl);
+                    } else {
+                      setCustomValue('backgroundImage', info.secure_url as string);
+                    }
+                  }
+                }}
+                options={{
+                  multiple: false,
+                  maxFiles: 1,
+                  sources: ['local', 'camera'],
+                  resourceType: 'image',
+                  clientAllowedFormats: ['png', 'jpg', 'jpeg', 'webp'],
+                  maxImageFileSize: 10_000_000,
+                  cropping: true,
+                  croppingAspectRatio: 250 / 280,
+                  croppingShowBackButton: true,
+                  showSkipCropButton: false,
+                  folder: 'uploads/backgrounds',
+                }}
+              >
+                {(bgProps) => (
+                  <>
+                    {backgroundImage ? (
+                      <div
+                        onClick={() => bgProps?.open?.()}
+                        className="absolute inset-0 z-0 cursor-pointer"
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={backgroundImage} alt="Background" className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.20) 15%, rgba(0,0,0,0.10) 30%, rgba(0,0,0,0.00) 45%)' }} />
+                        <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.55) 18%, rgba(0,0,0,0.32) 38%, rgba(0,0,0,0.12) 55%, rgba(0,0,0,0.00) 70%)' }} />
+                        <div className="absolute inset-0 bg-black/0 hover:bg-black/20 transition-all duration-200 z-10" />
+                      </div>
+                    ) : (
+                      <div
+                        onClick={() => bgProps?.open?.()}
+                        className="absolute inset-0 z-0 cursor-pointer flex flex-col items-center justify-center text-center hover:bg-neutral-100 transition-colors"
+                      >
+                        <div className="mt-20">
+                          <svg className="w-8 h-8 text-neutral-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                          </svg>
+                          <span className="text-xs text-neutral-400 font-medium">Background Photo</span>
+                          <p className="text-[10px] text-neutral-300 mt-0.5">Click to upload</p>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+              </CldUploadWidget>
+
+              {/* Profile photo - centered at 40% like WorkerCard */}
+              <div className="absolute top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
+                <CldUploadWidget
+                  uploadPreset={UPLOAD_PRESET}
+                  onSuccess={(result: CldUploadWidgetResults) => {
+                    const info = result?.info;
+                    if (info && typeof info === 'object' && 'secure_url' in info) {
+                      const publicId = (info as any).public_id;
+                      let cloudName: string | null = null;
+                      if (typeof info.secure_url === 'string') {
+                        const urlMatch = info.secure_url.match(/res\.cloudinary\.com\/([^/]+)/);
+                        cloudName = urlMatch ? urlMatch[1] : null;
+                      }
+                      if (publicId && cloudName) {
+                        const finalUrl = `https://res.cloudinary.com/${cloudName}/image/upload/q_auto:good,f_auto,w_400,h_400,c_fill,g_face/${publicId}`;
+                        setCustomValue('image', finalUrl);
+                      } else {
+                        setCustomValue('image', info.secure_url as string);
+                      }
+                    }
+                  }}
+                  options={{
+                    multiple: false,
+                    maxFiles: 1,
+                    sources: ['local', 'camera'],
+                    resourceType: 'image',
+                    clientAllowedFormats: ['png', 'jpg', 'jpeg', 'webp'],
+                    maxImageFileSize: 5_000_000,
+                    cropping: true,
+                    croppingAspectRatio: 1,
+                    croppingShowBackButton: true,
+                    showSkipCropButton: false,
+                    folder: 'uploads/profiles',
+                  }}
+                >
+                  {(profileProps) => (
+                    <div
+                      onClick={(e) => { e.stopPropagation(); profileProps?.open?.(); }}
+                      className={`group/profile cursor-pointer rounded-full overflow-hidden relative transition-all duration-300 hover:scale-105 border-2 border-white shadow-lg ${image ? '' : 'bg-neutral-100'}`}
+                      style={{ width: '96px', height: '96px' }}
+                    >
+                      {image ? (
+                        <>
+                          <div className="absolute inset-0 z-0">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={image} alt="Profile" className="w-full h-full object-cover" />
+                          </div>
+                          <div className="absolute inset-0 bg-black/0 group-hover/profile:bg-black/30 transition-all duration-200 flex items-center justify-center opacity-0 group-hover/profile:opacity-100 z-20">
+                            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" strokeLinecap="round" strokeLinejoin="round" />
+                              <circle cx="12" cy="13" r="4" />
+                            </svg>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="h-full flex flex-col items-center justify-center group-hover/profile:bg-neutral-200 transition-colors">
+                          <svg className="w-8 h-8 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                          </svg>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </CldUploadWidget>
+              </div>
+
+              {/* Bottom info overlay - only show when background is uploaded */}
+              {backgroundImage && (
+                <div className="absolute bottom-4 left-4 right-4 z-10">
+                  <h3 className="text-white text-lg leading-tight font-semibold drop-shadow mb-0.5 truncate">{name || 'Your Name'}</h3>
+                  <div className="text-white/90 text-xs leading-tight"><span className="line-clamp-1">{jobTitle || 'Your Title'}</span></div>
+                </div>
               )}
-
-              {/* Subtle blue radial gradient from avatar position */}
-              <div
-                className="absolute inset-0 opacity-12"
-                style={{ background: 'radial-gradient(circle at 50% 28%, rgba(96, 165, 250, 0.18) 0%, transparent 55%)' }}
-              />
-
-              {/* Top gradient for framing */}
-              <div
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                  background: 'linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.20) 15%, rgba(0,0,0,0.10) 30%, rgba(0,0,0,0.00) 45%)',
-                }}
-              />
-
-              {/* Bottom gradient for text readability */}
-              <div
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                  background: 'linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.55) 18%, rgba(0,0,0,0.32) 38%, rgba(0,0,0,0.12) 55%, rgba(0,0,0,0.00) 70%)',
-                }}
-              />
-            </div>
-
-            {/* Content */}
-            <div className="relative z-10 h-full">
-              {/* Avatar - positioned at 40% like WorkerCard */}
-              <div className="absolute top-[40%] left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                {image ? (
-                  <div className="w-24 h-24 rounded-full overflow-hidden shadow-lg border-2 border-white">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={image} alt="Profile" className="w-full h-full object-cover" />
-                  </div>
-                ) : (
-                  <div
-                    className="w-24 h-24 rounded-full flex items-center justify-center text-white text-2xl font-semibold shadow-lg border-2 border-white"
-                    style={{ backgroundColor: 'var(--accent-color)' }}
-                  >
-                    {getInitials(name)}
-                  </div>
-                )}
-              </div>
-
-              {/* Bottom info - matches WorkerCard positioning */}
-              <div className="absolute bottom-4 left-4 right-4">
-                <div className="mb-0.5">
-                  <h3 className="text-lg font-semibold text-white drop-shadow leading-tight line-clamp-2">
-                    {name || 'Your Name'}
-                  </h3>
-                </div>
-                <div className="text-white/90 text-xs leading-tight mb-2.5">
-                  <span className="line-clamp-1">{jobTitle || 'Your Title'}</span>
-                </div>
-                {/* Placeholder for SmartBadge area */}
-                <div className="flex items-center">
-                  <span className="px-3 py-1.5 bg-white/20 backdrop-blur-md rounded-lg text-white text-xs font-medium">
-                    Preview
-                  </span>
-                </div>
-              </div>
             </div>
           </div>
 
-          {/* Upload Buttons */}
-          <div className="flex flex-col gap-3 justify-center">
-            {/* Profile Photo Button */}
-            <div className="relative">
-              <ImageUpload
-                uploadId="profile-picture"
-                onChange={(v) => setCustomValue('image', v)}
-                value=""
-                className="absolute inset-0 opacity-0 z-10 cursor-pointer"
-                ratio="square"
-                rounded="full"
-                enableCrop={true}
-                cropMode="fixed"
-                label=""
-                maxFileSizeMB={5}
-                showRemove={false}
-              />
-              <div className={`
-                w-12 h-12 rounded-xl flex items-center justify-center cursor-pointer
-                transition-all duration-200 border
-                ${image
-                  ? 'bg-green-50 border-green-200 text-green-600'
-                  : 'bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100 hover:border-gray-300'}
-              `}>
-                {image ? (
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                ) : (
-                  <CameraIcon size={20} />
-                )}
+          {/* Right: Steps */}
+          <div className="flex-1 min-w-0 flex flex-col gap-4">
+            {/* Step indicators */}
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center gap-3">
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold transition-colors ${backgroundImage && image ? 'bg-emerald-100 text-emerald-600' : 'bg-neutral-100 text-neutral-500'}`}>
+                  {backgroundImage && image ? <Check className="w-3.5 h-3.5" /> : '1'}
+                </div>
+                <span className={`text-sm ${backgroundImage && image ? 'text-emerald-600 font-medium' : 'text-neutral-600'}`}>
+                  Upload profile & background photos
+                </span>
               </div>
-              <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[10px] text-gray-500 whitespace-nowrap">
-                Profile
-              </span>
+              <div className="flex items-center gap-3">
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold transition-colors ${bioVal?.trim() ? 'bg-emerald-100 text-emerald-600' : 'bg-neutral-100 text-neutral-500'}`}>
+                  {bioVal?.trim() ? <Check className="w-3.5 h-3.5" /> : '2'}
+                </div>
+                <span className={`text-sm ${bioVal?.trim() ? 'text-emerald-600 font-medium' : 'text-neutral-600'}`}>
+                  Write your bio
+                </span>
+              </div>
             </div>
 
-            {/* Background Photo Button */}
-            <div className="relative mt-4">
-              <ImageUpload
-                uploadId="background-image"
-                onChange={(v) => setCustomValue('backgroundImage', v)}
-                value=""
-                className="absolute inset-0 opacity-0 z-10 cursor-pointer"
-                ratio="wide"
-                rounded="xl"
-                enableCrop={true}
-                cropMode="fixed"
-                customAspectRatio={250 / 280}
-                label=""
-                maxFileSizeMB={5}
-                showRemove={false}
-              />
-              <div className={`
-                w-12 h-12 rounded-xl flex items-center justify-center cursor-pointer
-                transition-all duration-200 border
-                ${backgroundImage
-                  ? 'bg-green-50 border-green-200 text-green-600'
-                  : 'bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100 hover:border-gray-300'}
-              `}>
-                {backgroundImage ? (
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                ) : (
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                    <circle cx="8.5" cy="8.5" r="1.5" />
-                    <polyline points="21 15 16 10 5 21" />
-                  </svg>
-                )}
-              </div>
-              <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[10px] text-gray-500 whitespace-nowrap">
-                Cover
-              </span>
-            </div>
+            <Input
+              id="bio"
+              label="Biography"
+              disabled={isLoading}
+              register={register}
+              errors={errors}
+              maxLength={500}
+            />
           </div>
         </div>
-
-        <p className="text-xs text-gray-400 text-center mt-2">
-          Photos are optional — you can add them later
-        </p>
       </div>
     );
   }

@@ -7,19 +7,23 @@ import { FiEye, FiEyeOff } from 'react-icons/fi';
 
 interface InputProps {
   id: string;
-  label?: string;  
+  label?: string;
   type?: string;
   placeholder?: string;
   disabled?: boolean;
   formatPrice?: boolean;
   required?: boolean;
-  register: UseFormRegister<FieldValues>;
-  errors: FieldErrors;
+  register?: UseFormRegister<FieldValues>;
+  errors?: FieldErrors;
   maxLength?: number;
   showPasswordValidation?: boolean;
   onChange?: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
-  className?: string;        
-  inputClassName?: string;   
+  className?: string;
+  inputClassName?: string;
+  // Controlled mode props
+  value?: string;
+  onBlur?: () => void;
+  inputMode?: 'none' | 'text' | 'decimal' | 'numeric' | 'tel' | 'search' | 'email' | 'url';
 }
 
 interface PasswordValidation {
@@ -36,7 +40,7 @@ const Input: React.FC<InputProps> = ({
   label,
   type = "text",
   placeholder = " ",
-  disabled, 
+  disabled,
   formatPrice,
   register,
   required,
@@ -45,8 +49,13 @@ const Input: React.FC<InputProps> = ({
   onChange,
   showPasswordValidation = false,
   className,
-  inputClassName
+  inputClassName,
+  value,
+  onBlur,
+  inputMode,
 }) => {
+  // Determine if we're in controlled mode (value prop provided)
+  const isControlled = value !== undefined;
   const [charCount, setCharCount] = useState(0);
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordHelp, setShowPasswordHelp] = useState(false); // NEW: Controls help visibility
@@ -64,15 +73,15 @@ const Input: React.FC<InputProps> = ({
   }, [maxLength]);
 
   const getErrorMessage = (): string => {
-    const error = errors[id];
+    const error = errors?.[id];
     if (!error) return '';
-    
+
     if (typeof error === 'string') return error;
     if (error && typeof error === 'object' && 'message' in error) {
       const message = error.message;
       if (typeof message === 'string') return message;
     }
-    
+
     return `Please check your ${label || id}`;
   };
 
@@ -164,7 +173,7 @@ const Input: React.FC<InputProps> = ({
           <textarea
             id={id}
             disabled={disabled}
-            {...register(id, getValidationRules())}
+            {...(isControlled ? { value, onBlur } : register?.(id, getValidationRules()))}
             placeholder={placeholder}
             className={`
               peer w-full p-3 pt-6 bg-white border border-gray-200/60 rounded-xl
@@ -172,7 +181,7 @@ const Input: React.FC<InputProps> = ({
               disabled:opacity-50 disabled:cursor-not-allowed
               hover:border-gray-300
               ${formatPrice ? 'pl-9' : 'pl-4'}
-              ${errors[id] ? 'border-rose-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/10' : 'focus:border-[var(--accent-color)] focus:ring-2 focus:ring-[var(--accent-color-light)]'}
+              ${errors?.[id] ? 'border-rose-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/10' : 'focus:border-[var(--accent-color)] focus:ring-2 focus:ring-[var(--accent-color-light)]'}
               ${inputClassName ?? ''}
             `}
             onChange={handleChange}
@@ -181,9 +190,10 @@ const Input: React.FC<InputProps> = ({
           <input
             id={id}
             disabled={disabled}
-            {...register(id, getValidationRules())}
+            {...(isControlled ? { value, onBlur } : register?.(id, getValidationRules()))}
             placeholder={placeholder}
             type={type === "password" ? (showPassword ? "text" : "password") : type}
+            inputMode={inputMode}
             autoComplete={
               id === "name" ? "name" :
               id === "email" ? "email" :
@@ -197,7 +207,7 @@ const Input: React.FC<InputProps> = ({
               hover:border-gray-300
               ${formatPrice ? 'pl-9' : 'pl-4'}
               ${type === "password" && showPasswordValidation ? 'pr-24' : type === "password" ? 'pr-12' : 'pr-4'}
-              ${errors[id] ? 'border-rose-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/10' : 'focus:border-[var(--accent-color)] focus:ring-2 focus:ring-[var(--accent-color-light)]'}
+              ${errors?.[id] ? 'border-rose-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/10' : 'focus:border-[var(--accent-color)] focus:ring-2 focus:ring-[var(--accent-color-light)]'}
               ${inputClassName ?? ''}
             `}
             onChange={handleChange}
@@ -247,11 +257,13 @@ const Input: React.FC<InputProps> = ({
           <label
             htmlFor={id}
             className={`
-              absolute text-sm duration-150 transform origin-[0] pointer-events-none
-              ${formatPrice ? 'left-9' : 'left-4'}
-              ${errors[id]
+              absolute text-sm duration-150 transform origin-[0] pointer-events-none bg-white px-1 z-10
+              ${formatPrice ? 'left-9' : 'left-3'}
+              ${errors?.[id]
                 ? 'text-rose-500 scale-75 -translate-y-4 top-5'
-                : 'text-gray-500 -translate-y-3 top-5 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4'
+                : isControlled && value
+                  ? 'text-gray-500 -translate-y-3 top-5 peer-focus:scale-75 peer-focus:-translate-y-4'
+                  : 'text-gray-500 -translate-y-3 top-5 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4'
               }
             `}
           >
@@ -261,13 +273,13 @@ const Input: React.FC<InputProps> = ({
       </div>
 
       {maxLength && (
-        <span className="absolute -top-6 right-4 text-xs text-gray-500">
+        <span className="text-xs text-gray-500 text-right block mt-1">
           {charCount}/{maxLength}
         </span>
       )}
 
-      {errors[id] && (
-        <span className="text-rose-500 text-xs mt-1.5 block font-medium">
+      {errors?.[id] && (
+        <span className="text-rose-500 text-xs mt-1 block text-right font-medium">
           {getErrorMessage()}
         </span>
       )}

@@ -194,9 +194,9 @@ function FloatingLabelSelect(props: {
       />
       <label
         className={[
-          'absolute left-4 top-5 origin-[0] text-sm text-neutral-500 pointer-events-none',
+          'absolute left-4 top-5 origin-[0] text-sm text-gray-500 pointer-events-none',
           'transition-transform duration-150',
-          (focused || hasValue) ? 'scale-75 -translate-y-4' : 'scale-100 translate-y-0',
+          focused ? 'scale-75 -translate-y-4' : hasValue ? '-translate-y-3' : 'translate-y-0',
         ].join(' ')}
       >
         {props.label}

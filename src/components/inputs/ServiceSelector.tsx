@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { CldUploadWidget, type CldUploadWidgetResults } from 'next-cloudinary';
 import { categories } from '../Categories';
-import { Check } from 'lucide-react';
+import Input from './Input';
 
 export type Service = {
   id?: string;           // carry DB id so PUT can upsert, not delete
@@ -142,7 +142,7 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
           const uploading = uploadingIndex === i;
 
           return (
-            <div key={`svc-row-${i}`} className="flex gap-5 items-start">
+            <div key={`svc-row-${i}`} className="flex gap-5 items-center">
               {/* Left: Service Card Preview (exact 250x280 like ServiceCard) */}
               <div className="flex-shrink-0">
                 <CldUploadWidget
@@ -166,13 +166,13 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
                   {({ open }) => (
                     <div
                       onClick={() => open?.()}
-                      className="group cursor-pointer rounded-xl overflow-hidden relative transition-all duration-300 hover:-translate-y-1 hover:shadow-lg max-w-[250px]"
+                      className={`group cursor-pointer rounded-xl overflow-hidden relative transition-all duration-300 hover:-translate-y-1 max-w-[250px] ${hasImage ? 'hover:shadow-lg' : 'border-2 border-dashed border-neutral-200 hover:border-neutral-300 bg-neutral-50'}`}
                       style={{ width: '250px', height: '280px' }}
                     >
-                      {/* Background */}
-                      <div className="absolute inset-0 z-0">
-                        {hasImage ? (
-                          <>
+                      {hasImage ? (
+                        <>
+                          {/* Image state */}
+                          <div className="absolute inset-0 z-0">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                               src={svc.imageSrc}
@@ -204,69 +204,48 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
                                   'rgba(0,0,0,0.00) 70%)',
                               }}
                             />
-                          </>
-                        ) : (
-                          /* Empty state - clean placeholder */
-                          <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200">
-                            {/* Centered camera icon */}
-                            <div className="absolute top-[35%] left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                              <div className="w-16 h-16 rounded-full bg-white/80 backdrop-blur-sm shadow-md flex items-center justify-center border border-gray-200">
-                                <svg
-                                  className="w-7 h-7 text-gray-400"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                  strokeWidth="1.5"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                >
-                                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-                                  <circle cx="12" cy="13" r="4" />
-                                </svg>
-                              </div>
-                            </div>
-                            {/* Bottom gradient for text readability */}
-                            <div
-                              className="absolute inset-0 pointer-events-none"
-                              style={{
-                                background:
-                                  'linear-gradient(to top,' +
-                                  'rgba(0,0,0,0.55) 0%,' +
-                                  'rgba(0,0,0,0.40) 20%,' +
-                                  'rgba(0,0,0,0.20) 40%,' +
-                                  'rgba(0,0,0,0.00) 60%)',
-                              }}
-                            />
                           </div>
-                        )}
-                      </div>
 
-                      {/* Content overlay - matches ServiceCard */}
-                      <div className="absolute bottom-4 left-4 right-4 z-10">
-                        {/* Service Name */}
-                        <h3 className="text-white text-lg leading-tight font-semibold drop-shadow mb-0.5 truncate">
-                          {svc.serviceName || 'Untitled Service'}
-                        </h3>
+                          {/* Content overlay */}
+                          <div className="absolute bottom-4 left-4 right-4 z-10">
+                            <h3 className="text-white text-lg leading-tight font-semibold drop-shadow mb-0.5 truncate">
+                              {svc.serviceName || 'Untitled Service'}
+                            </h3>
+                            <div className="text-white/90 text-xs leading-tight mb-2.5">
+                              <span className="line-clamp-1">{svc.category || 'Category'} · 60 min</span>
+                            </div>
+                            <div className="flex items-center">
+                              <span className="px-3 py-1.5 bg-white/20 backdrop-blur-md rounded-lg text-white text-sm font-semibold">
+                                ${priceNum > 0 ? priceNum.toFixed(0) : '0'}
+                              </span>
+                            </div>
+                          </div>
 
-                        {/* Category + Duration */}
-                        <div className="text-white/90 text-xs leading-tight mb-2.5">
-                          <span className="line-clamp-1">{svc.category || 'Category'} · 60 min</span>
+                          {/* Hover overlay */}
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100 z-20">
+                            <span className="text-white text-sm font-medium px-4 py-2 bg-white/20 backdrop-blur-sm rounded-lg">
+                              Change photo
+                            </span>
+                          </div>
+                        </>
+                      ) : (
+                        /* Empty state - clean upload prompt */
+                        <div className="h-full flex flex-col items-center justify-center text-center p-4">
+                          <div className="w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center mb-3 group-hover:bg-neutral-200 transition-colors">
+                            <svg
+                              className="w-6 h-6 text-neutral-400"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                              strokeWidth="1.5"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                            </svg>
+                          </div>
+                          <span className="text-sm font-medium text-neutral-500 group-hover:text-neutral-600 transition-colors">Add photo</span>
+                          <span className="text-xs text-neutral-400 mt-1">Click to upload</span>
                         </div>
-
-                        {/* Price badge - matches SmartBadgePrice dark variant */}
-                        <div className="flex items-center">
-                          <span className="px-3 py-1.5 bg-white/20 backdrop-blur-md rounded-lg text-white text-sm font-semibold">
-                            ${priceNum > 0 ? priceNum.toFixed(0) : '0'}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Hover overlay */}
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100 z-20">
-                        <span className="text-white text-sm font-medium px-4 py-2 bg-white/20 backdrop-blur-sm rounded-lg">
-                          {hasImage ? 'Change photo' : 'Add photo'}
-                        </span>
-                      </div>
+                      )}
 
                       {/* Uploading overlay */}
                       {uploading && (
@@ -278,61 +257,35 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
                   )}
                 </CldUploadWidget>
 
-                {/* Success indicator */}
-                {hasImage && !uploading && (
-                  <div className="flex items-center justify-center gap-1.5 mt-3">
-                    <div className="w-4 h-4 rounded-full bg-emerald-100 flex items-center justify-center">
-                      <Check className="w-2.5 h-2.5 text-emerald-600" />
-                    </div>
-                    <span className="text-xs text-emerald-600 font-medium">Photo added</span>
-                  </div>
-                )}
               </div>
 
               {/* Right: Form Controls */}
-              <div className="flex-1 min-w-0 space-y-4">
+              <div className="flex-1 min-w-0 space-y-3">
                 {/* Service Name */}
-                <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1.5">
-                    Service name
-                  </label>
-                  <input
-                    id={`serviceName-${i}`}
-                    value={svc.serviceName}
-                    onChange={(e) => setRow(i, { serviceName: e.target.value })}
-                    placeholder="e.g. Haircut, Massage..."
-                    className="w-full px-4 py-3 h-[58px] text-base bg-white border border-gray-200/60 rounded-xl outline-none transition-all duration-200 hover:border-gray-300 focus:border-[#60A5FA] focus:ring-2 focus:ring-[#60A5FA]/10 placeholder:text-gray-400"
-                  />
-                </div>
+                <Input
+                  id={`serviceName-${i}`}
+                  label="Service name"
+                  value={svc.serviceName}
+                  onChange={(e) => setRow(i, { serviceName: e.target.value })}
+                />
 
                 {/* Price */}
-                <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1.5">
-                    Price
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-base text-gray-400">$</span>
-                    <input
-                      id={`servicePrice-${i}`}
-                      value={priceInputs[i]}
-                      onChange={(e) => handlePriceChange(i, e.target.value)}
-                      onBlur={() => handlePriceBlur(i)}
-                      inputMode="decimal"
-                      placeholder="0.00"
-                      className="w-full pl-8 pr-4 py-3 h-[58px] text-base bg-white border border-gray-200/60 rounded-xl outline-none transition-all duration-200 hover:border-gray-300 focus:border-[#60A5FA] focus:ring-2 focus:ring-[#60A5FA]/10 placeholder:text-gray-400"
-                    />
-                  </div>
-                </div>
+                <Input
+                  id={`servicePrice-${i}`}
+                  label="Price"
+                  value={priceInputs[i]}
+                  onChange={(e) => handlePriceChange(i, e.target.value)}
+                  onBlur={() => handlePriceBlur(i)}
+                  inputMode="decimal"
+                />
 
                 {/* Category */}
-                <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1.5">
-                    Category
-                  </label>
+                <div className="relative">
                   <select
+                    id={`serviceCategory-${i}`}
                     value={svc.category}
                     onChange={(e) => setRow(i, { category: e.target.value })}
-                    className="w-full px-4 py-3 h-[58px] text-base bg-white border border-gray-200/60 rounded-xl outline-none transition-all duration-200 hover:border-gray-300 focus:border-[#60A5FA] focus:ring-2 focus:ring-[#60A5FA]/10 appearance-none cursor-pointer"
+                    className={`peer w-full p-3 pt-6 pl-4 h-[58px] bg-white border border-gray-200/60 rounded-xl outline-none transition-all duration-200 hover:border-gray-300 focus:border-[var(--accent-color)] focus:ring-2 focus:ring-[var(--accent-color-light)] appearance-none cursor-pointer ${svc.category ? 'text-gray-900' : 'text-transparent'}`}
                     style={{
                       backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
                       backgroundPosition: 'right 0.75rem center',
@@ -340,17 +293,18 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
                       backgroundSize: '1.5em 1.5em',
                     }}
                   >
-                    <option value="">Select category</option>
+                    <option value="">Select</option>
                     {categoryOptions.map((cat) => (
                       <option key={cat} value={cat}>{cat}</option>
                     ))}
                   </select>
+                  <label
+                    htmlFor={`serviceCategory-${i}`}
+                    className={`absolute text-sm text-gray-500 duration-150 transform origin-[0] pointer-events-none left-4 top-5 ${svc.category ? '-translate-y-3' : 'translate-y-0'} peer-focus:scale-75 peer-focus:-translate-y-4`}
+                  >
+                    Category
+                  </label>
                 </div>
-
-                {/* Tip */}
-                <p className="text-xs text-gray-400">
-                  Click the card to add a photo
-                </p>
               </div>
             </div>
           );

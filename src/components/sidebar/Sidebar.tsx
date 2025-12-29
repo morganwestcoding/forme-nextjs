@@ -116,7 +116,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
 
   const handleSignOut = handleClick(() => signOut());
   const handleSignIn = handleClick(() => loginModal.onOpen());
-  const handleSignUp = handleClick(() => registerModal.onOpen());
+  const handleSignUp = handleClick(() => router.push('/register'));
   const handleProfile = handleClick(() => {
     if (currentUser?.id) router.push(`/profile/${currentUser.id}`);
   });

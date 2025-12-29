@@ -697,7 +697,7 @@ useEffect(() => {
 
   const handleCommentSubmit = async () => {
     if (!currentUser) {
-      registerModal.onOpen();
+      router.push('/register');
       return;
     }
     if (!comment.trim() || !currentPost) return;
@@ -1453,7 +1453,7 @@ useEffect(() => {
                     onChange={(e) => setComment(e.target.value)}
                     onFocus={() => {
                       if (!currentUser) {
-                        registerModal.onOpen();
+                        router.push('/register');
                       }
                     }}
                     onKeyDown={(e) => {

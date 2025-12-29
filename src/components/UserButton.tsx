@@ -76,7 +76,7 @@ const UserButton: React.FC<UserButtonProps> = ({
 
   const handleSignOut = handleClick(() => signOut());
   const handleLogin = handleClick(() => loginModal.onOpen());
-  const handleRegister = handleClick(() => registerModal.onOpen());
+  const handleRegister = handleClick(() => router.push('/register'));
   const handleRent = handleClick(() => rentModal.onOpen());
   const handleSubscribe = handleClick(() => router.push("/subscription"));
   const handleProfile = handleClick(() => {
