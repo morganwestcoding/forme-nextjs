@@ -254,11 +254,11 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
               {/* 3-dot menu - top right */}
               <button
                 onClick={handleDropdownToggle}
-                className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all"
+                className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-all"
                 type="button"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/>
                 </svg>
               </button>
               <div className="w-24 h-24 rounded-full mx-auto overflow-hidden ring-2 ring-gray-100 shadow-lg">
@@ -269,10 +269,37 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                 />
               </div>
               <div className="mt-4">
-                <div className="flex items-center justify-center gap-1.5">
-                  <h1 className="text-xl font-bold text-gray-900">{name ?? 'User'}</h1>
-                  <VerificationBadge size={18} />
-                </div>
+                <h1 className="text-xl font-bold text-gray-900 text-center">
+                  {(() => {
+                    const displayName = name ?? 'User';
+                    const words = displayName.trim().split(' ');
+                    if (words.length <= 2) {
+                      // Keep all words together with badge
+                      return (
+                        <span className="whitespace-nowrap">
+                          {displayName}
+                          <span className="inline-flex items-center align-middle ml-1">
+                            <VerificationBadge size={18} />
+                          </span>
+                        </span>
+                      );
+                    }
+                    // Keep last 2 words together with badge to prevent orphans
+                    const firstWords = words.slice(0, -2);
+                    const lastTwoWords = words.slice(-2).join(' ');
+                    return (
+                      <>
+                        {firstWords.join(' ')}{' '}
+                        <span className="whitespace-nowrap">
+                          {lastTwoWords}
+                          <span className="inline-flex items-center align-middle ml-1">
+                            <VerificationBadge size={18} />
+                          </span>
+                        </span>
+                      </>
+                    );
+                  })()}
+                </h1>
                 <p className="text-sm text-gray-500 mt-1">{jobTitle || 'Member'}</p>
                 {location && (
                   <a
@@ -408,7 +435,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
         </div>
 
         {/* ===== RIGHT COLUMN - Content ===== */}
-        <div ref={rightColumnRef} className="flex-1 min-w-0 md:overflow-y-auto md:py-10 scrollbar-hide">
+        <div ref={rightColumnRef} className="flex-1 min-w-0 md:overflow-y-auto md:py-14 scrollbar-hide">
           {/* Mobile Profile Header (hidden on desktop) */}
           <div className="md:hidden mb-6">
             <div className="flex items-center gap-4">
@@ -428,11 +455,11 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
               </div>
               <button
                 onClick={handleDropdownToggle}
-                className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+                className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100"
                 type="button"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/>
                 </svg>
               </button>
             </div>

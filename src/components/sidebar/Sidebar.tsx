@@ -103,11 +103,13 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
             <div className={`group flex items-center gap-3 p-3 rounded-2xl bg-zinc-800/50 border border-zinc-700/50 hover:border-zinc-600 transition-all duration-300 cursor-pointer ${isCollapsed ? "justify-center p-2" : ""}`}>
               <div className="relative">
                 {currentUser?.image ? (
-                  <Image src={currentUser.image} alt="" width={32} height={32} className="rounded-xl" />
+                  <Image src={currentUser.image} alt="" width={32} height={32} className="rounded-xl ring-1 ring-emerald-500/30" />
                 ) : (
-                  <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-zinc-700 to-zinc-800" />
+                  <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-rose-500/20 via-zinc-800 to-zinc-900 ring-1 ring-rose-500/30 flex items-center justify-center text-rose-400/90 text-xs font-semibold tracking-tight">
+                    G
+                  </div>
                 )}
-                <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-zinc-900" />
+                <span className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-zinc-900 ${currentUser ? "bg-emerald-400" : "bg-red-500"}`} />
               </div>
               {!isCollapsed && (
                 <div className="flex-1 text-left">
@@ -151,8 +153,8 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 px-4 pt-2 flex flex-col items-center">
-        <div className="space-y-1">
+      <nav className="flex-1 pt-2 flex flex-col">
+        <div className="space-y-1 pl-[58px]">
           {navItems.map((item, i) => {
             const El = item.href ? Link : "button";
             return (

@@ -192,11 +192,6 @@ const ListingHead: React.FC<ListingHeadProps> = ({
 
   const operatingStatus = getOperatingStatus();
 
-  // Parse location
-  const [city, state] = useMemo(
-    () => (location ? location.split(',').map((s) => s.trim()) : [null, null]),
-    [location]
-  );
 
   return (
     <>
@@ -337,11 +332,11 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               {/* 3-dot menu - top right */}
               <button
                 onClick={handleDropdownToggle}
-                className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all"
+                className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-all"
                 type="button"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/>
                 </svg>
               </button>
               <div className="w-24 h-24 rounded-xl mx-auto overflow-hidden ring-2 ring-gray-100 shadow-lg">
@@ -352,11 +347,37 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 />
               </div>
               <div className="mt-4">
-                <div className="flex items-center justify-center gap-1.5">
-                  <h1 className="text-xl font-bold text-gray-900">{title}</h1>
-                  <VerificationBadge size={18} />
-                </div>
-                {(location || address) && (
+                <h1 className="text-xl font-bold text-gray-900 text-center">
+                  {(() => {
+                    const words = title.trim().split(' ');
+                    if (words.length <= 2) {
+                      // Keep all words together with badge
+                      return (
+                        <span className="whitespace-nowrap">
+                          {title}
+                          <span className="inline-flex items-center align-middle ml-1">
+                            <VerificationBadge size={18} />
+                          </span>
+                        </span>
+                      );
+                    }
+                    // Keep last 2 words together with badge to prevent orphans
+                    const firstWords = words.slice(0, -2);
+                    const lastTwoWords = words.slice(-2).join(' ');
+                    return (
+                      <>
+                        {firstWords.join(' ')}{' '}
+                        <span className="whitespace-nowrap">
+                          {lastTwoWords}
+                          <span className="inline-flex items-center align-middle ml-1">
+                            <VerificationBadge size={18} />
+                          </span>
+                        </span>
+                      </>
+                    );
+                  })()}
+                </h1>
+                {(address || location) && (
                   <a
                     href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address || location)}`}
                     target="_blank"
@@ -364,8 +385,21 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                     onClick={(e) => e.stopPropagation()}
                     className="text-sm text-gray-400 mt-0.5 hover:text-gray-600 transition-colors"
                   >
-                    {city}{state ? `, ${state}` : ''}
+                    {address || location}
                   </a>
+                )}
+                {operatingStatus && (
+                  <p className="text-sm mt-1">
+                    <span className={operatingStatus.isOpen ? 'text-green-600 font-medium' : 'text-red-500 font-medium'}>
+                      {operatingStatus.isOpen ? 'Open' : 'Closed'}
+                    </span>
+                    <span className="text-gray-400">
+                      {operatingStatus.isOpen
+                        ? ` · Closes ${operatingStatus.closeTime}`
+                        : ` · Opens ${operatingStatus.openTime}`
+                      }
+                    </span>
+                  </p>
                 )}
               </div>
               {/* Rating */}
@@ -385,7 +419,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                     width="14"
                     height="14"
                     viewBox="0 0 24 24"
-                    fill={star <= Math.round(reviewStats?.averageRating || 5) ? `url(#${starGradientId})` : '#e5e7eb'}
+                    fill={star <= Math.round(reviewStats?.averageRating || 0) ? `url(#${starGradientId})` : '#e5e7eb'}
                   >
                     <path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z" />
                   </svg>
@@ -481,7 +515,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
         </div>
 
         {/* ===== RIGHT COLUMN - Content ===== */}
-        <div ref={rightColumnRef} className="flex-1 min-w-0 md:overflow-y-auto md:py-10 scrollbar-hide">
+        <div ref={rightColumnRef} className="flex-1 min-w-0 md:overflow-y-auto md:py-14 scrollbar-hide">
           {/* Mobile Header (hidden on desktop) */}
           <div className="md:hidden mb-6">
             <div className="flex items-center gap-4">
@@ -501,11 +535,11 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               </div>
               <button
                 onClick={handleDropdownToggle}
-                className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+                className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100"
                 type="button"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/>
                 </svg>
               </button>
             </div>

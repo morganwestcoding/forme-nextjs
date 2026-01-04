@@ -13,6 +13,8 @@ export default function ImagesStep() {
   const image = watch('image');
   const backgroundImage = watch('backgroundImage');
   const bio = watch('bio');
+  const name = watch('name');
+  const jobTitle = watch('jobTitle');
 
   const handleProfileUpload = (result: CldUploadWidgetResults) => {
     const info = result?.info;
