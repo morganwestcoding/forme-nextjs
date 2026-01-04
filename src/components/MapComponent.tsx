@@ -10,12 +10,14 @@ interface MapComponentProps {
     lng: number;
   } | null;
   zoom?: number;
+  interactive?: boolean;
 }
 
-const MapComponent: React.FC<MapComponentProps> = ({ 
+const MapComponent: React.FC<MapComponentProps> = ({
   location,
   coordinates,
-  zoom = 12
+  zoom = 12,
+  interactive = true
 }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
@@ -37,10 +39,17 @@ const MapComponent: React.FC<MapComponentProps> = ({
       map.current = new mapboxgl.Map({
         container: mapContainer.current,
         style: 'mapbox://styles/mapbox/streets-v11',
-        center: coordinates 
+        center: coordinates
           ? [coordinates.lng, coordinates.lat]
           : [defaultLocation.lng, defaultLocation.lat],
-        zoom: coordinates ? zoom : defaultLocation.zoom
+        zoom: coordinates ? zoom : defaultLocation.zoom,
+        interactive: interactive,
+        scrollZoom: interactive,
+        dragPan: interactive,
+        dragRotate: interactive,
+        doubleClickZoom: interactive,
+        touchZoomRotate: interactive,
+        attributionControl: false
       });
 
       // Add default marker
@@ -104,9 +113,9 @@ const MapComponent: React.FC<MapComponentProps> = ({
   }, [location, coordinates, zoom]);
 
   return (
-    <div 
-      ref={mapContainer} 
-      className="w-full h-[200px] rounded-lg overflow-hidden shadow-sm shadow-gray-300"
+    <div
+      ref={mapContainer}
+      className="w-full h-[200px] rounded-lg overflow-hidden shadow-sm shadow-gray-300 [&_.mapboxgl-ctrl-logo]:hidden [&_.mapboxgl-ctrl-attrib]:hidden"
     />
   );
 };

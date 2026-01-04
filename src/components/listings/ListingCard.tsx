@@ -15,9 +15,10 @@ interface ListingCardProps {
   onAction?: () => void;
   disabled?: boolean;
   actionLabel?: string;
+  compact?: boolean;
 }
 
-const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser }) => {
+const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = false }) => {
   const router = useRouter();
 
   const [city, state] = data.location?.split(',').map((s) => s.trim()) || [];
@@ -62,11 +63,12 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser }) => {
   return (
     <div
       onClick={() => router.push(`/listings/${data.id}`)}
-className="
-  group cursor-pointer relative overflow-hidden
-  rounded-xl bg-white dark:bg-neutral-950 transition-all duration-300 ease-out
-  hover:-translate-y-1 hover:scale-[1.01] hover:shadow-md
-  max-w-[250px]"
+      className={`
+        group cursor-pointer relative overflow-hidden
+        rounded-xl bg-white dark:bg-neutral-950 transition-all duration-300 ease-out
+        hover:-translate-y-1 hover:scale-[1.01] hover:shadow-md
+        ${compact ? '' : 'max-w-[250px]'}
+      `}
     >
       {/* Background image + lighter-at-top, bottom-heavy gradient */}
       <div className="absolute inset-0 z-0">
@@ -93,7 +95,7 @@ className="
       </div>
 
       <div className="relative z-10">
-        <div className="relative h-[280px]">
+        <div className={compact ? 'relative h-[180px]' : 'relative h-[280px]'}>
           {/* Heart - Using HeartButton component */}
           <div className="absolute top-4 right-4 z-20">
             <HeartButton
@@ -105,30 +107,57 @@ className="
 
           {/* Bottom info */}
           <div className="absolute bottom-4 left-4 right-4 z-20">
-            {/* Title with verification badge that stays with last word */}
-            <div className="mb-0.5">
-              <h1 className="text-white text-base leading-tight font-semibold drop-shadow line-clamp-2">
-                {renderTitleWithBadge(data.title)}
-              </h1>
-            </div>
+            {compact ? (
+              <div className="flex flex-col gap-0.5">
+                {/* Title */}
+                <h1 className="text-white text-xs leading-tight font-semibold drop-shadow line-clamp-1">
+                  {data.title}
+                </h1>
+                {/* Location */}
+                <div className="text-white/90 text-xs leading-tight">
+                  <span className="line-clamp-1">
+                    {city && state ? `${city}, ${state}` : city || state || 'Location not specified'}
+                  </span>
+                </div>
+                {/* Rating */}
+                <div className="flex items-center mt-0.5">
+                  <SmartBadgeRating
+                    rating={data.rating ?? 5.0}
+                    isTrending={data.isTrending || false}
+                    onRatingClick={() => {}}
+                    onTimeClick={() => {}}
+                    storeHours={data.storeHours}
+                  />
+                </div>
+              </div>
+            ) : (
+              <>
+                {/* Title with verification badge that stays with last word */}
+                <div className="mb-0.5">
+                  <h1 className="text-white text-base leading-tight font-semibold drop-shadow line-clamp-2">
+                    {renderTitleWithBadge(data.title)}
+                  </h1>
+                </div>
 
-            {/* Location - improved formatting */}
-            <div className="text-white/90 text-xs leading-tight mb-2.5">
-              <span className="line-clamp-1">
-                {city && state ? `${city}, ${state}` : city || state || 'Location not specified'}
-              </span>
-            </div>
+                {/* Location - improved formatting */}
+                <div className="text-white/90 text-xs leading-tight mb-2.5">
+                  <span className="line-clamp-1">
+                    {city && state ? `${city}, ${state}` : city || state || 'Location not specified'}
+                  </span>
+                </div>
 
-            {/* Rating + open status */}
-            <div className="flex items-center">
-              <SmartBadgeRating
-                rating={data.rating ?? 5.0}
-                isTrending={data.isTrending || false}
-                onRatingClick={() => {}}
-                onTimeClick={() => {}}
-                storeHours={data.storeHours}
-              />
-            </div>
+                {/* Rating + open status */}
+                <div className="flex items-center">
+                  <SmartBadgeRating
+                    rating={data.rating ?? 5.0}
+                    isTrending={data.isTrending || false}
+                    onRatingClick={() => {}}
+                    onTimeClick={() => {}}
+                    storeHours={data.storeHours}
+                  />
+                </div>
+              </>
+            )}
           </div>
         </div>
 

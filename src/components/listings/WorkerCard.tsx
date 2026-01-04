@@ -34,6 +34,8 @@ interface WorkerCardProps {
   currentUser?: SafeUser | null;
   onFollow?: () => void;
   onBook?: () => void;
+  compact?: boolean;
+  solidBackground?: boolean;
 }
 
 /** ---------- Helpers ---------- */
@@ -73,6 +75,8 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
   data,
   listing,
   currentUser,
+  compact = false,
+  solidBackground = false,
 }) => {
   const [/*isFollowing*/, /*setIsFollowing*/] = useState(false);
   const [imageError, setImageError] = useState(false);
@@ -172,135 +176,235 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
   return (
     <div
       onClick={handleCardClick}
-      className="group cursor-pointer rounded-xl overflow-hidden relative transition-all duration-300 hover:-translate-y-1 hover:scale-[1.01] hover:shadow-md max-w-[250px]"
+      className={`group cursor-pointer rounded-xl overflow-hidden relative transition-all duration-300 ${
+        solidBackground
+          ? 'hover:border-neutral-300 hover:shadow-sm'
+          : 'hover:-translate-y-1 hover:scale-[1.01] hover:shadow-md'
+      } ${compact ? '' : 'max-w-[250px]'}`}
     >
-      {/* Background with user's background image or listing image */}
+      {/* Background */}
       <div className="absolute inset-0 z-0">
-        {/* Background image - grayscale and sharp */}
-        <div className="absolute inset-0">
-          <Image
-            src={backgroundImageSrc}
-            alt=""
-            fill
-            className="object-cover grayscale scale-105"
-            style={{ opacity: 0.75 }}
-            sizes="250px"
-          />
-        </div>
+        {solidBackground ? (
+          /* Ultra-minimal white background */
+          <div className="absolute inset-0 bg-white rounded-xl border border-neutral-200/60" />
+        ) : (
+          <>
+            {/* Background image - grayscale and sharp */}
+            <div className="absolute inset-0">
+              <Image
+                src={backgroundImageSrc}
+                alt=""
+                fill
+                className="object-cover grayscale scale-105"
+                style={{ opacity: 0.75 }}
+                sizes="250px"
+              />
+            </div>
 
-        {/* Very light desaturation overlay */}
-        <div
-          className="absolute inset-0 bg-gray-600/15"
-          style={{ mixBlendMode: 'multiply' }}
-        />
+            {/* Very light desaturation overlay */}
+            <div
+              className="absolute inset-0 bg-gray-600/15"
+              style={{ mixBlendMode: 'multiply' }}
+            />
 
-        {/* Subtle blue radial gradient emanating from avatar position */}
-        <div
-          className="absolute inset-0 opacity-12"
-          style={{
-            background: 'radial-gradient(circle at 50% 28%, rgba(96, 165, 250, 0.18) 0%, transparent 55%)'
-          }}
-        />
+            {/* Subtle blue radial gradient emanating from avatar position */}
+            <div
+              className="absolute inset-0 opacity-12"
+              style={{
+                background: 'radial-gradient(circle at 50% 28%, rgba(96, 165, 250, 0.18) 0%, transparent 55%)'
+              }}
+            />
 
-        {/* Top gradient for framing and heart button visibility */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background:
-              'linear-gradient(to bottom,' +
-              'rgba(0,0,0,0.35) 0%,' +
-              'rgba(0,0,0,0.20) 15%,' +
-              'rgba(0,0,0,0.10) 30%,' +
-              'rgba(0,0,0,0.00) 45%)',
-          }}
-        />
+            {/* Top gradient for framing and heart button visibility */}
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background:
+                  'linear-gradient(to bottom,' +
+                  'rgba(0,0,0,0.35) 0%,' +
+                  'rgba(0,0,0,0.20) 15%,' +
+                  'rgba(0,0,0,0.10) 30%,' +
+                  'rgba(0,0,0,0.00) 45%)',
+              }}
+            />
 
-        {/* Bottom gradient for text readability - matches ListingCard */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background:
-              'linear-gradient(to top,' +
-              'rgba(0,0,0,0.72) 0%,' +
-              'rgba(0,0,0,0.55) 18%,' +
-              'rgba(0,0,0,0.32) 38%,' +
-              'rgba(0,0,0,0.12) 55%,' +
-              'rgba(0,0,0,0.00) 70%)',
-          }}
-        />
+            {/* Bottom gradient for text readability */}
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background:
+                  'linear-gradient(to top,' +
+                  'rgba(0,0,0,0.72) 0%,' +
+                  'rgba(0,0,0,0.55) 18%,' +
+                  'rgba(0,0,0,0.32) 38%,' +
+                  'rgba(0,0,0,0.12) 55%,' +
+                  'rgba(0,0,0,0.00) 70%)',
+              }}
+            />
+          </>
+        )}
       </div>
 
       <div className="relative z-10">
         {/* Match ListingCard height structure */}
-        <div className="relative h-[280px]">
-        {/* Heart - Using HeartButton component */}
-        <div className="absolute top-4 right-4 z-20">
-          <HeartButton
-            listingId={employee.id}
-            currentUser={currentUser}
-            variant="worker"
-          />
-        </div>
+        <div className={compact ? 'relative h-[180px]' : 'relative h-[280px]'}>
+          {/* Heart - Using HeartButton component (hidden on minimal solid background) */}
+          {!solidBackground && (
+            <div className="absolute top-4 right-4 z-20">
+              <HeartButton
+                listingId={employee.id}
+                currentUser={currentUser}
+                variant="worker"
+              />
+            </div>
+          )}
 
-        {/* Avatar - Centered */}
-        <div className="absolute top-[40%] left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-          <div className="relative transition-transform duration-300">
-            {/* Profile Image or Initials Circle */}
-            {shouldShowImage ? (
-              <div className="w-24 h-24 rounded-full overflow-hidden shadow-lg border-2 border-white relative">
-                <Image
-                  src={profileImage}
-                  alt={employee.fullName}
-                  fill
-                  className="object-cover"
-                  onError={handleImageError}
-                  onLoad={handleImageLoad}
-                  priority={false}
-                  sizes="96px"
-                />
-              </div>
-            ) : (
-              <div
-                className="w-24 h-24 rounded-full flex items-center justify-center text-white text-2xl font-semibold shadow-lg border-2 border-white"
-                style={{ backgroundColor: avatarBg }}
-                aria-label="Employee initials"
-                title={employee.fullName}
-              >
+          {/* Avatar and info - different layout for solid vs image background */}
+          {solidBackground ? (
+            /* Bold editorial layout */
+            <div className="absolute inset-0 flex flex-col z-20 overflow-hidden">
+              {/* Large initials watermark in background */}
+              <div className="absolute -right-3 -top-6 text-[90px] font-black text-neutral-100 leading-none select-none pointer-events-none tracking-tighter">
                 {initials}
               </div>
-            )}
-          </div>
-        </div>
 
-        {/* Bottom info - positioned like ListingCard */}
-        <div className="absolute bottom-4 left-4 right-4 z-20">
-          {/* Name with verification badge */}
-          <div className="mb-0.5">
-            <h3 className="text-lg font-semibold text-white drop-shadow leading-tight line-clamp-2">
-              {renderNameWithBadge(employee.fullName)}
-            </h3>
-          </div>
+              {/* Content */}
+              <div className="relative flex flex-col h-full p-5">
+                {/* Avatar - top left */}
+                <div className="mb-3">
+                  {shouldShowImage ? (
+                    <div className="w-14 h-14 rounded-full overflow-hidden relative ring-2 ring-neutral-900">
+                      <Image
+                        src={profileImage}
+                        alt={employee.fullName}
+                        fill
+                        className="object-cover"
+                        onError={handleImageError}
+                        onLoad={handleImageLoad}
+                        priority={false}
+                        sizes="56px"
+                      />
+                    </div>
+                  ) : (
+                    <div
+                      className="w-14 h-14 rounded-full flex items-center justify-center text-white text-lg font-bold"
+                      style={{ backgroundColor: avatarBg }}
+                    >
+                      {initials}
+                    </div>
+                  )}
+                </div>
 
-          {/* Job title and location - improved formatting */}
-          <div className="text-white/90 text-xs leading-tight mb-2.5">
-            <span className="line-clamp-1">{employee.jobTitle || 'Specialist'}</span>
-          </div>
+                {/* Name - large and bold */}
+                <h3 className="text-[17px] font-black text-neutral-900 leading-[1.15] line-clamp-2 tracking-tight pr-6">
+                  {employee.fullName}
+                </h3>
 
-          {/* SmartBadge */}
-          <div className="flex items-center">
-            <SmartBadgeWorker
-              employee={employee}
-              listingTitle={listingTitle}
-              followerCount={employee.followerCount || 1247}
-              onTimeClick={(e?: React.MouseEvent) => {
-                e?.stopPropagation();
-                if (currentUser) {
-                  reservationModal.onOpen(listing, currentUser, undefined, employee.id);
-                }
-              }}
-            />
-          </div>
-        </div>
+                {/* Job title - understated */}
+                <p className="mt-1.5 text-[11px] text-neutral-400 font-medium">
+                  {employee.jobTitle || 'Specialist'}
+                </p>
+
+                {/* Spacer */}
+                <div className="flex-1" />
+
+                {/* Bottom row - arrow */}
+                <div className="flex items-end justify-end">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    className="text-neutral-300 group-hover:text-neutral-900 group-hover:translate-x-0.5 transition-all duration-300"
+                  >
+                    <path d="M7 17L17 7M17 7H8M17 7V16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <>
+              {/* Centered avatar for image backgrounds */}
+              <div className={compact ? 'absolute top-[32%] left-1/2 transform -translate-x-1/2 -translate-y-1/2' : 'absolute top-[40%] left-1/2 transform -translate-x-1/2 -translate-y-1/2'}>
+                <div className="relative transition-transform duration-300">
+                  {shouldShowImage ? (
+                    <div className={compact ? 'w-14 h-14 rounded-full overflow-hidden shadow-lg border-2 border-white relative' : 'w-24 h-24 rounded-full overflow-hidden shadow-lg border-2 border-white relative'}>
+                      <Image
+                        src={profileImage}
+                        alt={employee.fullName}
+                        fill
+                        className="object-cover"
+                        onError={handleImageError}
+                        onLoad={handleImageLoad}
+                        priority={false}
+                        sizes={compact ? '56px' : '96px'}
+                      />
+                    </div>
+                  ) : (
+                    <div
+                      className={compact ? 'w-14 h-14 rounded-full flex items-center justify-center text-white text-base font-semibold shadow-lg border-2 border-white' : 'w-24 h-24 rounded-full flex items-center justify-center text-white text-2xl font-semibold shadow-lg border-2 border-white'}
+                      style={{ backgroundColor: avatarBg }}
+                      aria-label="Employee initials"
+                      title={employee.fullName}
+                    >
+                      {initials}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Bottom info for image backgrounds */}
+              <div className="absolute bottom-4 left-4 right-4 z-20">
+                {compact ? (
+                  <div className="flex flex-col gap-0.5">
+                    <h3 className="text-white text-xs leading-tight font-semibold drop-shadow line-clamp-1">
+                      {employee.fullName}
+                    </h3>
+                    <div className="text-white/90 text-xs leading-tight">
+                      <span className="line-clamp-1">{employee.jobTitle || 'Specialist'}</span>
+                    </div>
+                    <div className="flex items-center mt-0.5">
+                      <SmartBadgeWorker
+                        employee={employee}
+                        listingTitle={listingTitle}
+                        followerCount={employee.followerCount || 1247}
+                        onTimeClick={(e?: React.MouseEvent) => {
+                          e?.stopPropagation();
+                          if (currentUser) {
+                            reservationModal.onOpen(listing, currentUser, undefined, employee.id);
+                          }
+                        }}
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="mb-0.5">
+                      <h3 className="text-lg font-semibold text-white drop-shadow leading-tight line-clamp-2">
+                        {renderNameWithBadge(employee.fullName)}
+                      </h3>
+                    </div>
+                    <div className="text-white/90 text-xs leading-tight mb-2.5">
+                      <span className="line-clamp-1">{employee.jobTitle || 'Specialist'}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <SmartBadgeWorker
+                        employee={employee}
+                        listingTitle={listingTitle}
+                        followerCount={employee.followerCount || 1247}
+                        onTimeClick={(e?: React.MouseEvent) => {
+                          e?.stopPropagation();
+                          if (currentUser) {
+                            reservationModal.onOpen(listing, currentUser, undefined, employee.id);
+                          }
+                        }}
+                      />
+                    </div>
+                  </>
+                )}
+              </div>
+            </>
+          )}
         </div>
 
         {/* Match ListingCard bottom padding */}

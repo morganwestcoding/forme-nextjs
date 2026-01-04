@@ -25,36 +25,63 @@ const ProfileCategoryNav: React.FC<ProfileCategoryNavProps> = ({
   ];
 
   return (
-    <div className="flex items-center gap-1.5 py-3">
-      {tabs.map((tab) => {
-        const isSelected = activeTab === tab.key;
+    <div className="flex items-center py-3">
+      {/* Spacer for balance */}
+      <div className="w-20" />
 
-        const handleTabClick = () => {
-          onTabChange(activeTab === tab.key ? null : tab.key);
-        };
+      {/* Centered pills */}
+      <div className="flex-1 flex items-center justify-center gap-1.5">
+        {tabs.map((tab) => {
+          const isSelected = activeTab === tab.key;
 
-        return (
-          <button
-            key={tab.key}
-            onClick={handleTabClick}
-            className={`
-              relative px-3 sm:px-4 h-9 flex items-center text-[12px] sm:text-[13px] font-medium rounded-xl border transition-all duration-200 active:scale-[0.97] whitespace-nowrap
-              ${isSelected
-                ? 'text-white'
-                : 'bg-white dark:bg-neutral-800 border-neutral-300 dark:border-neutral-600 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700 hover:border-neutral-400 dark:hover:border-neutral-500'
-              }
-            `}
-            style={isSelected ? {
-              backgroundColor: accentColor,
-              borderColor: accentColor,
-              color: 'white'
-            } : undefined}
-            type="button"
-          >
-            <span className="relative z-10">{tab.label}</span>
-          </button>
-        );
-      })}
+          const handleTabClick = () => {
+            onTabChange(activeTab === tab.key ? null : tab.key);
+          };
+
+          return (
+            <button
+              key={tab.key}
+              onClick={handleTabClick}
+              className={`
+                relative px-3 sm:px-4 h-9 flex items-center text-[12px] sm:text-[13px] font-medium rounded-xl border transition-all duration-200 active:scale-[0.97] whitespace-nowrap
+                ${isSelected
+                  ? 'text-white'
+                  : 'bg-white border-neutral-300 text-neutral-600 hover:bg-neutral-50 hover:border-neutral-400'
+                }
+              `}
+              style={isSelected ? {
+                backgroundColor: accentColor,
+                borderColor: accentColor,
+                color: 'white'
+              } : undefined}
+              type="button"
+            >
+              {tab.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Right side icons */}
+      <div className="flex items-center gap-1 w-20 justify-end">
+        <button
+          type="button"
+          className="w-9 h-9 flex items-center justify-center rounded-xl border border-neutral-300 bg-white text-neutral-500 hover:bg-neutral-50 hover:border-neutral-400 transition-all duration-200"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.3-4.3"/>
+          </svg>
+        </button>
+        <button
+          type="button"
+          className="w-9 h-9 flex items-center justify-center rounded-xl border border-neutral-300 bg-white text-neutral-500 hover:bg-neutral-50 hover:border-neutral-400 transition-all duration-200"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+          </svg>
+        </button>
+      </div>
     </div>
   );
 };

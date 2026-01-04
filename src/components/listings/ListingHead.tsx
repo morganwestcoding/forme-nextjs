@@ -1,21 +1,18 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import { Location01Icon, Call02Icon, Globe02Icon, Share08Icon, UserAdd01Icon, UserCheck01Icon } from 'hugeicons-react';
+import { toast } from 'react-hot-toast';
 import ServiceCard from './ServiceCard';
 import WorkerCard from './WorkerCard';
 import PostCard from '../feed/PostCard';
 import QRModal from '../modals/QRModal';
-import ListingCategoryNav from './ListingCategoryNav';
-import SectionHeader from '@/app/market/SectionHeader';
 import { SafePost, SafeUser, SafeListing, SafeReview } from '@/app/types';
 import useReservationModal from '@/app/hooks/useReservationModal';
 import useRentModal from '@/app/hooks/useListingModal';
 import useReviewModal from '@/app/hooks/useReviewModal';
 import useFavorite from '@/app/hooks/useFavorite';
-import { useSidebarState } from '@/app/hooks/useSidebarState';
 import ReviewCard from '@/components/reviews/ReviewCard';
 import VerificationBadge from '@/components/VerificationBadge';
 
@@ -56,6 +53,8 @@ const ListingHead: React.FC<ListingHeadProps> = ({
   const { title, location, galleryImages, imageSrc, employees = [], user, storeHours = [], description, phoneNumber, website } = listing;
   const address = (listing as any).address;
 
+  const starGradientId = `starGrad-${React.useId().replace(/:/g, '')}`;
+
   const initialFollowers = useMemo<string[]>(
     () => (Array.isArray((listing as any).followers) ? (listing as any).followers : []),
     [listing]
@@ -63,13 +62,24 @@ const ListingHead: React.FC<ListingHeadProps> = ({
   const [followers, setFollowers] = useState<string[]>(initialFollowers);
   const [showQRModal, setShowQRModal] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [activeTab, setActiveTab] = useState<'About' | 'Services' | 'Professionals' | 'Posts' | 'Reviews' | null>(null);
-  const sidebarCollapsed = useSidebarState();
 
-  // Responsive grid - matches Market pattern, adds 1 column when sidebar is collapsed
-  const gridColsClass = sidebarCollapsed
-    ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6'
-    : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5';
+  const leftColumnRef = useRef<HTMLDivElement>(null);
+  const rightColumnRef = useRef<HTMLDivElement>(null);
+
+  // Forward scroll events from left column to right column
+  useEffect(() => {
+    const leftCol = leftColumnRef.current;
+    const rightCol = rightColumnRef.current;
+    if (!leftCol || !rightCol) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      rightCol.scrollTop += e.deltaY;
+    };
+
+    leftCol.addEventListener('wheel', handleWheel, { passive: false });
+    return () => leftCol.removeEventListener('wheel', handleWheel);
+  }, []);
 
   const isFollowing = !!currentUser?.id && followers.includes(currentUser.id);
 
@@ -84,7 +94,10 @@ const ListingHead: React.FC<ListingHeadProps> = ({
   const mainImage = imageSrc || galleryImages?.[0] || '/placeholder.jpg';
 
   const handleReserveClick = () => {
-    if (!currentUser) return;
+    if (!currentUser) {
+      toast.error('You must be logged in to reserve');
+      return;
+    }
     reservationModal.onOpen(listing, currentUser);
   };
 
@@ -93,7 +106,10 @@ const ListingHead: React.FC<ListingHeadProps> = ({
 
   const handleToggleFollow = async () => {
     if (isOwner) return;
-    if (!currentUser?.id) return;
+    if (!currentUser?.id) {
+      toast.error('You must be logged in to follow');
+      return;
+    }
 
     setFollowers(prev =>
       prev.includes(currentUser.id)
@@ -176,6 +192,11 @@ const ListingHead: React.FC<ListingHeadProps> = ({
 
   const operatingStatus = getOperatingStatus();
 
+  // Parse location
+  const [city, state] = useMemo(
+    () => (location ? location.split(',').map((s) => s.trim()) : [null, null]),
+    [location]
+  );
 
   return (
     <>
@@ -305,486 +326,414 @@ const ListingHead: React.FC<ListingHeadProps> = ({
         </div>
       )}
 
-      {/* ========== LISTING HEADER ========== */}
-      <div className="-mx-6 md:-mx-24 -mt-2 md:-mt-8">
-        <div className="relative px-6 md:px-24 pt-11 pb-8">
+      {/* ========== TWO-COLUMN LAYOUT ========== */}
+      <div className="flex gap-6 -mx-6 md:-mx-24 px-6 md:px-24 -mt-2 md:-mt-8 md:h-[calc(100vh-2rem)] md:overflow-hidden">
 
-          {/* Content */}
-          <div className="relative z-10 pb-6">
-            {/* Centered Layout */}
-            <div className="relative">
-              {/* 3 Dots Menu - Top Right */}
+        {/* ===== LEFT COLUMN - Business Card ===== */}
+        <div ref={leftColumnRef} className="w-[300px] flex-shrink-0 hidden md:flex flex-col gap-4 py-10">
+          <div className="rounded-2xl overflow-hidden bg-gray-50 border border-gray-200/60 shadow-sm">
+            {/* Centered Image & Identity */}
+            <div className="pt-8 pb-5 px-6 text-center relative">
+              {/* 3-dot menu - top right */}
               <button
                 onClick={handleDropdownToggle}
-                className="absolute right-0 top-0 p-1.5 rounded-xl hover:bg-gray-50 text-gray-500 hover:text-gray-900 transition-all duration-200"
+                className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all"
                 type="button"
-                title="More options"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/>
                 </svg>
               </button>
-
-              {/* Vertically aligned content */}
-              <div className="flex flex-col items-center">
-                {/* Image + Title/Info block */}
-                <div className="flex items-center gap-4 mt-2">
-                  {/* Listing Image - sized to match WorkerCard */}
-                  <div className="w-24 h-24 rounded-xl overflow-hidden border-2 border-gray-100 flex-shrink-0">
-                    <img
-                      src={mainImage}
-                      alt={title}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-
-                  {/* Title and Info stacked, left-aligned */}
-                  <div className="flex flex-col items-start">
-                    {/* Title + Badge */}
-                    <div className="flex items-center gap-2">
-                      <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white leading-tight tracking-tight">
-                        {title}
-                      </h1>
-                      <VerificationBadge size={20} />
-                    </div>
-
-                    {/* Info line */}
-                    <p className="text-gray-500 text-base mt-1">
-                      <span className="font-semibold text-neutral-900">{validServices.length}</span> services
-                      <span className="mx-1.5 text-gray-300">·</span>
-                      <span className="font-semibold text-neutral-900">{followers.length}</span> followers
-                      <span className="mx-1.5 text-gray-300">·</span>
-                      {location || address}
-                      {operatingStatus && (
-                        <>
-                          <span className="text-gray-300 mx-1.5">·</span>
-                          <span className={operatingStatus.isOpen ? 'text-emerald-600' : 'text-rose-600'}>
-                            {operatingStatus.isOpen ? `Open` : `Closed`}
-                          </span>
-                        </>
-                      )}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Action Buttons - Centered with labels */}
-                <div className="mt-4">
-                  <div
-                    className="border border-neutral-200 rounded-2xl overflow-hidden"
-                    style={{
-                      background: 'linear-gradient(to right, rgb(245 245 245) 0%, rgb(241 241 241) 100%)'
-                    }}
-                  >
-                    <div className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5">
-                      <button
-                        onClick={handleReserveClick}
-                        className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-white/80 text-neutral-600 hover:text-neutral-900 transition-all duration-200"
-                        type="button"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth="1.5">
-                          <path d="M18 2V4M6 2V4" strokeLinecap="round" strokeLinejoin="round"/>
-                          <path d="M11.9955 13H12.0045M11.9955 17H12.0045M15.991 13H16M8 13H8.00897M8 17H8.00897" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                          <path d="M3.5 8H20.5" strokeLinecap="round" strokeLinejoin="round"/>
-                          <path d="M2.5 12.2432C2.5 7.88594 2.5 5.70728 3.75212 4.35364C5.00424 3 7.01949 3 11.05 3H12.95C16.9805 3 18.9958 3 20.2479 4.35364C21.5 5.70728 21.5 7.88594 21.5 12.2432V12.7568C21.5 17.1141 21.5 19.2927 20.2479 20.6464C18.9958 22 16.9805 22 12.95 22H11.05C7.01949 22 5.00424 22 3.75212 20.6464C2.5 19.2927 2.5 17.1141 2.5 12.7568V12.2432Z" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                        <span className="text-[13px] font-medium">Reserve</span>
-                      </button>
-                      <div className="w-px h-5 bg-neutral-300" />
-                      <button
-                        onClick={handleToggleFollow}
-                        className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-white/80 text-neutral-600 hover:text-neutral-900 transition-all duration-200"
-                        type="button"
-                      >
-                        {isFollowing ? (
-                          <UserCheck01Icon size={18} color="currentColor" />
-                        ) : (
-                          <UserAdd01Icon size={18} color="currentColor" />
-                        )}
-                        <span className="text-[13px] font-medium">{isFollowing ? 'Following' : 'Follow'}</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Category Nav - Below, centered */}
-                <div className="mt-4">
-                  <ListingCategoryNav activeTab={activeTab} onTabChange={setActiveTab} />
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </div>
-
-      {/* ========== SIMPLE CONTENT SECTIONS ========== */}
-      <div className="relative -mt-[30px]">
-        <div className="space-y-12">
-
-        {/* Services */}
-        {validServices.length > 0 && (!activeTab || activeTab === 'Services') && (
-          <section>
-            <SectionHeader
-              title="Our Services & Offerings"
-              onViewAll={validServices.length > 8 ? () => {} : undefined}
-              viewAllLabel={validServices.length > 8 ? `View all ${validServices.length}` : undefined}
-              className="!-mt-2 !mb-6"
-            />
-            <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
-              {validServices.slice(0, 8).map((service, idx) => (
-                <div
-                  key={service.id}
-                  style={{
-                    opacity: 0,
-                    animation: `fadeInUp 520ms ease-out both`,
-                    animationDelay: `${Math.min(60 + idx * 30, 360)}ms`,
-                  }}
-                >
-                  <ServiceCard
-                    service={service}
-                    listing={listing}
-                    currentUser={currentUser}
-                    storeHours={storeHours}
-                  />
-                </div>
-              ))}
-              {isOwner && (
-                <div className="max-w-[250px]">
-                  <button
-                    onClick={handleAddService}
-                    type="button"
-                    className="group relative h-[284px] w-full rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 hover:border-gray-300 hover:bg-gray-100 transition-all"
-                  >
-                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-                      <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-400">
-                          <path d="M12 5v14M5 12h14"/>
-                        </svg>
-                      </div>
-                      <span className="text-sm font-medium text-gray-500">Add Service</span>
-                    </div>
-                  </button>
-                </div>
-              )}
-            </div>
-          </section>
-        )}
-
-        {/* Team */}
-        {employees.length > 0 && (!activeTab || activeTab === 'Professionals') && (
-          <section>
-            <SectionHeader
-              title="Our Professionals"
-              className="!-mt-2 !mb-6"
-            />
-            <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
-              {employees.slice(0, 8).map((employee: any, idx: number) => (
-                <div
-                  key={employee.id || idx}
-                  style={{
-                    opacity: 0,
-                    animation: `fadeInUp 520ms ease-out both`,
-                    animationDelay: `${Math.min(60 + idx * 30, 360)}ms`,
-                  }}
-                >
-                  <WorkerCard
-                    employee={employee}
-                    listingTitle={title}
-                    data={{ title, imageSrc: mainImage, category: (listing as any).category }}
-                    listing={listing}
-                    currentUser={currentUser}
-                    onFollow={() => {}}
-                    onBook={() => {}}
-                  />
-                </div>
-              ))}
-              {isOwner && (
-                <div className="max-w-[250px]">
-                  <button
-                    onClick={handleAddWorker}
-                    type="button"
-                    className="group relative h-[288px] w-full rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 hover:border-gray-300 hover:bg-gray-100 transition-all"
-                  >
-                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-                      <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-400">
-                          <path d="M12 5v14M5 12h14"/>
-                        </svg>
-                      </div>
-                      <span className="text-sm font-medium text-gray-500">Add Professional</span>
-                    </div>
-                  </button>
-                </div>
-              )}
-            </div>
-          </section>
-        )}
-
-        {/* Gallery / Posts */}
-        {((galleryImages && galleryImages.length > 0) || (posts && posts.length > 0) || isOwner) && (!activeTab || activeTab === 'Posts') && (
-          <section>
-            <SectionHeader
-              title="Photos & Gallery"
-              className="!-mt-2 !mb-6"
-            />
-            <div className={`grid ${gridColsClass} gap-3 transition-all duration-300`}>
-              {galleryImages && galleryImages.map((image, idx) => (
-                <div
-                  key={`image-${idx}`}
-                  className="relative rounded-xl overflow-hidden bg-gray-100 aspect-square group cursor-pointer"
-                  style={{
-                    opacity: 0,
-                    animation: `fadeInUp 520ms ease-out both`,
-                    animationDelay: `${Math.min(60 + idx * 30, 360)}ms`,
-                  }}
-                >
-                  <img
-                    src={image}
-                    alt={`${title} - Image ${idx + 1}`}
-                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-              ))}
-
-              {posts && posts.map((post) => (
-                <PostCard
-                  key={post.id}
-                  post={post}
-                  currentUser={currentUser}
-                  categories={categories}
-                  variant="listing"
+              <div className="w-24 h-24 rounded-xl mx-auto overflow-hidden ring-2 ring-gray-100 shadow-lg">
+                <img
+                  src={mainImage}
+                  alt={title}
+                  className="w-full h-full object-cover"
                 />
-              ))}
-
-              {isOwner && (
-                <div className="relative aspect-square min-h-[200px]">
-                  <button
-                    onClick={handleAddMedia}
-                    type="button"
-                    className="group absolute inset-0 rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 hover:border-gray-300 hover:bg-gray-100 transition-all"
-                  >
-                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-                      <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-400">
-                          <path d="M12 5v14M5 12h14"/>
-                        </svg>
-                      </div>
-                      <span className="text-sm font-medium text-gray-500">Add Media</span>
-                    </div>
-                  </button>
-                </div>
-              )}
-            </div>
-          </section>
-        )}
-
-        {/* Reviews Section */}
-        {(!activeTab || activeTab === 'Reviews') && (
-          <section>
-            <SectionHeader
-              title="Reviews"
-              onViewAll={reviews.length > 8 ? () => {} : undefined}
-              viewAllLabel={reviews.length > 8 ? `View all ${reviews.length}` : undefined}
-              className="!-mt-2 !mb-6"
-            />
-            {reviews.length > 0 ? (
-              <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
-                {reviews.slice(0, 8).map((review, idx) => (
-                  <div
-                    key={review.id}
-                    style={{
-                      opacity: 0,
-                      animation: `fadeInUp 520ms ease-out both`,
-                      animationDelay: `${Math.min(60 + idx * 30, 360)}ms`,
-                    }}
-                  >
-                    <ReviewCard review={review} currentUser={currentUser} />
-                  </div>
-                ))}
               </div>
-            ) : (
-              <div className="text-center py-16">
-                <p className="text-base font-medium text-gray-600 mb-1">No reviews yet</p>
-                <p className="text-sm text-gray-500">Reviews will appear here once shared</p>
+              <div className="mt-4">
+                <div className="flex items-center justify-center gap-1.5">
+                  <h1 className="text-xl font-bold text-gray-900">{title}</h1>
+                  <VerificationBadge size={18} />
+                </div>
+                {(location || address) && (
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address || location)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="text-sm text-gray-400 mt-0.5 hover:text-gray-600 transition-colors"
+                  >
+                    {city}{state ? `, ${state}` : ''}
+                  </a>
+                )}
+              </div>
+              {/* Rating */}
+              <div className="flex items-center justify-center gap-1 mt-3">
+                <svg width="0" height="0" className="absolute">
+                  <defs>
+                    <linearGradient id={starGradientId} x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stopColor="#fbbf24" />
+                      <stop offset="100%" stopColor="#f59e0b" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <svg
+                    key={star}
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill={star <= Math.round(reviewStats?.averageRating || 5) ? `url(#${starGradientId})` : '#e5e7eb'}
+                  >
+                    <path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z" />
+                  </svg>
+                ))}
+                <span className="text-xs text-gray-400 ml-1.5">{reviewStats?.totalCount || 0}</span>
+              </div>
+            </div>
+
+            {/* Stats */}
+            <div className="px-6 py-4 border-t border-gray-100">
+              <div className="flex items-center justify-between text-center">
+                <div className="flex-1">
+                  <p className="text-lg font-semibold text-gray-900">{validServices.length}</p>
+                  <p className="text-[11px] text-gray-500 uppercase tracking-wide">Services</p>
+                </div>
+                <div className="w-px h-10 bg-gray-100" />
+                <div className="flex-1">
+                  <p className="text-lg font-semibold text-gray-900">{followers.length}</p>
+                  <p className="text-[11px] text-gray-500 uppercase tracking-wide">Followers</p>
+                </div>
+                <div className="w-px h-10 bg-gray-100" />
+                <div className="flex-1">
+                  <p className="text-lg font-semibold text-gray-900">{reviewStats?.totalCount || 0}</p>
+                  <p className="text-[11px] text-gray-500 uppercase tracking-wide">Reviews</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Description */}
+            {description && (
+              <div className="px-6 py-4 border-t border-gray-100">
+                <p className="text-sm text-gray-600 leading-relaxed line-clamp-4">
+                  {description}
+                </p>
+
+                {/* Social Icons */}
+                <div className="flex items-center justify-center gap-3 mt-6 mb-2">
+                  <a href="#" className="text-gray-400 hover:text-gray-600 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                    </svg>
+                  </a>
+                  <a href="#" className="text-gray-400 hover:text-gray-600 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                  </a>
+                  <a href="#" className="text-gray-400 hover:text-gray-600 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+                    </svg>
+                  </a>
+                  <a href="#" className="text-gray-400 hover:text-gray-600 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                    </svg>
+                  </a>
+                </div>
               </div>
             )}
-          </section>
-        )}
 
-        {/* About & Hours */}
-        {(description || (storeHours && storeHours.length > 0)) && (!activeTab || activeTab === 'About') && (
-          <section>
-            <SectionHeader
-              title="Info & Business Hours"
-              className="!-mt-2 !mb-6"
-            />
-            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8">
-              {/* Left - Description & Contact */}
-              <div className="flex-1 max-w-lg">
-                {/* Description */}
-                {description && (
-                  <p className="text-sm text-gray-600 leading-relaxed">{description}</p>
-                )}
-
-                {/* Contact Actions */}
-                <div className="flex flex-wrap gap-2 mt-6">
-                  {address ? (
-                    <a
-                      href={`https://maps.google.com/?q=${encodeURIComponent(address + (location ? ', ' + location : ''))}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-xl text-sm text-gray-700 transition-colors"
-                    >
-                      <Location01Icon size={18} strokeWidth={1.5} />
-                      Directions
-                    </a>
-                  ) : (
-                    <button
-                      type="button"
-                      className="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-xl text-sm text-gray-400 transition-colors cursor-not-allowed"
-                      disabled
-                    >
-                      <Location01Icon size={18} strokeWidth={1.5} />
-                      Directions
-                    </button>
-                  )}
-                  {phoneNumber ? (
-                    <a
-                      href={`tel:${phoneNumber}`}
-                      className="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-xl text-sm text-gray-700 transition-colors"
-                    >
-                      <Call02Icon size={18} strokeWidth={1.5} />
-                      Call
-                    </a>
-                  ) : (
-                    <button
-                      type="button"
-                      className="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-xl text-sm text-gray-400 transition-colors cursor-not-allowed"
-                      disabled
-                    >
-                      <Call02Icon size={18} strokeWidth={1.5} />
-                      Call
-                    </button>
-                  )}
-                  {website ? (
-                    <a
-                      href={website}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-xl text-sm text-gray-700 transition-colors"
-                    >
-                      <Globe02Icon size={18} strokeWidth={1.5} />
-                      Website
-                    </a>
-                  ) : (
-                    <button
-                      type="button"
-                      className="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-xl text-sm text-gray-400 transition-colors cursor-not-allowed"
-                      disabled
-                    >
-                      <Globe02Icon size={18} strokeWidth={1.5} />
-                      Website
-                    </button>
-                  )}
+            {/* Action Buttons */}
+            <div className="px-6 py-5 border-t border-gray-100">
+              {!isOwner ? (
+                <div className="flex gap-2">
                   <button
+                    onClick={handleReserveClick}
+                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 bg-gray-900 hover:bg-gray-800 text-white rounded-xl text-sm font-medium transition-all"
                     type="button"
-                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-xl text-sm text-gray-700 transition-colors"
-                    onClick={() => {
-                      if (navigator.share) {
-                        navigator.share({ title, url: window.location.href });
-                      } else {
-                        navigator.clipboard.writeText(window.location.href);
-                      }
-                    }}
                   >
-                    <Share08Icon size={18} strokeWidth={1.5} />
-                    Share
+                    Reserve
+                  </button>
+                  <button
+                    onClick={handleToggleFollow}
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-sm font-medium transition-all border border-gray-200/60"
+                    type="button"
+                  >
+                    {isFollowing ? 'Following' : 'Follow'}
                   </button>
                 </div>
-              </div>
-
-              {/* Right - Hours Card */}
-              {storeHours && storeHours.length > 0 && (() => {
-                const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
-                const todayData = storeHours.find(h => h.dayOfWeek === today);
-                const isOpenNow = todayData && !todayData.isClosed;
-
-                return (
-                  <div className="flex-shrink-0 flex-1 max-w-[480px]">
-                    {/* Header */}
-                    <div className="flex items-center justify-between mb-4">
-                      <span className="text-sm font-medium text-gray-900">
-                        {isOpenNow ? 'Open Now' : 'Closed'}
-                        {todayData && !todayData.isClosed && (
-                          <span className="text-gray-400 font-normal"> · until {todayData.closeTime?.replace(':00', '')}</span>
-                        )}
-                      </span>
-                    </div>
-
-                    {/* Week Row */}
-                    <div className="flex gap-2">
-                      {storeHours.map((hours, idx) => {
-                        const isToday = hours.dayOfWeek === today;
-                        const dayAbbrev = hours.dayOfWeek.slice(0, 3);
-
-                        return (
-                          <div
-                            key={idx}
-                            className={`
-                              flex-1 flex flex-col items-center py-3 rounded-xl transition-all
-                              ${isToday
-                                ? 'bg-gray-900'
-                                : 'bg-gray-50'
-                              }
-                            `}
-                          >
-                            <span className={`text-[11px] font-medium ${isToday ? 'text-white' : hours.isClosed ? 'text-gray-300' : 'text-gray-500'}`}>
-                              {dayAbbrev}
-                            </span>
-                            <span className={`text-[10px] mt-1 ${isToday ? 'text-white/60' : hours.isClosed ? 'text-gray-300' : 'text-gray-400'}`}>
-                              {hours.isClosed ? '—' : hours.openTime?.replace(':00', '').replace(' ', '')}
-                            </span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                );
-              })()}
+              ) : (
+                <button
+                  onClick={handleEditListing}
+                  className="w-full flex items-center justify-center gap-2 px-3 py-2.5 bg-gray-900 hover:bg-gray-800 text-white rounded-xl text-sm font-medium transition-all"
+                  type="button"
+                >
+                  Edit Listing
+                </button>
+              )}
             </div>
-          </section>
-        )}
+          </div>
 
-        {/* Empty States for owner */}
-        {validServices.length === 0 && employees.length === 0 && isOwner && !activeTab && (
-          <section className="text-center py-12">
-            <div className="max-w-md mx-auto">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-gray-400">
-                  <path d="M12 5v14M5 12h14"/>
+        </div>
+
+        {/* ===== RIGHT COLUMN - Content ===== */}
+        <div ref={rightColumnRef} className="flex-1 min-w-0 md:overflow-y-auto md:py-10 scrollbar-hide">
+          {/* Mobile Header (hidden on desktop) */}
+          <div className="md:hidden mb-6">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 rounded-xl bg-gray-100 border-2 border-white shadow-lg overflow-hidden flex-shrink-0">
+                <img
+                  src={mainImage}
+                  alt={title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <h1 className="text-lg font-bold text-gray-900 truncate">{title}</h1>
+                  <VerificationBadge size={16} />
+                </div>
+                <p className="text-sm text-gray-500">{location || 'Business'}</p>
+              </div>
+              <button
+                onClick={handleDropdownToggle}
+                className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+                type="button"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/>
                 </svg>
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Get started with your listing</h3>
-              <p className="text-gray-500 mb-6">Add services and team members so customers can book with you.</p>
-              <div className="flex items-center justify-center gap-3">
-                <button
-                  onClick={handleAddService}
-                  className="px-4 py-2 bg-gray-900 text-white font-medium rounded-xl hover:bg-gray-800 transition-colors"
-                  type="button"
-                >
-                  Add Service
-                </button>
-                <button
-                  onClick={handleAddWorker}
-                  className="px-4 py-2 bg-white border border-gray-200 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-colors"
-                  type="button"
-                >
-                  Add Professional
-                </button>
-              </div>
+              </button>
             </div>
-          </section>
-        )}
+          </div>
+
+          {/* Content Sections */}
+          <div className="space-y-10">
+
+            {/* Services Section */}
+            <section>
+              <div className="flex items-center justify-between mb-5">
+                <div className="flex items-center gap-3">
+                  <h3 className="text-xl font-bold text-gray-900 tracking-tight">Services</h3>
+                  <span className="text-[11px] font-semibold text-gray-600 bg-gray-200/80 px-2.5 py-1 rounded-lg">{validServices.length}</span>
+                </div>
+                {validServices.length > 8 && (
+                  <button className="text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors">View all</button>
+                )}
+              </div>
+              {validServices.length > 0 ? (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                  {validServices.slice(0, 8).map((service, idx) => (
+                    <div
+                      key={service.id}
+                      style={{
+                        opacity: 0,
+                        animation: `fadeInUp 520ms ease-out both`,
+                        animationDelay: `${Math.min(60 + idx * 30, 360)}ms`,
+                      }}
+                    >
+                      <ServiceCard
+                        service={service}
+                        listing={listing}
+                        currentUser={currentUser}
+                        storeHours={storeHours}
+                        compact
+                        solidBackground
+                      />
+                    </div>
+                  ))}
+                  {isOwner && (
+                    <button
+                      onClick={handleAddService}
+                      type="button"
+                      className="group relative aspect-[3/4] rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 hover:border-gray-300 hover:bg-gray-100 transition-all"
+                    >
+                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+                        <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center group-hover:scale-110 transition-transform">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-400">
+                            <path d="M12 5v14M5 12h14"/>
+                          </svg>
+                        </div>
+                        <span className="text-sm font-medium text-gray-500">Add Service</span>
+                      </div>
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center py-10 bg-gray-50 rounded-xl">
+                  <p className="text-sm text-gray-400">No services yet</p>
+                </div>
+              )}
+            </section>
+
+            {/* Professionals Section */}
+            <section>
+              <div className="flex items-center justify-between mb-5">
+                <div className="flex items-center gap-3">
+                  <h3 className="text-xl font-bold text-gray-900 tracking-tight">Professionals</h3>
+                  <span className="text-[11px] font-semibold text-gray-600 bg-gray-200/80 px-2.5 py-1 rounded-lg">{employees.length}</span>
+                </div>
+                {employees.length > 8 && (
+                  <button className="text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors">View all</button>
+                )}
+              </div>
+              {employees.length > 0 ? (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                  {employees.slice(0, 8).map((employee: any, idx: number) => (
+                    <div
+                      key={employee.id || idx}
+                      style={{
+                        opacity: 0,
+                        animation: `fadeInUp 520ms ease-out both`,
+                        animationDelay: `${Math.min(60 + idx * 30, 360)}ms`,
+                      }}
+                    >
+                      <WorkerCard
+                        employee={employee}
+                        listingTitle={title}
+                        data={{ title, imageSrc: mainImage, category: (listing as any).category }}
+                        listing={listing}
+                        currentUser={currentUser}
+                        onFollow={() => {}}
+                        onBook={() => {}}
+                        compact
+                        solidBackground
+                      />
+                    </div>
+                  ))}
+                  {isOwner && (
+                    <button
+                      onClick={handleAddWorker}
+                      type="button"
+                      className="group relative aspect-[3/4] rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 hover:border-gray-300 hover:bg-gray-100 transition-all"
+                    >
+                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+                        <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center group-hover:scale-110 transition-transform">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-400">
+                            <path d="M12 5v14M5 12h14"/>
+                          </svg>
+                        </div>
+                        <span className="text-sm font-medium text-gray-500">Add Professional</span>
+                      </div>
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center py-10 bg-gray-50 rounded-xl">
+                  <p className="text-sm text-gray-400">No professionals yet</p>
+                </div>
+              )}
+            </section>
+
+            {/* Gallery Section */}
+            <section>
+              <div className="flex items-center justify-between mb-5">
+                <div className="flex items-center gap-3">
+                  <h3 className="text-xl font-bold text-gray-900 tracking-tight">Gallery</h3>
+                  <span className="text-[11px] font-semibold text-gray-600 bg-gray-200/80 px-2.5 py-1 rounded-lg">{(galleryImages?.length || 0) + posts.length}</span>
+                </div>
+                {((galleryImages?.length || 0) + posts.length) > 8 && (
+                  <button className="text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors">View all</button>
+                )}
+              </div>
+              {(galleryImages && galleryImages.length > 0) || posts.length > 0 ? (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                  {galleryImages && galleryImages.map((image, idx) => (
+                    <div
+                      key={`image-${idx}`}
+                      className="relative rounded-xl overflow-hidden bg-gray-100 aspect-square group cursor-pointer"
+                      style={{
+                        opacity: 0,
+                        animation: `fadeInUp 520ms ease-out both`,
+                        animationDelay: `${Math.min(60 + idx * 30, 360)}ms`,
+                      }}
+                    >
+                      <img
+                        src={image}
+                        alt={`${title} - Image ${idx + 1}`}
+                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                  ))}
+                  {posts.map((post, idx) => (
+                    <div
+                      key={post.id}
+                      style={{
+                        opacity: 0,
+                        animation: `fadeInUp 520ms ease-out both`,
+                        animationDelay: `${Math.min(60 + (galleryImages?.length || 0) + idx * 30, 360)}ms`,
+                      }}
+                    >
+                      <PostCard
+                        post={post}
+                        currentUser={currentUser}
+                        categories={categories}
+                        variant="listing"
+                      />
+                    </div>
+                  ))}
+                  {isOwner && (
+                    <button
+                      onClick={handleAddMedia}
+                      type="button"
+                      className="group relative aspect-square rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 hover:border-gray-300 hover:bg-gray-100 transition-all"
+                    >
+                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+                        <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center group-hover:scale-110 transition-transform">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-400">
+                            <path d="M12 5v14M5 12h14"/>
+                          </svg>
+                        </div>
+                        <span className="text-sm font-medium text-gray-500">Add Media</span>
+                      </div>
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center py-10 bg-gray-50 rounded-xl">
+                  <p className="text-sm text-gray-400">No gallery images yet</p>
+                </div>
+              )}
+            </section>
+
+            {/* Reviews Section */}
+            <section>
+              <div className="flex items-center justify-between mb-5">
+                <div className="flex items-center gap-3">
+                  <h3 className="text-xl font-bold text-gray-900 tracking-tight">Reviews</h3>
+                  <span className="text-[11px] font-semibold text-gray-600 bg-gray-200/80 px-2.5 py-1 rounded-lg">{reviews.length}</span>
+                </div>
+                {reviews.length > 8 && (
+                  <button className="text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors">View all</button>
+                )}
+              </div>
+              {reviews.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {reviews.slice(0, 6).map((review, idx) => (
+                    <div
+                      key={review.id}
+                      style={{
+                        opacity: 0,
+                        animation: `fadeInUp 520ms ease-out both`,
+                        animationDelay: `${Math.min(60 + idx * 30, 360)}ms`,
+                      }}
+                    >
+                      <ReviewCard review={review} currentUser={currentUser} />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-10 bg-gray-50 rounded-xl">
+                  <p className="text-sm text-gray-400">No reviews yet</p>
+                </div>
+              )}
+            </section>
+
+          </div>
         </div>
       </div>
     </>

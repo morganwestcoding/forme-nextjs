@@ -32,6 +32,8 @@ interface ServiceCardProps {
   selected?: boolean;
   disabled?: boolean;
   storeHours?: any[];
+  compact?: boolean;
+  solidBackground?: boolean;
 }
 
 const ServiceCard: React.FC<ServiceCardProps> = ({
@@ -39,9 +41,9 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   listing,
   currentUser,
   onClick,
-  onEdit,
-  onDuplicate,
   disabled = false,
+  compact = false,
+  solidBackground = false,
 }) => {
   const router = useRouter();
   const reservationModal = useReservationModal();
@@ -108,11 +110,18 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   return (
     <div
       onClick={handleCardClick}
-      className="group cursor-pointer rounded-xl overflow-hidden relative transition-all duration-300 hover:-translate-y-1 hover:scale-[1.01] hover:shadow-md max-w-[250px]"
+      className={`group cursor-pointer rounded-xl overflow-hidden relative transition-all duration-300 ${
+        solidBackground
+          ? 'hover:border-neutral-300 hover:shadow-sm'
+          : 'hover:-translate-y-1 hover:scale-[1.01] hover:shadow-md'
+      } ${compact ? '' : 'max-w-[250px]'}`}
     >
       {/* Background with image or empty state */}
       <div className="absolute inset-0 z-0">
-        {hasImage ? (
+        {solidBackground ? (
+          /* Ultra-minimal white background */
+          <div className="absolute inset-0 bg-white rounded-xl border border-neutral-200/60" />
+        ) : hasImage ? (
           <>
             <Image
               src={backgroundImageSrc!}
@@ -211,66 +220,138 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
       </div>
 
       <div className="relative z-10">
-        <div className="relative h-[280px]">
-          {/* Popular/New badges - top left */}
-          {(service.popular || service.isNew) && (
-            <div className="absolute left-3 top-3 flex items-center gap-1.5 z-20">
-              {service.popular && (
-                <span className="px-2 py-0.5 text-[9px] font-medium rounded-full backdrop-blur-md bg-white/15 text-white border border-white/30">
-                  Popular
-                </span>
-              )}
-              {service.isNew && (
-                <span className="px-2 py-0.5 text-[9px] font-medium rounded-full backdrop-blur-md bg-white/15 text-white border border-white/30">
-                  New
-                </span>
-              )}
+        <div className={compact ? 'relative h-[180px]' : 'relative h-[280px]'}>
+          {solidBackground ? (
+            /* Bold editorial layout */
+            <div className="absolute inset-0 flex flex-col z-20 overflow-hidden">
+              {/* Large price watermark in background */}
+              <div className="absolute -right-2 -top-4 text-[80px] font-black text-neutral-100 leading-none select-none pointer-events-none">
+                {priceNum}
+              </div>
+
+              {/* Content */}
+              <div className="relative flex flex-col h-full p-5">
+                {/* Service name - large and bold */}
+                <h3 className="text-[17px] font-black text-neutral-900 leading-[1.15] line-clamp-3 tracking-tight pr-8">
+                  {service.serviceName || 'Untitled Service'}
+                </h3>
+
+                {/* Duration - understated */}
+                <p className="mt-2.5 text-[11px] text-neutral-400 font-medium">
+                  {durationDisplay}
+                </p>
+
+                {/* Spacer */}
+                <div className="flex-1" />
+
+                {/* Bottom row - price with subtle arrow */}
+                <div className="flex items-end justify-between">
+                  <span className="text-2xl font-black text-neutral-900 tabular-nums">${priceNum}</span>
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    className="text-neutral-300 group-hover:text-neutral-900 group-hover:translate-x-0.5 transition-all duration-300 mb-1"
+                  >
+                    <path d="M7 17L17 7M17 7H8M17 7V16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+              </div>
             </div>
+          ) : (
+            <>
+              {/* Popular/New badges - top left */}
+              {(service.popular || service.isNew) && (
+                <div className="absolute left-3 top-3 flex items-center gap-1.5 z-20">
+                  {service.popular && (
+                    <span className="px-2 py-0.5 text-[9px] font-medium rounded-full backdrop-blur-md bg-white/15 text-white border border-white/30">
+                      Popular
+                    </span>
+                  )}
+                  {service.isNew && (
+                    <span className="px-2 py-0.5 text-[9px] font-medium rounded-full backdrop-blur-md bg-white/15 text-white border border-white/30">
+                      New
+                    </span>
+                  )}
+                </div>
+              )}
+
+              {/* Heart - top right */}
+              <div className="absolute top-4 right-4 z-20">
+                <HeartButton
+                  listingId={service.id}
+                  currentUser={currentUser}
+                  variant="worker"
+                />
+              </div>
+
+              {/* Bottom info - matches ListingCard/WorkerCard structure */}
+              <div className="absolute bottom-4 left-4 right-4 z-20">
+                {compact ? (
+                  <div className="flex flex-col gap-0.5">
+                    {/* Service Name */}
+                    <h3 className="text-white text-xs leading-tight font-semibold drop-shadow line-clamp-1">
+                      {service.serviceName || 'Untitled Service'}
+                    </h3>
+                    {/* Category and duration */}
+                    <div className="text-white/90 text-xs leading-tight">
+                      <span className="line-clamp-1">{service.category} · {durationDisplay}</span>
+                    </div>
+                    {/* Price */}
+                    <div className="flex items-center mt-0.5">
+                      <SmartBadgePrice
+                        price={priceNum}
+                        showPrice={true}
+                        variant="dark"
+                        onPriceClick={() => {}}
+                        onBookNowClick={(e: React.MouseEvent) => {
+                          e.stopPropagation();
+                          if (listing && currentUser) {
+                            reservationModal.onOpen(listing, currentUser, service.id);
+                          }
+                        }}
+                        isVerified={true}
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    {/* Service Name with verification badge */}
+                    <div className="mb-0.5">
+                      <h3 className="text-white text-lg leading-tight font-semibold drop-shadow line-clamp-2">
+                        {renderTitleWithBadge(service.serviceName || 'Untitled Service')}
+                      </h3>
+                    </div>
+
+                    {/* Category and location info */}
+                    <div className="text-white/90 text-xs leading-tight mb-2.5">
+                      <span className="line-clamp-1">{service.category} · {durationDisplay}</span>
+                    </div>
+
+                    {/* SmartBadgePrice - using dark variant for image background */}
+                    <div className="flex items-center">
+                      <SmartBadgePrice
+                        price={priceNum}
+                        showPrice={true}
+                        variant="dark"
+                        onPriceClick={() => {
+                          console.log('Price clicked for service:', service.serviceName);
+                        }}
+                        onBookNowClick={(e: React.MouseEvent) => {
+                          e.stopPropagation();
+                          if (listing && currentUser) {
+                            reservationModal.onOpen(listing, currentUser, service.id);
+                          }
+                        }}
+                        isVerified={true}
+                      />
+                    </div>
+                  </>
+                )}
+              </div>
+            </>
           )}
-
-          {/* Heart - top left */}
-          <div className="absolute top-4 right-4 z-20">
-            <HeartButton
-              listingId={service.id}
-              currentUser={currentUser}
-              variant="worker"
-            />
-          </div>
-
-
-          {/* Bottom info - matches ListingCard/WorkerCard structure */}
-          <div className="absolute bottom-4 left-4 right-4 z-20">
-            {/* Service Name with verification badge */}
-            <div className="mb-0.5">
-              <h3 className="text-white text-lg leading-tight font-semibold drop-shadow line-clamp-2">
-                {renderTitleWithBadge(service.serviceName || 'Untitled Service')}
-              </h3>
-            </div>
-
-            {/* Category and location info */}
-            <div className="text-white/90 text-xs leading-tight mb-2.5">
-              <span className="line-clamp-1">{service.category} · {durationDisplay}</span>
-            </div>
-
-            {/* SmartBadgePrice - using dark variant for image background */}
-            <div className="flex items-center">
-              <SmartBadgePrice
-                price={priceNum}
-                showPrice={true}
-                variant="dark"
-                onPriceClick={() => {
-                  console.log('Price clicked for service:', service.serviceName);
-                }}
-                onBookNowClick={(e: React.MouseEvent) => {
-                  e.stopPropagation();
-                  if (listing && currentUser) {
-                    reservationModal.onOpen(listing, currentUser, service.id);
-                  }
-                }}
-                isVerified={true}
-              />
-            </div>
-          </div>
         </div>
 
         {/* Bottom padding to match WorkerCard */}

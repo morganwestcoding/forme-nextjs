@@ -17,9 +17,10 @@ interface PostCardProps {
   currentUser?: SafeUser | null;
   categories: any[];
   variant?: 'default' | 'listing';
+  hideUserInfo?: boolean;
 }
 
-const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, variant = 'default' }) => {
+const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, variant = 'default', hideUserInfo = false }) => {
   const postModal = usePostModal();
   const router = useRouter();
 
@@ -202,7 +203,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, var
         ${isListingVariant ? 'rounded-2xl border border-gray-100 dark:border-neutral-800' : 'rounded-xl bg-white dark:bg-neutral-950'}
         transition-all duration-300 ease-out
         ${isListingVariant ? 'hover:shadow-md' : 'hover:-translate-y-2 hover:scale-[1.02] hover:shadow-xl hover:shadow-black/10'}
-        ${isListingVariant ? '' : 'max-w-[250px]'}`}
+        ${isListingVariant || hideUserInfo ? '' : 'max-w-[250px]'}`}
       style={isListingVariant ? { aspectRatio: '1 / 1' } : undefined}
     >
       {/* Background media/content */}
@@ -266,7 +267,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, var
       </div>
 
       <div className="relative z-10">
-        <div className={isListingVariant ? 'relative w-full h-full' : 'relative h-[280px]'}>
+        <div className={isListingVariant ? 'relative w-full h-full' : hideUserInfo ? 'relative h-[180px]' : 'relative h-[280px]'}>
           {/* Heart Button - top right - only show for default variant */}
           {!isListingVariant && (
             <div className="absolute top-4 right-4 z-20">
@@ -278,58 +279,72 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, var
             </div>
           )}
 
-          {/* Bottom info - user details - only show for default variant */}
+          {/* Bottom info - only show for default variant */}
           {!isListingVariant && (
             <div className="absolute bottom-4 left-4 right-4 z-20">
-              {/* User info */}
-              <div className="flex items-center gap-2">
-                <div
-                  className="relative h-9 w-9 overflow-hidden rounded-full border-2 border-white/30 cursor-pointer flex-shrink-0"
-                  onClick={handleUserClick}
-                >
-                  <Image
-                    src={post.user.image || '/images/placeholder.jpg'}
-                    alt={post.user.name || 'User'}
-                    fill
-                    sizes="36px"
-                    className="object-cover"
-                  />
+              {hideUserInfo ? (
+                /* Caption + time and views when user info is hidden (profile view) */
+                <div className="flex flex-col gap-1">
+                  {post.content && (
+                    <p className="text-white text-xs font-medium leading-snug drop-shadow line-clamp-2">
+                      {post.content}
+                    </p>
+                  )}
+                  <div className="text-white/90 text-xs leading-none drop-shadow">
+                    <span>{prettyTime} · {viewsLabel}</span>
+                  </div>
                 </div>
+              ) : (
+                /* Full user info with time and views */
+                <div className="flex items-center gap-2">
+                  <div
+                    className="relative h-9 w-9 overflow-hidden rounded-full border-2 border-white/30 cursor-pointer flex-shrink-0"
+                    onClick={handleUserClick}
+                  >
+                    <Image
+                      src={post.user.image || '/images/placeholder.jpg'}
+                      alt={post.user.name || 'User'}
+                      fill
+                      sizes="36px"
+                      className="object-cover"
+                    />
+                  </div>
 
-                <div className="flex flex-col justify-center min-w-0 flex-1 -mt-2">
-                  {/* Name with verification badge */}
-                  <div>
-                    <h1 className="text-white text-xs leading-tight font-semibold drop-shadow">
-                      {(() => {
-                        const name = post.user.name || 'Anonymous';
-                        const words = name.split(' ');
-                        const isVerified = post.user.verificationStatus === 'verified' || post.user.isSubscribed;
-                        const firstWords = words.slice(0, -1).join(' ');
-                        const lastWord = words[words.length - 1];
+                  <div className="flex flex-col justify-center min-w-0 flex-1 -mt-2">
+                    {/* Name with verification badge */}
+                    <div>
+                      <h1 className="text-white text-xs leading-tight font-semibold drop-shadow">
+                        {(() => {
+                          const name = post.user.name || 'Anonymous';
+                          const words = name.split(' ');
+                          const isVerified = post.user.verificationStatus === 'verified' || post.user.isSubscribed;
+                          const firstWords = words.slice(0, -1).join(' ');
+                          const lastWord = words[words.length - 1];
 
-                        return (
-                          <span className="cursor-pointer hover:text-white/80" onClick={handleUserClick}>
-                            {firstWords && <>{firstWords} </>}
-                            <span className="whitespace-nowrap">
-                              {lastWord}
-                              {isVerified && (
-                                <span className="inline-flex items-center align-middle ml-1" aria-label="Verified">
-                                  <VerificationBadge size={16} />
-                                </span>
-                              )}
+                          return (
+                            <span className="cursor-pointer hover:text-white/80" onClick={handleUserClick}>
+                              {firstWords && <>{firstWords} </>}
+                              <span className="whitespace-nowrap">
+                                {lastWord}
+                                {isVerified && (
+                                  <span className="inline-flex items-center align-middle ml-1" aria-label="Verified">
+                                    <VerificationBadge size={16} />
+                                  </span>
+                                )}
+                              </span>
                             </span>
-                          </span>
-                        );
-                      })()}
-                    </h1>
-                  </div>
+                          );
+                        })()}
+                      </h1>
+                    </div>
 
-                  {/* Time and views */}
-                  <div className="text-white/90 text-[10px] leading-none mt-0.5">
-                    <span className="line-clamp-1">{prettyTime} · {viewsLabel}</span>
+                    {/* Time and views */}
+                    <div className="text-white/90 text-[10px] leading-none mt-0.5">
+                      <span className="line-clamp-1">{prettyTime} · {viewsLabel}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
           )}
         </div>

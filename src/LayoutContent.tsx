@@ -18,7 +18,7 @@ export default function LayoutContent({ children }: LayoutContentProps) {
   }, []);
 
   return (
-    <div className={`flex-1 transition-all duration-300 ease-in-out ${collapsed ? 'pl-[84px]' : 'pl-[272px]'}`}>
+    <div className={`flex-1 transition-all duration-300 ease-in-out ${collapsed ? 'pl-16' : 'pl-56'}`}>
       <main className="pt-3 pb-8">
         {children}
       </main>
