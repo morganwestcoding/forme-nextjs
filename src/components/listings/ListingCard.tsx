@@ -65,13 +65,14 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
       onClick={() => router.push(`/listings/${data.id}`)}
       className={`
         group cursor-pointer relative overflow-hidden
-        rounded-xl bg-white dark:bg-neutral-950 transition-all duration-300 ease-out
-        hover:-translate-y-1 hover:scale-[1.01] hover:shadow-md
+        rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-950
+        transition-[transform,box-shadow] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]
+        hover:-translate-y-0.5 hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)]
         ${compact ? '' : 'max-w-[250px]'}
       `}
     >
       {/* Background image + lighter-at-top, bottom-heavy gradient */}
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0 overflow-hidden rounded-2xl">
         <Image
           src={cardImage}
           alt={data.title}
@@ -85,11 +86,10 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
           style={{
             background:
               'linear-gradient(to top,' +
-              'rgba(0,0,0,0.72) 0%,' +
-              'rgba(0,0,0,0.55) 18%,' +
-              'rgba(0,0,0,0.32) 38%,' +
-              'rgba(0,0,0,0.12) 55%,' +
-              'rgba(0,0,0,0.00) 70%)',
+              'rgba(0,0,0,0.65) 0%,' +
+              'rgba(0,0,0,0.45) 18%,' +
+              'rgba(0,0,0,0.20) 40%,' +
+              'rgba(0,0,0,0.00) 60%)',
           }}
         />
       </div>
@@ -106,11 +106,14 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
           </div>
 
           {/* Bottom info */}
-          <div className="absolute bottom-4 left-4 right-4 z-20">
+          <div
+            className="absolute bottom-4 left-4 right-4 z-20"
+            style={{ textShadow: '0 1px 2px rgba(0,0,0,0.4)' }}
+          >
             {compact ? (
               <div className="flex flex-col gap-0.5">
                 {/* Title */}
-                <h1 className="text-white text-xs leading-tight font-semibold drop-shadow line-clamp-1">
+                <h1 className="text-white text-xs leading-tight font-semibold tracking-tight line-clamp-1">
                   {data.title}
                 </h1>
                 {/* Location */}
@@ -120,7 +123,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
                   </span>
                 </div>
                 {/* Rating */}
-                <div className="flex items-center mt-0.5">
+                <div className="flex items-center mt-0.5 drop-shadow">
                   <SmartBadgeRating
                     rating={data.rating ?? 5.0}
                     isTrending={data.isTrending || false}
@@ -134,20 +137,20 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
               <>
                 {/* Title with verification badge that stays with last word */}
                 <div className="mb-0.5">
-                  <h1 className="text-white text-base leading-tight font-semibold drop-shadow line-clamp-2">
+                  <h1 className="text-white text-[17px] leading-tight font-medium tracking-tight line-clamp-2">
                     {renderTitleWithBadge(data.title)}
                   </h1>
                 </div>
 
                 {/* Location - improved formatting */}
-                <div className="text-white/90 text-xs leading-tight mb-2.5">
+                <div className="text-white/90 text-xs leading-tight font-medium mb-2.5">
                   <span className="line-clamp-1">
                     {city && state ? `${city}, ${state}` : city || state || 'Location not specified'}
                   </span>
                 </div>
 
                 {/* Rating + open status */}
-                <div className="flex items-center">
+                <div className="flex items-center drop-shadow">
                   <SmartBadgeRating
                     rating={data.rating ?? 5.0}
                     isTrending={data.isTrending || false}

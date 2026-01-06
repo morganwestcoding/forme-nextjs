@@ -176,17 +176,17 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
   return (
     <div
       onClick={handleCardClick}
-      className={`group cursor-pointer rounded-xl overflow-hidden relative transition-all duration-300 ${
+      className={`group cursor-pointer rounded-2xl overflow-hidden relative border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-950 transition-[transform,box-shadow] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
         solidBackground
           ? 'hover:border-neutral-300 hover:shadow-sm'
-          : 'hover:-translate-y-1 hover:scale-[1.01] hover:shadow-md'
+          : 'hover:-translate-y-0.5 hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)]'
       } ${compact ? '' : 'max-w-[250px]'}`}
     >
       {/* Background */}
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0 overflow-hidden rounded-2xl">
         {solidBackground ? (
           /* Ultra-minimal white background */
-          <div className="absolute inset-0 bg-white rounded-xl border border-neutral-200/60" />
+          <div className="absolute inset-0 bg-white rounded-2xl border border-neutral-200/60" />
         ) : (
           <>
             {/* Background image - grayscale and sharp */}
@@ -234,11 +234,10 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
               style={{
                 background:
                   'linear-gradient(to top,' +
-                  'rgba(0,0,0,0.72) 0%,' +
-                  'rgba(0,0,0,0.55) 18%,' +
-                  'rgba(0,0,0,0.32) 38%,' +
-                  'rgba(0,0,0,0.12) 55%,' +
-                  'rgba(0,0,0,0.00) 70%)',
+                  'rgba(0,0,0,0.65) 0%,' +
+                  'rgba(0,0,0,0.45) 18%,' +
+                  'rgba(0,0,0,0.20) 40%,' +
+                  'rgba(0,0,0,0.00) 60%)',
               }}
             />
           </>
@@ -354,16 +353,19 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
               </div>
 
               {/* Bottom info for image backgrounds */}
-              <div className="absolute bottom-4 left-4 right-4 z-20">
+              <div
+                className="absolute bottom-4 left-4 right-4 z-20"
+                style={{ textShadow: '0 1px 2px rgba(0,0,0,0.4)' }}
+              >
                 {compact ? (
                   <div className="flex flex-col gap-0.5">
-                    <h3 className="text-white text-xs leading-tight font-semibold drop-shadow line-clamp-1">
+                    <h3 className="text-white text-xs leading-tight font-semibold tracking-tight line-clamp-1">
                       {employee.fullName}
                     </h3>
-                    <div className="text-white/90 text-xs leading-tight">
+                    <div className="text-white/90 text-xs leading-tight font-medium">
                       <span className="line-clamp-1">{employee.jobTitle || 'Specialist'}</span>
                     </div>
-                    <div className="flex items-center mt-0.5">
+                    <div className="flex items-center mt-0.5 drop-shadow">
                       <SmartBadgeWorker
                         employee={employee}
                         listingTitle={listingTitle}
@@ -380,14 +382,14 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
                 ) : (
                   <>
                     <div className="mb-0.5">
-                      <h3 className="text-lg font-semibold text-white drop-shadow leading-tight line-clamp-2">
+                      <h3 className="text-[17px] font-medium text-white leading-tight tracking-tight line-clamp-2">
                         {renderNameWithBadge(employee.fullName)}
                       </h3>
                     </div>
-                    <div className="text-white/90 text-xs leading-tight mb-2.5">
+                    <div className="text-white/90 text-xs leading-tight font-medium mb-2.5">
                       <span className="line-clamp-1">{employee.jobTitle || 'Specialist'}</span>
                     </div>
-                    <div className="flex items-center">
+                    <div className="flex items-center drop-shadow">
                       <SmartBadgeWorker
                         employee={employee}
                         listingTitle={listingTitle}

@@ -194,7 +194,7 @@ const PageSearch: React.FC<PageSearchProps> = ({
 
   const activeFilterCount = getActiveFilterCount();
 
-  const iconButtonClasses = "p-1.5 sm:p-2 rounded-lg sm:rounded-xl hover:bg-neutral-200 text-neutral-600 hover:text-neutral-900 transition-all duration-200";
+  const iconButtonClasses = "p-2 rounded-lg text-stone-400 dark:text-zinc-500 hover:text-stone-600 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-zinc-800 transition-colors";
 
   const defaultActionButtons = showDefaultActions ? (
     <>
@@ -251,7 +251,7 @@ const PageSearch: React.FC<PageSearchProps> = ({
         <button
           ref={refs.setReference}
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          className={`${iconButtonClasses} ${isDropdownOpen ? 'bg-neutral-200 text-neutral-900' : ''}`}
+          className={`${iconButtonClasses} ${isDropdownOpen ? 'bg-stone-100 dark:bg-zinc-800 text-stone-600 dark:text-white' : ''}`}
           type="button"
           title="Create"
         >
@@ -281,7 +281,7 @@ const PageSearch: React.FC<PageSearchProps> = ({
         <FloatingPortal>
           <div
             ref={refs.setFloating}
-            className="z-[9999] bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl shadow-lg shadow-neutral-900/10 py-1.5 min-w-[180px]"
+            className="z-[9999] bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-xl shadow-lg shadow-gray-900/10 py-1.5 min-w-[180px]"
             style={{
               ...floatingStyles,
               visibility: isPositioned ? 'visible' : 'hidden',
@@ -291,11 +291,11 @@ const PageSearch: React.FC<PageSearchProps> = ({
               <button
                 key={item.label}
                 onClick={() => handleActionClick(item.action)}
-                className="w-full px-3 py-2.5 flex items-center gap-2.5 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors duration-150 text-left"
+                className="w-full px-3 py-2.5 flex items-center gap-2.5 hover:bg-gray-50 dark:hover:bg-zinc-700 transition-colors duration-150 text-left"
                 type="button"
               >
-                <item.icon className="w-4 h-4 text-neutral-500 dark:text-neutral-400" strokeWidth={1.5} />
-                <span className="text-[13px] font-medium text-neutral-700 dark:text-neutral-200">{item.label}</span>
+                <item.icon className="w-4 h-4 text-gray-400 dark:text-zinc-500" strokeWidth={1.5} />
+                <span className="text-[13px] font-medium text-gray-700 dark:text-zinc-200">{item.label}</span>
               </button>
             ))}
           </div>

@@ -246,14 +246,21 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
   return (
     <div className={`relative w-full ${className || ""}`} ref={refs.setReference}>
       <div
-        className="border border-neutral-200 dark:border-neutral-700 rounded-2xl overflow-hidden"
+        className={`rounded-2xl border ${
+          isDarkMode
+            ? 'border-zinc-700/80'
+            : 'border-stone-200/60'
+        }`}
         style={{
           background: isDarkMode
-            ? 'linear-gradient(to right, rgb(38 38 38) 0%, rgb(35 35 35) 100%)'
-            : 'linear-gradient(to right, rgb(245 245 245) 0%, rgb(241 241 241) 100%)'
+            ? '#18181b'
+            : '#FAFAF9',
+          boxShadow: isDarkMode
+            ? 'inset 0 1px 0 rgba(255,255,255,0.04)'
+            : 'inset 0 1px 0 rgba(255,255,255,0.8)',
         }}
       >
-        <div className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5">
+        <div className="relative flex items-center gap-2 px-4 py-2.5">
           <input
             ref={inputRef}
             type="text"
@@ -262,12 +269,16 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
             onFocus={() => results.length && setOpen(true)}
             onKeyDown={onKeyDown}
             placeholder={placeholder}
-            className="flex-1 text-[13px] sm:text-[14px] bg-transparent border-none outline-none text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 font-normal pl-2 sm:pl-3"
+            className={`flex-1 pl-3 text-[15px] bg-transparent border-none outline-none ${
+              isDarkMode
+                ? 'text-white placeholder-zinc-500'
+                : 'text-stone-900 placeholder-stone-400'
+            }`}
           />
 
           {actionButtons && (
             <>
-              <div className="w-px h-5 bg-neutral-300 dark:bg-neutral-600" />
+              <div className={`w-px h-5 ${isDarkMode ? 'bg-zinc-700' : 'bg-stone-200'}`} />
               {actionButtons}
             </>
           )}
@@ -279,7 +290,7 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
         <FloatingPortal>
           <div
             ref={refs.setFloating}
-            className="z-[9999] max-h-80 overflow-auto rounded-2xl bg-white/95 backdrop-blur-xl border border-neutral-200 shadow-xl shadow-neutral-900/5"
+            className="z-[9999] max-h-80 overflow-auto rounded-2xl bg-white/95 dark:bg-zinc-900 backdrop-blur-xl border border-gray-100 dark:border-zinc-800 shadow-xl"
             style={{
               ...floatingStyles,
               visibility: isPositioned ? 'visible' : 'hidden',
@@ -289,18 +300,18 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
             {loading && (
               <div className="px-4 py-6 flex flex-col items-center justify-center gap-3">
                 <div className="flex items-center gap-1">
-                  <div className="w-1.5 h-1.5 rounded-full bg-neutral-400 animate-[bounce_1s_ease-in-out_infinite]" />
-                  <div className="w-1.5 h-1.5 rounded-full bg-neutral-400 animate-[bounce_1s_ease-in-out_0.15s_infinite]" />
-                  <div className="w-1.5 h-1.5 rounded-full bg-neutral-400 animate-[bounce_1s_ease-in-out_0.3s_infinite]" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-zinc-500 animate-[bounce_1s_ease-in-out_infinite]" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-zinc-500 animate-[bounce_1s_ease-in-out_0.15s_infinite]" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-zinc-500 animate-[bounce_1s_ease-in-out_0.3s_infinite]" />
                 </div>
               </div>
             )}
 
             {/* Empty */}
             {!loading && debouncedQ.length >= 2 && flatItems.length === 0 && (
-              <div className="px-4 py-6 text-sm text-neutral-400 text-center">
-                <div className="w-10 h-10 mx-auto mb-3 rounded-full bg-neutral-100 flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-neutral-400">
+              <div className="px-4 py-6 text-sm text-gray-400 dark:text-zinc-500 text-center">
+                <div className="w-10 h-10 mx-auto mb-3 rounded-full bg-gray-100 dark:bg-zinc-700 flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-gray-400 dark:text-zinc-500">
                     <circle cx="11" cy="11" r="8"/>
                     <path d="m21 21-4.3-4.3"/>
                   </svg>
@@ -319,7 +330,7 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
                     return (
                       <div key={typeKey}>
                         <div className="px-4 pt-3 pb-2">
-                          <span className="text-[11px] font-semibold uppercase tracking-wider text-neutral-400">
+                          <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 dark:text-zinc-500">
                             {typeLabel[typeKey as ItemType]}
                           </span>
                         </div>
@@ -335,8 +346,8 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
                                 data-idx={idx}
                                 className={`mx-2 px-3 py-2.5 cursor-pointer flex items-center gap-3 rounded-xl transition-all duration-150 ${
                                   active
-                                    ? "bg-neutral-100"
-                                    : "hover:bg-neutral-50"
+                                    ? "bg-gray-100 dark:bg-zinc-700"
+                                    : "hover:bg-gray-50 dark:hover:bg-zinc-700/50"
                                 }`}
                                 onMouseEnter={() => setActiveIdx(idx)}
                                 onClick={(e) => {
@@ -347,7 +358,7 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
                               >
                                 {/* Thumbnail */}
                                 <div className={`w-9 h-9 rounded-xl overflow-hidden shrink-0 transition-all duration-150 ${
-                                  active ? "ring-2 ring-neutral-300" : "bg-neutral-100"
+                                  active ? "ring-2 ring-gray-300 dark:ring-zinc-500" : "bg-gray-100 dark:bg-zinc-700"
                                 }`}>
                                   {item.image ? (
                                     // eslint-disable-next-line @next/next/no-img-element
@@ -357,7 +368,7 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
                                       className="w-full h-full object-cover"
                                     />
                                   ) : (
-                                    <div className="w-full h-full bg-gradient-to-br from-neutral-100 to-neutral-50 flex items-center justify-center text-[10px] font-medium text-neutral-400 uppercase">
+                                    <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-50 dark:from-zinc-700 dark:to-zinc-800 flex items-center justify-center text-[10px] font-medium text-gray-400 dark:text-zinc-500 uppercase">
                                       {typeKey.slice(0, 2)}
                                     </div>
                                   )}
@@ -365,19 +376,19 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
                                 {/* Text */}
                                 <div className="min-w-0 flex-1">
                                   <div className={`text-sm font-medium truncate transition-colors duration-150 ${
-                                    active ? "text-neutral-900" : "text-neutral-700"
+                                    active ? "text-gray-900 dark:text-white" : "text-gray-700 dark:text-zinc-300"
                                   }`}>
                                     {item.title}
                                   </div>
                                   {!!item.subtitle && (
-                                    <div className="text-xs text-neutral-400 truncate">
+                                    <div className="text-xs text-gray-400 dark:text-zinc-500 truncate">
                                       {item.subtitle}
                                     </div>
                                   )}
                                 </div>
                                 {/* Type badge */}
                                 <div className={`text-[10px] uppercase tracking-wider font-medium px-2 py-0.5 rounded-lg transition-all duration-150 ${
-                                  active ? "text-neutral-600 bg-neutral-200" : "text-neutral-400 bg-neutral-100"
+                                  active ? "text-gray-600 dark:text-zinc-300 bg-gray-200 dark:bg-zinc-600" : "text-gray-400 dark:text-zinc-500 bg-gray-100 dark:bg-zinc-700"
                                 }`}>
                                   {typeKey}
                                 </div>

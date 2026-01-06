@@ -5,7 +5,6 @@ import React, { useState, useRef } from 'react';
 import Image from 'next/image';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import { format, differenceInMinutes, differenceInHours, differenceInDays, differenceInMonths } from 'date-fns';
 import { SafePost, SafeUser, MediaOverlay } from '@/app/types';
 import usePostModal from '@/app/hooks/usePostModal';
 import { usePostStore } from '@/app/hooks/usePostStore';
@@ -35,31 +34,6 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, var
   const isTextPost = !post.imageSrc && !post.mediaUrl;
   const isVideo = post.mediaType === 'video';
   const hasThumbnail = isVideo && post.thumbnailUrl;
-
-  /** ---------- Helpers ---------- */
-  const formatViews = (n: number | undefined | null) => {
-    const v = typeof n === 'number' ? n : 0;
-    if (v < 1000) return `${v}`;
-    if (v < 1_000_000) return `${(v / 1000).toFixed(v % 1000 === 0 ? 0 : 1)}k`;
-    return `${(v / 1_000_000).toFixed(v % 1_000_000 === 0 ? 0 : 1)}M`;
-  };
-
-  const getPrettyTime = (iso: string) => {
-    const created = new Date(iso);
-    const now = new Date();
-    if (differenceInMonths(now, created) >= 1) {
-      return format(created, 'M.d.yy');
-    }
-    const mins = differenceInMinutes(now, created);
-    if (mins < 60) return `${mins}m`;
-    const hrs = differenceInHours(now, created);
-    if (hrs < 24) return `${hrs}h`;
-    const days = differenceInDays(now, created);
-    return `${days}d`;
-  };
-
-  const prettyTime = getPrettyTime(post.createdAt);
-  const viewsLabel = `${formatViews(post.viewedBy?.length ?? 0)} views`;
 
   /** ---------- Handlers ---------- */
   const handleCardClick = async () => {
@@ -200,9 +174,11 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, var
       onMouseLeave={handleMouseLeave}
       className={`
         group cursor-pointer relative overflow-hidden
-        ${isListingVariant ? 'rounded-2xl border border-gray-100 dark:border-neutral-800' : 'rounded-xl bg-white dark:bg-neutral-950'}
-        transition-all duration-300 ease-out
-        ${isListingVariant ? 'hover:shadow-md' : 'hover:-translate-y-2 hover:scale-[1.02] hover:shadow-xl hover:shadow-black/10'}
+        ${isListingVariant
+          ? 'rounded-2xl border border-gray-100 dark:border-neutral-800'
+          : 'rounded-xl bg-white dark:bg-neutral-950'}
+        transition-[transform,box-shadow] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]
+        ${isListingVariant ? 'hover:shadow-md' : 'hover:-translate-y-0.5 hover:shadow-sm'}
         ${isListingVariant || hideUserInfo ? '' : 'max-w-[250px]'}`}
       style={isListingVariant ? { aspectRatio: '1 / 1' } : undefined}
     >
@@ -247,18 +223,17 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, var
           </div>
         )}
 
-        {/* Gradient overlay - matching ListingCard/ShopCard style */}
+        {/* Subtle gradient overlay - lighter feel */}
         {!isListingVariant && (
           <div
             className="absolute inset-0 pointer-events-none"
             style={{
               background:
                 'linear-gradient(to top,' +
-                'rgba(0,0,0,0.72) 0%,' +
-                'rgba(0,0,0,0.55) 18%,' +
-                'rgba(0,0,0,0.32) 38%,' +
-                'rgba(0,0,0,0.12) 55%,' +
-                'rgba(0,0,0,0.00) 70%)',
+                'rgba(0,0,0,0.55) 0%,' +
+                'rgba(0,0,0,0.35) 15%,' +
+                'rgba(0,0,0,0.15) 35%,' +
+                'rgba(0,0,0,0.00) 55%)',
             }}
           />
         )}
@@ -266,11 +241,12 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, var
         <div className="absolute inset-0 bg-black/0 transition-colors" />
       </div>
 
+      {/* Card content layer */}
       <div className="relative z-10">
         <div className={isListingVariant ? 'relative w-full h-full' : hideUserInfo ? 'relative h-[180px]' : 'relative h-[280px]'}>
-          {/* Heart Button - top right - only show for default variant */}
+          {/* Heart button - top right */}
           {!isListingVariant && (
-            <div className="absolute top-4 right-4 z-20">
+            <div className="absolute top-3 right-3 z-20">
               <HeartButton
                 listingId={post.id}
                 currentUser={currentUser}
@@ -278,79 +254,50 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, var
               />
             </div>
           )}
-
-          {/* Bottom info - only show for default variant */}
-          {!isListingVariant && (
-            <div className="absolute bottom-4 left-4 right-4 z-20">
-              {hideUserInfo ? (
-                /* Caption + time and views when user info is hidden (profile view) */
-                <div className="flex flex-col gap-1">
-                  {post.content && (
-                    <p className="text-white text-xs font-medium leading-snug drop-shadow line-clamp-2">
-                      {post.content}
-                    </p>
-                  )}
-                  <div className="text-white/90 text-xs leading-none drop-shadow">
-                    <span>{prettyTime} · {viewsLabel}</span>
-                  </div>
-                </div>
-              ) : (
-                /* Full user info with time and views */
-                <div className="flex items-center gap-2">
-                  <div
-                    className="relative h-9 w-9 overflow-hidden rounded-full border-2 border-white/30 cursor-pointer flex-shrink-0"
-                    onClick={handleUserClick}
-                  >
-                    <Image
-                      src={post.user.image || '/images/placeholder.jpg'}
-                      alt={post.user.name || 'User'}
-                      fill
-                      sizes="36px"
-                      className="object-cover"
-                    />
-                  </div>
-
-                  <div className="flex flex-col justify-center min-w-0 flex-1 -mt-2">
-                    {/* Name with verification badge */}
-                    <div>
-                      <h1 className="text-white text-xs leading-tight font-semibold drop-shadow">
-                        {(() => {
-                          const name = post.user.name || 'Anonymous';
-                          const words = name.split(' ');
-                          const isVerified = post.user.verificationStatus === 'verified' || post.user.isSubscribed;
-                          const firstWords = words.slice(0, -1).join(' ');
-                          const lastWord = words[words.length - 1];
-
-                          return (
-                            <span className="cursor-pointer hover:text-white/80" onClick={handleUserClick}>
-                              {firstWords && <>{firstWords} </>}
-                              <span className="whitespace-nowrap">
-                                {lastWord}
-                                {isVerified && (
-                                  <span className="inline-flex items-center align-middle ml-1" aria-label="Verified">
-                                    <VerificationBadge size={16} />
-                                  </span>
-                                )}
-                              </span>
-                            </span>
-                          );
-                        })()}
-                      </h1>
-                    </div>
-
-                    {/* Time and views */}
-                    <div className="text-white/90 text-[10px] leading-none mt-0.5">
-                      <span className="line-clamp-1">{prettyTime} · {viewsLabel}</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
         </div>
-
-        <div className="pb-2" />
       </div>
+
+      {/* Hover reveal info bar */}
+      {!isListingVariant && !hideUserInfo && (
+        <div
+          className="absolute -bottom-px left-0 right-0 z-30 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+        >
+          <div className="bg-white dark:bg-neutral-900 px-3.5 py-3 rounded-b-xl">
+            {/* User row */}
+            <div
+              className="flex items-center gap-2.5 cursor-pointer group/user"
+              onClick={handleUserClick}
+            >
+              <div className="relative h-7 w-7 overflow-hidden rounded-full flex-shrink-0">
+                <Image
+                  src={post.user.image || '/images/placeholder.jpg'}
+                  alt={post.user.name || 'User'}
+                  fill
+                  sizes="28px"
+                  className="object-cover"
+                />
+              </div>
+              <span className="text-neutral-900 dark:text-white text-[13px] font-medium truncate transition-opacity duration-300 ease-out group-hover/user:opacity-60">
+                {post.user.name || 'Anonymous'}
+                {(post.user.verificationStatus === 'verified' || post.user.isSubscribed) && (
+                  <span className="inline-flex items-center align-middle ml-1">
+                    <VerificationBadge size={12} />
+                  </span>
+                )}
+              </span>
+            </div>
+
+            {/* Caption row */}
+            {post.content && (
+              <div className="mt-2.5 pt-2.5 border-t border-neutral-100 dark:border-neutral-800">
+                <p className="text-neutral-500 dark:text-neutral-400 text-xs leading-relaxed line-clamp-2">
+                  {post.content}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

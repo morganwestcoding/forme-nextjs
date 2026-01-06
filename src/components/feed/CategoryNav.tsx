@@ -15,7 +15,7 @@ interface CategoryNavProps {
 const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams, onNavigate }) => {
   const router = useRouter();
   const params = useSearchParams();
-  const { accentColor } = useTheme();
+  const { accentColor, isDarkMode } = useTheme();
 
   // Support both single category (legacy) and multiple categories
   const currentCategories = params?.get('categories')?.split(',').filter(Boolean) ||
@@ -54,7 +54,20 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams, onNavigate }) =
   };
 
   return (
-    <div className="-mx-6 md:-mx-24 border-b border-neutral-200/50 dark:border-neutral-700/50">
+    <div
+      className="-mx-6 md:-mx-24 relative backdrop-blur-sm"
+      style={{
+        background: isDarkMode
+          ? 'linear-gradient(180deg, rgba(24,24,27,0.95) 0%, rgba(18,18,20,0.9) 100%)'
+          : 'linear-gradient(180deg, rgba(248,246,243,0.95) 0%, rgba(243,240,235,0.9) 100%)',
+      }}
+    >
+      <div
+        className="absolute bottom-0 left-0 right-0 h-[1px]"
+        style={{
+          background: 'linear-gradient(90deg, transparent 0%, rgba(192,192,192,0.3) 20%, rgba(168,139,197,0.15) 40%, rgba(147,197,253,0.15) 60%, rgba(192,192,192,0.3) 80%, transparent 100%)',
+        }}
+      />
       <div className="flex items-center justify-center gap-8">
         {categories.map((category) => {
           const isSelected = currentCategories.includes(category.label);
@@ -67,7 +80,7 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams, onNavigate }) =
                 relative pb-3 text-[13px] font-medium transition-all duration-200
                 ${isSelected
                   ? ''
-                  : 'text-neutral-500 dark:text-neutral-400'
+                  : 'text-stone-500 dark:text-zinc-400'
                 }
               `}
               style={isSelected ? { color: accentColor } : undefined}
@@ -87,7 +100,10 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams, onNavigate }) =
               {isSelected && (
                 <span
                   className="absolute bottom-0 left-0 right-0 h-[2px]"
-                  style={{ backgroundColor: accentColor }}
+                  style={{
+                    backgroundColor: accentColor,
+                    boxShadow: `0 0 8px -2px ${accentColor}40`,
+                  }}
                 />
               )}
             </button>

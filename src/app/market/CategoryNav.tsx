@@ -15,7 +15,7 @@ interface CategoryNavProps {
 const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams, basePath = '/market' }) => {
   const router = useRouter();
   const params = useSearchParams();
-  const { accentColor } = useTheme();
+  const { accentColor, isDarkMode } = useTheme();
 
   // Support both single category (legacy) and multiple categories
   const currentCategories = params?.get('categories')?.split(',').filter(Boolean) ||
@@ -50,7 +50,7 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams, basePath = '/ma
   return (
     <div className="relative flex items-center justify-center py-2 sm:py-3 -mx-2 px-2 sm:mx-0 sm:px-0">
       {/* Categories - centered */}
-      <div className="flex items-center justify-center gap-1.5 overflow-x-auto scrollbar-hide pt-1 pb-3 -mb-2">
+      <div className="flex items-center justify-center gap-1.5 overflow-x-auto scrollbar-hide pt-1 pb-3 -mb-2 px-4">
         {categories.map((category) => {
           const isSelected = currentCategories.includes(category.label);
 
@@ -59,25 +59,37 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams, basePath = '/ma
               key={category.label}
               onClick={() => handleCategorySelect(category.label)}
               className={`
-                relative px-3 sm:px-4 h-9 flex items-center text-[12px] sm:text-[13px] font-medium rounded-xl border transition-all duration-200 active:scale-[0.97] whitespace-nowrap flex-shrink-0
+                relative px-3 sm:px-4 h-9 flex items-center text-[12px] sm:text-[13px] font-medium rounded-xl border transition-all duration-200 active:scale-[0.97] whitespace-nowrap flex-shrink-0 overflow-hidden
                 ${isSelected
-                  ? 'text-white'
-                  : 'bg-white dark:bg-neutral-800 border-neutral-300 dark:border-neutral-600 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700 hover:border-neutral-400 dark:hover:border-neutral-500'
+                  ? 'text-white border-transparent scale-[1.02]'
+                  : 'border-stone-200/60 dark:border-zinc-700/80 text-stone-500 dark:text-zinc-400 hover:border-stone-300 dark:hover:border-zinc-600 hover:text-stone-600 dark:hover:text-zinc-300'
                 }
               `}
               style={isSelected ? {
-                backgroundColor: accentColor,
-                borderColor: accentColor,
-                color: 'white'
-              } : undefined}
+                background: accentColor,
+                boxShadow: `inset 0 1px 0 rgba(255,255,255,0.15)`,
+              } : {
+                background: isDarkMode ? '#18181b' : '#FAFAF9',
+                boxShadow: isDarkMode
+                  ? 'inset 0 1px 0 rgba(255,255,255,0.04)'
+                  : 'inset 0 1px 0 rgba(255,255,255,0.8)',
+              }}
               type="button"
             >
+              {/* Subtle glass highlight */}
+              {isSelected && (
+                <span
+                  className="absolute inset-x-0 top-0 h-[45%] pointer-events-none rounded-t-[10px]"
+                  style={{
+                    background: 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, transparent 100%)',
+                  }}
+                />
+              )}
               <span className="relative z-10">{category.label}</span>
             </button>
           );
         })}
       </div>
-
     </div>
   );
 };
