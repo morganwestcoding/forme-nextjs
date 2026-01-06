@@ -62,6 +62,10 @@ enum STEPS {
 
 const EDIT_HUB_STEP = -1;
 
+// Pre-computed gradient styles to avoid re-computation on every render
+const GRADIENT_TOP = 'linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.20) 15%, rgba(0,0,0,0.10) 30%, rgba(0,0,0,0.00) 45%)';
+const GRADIENT_BOTTOM = 'linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.55) 18%, rgba(0,0,0,0.32) 38%, rgba(0,0,0,0.12) 55%, rgba(0,0,0,0.00) 70%)';
+
 const RegisterModal = () => {
   const router = useRouter();
   const { status, update } = useSession();
@@ -122,6 +126,8 @@ const RegisterModal = () => {
 
   const [step, setStep] = useState<number>(isEdit ? EDIT_HUB_STEP : STEPS.ACCOUNT);
   const [isLoading, setIsLoading] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [transitionDirection, setTransitionDirection] = useState<'forward' | 'back'>('forward');
 
   // Services management for individual providers
   const [services, setServices] = useState<Service[]>([]);
@@ -164,7 +170,7 @@ const RegisterModal = () => {
       } else {
         registerModal.onClose();
       }
-      const t = setTimeout(() => router.refresh(), 320);
+      const t = setTimeout(() => router.refresh(), 220);
       return () => clearTimeout(t);
     }
     prevStatusRef.current = status;
@@ -275,18 +281,29 @@ const RegisterModal = () => {
     return currentStep - 1;
   };
 
+  const animateStep = useCallback((newStep: number, direction: 'forward' | 'back') => {
+    setTransitionDirection(direction);
+    setIsTransitioning(true);
+    // Short delay for exit animation, then change step
+    setTimeout(() => {
+      setStep(newStep);
+      // Allow enter animation to play
+      setTimeout(() => setIsTransitioning(false), 20);
+    }, 150);
+  }, []);
+
   const onNext = (overrideListing?: string) => {
     const nextStep = getNextStep(step, userType, overrideListing);
-    setStep(nextStep);
+    animateStep(nextStep, 'forward');
   };
 
   const onBack = () => {
     if (isEdit && step !== EDIT_HUB_STEP) {
-      setStep(EDIT_HUB_STEP);
+      animateStep(EDIT_HUB_STEP, 'back');
       return;
     }
     const previousStep = getPreviousStep(step, userType);
-    setStep(previousStep);
+    animateStep(previousStep, 'back');
   };
 
   // Service management helpers for individual providers
@@ -322,7 +339,7 @@ const RegisterModal = () => {
     modalRef.current?.close();
     setTimeout(() => {
       loginModal.onOpen();
-    }, 400);
+    }, 220); // Match faster modal animation
   }, [loginModal, isEdit]);
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
@@ -502,7 +519,7 @@ const RegisterModal = () => {
       if (modalRef.current?.close) modalRef.current.close();
       setTimeout(() => {
         loginModal.onOpen();
-      }, 320);
+      }, 220);
 
     } catch (error: any) {
       safeToastError(error);
@@ -876,27 +893,12 @@ const RegisterModal = () => {
                         {/* Top gradient */}
                         <div
                           className="absolute inset-0 pointer-events-none"
-                          style={{
-                            background:
-                              'linear-gradient(to bottom,' +
-                              'rgba(0,0,0,0.35) 0%,' +
-                              'rgba(0,0,0,0.20) 15%,' +
-                              'rgba(0,0,0,0.10) 30%,' +
-                              'rgba(0,0,0,0.00) 45%)',
-                          }}
+                          style={{ background: GRADIENT_TOP }}
                         />
                         {/* Bottom gradient */}
                         <div
                           className="absolute inset-0 pointer-events-none"
-                          style={{
-                            background:
-                              'linear-gradient(to top,' +
-                              'rgba(0,0,0,0.72) 0%,' +
-                              'rgba(0,0,0,0.55) 18%,' +
-                              'rgba(0,0,0,0.32) 38%,' +
-                              'rgba(0,0,0,0.12) 55%,' +
-                              'rgba(0,0,0,0.00) 70%)',
-                          }}
+                          style={{ background: GRADIENT_BOTTOM }}
                         />
                       </div>
 
@@ -1079,8 +1081,8 @@ const RegisterModal = () => {
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={backgroundImage} alt="Background" className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.20) 15%, rgba(0,0,0,0.10) 30%, rgba(0,0,0,0.00) 45%)' }} />
-                        <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.55) 18%, rgba(0,0,0,0.32) 38%, rgba(0,0,0,0.12) 55%, rgba(0,0,0,0.00) 70%)' }} />
+                        <div className="absolute inset-0 pointer-events-none" style={{ background: GRADIENT_TOP }} />
+                        <div className="absolute inset-0 pointer-events-none" style={{ background: GRADIENT_BOTTOM }} />
                         <div className="absolute inset-0 bg-black/0 hover:bg-black/20 transition-all duration-200 z-10" />
                       </div>
                     ) : (
@@ -1240,10 +1242,23 @@ const RegisterModal = () => {
 
   const showBack = isEdit ? step !== EDIT_HUB_STEP : step !== STEPS.ACCOUNT;
 
+  // Wrap body content with smooth transitions
+  const animatedBody = useMemo(() => (
+    <div
+      className={`transition-all duration-200 ease-out ${
+        isTransitioning
+          ? `opacity-0 ${transitionDirection === 'forward' ? 'translate-x-4' : '-translate-x-4'}`
+          : 'opacity-100 translate-x-0'
+      }`}
+    >
+      {bodyContent}
+    </div>
+  ), [bodyContent, isTransitioning, transitionDirection]);
+
   return (
     <Modal
       ref={modalRef}
-      disabled={isLoading}
+      disabled={isLoading || isTransitioning}
       isOpen={registerModal.isOpen}
       title={isEdit ? "Edit Profile" : "Register"}
       actionLabel={actionLabel}
@@ -1251,7 +1266,7 @@ const RegisterModal = () => {
       secondaryActionLabel={showBack ? "Back" : undefined}
       onClose={handleClose}
       onSubmit={handleSubmit(onSubmit)}
-      body={bodyContent}
+      body={animatedBody}
       footer={footerContent}
     />
   );

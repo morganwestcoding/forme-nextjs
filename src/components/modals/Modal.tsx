@@ -34,7 +34,7 @@ interface ModalProps {
   actionId?: string;
 }
 
-const ANIM_MS = 300;
+const ANIM_MS = 200; // Faster animation for snappier feel
 
 const Modal = forwardRef<ModalHandle, ModalProps>(({
   id,
@@ -125,7 +125,7 @@ const Modal = forwardRef<ModalHandle, ModalProps>(({
       role="dialog"
       aria-modal="true"
       aria-labelledby={title ? `${id || "modal"}-title` : undefined}
-      className="fixed inset-0 z-[9999] backdrop-blur-sm bg-neutral-900/60 animate-in fade-in duration-300"
+      className="fixed inset-0 z-[9999] backdrop-blur-sm bg-neutral-900/60 animate-in fade-in duration-200"
       onMouseDown={handleBackdropClick}
     >
       {backdropVideo && <ModalBackdrop videoSrc={backdropVideo} />}
@@ -136,10 +136,10 @@ const Modal = forwardRef<ModalHandle, ModalProps>(({
           // stop backdrop handler when clicking inside content
           onMouseDown={(e) => e.stopPropagation()}
         >
-          {/* Slide + fade */}
+          {/* Slide + fade with GPU acceleration */}
           <div
-            className={`transform transition-all duration-300 ease-out
-              ${showModal ? "translate-y-0 opacity-100 scale-100" : "translate-y-8 opacity-0 scale-95"}`}
+            className={`transform transition-all duration-200 ease-out will-change-transform
+              ${showModal ? "translate-y-0 opacity-100 scale-100" : "translate-y-4 opacity-0 scale-[0.98]"}`}
           >
             <div
               id={id}

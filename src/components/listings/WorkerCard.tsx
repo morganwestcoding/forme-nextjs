@@ -176,7 +176,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
   return (
     <div
       onClick={handleCardClick}
-      className={`group cursor-pointer rounded-2xl overflow-hidden relative border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-950 transition-[transform,box-shadow] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+      className={`group cursor-pointer rounded-2xl overflow-hidden relative border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-950 transition-[transform,box-shadow,opacity] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-[0.98] active:opacity-90 ${
         solidBackground
           ? 'hover:border-neutral-300 hover:shadow-sm'
           : 'hover:-translate-y-0.5 hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)]'

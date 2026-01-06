@@ -45,12 +45,31 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
   const notificationsModal = useNotificationsModal();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const [phraseIndex] = useState(() => Math.floor(Math.random() * phrases.length));
+  const [phraseIndex, setPhraseIndex] = useState<number | null>(null);
+  const [hasAnimated, setHasAnimated] = useState(false);
+
+  // Hide sidebar on register page (full-screen experience)
+  const isRegisterPage = pathname?.startsWith('/register');
 
   useEffect(() => {
     const saved = localStorage.getItem("sidebarCollapsed");
     if (saved) setIsCollapsed(saved === "true");
+
+    // Set random phrase on client only to avoid hydration mismatch
+    setPhraseIndex(Math.floor(Math.random() * phrases.length));
+
+    // Only animate once per session
+    const animated = sessionStorage.getItem("sidebarAnimated");
+    if (!animated) {
+      sessionStorage.setItem("sidebarAnimated", "true");
+      setTimeout(() => setHasAnimated(true), 50);
+    } else {
+      setHasAnimated(true);
+    }
   }, []);
+
+  // Hide sidebar on register page (after hooks)
+  if (isRegisterPage) return null;
 
   const toggle = () => {
     const next = !isCollapsed;
@@ -78,26 +97,53 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
     { label: "Settings", onClick: () => settingsModal.onOpen(), active: false },
   ];
 
+  // Skip animation if already animated this session
+  const shouldAnimate = !hasAnimated;
+
   return (
     <div
       className={`fixed inset-y-0 left-0 z-50 flex flex-col bg-zinc-900 border-r border-zinc-800/50 transition-all duration-200 ${
         isCollapsed ? "w-16" : "w-56"
-      }`}
+      } ${shouldAnimate ? 'opacity-0' : 'opacity-100'}`}
+      style={{
+        opacity: hasAnimated ? 1 : 0,
+        transition: 'opacity 0.5s ease-out'
+      }}
     >
       {/* Logo */}
-      <div className="flex flex-col items-center justify-center pt-16 pb-4">
+      <div
+        className="flex flex-col items-center justify-center pt-16 pb-4"
+        style={{
+          opacity: hasAnimated ? 1 : 0,
+          transform: hasAnimated ? 'translateY(0)' : 'translateY(-8px)',
+          transition: 'opacity 0.5s ease-out 0.1s, transform 0.5s ease-out 0.1s'
+        }}
+      >
         <Link href="/" className="group">
           <Image src="/logos/black.png" alt="Logo" width={30} height={40} className="invert opacity-90 group-hover:opacity-100 transition-opacity duration-200" />
         </Link>
-        {!isCollapsed && (
-          <p className="mt-3.5 text-sm tracking-wide text-zinc-500">
+        {!isCollapsed && phraseIndex !== null && (
+          <p
+            className="mt-3.5 text-sm tracking-wide text-zinc-500"
+            style={{
+              opacity: hasAnimated ? 1 : 0,
+              transition: 'opacity 0.6s ease-out 0.25s'
+            }}
+          >
             {phrases[phraseIndex]}
           </p>
         )}
       </div>
 
       {/* User */}
-      <div className={`mx-4 mt-4 mb-3 ${isCollapsed ? "mx-2" : ""}`}>
+      <div
+        className={`mx-4 mt-4 mb-3 ${isCollapsed ? "mx-2" : ""}`}
+        style={{
+          opacity: hasAnimated ? 1 : 0,
+          transform: hasAnimated ? 'translateY(0)' : 'translateY(8px)',
+          transition: 'opacity 0.5s ease-out 0.15s, transform 0.5s ease-out 0.15s'
+        }}
+      >
         <DropdownMenu open={isUserMenuOpen} onOpenChange={setIsUserMenuOpen}>
           <DropdownMenuTrigger className="w-full outline-none">
             <div className={`group flex items-center gap-3 p-3 rounded-2xl bg-zinc-800/50 border border-zinc-700/50 hover:border-zinc-600 transition-all duration-300 cursor-pointer ${isCollapsed ? "justify-center p-2" : ""}`}>
@@ -153,7 +199,13 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 pt-2 flex flex-col">
+      <nav
+        className="flex-1 pt-2 flex flex-col"
+        style={{
+          opacity: hasAnimated ? 1 : 0,
+          transition: 'opacity 0.5s ease-out 0.2s'
+        }}
+      >
         <div className="space-y-1 pl-[58px]">
           {navItems.map((item, i) => {
             const El = item.href ? Link : "button";

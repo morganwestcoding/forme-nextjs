@@ -66,8 +66,9 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
       className={`
         group cursor-pointer relative overflow-hidden
         rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-950
-        transition-[transform,box-shadow] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]
+        transition-[transform,box-shadow,opacity] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]
         hover:-translate-y-0.5 hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)]
+        active:scale-[0.98] active:opacity-90
         ${compact ? '' : 'max-w-[250px]'}
       `}
     >
