@@ -9,6 +9,7 @@ interface TypeformNavigationProps {
   isLoading: boolean;
   onNext: () => void;
   onBack: () => void;
+  submitLabel?: string;
 }
 
 export default function TypeformNavigation({
@@ -18,6 +19,7 @@ export default function TypeformNavigation({
   isLoading,
   onNext,
   onBack,
+  submitLabel = 'Create account',
 }: TypeformNavigationProps) {
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-6 py-4">
@@ -56,7 +58,7 @@ export default function TypeformNavigation({
             {isLoading ? (
               <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
             ) : isLastStep ? (
-              'Create account'
+              submitLabel
             ) : (
               'Continue'
             )}

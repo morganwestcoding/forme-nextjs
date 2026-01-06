@@ -9,7 +9,6 @@ import WorkerCard from './WorkerCard';
 import PostCard from '../feed/PostCard';
 import QRModal from '../modals/QRModal';
 import { SafePost, SafeUser, SafeListing, SafeReview } from '@/app/types';
-import useReservationModal from '@/app/hooks/useReservationModal';
 import useRentModal from '@/app/hooks/useListingModal';
 import useReviewModal from '@/app/hooks/useReviewModal';
 import useFavorite from '@/app/hooks/useFavorite';
@@ -83,7 +82,6 @@ const ListingHead: React.FC<ListingHeadProps> = ({
 
   const isFollowing = !!currentUser?.id && followers.includes(currentUser.id);
 
-  const reservationModal = useReservationModal();
   const rentModal = useRentModal();
   const reviewModal = useReviewModal();
   const { hasFavorited, toggleFavorite } = useFavorite({
@@ -98,7 +96,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
       toast.error('You must be logged in to reserve');
       return;
     }
-    reservationModal.onOpen(listing, currentUser);
+    router.push(`/reserve/${listing.id}`);
   };
 
   const isOwner = !!currentUser?.id && currentUser.id === user?.id;

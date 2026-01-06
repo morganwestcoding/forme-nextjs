@@ -7,7 +7,6 @@ import { useRouter } from 'next/navigation';
 import { SafeListing, SafeUser } from '@/app/types';
 import HeartButton from '../HeartButton';
 import SmartBadgePrice from './SmartBadgePrice';
-import useReservationModal from '@/app/hooks/useReservationModal';
 import VerificationBadge from '../VerificationBadge';
 
 interface ServiceItem {
@@ -46,7 +45,6 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   solidBackground = false,
 }) => {
   const router = useRouter();
-  const reservationModal = useReservationModal();
 
   const isOwner =
     !!currentUser?.id && !!listing?.user?.id && currentUser.id === listing.user.id;
@@ -308,7 +306,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                         onBookNowClick={(e: React.MouseEvent) => {
                           e.stopPropagation();
                           if (listing && currentUser) {
-                            reservationModal.onOpen(listing, currentUser, service.id);
+                            router.push(`/reserve/${listing.id}?serviceId=${service.id}`);
                           }
                         }}
                         isVerified={true}
@@ -341,7 +339,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                         onBookNowClick={(e: React.MouseEvent) => {
                           e.stopPropagation();
                           if (listing && currentUser) {
-                            reservationModal.onOpen(listing, currentUser, service.id);
+                            router.push(`/reserve/${listing.id}?serviceId=${service.id}`);
                           }
                         }}
                         isVerified={true}

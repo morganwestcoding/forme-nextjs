@@ -48,8 +48,8 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
   const [phraseIndex, setPhraseIndex] = useState<number | null>(null);
   const [hasAnimated, setHasAnimated] = useState(false);
 
-  // Hide sidebar on register page (full-screen experience)
-  const isRegisterPage = pathname?.startsWith('/register');
+  // Hide sidebar on full-screen pages
+  const isFullScreenPage = pathname?.startsWith('/register') || pathname?.startsWith('/listing/new') || pathname?.startsWith('/reserve');
 
   useEffect(() => {
     const saved = localStorage.getItem("sidebarCollapsed");
@@ -68,8 +68,8 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
     }
   }, []);
 
-  // Hide sidebar on register page (after hooks)
-  if (isRegisterPage) return null;
+  // Hide sidebar on full-screen pages (after hooks)
+  if (isFullScreenPage) return null;
 
   const toggle = () => {
     const next = !isCollapsed;

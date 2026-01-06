@@ -1,22 +1,21 @@
 // AddListing.tsx
 'use client'
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { SafeUser } from "@/app/types";
-import useRentModal from "@/app/hooks/useListingModal";
 
 interface AddListingProps {
-  currentUser?: SafeUser | null 
+  currentUser?: SafeUser | null
 }
 
 export const dynamic = 'force-dynamic';
 
 const AddListing: React.FC<AddListingProps> = ({}) => {
-  const rentModal = useRentModal();
-  const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
 
   const onRent = useCallback(() => {
-    rentModal.onOpen();
-  }, [rentModal]);
+    router.push('/listing/new');
+  }, [router]);
 
   return (
     <div 

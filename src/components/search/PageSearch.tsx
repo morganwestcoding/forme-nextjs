@@ -1,9 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { Plus, Store, PenSquare, Building2, Package, Search } from 'lucide-react';
-import useRentModal from '@/app/hooks/useListingModal';
 import useFilterModal from '@/app/hooks/useFilterModal';
 import { useTheme } from '@/app/context/ThemeContext';
 import useCreatePostModal from '@/app/hooks/useCreatePostModal';
@@ -72,7 +71,7 @@ const PageSearch: React.FC<PageSearchProps> = ({
   actionContext,
 }) => {
   const params = useSearchParams();
-  const rentModal = useRentModal();
+  const router = useRouter();
   const filterModal = useFilterModal();
   const createPostModal = useCreatePostModal();
   const shopModal = useShopModal();
@@ -102,7 +101,7 @@ const PageSearch: React.FC<PageSearchProps> = ({
     switch (actionContext) {
       case 'market':
         return [
-          { label: 'Create Listing', icon: Store, action: () => rentModal.onOpen() },
+          { label: 'Create Listing', icon: Store, action: () => router.push('/listing/new') },
           { label: 'Create Post', icon: PenSquare, action: () => createPostModal.onOpen() },
         ];
       case 'shops':
@@ -117,7 +116,7 @@ const PageSearch: React.FC<PageSearchProps> = ({
         ];
       case 'properties':
         return [
-          { label: 'Create Listing', icon: Store, action: () => rentModal.onOpen() },
+          { label: 'Create Listing', icon: Store, action: () => router.push('/listing/new') },
         ];
       default:
         return [];
@@ -166,7 +165,7 @@ const PageSearch: React.FC<PageSearchProps> = ({
     if (onCreateClick) {
       onCreateClick();
     } else {
-      rentModal.onOpen();
+      router.push('/listing/new');
     }
   };
 

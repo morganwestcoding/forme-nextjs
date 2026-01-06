@@ -7,7 +7,6 @@ import { useRouter } from 'next/navigation';
 import { SafeListing, SafeUser, SafeEmployee } from '@/app/types';
 import SmartBadgeWorker from './SmartBadgeWorker';
 import HeartButton from '../HeartButton';
-import useReservationModal from '@/app/hooks/useReservationModal';
 import VerificationBadge from '../VerificationBadge';
 
 interface WorkerCardProps {
@@ -81,7 +80,6 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
   const [/*isFollowing*/, /*setIsFollowing*/] = useState(false);
   const [imageError, setImageError] = useState(false);
   const router = useRouter();
-  const reservationModal = useReservationModal();
 
   const handleCardClick = () => {
     // Independent workers should route to their user profile, not a listing
@@ -373,7 +371,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
                         onTimeClick={(e?: React.MouseEvent) => {
                           e?.stopPropagation();
                           if (currentUser) {
-                            reservationModal.onOpen(listing, currentUser, undefined, employee.id);
+                            router.push(`/reserve/${listing.id}?employeeId=${employee.id}`);
                           }
                         }}
                       />
@@ -397,7 +395,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
                         onTimeClick={(e?: React.MouseEvent) => {
                           e?.stopPropagation();
                           if (currentUser) {
-                            reservationModal.onOpen(listing, currentUser, undefined, employee.id);
+                            router.push(`/reserve/${listing.id}?employeeId=${employee.id}`);
                           }
                         }}
                       />

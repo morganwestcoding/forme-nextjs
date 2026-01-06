@@ -11,20 +11,20 @@ interface LayoutContentProps {
 export default function LayoutContent({ children }: LayoutContentProps) {
   const pathname = usePathname();
 
-  // Skip animation for register page (it has its own full-screen layout)
-  const isRegisterPage = pathname?.startsWith('/register');
+  // Skip animation for full-screen pages (they have their own layouts)
+  const isFullScreenPage = pathname?.startsWith('/register') || pathname?.startsWith('/listing/new') || pathname?.startsWith('/reserve');
 
   const [collapsed, setCollapsed] = useState(false);
-  // Initialize hasAnimated to true for register page to avoid flash of invisible content
-  const [hasAnimated, setHasAnimated] = useState(isRegisterPage ?? false);
+  // Initialize hasAnimated to true for full-screen pages to avoid flash of invisible content
+  const [hasAnimated, setHasAnimated] = useState(isFullScreenPage ?? false);
 
   useEffect(() => {
     const check = () => setCollapsed(localStorage.getItem('sidebarCollapsed') === 'true');
     check();
     window.addEventListener('sidebarToggle', check);
 
-    // Only animate once per session (skip for register page)
-    if (isRegisterPage) {
+    // Only animate once per session (skip for full-screen pages)
+    if (isFullScreenPage) {
       setHasAnimated(true);
     } else {
       const animated = sessionStorage.getItem('contentAnimated');
@@ -39,10 +39,10 @@ export default function LayoutContent({ children }: LayoutContentProps) {
     return () => {
       window.removeEventListener('sidebarToggle', check);
     };
-  }, [isRegisterPage]);
+  }, [isFullScreenPage]);
 
-  // For register page, render children directly without animation wrapper
-  if (isRegisterPage) {
+  // For full-screen pages, render children directly without animation wrapper
+  if (isFullScreenPage) {
     return <>{children}</>;
   }
 
