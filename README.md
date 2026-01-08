@@ -1,37 +1,62 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# ForMe Monorepo
+
+A service marketplace platform with web and native iOS apps.
+
+## Structure
+
+```
+forme/
+├── web/          # Next.js web application
+├── ios/          # Native iOS app (Swift/SwiftUI)
+└── shared/       # Shared API specs & type definitions
+    ├── api/      # API endpoint documentation
+    └── models/   # Data model definitions
+```
 
 ## Getting Started
 
-First, run the development server:
+### Web App
 
 ```bash
+cd web
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to view.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### iOS App
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+1. Open Xcode
+2. Create new iOS project in `ios/` folder (SwiftUI, Swift)
+3. Or run: `npm run ios:open`
 
-## Learn More
+## Scripts
 
-To learn more about Next.js, take a look at the following resources:
+From the monorepo root:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+# Web development
+npm run web:dev      # Start web dev server
+npm run web:build    # Build web app
+npm run web:start    # Start production server
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+# iOS
+npm run ios:open     # Open Xcode project
+```
 
-## Deploy on Vercel
+## Shared Resources
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The `shared/` folder contains:
+- **api/endpoints.md** - API endpoint documentation
+- **models/types.md** - Data model definitions
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Both apps connect to the same backend API.
 
+## Deploy
+
+### Web (Vercel)
+The web app deploys to Vercel. Update the root directory setting to `web/` in your Vercel project settings.
+
+### iOS (App Store)
+Archive and submit through Xcode.
