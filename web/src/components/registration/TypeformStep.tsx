@@ -19,8 +19,8 @@ const variants = {
     transition: {
       y: { duration: 0.3, ease: [0.25, 0.1, 0.25, 1] },
       opacity: { duration: 0.25 },
-      staggerChildren: 0.04,
-      delayChildren: 0.1,
+      staggerChildren: 0,
+      delayChildren: 0.05,
     }
   },
   exit: (direction: number) => ({
