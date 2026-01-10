@@ -151,7 +151,7 @@ const UserButton: React.FC<UserButtonProps> = ({
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
-        className={`bg-white rounded-2xl px-1 py-2 border border-neutral-200 z-[100] ${dropdownWidthClass}`}
+        className={`z-[100] ${dropdownWidthClass}`}
         side="bottom"
         align="start"
         sideOffset={8}
@@ -165,7 +165,7 @@ const UserButton: React.FC<UserButtonProps> = ({
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={handleClearEarlyAccess}
-          className="text-red-600 hover:text-red-700 hover:bg-red-50 px-2 py-2"
+          className="text-red-500 hover:text-red-600 hover:bg-red-50"
         >
           Clean
         </DropdownMenuItem>

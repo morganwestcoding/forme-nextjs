@@ -290,7 +290,7 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
         <FloatingPortal>
           <div
             ref={refs.setFloating}
-            className="z-[9999] max-h-80 overflow-auto rounded-2xl bg-white/95 dark:bg-zinc-900 backdrop-blur-xl border border-gray-100 dark:border-zinc-800 shadow-xl"
+            className="z-[9999] max-h-80 overflow-auto rounded-xl bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700/50 shadow-lg shadow-gray-900/10 dark:shadow-xl dark:shadow-black/20"
             style={{
               ...floatingStyles,
               visibility: isPositioned ? 'visible' : 'hidden',
@@ -344,10 +344,10 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
                               <li
                                 key={`${item.type}-${item.id}`}
                                 data-idx={idx}
-                                className={`mx-2 px-3 py-2.5 cursor-pointer flex items-center gap-3 rounded-xl transition-all duration-150 ${
+                                className={`mx-1.5 px-3 py-2.5 cursor-pointer flex items-center gap-3 rounded-lg transition-colors duration-150 ${
                                   active
-                                    ? "bg-gray-100 dark:bg-zinc-700"
-                                    : "hover:bg-gray-50 dark:hover:bg-zinc-700/50"
+                                    ? "bg-gray-50 dark:bg-zinc-700"
+                                    : "hover:bg-gray-50 dark:hover:bg-zinc-700"
                                 }`}
                                 onMouseEnter={() => setActiveIdx(idx)}
                                 onClick={(e) => {

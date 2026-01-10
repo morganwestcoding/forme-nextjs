@@ -79,7 +79,7 @@ const Filter: React.FC<FilterProps> = ({ activeButtonColor, hoverColor, onApplyF
         </button>
       </DropdownMenuTrigger>
       
-      <DropdownMenuContent className="w-72 p-5 rounded-xl shadow-lg">
+      <DropdownMenuContent className="w-72 p-5">
         <h3 className="text-lg font-semibold mb-4">Filters</h3>
         
         {/* Price Range Filter */}

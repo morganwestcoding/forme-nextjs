@@ -280,7 +280,7 @@ const PageSearch: React.FC<PageSearchProps> = ({
         <FloatingPortal>
           <div
             ref={refs.setFloating}
-            className="z-[9999] bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-xl shadow-lg shadow-gray-900/10 py-1.5 min-w-[180px]"
+            className="z-[9999] bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700/50 rounded-xl shadow-lg shadow-gray-900/10 dark:shadow-xl dark:shadow-black/20 p-1.5 min-w-[180px]"
             style={{
               ...floatingStyles,
               visibility: isPositioned ? 'visible' : 'hidden',
@@ -290,7 +290,7 @@ const PageSearch: React.FC<PageSearchProps> = ({
               <button
                 key={item.label}
                 onClick={() => handleActionClick(item.action)}
-                className="w-full px-3 py-2.5 flex items-center gap-2.5 hover:bg-gray-50 dark:hover:bg-zinc-700 transition-colors duration-150 text-left"
+                className="w-full px-3 py-2.5 flex items-center gap-2.5 rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-700 transition-colors duration-150 text-left"
                 type="button"
               >
                 <item.icon className="w-4 h-4 text-gray-400 dark:text-zinc-500" strokeWidth={1.5} />

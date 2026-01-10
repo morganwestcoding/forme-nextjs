@@ -176,22 +176,22 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
               )}
             </div>
           </DropdownMenuTrigger>
-          <DropdownMenuContent side="bottom" align="start" className="w-48 mt-1">
+          <DropdownMenuContent side="bottom" align="start" variant="dark" className="w-48 mt-2">
             {currentUser ? (
               <>
-                <DropdownMenuItem onClick={() => router.push(`/profile/${currentUser.id}`)}>Profile</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => router.push("/properties")}>Listings</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => router.push("/analytics")}>Analytics</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push(`/profile/${currentUser.id}`)} className="text-zinc-200 hover:bg-zinc-700/70">Profile</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push("/properties")} className="text-zinc-200 hover:bg-zinc-700/70">Listings</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push("/analytics")} className="text-zinc-200 hover:bg-zinc-700/70">Analytics</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => router.push("/subscription")}>Subscription</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push("/subscription")} className="text-zinc-200 hover:bg-zinc-700/70">Subscription</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => { if(confirm("Clear early access?")) clearEarlyAccess(); }} className="text-red-600">Clear Data</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => signOut()}>Sign Out</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => { if(confirm("Clear early access?")) clearEarlyAccess(); }} className="text-red-400 hover:bg-zinc-700/70 hover:text-red-400">Clear Data</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => signOut()} className="text-zinc-200 hover:bg-zinc-700/70">Sign Out</DropdownMenuItem>
               </>
             ) : (
               <>
-                <DropdownMenuItem onClick={() => loginModal.onOpen()}>Sign In</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => router.push("/register")}>Sign Up</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => loginModal.onOpen()} className="text-zinc-200 hover:bg-zinc-700/70">Sign In</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push("/register")} className="text-zinc-200 hover:bg-zinc-700/70">Sign Up</DropdownMenuItem>
               </>
             )}
           </DropdownMenuContent>
