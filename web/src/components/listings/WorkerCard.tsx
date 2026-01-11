@@ -178,17 +178,17 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
   return (
     <div
       onClick={handleCardClick}
-      className={`group cursor-pointer rounded-2xl overflow-hidden relative border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-950 transition-[transform,box-shadow,opacity] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-[0.98] active:opacity-90 ${
+      className={`group cursor-pointer rounded-3xl overflow-hidden relative bg-neutral-900 transition-[transform,box-shadow,opacity] duration-500 ease-out active:scale-[0.98] active:opacity-90 ${
         solidBackground
-          ? 'hover:border-neutral-300 hover:shadow-sm'
-          : 'hover:-translate-y-0.5 hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)]'
+          ? 'border border-neutral-200/60 hover:shadow-[0_10px_30px_rgba(0,0,0,0.08)]'
+          : 'hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(0,0,0,0.15),0_8px_16px_rgba(0,0,0,0.1)]'
       } ${compact ? '' : 'max-w-[250px]'}`}
     >
       {/* Background */}
-      <div className="absolute inset-0 z-0 overflow-hidden rounded-2xl">
+      <div className="absolute inset-0 z-0 overflow-hidden rounded-3xl">
         {solidBackground ? (
           /* Ultra-minimal white background */
-          <div className="absolute inset-0 bg-white rounded-2xl border border-neutral-200/60" />
+          <div className="absolute inset-0 bg-white rounded-3xl" />
         ) : (
           <>
             {/* Background image - grayscale and sharp */}
@@ -197,7 +197,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
                 src={backgroundImageSrc}
                 alt=""
                 fill
-                className="object-cover grayscale scale-105"
+                className="object-cover grayscale transition-[transform,filter] duration-700 ease-out group-hover:scale-110 group-hover:brightness-110"
                 style={{ opacity: 0.75 }}
                 sizes="250px"
               />
@@ -236,10 +236,10 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
               style={{
                 background:
                   'linear-gradient(to top,' +
-                  'rgba(0,0,0,0.55) 0%,' +
-                  'rgba(0,0,0,0.35) 10%,' +
-                  'rgba(0,0,0,0.12) 22%,' +
-                  'rgba(0,0,0,0.00) 32%)',
+                  'rgba(0,0,0,0.70) 0%,' +
+                  'rgba(0,0,0,0.50) 12%,' +
+                  'rgba(0,0,0,0.25) 25%,' +
+                  'rgba(0,0,0,0.00) 40%)',
               }}
             />
           </>
@@ -356,8 +356,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
 
               {/* Bottom info for image backgrounds */}
               <div
-                className="absolute bottom-3 left-3 right-3 z-20 backdrop-blur-md bg-black/25 rounded-xl px-3 py-2.5"
-                style={{ textShadow: '0 -1px 0 rgba(255,255,255,0.06), 0 1px 2px rgba(0,0,0,0.35)' }}
+                className="absolute bottom-3 left-3 right-3 z-20 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]"
               >
                 {compact ? (
                   <div className="flex flex-col gap-0.5">
@@ -410,9 +409,6 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
             </>
           )}
         </div>
-
-        {/* Match ListingCard bottom padding */}
-        <div className="pb-2" />
       </div>
     </div>
   );
