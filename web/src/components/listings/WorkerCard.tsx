@@ -236,10 +236,10 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
               style={{
                 background:
                   'linear-gradient(to top,' +
-                  'rgba(0,0,0,0.65) 0%,' +
-                  'rgba(0,0,0,0.45) 18%,' +
-                  'rgba(0,0,0,0.20) 40%,' +
-                  'rgba(0,0,0,0.00) 60%)',
+                  'rgba(0,0,0,0.55) 0%,' +
+                  'rgba(0,0,0,0.35) 10%,' +
+                  'rgba(0,0,0,0.12) 22%,' +
+                  'rgba(0,0,0,0.00) 32%)',
               }}
             />
           </>
@@ -356,18 +356,18 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
 
               {/* Bottom info for image backgrounds */}
               <div
-                className="absolute bottom-4 left-4 right-4 z-20"
-                style={{ textShadow: '0 1px 2px rgba(0,0,0,0.4)' }}
+                className="absolute bottom-3 left-3 right-3 z-20 backdrop-blur-md bg-black/25 rounded-xl px-3 py-2.5"
+                style={{ textShadow: '0 -1px 0 rgba(255,255,255,0.06), 0 1px 2px rgba(0,0,0,0.35)' }}
               >
                 {compact ? (
                   <div className="flex flex-col gap-0.5">
                     <h3 className="text-white text-xs leading-tight font-semibold tracking-tight line-clamp-1">
                       {employee.fullName}
                     </h3>
-                    <div className="text-white/90 text-xs leading-tight font-medium">
+                    <div className="text-white/75 text-[11px] leading-tight">
                       <span className="line-clamp-1">{employee.jobTitle || 'Specialist'}</span>
                     </div>
-                    <div className="flex items-center mt-0.5 drop-shadow">
+                    <div className="flex items-center mt-0.5">
                       <SmartBadgeWorker
                         employee={employee}
                         listingTitle={listingTitle}
@@ -383,15 +383,15 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
                   </div>
                 ) : (
                   <>
-                    <div className="mb-0.5">
-                      <h3 className="text-[17px] font-medium text-white leading-tight tracking-tight line-clamp-2">
+                    <div className="mb-1.5">
+                      <h3 className="text-[17px] font-semibold text-white leading-snug tracking-tight line-clamp-2">
                         {renderNameWithBadge(employee.fullName)}
                       </h3>
                     </div>
-                    <div className="text-white/90 text-xs leading-tight font-medium mb-2.5">
+                    <div className="text-white/75 text-[11px] leading-tight mb-3">
                       <span className="line-clamp-1">{employee.jobTitle || 'Specialist'}</span>
                     </div>
-                    <div className="flex items-center drop-shadow">
+                    <div className="flex items-center">
                       <SmartBadgeWorker
                         employee={employee}
                         listingTitle={listingTitle}

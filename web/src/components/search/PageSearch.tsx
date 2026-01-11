@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Plus, Store, PenSquare, Building2, Package, Search } from 'lucide-react';
+import { PlusSignIcon, Search01Icon } from 'hugeicons-react';
 import useFilterModal from '@/app/hooks/useFilterModal';
 import { useTheme } from '@/app/context/ThemeContext';
 import useCreatePostModal from '@/app/hooks/useCreatePostModal';
@@ -51,7 +51,6 @@ interface PageSearchProps {
 
 interface ActionItem {
   label: string;
-  icon: React.ElementType;
   action: () => void;
 }
 
@@ -85,9 +84,9 @@ const PageSearch: React.FC<PageSearchProps> = ({
   const { refs, floatingStyles, isPositioned } = useFloating({
     open: isDropdownOpen,
     onOpenChange: setIsDropdownOpen,
-    placement: "bottom-end",
+    placement: "bottom",
     middleware: [
-      offset(8),
+      offset(12),
       flip({ padding: 8 }),
       shift({ padding: 8 }),
     ],
@@ -101,22 +100,22 @@ const PageSearch: React.FC<PageSearchProps> = ({
     switch (actionContext) {
       case 'market':
         return [
-          { label: 'Create Listing', icon: Store, action: () => router.push('/listing/new') },
-          { label: 'Create Post', icon: PenSquare, action: () => createPostModal.onOpen() },
+          { label: 'Create Listing', action: () => router.push('/listing/new') },
+          { label: 'Create Post', action: () => createPostModal.onOpen() },
         ];
       case 'shops':
         return [
-          { label: 'Create Shop', icon: Building2, action: () => shopModal.onOpen() },
-          { label: 'Create Product', icon: Package, action: () => productModal.onOpen() },
-          { label: 'Create Post', icon: PenSquare, action: () => createPostModal.onOpen() },
+          { label: 'Create Shop', action: () => shopModal.onOpen() },
+          { label: 'Create Product', action: () => productModal.onOpen() },
+          { label: 'Create Post', action: () => createPostModal.onOpen() },
         ];
       case 'discover':
         return [
-          { label: 'Create Post', icon: PenSquare, action: () => createPostModal.onOpen() },
+          { label: 'Create Post', action: () => createPostModal.onOpen() },
         ];
       case 'properties':
         return [
-          { label: 'Create Listing', icon: Store, action: () => router.push('/listing/new') },
+          { label: 'Create Listing', action: () => router.push('/listing/new') },
         ];
       default:
         return [];
@@ -203,7 +202,7 @@ const PageSearch: React.FC<PageSearchProps> = ({
           type="button"
           title="Search"
         >
-          <Search className="w-5 h-5 sm:w-[22px] sm:h-[22px]" strokeWidth={1.5} />
+          <Search01Icon className="w-5 h-5 sm:w-[22px] sm:h-[22px]" strokeWidth={1.5} />
         </button>
       )}
 
@@ -254,7 +253,7 @@ const PageSearch: React.FC<PageSearchProps> = ({
           type="button"
           title="Create"
         >
-          <Plus
+          <PlusSignIcon
             className={`w-5 h-5 sm:w-[22px] sm:h-[22px] transition-transform duration-200 ${isDropdownOpen ? 'rotate-45' : ''}`}
             strokeWidth={1.5}
           />
@@ -280,7 +279,7 @@ const PageSearch: React.FC<PageSearchProps> = ({
         <FloatingPortal>
           <div
             ref={refs.setFloating}
-            className="z-[9999] bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700/50 rounded-xl shadow-lg shadow-gray-900/10 dark:shadow-xl dark:shadow-black/20 p-1.5 min-w-[180px]"
+            className="z-[9999] bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700/50 rounded-xl shadow-lg shadow-gray-900/10 dark:shadow-xl dark:shadow-black/20 p-1.5 w-[160px]"
             style={{
               ...floatingStyles,
               visibility: isPositioned ? 'visible' : 'hidden',
@@ -290,11 +289,10 @@ const PageSearch: React.FC<PageSearchProps> = ({
               <button
                 key={item.label}
                 onClick={() => handleActionClick(item.action)}
-                className="w-full px-3 py-2.5 flex items-center gap-2.5 rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-700 transition-colors duration-150 text-left"
+                className="w-full px-3 py-2.5 rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-700 transition-colors duration-150 text-left text-[13px] font-medium text-gray-700 dark:text-zinc-200"
                 type="button"
               >
-                <item.icon className="w-4 h-4 text-gray-400 dark:text-zinc-500" strokeWidth={1.5} />
-                <span className="text-[13px] font-medium text-gray-700 dark:text-zinc-200">{item.label}</span>
+                {item.label}
               </button>
             ))}
           </div>

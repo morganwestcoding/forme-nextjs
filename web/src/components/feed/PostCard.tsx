@@ -61,18 +61,14 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, var
 
   const handleMouseEnter = () => {
     if (isVideo && videoRef.current) {
-      // Only reset to beginning on first play, otherwise continue from where we left off
-      if (!hasPlayed) {
-        videoRef.current.currentTime = 0;
-      }
       videoRef.current.play().catch(console.error);
 
-      // Mark as played so thumbnail fades out (and stays hidden)
-      if (hasThumbnail && !hasPlayed) {
-        if (videoReady) {
+      // Mark as played so thumbnail fades out (and video continues from where it left off)
+      if (!hasPlayed) {
+        if (!hasThumbnail || videoReady) {
           setHasPlayed(true);
         } else {
-          // Wait for video to be ready before fading
+          // Wait for video to be ready before fading thumbnail
           const checkReady = () => {
             if (videoRef.current && videoRef.current.readyState >= 2) {
               setVideoReady(true);
@@ -223,22 +219,33 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, var
           </div>
         )}
 
-        {/* Subtle gradient overlay - lighter feel */}
+        {/* Gradient overlay - intensifies on hover */}
         {!isListingVariant && (
           <div
-            className="absolute inset-0 pointer-events-none"
+            className="absolute inset-0 pointer-events-none transition-opacity duration-500 ease-out opacity-100 group-hover:opacity-0"
             style={{
               background:
                 'linear-gradient(to top,' +
-                'rgba(0,0,0,0.55) 0%,' +
-                'rgba(0,0,0,0.35) 15%,' +
-                'rgba(0,0,0,0.15) 35%,' +
+                'rgba(0,0,0,0.4) 0%,' +
+                'rgba(0,0,0,0.2) 15%,' +
+                'rgba(0,0,0,0.05) 35%,' +
                 'rgba(0,0,0,0.00) 55%)',
             }}
           />
         )}
-
-        <div className="absolute inset-0 bg-black/0 transition-colors" />
+        {!isListingVariant && (
+          <div
+            className="absolute inset-0 pointer-events-none transition-opacity duration-500 ease-out opacity-0 group-hover:opacity-100"
+            style={{
+              background:
+                'linear-gradient(to top,' +
+                'rgba(0,0,0,0.75) 0%,' +
+                'rgba(0,0,0,0.5) 20%,' +
+                'rgba(0,0,0,0.25) 40%,' +
+                'rgba(0,0,0,0.00) 60%)',
+            }}
+          />
+        )}
       </div>
 
       {/* Card content layer */}
@@ -257,45 +264,39 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, var
         </div>
       </div>
 
-      {/* Hover reveal info bar */}
+      {/* Hover reveal info - fades in within gradient */}
       {!isListingVariant && !hideUserInfo && (
-        <div
-          className="absolute -bottom-px left-0 right-0 z-30 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
-        >
-          <div className="bg-white dark:bg-neutral-900 px-3.5 py-3 rounded-b-xl">
-            {/* User row */}
-            <div
-              className="flex items-center gap-2.5 cursor-pointer group/user"
-              onClick={handleUserClick}
-            >
-              <div className="relative h-7 w-7 overflow-hidden rounded-full flex-shrink-0">
-                <Image
-                  src={post.user.image || '/images/placeholder.jpg'}
-                  alt={post.user.name || 'User'}
-                  fill
-                  sizes="28px"
-                  className="object-cover"
-                />
-              </div>
-              <span className="text-neutral-900 dark:text-white text-[13px] font-medium truncate transition-opacity duration-300 ease-out group-hover/user:opacity-60">
-                {post.user.name || 'Anonymous'}
-                {(post.user.verificationStatus === 'verified' || post.user.isSubscribed) && (
-                  <span className="inline-flex items-center align-middle ml-1">
-                    <VerificationBadge size={12} />
-                  </span>
-                )}
-              </span>
+        <div className="absolute bottom-0 left-0 right-0 z-30 px-3.5 pb-3.5 pt-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-out">
+          {/* User row */}
+          <div
+            className="flex items-center gap-2.5 cursor-pointer group/user"
+            onClick={handleUserClick}
+          >
+            <div className="relative h-7 w-7 overflow-hidden rounded-full flex-shrink-0 ring-1 ring-white/20">
+              <Image
+                src={post.user.image || '/images/placeholder.jpg'}
+                alt={post.user.name || 'User'}
+                fill
+                sizes="28px"
+                className="object-cover"
+              />
             </div>
-
-            {/* Caption row */}
-            {post.content && (
-              <div className="mt-2.5 pt-2.5 border-t border-neutral-100 dark:border-neutral-800">
-                <p className="text-neutral-500 dark:text-neutral-400 text-xs leading-relaxed line-clamp-2">
-                  {post.content}
-                </p>
-              </div>
-            )}
+            <span className="text-white text-[13px] font-medium truncate transition-opacity duration-300 ease-out group-hover/user:opacity-70 drop-shadow-sm">
+              {post.user.name || 'Anonymous'}
+              {(post.user.verificationStatus === 'verified' || post.user.isSubscribed) && (
+                <span className="inline-flex items-center align-middle ml-1">
+                  <VerificationBadge size={12} />
+                </span>
+              )}
+            </span>
           </div>
+
+          {/* Caption row */}
+          {post.content && (
+            <p className="mt-2 text-white/70 text-xs leading-relaxed line-clamp-2 drop-shadow-sm">
+              {post.content}
+            </p>
+          )}
         </div>
       )}
     </div>

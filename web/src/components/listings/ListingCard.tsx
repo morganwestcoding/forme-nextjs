@@ -87,10 +87,10 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
           style={{
             background:
               'linear-gradient(to top,' +
-              'rgba(0,0,0,0.65) 0%,' +
-              'rgba(0,0,0,0.45) 18%,' +
-              'rgba(0,0,0,0.20) 40%,' +
-              'rgba(0,0,0,0.00) 60%)',
+              'rgba(0,0,0,0.55) 0%,' +
+              'rgba(0,0,0,0.35) 10%,' +
+              'rgba(0,0,0,0.12) 22%,' +
+              'rgba(0,0,0,0.00) 32%)',
           }}
         />
       </div>
@@ -108,8 +108,8 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
 
           {/* Bottom info */}
           <div
-            className="absolute bottom-4 left-4 right-4 z-20"
-            style={{ textShadow: '0 1px 2px rgba(0,0,0,0.4)' }}
+            className="absolute bottom-3 left-3 right-3 z-20 backdrop-blur-md bg-black/25 rounded-xl px-3 py-2.5"
+            style={{ textShadow: '0 -1px 0 rgba(255,255,255,0.06), 0 1px 2px rgba(0,0,0,0.35)' }}
           >
             {compact ? (
               <div className="flex flex-col gap-0.5">
@@ -136,15 +136,15 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
               </div>
             ) : (
               <>
-                {/* Title with verification badge that stays with last word */}
-                <div className="mb-0.5">
-                  <h1 className="text-white text-[17px] leading-tight font-medium tracking-tight line-clamp-2">
+                {/* Title */}
+                <div className="mb-1.5">
+                  <h1 className="text-white text-[17px] leading-snug font-semibold tracking-tight line-clamp-2">
                     {renderTitleWithBadge(data.title)}
                   </h1>
                 </div>
 
-                {/* Location - improved formatting */}
-                <div className="text-white/90 text-xs leading-tight font-medium mb-2.5">
+                {/* Location */}
+                <div className="text-white/75 text-[11px] leading-tight mb-3">
                   <span className="line-clamp-1">
                     {city && state ? `${city}, ${state}` : city || state || 'Location not specified'}
                   </span>

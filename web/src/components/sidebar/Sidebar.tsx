@@ -87,9 +87,9 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
   const navItems = [
     { label: "Discover", href: "/", active: isActive("/", ["/post"]) },
     { label: "Businesses", href: "/market", active: isActive("/market", ["/market", "/listings"]) },
-    { label: "Shops", href: "/shops", active: isActive("/shops") },
+    { label: "Shops", href: "/shops", active: isActive("/shops", ["/shops"]) },
     ...(currentUser ? [
-      { label: "Appointments", href: "/bookings/reservations", active: isActive("/bookings") },
+      { label: "Appointments", href: "/bookings/reservations", active: isActive("/bookings/reservations", ["/bookings"]) },
       { label: "Favorites", href: "/favorites", active: isActive("/favorites") },
       { label: "Inbox", onClick: () => inboxModal.onOpen(currentUser), active: false },
       { label: "Notifications", onClick: () => notificationsModal.onOpen(), active: false },
