@@ -146,6 +146,7 @@ export type SafePost = Omit<
   category?: string;
   user: SafeUser;
   imageSrc: string | null;
+  beforeImageSrc?: string | null;
   mediaType?: MediaType | null;
   mediaOverlay?: MediaOverlay | null;
   thumbnailUrl?: string | null;

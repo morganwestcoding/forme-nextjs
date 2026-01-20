@@ -19,7 +19,7 @@ const tabs: Array<{ key: TabKey; label: string }> = [
 ];
 
 const ShopCategoryNav: React.FC<ShopCategoryNavProps> = ({ activeTab, onTabChange }) => {
-  const { accentColor } = useTheme();
+  const { accentColor, isDarkMode } = useTheme();
 
   return (
     <div className="flex items-center gap-1.5 py-3">
@@ -37,15 +37,19 @@ const ShopCategoryNav: React.FC<ShopCategoryNavProps> = ({ activeTab, onTabChang
             className={`
               relative px-3 sm:px-4 h-9 flex items-center text-[12px] sm:text-[13px] font-medium rounded-xl border transition-all duration-200 active:scale-[0.97] whitespace-nowrap
               ${isSelected
-                ? 'text-white'
-                : 'bg-white dark:bg-neutral-800 border-neutral-300 dark:border-neutral-600 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700 hover:border-neutral-400 dark:hover:border-neutral-500'
+                ? 'text-white border-transparent'
+                : 'border-stone-300/90 dark:border-zinc-600/60 text-stone-500 dark:text-zinc-400 hover:border-stone-400 dark:hover:border-zinc-500 hover:text-stone-600 dark:hover:text-zinc-300'
               }
             `}
             style={isSelected ? {
-              backgroundColor: accentColor,
-              borderColor: accentColor,
-              color: 'white'
-            } : undefined}
+              background: accentColor,
+              boxShadow: '0 1px 3px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.15)',
+            } : {
+              background: isDarkMode ? '#222225' : '#F7F7F6',
+              boxShadow: isDarkMode
+                ? '0 1px 2px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.03)'
+                : '0 1px 2px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.7)',
+            }}
             type="button"
           >
             <span className="relative z-10">{tab.label}</span>

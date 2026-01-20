@@ -14,6 +14,7 @@ export async function POST(request: Request) {
     const {
         content,
         imageSrc,
+        beforeImageSrc,
         mediaUrl,
         mediaType,
         mediaOverlay,
@@ -28,6 +29,7 @@ export async function POST(request: Request) {
     console.log("Received fields in POST request:", {
         content,
         imageSrc,
+        beforeImageSrc: beforeImageSrc || 'NOT PROVIDED',
         mediaUrl,
         mediaType,
         mediaOverlay,
@@ -38,6 +40,10 @@ export async function POST(request: Request) {
         postType,
         mentions
     });
+
+    if (beforeImageSrc) {
+        console.log(">>> beforeImageSrc IS SET:", beforeImageSrc);
+    }
 
     // Check if content exists (allow empty content for Reels)
     if (content === undefined || content === null) {
@@ -77,6 +83,7 @@ export async function POST(request: Request) {
             data: {
                 content,
                 imageSrc,
+                beforeImageSrc: beforeImageSrc || undefined,
                 mediaUrl,
                 mediaType,
                 mediaOverlay: mediaOverlay || undefined,

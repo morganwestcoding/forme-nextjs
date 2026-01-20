@@ -168,6 +168,7 @@ export default async function getPosts(params: IPostsParams) {
         id: post.id,
         content: post.content,
         imageSrc: post.imageSrc,
+        beforeImageSrc: post.beforeImageSrc || null,
         mediaUrl: post.mediaUrl || null,
         mediaType: (post.mediaType as MediaType) || null,
         mediaOverlay: post.mediaOverlay as any,

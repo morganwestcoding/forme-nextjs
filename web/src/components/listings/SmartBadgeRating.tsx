@@ -33,6 +33,8 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
   ],
 }) => {
   const [, setTick] = useState(0);
+  const gradientId = `starGrad-rating-${React.useId().replace(/:/g, '')}`;
+  const dotGradientId = `dotGrad-rating-${React.useId().replace(/:/g, '')}`;
 
   useEffect(() => {
     const t = setInterval(() => setTick((v) => v + 1), 60_000);
@@ -86,12 +88,12 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
 
   const timeStatus = getTimeStatus();
 
-  const getStatusDotColor = (color: string) => {
+  const getStatusGradient = (color: string) => {
     switch (color) {
-      case 'green': return 'bg-emerald-500';
-      case 'orange': return 'bg-amber-500';
-      case 'red': return 'bg-rose-500';
-      default: return 'bg-gray-400';
+      case 'green': return { start: '#34D399', end: '#059669' };
+      case 'orange': return { start: '#FBBF24', end: '#D97706' };
+      case 'red': return { start: '#FB7185', end: '#E11D48' };
+      default: return { start: '#9CA3AF', end: '#6B7280' };
     }
   };
 
@@ -106,28 +108,41 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
   };
 
   return (
-    <div className="flex items-center gap-2">
-      {/* Rating */}
+    <div
+      className="flex items-center gap-3 text-[12px] font-medium text-white"
+      style={{ textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}
+    >
       <button
         onClick={handleRatingClick}
-        className="flex items-center gap-1 pr-2.5 py-1.5 text-xs text-white/90 hover:text-white transition-colors"
+        className="flex items-center gap-0.5 hover:text-white transition-colors"
         type="button"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="12" height="12" className="text-amber-400">
-          <path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z" fill="currentColor" />
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="12" height="12" className="flex-shrink-0">
+          <path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z" fill={`url(#${gradientId})`} />
+          <defs>
+            <linearGradient id={gradientId} x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#FBBF24" />
+              <stop offset="100%" stopColor="#D97706" />
+            </linearGradient>
+          </defs>
         </svg>
         <span>{Number(rating).toFixed(1)}</span>
       </button>
 
-      <span className="w-px h-4 bg-white/30" />
-
-      {/* Status */}
       <button
         onClick={handleTimeClick}
-        className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-white/90 hover:text-white transition-colors"
+        className="flex items-center gap-0.5 hover:text-white transition-colors"
         type="button"
       >
-        <span className={`w-1.5 h-1.5 rounded-full ${getStatusDotColor(timeStatus.color)}`} />
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="8" height="8" className="flex-shrink-0">
+          <circle cx="12" cy="12" r="10" fill={`url(#${dotGradientId})`} />
+          <defs>
+            <linearGradient id={dotGradientId} x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor={getStatusGradient(timeStatus.color).start} />
+              <stop offset="100%" stopColor={getStatusGradient(timeStatus.color).end} />
+            </linearGradient>
+          </defs>
+        </svg>
         <span>{timeStatus.message}</span>
       </button>
     </div>

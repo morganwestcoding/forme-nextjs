@@ -5,7 +5,6 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { PlusSignIcon, Search01Icon } from 'hugeicons-react';
 import useFilterModal from '@/app/hooks/useFilterModal';
 import { useTheme } from '@/app/context/ThemeContext';
-import useCreatePostModal from '@/app/hooks/useCreatePostModal';
 import useShopModal from '@/app/hooks/useShopModal';
 import useProductModal from '@/app/hooks/useProductModal';
 import ContextualSearch from '@/components/search/ContextualSearch';
@@ -72,7 +71,6 @@ const PageSearch: React.FC<PageSearchProps> = ({
   const params = useSearchParams();
   const router = useRouter();
   const filterModal = useFilterModal();
-  const createPostModal = useCreatePostModal();
   const shopModal = useShopModal();
   const productModal = useProductModal();
   const { accentColor } = useTheme();
@@ -101,17 +99,17 @@ const PageSearch: React.FC<PageSearchProps> = ({
       case 'market':
         return [
           { label: 'Create Listing', action: () => router.push('/listing/new') },
-          { label: 'Create Post', action: () => createPostModal.onOpen() },
+          { label: 'Create Post', action: () => router.push('/post/new') },
         ];
       case 'shops':
         return [
           { label: 'Create Shop', action: () => shopModal.onOpen() },
           { label: 'Create Product', action: () => productModal.onOpen() },
-          { label: 'Create Post', action: () => createPostModal.onOpen() },
+          { label: 'Create Post', action: () => router.push('/post/new') },
         ];
       case 'discover':
         return [
-          { label: 'Create Post', action: () => createPostModal.onOpen() },
+          { label: 'Create Post', action: () => router.push('/post/new') },
         ];
       case 'properties':
         return [

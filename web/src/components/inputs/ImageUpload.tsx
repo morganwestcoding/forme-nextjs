@@ -233,7 +233,7 @@ export default function ImageUpload({
   }, [accept, maxFileSizeMB, enableCrop, cropMode, getCropAspectRatio, uploadId]);
 
   return (
-    <div>
+    <div className="w-full h-full">
       {hint && (
         <div className="mb-2 text-xs text-neutral-500 dark:text-neutral-400">
           {hint}

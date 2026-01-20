@@ -248,16 +248,16 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
       <div
         className={`rounded-2xl border ${
           isDarkMode
-            ? 'border-zinc-700/80'
-            : 'border-stone-200/60'
+            ? 'border-zinc-600/60'
+            : 'border-stone-300/90'
         }`}
         style={{
           background: isDarkMode
-            ? '#18181b'
-            : '#FAFAF9',
+            ? '#222225'
+            : '#F7F7F6',
           boxShadow: isDarkMode
-            ? 'inset 0 1px 0 rgba(255,255,255,0.04)'
-            : 'inset 0 1px 0 rgba(255,255,255,0.8)',
+            ? '0 1px 2px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.03)'
+            : '0 1px 2px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.7)',
         }}
       >
         <div className="relative flex items-center gap-2 px-4 py-2.5">

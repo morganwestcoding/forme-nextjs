@@ -30,8 +30,8 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
     if (words.length === 0) return null;
 
     const Badge = () => (
-      <span className="inline-flex items-center align-middle ml-1" aria-label="Verified">
-        <VerificationBadge size={16} />
+      <span className="inline-flex items-center align-middle ml-0.5" aria-label="Verified">
+        <VerificationBadge size={14} />
       </span>
     );
 
@@ -82,15 +82,20 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
           sizes="(max-width:768px) 100vw, 33vw"
           priority={false}
         />
+        {/* Center vignette gradient for centered text */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              'linear-gradient(to top,' +
-              'rgba(0,0,0,0.70) 0%,' +
-              'rgba(0,0,0,0.50) 12%,' +
-              'rgba(0,0,0,0.25) 25%,' +
-              'rgba(0,0,0,0.00) 40%)',
+              'radial-gradient(ellipse at center, rgba(0,0,0,0.50) 0%, rgba(0,0,0,0.25) 50%, rgba(0,0,0,0.15) 100%)',
+          }}
+        />
+        {/* Top gradient for heart button */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              'linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 25%)',
           }}
         />
       </div>
@@ -106,24 +111,19 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
             />
           </div>
 
-          {/* Bottom info */}
+          {/* Centered title + location */}
           <div
-            className="absolute bottom-3 left-3 right-3 z-20 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]"
+            className="absolute inset-0 flex flex-col items-center justify-center z-20 px-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
           >
             {compact ? (
-              <div className="flex flex-col gap-0.5">
-                {/* Title */}
-                <h1 className="text-white text-xs leading-tight font-semibold tracking-tight line-clamp-1">
+              <div className="flex flex-col items-center text-center">
+                <h1 className="text-white text-xs leading-snug font-medium tracking-tight line-clamp-2">
                   {data.title}
                 </h1>
-                {/* Location */}
-                <div className="text-white/90 text-xs leading-tight">
-                  <span className="line-clamp-1">
-                    {city && state ? `${city}, ${state}` : city || state || 'Location not specified'}
-                  </span>
-                </div>
-                {/* Rating */}
-                <div className="flex items-center mt-0.5 drop-shadow">
+                <p className="text-white/70 text-[10px] font-light tracking-normal mt-0.5">
+                  {city && state ? `${city}, ${state}` : city || state || 'Location not specified'}
+                </p>
+                <div className="mt-1.5">
                   <SmartBadgeRating
                     rating={data.rating ?? 5.0}
                     isTrending={data.isTrending || false}
@@ -134,23 +134,14 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
                 </div>
               </div>
             ) : (
-              <>
-                {/* Title */}
-                <div className="mb-1.5">
-                  <h1 className="text-white text-[17px] leading-snug font-semibold tracking-tight line-clamp-2">
-                    {renderTitleWithBadge(data.title)}
-                  </h1>
-                </div>
-
-                {/* Location */}
-                <div className="text-white/75 text-[11px] leading-tight mb-3">
-                  <span className="line-clamp-1">
-                    {city && state ? `${city}, ${state}` : city || state || 'Location not specified'}
-                  </span>
-                </div>
-
-                {/* Rating + open status */}
-                <div className="flex items-center drop-shadow">
+              <div className="flex flex-col items-center text-center">
+                <h1 className="text-white text-lg leading-snug font-medium tracking-tight">
+                  {renderTitleWithBadge(data.title)}
+                </h1>
+                <p className="text-white/70 text-[12px] font-light tracking-wide mt-1">
+                  {city && state ? `${city}, ${state}` : city || state || 'Location not specified'}
+                </p>
+                <div className="mt-2">
                   <SmartBadgeRating
                     rating={data.rating ?? 5.0}
                     isTrending={data.isTrending || false}
@@ -159,7 +150,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
                     storeHours={data.storeHours}
                   />
                 </div>
-              </>
+              </div>
             )}
           </div>
         </div>

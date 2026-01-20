@@ -132,7 +132,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
 
     const Badge = () => (
       <span className="inline-flex items-center align-middle ml-1" aria-label="Verified">
-        <VerificationBadge size={16} />
+        <VerificationBadge size={18} />
       </span>
     );
 
@@ -178,17 +178,16 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
   return (
     <div
       onClick={handleCardClick}
-      className={`group cursor-pointer rounded-3xl overflow-hidden relative bg-neutral-900 transition-[transform,box-shadow,opacity] duration-500 ease-out active:scale-[0.98] active:opacity-90 ${
-        solidBackground
-          ? 'border border-neutral-200/60 hover:shadow-[0_10px_30px_rgba(0,0,0,0.08)]'
-          : 'hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(0,0,0,0.15),0_8px_16px_rgba(0,0,0,0.1)]'
-      } ${compact ? '' : 'max-w-[250px]'}`}
+      className={solidBackground
+        ? `group cursor-pointer overflow-hidden relative rounded-xl bg-white border border-gray-100 dark:border-neutral-800 dark:bg-neutral-950 transition-all duration-300 hover:border-neutral-300 hover:shadow-sm ${compact ? '' : 'max-w-[250px]'}`
+        : `group cursor-pointer overflow-hidden relative rounded-3xl bg-neutral-900 transition-[transform,box-shadow,opacity] duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(0,0,0,0.15),0_8px_16px_rgba(0,0,0,0.1)] active:scale-[0.98] active:opacity-90 ${compact ? '' : 'max-w-[250px]'}`
+      }
     >
       {/* Background */}
-      <div className="absolute inset-0 z-0 overflow-hidden rounded-3xl">
+      <div className={`absolute inset-0 z-0 overflow-hidden ${solidBackground ? 'rounded-xl' : 'rounded-3xl'}`}>
         {solidBackground ? (
           /* Ultra-minimal white background */
-          <div className="absolute inset-0 bg-white rounded-3xl" />
+          <div className="absolute inset-0 bg-white dark:bg-neutral-950 rounded-xl border border-neutral-200/60" />
         ) : (
           <>
             {/* Background image - grayscale and sharp */}
@@ -230,16 +229,12 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
               }}
             />
 
-            {/* Bottom gradient for text readability */}
+            {/* Center vignette gradient for centered text */}
             <div
               className="absolute inset-0 pointer-events-none"
               style={{
                 background:
-                  'linear-gradient(to top,' +
-                  'rgba(0,0,0,0.70) 0%,' +
-                  'rgba(0,0,0,0.50) 12%,' +
-                  'rgba(0,0,0,0.25) 25%,' +
-                  'rgba(0,0,0,0.00) 40%)',
+                  'radial-gradient(ellipse at center 55%, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.20) 50%, rgba(0,0,0,0.10) 100%)',
               }}
             />
           </>
@@ -325,11 +320,12 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
             </div>
           ) : (
             <>
-              {/* Centered avatar for image backgrounds */}
-              <div className={compact ? 'absolute top-[32%] left-1/2 transform -translate-x-1/2 -translate-y-1/2' : 'absolute top-[40%] left-1/2 transform -translate-x-1/2 -translate-y-1/2'}>
-                <div className="relative transition-transform duration-300">
+              {/* Centered avatar + name + job title */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center z-20 px-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
+                {/* Avatar */}
+                <div className="relative transition-transform duration-300 mb-3">
                   {shouldShowImage ? (
-                    <div className={compact ? 'w-14 h-14 rounded-full overflow-hidden shadow-lg border-2 border-white relative' : 'w-24 h-24 rounded-full overflow-hidden shadow-lg border-2 border-white relative'}>
+                    <div className={compact ? 'w-14 h-14 rounded-full overflow-hidden shadow-lg border-2 border-white relative' : 'w-20 h-20 rounded-full overflow-hidden shadow-lg border-2 border-white relative'}>
                       <Image
                         src={profileImage}
                         alt={employee.fullName}
@@ -338,12 +334,12 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
                         onError={handleImageError}
                         onLoad={handleImageLoad}
                         priority={false}
-                        sizes={compact ? '56px' : '96px'}
+                        sizes={compact ? '56px' : '80px'}
                       />
                     </div>
                   ) : (
                     <div
-                      className={compact ? 'w-14 h-14 rounded-full flex items-center justify-center text-white text-base font-semibold shadow-lg border-2 border-white' : 'w-24 h-24 rounded-full flex items-center justify-center text-white text-2xl font-semibold shadow-lg border-2 border-white'}
+                      className={compact ? 'w-14 h-14 rounded-full flex items-center justify-center text-white text-base font-semibold shadow-lg border-2 border-white' : 'w-20 h-20 rounded-full flex items-center justify-center text-white text-xl font-semibold shadow-lg border-2 border-white'}
                       style={{ backgroundColor: avatarBg }}
                       aria-label="Employee initials"
                       title={employee.fullName}
@@ -352,21 +348,17 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
                     </div>
                   )}
                 </div>
-              </div>
 
-              {/* Bottom info for image backgrounds */}
-              <div
-                className="absolute bottom-3 left-3 right-3 z-20 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]"
-              >
+                {/* Name + Job title */}
                 {compact ? (
-                  <div className="flex flex-col gap-0.5">
-                    <h3 className="text-white text-xs leading-tight font-semibold tracking-tight line-clamp-1">
+                  <div className="flex flex-col items-center text-center">
+                    <h3 className="text-white text-sm leading-tight font-medium tracking-tight line-clamp-1">
                       {employee.fullName}
                     </h3>
-                    <div className="text-white/75 text-[11px] leading-tight">
-                      <span className="line-clamp-1">{employee.jobTitle || 'Specialist'}</span>
-                    </div>
-                    <div className="flex items-center mt-0.5">
+                    <p className="text-white/75 text-[11px] font-extralight tracking-normal mt-0.5">
+                      {employee.jobTitle || 'Specialist'}
+                    </p>
+                    <div className="mt-2">
                       <SmartBadgeWorker
                         employee={employee}
                         listingTitle={listingTitle}
@@ -381,16 +373,14 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
                     </div>
                   </div>
                 ) : (
-                  <>
-                    <div className="mb-1.5">
-                      <h3 className="text-[17px] font-semibold text-white leading-snug tracking-tight line-clamp-2">
-                        {renderNameWithBadge(employee.fullName)}
-                      </h3>
-                    </div>
-                    <div className="text-white/75 text-[11px] leading-tight mb-3">
-                      <span className="line-clamp-1">{employee.jobTitle || 'Specialist'}</span>
-                    </div>
-                    <div className="flex items-center">
+                  <div className="flex flex-col items-center text-center">
+                    <h3 className="text-white text-[20px] leading-tight font-semibold tracking-[-0.02em]">
+                      {renderNameWithBadge(employee.fullName)}
+                    </h3>
+                    <p className="text-white/80 text-[14px] font-light tracking-wide mt-1.5">
+                      {employee.jobTitle || 'Specialist'}
+                    </p>
+                    <div className="mt-3">
                       <SmartBadgeWorker
                         employee={employee}
                         listingTitle={listingTitle}
@@ -403,7 +393,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
                         }}
                       />
                     </div>
-                  </>
+                  </div>
                 )}
               </div>
             </>

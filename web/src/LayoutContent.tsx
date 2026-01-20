@@ -12,7 +12,7 @@ export default function LayoutContent({ children }: LayoutContentProps) {
   const pathname = usePathname();
 
   // Skip animation for full-screen pages (they have their own layouts)
-  const isFullScreenPage = pathname?.startsWith('/register') || pathname?.startsWith('/listing/new') || pathname?.startsWith('/reserve');
+  const isFullScreenPage = pathname?.startsWith('/register') || pathname?.startsWith('/listing/new') || pathname?.startsWith('/reserve') || pathname?.startsWith('/post/new');
 
   const [collapsed, setCollapsed] = useState(false);
   // Initialize hasAnimated to true for full-screen pages to avoid flash of invisible content

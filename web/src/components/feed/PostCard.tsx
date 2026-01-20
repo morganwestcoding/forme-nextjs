@@ -1,306 +1,342 @@
-// components/posts/PostCard.tsx
+// components/feed/PostCard.tsx
 'use client';
 
 import React, { useState, useRef } from 'react';
 import Image from 'next/image';
 import axios from 'axios';
-import { useRouter } from 'next/navigation';
-import { SafePost, SafeUser, MediaOverlay } from '@/app/types';
+import { SafePost, SafeUser } from '@/app/types';
 import usePostModal from '@/app/hooks/usePostModal';
 import { usePostStore } from '@/app/hooks/usePostStore';
-import HeartButton from '../HeartButton';
-import VerificationBadge from '../VerificationBadge';
 
 interface PostCardProps {
   post: SafePost;
   currentUser?: SafeUser | null;
-  categories: any[];
-  variant?: 'default' | 'listing';
+  categories?: any[];
+  variant?: string;
   hideUserInfo?: boolean;
 }
 
-const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, variant = 'default', hideUserInfo = false }) => {
+const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) => {
   const postModal = usePostModal();
-  const router = useRouter();
-
   const { posts } = usePostStore();
   const post = posts.find((p) => p.id === initialPost.id) || initialPost;
 
   const [imageLoaded, setImageLoaded] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
   const [hasPlayed, setHasPlayed] = useState(false);
+  const [showBefore, setShowBefore] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const isTextPost = !post.imageSrc && !post.mediaUrl;
   const isVideo = post.mediaType === 'video';
   const hasThumbnail = isVideo && post.thumbnailUrl;
+  const hasBeforeAfter = Boolean(post.beforeImageSrc) && !isVideo;
 
-  /** ---------- Handlers ---------- */
+  // Debug logging - always log for first few posts
+  console.log('[PostCard] Rendering:', {
+    id: post.id,
+    hasBeforeAfter,
+    beforeImageSrc: post.beforeImageSrc || 'NOT SET',
+    imageSrc: post.imageSrc ? 'SET' : 'NOT SET',
+    isVideo
+  });
+
+  // Text-only posts are not displayed in Work Gallery
+  if (isTextPost) {
+    return null;
+  }
+
   const handleCardClick = async () => {
     try {
       const postIndex = posts.findIndex((p) => p.id === post.id);
       const res = await axios.get(`/api/post/${post.id}`);
-      const freshPost = res.data;
-      postModal.onOpen(freshPost, currentUser, undefined, posts, postIndex >= 0 ? postIndex : 0);
-
-      // Increment view count (fire and forget)
+      postModal.onOpen(res.data, currentUser, undefined, posts, postIndex >= 0 ? postIndex : 0);
       axios.post(`/api/post/${post.id}/view`).catch(() => {});
-    } catch (err) {
+    } catch {
       const postIndex = posts.findIndex((p) => p.id === post.id);
       postModal.onOpen(post, currentUser, undefined, posts, postIndex >= 0 ? postIndex : 0);
-
-      // Still increment view even on error
       axios.post(`/api/post/${post.id}/view`).catch(() => {});
     }
-  };
-
-  const handleUserClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    router.push(`/profile/${post.user.id}`);
   };
 
   const handleMouseEnter = () => {
     if (isVideo && videoRef.current) {
-      videoRef.current.play().catch(console.error);
-
-      // Mark as played so thumbnail fades out (and video continues from where it left off)
-      if (!hasPlayed) {
-        if (!hasThumbnail || videoReady) {
-          setHasPlayed(true);
-        } else {
-          // Wait for video to be ready before fading thumbnail
-          const checkReady = () => {
-            if (videoRef.current && videoRef.current.readyState >= 2) {
-              setVideoReady(true);
-              setHasPlayed(true);
-            } else {
-              requestAnimationFrame(checkReady);
-            }
-          };
-          checkReady();
-        }
-      }
+      videoRef.current.play().catch(() => {});
+      if (!hasPlayed && (!hasThumbnail || videoReady)) setHasPlayed(true);
+    }
+    if (hasBeforeAfter) {
+      setShowBefore(true);
     }
   };
 
   const handleMouseLeave = () => {
-    // Just pause - don't fade back to thumbnail, leave video on current frame
-    if (isVideo && videoRef.current) {
-      videoRef.current.pause();
+    if (isVideo && videoRef.current) videoRef.current.pause();
+    if (hasBeforeAfter) {
+      setShowBefore(false);
     }
   };
-
-  const renderBackground = () => {
-    if (isTextPost) {
-      // Text post - create a gradient background
-      return (
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500">
-          <div className="absolute inset-0 flex items-center justify-center p-6">
-            <p className="text-white text-sm font-medium text-center leading-relaxed drop-shadow-lg">
-              {post.content.length > 200 ? post.content.substring(0, 200) + '...' : post.content}
-            </p>
-          </div>
-        </div>
-      );
-    }
-
-    // Media post (image/video)
-    if (isVideo) {
-      return (
-        <>
-          {/* Video element - fades in once played, stays visible after */}
-          <video
-            ref={videoRef}
-            src={post.mediaUrl || post.imageSrc || ''}
-            className="absolute inset-0 w-full h-full object-cover"
-            style={{
-              opacity: hasThumbnail ? (hasPlayed ? 1 : 0) : 1,
-              transition: 'opacity 1000ms cubic-bezier(0.4, 0, 0.2, 1)',
-            }}
-            muted
-            loop
-            playsInline
-            preload="metadata"
-            onCanPlay={() => setVideoReady(true)}
-          />
-          {/* Thumbnail overlay - fades out once video plays, stays hidden */}
-          {hasThumbnail && (
-            <div
-              className="absolute inset-0 w-full h-full pointer-events-none"
-              style={{
-                opacity: hasPlayed ? 0 : 1,
-                transition: 'opacity 1000ms cubic-bezier(0.4, 0, 0.2, 1)',
-              }}
-            >
-              <Image
-                src={post.thumbnailUrl!}
-                alt={`Thumbnail for post by ${post.user.name}`}
-                fill
-                className="object-cover"
-                sizes="(max-width:768px) 100vw, 33vw"
-                priority
-              />
-            </div>
-          )}
-        </>
-      );
-    }
-
-    return (
-      <Image
-        src={post.mediaUrl || post.imageSrc || ''}
-        alt={`Post by ${post.user.name}`}
-        fill
-        className={`object-cover ${
-          imageLoaded ? 'opacity-100' : 'opacity-0'
-        }`}
-        onLoad={() => setImageLoaded(true)}
-        sizes="(max-width:768px) 100vw, 33vw"
-        priority={false}
-      />
-    );
-  };
-
-  const isListingVariant = variant === 'listing';
 
   return (
     <div
       onClick={handleCardClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className={`
-        group cursor-pointer relative overflow-hidden
-        ${isListingVariant
-          ? 'rounded-2xl border border-gray-100 dark:border-neutral-800'
-          : 'rounded-xl bg-white dark:bg-neutral-950'}
-        transition-[transform,box-shadow] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]
-        ${isListingVariant ? 'hover:shadow-md' : 'hover:-translate-y-0.5 hover:shadow-sm'}
-        ${isListingVariant || hideUserInfo ? '' : 'max-w-[250px]'}`}
-      style={isListingVariant ? { aspectRatio: '1 / 1' } : undefined}
+      className="group cursor-pointer relative overflow-hidden rounded-2xl bg-neutral-100 dark:bg-neutral-900 transition-all duration-300 ease-out"
+      style={{ aspectRatio: '1' }}
     >
-      {/* Background media/content */}
-      <div className={`absolute inset-0 z-0 overflow-hidden ${isListingVariant ? 'rounded-2xl' : 'rounded-xl'}`}>
-        {renderBackground()}
-
-        {/* Text Overlay - rendered via CSS to match preview */}
-        {post.mediaOverlay && (post.mediaOverlay as MediaOverlay).text && (
-          <div
-            className="pointer-events-none absolute inset-0 flex p-4 z-10"
-            style={{
-              justifyContent:
-                (post.mediaOverlay as MediaOverlay).pos.endsWith('left') ? 'flex-start' :
-                (post.mediaOverlay as MediaOverlay).pos.endsWith('right') ? 'flex-end' :
-                'center',
-              alignItems:
-                (post.mediaOverlay as MediaOverlay).pos.startsWith('top') ? 'flex-start' :
-                (post.mediaOverlay as MediaOverlay).pos.startsWith('bottom') ? 'flex-end' :
-                'center',
-            }}
-          >
+      {/* Media - clean, no overlays */}
+      {isVideo ? (
+        <>
+          <video
+            ref={videoRef}
+            src={post.mediaUrl || post.imageSrc || ''}
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+            style={{ opacity: hasThumbnail ? (hasPlayed ? 1 : 0) : 1, transition: 'opacity 400ms' }}
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            onCanPlay={() => { setVideoReady(true); if (!hasPlayed) setHasPlayed(true); }}
+          />
+          {hasThumbnail && (
             <div
-              style={{
-                fontSize: `${Math.max(12, (post.mediaOverlay as MediaOverlay).size * 0.4)}px`,
-                color: (post.mediaOverlay as MediaOverlay).color === 'ffffff' ? '#fff' : '#000',
-                textShadow: (post.mediaOverlay as MediaOverlay).color === 'ffffff'
-                  ? '1px 1px 3px rgba(0,0,0,0.8), 0 0 10px rgba(0,0,0,0.5)'
-                  : '1px 1px 3px rgba(255,255,255,0.8), 0 0 10px rgba(255,255,255,0.5)',
-                lineHeight: 1.2,
-                fontWeight: 700,
-                maxWidth: '90%',
-                wordBreak: 'break-word',
-                textAlign:
-                  (post.mediaOverlay as MediaOverlay).pos.endsWith('left') ? 'left' :
-                  (post.mediaOverlay as MediaOverlay).pos.endsWith('right') ? 'right' :
-                  'center',
-              }}
+              className="absolute inset-0 pointer-events-none transition-opacity duration-400"
+              style={{ opacity: hasPlayed ? 0 : 1 }}
             >
-              {(post.mediaOverlay as MediaOverlay).text}
-            </div>
-          </div>
-        )}
-
-        {/* Gradient overlay - intensifies on hover */}
-        {!isListingVariant && (
-          <div
-            className="absolute inset-0 pointer-events-none transition-opacity duration-500 ease-out opacity-100 group-hover:opacity-0"
-            style={{
-              background:
-                'linear-gradient(to top,' +
-                'rgba(0,0,0,0.4) 0%,' +
-                'rgba(0,0,0,0.2) 15%,' +
-                'rgba(0,0,0,0.05) 35%,' +
-                'rgba(0,0,0,0.00) 55%)',
-            }}
-          />
-        )}
-        {!isListingVariant && (
-          <div
-            className="absolute inset-0 pointer-events-none transition-opacity duration-500 ease-out opacity-0 group-hover:opacity-100"
-            style={{
-              background:
-                'linear-gradient(to top,' +
-                'rgba(0,0,0,0.75) 0%,' +
-                'rgba(0,0,0,0.5) 20%,' +
-                'rgba(0,0,0,0.25) 40%,' +
-                'rgba(0,0,0,0.00) 60%)',
-            }}
-          />
-        )}
-      </div>
-
-      {/* Card content layer */}
-      <div className="relative z-10">
-        <div className={isListingVariant ? 'relative w-full h-full' : hideUserInfo ? 'relative h-[180px]' : 'relative h-[280px]'}>
-          {/* Heart button - top right */}
-          {!isListingVariant && (
-            <div className="absolute top-3 right-3 z-20">
-              <HeartButton
-                listingId={post.id}
-                currentUser={currentUser}
-                variant="default"
-              />
+              <Image src={post.thumbnailUrl!} alt="" fill className="object-cover" sizes="300px" priority />
             </div>
           )}
-        </div>
-      </div>
-
-      {/* Hover reveal info - fades in within gradient */}
-      {!isListingVariant && !hideUserInfo && (
-        <div className="absolute bottom-0 left-0 right-0 z-30 px-3.5 pb-3.5 pt-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-out">
-          {/* User row */}
+          {/* Video indicator - subtle */}
+          <div className="absolute bottom-3 right-3 w-6 h-6 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center opacity-60 group-hover:opacity-100 transition-opacity">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="white">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </div>
+        </>
+      ) : hasBeforeAfter ? (
+        <>
+          {/* Before image (underneath) */}
+          <Image
+            src={post.beforeImageSrc || ''}
+            alt=""
+            fill
+            className="object-cover"
+            sizes="300px"
+          />
+          {/* After image with clip reveal */}
           <div
-            className="flex items-center gap-2.5 cursor-pointer group/user"
-            onClick={handleUserClick}
+            className="absolute inset-0 transition-[clip-path] duration-500 ease-out"
+            style={{
+              clipPath: showBefore
+                ? 'inset(0 100% 0 0)'
+                : 'inset(0 0% 0 0)',
+            }}
           >
-            <div className="relative h-7 w-7 overflow-hidden rounded-full flex-shrink-0 ring-1 ring-white/20">
-              <Image
-                src={post.user.image || '/images/placeholder.jpg'}
-                alt={post.user.name || 'User'}
-                fill
-                sizes="28px"
-                className="object-cover"
-              />
-            </div>
-            <span className="text-white text-[13px] font-medium truncate transition-opacity duration-300 ease-out group-hover/user:opacity-70 drop-shadow-sm">
-              {post.user.name || 'Anonymous'}
-              {(post.user.verificationStatus === 'verified' || post.user.isSubscribed) && (
-                <span className="inline-flex items-center align-middle ml-1">
-                  <VerificationBadge size={12} />
-                </span>
-              )}
-            </span>
+            <Image
+              src={post.mediaUrl || post.imageSrc || ''}
+              alt=""
+              fill
+              className="object-cover"
+              onLoad={() => setImageLoaded(true)}
+              sizes="300px"
+            />
           </div>
-
-          {/* Caption row */}
-          {post.content && (
-            <p className="mt-2 text-white/70 text-xs leading-relaxed line-clamp-2 drop-shadow-sm">
-              {post.content}
-            </p>
-          )}
-        </div>
+          {/* Slider line */}
+          <div
+            className="absolute top-0 bottom-0 w-0.5 bg-white shadow-[0_0_12px_rgba(255,255,255,0.8)] transition-all duration-500 ease-out z-10"
+            style={{
+              left: showBefore ? '0%' : '100%',
+              opacity: showBefore ? 1 : 0,
+            }}
+          />
+          {/* Centered labels with crossfade */}
+          <div className="absolute bottom-3 left-0 right-0 flex justify-center pointer-events-none">
+            <div className="relative w-[52px] h-[26px]">
+              {/* Before label */}
+              <span
+                className={`
+                  absolute inset-0 flex items-center justify-center
+                  rounded-md text-[11px] font-medium
+                  bg-white/95 text-neutral-900 backdrop-blur-md
+                  transition-all duration-500 ease-out
+                  ${showBefore ? 'opacity-100 blur-0' : 'opacity-0 blur-sm'}
+                `}
+              >
+                Before
+              </span>
+              {/* After label */}
+              <span
+                className={`
+                  absolute inset-0 flex items-center justify-center
+                  rounded-md text-[11px] font-medium
+                  bg-white/95 text-neutral-900 backdrop-blur-md
+                  transition-all duration-500 ease-out
+                  ${showBefore ? 'opacity-0 blur-sm' : 'opacity-100 blur-0'}
+                `}
+              >
+                After
+              </span>
+            </div>
+          </div>
+        </>
+      ) : (
+        <Image
+          src={post.mediaUrl || post.imageSrc || ''}
+          alt=""
+          fill
+          className={`object-cover transition-all duration-500 group-hover:scale-[1.02] ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+          onLoad={() => setImageLoaded(true)}
+          sizes="300px"
+        />
       )}
     </div>
   );
 };
 
 export default PostCard;
+
+// ============================================
+// PREVIEW COMPONENT - 3 placeholder Work Gallery cards
+// ============================================
+export const PostCardPreview: React.FC = () => {
+  const placeholderPosts = [
+    {
+      id: 'preview-1',
+      imageSrc: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=600&h=600&fit=crop',
+      content: 'Fresh fade for the summer',
+      user: { name: 'Marcus Johnson' },
+    },
+    {
+      id: 'preview-2',
+      imageSrc: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=600&h=600&fit=crop',
+      content: 'Before & After transformation',
+      user: { name: 'Aaliyah Brown' },
+      hasBeforeAfter: true,
+    },
+    {
+      id: 'preview-3',
+      imageSrc: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600&h=600&fit=crop',
+      content: 'Summer nails ready',
+      user: { name: 'Jordan Lee' },
+    },
+  ];
+
+  return (
+    <div className="p-8 bg-neutral-50 dark:bg-neutral-950 min-h-screen">
+      <h2 className="text-2xl font-bold mb-2 text-neutral-900 dark:text-white">Work Gallery</h2>
+      <p className="text-neutral-500 dark:text-neutral-400 text-sm mb-8">Clean portfolio cards - tap to expand</p>
+
+      <div className="grid grid-cols-3 gap-3 max-w-[600px]">
+        {placeholderPosts.map((post) => (
+          <div
+            key={post.id}
+            className="group cursor-pointer relative overflow-hidden rounded-2xl bg-neutral-100 dark:bg-neutral-900 transition-all duration-300 ease-out"
+            style={{ aspectRatio: '1' }}
+          >
+            <img
+              src={post.imageSrc}
+              alt={post.content}
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+            />
+
+            {/* Before/After indicator - only if applicable */}
+            {post.hasBeforeAfter && (
+              <div className="absolute bottom-3 left-0 right-0 flex justify-center">
+                <span className="w-[52px] h-[26px] flex items-center justify-center rounded-md text-[11px] font-medium backdrop-blur-md bg-white/95 text-neutral-900">
+                  After
+                </span>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Expanded state preview */}
+      <div className="mt-12">
+        <h3 className="text-lg font-semibold mb-4 text-neutral-900 dark:text-white">Expanded View (on tap)</h3>
+        <div className="max-w-[400px] bg-white dark:bg-neutral-900 rounded-3xl overflow-hidden shadow-2xl">
+          {/* Image */}
+          <div className="relative aspect-square">
+            <img
+              src="https://images.unsplash.com/photo-1560066984-138dadb4c035?w=600&h=600&fit=crop"
+              alt=""
+              className="w-full h-full object-cover"
+            />
+          </div>
+
+          {/* Creator info */}
+          <div className="p-5">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-full bg-neutral-200 dark:bg-neutral-700 overflow-hidden">
+                <img
+                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop"
+                  alt=""
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-1.5">
+                  <span className="font-semibold text-neutral-900 dark:text-white text-sm">Marcus Johnson</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" className="text-violet-500">
+                    <path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                  </svg>
+                </div>
+                <p className="text-neutral-500 dark:text-neutral-400 text-xs">Barber at Fresh Cuts</p>
+              </div>
+              <div className="flex items-center gap-1 text-amber-500">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                <span className="text-xs font-medium">4.9</span>
+              </div>
+            </div>
+
+            {/* Caption */}
+            <p className="text-neutral-700 dark:text-neutral-300 text-sm mb-4">
+              Fresh fade for the summer. Book now while slots are available!
+            </p>
+
+            {/* Book CTA */}
+            <button className="w-full py-3 px-4 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-xl font-medium text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+              </svg>
+              Book This Look • $45
+            </button>
+
+            {/* Engagement - secondary */}
+            <div className="flex items-center gap-6 mt-4 pt-4 border-t border-neutral-100 dark:border-neutral-800">
+              <button className="flex items-center gap-1.5 text-neutral-500 hover:text-red-500 transition-colors">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+                <span className="text-xs">24</span>
+              </button>
+              <button className="flex items-center gap-1.5 text-neutral-500 hover:text-blue-500 transition-colors">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+                <span className="text-xs">3</span>
+              </button>
+              <button className="flex items-center gap-1.5 text-neutral-500 hover:text-amber-500 transition-colors">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+                </svg>
+              </button>
+              <div className="flex-1" />
+              <button className="text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300 transition-colors">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="18" cy="5" r="3"/>
+                  <circle cx="6" cy="12" r="3"/>
+                  <circle cx="18" cy="19" r="3"/>
+                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+                  <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};

@@ -153,6 +153,7 @@ model Post {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   content   String
   imageSrc  String?
+  beforeImageSrc String?
   location  String?
   tag       String?
   postType String?
