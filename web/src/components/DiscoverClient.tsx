@@ -373,7 +373,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                       onViewAll={handleBackToMain}
                       viewAllLabel="← Back to Discover"
                     />
-                    <div className="flex flex-wrap gap-5 transition-all duration-300">
+                    <div className="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-5 transition-all duration-300">
                       {(initialPosts || []).map((post, idx) => (
                         <div
                           key={post.id}
@@ -501,7 +501,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                           onViewAll={handleViewAllPosts}
                         />
                         <div id="posts-rail">
-                          <div className="flex flex-wrap gap-5 transition-all duration-300">
+                          <div className="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-5 transition-all duration-300">
                             {currentPosts.map((post, idx) => (
                               <div
                                 key={`${post.id}-${postsIndex}`}

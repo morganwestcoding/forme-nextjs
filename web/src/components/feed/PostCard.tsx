@@ -90,7 +90,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
       onClick={handleCardClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className="group cursor-pointer rounded-xl bg-white border border-neutral-200/60 p-2 transition-all duration-300 hover:border-neutral-300 hover:shadow-sm w-[200px]"
+      className="group cursor-pointer rounded-xl bg-white border border-neutral-200/60 p-2 transition-all duration-300 hover:border-neutral-300 hover:shadow-sm w-full"
     >
       {/* Media container */}
       <div
