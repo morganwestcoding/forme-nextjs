@@ -10,8 +10,10 @@ import TypeformStep from '../registration/TypeformStep';
 import TypeformProgress from '../registration/TypeformProgress';
 import TypeformNavigation from '../registration/TypeformNavigation';
 
+import TypeStep from './steps/TypeStep';
 import MediaStep from './steps/MediaStep';
 import CaptionStep from './steps/CaptionStep';
+import TextContentStep from './steps/TextContentStep';
 import PreviewStep from './steps/PreviewStep';
 
 import { SafeUser } from '@/app/types';
@@ -20,33 +22,46 @@ interface PostFlowProps {
   currentUser: SafeUser;
 }
 
+type PostType = 'media' | 'text';
+
 enum STEPS {
-  MEDIA = 0,
-  CAPTION = 1,
-  PREVIEW = 2,
+  TYPE = 0,
+  MEDIA = 1,
+  TEXT_CONTENT = 2,
+  CAPTION = 3,
+  PREVIEW = 4,
 }
 
 export default function PostFlow({ currentUser }: PostFlowProps) {
   const router = useRouter();
 
-  const [step, setStep] = useState<STEPS>(STEPS.MEDIA);
+  const [step, setStep] = useState<STEPS>(STEPS.TYPE);
   const [direction, setDirection] = useState<1 | -1>(1);
   const [isLoading, setIsLoading] = useState(false);
 
   // Post data
+  const [postType, setPostType] = useState<PostType | null>(null);
   const [mediaSrc, setMediaSrc] = useState<string>('');
   const [mediaType, setMediaType] = useState<'image' | 'video'>('image');
   const [caption, setCaption] = useState<string>('');
+  const [textContent, setTextContent] = useState<string>('');
   const [beforeImageSrc, setBeforeImageSrc] = useState<string>('');
 
   const getFlowPath = useCallback((): STEPS[] => {
-    return [STEPS.MEDIA, STEPS.CAPTION, STEPS.PREVIEW];
-  }, []);
+    if (postType === 'text') {
+      return [STEPS.TYPE, STEPS.TEXT_CONTENT, STEPS.PREVIEW];
+    }
+    return [STEPS.TYPE, STEPS.MEDIA, STEPS.CAPTION, STEPS.PREVIEW];
+  }, [postType]);
 
   const canProceed = useCallback((): boolean => {
     switch (step) {
+      case STEPS.TYPE:
+        return Boolean(postType);
       case STEPS.MEDIA:
         return Boolean(mediaSrc);
+      case STEPS.TEXT_CONTENT:
+        return textContent.trim().length > 0;
       case STEPS.CAPTION:
         return true; // Caption is optional
       case STEPS.PREVIEW:
@@ -54,7 +69,7 @@ export default function PostFlow({ currentUser }: PostFlowProps) {
       default:
         return true;
     }
-  }, [step, mediaSrc]);
+  }, [step, postType, mediaSrc, textContent]);
 
   const getNextStep = useCallback((): STEPS | null => {
     const flowPath = getFlowPath();
@@ -73,8 +88,14 @@ export default function PostFlow({ currentUser }: PostFlowProps) {
   const handleNext = useCallback(() => {
     if (!canProceed()) {
       switch (step) {
+        case STEPS.TYPE:
+          toast.error('Please select a post type');
+          break;
         case STEPS.MEDIA:
           toast.error('Please upload an image or video');
+          break;
+        case STEPS.TEXT_CONTENT:
+          toast.error('Please write something');
           break;
       }
       return;
@@ -99,22 +120,31 @@ export default function PostFlow({ currentUser }: PostFlowProps) {
   }, [getPreviousStep, router]);
 
   const onSubmit = useCallback(async () => {
-    if (!mediaSrc) {
+    if (postType === 'media' && !mediaSrc) {
       toast.error('Please upload media');
+      return;
+    }
+    if (postType === 'text' && !textContent.trim()) {
+      toast.error('Please write something');
       return;
     }
 
     setIsLoading(true);
 
     try {
-      const payload = {
-        content: caption.trim() || '',
-        imageSrc: mediaType === 'image' ? mediaSrc : undefined,
-        mediaUrl: mediaType === 'video' ? mediaSrc : undefined,
-        mediaType: mediaType,
-        beforeImageSrc: beforeImageSrc || undefined,
-        postType: 'work',
-      };
+      const payload = postType === 'text'
+        ? {
+            content: textContent.trim(),
+            postType: 'text',
+          }
+        : {
+            content: caption.trim() || '',
+            imageSrc: mediaType === 'image' ? mediaSrc : undefined,
+            mediaUrl: mediaType === 'video' ? mediaSrc : undefined,
+            mediaType: mediaType,
+            beforeImageSrc: beforeImageSrc || undefined,
+            postType: 'work',
+          };
 
       console.log('[PostFlow] Submitting payload:', payload);
       await axios.post('/api/post', payload);
@@ -130,7 +160,7 @@ export default function PostFlow({ currentUser }: PostFlowProps) {
     } finally {
       setIsLoading(false);
     }
-  }, [mediaSrc, mediaType, caption, beforeImageSrc, router]);
+  }, [postType, mediaSrc, mediaType, caption, textContent, beforeImageSrc, router]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -168,6 +198,13 @@ export default function PostFlow({ currentUser }: PostFlowProps) {
 
   const renderStep = () => {
     switch (step) {
+      case STEPS.TYPE:
+        return (
+          <TypeStep
+            selectedType={postType}
+            onTypeSelect={setPostType}
+          />
+        );
       case STEPS.MEDIA:
         return (
           <MediaStep
@@ -181,6 +218,13 @@ export default function PostFlow({ currentUser }: PostFlowProps) {
             onBeforeImageChange={setBeforeImageSrc}
           />
         );
+      case STEPS.TEXT_CONTENT:
+        return (
+          <TextContentStep
+            content={textContent}
+            onContentChange={setTextContent}
+          />
+        );
       case STEPS.CAPTION:
         return (
           <CaptionStep
@@ -189,7 +233,16 @@ export default function PostFlow({ currentUser }: PostFlowProps) {
           />
         );
       case STEPS.PREVIEW:
-        return (
+        return postType === 'text' ? (
+          <PreviewStep
+            mediaSrc=""
+            mediaType="image"
+            caption={textContent}
+            beforeImageSrc=""
+            currentUser={currentUser}
+            isTextPost
+          />
+        ) : (
           <PreviewStep
             mediaSrc={mediaSrc}
             mediaType={mediaType}

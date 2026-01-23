@@ -41,11 +41,6 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
     isVideo
   });
 
-  // Text-only posts are not displayed in Work Gallery
-  if (isTextPost) {
-    return null;
-  }
-
   const handleCardClick = async () => {
     try {
       const postIndex = posts.findIndex((p) => p.id === post.id);
@@ -76,16 +71,65 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
     }
   };
 
+  // Format date
+  const formatDate = (date: string | Date) => {
+    const d = new Date(date);
+    const now = new Date();
+    const diffMs = now.getTime() - d.getTime();
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0) return 'Today';
+    if (diffDays === 1) return '1d ago';
+    if (diffDays < 7) return `${diffDays}d ago`;
+    if (diffDays < 30) return `${Math.floor(diffDays / 7)}w ago`;
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  };
+
   return (
     <div
       onClick={handleCardClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className="group cursor-pointer relative overflow-hidden rounded-2xl bg-neutral-100 dark:bg-neutral-900 transition-all duration-300 ease-out"
-      style={{ aspectRatio: '1' }}
+      className="group cursor-pointer rounded-xl bg-white border border-neutral-200/60 p-2 transition-all duration-300 hover:border-neutral-300 hover:shadow-sm w-[200px]"
     >
-      {/* Media - clean, no overlays */}
-      {isVideo ? (
+      {/* Media container */}
+      <div
+        className="relative overflow-hidden rounded-lg bg-neutral-100 dark:bg-neutral-900"
+        style={{ aspectRatio: '1' }}
+      >
+      {/* Text post */}
+      {isTextPost ? (
+        <>
+          {/* Soft gradient background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-stone-100 via-neutral-50 to-white" />
+
+          {/* Subtle pattern overlay */}
+          <div
+            className="absolute inset-0 opacity-[0.3]"
+            style={{
+              backgroundImage: `radial-gradient(circle at 1px 1px, #a8a29e 0.5px, transparent 0)`,
+              backgroundSize: '16px 16px',
+            }}
+          />
+
+          {/* Text content */}
+          <div className="absolute inset-0 flex items-center justify-center p-6">
+            <p className="text-neutral-800 text-[13px] leading-relaxed font-medium text-center line-clamp-6 break-words whitespace-pre-wrap">
+              {post.content}
+            </p>
+          </div>
+
+          {/* Quote mark accent */}
+          <div className="absolute top-3 left-3 text-stone-300 text-3xl font-serif leading-none select-none">
+            "
+          </div>
+
+          {/* Closing quote mark */}
+          <div className="absolute bottom-2 right-3 text-stone-300 text-3xl font-serif leading-none select-none rotate-180">
+            "
+          </div>
+        </>
+      ) : isVideo ? (
         <>
           <video
             ref={videoRef}
@@ -189,6 +233,37 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
           sizes="300px"
         />
       )}
+      </div>
+
+      {/* Info section */}
+      <div className="mt-2 flex flex-col gap-1">
+        {post.user && (
+          <div className="flex items-center gap-1.5">
+            {post.user.image && (
+              <div className="w-5 h-5 rounded-full overflow-hidden relative flex-shrink-0">
+                <Image
+                  src={post.user.image}
+                  alt={post.user.name || ''}
+                  fill
+                  className="object-cover"
+                  sizes="20px"
+                />
+              </div>
+            )}
+            <span className="text-neutral-900 text-[11px] font-medium truncate">
+              {post.user.name}
+            </span>
+          </div>
+        )}
+        <div className="flex items-center gap-2 text-[10px] text-neutral-400">
+          {(post as any).viewCount !== undefined && (
+            <span>{(post as any).viewCount} views</span>
+          )}
+          {post.createdAt && (
+            <span>{formatDate(post.createdAt)}</span>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

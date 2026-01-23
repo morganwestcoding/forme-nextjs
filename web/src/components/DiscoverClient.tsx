@@ -144,8 +144,8 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
 
   // Responsive grid - adds 1 column when sidebar is collapsed
   const gridColsClass = isSidebarCollapsed
-    ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6'
-    : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6';
+    ? 'grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+    : 'grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4';
 
   const filterInfo = useMemo(() => {
     const categoryIsActive = currentCategories.length > 0;
@@ -373,7 +373,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                       onViewAll={handleBackToMain}
                       viewAllLabel="← Back to Discover"
                     />
-                    <div className={`grid ${gridColsClass} gap-5 transition-all duration-300`}>
+                    <div className="flex flex-wrap gap-5 transition-all duration-300">
                       {(initialPosts || []).map((post, idx) => (
                         <div
                           key={post.id}
@@ -501,7 +501,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                           onViewAll={handleViewAllPosts}
                         />
                         <div id="posts-rail">
-                          <div className={`grid ${gridColsClass} gap-5 transition-all duration-300`}>
+                          <div className="flex flex-wrap gap-5 transition-all duration-300">
                             {currentPosts.map((post, idx) => (
                               <div
                                 key={`${post.id}-${postsIndex}`}

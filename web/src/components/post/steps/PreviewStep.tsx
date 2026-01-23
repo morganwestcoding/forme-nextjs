@@ -11,6 +11,7 @@ interface PreviewStepProps {
   caption: string;
   beforeImageSrc: string;
   currentUser: SafeUser;
+  isTextPost?: boolean;
 }
 
 const PreviewStep: React.FC<PreviewStepProps> = ({
@@ -18,11 +19,12 @@ const PreviewStep: React.FC<PreviewStepProps> = ({
   caption,
   beforeImageSrc,
   currentUser,
+  isTextPost = false,
 }) => {
   const [showBefore, setShowBefore] = useState(false);
 
   const displayImage = showBefore && beforeImageSrc ? beforeImageSrc : mediaSrc;
-  const hasBeforeAfter = !!beforeImageSrc;
+  const hasBeforeAfter = !!beforeImageSrc && !isTextPost;
 
   return (
     <div>
@@ -33,23 +35,60 @@ const PreviewStep: React.FC<PreviewStepProps> = ({
 
       {/* Card preview */}
       <div className="flex justify-center">
-        <div className="relative w-[220px] aspect-square rounded-2xl overflow-hidden bg-gray-100 shadow-lg">
-          <Image
-            src={displayImage}
-            alt="Post preview"
-            fill
-            className="object-cover"
-          />
+        <div className="relative w-[220px] aspect-square rounded-2xl overflow-hidden shadow-lg">
+          {isTextPost ? (
+            <>
+              {/* Soft gradient background */}
+              <div className="absolute inset-0 bg-gradient-to-br from-stone-100 via-neutral-50 to-white" />
 
-          {/* Before/After badge */}
-          {hasBeforeAfter && (
-            <button
-              type="button"
-              onClick={() => setShowBefore(!showBefore)}
-              className="absolute bottom-3 left-3 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-sm text-white text-xs font-medium transition-all hover:bg-black/80"
-            >
-              {showBefore ? 'Before' : 'After'}
-            </button>
+              {/* Subtle pattern overlay */}
+              <div
+                className="absolute inset-0 opacity-[0.3]"
+                style={{
+                  backgroundImage: `radial-gradient(circle at 1px 1px, #a8a29e 0.5px, transparent 0)`,
+                  backgroundSize: '16px 16px',
+                }}
+              />
+
+              {/* Text content */}
+              <div className="absolute inset-0 flex items-center justify-center p-6">
+                <p className="text-neutral-800 text-[13px] leading-relaxed font-medium text-center line-clamp-6 break-words whitespace-pre-wrap">
+                  {caption}
+                </p>
+              </div>
+
+              {/* Quote mark accent */}
+              <div className="absolute top-3 left-3 text-stone-300 text-3xl font-serif leading-none select-none">
+                "
+              </div>
+
+              {/* Closing quote mark */}
+              <div className="absolute bottom-2 right-3 text-stone-300 text-3xl font-serif leading-none select-none rotate-180">
+                "
+              </div>
+            </>
+          ) : (
+            <>
+              <Image
+                src={displayImage}
+                alt="Post preview"
+                fill
+                className="object-cover"
+              />
+
+              {/* Before/After badge */}
+              {hasBeforeAfter && (
+                <button
+                  type="button"
+                  onClick={() => setShowBefore(!showBefore)}
+                  className="absolute bottom-3 left-0 right-0 flex justify-center"
+                >
+                  <span className="w-[52px] h-[26px] flex items-center justify-center rounded-md text-[11px] font-medium backdrop-blur-md bg-white/95 text-neutral-900">
+                    {showBefore ? 'Before' : 'After'}
+                  </span>
+                </button>
+              )}
+            </>
           )}
         </div>
       </div>
@@ -90,9 +129,14 @@ const PreviewStep: React.FC<PreviewStepProps> = ({
         </div>
 
         {/* Caption preview */}
-        {caption && (
+        {caption && !isTextPost && (
           <p className="text-sm text-gray-600 line-clamp-3">
             {caption}
+          </p>
+        )}
+        {isTextPost && (
+          <p className="text-xs text-gray-400 italic">
+            Text post - content shown in card
           </p>
         )}
 
