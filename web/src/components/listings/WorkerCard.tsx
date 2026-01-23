@@ -237,10 +237,10 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
             variant="listingHead"
           />
         </div>
-        {/* Avatar */}
-        <div className="flex-shrink-0 relative">
+        {/* Avatar container - matches ListingCard image size */}
+        <div className={`flex-shrink-0 flex items-center justify-center ${compact ? 'w-[100px] h-[100px]' : 'w-[120px] h-[120px]'}`}>
           {shouldShowImage ? (
-            <div className={`${compact ? 'w-[68px] h-[68px]' : 'w-[80px] h-[80px]'} rounded-full overflow-hidden shadow-sm relative transition-transform duration-300 group-hover:scale-105`}>
+            <div className={`${compact ? 'w-[68px] h-[68px]' : 'w-[80px] h-[80px]'} rounded-full overflow-hidden shadow-sm relative transition-transform duration-300 group-hover:scale-105 border border-neutral-200`}>
               <Image
                 src={profileImage}
                 alt={employee.fullName}
@@ -254,7 +254,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
             </div>
           ) : (
             <div
-              className={`${compact ? 'w-[68px] h-[68px] text-xl' : 'w-[80px] h-[80px] text-2xl'} rounded-full flex items-center justify-center text-white font-semibold shadow-sm transition-transform duration-300 group-hover:scale-105`}
+              className={`${compact ? 'w-[68px] h-[68px] text-lg' : 'w-[80px] h-[80px] text-xl'} rounded-full flex items-center justify-center text-white font-semibold shadow-sm transition-transform duration-300 group-hover:scale-105 border border-neutral-200`}
               style={{ backgroundColor: avatarBg }}
             >
               {initials}
