@@ -2,7 +2,7 @@
 
 import { useFormContext } from 'react-hook-form';
 import { CldUploadWidget, type CldUploadWidgetResults } from 'next-cloudinary';
-import { Camera01Icon, Image01Icon } from 'hugeicons-react';
+import { Camera01Icon } from 'hugeicons-react';
 import TypeformHeading from '../TypeformHeading';
 
 const UPLOAD_PRESET = 'cs0am6m7';
@@ -11,7 +11,6 @@ export default function ImagesStep() {
   const { watch, setValue, register } = useFormContext();
 
   const image = watch('image');
-  const backgroundImage = watch('backgroundImage');
   const bio = watch('bio');
   const name = watch('name');
   const jobTitle = watch('jobTitle');
@@ -34,75 +33,16 @@ export default function ImagesStep() {
     }
   };
 
-  const handleBackgroundUpload = (result: CldUploadWidgetResults) => {
-    const info = result?.info;
-    if (info && typeof info === 'object' && 'secure_url' in info) {
-      const publicId = (info as any).public_id;
-      let cloudName: string | null = null;
-      if (typeof info.secure_url === 'string') {
-        const urlMatch = info.secure_url.match(/res\.cloudinary\.com\/([^/]+)/);
-        cloudName = urlMatch ? urlMatch[1] : null;
-      }
-      if (publicId && cloudName) {
-        const finalUrl = `https://res.cloudinary.com/${cloudName}/image/upload/q_auto:good,f_auto,w_500,h_560,c_fill,g_auto/${publicId}`;
-        setValue('backgroundImage', finalUrl);
-      } else {
-        setValue('backgroundImage', info.secure_url as string);
-      }
-    }
-  };
-
   return (
     <div>
       <TypeformHeading
         question="Almost done!"
-        subtitle="Add your photos so clients can recognize you"
+        subtitle="Add your photo so clients can recognize you"
       />
 
       <div className="max-w-xl">
-        {/* Cover Photo */}
-        <CldUploadWidget
-          uploadPreset={UPLOAD_PRESET}
-          onSuccess={handleBackgroundUpload}
-          options={{
-            multiple: false,
-            maxFiles: 1,
-            sources: ['local', 'camera'],
-            resourceType: 'image',
-            clientAllowedFormats: ['png', 'jpg', 'jpeg', 'webp'],
-            maxImageFileSize: 10_000_000,
-            cropping: true,
-            croppingAspectRatio: 3,
-            croppingShowBackButton: true,
-            showSkipCropButton: false,
-            folder: 'uploads/backgrounds',
-          }}
-        >
-          {(bgProps) => (
-            <button
-              type="button"
-              onClick={() => bgProps?.open?.()}
-              className="w-full h-28 rounded-xl bg-gray-100 hover:bg-gray-200 transition-colors relative overflow-hidden group"
-            >
-              {backgroundImage ? (
-                <>
-                  <img src={backgroundImage} alt="Cover" className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
-                    <span className="text-white text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">Change cover</span>
-                  </div>
-                </>
-              ) : (
-                <div className="flex items-center justify-center h-full gap-2 text-gray-400">
-                  <Image01Icon className="w-5 h-5" />
-                  <span className="text-sm font-medium">Add cover photo</span>
-                </div>
-              )}
-            </button>
-          )}
-        </CldUploadWidget>
-
-        {/* Profile section - avatar + info like ProfileHead */}
-        <div className="flex items-center gap-4 -mt-10 ml-4">
+        {/* Profile section - avatar + info */}
+        <div className="flex items-center gap-4">
           {/* Profile Photo */}
           <CldUploadWidget
             uploadPreset={UPLOAD_PRESET}
@@ -125,7 +65,7 @@ export default function ImagesStep() {
               <button
                 type="button"
                 onClick={() => profileProps?.open?.()}
-                className="w-20 h-20 rounded-full bg-gray-100 hover:bg-gray-200 border-4 border-white shadow-lg transition-colors relative overflow-hidden group flex-shrink-0"
+                className="w-20 h-20 rounded-full bg-gray-100 hover:bg-gray-200 shadow-md transition-colors relative overflow-hidden group flex-shrink-0"
               >
                 {image ? (
                   <>
@@ -143,8 +83,8 @@ export default function ImagesStep() {
             )}
           </CldUploadWidget>
 
-          {/* Name preview + helper text */}
-          <div className="flex flex-col items-start pt-8">
+          {/* Name preview */}
+          <div className="flex flex-col items-start">
             <h3 className="text-xl font-bold text-gray-900">{name || 'Your Name'}</h3>
             <p className="text-sm text-gray-500">{jobTitle || 'Your profession'}</p>
           </div>

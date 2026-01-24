@@ -205,7 +205,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
           className={`
             relative overflow-hidden rounded-lg bg-neutral-900 flex-shrink-0
             transition-[transform,filter] duration-500 ease-out
-            group-hover:scale-[1.02]
+            group-hover:scale-[1.02] border-0 outline-none ring-0
             ${compact ? 'w-[100px] h-[100px]' : 'w-[120px] h-[120px]'}
           `}
         >
@@ -213,7 +213,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
             src={cardImage}
             alt={data.title}
             fill
-            className="object-cover transition-[transform,filter] duration-700 ease-out group-hover:brightness-105"
+            className="object-cover transition-[transform,filter] duration-700 ease-out group-hover:brightness-105 border-0"
             sizes="120px"
             priority={false}
           />

@@ -9,6 +9,7 @@ export type Service = {
   serviceName: string;
   price: number;
   category: string;
+  duration?: number;     // duration in minutes
   imageSrc?: string;     // service-specific image
 };
 

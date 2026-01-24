@@ -144,16 +144,10 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
     return (
       <div
         onClick={handleCardClick}
-        className="group cursor-pointer rounded-xl overflow-hidden relative transition-all duration-300 hover:border-stone-400 hover:shadow-sm"
+        className="group cursor-pointer rounded-xl overflow-hidden relative transition-all duration-300 hover:border-neutral-300 hover:shadow-sm"
       >
-        {/* Gradient background */}
-        <div
-          className="absolute inset-0 rounded-xl border border-stone-300/90"
-          style={{
-            background: 'linear-gradient(to bottom, #FAFAF9, #F7F7F6)',
-            boxShadow: '0 1px 2px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.7)',
-          }}
-        />
+        {/* White background */}
+        <div className="absolute inset-0 bg-white rounded-xl border border-neutral-200/60" />
 
         <div className="relative z-10">
           <div className={compact ? 'relative h-[180px]' : 'relative h-[280px]'}>

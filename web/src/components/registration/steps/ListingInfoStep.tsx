@@ -2,7 +2,7 @@
 
 import { useFormContext } from 'react-hook-form';
 import { CldUploadWidget, type CldUploadWidgetResults } from 'next-cloudinary';
-import { ImagePlus, Check } from 'lucide-react';
+import { Plus, Check } from 'lucide-react';
 import TypeformHeading from '../TypeformHeading';
 
 const UPLOAD_PRESET = 'cs0am6m7';
@@ -12,8 +12,6 @@ export default function ListingInfoStep() {
   const { register, watch, setValue, formState: { errors } } = useFormContext();
 
   const listingImage = watch('listingImage');
-  const listingTitle = watch('listingTitle');
-  const location = watch('location');
 
   const handleImageUpload = (result: CldUploadWidgetResults) => {
     const info = result?.info;
@@ -45,7 +43,7 @@ export default function ListingInfoStep() {
         subtitle="This is how clients will find you"
       />
 
-      <div className="flex gap-6 items-start">
+      <div className="flex gap-6 items-center">
         {/* Left: Image upload / preview */}
         <div className="flex-shrink-0">
           <CldUploadWidget
@@ -69,30 +67,29 @@ export default function ListingInfoStep() {
               <div
                 onClick={() => props?.open?.()}
                 className={`
-                  group cursor-pointer rounded-xl overflow-hidden relative transition-all duration-300 hover:-translate-y-1
-                  ${listingImage ? 'hover:shadow-lg' : 'border-2 border-dashed border-gray-200 hover:border-gray-300 bg-gray-50'}
+                  group cursor-pointer rounded-xl overflow-hidden relative transition-all duration-300
+                  ${listingImage
+                    ? 'hover:shadow-lg bg-neutral-900 hover:-translate-y-1'
+                    : 'border-2 border-dashed border-gray-200 bg-gray-50/50 hover:border-gray-900 hover:bg-gray-100'}
                 `}
                 style={{ width: '200px', height: '224px' }}
               >
                 {listingImage ? (
                   <>
-                    <img src={listingImage} alt="Listing preview" className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 40%, transparent 60%)' }} />
-                    <div className="absolute bottom-3 left-3 right-3">
-                      <h3 className="text-white text-sm font-semibold truncate">{listingTitle || 'Your Listing'}</h3>
-                      <p className="text-white/80 text-xs truncate">{location || 'Location'}</p>
-                    </div>
+                    <img
+                      src={listingImage}
+                      alt="Listing preview"
+                      className="w-full h-full object-cover transition-[transform,filter] duration-500 ease-out group-hover:scale-105 group-hover:brightness-105"
+                    />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
                       <span className="text-white text-xs font-medium px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-lg">Change</span>
                     </div>
                   </>
                 ) : (
                   <div className="h-full flex flex-col items-center justify-center text-center p-4">
-                    <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-3 group-hover:bg-gray-200 transition-colors">
-                      <ImagePlus className="w-5 h-5 text-gray-400" />
+                    <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm">
+                      <Plus className="w-5 h-5 text-gray-400" />
                     </div>
-                    <span className="text-sm font-medium text-gray-500">Add cover photo</span>
-                    <span className="text-xs text-gray-400 mt-1">Click to upload</span>
                   </div>
                 )}
               </div>

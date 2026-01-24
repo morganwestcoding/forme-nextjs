@@ -19,6 +19,7 @@ export default function ServiceFormStep({ services, setServices, editingIndex, o
 
   const [name, setName] = useState(service?.serviceName || '');
   const [price, setPrice] = useState(service?.price?.toString() || '');
+  const [duration, setDuration] = useState(service?.duration?.toString() || '');
   const [category, setCategory] = useState(service?.category || '');
 
   useEffect(() => {
@@ -26,6 +27,7 @@ export default function ServiceFormStep({ services, setServices, editingIndex, o
       const s = services[editingIndex];
       setName(s.serviceName || '');
       setPrice(s.price?.toString() || '');
+      setDuration(s.duration?.toString() || '');
       setCategory(s.category || '');
     }
   }, [editingIndex, services]);
@@ -38,6 +40,7 @@ export default function ServiceFormStep({ services, setServices, editingIndex, o
       ...updated[editingIndex],
       serviceName: name,
       price: parseFloat(price) || 0,
+      duration: parseInt(duration) || undefined,
       category,
     };
     setServices(updated);
@@ -87,23 +90,44 @@ export default function ServiceFormStep({ services, setServices, editingIndex, o
           />
         </div>
 
-        {/* Price */}
-        <div>
-          <label htmlFor="servicePrice" className="block text-sm font-medium text-gray-700 mb-2">
-            Price
-          </label>
-          <div className="relative">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">$</span>
-            <input
-              id="servicePrice"
-              type="number"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              min="0"
-              step="0.01"
-              className="w-full pl-8 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
-              placeholder="0.00"
-            />
+        {/* Price and Duration row */}
+        <div className="flex gap-4">
+          <div className="flex-1">
+            <label htmlFor="servicePrice" className="block text-sm font-medium text-gray-700 mb-2">
+              Price
+            </label>
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">$</span>
+              <input
+                id="servicePrice"
+                type="number"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                min="0"
+                step="0.01"
+                className="w-full pl-8 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
+                placeholder="0.00"
+              />
+            </div>
+          </div>
+
+          <div className="flex-1">
+            <label htmlFor="serviceDuration" className="block text-sm font-medium text-gray-700 mb-2">
+              Duration
+            </label>
+            <div className="relative">
+              <input
+                id="serviceDuration"
+                type="number"
+                value={duration}
+                onChange={(e) => setDuration(e.target.value)}
+                min="0"
+                step="5"
+                className="w-full px-4 pr-12 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
+                placeholder="30"
+              />
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm">min</span>
+            </div>
           </div>
         </div>
 
