@@ -13,14 +13,16 @@ import SectionHeader from "@/app/market/SectionHeader";
 import { useSidebarState } from "@/app/hooks/useSidebarState";
 
 interface ReservationsClientProps {
-  reservations: SafeReservation[];
+  incomingReservations: SafeReservation[];
+  outgoingReservations: SafeReservation[];
   currentUser?: SafeUser | null;
 }
 
 const FADE_OUT_DURATION = 200;
 
 const ReservationsClient: React.FC<ReservationsClientProps> = ({
-  reservations,
+  incomingReservations,
+  outgoingReservations,
   currentUser,
 }) => {
   const router = useRouter();
@@ -39,10 +41,10 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
   // View all mode
   const [viewAllMode, setViewAllMode] = useState(false);
 
-  // Responsive grid - adds 1 column when sidebar is collapsed
+  // Responsive grid - matches MarketClient for consistent card sizing
   const gridColsClass = isSidebarCollapsed
-    ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6'
-    : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5';
+    ? 'grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+    : 'grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3';
 
   // Reset pagination on sidebar change
   useEffect(() => {
@@ -89,18 +91,20 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
     }
   }, [router]);
 
-  // Filter reservations based on selected categories
-  const filteredReservations = useMemo(() => {
-    return reservations.filter(reservation => {
-      if (selectedCategories.length === 0) return true;
+  // Determine which reservations to show based on direction filter
+  const isOutgoingSelected = selectedCategories.includes('outgoing');
+  const baseReservations = isOutgoingSelected ? outgoingReservations : incomingReservations;
 
-      return selectedCategories.some(category => {
-        if (category === 'incoming') return true;
-        if (category === 'outgoing') return false;
-        return reservation.status === category;
-      });
-    });
-  }, [reservations, selectedCategories]);
+  // Filter reservations based on selected status categories
+  const filteredReservations = useMemo(() => {
+    const statusFilters = selectedCategories.filter(cat => !['incoming', 'outgoing'].includes(cat));
+
+    if (statusFilters.length === 0) return baseReservations;
+
+    return baseReservations.filter(reservation =>
+      statusFilters.includes(reservation.status)
+    );
+  }, [baseReservations, selectedCategories]);
 
   const hasReservations = filteredReservations.length > 0;
 
@@ -157,21 +161,17 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
 
   // Generate section header based on active filters
   const getSectionHeader = () => {
-    if (selectedCategories.length === 0) {
-      return "All Incoming Reservations";
-    }
-
+    const directionLabel = isOutgoingSelected ? "Outgoing" : "Incoming";
     const statusFilters = selectedCategories.filter(cat => !['incoming', 'outgoing'].includes(cat));
-    const hasIncoming = selectedCategories.includes('incoming');
 
     if (statusFilters.length > 0) {
       const statusText = statusFilters.map(status =>
         status.charAt(0).toUpperCase() + status.slice(1)
       ).join(' & ');
-      return hasIncoming ? `${statusText} Incoming Reservations` : `${statusText} Reservations`;
+      return `${statusText} ${directionLabel} Reservations`;
     }
 
-    return hasIncoming ? "Incoming Reservations" : "Filtered Reservations";
+    return `${directionLabel} Reservations`;
   };
 
   return (
@@ -187,7 +187,11 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
               <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight tracking-tight">
                 Reservations
               </h1>
-              <p className="text-gray-500 text-base mt-3 max-w-2xl mx-auto">Reservations you&apos;ve received from customers</p>
+              <p className="text-gray-500 text-base mt-3 max-w-2xl mx-auto">
+                {isOutgoingSelected
+                  ? "Reservations you've made at other businesses"
+                  : "Reservations you've received from customers"}
+              </p>
             </div>
 
             {/* Search */}
@@ -243,7 +247,7 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
                           onAccept={() => onAccept(reservation.id)}
                           onDecline={() => onDecline(reservation.id)}
                           onCancel={() => onCancel(reservation.id)}
-                          showAcceptDecline={true}
+                          showAcceptDecline={!isOutgoingSelected}
                           onCardClick={() => router.push(`/listings/${reservation.listing.id}`)}
                         />
                       </div>
@@ -283,7 +287,7 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
                             onAccept={() => onAccept(reservation.id)}
                             onDecline={() => onDecline(reservation.id)}
                             onCancel={() => onCancel(reservation.id)}
-                            showAcceptDecline={true}
+                            showAcceptDecline={!isOutgoingSelected}
                             onCardClick={() => router.push(`/listings/${reservation.listing.id}`)}
                           />
                         </div>

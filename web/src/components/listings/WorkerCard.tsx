@@ -144,10 +144,16 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
     return (
       <div
         onClick={handleCardClick}
-        className="group cursor-pointer rounded-xl overflow-hidden relative transition-all duration-300 hover:border-neutral-300 hover:shadow-sm"
+        className="group cursor-pointer rounded-xl overflow-hidden relative transition-all duration-300 hover:border-stone-400 hover:shadow-sm"
       >
-        {/* White background */}
-        <div className="absolute inset-0 bg-white rounded-xl border border-neutral-200/60" />
+        {/* Gradient background */}
+        <div
+          className="absolute inset-0 rounded-xl border border-stone-300/90"
+          style={{
+            background: 'linear-gradient(to bottom, #FAFAF9, #F7F7F6)',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.7)',
+          }}
+        />
 
         <div className="relative z-10">
           <div className={compact ? 'relative h-[180px]' : 'relative h-[280px]'}>
@@ -226,7 +232,11 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
   return (
     <div
       onClick={handleCardClick}
-      className="group cursor-pointer rounded-xl bg-white border border-neutral-200/60 p-3 transition-all duration-300 hover:border-neutral-300 hover:shadow-sm"
+      className="group cursor-pointer rounded-xl border border-stone-300/90 p-3 transition-all duration-300 hover:border-stone-400 hover:shadow-sm"
+      style={{
+        background: 'linear-gradient(to bottom, #FAFAF9, #F7F7F6)',
+        boxShadow: '0 1px 2px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.7)',
+      }}
     >
       <div className="flex flex-row gap-4 items-center w-full relative">
         {/* Heart button - top right */}
@@ -266,10 +276,10 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
         <div className="flex flex-col justify-center min-w-0 flex-1 gap-0.5">
         {compact ? (
           <>
-            <span className="text-[9px] uppercase tracking-[0.1em] text-neutral-400 font-medium">
+            <span className="text-[11px] text-neutral-400">
               {employee.jobTitle || 'Specialist'}
             </span>
-            <h1 className="text-neutral-900 text-[15px] leading-snug font-semibold tracking-[-0.01em] line-clamp-2">
+            <h1 className="text-neutral-900 text-[15px] leading-snug font-semibold tracking-[-0.01em] line-clamp-2 max-w-[140px]">
               {employee.fullName}
             </h1>
             <p className="text-neutral-400 text-[11px] line-clamp-1">
@@ -277,25 +287,16 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
             </p>
             <div className="mt-1.5 flex items-center gap-1.5 text-[11px]">
               <span className="font-semibold text-neutral-900 tabular-nums">{Number(rating).toFixed(1)}</span>
-              <span className="text-neutral-300">/</span>
-              <span className="text-blue-400 font-medium">Reserve</span>
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                className="text-neutral-300 group-hover:text-neutral-900 group-hover:translate-x-0.5 transition-all duration-300 ml-0.5"
-              >
-                <path d="M7 17L17 7M17 7H8M17 7V16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
+              <span className="text-neutral-300">|</span>
+              <span className="text-neutral-500">Reserve</span>
             </div>
           </>
         ) : (
           <>
-            <span className="text-[9px] uppercase tracking-[0.1em] text-neutral-400 font-medium">
+            <span className="text-[12px] text-neutral-400">
               {employee.jobTitle || 'Specialist'}
             </span>
-            <h1 className="text-neutral-900 text-[17px] leading-snug font-semibold tracking-[-0.02em] line-clamp-2">
+            <h1 className="text-neutral-900 text-[16px] leading-snug font-semibold tracking-[-0.01em] line-clamp-2 max-w-[160px]">
               {renderNameWithBadge(employee.fullName)}
             </h1>
             <p className="text-neutral-400 text-[12px] line-clamp-1">
@@ -303,17 +304,8 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
             </p>
             <div className="mt-2 flex items-center gap-2 text-[12px]">
               <span className="font-semibold text-neutral-900 tabular-nums">{Number(rating).toFixed(1)}</span>
-              <span className="text-neutral-300">/</span>
-              <span className="text-blue-400 font-medium">Reserve</span>
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                className="text-neutral-300 group-hover:text-neutral-900 group-hover:translate-x-0.5 transition-all duration-300 ml-0.5"
-              >
-                <path d="M7 17L17 7M17 7H8M17 7V16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
+              <span className="text-neutral-300">|</span>
+              <span className="text-neutral-500">Reserve</span>
             </div>
           </>
         )}

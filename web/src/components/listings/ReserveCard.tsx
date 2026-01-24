@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { format } from 'date-fns';
 import { SafeReservation, SafeUser } from '@/app/types';
 
@@ -73,6 +74,7 @@ const ReserveCard: React.FC<ReserveCardProps> = ({
   const [localStatus, setLocalStatus] = useState<UiStatus>(uiStatus);
 
   const employeeName = listing.employees?.find(emp => emp.id === reservation.employeeId)?.fullName;
+  const cardImage = listing.imageSrc || listing.galleryImages?.[0] || '/placeholder.jpg';
 
   const formatTime = (time: string) => {
     const [hours, minutes] = time.split(':');
@@ -82,7 +84,8 @@ const ReserveCard: React.FC<ReserveCardProps> = ({
     return `${hour12}:${minutes} ${period}`;
   };
 
-  const handleAccept = () => {
+  const handleAccept = (e: React.MouseEvent) => {
+    e.stopPropagation();
     setIsTransitioning(true);
     setTimeout(() => {
       setLocalStatus('accepted');
@@ -91,7 +94,8 @@ const ReserveCard: React.FC<ReserveCardProps> = ({
     }, 150);
   };
 
-  const handleReject = () => {
+  const handleReject = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (onDecline) onDecline();
     else if (onCancel) onCancel();
   };
@@ -100,9 +104,9 @@ const ReserveCard: React.FC<ReserveCardProps> = ({
   const isPending = localStatus === 'pending';
 
   const statusConfig = {
-    accepted: { label: 'Confirmed', color: 'text-emerald-600', bg: 'bg-emerald-50' },
-    declined: { label: 'Declined', color: 'text-neutral-500', bg: 'bg-neutral-100' },
-    pending: { label: 'Pending', color: 'text-amber-600', bg: 'bg-amber-50' },
+    accepted: { label: 'Confirmed', bg: 'bg-emerald-500/90 text-white border-emerald-400/50 shadow-[0_0_12px_rgba(16,185,129,0.4)]' },
+    declined: { label: 'Declined', bg: 'bg-black/60 text-white/90 border-white/20' },
+    pending: { label: 'Pending', bg: 'bg-amber-500/90 text-white border-amber-400/50 shadow-[0_0_12px_rgba(245,158,11,0.4)]' },
   };
 
   const status = statusConfig[localStatus];
@@ -110,101 +114,106 @@ const ReserveCard: React.FC<ReserveCardProps> = ({
   return (
     <div
       onClick={onCardClick}
-      className="group cursor-pointer overflow-hidden rounded-xl bg-white border border-neutral-200 transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.01] hover:shadow-md max-w-[250px]"
+      className="group cursor-pointer rounded-xl border border-stone-300/90 p-3 transition-all duration-300 hover:border-stone-400 hover:shadow-sm"
+      style={{
+        background: 'linear-gradient(to bottom, #FAFAF9, #F7F7F6)',
+        boxShadow: '0 1px 2px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.7)',
+      }}
     >
-      <div className="h-[280px] flex flex-col p-4">
-        {/* Top row - Status & Price */}
-        <div className="flex items-center justify-between">
-          <span className={`text-[11px] font-semibold uppercase tracking-wide px-2 py-1 rounded-md ${status.color} ${status.bg}`}>
-            {status.label}
+      <div className="flex flex-row gap-4 items-center w-full relative">
+        {/* Image card */}
+        <div className="relative overflow-hidden rounded-lg bg-neutral-900 flex-shrink-0 w-[120px] h-[120px] transition-[transform,filter] duration-500 ease-out group-hover:scale-[1.02]">
+          <Image
+            src={cardImage}
+            alt={listing.title}
+            fill
+            className="object-cover transition-[transform,filter] duration-700 ease-out group-hover:brightness-105"
+            sizes="120px"
+            priority={false}
+          />
+          {/* Status indicator */}
+          <div className="absolute bottom-2 left-2 z-20">
+            <span
+              className={`inline-flex items-center justify-center text-[10px] font-semibold px-2.5 h-[22px] rounded-md backdrop-blur-md border ${status.bg}`}
+              style={{ lineHeight: '22px' }}
+            >
+              {status.label}
+            </span>
+          </div>
+        </div>
+
+        {/* Text content */}
+        <div className="flex flex-col justify-center min-w-0 flex-1 gap-0.5">
+          {/* Date & Time */}
+          <span className="text-[12px] text-neutral-400">
+            {format(new Date(reservation.date), 'EEE, MMM d')} · {formatTime(reservation.time)}
           </span>
-          <span className="text-lg font-semibold text-neutral-900">
-            ${reservation.totalPrice}
-          </span>
-        </div>
 
-        {/* Date & Time - Hero */}
-        <div className="mt-5">
-          <div className="text-2xl font-bold text-neutral-900 leading-tight">
-            {format(new Date(reservation.date), 'EEE, MMM d')}
+          {/* Service name */}
+          <h1 className="text-neutral-900 text-[16px] leading-snug font-semibold tracking-[-0.01em] line-clamp-1">
+            {reservation.serviceName}
+          </h1>
+
+          {/* Business name */}
+          <p className="text-neutral-400 text-[12px] line-clamp-1">
+            {listing.title}
+          </p>
+
+          {/* Employee & Price */}
+          <div className="mt-2 flex items-center gap-2 text-[12px]">
+            {employeeName && (
+              <>
+                <span className="text-neutral-500">with {employeeName}</span>
+                <span className="text-neutral-300">|</span>
+              </>
+            )}
+            <span className="font-semibold text-neutral-900 tabular-nums">${reservation.totalPrice}</span>
           </div>
-          <div className="text-base text-neutral-600 mt-0.5">
-            {formatTime(reservation.time)}
-          </div>
-        </div>
 
-        {/* Spacer */}
-        <div className="flex-1" />
-
-        {/* Service */}
-        <div className="text-sm font-semibold text-neutral-900 truncate">
-          {reservation.serviceName}
-        </div>
-
-        {/* Business */}
-        <div className="text-xs text-neutral-500 truncate mt-1">
-          {listing.title}
-        </div>
-
-        {/* Employee */}
-        {employeeName && (
-          <div className="text-xs text-neutral-500 truncate mt-0.5">
-            with {employeeName}
-          </div>
-        )}
-
-        {/* Actions */}
-        {showActions && (
-          <div className="mt-4">
-            {isPending && !isTransitioning ? (
-              <div className="flex gap-2">
+          {/* Actions */}
+          {showActions && (
+            <div className="mt-2 flex gap-2">
+              {isPending && !isTransitioning ? (
+                <>
+                  <button
+                    disabled={disabled}
+                    onClick={handleAccept}
+                    className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-colors ${
+                      disabled
+                        ? 'bg-neutral-100 text-neutral-400'
+                        : 'bg-neutral-900 text-white hover:bg-neutral-800'
+                    }`}
+                  >
+                    Accept
+                  </button>
+                  <button
+                    disabled={disabled}
+                    onClick={handleReject}
+                    className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-colors ${
+                      disabled
+                        ? 'bg-neutral-100 text-neutral-400'
+                        : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
+                    }`}
+                  >
+                    {showAcceptDecline ? 'Decline' : 'Cancel'}
+                  </button>
+                </>
+              ) : (
                 <button
                   disabled={disabled}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleAccept();
-                  }}
-                  className={`flex-1 py-2.5 rounded-lg text-xs font-semibold transition-colors ${
-                    disabled
-                      ? 'bg-neutral-100 text-neutral-400'
-                      : 'bg-neutral-900 text-white hover:bg-neutral-800'
-                  }`}
-                >
-                  Accept
-                </button>
-                <button
-                  disabled={disabled}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleReject();
-                  }}
-                  className={`flex-1 py-2.5 rounded-lg text-xs font-semibold transition-colors ${
+                  onClick={handleReject}
+                  className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-colors ${
                     disabled
                       ? 'bg-neutral-100 text-neutral-400'
                       : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
                   }`}
                 >
-                  {showAcceptDecline ? 'Decline' : 'Cancel'}
+                  Cancel
                 </button>
-              </div>
-            ) : (
-              <button
-                disabled={disabled}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleReject();
-                }}
-                className={`w-full py-2.5 rounded-lg text-xs font-semibold transition-colors ${
-                  disabled
-                    ? 'bg-neutral-100 text-neutral-400'
-                    : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
-                }`}
-              >
-                Cancel
-              </button>
-            )}
-          </div>
-        )}
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

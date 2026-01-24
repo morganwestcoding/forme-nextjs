@@ -13,17 +13,21 @@ interface ReservationsPageProps {
 const ReservationsPage = async ({ searchParams }: ReservationsPageProps) => {
   const currentUser = await getCurrentUser();
 
-  // Only fetch reservations if user is logged in
-  const reservations = currentUser?.id
-    ? await getReservations({ authorId: currentUser.id })
-    : [];
+  // Fetch both incoming (reservations on user's listings) and outgoing (reservations user made)
+  const [incomingReservations, outgoingReservations] = currentUser?.id
+    ? await Promise.all([
+        getReservations({ authorId: currentUser.id }),
+        getReservations({ userId: currentUser.id }),
+      ])
+    : [[], []];
 
   return (
     <ClientOnly>
 
 
         <ReservationsClient
-          reservations={reservations || []}
+          incomingReservations={incomingReservations || []}
+          outgoingReservations={outgoingReservations || []}
           currentUser={currentUser}
         />
 

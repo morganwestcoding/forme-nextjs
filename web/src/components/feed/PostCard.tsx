@@ -7,6 +7,7 @@ import axios from 'axios';
 import { SafePost, SafeUser } from '@/app/types';
 import usePostModal from '@/app/hooks/usePostModal';
 import { usePostStore } from '@/app/hooks/usePostStore';
+import HeartButton from '../HeartButton';
 
 interface PostCardProps {
   post: SafePost;
@@ -90,7 +91,11 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
       onClick={handleCardClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className="group cursor-pointer rounded-xl bg-white border border-neutral-200/60 p-2 transition-all duration-300 hover:border-neutral-300 hover:shadow-sm w-full"
+      className="group cursor-pointer rounded-xl border border-stone-300/90 p-2 transition-all duration-300 hover:border-stone-400 hover:shadow-sm w-full"
+      style={{
+        background: 'linear-gradient(to bottom, #FAFAF9, #F7F7F6)',
+        boxShadow: '0 1px 2px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.7)',
+      }}
     >
       {/* Media container */}
       <div
@@ -236,32 +241,39 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
       </div>
 
       {/* Info section */}
-      <div className="mt-2 flex flex-col gap-1">
-        {post.user && (
-          <div className="flex items-center gap-1.5">
-            {post.user.image && (
-              <div className="w-5 h-5 rounded-full overflow-hidden relative flex-shrink-0">
-                <Image
-                  src={post.user.image}
-                  alt={post.user.name || ''}
-                  fill
-                  className="object-cover"
-                  sizes="20px"
-                />
-              </div>
+      <div className="mt-2 flex items-start justify-between gap-2">
+        <div className="flex flex-col gap-1 min-w-0 flex-1">
+          {post.user && (
+            <div className="flex items-center gap-1.5">
+              {post.user.image && (
+                <div className="w-5 h-5 rounded-full overflow-hidden relative flex-shrink-0">
+                  <Image
+                    src={post.user.image}
+                    alt={post.user.name || ''}
+                    fill
+                    className="object-cover"
+                    sizes="20px"
+                  />
+                </div>
+              )}
+              <span className="text-neutral-900 text-xs font-medium truncate">
+                {post.user.name}
+              </span>
+            </div>
+          )}
+          <div className="flex items-center gap-2 text-[10px] text-neutral-400">
+            <span>{(post as any).viewCount ?? 0} views</span>
+            {post.createdAt && (
+              <span>{formatDate(post.createdAt)}</span>
             )}
-            <span className="text-neutral-900 text-[11px] font-medium truncate">
-              {post.user.name}
-            </span>
           </div>
-        )}
-        <div className="flex items-center gap-2 text-[10px] text-neutral-400">
-          {(post as any).viewCount !== undefined && (
-            <span>{(post as any).viewCount} views</span>
-          )}
-          {post.createdAt && (
-            <span>{formatDate(post.createdAt)}</span>
-          )}
+        </div>
+        <div className="flex-shrink-0 mt-0.5">
+          <HeartButton
+            listingId={post.id}
+            currentUser={currentUser}
+            variant="listingHead"
+          />
         </div>
       </div>
     </div>

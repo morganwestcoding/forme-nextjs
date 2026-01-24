@@ -206,7 +206,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
           transition: 'opacity 0.5s ease-out 0.2s'
         }}
       >
-        <div className="space-y-1 pl-[58px]">
+        <div className="space-y-1 pl-[76px]">
           {navItems.map((item, i) => {
             const El = item.href ? Link : "button";
             return (
@@ -217,18 +217,11 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
                 className={`group flex items-center gap-2.5 py-2.5 text-[14px] ${isCollapsed ? "justify-center" : ""}`}
               >
                 {!isCollapsed && (
-                  <>
-                    <span className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ease-out ${
-                      item.active
-                        ? "bg-white opacity-100 -translate-x-0.5"
-                        : "bg-zinc-500 opacity-0 -translate-x-2.5 group-hover:opacity-100 group-hover:-translate-x-0.5"
-                    }`} />
-                    <span className={`transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
-                      item.active
-                        ? "text-white font-medium opacity-100"
-                        : "text-zinc-500 opacity-60 group-hover:opacity-100 group-hover:text-zinc-300"
-                    }`}>{item.label}</span>
-                  </>
+                  <span className={`transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
+                    item.active
+                      ? "text-white font-medium opacity-100"
+                      : "text-zinc-500 opacity-60 group-hover:opacity-100 group-hover:text-zinc-300"
+                  }`}>{item.label}</span>
                 )}
               </El>
             );
