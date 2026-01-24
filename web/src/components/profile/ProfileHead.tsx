@@ -525,6 +525,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                         data={listing}
                         currentUser={currentUser}
                         categories={categories}
+                        solidBackground
                         compact
                       />
                     </div>
