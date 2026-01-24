@@ -20,31 +20,56 @@ interface ListingCardProps {
 
 // Inline status indicator for the image
 const StatusIndicator = ({ storeHours }: { storeHours?: { dayOfWeek: string; openTime: string; closeTime: string; isClosed: boolean }[] }) => {
-  const getStatus = () => {
-    if (!storeHours?.length) return { isOpen: true, label: 'Open' };
+  const getStatus = (): { status: 'open' | 'soon' | 'closing' | 'closed'; label: string } => {
+    if (!storeHours?.length) return { status: 'open', label: 'Open' };
     const now = new Date();
     const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const today = storeHours.find(h => h.dayOfWeek.toLowerCase() === dayNames[now.getDay()].toLowerCase());
-    if (!today || today.isClosed) return { isOpen: false, label: 'Closed' };
-    const hhmm = now.toTimeString().slice(0, 5);
+    if (!today || today.isClosed) return { status: 'closed', label: 'Closed' };
+
     const to24 = (t: string) => t.includes('M') ? t.replace(/(\d+):(\d+)\s*(AM|PM)/i, (_, h, m, p) => `${(p.toUpperCase() === 'PM' && h !== '12' ? +h + 12 : h === '12' && p.toUpperCase() === 'AM' ? '00' : h).toString().padStart(2, '0')}:${m}`) : t;
-    const curr = to24(hhmm), open = to24(today.openTime), close = to24(today.closeTime);
-    return curr >= open && curr < close ? { isOpen: true, label: 'Open' } : { isOpen: false, label: 'Closed' };
+    const toMinutes = (t: string) => { const [h, m] = t.split(':').map(Number); return h * 60 + m; };
+
+    const currTime = now.toTimeString().slice(0, 5);
+    const curr = toMinutes(to24(currTime));
+    const open = toMinutes(to24(today.openTime));
+    const close = toMinutes(to24(today.closeTime));
+
+    if (curr < open) {
+      // Before opening - check if opening soon (within 30 min)
+      return open - curr <= 30 ? { status: 'soon', label: 'Soon' } : { status: 'closed', label: 'Closed' };
+    }
+    if (curr >= close) {
+      return { status: 'closed', label: 'Closed' };
+    }
+    // Currently open - check if closing soon (within 30 min)
+    return close - curr <= 30 ? { status: 'closing', label: 'Closing' } : { status: 'open', label: 'Open' };
   };
-  const { isOpen, label } = getStatus();
+
+  const { status, label } = getStatus();
+
+  const colors = {
+    open: { bg: 'linear-gradient(135deg, #6ee7b7 0%, #34d399 50%, #10b981 100%)', shadow: '0 0 4px 1px rgba(52,211,153,0.4)' },
+    soon: { bg: 'linear-gradient(135deg, #fde047 0%, #facc15 50%, #eab308 100%)', shadow: '0 0 4px 1px rgba(250,204,21,0.4)' },
+    closing: { bg: 'linear-gradient(135deg, #fdba74 0%, #fb923c 50%, #f97316 100%)', shadow: '0 0 4px 1px rgba(251,146,60,0.4)' },
+    closed: { bg: 'linear-gradient(135deg, #d4d4d4 0%, #a3a3a3 100%)', shadow: 'none' },
+  };
+
+  // Fixed widths for each label to enable smooth animation
+  const expandedWidth = { open: '38px', soon: '38px', closing: '48px', closed: '44px' };
+
   return (
     <span
-      className={`
-        inline-flex items-center justify-center text-[10px] font-semibold px-2.5 h-[22px] rounded-md
-        backdrop-blur-md border
-        ${isOpen
-          ? 'bg-emerald-500/90 text-white border-emerald-400/50 shadow-[0_0_12px_rgba(16,185,129,0.4)]'
-          : 'bg-black/60 text-white/90 border-white/20'
-        }
-      `}
-      style={{ lineHeight: '22px' }}
+      className="group/status flex items-center justify-center h-3.5 w-3.5 hover:w-[--expanded] rounded-[4px] cursor-default overflow-hidden transition-all duration-300 ease-out"
+      style={{
+        '--expanded': expandedWidth[status],
+        background: colors[status].bg,
+        boxShadow: colors[status].shadow,
+      } as React.CSSProperties}
     >
-      {label}
+      <span className="text-[9px] font-semibold text-white opacity-0 group-hover/status:opacity-100 transition-opacity duration-200 whitespace-nowrap drop-shadow-sm">
+        {label}
+      </span>
     </span>
   );
 };

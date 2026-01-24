@@ -227,6 +227,50 @@ export async function POST(req: Request) {
       return NextResponse.json({ received: true });
     }
 
+    // ========== STRIPE CONNECT ACCOUNT EVENTS ==========
+    if (event.type === 'account.updated') {
+      const account = event.data.object as Stripe.Account;
+
+      console.log(`Processing account.updated for: ${account.id}`);
+
+      // Find user by Connect account ID
+      const user = await prisma.user.findFirst({
+        where: { stripeConnectAccountId: account.id },
+      });
+
+      if (user) {
+        const wasNotComplete = !user.stripeConnectOnboardingComplete;
+
+        await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            stripeConnectDetailsSubmitted: account.details_submitted,
+            stripeConnectOnboardingComplete: account.details_submitted,
+            stripeConnectChargesEnabled: account.charges_enabled,
+            stripeConnectPayoutsEnabled: account.payouts_enabled,
+            ...(account.details_submitted && wasNotComplete
+              ? { stripeConnectOnboardedAt: new Date() }
+              : {}),
+          },
+        });
+
+        console.log(`Updated Connect status for user ${user.id}`);
+
+        // Create notification when onboarding completes
+        if (account.details_submitted && wasNotComplete) {
+          await prisma.notification.create({
+            data: {
+              type: 'STRIPE_CONNECT_COMPLETE',
+              content: 'Your payment account is now set up! You can start receiving payments for your services.',
+              userId: user.id,
+            },
+          });
+        }
+      }
+
+      return NextResponse.json({ received: true });
+    }
+
     return NextResponse.json({ received: true });
   } catch (error: any) {
     console.error('Webhook error:', error);

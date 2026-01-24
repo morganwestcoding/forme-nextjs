@@ -155,7 +155,9 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
                     G
                   </div>
                 )}
-                <span className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-zinc-900 ${currentUser ? "bg-emerald-400" : "bg-red-500"}`} />
+                {currentUser && (
+                  <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-zinc-900" />
+                )}
               </div>
               {!isCollapsed && (
                 <div className="flex-1 text-left">
@@ -166,7 +168,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
                         : currentUser.name
                       : "Guest"}
                   </p>
-                  <p className="text-[11px] text-zinc-500">Online</p>
+                  <p className="text-[11px] text-zinc-500">{currentUser ? "Online" : "Tap to join"}</p>
                 </div>
               )}
               {!isCollapsed && (

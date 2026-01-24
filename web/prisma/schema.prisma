@@ -48,8 +48,16 @@ model User {
   stripeSubscriptionId         String?
   subscriptionPriceId          String?
   subscriptionStatus           String?
-  subscriptionBillingInterval  String? 
+  subscriptionBillingInterval  String?
   currentPeriodEnd             DateTime?
+
+  // Stripe Connect fields (for receiving payments as a worker)
+  stripeConnectAccountId          String?
+  stripeConnectOnboardingComplete Boolean   @default(false)
+  stripeConnectDetailsSubmitted   Boolean   @default(false)
+  stripeConnectChargesEnabled     Boolean   @default(false)
+  stripeConnectPayoutsEnabled     Boolean   @default(false)
+  stripeConnectOnboardedAt        DateTime?
 
   // Social/Network fields
   following    String[]      @db.ObjectId

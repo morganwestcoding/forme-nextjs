@@ -114,6 +114,13 @@ export type SafeUser = Omit<
   subscriptionBillingInterval?: string | null;
   currentPeriodEnd?: Date | null;
 
+  // Stripe Connect fields (for receiving payments as a worker)
+  stripeConnectAccountId?: string | null;
+  stripeConnectOnboardingComplete?: boolean;
+  stripeConnectChargesEnabled?: boolean;
+  stripeConnectPayoutsEnabled?: boolean;
+  stripeConnectOnboardedAt?: Date | null;
+
   // Social/Network fields
   following: string[];
   followers: string[];

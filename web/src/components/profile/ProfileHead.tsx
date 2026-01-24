@@ -12,6 +12,7 @@ import useReviewModal from '@/app/hooks/useReviewModal';
 import useMessageModal from '@/app/hooks/useMessageModal';
 import ReviewCard from '@/components/reviews/ReviewCard';
 import VerificationBadge from '@/components/VerificationBadge';
+import StripeConnectCard from '@/components/stripe/StripeConnectCard';
 
 interface ProfileHeadProps {
   user: SafeUser;
@@ -87,6 +88,13 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
       if (employee?.jobTitle) return employee.jobTitle;
     }
     return null;
+  }, [listings, id]);
+
+  // Check if user is an employee (can receive payments)
+  const isEmployee = useMemo(() => {
+    return listings.some(listing =>
+      listing.employees?.some(emp => emp.userId === id && emp.isActive)
+    );
   }, [listings, id]);
 
   const handleFollow = async () => {
@@ -415,6 +423,11 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
               )}
             </div>
           </div>
+
+          {/* Stripe Connect - Payment setup for workers */}
+          {canEdit && isEmployee && (
+            <StripeConnectCard userId={id} isOwner={canEdit} />
+          )}
 
         </div>
 
