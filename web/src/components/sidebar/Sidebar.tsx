@@ -12,7 +12,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import useSettingsModal from "@/app/hooks/useSettingsModal";
 import useLoginModal from "@/app/hooks/useLoginModal";
 import useInboxModal from "@/app/hooks/useInboxModal";
 import useNotificationsModal from "@/app/hooks/useNotificationsModal";
@@ -39,7 +38,6 @@ const phrases = [
 const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
   const pathname = usePathname();
   const router = useRouter();
-  const settingsModal = useSettingsModal();
   const loginModal = useLoginModal();
   const inboxModal = useInboxModal();
   const notificationsModal = useNotificationsModal();
@@ -94,7 +92,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
       { label: "Inbox", onClick: () => inboxModal.onOpen(currentUser), active: false },
       { label: "Notifications", onClick: () => notificationsModal.onOpen(), active: false },
     ] : []),
-    { label: "Settings", onClick: () => settingsModal.onOpen(), active: false },
+    { label: "Settings", href: "/settings", active: isActive("/settings") },
   ];
 
   // Skip animation if already animated this session
