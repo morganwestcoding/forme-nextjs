@@ -135,7 +135,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
 
       {/* User */}
       <div
-        className={`mx-6 mt-4 mb-3 ${isCollapsed ? "mx-2" : ""}`}
+        className={`px-3 mt-2 mb-4 ${isCollapsed ? "flex justify-center" : ""}`}
         style={{
           opacity: hasAnimated ? 1 : 0,
           transform: hasAnimated ? 'translateY(0)' : 'translateY(8px)',
@@ -144,44 +144,64 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
       >
         <DropdownMenu open={isUserMenuOpen} onOpenChange={setIsUserMenuOpen}>
           <DropdownMenuTrigger className="w-full outline-none">
-            <div className={`group flex items-center gap-3 p-3 rounded-2xl bg-white border border-zinc-200 hover:border-zinc-300 transition-all duration-300 cursor-pointer ${isCollapsed ? "justify-center p-2" : ""}`}>
-              {currentUser?.image ? (
-                <Image src={currentUser.image} alt="" width={32} height={32} className="rounded-lg" />
-              ) : (
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-zinc-200 to-zinc-300 flex items-center justify-center text-zinc-500 text-xs font-semibold">
-                  G
-                </div>
-              )}
+            <div className={`group flex items-center gap-3 p-2.5 rounded-xl bg-white/60 border border-zinc-200/80 hover:bg-white hover:border-zinc-300 transition-all duration-200 cursor-pointer ${isCollapsed ? "justify-center p-2" : ""}`}>
+              <div className="relative shrink-0">
+                {currentUser?.image ? (
+                  <Image
+                    src={currentUser.image}
+                    alt=""
+                    width={36}
+                    height={36}
+                    className="rounded-full"
+                  />
+                ) : (
+                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-zinc-200 to-zinc-300 flex items-center justify-center text-zinc-600 text-sm font-medium">
+                    {currentUser?.name?.charAt(0).toUpperCase() || "G"}
+                  </div>
+                )}
+                <span className={`absolute bottom-0 right-0 w-2 h-2 rounded-full ring-[1.5px] ring-white ${currentUser ? "bg-emerald-400" : "bg-zinc-400"}`} />
+              </div>
               {!isCollapsed && (
-                <div className="flex-1 text-left">
-                  <p className="text-[13px] font-medium text-zinc-900 truncate">
-                    {currentUser?.name
-                      ? currentUser.name.split(" ").length > 1
-                        ? `${currentUser.name.split(" ")[0]} ${currentUser.name.split(" ").slice(-1)[0][0]}.`
-                        : currentUser.name
-                      : "Guest"}
-                  </p>
-                  <p className={`text-[11px] ${currentUser ? "text-emerald-600" : "text-zinc-500"}`}>{currentUser ? "Online" : "Tap to join"}</p>
-                </div>
+                <>
+                  <div className="flex-1 text-left min-w-0">
+                    <p className="text-[13px] font-medium text-zinc-800 truncate">
+                      {currentUser?.name
+                        ? currentUser.name.split(" ")[0]
+                        : "Guest"}
+                    </p>
+                    <p className="text-[11px] text-zinc-500 truncate">
+                      {currentUser ? "View profile" : "Sign in"}
+                    </p>
+                  </div>
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    className={`text-zinc-400 shrink-0 transition-transform duration-200 ${isUserMenuOpen ? "rotate-180" : ""}`}
+                  >
+                    <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </>
               )}
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent side="bottom" align="start" className="w-48 mt-2">
             {currentUser ? (
               <>
-                <DropdownMenuItem onClick={() => router.push(`/profile/${currentUser.id}`)} className="text-zinc-700 hover:bg-zinc-100">Profile</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => router.push("/properties")} className="text-zinc-700 hover:bg-zinc-100">Listings</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => router.push("/analytics")} className="text-zinc-700 hover:bg-zinc-100">Analytics</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push(`/profile/${currentUser.id}`)}>Profile</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push("/properties")}>Listings</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push("/analytics")}>Analytics</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => router.push("/subscription")} className="text-zinc-700 hover:bg-zinc-100">Subscription</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push("/subscription")}>Subscription</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => { if(confirm("Clear early access?")) clearEarlyAccess(); }} className="text-red-500 hover:bg-zinc-100 hover:text-red-500">Clear Data</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => signOut()} className="text-zinc-700 hover:bg-zinc-100">Sign Out</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => { if(confirm("Clear early access?")) clearEarlyAccess(); }} className="text-red-500 hover:text-red-600">Clear Data</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => signOut()}>Sign Out</DropdownMenuItem>
               </>
             ) : (
               <>
-                <DropdownMenuItem onClick={() => loginModal.onOpen()} className="text-zinc-700 hover:bg-zinc-100">Sign In</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => router.push("/register")} className="text-zinc-700 hover:bg-zinc-100">Sign Up</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => loginModal.onOpen()}>Sign In</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push("/register")}>Sign Up</DropdownMenuItem>
               </>
             )}
           </DropdownMenuContent>
