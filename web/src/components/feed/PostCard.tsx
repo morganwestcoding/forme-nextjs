@@ -91,7 +91,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
       onClick={handleCardClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className="group cursor-pointer rounded-xl border border-stone-300/90 p-2 transition-all duration-300 hover:border-stone-400 hover:shadow-sm w-full"
+      className="group cursor-pointer rounded-xl border border-stone-300/90 p-3 transition-all duration-300 hover:border-stone-400 hover:shadow-sm w-full"
       style={{
         background: 'linear-gradient(to bottom, #FAFAF9, #F7F7F6)',
         boxShadow: '0 1px 2px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.7)',
@@ -105,8 +105,8 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
       {/* Text post */}
       {isTextPost ? (
         <>
-          {/* Soft gradient background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-stone-100 via-neutral-50 to-white" />
+          {/* White background */}
+          <div className="absolute inset-0 bg-white" />
 
           {/* Subtle pattern overlay */}
           <div
@@ -241,7 +241,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
       </div>
 
       {/* Info section */}
-      <div className="mt-2 flex items-start justify-between gap-2">
+      <div className="mt-3 flex items-start justify-between gap-2">
         <div className="flex flex-col gap-1 min-w-0 flex-1">
           {post.user && (
             <div className="flex items-center gap-1.5">

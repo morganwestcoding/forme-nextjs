@@ -100,7 +100,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
 
   return (
     <div
-      className={`fixed inset-y-0 left-0 z-50 flex flex-col bg-zinc-900 border-r border-zinc-800/50 transition-all duration-200 ${
+      className={`fixed inset-y-0 left-0 z-50 flex flex-col bg-zinc-100 border-r border-zinc-200 transition-all duration-200 ${
         isCollapsed ? "w-16" : "w-56"
       } ${shouldAnimate ? 'opacity-0' : 'opacity-100'}`}
       style={{
@@ -118,7 +118,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
         }}
       >
         <Link href="/" className="group">
-          <Image src="/logos/black.png" alt="Logo" width={30} height={40} className="invert opacity-90 group-hover:opacity-100 transition-opacity duration-200" />
+          <Image src="/logos/black.png" alt="Logo" width={30} height={40} className="opacity-90 group-hover:opacity-100 transition-opacity duration-200" />
         </Link>
         {!isCollapsed && phraseIndex !== null && (
           <p
@@ -135,7 +135,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
 
       {/* User */}
       <div
-        className={`mx-5 mt-4 mb-3 ${isCollapsed ? "mx-2" : ""}`}
+        className={`mx-6 mt-4 mb-3 ${isCollapsed ? "mx-2" : ""}`}
         style={{
           opacity: hasAnimated ? 1 : 0,
           transform: hasAnimated ? 'translateY(0)' : 'translateY(8px)',
@@ -144,54 +144,44 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
       >
         <DropdownMenu open={isUserMenuOpen} onOpenChange={setIsUserMenuOpen}>
           <DropdownMenuTrigger className="w-full outline-none">
-            <div className={`group flex items-center gap-3 p-3 rounded-2xl bg-zinc-800/50 border border-zinc-700/50 hover:border-zinc-600 transition-all duration-300 cursor-pointer ${isCollapsed ? "justify-center p-2" : ""}`}>
-              <div className="relative">
-                {currentUser?.image ? (
-                  <Image src={currentUser.image} alt="" width={32} height={32} className="rounded-xl ring-1 ring-emerald-500/30" />
-                ) : (
-                  <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-rose-500/20 via-zinc-800 to-zinc-900 ring-1 ring-rose-500/30 flex items-center justify-center text-rose-400/90 text-xs font-semibold tracking-tight">
-                    G
-                  </div>
-                )}
-                {currentUser && (
-                  <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-zinc-900" />
-                )}
-              </div>
+            <div className={`group flex items-center gap-3 p-3 rounded-2xl bg-white border border-zinc-200 hover:border-zinc-300 transition-all duration-300 cursor-pointer ${isCollapsed ? "justify-center p-2" : ""}`}>
+              {currentUser?.image ? (
+                <Image src={currentUser.image} alt="" width={32} height={32} className="rounded-lg" />
+              ) : (
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-zinc-200 to-zinc-300 flex items-center justify-center text-zinc-500 text-xs font-semibold">
+                  G
+                </div>
+              )}
               {!isCollapsed && (
                 <div className="flex-1 text-left">
-                  <p className="text-[13px] font-medium text-white truncate">
+                  <p className="text-[13px] font-medium text-zinc-900 truncate">
                     {currentUser?.name
                       ? currentUser.name.split(" ").length > 1
                         ? `${currentUser.name.split(" ")[0]} ${currentUser.name.split(" ").slice(-1)[0][0]}.`
                         : currentUser.name
                       : "Guest"}
                   </p>
-                  <p className="text-[11px] text-zinc-500">{currentUser ? "Online" : "Tap to join"}</p>
+                  <p className={`text-[11px] ${currentUser ? "text-emerald-600" : "text-zinc-500"}`}>{currentUser ? "Online" : "Tap to join"}</p>
                 </div>
-              )}
-              {!isCollapsed && (
-                <svg className="w-4 h-4 text-zinc-600 group-hover:text-zinc-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
-                </svg>
               )}
             </div>
           </DropdownMenuTrigger>
-          <DropdownMenuContent side="bottom" align="start" variant="dark" className="w-48 mt-2">
+          <DropdownMenuContent side="bottom" align="start" className="w-48 mt-2">
             {currentUser ? (
               <>
-                <DropdownMenuItem onClick={() => router.push(`/profile/${currentUser.id}`)} className="text-zinc-200 hover:bg-zinc-700/70">Profile</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => router.push("/properties")} className="text-zinc-200 hover:bg-zinc-700/70">Listings</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => router.push("/analytics")} className="text-zinc-200 hover:bg-zinc-700/70">Analytics</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push(`/profile/${currentUser.id}`)} className="text-zinc-700 hover:bg-zinc-100">Profile</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push("/properties")} className="text-zinc-700 hover:bg-zinc-100">Listings</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push("/analytics")} className="text-zinc-700 hover:bg-zinc-100">Analytics</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => router.push("/subscription")} className="text-zinc-200 hover:bg-zinc-700/70">Subscription</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push("/subscription")} className="text-zinc-700 hover:bg-zinc-100">Subscription</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => { if(confirm("Clear early access?")) clearEarlyAccess(); }} className="text-red-400 hover:bg-zinc-700/70 hover:text-red-400">Clear Data</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => signOut()} className="text-zinc-200 hover:bg-zinc-700/70">Sign Out</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => { if(confirm("Clear early access?")) clearEarlyAccess(); }} className="text-red-500 hover:bg-zinc-100 hover:text-red-500">Clear Data</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => signOut()} className="text-zinc-700 hover:bg-zinc-100">Sign Out</DropdownMenuItem>
               </>
             ) : (
               <>
-                <DropdownMenuItem onClick={() => loginModal.onOpen()} className="text-zinc-200 hover:bg-zinc-700/70">Sign In</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => router.push("/register")} className="text-zinc-200 hover:bg-zinc-700/70">Sign Up</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => loginModal.onOpen()} className="text-zinc-700 hover:bg-zinc-100">Sign In</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push("/register")} className="text-zinc-700 hover:bg-zinc-100">Sign Up</DropdownMenuItem>
               </>
             )}
           </DropdownMenuContent>
@@ -219,8 +209,8 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
                 {!isCollapsed && (
                   <span className={`transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
                     item.active
-                      ? "text-white font-medium opacity-100"
-                      : "text-zinc-500 opacity-60 group-hover:opacity-100 group-hover:text-zinc-300"
+                      ? "text-zinc-900 font-medium opacity-100"
+                      : "text-zinc-500 opacity-60 group-hover:opacity-100 group-hover:text-zinc-700"
                   }`}>{item.label}</span>
                 )}
               </El>
@@ -231,7 +221,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
 
       {/* Expand button when collapsed */}
       {isCollapsed && (
-        <button onClick={toggle} className="p-4 text-zinc-500 hover:text-zinc-300">
+        <button onClick={toggle} className="p-4 text-zinc-400 hover:text-zinc-600">
           <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
             <path stroke="currentColor" strokeWidth="1.5" d="M9 6l6 6-6 6"/>
           </svg>
