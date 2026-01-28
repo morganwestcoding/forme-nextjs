@@ -1,6 +1,9 @@
 import Foundation
 
-struct User: Codable, Identifiable {
+struct User: Codable, Identifiable, Hashable {
+    static func == (lhs: User, rhs: User) -> Bool { lhs.id == rhs.id }
+    func hash(into hasher: inout Hasher) { hasher.combine(id) }
+
     let id: String
     var name: String?
     var email: String?

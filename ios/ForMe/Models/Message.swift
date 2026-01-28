@@ -1,6 +1,6 @@
 import Foundation
 
-struct Conversation: Codable, Identifiable {
+struct Conversation: Codable, Identifiable, Hashable {
     let id: String
     var userIds: [String]
     var users: [User]?
@@ -11,8 +11,20 @@ struct Conversation: Codable, Identifiable {
         return messages?.last
     }
 
+    var otherUser: User? {
+        return users?.first
+    }
+
     func otherUser(currentUserId: String) -> User? {
         return users?.first { $0.id != currentUserId }
+    }
+
+    static func == (lhs: Conversation, rhs: Conversation) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
     }
 }
 

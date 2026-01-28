@@ -2,11 +2,11 @@ import Foundation
 
 struct Reservation: Codable, Identifiable {
     let id: String
-    var date: Date
-    var time: String
+    var date: Date?
+    var time: String?
     var note: String?
 
-    var totalPrice: Double
+    var totalPrice: Double?
     var paymentIntentId: String?
     var paymentStatus: PaymentStatus?
     var status: ReservationStatus

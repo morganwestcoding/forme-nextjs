@@ -5,14 +5,27 @@ struct ContentView: View {
 
     var body: some View {
         Group {
-            if authViewModel.isAuthenticated {
+            if authViewModel.isLoading {
+                LoadingView()
+            } else if authViewModel.isAuthenticated {
                 MainTabView()
             } else {
-                AuthView()
+                WelcomeView()
             }
         }
         .task {
             await authViewModel.checkAuthStatus()
+        }
+    }
+}
+
+struct LoadingView: View {
+    var body: some View {
+        VStack(spacing: 16) {
+            ProgressView()
+                .scaleEffect(1.5)
+            Text("Loading...")
+                .foregroundColor(.secondary)
         }
     }
 }

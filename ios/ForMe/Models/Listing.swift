@@ -1,6 +1,9 @@
 import Foundation
 
-struct Listing: Codable, Identifiable {
+struct Listing: Codable, Identifiable, Hashable {
+    static func == (lhs: Listing, rhs: Listing) -> Bool { lhs.id == rhs.id }
+    func hash(into hasher: inout Hasher) { hasher.combine(id) }
+
     let id: String
     var title: String
     var description: String?
