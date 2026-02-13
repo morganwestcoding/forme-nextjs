@@ -2,7 +2,7 @@ import Foundation
 
 struct StoreHours: Codable, Identifiable {
     let id: String
-    var dayOfWeek: DayOfWeek
+    var dayOfWeek: String
     var openTime: String?
     var closeTime: String?
     var isClosed: Bool
@@ -10,42 +10,37 @@ struct StoreHours: Codable, Identifiable {
     enum CodingKeys: String, CodingKey {
         case id, dayOfWeek, openTime, closeTime, isClosed
     }
-}
 
-enum DayOfWeek: Int, Codable, CaseIterable {
-    case sunday = 0
-    case monday = 1
-    case tuesday = 2
-    case wednesday = 3
-    case thursday = 4
-    case friday = 5
-    case saturday = 6
-
-    var name: String {
-        switch self {
-        case .sunday: return "Sunday"
-        case .monday: return "Monday"
-        case .tuesday: return "Tuesday"
-        case .wednesday: return "Wednesday"
-        case .thursday: return "Thursday"
-        case .friday: return "Friday"
-        case .saturday: return "Saturday"
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(String.self, forKey: .id)
+        // Handle both string ("Monday") and int (1) formats
+        if let str = try? container.decode(String.self, forKey: .dayOfWeek) {
+            dayOfWeek = str
+        } else if let num = try? container.decode(Int.self, forKey: .dayOfWeek) {
+            let names = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+            dayOfWeek = (num >= 0 && num < names.count) ? names[num] : "Unknown"
+        } else {
+            dayOfWeek = "Unknown"
         }
+        openTime = try container.decodeIfPresent(String.self, forKey: .openTime)
+        closeTime = try container.decodeIfPresent(String.self, forKey: .closeTime)
+        isClosed = (try? container.decode(Bool.self, forKey: .isClosed)) ?? false
     }
 
-    var shortName: String {
-        return String(name.prefix(3))
-    }
+    var dayName: String { dayOfWeek }
+    var shortName: String { String(dayOfWeek.prefix(3)) }
 }
 
 extension Array where Element == StoreHours {
-    func hours(for day: DayOfWeek) -> StoreHours? {
-        return first { $0.dayOfWeek == day }
+    func hours(for dayName: String) -> StoreHours? {
+        return first { $0.dayOfWeek.lowercased() == dayName.lowercased() }
     }
 
     var todayHours: StoreHours? {
-        let weekday = Calendar.current.component(.weekday, from: Date())
-        let day = DayOfWeek(rawValue: weekday - 1) ?? .sunday
-        return hours(for: day)
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEEE"
+        let todayName = formatter.string(from: Date())
+        return hours(for: todayName)
     }
 }

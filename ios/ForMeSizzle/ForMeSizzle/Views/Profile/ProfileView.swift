@@ -5,129 +5,117 @@ struct ProfileView: View {
     @State private var showSettings = false
     @State private var showEditProfile = false
 
+    private var user: User? { authViewModel.currentUser }
+
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(spacing: 24) {
-                    // Profile Header
-                    VStack(spacing: 16) {
-                        AsyncImage(url: URL(string: authViewModel.currentUser?.image ?? "")) { image in
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                        } placeholder: {
-                            Circle()
-                                .fill(Color(.systemGray4))
-                                .overlay(
-                                    Image(systemName: "person.fill")
-                                        .font(.largeTitle)
-                                        .foregroundColor(.white)
-                                )
-                        }
-                        .frame(width: 100, height: 100)
-                        .clipShape(Circle())
+        ScrollView {
+            VStack(spacing: 20) {
+                // Profile Header Card
+                VStack(spacing: 16) {
+                    DynamicAvatar(
+                        name: user?.name ?? "User",
+                        imageUrl: user?.image,
+                        size: .large
+                    )
 
-                        VStack(spacing: 4) {
-                            Text(authViewModel.currentUser?.name ?? "User")
+                    VStack(spacing: 6) {
+                        HStack(spacing: 6) {
+                            Text(user?.name ?? "User")
                                 .font(.title2.bold())
+                                .foregroundColor(ForMe.textPrimary)
 
-                            if let bio = authViewModel.currentUser?.bio {
-                                Text(bio)
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                                    .multilineTextAlignment(.center)
-                            }
-
-                            if let location = authViewModel.currentUser?.location {
-                                HStack(spacing: 4) {
-                                    Image(systemName: "mappin")
-                                    Text(location)
-                                }
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                            }
-                        }
-
-                        // Verification badge
-                        if authViewModel.currentUser?.verificationStatus == .verified {
-                            HStack(spacing: 4) {
+                            if user?.verificationStatus == .verified {
                                 Image(systemName: "checkmark.seal.fill")
-                                    .foregroundColor(.blue)
-                                Text("Verified")
-                                    .font(.caption.bold())
+                                    .foregroundColor(ForMe.accent)
+                                    .font(.subheadline)
                             }
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 6)
-                            .background(Color.blue.opacity(0.1))
-                            .cornerRadius(16)
                         }
 
-                        Button("Edit Profile") {
-                            showEditProfile = true
-                        }
-                        .font(.subheadline.bold())
-                        .foregroundColor(.primary)
-                        .padding(.horizontal, 24)
-                        .padding(.vertical, 10)
-                        .background(Color(.systemGray6))
-                        .cornerRadius(20)
-                    }
-                    .padding()
-
-                    Divider()
-
-                    // Menu Items
-                    VStack(spacing: 0) {
-                        ProfileMenuItem(icon: "heart", title: "Favorites") {
-                            // Navigate to favorites
-                        }
-
-                        ProfileMenuItem(icon: "clock", title: "Booking History") {
-                            // Navigate to history
-                        }
-
-                        ProfileMenuItem(icon: "creditcard", title: "Payment Methods") {
-                            // Navigate to payment
-                        }
-
-                        ProfileMenuItem(icon: "bell", title: "Notifications") {
-                            // Navigate to notifications
-                        }
-
-                        ProfileMenuItem(icon: "gearshape", title: "Settings") {
-                            showSettings = true
-                        }
-
-                        ProfileMenuItem(icon: "questionmark.circle", title: "Help & Support") {
-                            // Navigate to help
+                        if let location = user?.location {
+                            HStack(spacing: 4) {
+                                Image(systemName: "mappin")
+                                Text(location)
+                            }
+                            .font(.caption)
+                            .foregroundColor(ForMe.textTertiary)
                         }
                     }
 
-                    // Logout
-                    Button(role: .destructive) {
-                        authViewModel.logout()
+                    if let bio = user?.bio, !bio.isEmpty {
+                        Text(bio)
+                            .font(.subheadline)
+                            .foregroundColor(ForMe.textSecondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 8)
+                    }
+
+                    // Edit button
+                    Button {
+                        showEditProfile = true
                     } label: {
-                        HStack {
-                            Image(systemName: "rectangle.portrait.and.arrow.right")
-                            Text("Log Out")
-                        }
-                        .font(.headline)
-                        .foregroundColor(.red)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color(.systemGray6))
-                        .cornerRadius(12)
+                        Text("Edit Profile")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundColor(ForMe.textPrimary)
+                            .padding(.horizontal, 24)
+                            .padding(.vertical, 10)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .stroke(ForMe.border, lineWidth: 1)
+                            )
                     }
-                    .padding(.horizontal)
                 }
+                .padding(20)
+                .frame(maxWidth: .infinity)
+                .forMeCard(padding: 0)
+                .padding(.horizontal)
+                .staggeredFadeIn(index: 0)
+
+                // Menu sections
+                VStack(spacing: 2) {
+                    ProfileMenuItem(icon: "heart", title: "Favorites") {}
+                    ProfileMenuItem(icon: "clock", title: "Booking History") {}
+                    ProfileMenuItem(icon: "creditcard", title: "Payment Methods") {}
+                }
+                .forMeCard(padding: 0)
+                .padding(.horizontal)
+                .staggeredFadeIn(index: 1)
+
+                VStack(spacing: 2) {
+                    ProfileMenuItem(icon: "bell", title: "Notifications") {}
+                    ProfileMenuItem(icon: "gearshape", title: "Settings") {
+                        showSettings = true
+                    }
+                    ProfileMenuItem(icon: "questionmark.circle", title: "Help & Support") {}
+                }
+                .forMeCard(padding: 0)
+                .padding(.horizontal)
+                .staggeredFadeIn(index: 2)
+
+                // Logout
+                Button(role: .destructive) {
+                    authViewModel.logout()
+                } label: {
+                    HStack(spacing: 8) {
+                        Image(systemName: "rectangle.portrait.and.arrow.right")
+                        Text("Log Out")
+                    }
+                    .font(.subheadline.weight(.medium))
+                    .foregroundColor(ForMe.statusCancelled)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14)
+                }
+                .padding(.horizontal)
+                .staggeredFadeIn(index: 3)
             }
-            .navigationTitle("Profile")
-            .sheet(isPresented: $showEditProfile) {
-                EditProfileView()
-            }
-            .sheet(isPresented: $showSettings) {
-                SettingsView()
-            }
+            .padding(.vertical)
+        }
+        .background(ForMe.background)
+        .navigationTitle("Profile")
+        .sheet(isPresented: $showEditProfile) {
+            EditProfileView()
+        }
+        .sheet(isPresented: $showSettings) {
+            SettingsView()
         }
     }
 }
@@ -139,21 +127,24 @@ struct ProfileMenuItem: View {
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 16) {
+            HStack(spacing: 14) {
                 Image(systemName: icon)
+                    .font(.body)
                     .frame(width: 24)
-                    .foregroundColor(.primary)
+                    .foregroundColor(ForMe.accent)
 
                 Text(title)
-                    .foregroundColor(.primary)
+                    .font(.subheadline)
+                    .foregroundColor(ForMe.textPrimary)
 
                 Spacer()
 
                 Image(systemName: "chevron.right")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                    .font(.caption2)
+                    .foregroundColor(ForMe.textTertiary)
             }
-            .padding()
+            .padding(.horizontal, 16)
+            .padding(.vertical, 14)
         }
     }
 }

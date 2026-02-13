@@ -5,6 +5,7 @@ import Combine
 class AuthViewModel: ObservableObject {
     @Published var currentUser: User?
     @Published var isAuthenticated = false
+    @Published var isCheckingAuth = true
     @Published var isLoading = false
     @Published var error: String?
 
@@ -13,10 +14,11 @@ class AuthViewModel: ObservableObject {
     func checkAuthStatus() async {
         guard api.isAuthenticated else {
             isAuthenticated = false
+            isCheckingAuth = false
             return
         }
 
-        isLoading = true
+        isCheckingAuth = true
         do {
             currentUser = try await api.getCurrentUser()
             isAuthenticated = true
@@ -24,7 +26,7 @@ class AuthViewModel: ObservableObject {
             isAuthenticated = false
             currentUser = nil
         }
-        isLoading = false
+        isCheckingAuth = false
     }
 
     func login(email: String, password: String) async -> Bool {
@@ -48,12 +50,12 @@ class AuthViewModel: ObservableObject {
         }
     }
 
-    func register(name: String, email: String, password: String, userType: String? = nil) async -> Bool {
+    func register(_ request: RegisterRequest) async -> Bool {
         isLoading = true
         error = nil
 
         do {
-            let response = try await api.register(name: name, email: email, password: password, userType: userType)
+            let response = try await api.register(request)
             currentUser = response.user
             isAuthenticated = true
             isLoading = false

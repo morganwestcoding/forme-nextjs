@@ -10,7 +10,9 @@ struct SettingsView: View {
             Form {
                 Section("Preferences") {
                     Toggle("Push Notifications", isOn: $notificationsEnabled)
+                        .tint(ForMe.accent)
                     Toggle("Dark Mode", isOn: $darkMode)
+                        .tint(ForMe.accent)
                 }
 
                 Section("Account") {
@@ -28,17 +30,20 @@ struct SettingsView: View {
                         Text("Version")
                         Spacer()
                         Text("1.0.0")
-                            .foregroundColor(.secondary)
+                            .foregroundColor(ForMe.textTertiary)
                     }
 
                     Link("Terms of Service", destination: URL(string: "https://forme.app/terms")!)
+                        .foregroundColor(ForMe.accent)
                     Link("Privacy Policy", destination: URL(string: "https://forme.app/privacy")!)
+                        .foregroundColor(ForMe.accent)
                 }
 
                 Section {
                     Button("Delete Account", role: .destructive) {
                         // TODO: Implement account deletion
                     }
+                    .foregroundColor(ForMe.statusCancelled)
                 }
             }
             .navigationTitle("Settings")
@@ -48,6 +53,7 @@ struct SettingsView: View {
                     Button("Done") {
                         dismiss()
                     }
+                    .foregroundColor(ForMe.accent)
                 }
             }
         }

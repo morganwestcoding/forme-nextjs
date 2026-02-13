@@ -1,7 +1,47 @@
-// app/api/listings/route.ts - POST route fix
+// app/api/listings/route.ts
 import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
+
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const category = searchParams.get('category');
+  const location = searchParams.get('location');
+  const page = parseInt(searchParams.get('page') || '1');
+  const limit = parseInt(searchParams.get('limit') || '20');
+  const skip = (page - 1) * limit;
+
+  const where: any = {};
+  if (category) where.category = category;
+  if (location) where.location = { contains: location, mode: 'insensitive' };
+
+  try {
+    const [listings, totalCount] = await Promise.all([
+      prisma.listing.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          services: true,
+          employees: { include: { user: { select: { id: true, name: true, image: true } } } },
+          storeHours: true,
+          user: { select: { id: true, name: true, image: true, verificationStatus: true } },
+        },
+      }),
+      prisma.listing.count({ where }),
+    ]);
+
+    return NextResponse.json({
+      listings,
+      totalCount,
+      hasMore: skip + listings.length < totalCount,
+    });
+  } catch (error) {
+    console.error('Error fetching listings:', error);
+    return new Response('Internal Server Error', { status: 500 });
+  }
+}
 
 interface EmployeeInput {
   userId: string;

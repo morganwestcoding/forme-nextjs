@@ -6,6 +6,7 @@ struct LoginView: View {
 
     @State private var email = ""
     @State private var password = ""
+    @State private var showPassword = false
     @FocusState private var focusedField: Field?
 
     enum Field {
@@ -17,29 +18,65 @@ struct LoginView: View {
             VStack(spacing: 24) {
                 VStack(spacing: 8) {
                     Text("Welcome back")
-                        .font(.largeTitle.bold())
+                        .font(.title.bold())
+                        .foregroundColor(ForMe.textPrimary)
 
                     Text("Sign in to your account")
-                        .foregroundColor(.secondary)
+                        .foregroundColor(ForMe.textSecondary)
                 }
                 .padding(.top, 40)
 
                 VStack(spacing: 16) {
-                    TextField("Email", text: $email)
-                        .textContentType(.emailAddress)
-                        .keyboardType(.emailAddress)
-                        .autocapitalization(.none)
-                        .focused($focusedField, equals: .email)
-                        .padding()
-                        .background(Color(.systemGray6))
-                        .cornerRadius(12)
+                    // Email field
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Email")
+                            .font(.subheadline.weight(.medium))
+                            .foregroundColor(ForMe.textPrimary)
 
-                    SecureField("Password", text: $password)
-                        .textContentType(.password)
-                        .focused($focusedField, equals: .password)
-                        .padding()
-                        .background(Color(.systemGray6))
-                        .cornerRadius(12)
+                        TextField("you@example.com", text: $email)
+                            .textContentType(.emailAddress)
+                            .keyboardType(.emailAddress)
+                            .autocapitalization(.none)
+                            .focused($focusedField, equals: .email)
+                            .forMeInput()
+                    }
+
+                    // Password field
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Password")
+                            .font(.subheadline.weight(.medium))
+                            .foregroundColor(ForMe.textPrimary)
+
+                        HStack {
+                            if showPassword {
+                                TextField("Enter your password", text: $password)
+                                    .textContentType(.password)
+                                    .focused($focusedField, equals: .password)
+                            } else {
+                                SecureField("Enter your password", text: $password)
+                                    .textContentType(.password)
+                                    .focused($focusedField, equals: .password)
+                            }
+
+                            Button {
+                                showPassword.toggle()
+                            } label: {
+                                Image(systemName: showPassword ? "eye.slash" : "eye")
+                                    .foregroundColor(ForMe.textTertiary)
+                                    .font(.body)
+                            }
+                        }
+                        .forMeInput()
+
+                        HStack {
+                            Spacer()
+                            Button("Forgot password?") {
+                                // TODO: Implement forgot password
+                            }
+                            .font(.caption)
+                            .foregroundColor(ForMe.accent)
+                        }
+                    }
                 }
 
                 if let error = authViewModel.error {
@@ -58,30 +95,34 @@ struct LoginView: View {
                     }
                 } label: {
                     if authViewModel.isLoading {
-                        ProgressView()
-                            .tint(.white)
+                        ForMeLoader(size: .small, color: .white)
                     } else {
-                        Text("Sign In")
+                        Text("Continue")
                     }
                 }
-                .font(.headline)
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(isFormValid ? Color.primary : Color.gray)
-                .cornerRadius(12)
+                .buttonStyle(ForMeAccentButtonStyle(isEnabled: isFormValid))
                 .disabled(!isFormValid || authViewModel.isLoading)
 
-                Button("Forgot password?") {
-                    // TODO: Implement forgot password
+                HStack(spacing: 4) {
+                    Text("First time using ForMe?")
+                        .foregroundColor(ForMe.textSecondary)
+                    Button("Create an account") {
+                        dismiss()
+                    }
+                    .foregroundColor(ForMe.accent)
+                    .fontWeight(.medium)
                 }
-                .foregroundColor(.secondary)
+                .font(.subheadline)
 
                 Spacer()
             }
             .padding(.horizontal, 24)
         }
+        .background(ForMe.background)
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            focusedField = .email
+        }
     }
 
     var isFormValid: Bool {

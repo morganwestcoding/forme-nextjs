@@ -118,12 +118,23 @@ struct RegisterView: View {
                 Button {
                     Task {
                         focusedField = nil
-                        if await authViewModel.register(
+                        let request = RegisterRequest(
                             name: name,
                             email: email,
                             password: password,
-                            userType: userType.rawValue
-                        ) {
+                            userType: userType.rawValue,
+                            location: nil,
+                            bio: nil,
+                            image: nil,
+                            jobTitle: nil,
+                            isOwnerManager: nil,
+                            selectedListing: nil,
+                            selectedServices: nil,
+                            listingCategory: nil,
+                            listingTitle: nil,
+                            listingDescription: nil
+                        )
+                        if await authViewModel.register(request) {
                             dismiss()
                         }
                     }

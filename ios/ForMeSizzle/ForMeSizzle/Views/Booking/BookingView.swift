@@ -15,24 +15,26 @@ struct BookingView: View {
                         HStack {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(listing.title)
-                                    .font(.headline)
+                                    .font(.subheadline.weight(.semibold))
+                                    .foregroundColor(ForMe.textPrimary)
                                 Text(service.serviceName)
-                                    .foregroundColor(.secondary)
+                                    .font(.caption)
+                                    .foregroundColor(ForMe.textSecondary)
                             }
 
                             Spacer()
 
                             Text("$\(service.price, specifier: "%.0f")")
                                 .font(.title2.bold())
+                                .foregroundColor(ForMe.textPrimary)
                         }
-                        .padding()
-                        .background(Color(.systemGray6))
-                        .cornerRadius(12)
+                        .forMeCard()
 
                         // Date picker
                         VStack(alignment: .leading, spacing: 12) {
                             Text("Select Date")
                                 .font(.headline)
+                                .foregroundColor(ForMe.textPrimary)
 
                             DatePicker(
                                 "Date",
@@ -41,21 +43,21 @@ struct BookingView: View {
                                 displayedComponents: .date
                             )
                             .datePickerStyle(.graphical)
-                            .padding()
-                            .background(Color(.systemGray6))
-                            .cornerRadius(12)
+                            .tint(ForMe.accent)
+                            .forMeCard()
                         }
 
                         // Time slots
                         VStack(alignment: .leading, spacing: 12) {
                             Text("Select Time")
                                 .font(.headline)
+                                .foregroundColor(ForMe.textPrimary)
 
                             LazyVGrid(columns: [
                                 GridItem(.flexible()),
                                 GridItem(.flexible()),
                                 GridItem(.flexible())
-                            ], spacing: 12) {
+                            ], spacing: 10) {
                                 ForEach(viewModel.availableTimeSlots, id: \.self) { time in
                                     TimeSlotButton(
                                         time: time,
@@ -72,6 +74,7 @@ struct BookingView: View {
                             VStack(alignment: .leading, spacing: 12) {
                                 Text("Select Provider")
                                     .font(.headline)
+                                    .foregroundColor(ForMe.textPrimary)
 
                                 ScrollView(.horizontal, showsIndicators: false) {
                                     HStack(spacing: 12) {
@@ -99,12 +102,11 @@ struct BookingView: View {
                         VStack(alignment: .leading, spacing: 12) {
                             Text("Notes (optional)")
                                 .font(.headline)
+                                .foregroundColor(ForMe.textPrimary)
 
                             TextField("Any special requests?", text: $viewModel.note, axis: .vertical)
                                 .lineLimit(3...6)
-                                .padding()
-                                .background(Color(.systemGray6))
-                                .cornerRadius(12)
+                                .forMeInput()
                         }
                     }
                     .padding()
@@ -113,14 +115,16 @@ struct BookingView: View {
                 // Book button
                 VStack(spacing: 0) {
                     Divider()
+                        .foregroundColor(ForMe.border)
 
                     HStack {
                         VStack(alignment: .leading) {
                             Text("Total")
                                 .font(.caption)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(ForMe.textSecondary)
                             Text("$\(service.price, specifier: "%.0f")")
                                 .font(.title2.bold())
+                                .foregroundColor(ForMe.textPrimary)
                         }
 
                         Spacer()
@@ -136,8 +140,7 @@ struct BookingView: View {
                             }
                         } label: {
                             if viewModel.isLoading {
-                                ProgressView()
-                                    .tint(.white)
+                                ForMeLoader(size: .small, color: .white)
                             } else {
                                 Text("Confirm Booking")
                             }
@@ -146,13 +149,13 @@ struct BookingView: View {
                         .foregroundColor(.white)
                         .padding(.horizontal, 32)
                         .padding(.vertical, 16)
-                        .background(viewModel.canBook ? Color.primary : Color.gray)
+                        .background(viewModel.canBook ? ForMe.accent : ForMe.textTertiary)
                         .cornerRadius(12)
                         .disabled(!viewModel.canBook || viewModel.isLoading)
                     }
                     .padding()
                 }
-                .background(Color(.systemBackground))
+                .background(ForMe.background)
             }
             .navigationTitle("Book Appointment")
             .navigationBarTitleDisplayMode(.inline)
@@ -180,12 +183,16 @@ struct TimeSlotButton: View {
     var body: some View {
         Button(action: action) {
             Text(time)
-                .font(.subheadline)
+                .font(.subheadline.weight(.medium))
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)
-                .background(isSelected ? Color.primary : Color(.systemGray6))
-                .foregroundColor(isSelected ? .white : .primary)
-                .cornerRadius(8)
+                .background(isSelected ? ForMe.accent : ForMe.surface)
+                .foregroundColor(isSelected ? .white : ForMe.textPrimary)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(isSelected ? Color.clear : ForMe.border, lineWidth: 1)
+                )
+                .cornerRadius(10)
         }
     }
 }
@@ -198,27 +205,21 @@ struct EmployeeCard: View {
     var body: some View {
         Button(action: action) {
             VStack(spacing: 8) {
-                Circle()
-                    .fill(Color(.systemGray4))
-                    .frame(width: 60, height: 60)
-                    .overlay(
-                        Image(systemName: "person.fill")
-                            .foregroundColor(.white)
-                    )
+                DynamicAvatar(name: name, size: .medium)
 
                 Text(name)
-                    .font(.caption)
+                    .font(.caption.weight(.medium))
                     .lineLimit(1)
+                    .foregroundColor(ForMe.textPrimary)
             }
-            .padding()
-            .background(isSelected ? Color.primary.opacity(0.1) : Color(.systemGray6))
+            .padding(12)
+            .background(isSelected ? ForMe.accentLight : ForMe.surface)
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
-                    .stroke(isSelected ? Color.primary : Color.clear, lineWidth: 2)
+                    .stroke(isSelected ? ForMe.accent : ForMe.border, lineWidth: isSelected ? 2 : 1)
             )
             .cornerRadius(12)
         }
-        .foregroundColor(.primary)
     }
 }
 

@@ -45,7 +45,17 @@ class APIService {
 
     private let decoder: JSONDecoder = {
         let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
+        let isoFractional = ISO8601DateFormatter()
+        isoFractional.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        let isoBasic = ISO8601DateFormatter()
+        isoBasic.formatOptions = [.withInternetDateTime]
+        decoder.dateDecodingStrategy = .custom { decoder in
+            let container = try decoder.singleValueContainer()
+            let string = try container.decode(String.self)
+            if let date = isoFractional.date(from: string) { return date }
+            if let date = isoBasic.date(from: string) { return date }
+            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid date: \(string)")
+        }
         return decoder
     }()
 
@@ -125,12 +135,19 @@ class APIService {
         return response
     }
 
-    func register(name: String, email: String, password: String, userType: String? = nil) async throws -> AuthResponse {
-        let body = try encoder.encode(RegisterRequest(name: name, email: email, password: password, userType: userType))
+    func register(_ registerRequest: RegisterRequest) async throws -> AuthResponse {
+        let body = try encoder.encode(registerRequest)
         let request = try buildRequest(endpoint: "/register", method: "POST", body: body)
         let response: AuthResponse = try await perform(request)
         authToken = response.token
         return response
+    }
+
+    func checkEmailExists(email: String) async throws -> Bool {
+        let queryItems = [URLQueryItem(name: "email", value: email)]
+        let request = try buildRequest(endpoint: "/check-email", queryItems: queryItems)
+        let response: CheckEmailResponse = try await perform(request)
+        return response.exists
     }
 
     func getCurrentUser() async throws -> User {

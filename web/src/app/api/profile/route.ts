@@ -1,9 +1,10 @@
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import { canModifyResource } from "@/app/libs/authorization";
+import { getUserFromRequest } from "@/app/utils/mobileAuth";
 
 export async function POST(request: Request) {
-  const currentUser = await getCurrentUser();
+  const currentUser = await getUserFromRequest(request) || await getCurrentUser();
   if (!currentUser) {
     return new Response("Unauthorized", { status: 401 });
   }
@@ -61,7 +62,7 @@ export async function POST(request: Request) {
 }
 
 export async function GET(request: Request) {
-  const currentUser = await getCurrentUser();
+  const currentUser = await getUserFromRequest(request) || await getCurrentUser();
   if (!currentUser) {
     return new Response("Unauthorized", { status: 401 });
   }
@@ -86,7 +87,7 @@ export async function GET(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  const currentUser = await getCurrentUser();
+  const currentUser = await getUserFromRequest(request) || await getCurrentUser();
   if (!currentUser) {
     return new Response("Unauthorized", { status: 401 });
   }

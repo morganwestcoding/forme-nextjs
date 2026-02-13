@@ -5,8 +5,8 @@ struct ContentView: View {
 
     var body: some View {
         Group {
-            if authViewModel.isLoading {
-                LoadingView()
+            if authViewModel.isCheckingAuth {
+                ForMeLoadingView()
             } else if authViewModel.isAuthenticated {
                 MainTabView()
             } else {
@@ -15,17 +15,6 @@ struct ContentView: View {
         }
         .task {
             await authViewModel.checkAuthStatus()
-        }
-    }
-}
-
-struct LoadingView: View {
-    var body: some View {
-        VStack(spacing: 16) {
-            ProgressView()
-                .scaleEffect(1.5)
-            Text("Loading...")
-                .foregroundColor(.secondary)
         }
     }
 }

@@ -38,6 +38,7 @@
     "framer-motion": "^12.0.6",
     "glob": "^11.0.0",
     "hugeicons-react": "^0.3.0",
+    "jose": "^4.15.9",
     "js": "^0.1.0",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.298.0",

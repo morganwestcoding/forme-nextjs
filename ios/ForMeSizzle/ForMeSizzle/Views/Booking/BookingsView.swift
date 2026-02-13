@@ -5,49 +5,49 @@ struct BookingsView: View {
     @State private var selectedTab = 0
 
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 0) {
-                // Tabs
-                Picker("", selection: $selectedTab) {
-                    Text("Upcoming").tag(0)
-                    Text("Past").tag(1)
-                }
-                .pickerStyle(.segmented)
-                .padding()
+        VStack(spacing: 0) {
+            // Tabs
+            Picker("", selection: $selectedTab) {
+                Text("Upcoming").tag(0)
+                Text("Past").tag(1)
+            }
+            .pickerStyle(.segmented)
+            .padding()
 
-                if viewModel.isLoading {
-                    Spacer()
-                    ProgressView()
-                    Spacer()
-                } else if currentBookings.isEmpty {
-                    Spacer()
-                    VStack(spacing: 12) {
-                        Image(systemName: "calendar")
-                            .font(.largeTitle)
-                            .foregroundColor(.secondary)
-                        Text(selectedTab == 0 ? "No upcoming bookings" : "No past bookings")
-                            .foregroundColor(.secondary)
-                    }
-                    Spacer()
-                } else {
-                    ScrollView {
-                        LazyVStack(spacing: 16) {
-                            ForEach(currentBookings) { reservation in
-                                BookingCard(reservation: reservation) {
-                                    Task {
-                                        await viewModel.cancelReservation(id: reservation.id)
-                                    }
+            if viewModel.isLoading {
+                Spacer()
+                ForMeLoader(size: .medium)
+                Spacer()
+            } else if currentBookings.isEmpty {
+                Spacer()
+                VStack(spacing: 12) {
+                    Image(systemName: "calendar")
+                        .font(.system(size: 40))
+                        .foregroundColor(ForMe.textTertiary)
+                    Text(selectedTab == 0 ? "No upcoming bookings" : "No past bookings")
+                        .font(.subheadline)
+                        .foregroundColor(ForMe.textSecondary)
+                }
+                Spacer()
+            } else {
+                ScrollView {
+                    LazyVStack(spacing: 12) {
+                        ForEach(Array(currentBookings.enumerated()), id: \.element.id) { index, reservation in
+                            BookingCard(reservation: reservation) {
+                                Task {
+                                    await viewModel.cancelReservation(id: reservation.id)
                                 }
                             }
+                            .staggeredFadeIn(index: index)
                         }
-                        .padding()
                     }
+                    .padding()
                 }
             }
-            .navigationTitle("Bookings")
-            .refreshable {
-                await viewModel.loadReservations()
-            }
+        }
+        .navigationTitle("Bookings")
+        .refreshable {
+            await viewModel.loadReservations()
         }
         .task {
             await viewModel.loadReservations()
@@ -81,11 +81,13 @@ struct BookingCard: View {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(reservation.serviceName ?? "Service")
-                        .font(.headline)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundColor(ForMe.textPrimary)
 
                     if let listing = reservation.listing {
                         Text(listing.title)
-                            .foregroundColor(.secondary)
+                            .font(.caption)
+                            .foregroundColor(ForMe.textSecondary)
                     }
                 }
 
@@ -95,6 +97,7 @@ struct BookingCard: View {
             }
 
             Divider()
+                .foregroundColor(ForMe.border)
 
             HStack(spacing: 16) {
                 if let date = reservation.date {
@@ -102,7 +105,7 @@ struct BookingCard: View {
                         Image(systemName: "calendar")
                         Text(date, style: .date)
                     }
-                    .font(.subheadline)
+                    .font(.caption)
                 }
 
                 if let time = reservation.time {
@@ -110,14 +113,15 @@ struct BookingCard: View {
                         Image(systemName: "clock")
                         Text(time)
                     }
-                    .font(.subheadline)
+                    .font(.caption)
                 }
             }
-            .foregroundColor(.secondary)
+            .foregroundColor(ForMe.textSecondary)
 
             if let totalPrice = reservation.totalPrice {
                 Text("$\(totalPrice, specifier: "%.0f")")
-                    .font(.headline)
+                    .font(.subheadline.bold())
+                    .foregroundColor(ForMe.textPrimary)
             }
 
             if reservation.status == .pending || reservation.status == .confirmed {
@@ -125,17 +129,19 @@ struct BookingCard: View {
                     showCancelConfirm = true
                 } label: {
                     Text("Cancel Booking")
-                        .font(.subheadline)
+                        .font(.caption.weight(.medium))
+                        .foregroundColor(ForMe.statusCancelled)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 10)
-                        .background(Color(.systemGray6))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(ForMe.statusCancelled.opacity(0.3), lineWidth: 1)
+                        )
                         .cornerRadius(8)
                 }
             }
         }
-        .padding()
-        .background(Color(.systemGray6))
-        .cornerRadius(12)
+        .forMeCard()
         .confirmationDialog("Cancel Booking?", isPresented: $showCancelConfirm) {
             Button("Cancel Booking", role: .destructive, action: onCancel)
             Button("Keep Booking", role: .cancel) {}
@@ -148,31 +154,27 @@ struct StatusBadge: View {
 
     var body: some View {
         Text(status?.rawValue.capitalized ?? "Unknown")
-            .font(.caption.bold())
-            .padding(.horizontal, 8)
+            .font(.caption2.bold())
+            .padding(.horizontal, 10)
             .padding(.vertical, 4)
-            .background(backgroundColor)
-            .foregroundColor(foregroundColor)
-            .cornerRadius(4)
+            .background(
+                LinearGradient(
+                    colors: [statusColor.opacity(0.15), statusColor.opacity(0.08)],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+            )
+            .foregroundColor(statusColor)
+            .cornerRadius(6)
     }
 
-    var backgroundColor: Color {
+    var statusColor: Color {
         switch status {
-        case .confirmed: return .green.opacity(0.2)
-        case .pending: return .yellow.opacity(0.2)
-        case .cancelled: return .red.opacity(0.2)
-        case .completed: return .blue.opacity(0.2)
-        case .none: return .gray.opacity(0.2)
-        }
-    }
-
-    var foregroundColor: Color {
-        switch status {
-        case .confirmed: return .green
-        case .pending: return .orange
-        case .cancelled: return .red
-        case .completed: return .blue
-        case .none: return .gray
+        case .confirmed: return ForMe.statusConfirmed
+        case .pending: return ForMe.statusPending
+        case .cancelled: return ForMe.statusCancelled
+        case .completed: return ForMe.statusCompleted
+        case .none: return ForMe.statusClosed
         }
     }
 }

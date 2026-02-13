@@ -11,44 +11,55 @@ struct EditProfileView: View {
 
     var body: some View {
         NavigationStack {
-            Form {
-                Section {
-                    HStack {
-                        Spacer()
-                        VStack(spacing: 12) {
-                            AsyncImage(url: URL(string: authViewModel.currentUser?.image ?? "")) { image in
-                                image
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                            } placeholder: {
-                                Circle()
-                                    .fill(Color(.systemGray4))
-                                    .overlay(
-                                        Image(systemName: "person.fill")
-                                            .font(.title)
-                                            .foregroundColor(.white)
-                                    )
-                            }
-                            .frame(width: 80, height: 80)
-                            .clipShape(Circle())
+            ScrollView {
+                VStack(spacing: 24) {
+                    // Avatar
+                    VStack(spacing: 12) {
+                        DynamicAvatar(
+                            name: authViewModel.currentUser?.name ?? "User",
+                            imageUrl: authViewModel.currentUser?.image,
+                            size: .large
+                        )
 
-                            Button("Change Photo") {
-                                // TODO: Implement photo picker
-                            }
-                            .font(.subheadline)
+                        Button("Change Photo") {
+                            // TODO: Implement photo picker
                         }
-                        Spacer()
+                        .font(.subheadline.weight(.medium))
+                        .foregroundColor(ForMe.accent)
                     }
-                    .listRowBackground(Color.clear)
-                }
+                    .padding(.top, 8)
 
-                Section("Personal Info") {
-                    TextField("Name", text: $name)
-                    TextField("Bio", text: $bio, axis: .vertical)
-                        .lineLimit(3...6)
-                    TextField("Location", text: $location)
+                    // Fields
+                    VStack(spacing: 16) {
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("Name")
+                                .font(.subheadline.weight(.medium))
+                                .foregroundColor(ForMe.textPrimary)
+                            TextField("Your name", text: $name)
+                                .forMeInput()
+                        }
+
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("Bio")
+                                .font(.subheadline.weight(.medium))
+                                .foregroundColor(ForMe.textPrimary)
+                            TextField("Tell us about yourself", text: $bio, axis: .vertical)
+                                .lineLimit(3...6)
+                                .forMeInput()
+                        }
+
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("Location")
+                                .font(.subheadline.weight(.medium))
+                                .foregroundColor(ForMe.textPrimary)
+                            TextField("City, State", text: $location)
+                                .forMeInput()
+                        }
+                    }
                 }
+                .padding(.horizontal, 24)
             }
+            .background(ForMe.background)
             .navigationTitle("Edit Profile")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -56,6 +67,7 @@ struct EditProfileView: View {
                     Button("Cancel") {
                         dismiss()
                     }
+                    .foregroundColor(ForMe.textSecondary)
                 }
 
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -73,10 +85,11 @@ struct EditProfileView: View {
                         }
                     } label: {
                         if isSaving {
-                            ProgressView()
+                            ForMeLoader(size: .small, color: ForMe.accent)
                         } else {
                             Text("Save")
                                 .bold()
+                                .foregroundColor(ForMe.accent)
                         }
                     }
                     .disabled(isSaving)

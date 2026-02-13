@@ -3,6 +3,7 @@ import SwiftUI
 struct WelcomeView: View {
     @State private var showLogin = false
     @State private var showRegister = false
+    @State private var appeared = false
 
     var body: some View {
         NavigationStack {
@@ -10,13 +11,22 @@ struct WelcomeView: View {
                 Spacer()
 
                 // Logo and tagline
-                VStack(spacing: 16) {
+                VStack(spacing: 20) {
+                    ForMeLoader(size: .large, color: ForMe.accent)
+                        .opacity(appeared ? 1 : 0)
+                        .offset(y: appeared ? 0 : 10)
+
                     Text("ForMe")
                         .font(.system(size: 48, weight: .bold, design: .rounded))
+                        .foregroundColor(ForMe.textPrimary)
+                        .opacity(appeared ? 1 : 0)
+                        .offset(y: appeared ? 0 : 10)
 
                     Text("Book beauty & wellness services")
                         .font(.title3)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(ForMe.textSecondary)
+                        .opacity(appeared ? 1 : 0)
+                        .offset(y: appeared ? 0 : 10)
                 }
 
                 Spacer()
@@ -27,34 +37,32 @@ struct WelcomeView: View {
                         showRegister = true
                     } label: {
                         Text("Get Started")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.primary)
-                            .cornerRadius(12)
                     }
+                    .buttonStyle(ForMeAccentButtonStyle())
 
                     Button {
                         showLogin = true
                     } label: {
                         Text("I already have an account")
-                            .font(.headline)
-                            .foregroundColor(.primary)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color(.systemGray6))
-                            .cornerRadius(12)
                     }
+                    .buttonStyle(ForMeSecondaryButtonStyle())
                 }
                 .padding(.horizontal, 24)
                 .padding(.bottom, 48)
+                .opacity(appeared ? 1 : 0)
+                .offset(y: appeared ? 0 : 16)
             }
+            .background(ForMe.background)
             .navigationDestination(isPresented: $showLogin) {
                 LoginView()
             }
             .navigationDestination(isPresented: $showRegister) {
-                RegisterView()
+                OnboardingFlowView()
+            }
+            .onAppear {
+                withAnimation(.easeOut(duration: 0.6).delay(0.1)) {
+                    appeared = true
+                }
             }
         }
     }

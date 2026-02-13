@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import prisma from "@/app/libs/prismadb";
 import { apiError, apiErrorCode } from "@/app/utils/api";
 import { registerSchema, validateBody } from "@/app/utils/validations";
+import { signMobileToken } from "@/app/utils/mobileAuth";
 
 type CanonicalTier = 'bronze' | 'professional' | 'enterprise';
 type UserType = 'customer' | 'individual' | 'team';
@@ -228,9 +229,15 @@ export async function POST(request: Request) {
       }
     }
 
+    const token = await signMobileToken(user.id, user.email);
+
     return NextResponse.json({
-      ...user,
-      userType: userType || 'customer'
+      user: {
+        ...user,
+        hashedPassword: undefined,
+        userType: userType || 'customer',
+      },
+      token,
     });
   } catch (err) {
     console.error('REGISTER_ERROR', err);
