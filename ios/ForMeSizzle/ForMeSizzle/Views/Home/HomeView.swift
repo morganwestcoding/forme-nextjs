@@ -181,14 +181,29 @@ struct FeaturedListingCard: View {
             .frame(width: cardWidth, height: cardHeight)
             .clipped()
 
-            // Clean gradient overlay
+            // Subtle warm lift
+            Color(hex: "FDF6E3").opacity(0.03)
+                .blendMode(.plusLighter)
+
+            // Edge vignette - soft, natural falloff
+            RadialGradient(
+                gradient: Gradient(stops: [
+                    .init(color: .clear, location: 0.3),
+                    .init(color: .black.opacity(0.4), location: 0.85),
+                    .init(color: .black.opacity(0.6), location: 1.0)
+                ]),
+                center: .init(x: 0.5, y: 0.5),
+                startRadius: 0,
+                endRadius: cardWidth * 0.95
+            )
+
+            // Bottom fade - smooth and deep
             LinearGradient(
                 stops: [
-                    .init(color: .black.opacity(0.1), location: 0),
-                    .init(color: .clear, location: 0.3),
-                    .init(color: .clear, location: 0.4),
-                    .init(color: .black.opacity(0.7), location: 0.7),
-                    .init(color: .black.opacity(0.95), location: 1.0)
+                    .init(color: .clear, location: 0.35),
+                    .init(color: .black.opacity(0.4), location: 0.55),
+                    .init(color: .black.opacity(0.85), location: 0.75),
+                    .init(color: .black.opacity(0.98), location: 1.0)
                 ],
                 startPoint: .top,
                 endPoint: .bottom
@@ -201,44 +216,74 @@ struct FeaturedListingCard: View {
                     // Price tag
                     if let priceRange = listing.priceRange {
                         Text(priceRange)
-                            .font(.system(size: 13, weight: .semibold))
+                            .font(.system(size: 15, weight: .semibold))
                             .foregroundColor(.white)
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 6)
-                            .background(.black.opacity(0.4))
-                            .clipShape(Capsule())
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 8)
+                            .background(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .fill(.white.opacity(0.12))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 10)
+                                            .stroke(.white.opacity(0.25), lineWidth: 1)
+                                    )
+                            )
                     }
 
                     Spacer()
+
+                    // Quick book button
+                    Button {
+                        // TODO: Quick book action
+                    } label: {
+                        Image(systemName: "bolt.fill")
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(.white)
+                            .frame(width: 38, height: 38)
+                            .background(
+                                Circle()
+                                    .fill(.white.opacity(0.12))
+                                    .overlay(
+                                        Circle()
+                                            .stroke(.white.opacity(0.25), lineWidth: 1)
+                                    )
+                            )
+                    }
+                    .buttonStyle(.plain)
 
                     // Favorite button
                     Button {
                         // TODO: Toggle favorite
                     } label: {
-                        Image(systemName: "heart")
-                            .font(.system(size: 13, weight: .medium))
+                        Image(systemName: "heart.fill")
+                            .font(.system(size: 14, weight: .medium))
                             .foregroundColor(.white)
-                            .frame(width: 32, height: 32)
-                            .background(.black.opacity(0.4))
-                            .clipShape(Circle())
+                            .frame(width: 38, height: 38)
+                            .background(
+                                Circle()
+                                    .fill(.white.opacity(0.12))
+                                    .overlay(
+                                        Circle()
+                                            .stroke(.white.opacity(0.25), lineWidth: 1)
+                                    )
+                            )
                     }
                     .buttonStyle(.plain)
                 }
-                .padding(12)
+                .padding(14)
 
                 Spacer()
 
                 // Center content section
-                VStack(alignment: .center, spacing: 6) {
+                VStack(alignment: .center, spacing: 4) {
                     // Category label
-                    Text(listing.category.rawValue.uppercased())
-                        .font(.system(size: 10, weight: .semibold))
-                        .tracking(1)
-                        .foregroundColor(.white.opacity(0.7))
+                    Text(listing.category.rawValue)
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundColor(.white.opacity(0.6))
 
                     // Title
                     Text(listing.title)
-                        .font(.system(size: 20, weight: .bold))
+                        .font(.system(size: 21, weight: .semibold))
                         .foregroundColor(.white)
                         .lineLimit(2)
                         .multilineTextAlignment(.center)
@@ -246,12 +291,13 @@ struct FeaturedListingCard: View {
                     // Location
                     if let location = listing.location {
                         Text(location)
-                            .font(.system(size: 12, weight: .medium))
-                            .foregroundColor(.white.opacity(0.7))
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundColor(.white.opacity(0.6))
                             .lineLimit(1)
                     }
                 }
-                .padding(.horizontal, 16)
+                .shadow(color: .black.opacity(0.5), radius: 6, x: 0, y: 2)
+                .padding(.horizontal, 18)
 
                 Spacer()
 
@@ -319,16 +365,38 @@ struct FeaturedListingCard: View {
                         }
                     }
                 }
-                .padding(.horizontal, 14)
-                .padding(.vertical, 10)
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
-                .padding(.horizontal, 10)
-                .padding(.bottom, 10)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 12)
+                .background(.black.opacity(0.35), in: RoundedRectangle(cornerRadius: 12))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .strokeBorder(
+                            LinearGradient(
+                                colors: [.white.opacity(0.3), .white.opacity(0.1)],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            ),
+                            lineWidth: 0.5
+                        )
+                )
+                .padding(.horizontal, 12)
+                .padding(.bottom, 16)
             }
         }
         .frame(width: cardWidth, height: cardHeight)
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .shadow(color: .black.opacity(0.25), radius: 20, x: 0, y: 10)
+        .clipShape(RoundedRectangle(cornerRadius: 20))
+        .overlay(
+            RoundedRectangle(cornerRadius: 20)
+                .stroke(
+                    LinearGradient(
+                        colors: [.white.opacity(0.3), .white.opacity(0.1), .clear],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 1
+                )
+        )
+        .shadow(color: .black.opacity(0.15), radius: 12, x: 0, y: 6)
     }
 
     // Format rating count (1500 → 1.5k)
@@ -367,95 +435,111 @@ struct FeaturedListingCard: View {
     }
 }
 
-// MARK: - Listing Row (horizontal card with padded image)
+// MARK: - Listing Row
 
 struct ListingRow: View {
     let listing: Listing
 
     var body: some View {
-        HStack(spacing: 12) {
-            // Thumbnail image with padding
+        HStack(spacing: 14) {
+            // Image
             AsyncImage(url: URL(string: listing.imageSrc ?? "")) { image in
                 image
                     .resizable()
                     .aspectRatio(contentMode: .fill)
             } placeholder: {
                 Rectangle()
-                    .fill(Color(hex: "F5F5F4"))
+                    .fill(Color(hex: "F8F8F7"))
                     .overlay(
                         Image(systemName: listing.category.icon)
-                            .font(.system(size: 24))
+                            .font(.system(size: 22, weight: .light))
                             .foregroundColor(ForMe.textTertiary)
                     )
             }
-            .frame(width: 100, height: 100)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .frame(width: 88, height: 88)
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
 
             // Content
-            VStack(alignment: .leading, spacing: 6) {
-                // Category pill
-                Text(listing.category.rawValue)
-                    .font(.system(size: 10, weight: .semibold))
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(Color.black)
-                    .clipShape(RoundedRectangle(cornerRadius: 6))
-
-                // Title
-                Text(listing.title)
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(ForMe.textPrimary)
-                    .lineLimit(2)
-                    .multilineTextAlignment(.leading)
-
-                // Price | Stars | Rating | Reserve
-                HStack(spacing: 6) {
-                    if let priceRange = listing.priceRange {
-                        Text(priceRange)
-                            .font(.system(size: 13, weight: .semibold))
-                            .foregroundColor(ForMe.textPrimary)
-                    }
-
-                    Text("|")
-                        .font(.system(size: 12))
+            VStack(alignment: .leading, spacing: 8) {
+                // Title + Category
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(listing.category.rawValue)
+                        .font(.system(size: 11, weight: .medium))
                         .foregroundColor(ForMe.textTertiary)
 
-                    HStack(spacing: 2) {
-                        ForEach(0..<5) { i in
-                            Image(systemName: "star.fill")
-                                .font(.system(size: 9))
-                                .foregroundColor(i < Int((listing.rating ?? 5).rounded()) ? Color(hex: "FBBF24") : ForMe.textTertiary.opacity(0.4))
+                    Text(listing.title)
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundColor(ForMe.textPrimary)
+                        .lineLimit(2)
+                }
+
+                // Rating + Price
+                HStack(spacing: 10) {
+                    // Rating
+                    HStack(spacing: 4) {
+                        Image(systemName: "star.fill")
+                            .font(.system(size: 10))
+                            .foregroundColor(Color(hex: "FBBF24"))
+
+                        Text(String(format: "%.1f", listing.rating ?? 0))
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(ForMe.textSecondary)
+
+                        if let count = listing.ratingCount, count > 0 {
+                            Text("(\(count))")
+                                .font(.system(size: 11))
+                                .foregroundColor(ForMe.textTertiary)
                         }
                     }
 
-                    if let rating = listing.rating {
-                        Text(String(format: "%.1f", rating))
-                            .font(.system(size: 12))
-                            .foregroundColor(ForMe.textSecondary)
+                    // Price pill
+                    if let priceRange = listing.priceRange {
+                        Text(priceRange)
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(Color.black)
+                            .clipShape(Capsule())
                     }
-
-                    Text("|")
-                        .font(.system(size: 12))
-                        .foregroundColor(ForMe.textTertiary)
-
-                    Text("Reserve")
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(ForMe.accent)
-                        .underline()
                 }
             }
 
             Spacer()
+
+            // Actions
+            VStack(spacing: 8) {
+                // Favorite
+                Button {
+                    // TODO: Toggle favorite
+                } label: {
+                    Image(systemName: "heart")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(ForMe.textTertiary)
+                        .frame(width: 32, height: 32)
+                        .background(ForMe.background)
+                        .clipShape(Circle())
+                }
+                .buttonStyle(.plain)
+
+                // Quick book
+                Button {
+                    // TODO: Quick book
+                } label: {
+                    Image(systemName: "bolt.fill")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(.white)
+                        .frame(width: 32, height: 32)
+                        .background(ForMe.accent)
+                        .clipShape(Circle())
+                }
+                .buttonStyle(.plain)
+            }
         }
-        .padding(10)
+        .padding(12)
         .background(ForMe.surface)
-        .clipShape(RoundedRectangle(cornerRadius: 14))
-        .overlay(
-            RoundedRectangle(cornerRadius: 14)
-                .stroke(ForMe.border, lineWidth: 1)
-        )
-        .shadow(color: .black.opacity(0.06), radius: 4, x: 0, y: 2)
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .shadow(color: .black.opacity(0.04), radius: 8, x: 0, y: 2)
     }
 }
 
@@ -479,4 +563,20 @@ struct ListingRow: View {
     ))
     .padding(40)
     .background(Color.black)
+}
+
+#Preview("Listing Row") {
+    ListingRow(listing: Listing(
+        id: "preview",
+        title: "Pretty Ricky's Hair and Braid",
+        description: "Premium hair styling",
+        imageSrc: "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400",
+        category: .barber,
+        location: "Long Beach, California",
+        services: [Service(id: "1", serviceName: "Cut", price: 75, category: nil, imageSrc: nil, description: nil, duration: 60, listingId: nil)],
+        rating: 4.8,
+        ratingCount: 124,
+        userId: "1"
+    ))
+    .padding(20)
 }
