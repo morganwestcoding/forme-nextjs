@@ -181,33 +181,18 @@ struct FeaturedListingCard: View {
             .frame(width: cardWidth, height: cardHeight)
             .clipped()
 
-            // Cinematic vignette overlay
-            RadialGradient(
-                gradient: Gradient(colors: [
-                    .clear,
-                    .black.opacity(0.2),
-                    .black.opacity(0.5)
-                ]),
-                center: .center,
-                startRadius: cardWidth * 0.3,
-                endRadius: cardWidth * 0.9
+            // Clean gradient overlay
+            LinearGradient(
+                stops: [
+                    .init(color: .black.opacity(0.1), location: 0),
+                    .init(color: .clear, location: 0.3),
+                    .init(color: .clear, location: 0.4),
+                    .init(color: .black.opacity(0.7), location: 0.7),
+                    .init(color: .black.opacity(0.95), location: 1.0)
+                ],
+                startPoint: .top,
+                endPoint: .bottom
             )
-
-            // Dramatic bottom gradient for text legibility
-            VStack(spacing: 0) {
-                Spacer()
-                LinearGradient(
-                    stops: [
-                        .init(color: .clear, location: 0),
-                        .init(color: .black.opacity(0.3), location: 0.2),
-                        .init(color: .black.opacity(0.7), location: 0.5),
-                        .init(color: .black.opacity(0.95), location: 1.0)
-                    ],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-                .frame(height: cardHeight * 0.65)
-            }
 
             // Content overlay
             VStack(spacing: 0) {
@@ -216,75 +201,44 @@ struct FeaturedListingCard: View {
                     // Price tag
                     if let priceRange = listing.priceRange {
                         Text(priceRange)
-                            .font(.system(size: 15, weight: .semibold))
+                            .font(.system(size: 13, weight: .semibold))
                             .foregroundColor(.white)
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 8)
-                            .background(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .fill(.white.opacity(0.12))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .stroke(.white.opacity(0.25), lineWidth: 1)
-                                    )
-                            )
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 6)
+                            .background(.black.opacity(0.4))
+                            .clipShape(Capsule())
                     }
 
                     Spacer()
-
-                    // Quick book button
-                    Button {
-                        // TODO: Quick book action
-                    } label: {
-                        Image(systemName: "bolt.fill")
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(.white)
-                            .frame(width: 38, height: 38)
-                            .background(
-                                Circle()
-                                    .fill(.white.opacity(0.12))
-                                    .overlay(
-                                        Circle()
-                                            .stroke(.white.opacity(0.25), lineWidth: 1)
-                                    )
-                            )
-                    }
-                    .buttonStyle(.plain)
 
                     // Favorite button
                     Button {
                         // TODO: Toggle favorite
                     } label: {
-                        Image(systemName: "heart.fill")
-                            .font(.system(size: 14, weight: .medium))
+                        Image(systemName: "heart")
+                            .font(.system(size: 13, weight: .medium))
                             .foregroundColor(.white)
-                            .frame(width: 38, height: 38)
-                            .background(
-                                Circle()
-                                    .fill(.white.opacity(0.12))
-                                    .overlay(
-                                        Circle()
-                                            .stroke(.white.opacity(0.25), lineWidth: 1)
-                                    )
-                            )
+                            .frame(width: 32, height: 32)
+                            .background(.black.opacity(0.4))
+                            .clipShape(Circle())
                     }
                     .buttonStyle(.plain)
                 }
-                .padding(14)
+                .padding(12)
 
                 Spacer()
 
                 // Center content section
-                VStack(alignment: .center, spacing: 8) {
+                VStack(alignment: .center, spacing: 6) {
                     // Category label
                     Text(listing.category.rawValue.uppercased())
-                        .font(.system(size: 11, weight: .semibold))
-                        .tracking(1.5)
-                        .foregroundColor(.white.opacity(0.5))
+                        .font(.system(size: 10, weight: .semibold))
+                        .tracking(1)
+                        .foregroundColor(.white.opacity(0.7))
 
                     // Title
                     Text(listing.title)
-                        .font(.system(size: 22, weight: .bold))
+                        .font(.system(size: 20, weight: .bold))
                         .foregroundColor(.white)
                         .lineLimit(2)
                         .multilineTextAlignment(.center)
@@ -292,113 +246,89 @@ struct FeaturedListingCard: View {
                     // Location
                     if let location = listing.location {
                         Text(location)
-                            .font(.system(size: 13, weight: .medium))
-                            .foregroundColor(.white.opacity(0.6))
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(.white.opacity(0.7))
                             .lineLimit(1)
                     }
                 }
-                .padding(.horizontal, 18)
+                .padding(.horizontal, 16)
 
                 Spacer()
 
-                // Bottom rating section - the showstopper
-                VStack(spacing: 0) {
-                    // Subtle divider line
-                    Rectangle()
-                        .fill(
-                            LinearGradient(
-                                colors: [.clear, .white.opacity(0.2), .clear],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                        .frame(height: 1)
-                        .padding(.horizontal, 24)
-
-                    // Rating content
-                    HStack(spacing: 0) {
-                        if let rating = listing.rating {
-                            // Star cluster
-                            HStack(spacing: 3) {
-                                ForEach(0..<5) { i in
-                                    Image(systemName: "star.fill")
-                                        .font(.system(size: 10))
-                                        .foregroundColor(
-                                            i < Int(rating.rounded())
-                                                ? Color(hex: "FBBF24")
-                                                : .white.opacity(0.2)
-                                        )
-                                }
+                // Bottom rating section - frosted glass
+                HStack(spacing: 0) {
+                    if let rating = listing.rating {
+                        // Star cluster
+                        HStack(spacing: 3) {
+                            ForEach(0..<5) { i in
+                                Image(systemName: "star.fill")
+                                    .font(.system(size: 10))
+                                    .foregroundColor(
+                                        i < Int(rating.rounded())
+                                            ? Color(hex: "FBBF24")
+                                            : .white.opacity(0.2)
+                                    )
                             }
+                        }
 
-                            Spacer()
+                        Spacer()
 
-                            // Rating number - big and bold
-                            Text(String(format: "%.1f", rating))
-                                .font(.system(size: 28, weight: .bold, design: .rounded))
-                                .foregroundColor(.white)
+                        // Rating number
+                        Text(String(format: "%.1f", rating))
+                            .font(.system(size: 26, weight: .bold, design: .rounded))
+                            .foregroundColor(.white)
 
-                            Spacer()
+                        Spacer()
 
-                            // Review count
-                            if let count = listing.ratingCount, count > 0 {
-                                VStack(alignment: .trailing, spacing: 1) {
-                                    Text(formatRatingCount(count))
-                                        .font(.system(size: 14, weight: .semibold))
-                                        .foregroundColor(.white.opacity(0.9))
-                                    Text("reviews")
-                                        .font(.system(size: 10, weight: .medium))
-                                        .foregroundColor(.white.opacity(0.5))
-                                        .textCase(.uppercase)
-                                        .tracking(0.5)
-                                }
+                        // Review count
+                        if let count = listing.ratingCount, count > 0 {
+                            VStack(alignment: .trailing, spacing: 0) {
+                                Text(formatRatingCount(count))
+                                    .font(.system(size: 14, weight: .semibold))
+                                    .foregroundColor(.white.opacity(0.9))
+                                Text("Reviews")
+                                    .font(.system(size: 11, weight: .medium))
+                                    .foregroundColor(.white.opacity(0.5))
                             }
-                        } else {
-                            // New listing - no ratings yet
-                            Spacer()
-
-                            HStack(spacing: 8) {
-                                Image(systemName: "sparkles")
-                                    .font(.system(size: 16))
-                                    .foregroundColor(Color(hex: "FBBF24"))
-
-                                Text("New")
-                                    .font(.system(size: 22, weight: .bold, design: .rounded))
-                                    .foregroundColor(.white)
+                        }
+                    } else {
+                        // No rating - show 0.0 with 0 reviews
+                        HStack(spacing: 3) {
+                            ForEach(0..<5) { _ in
+                                Image(systemName: "star.fill")
+                                    .font(.system(size: 10))
+                                    .foregroundColor(.white.opacity(0.2))
                             }
+                        }
 
-                            Spacer()
+                        Spacer()
+
+                        Text("0.0")
+                            .font(.system(size: 26, weight: .bold, design: .rounded))
+                            .foregroundColor(.white)
+
+                        Spacer()
+
+                        VStack(alignment: .trailing, spacing: 0) {
+                            Text("0")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundColor(.white.opacity(0.9))
+                            Text("Reviews")
+                                .font(.system(size: 11, weight: .medium))
+                                .foregroundColor(.white.opacity(0.5))
                         }
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 16)
-                    .background(
-                        LinearGradient(
-                            colors: [
-                                .black.opacity(0.0),
-                                .black.opacity(0.3)
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
                 }
+                .padding(.horizontal, 14)
+                .padding(.vertical, 10)
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .padding(.horizontal, 10)
+                .padding(.bottom, 10)
             }
         }
         .frame(width: cardWidth, height: cardHeight)
-        .clipShape(RoundedRectangle(cornerRadius: 20))
-        .overlay(
-            RoundedRectangle(cornerRadius: 20)
-                .stroke(
-                    LinearGradient(
-                        colors: [.white.opacity(0.3), .white.opacity(0.1), .clear],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    ),
-                    lineWidth: 1
-                )
-        )
-        .shadow(color: .black.opacity(0.15), radius: 12, x: 0, y: 6)
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .shadow(color: .black.opacity(0.25), radius: 20, x: 0, y: 10)
     }
 
     // Format rating count (1500 → 1.5k)
