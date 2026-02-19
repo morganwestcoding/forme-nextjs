@@ -492,49 +492,44 @@ struct ListingRow: View {
                         }
                     }
 
-                    // Price pill
+                    // Price
                     if let priceRange = listing.priceRange {
                         Text(priceRange)
-                            .font(.system(size: 12, weight: .semibold))
-                            .foregroundColor(.white)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(Color.black)
-                            .clipShape(Capsule())
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(ForMe.textSecondary)
                     }
                 }
             }
 
             Spacer()
 
-            // Actions
-            VStack(spacing: 8) {
-                // Favorite
+            // Actions pill
+            VStack(spacing: 0) {
                 Button {
                     // TODO: Toggle favorite
                 } label: {
-                    Image(systemName: "heart")
-                        .font(.system(size: 12, weight: .medium))
+                    Image(systemName: "heart.fill")
+                        .font(.system(size: 16))
                         .foregroundColor(ForMe.textTertiary)
-                        .frame(width: 32, height: 32)
-                        .background(ForMe.background)
-                        .clipShape(Circle())
+                        .frame(width: 44, height: 44)
                 }
                 .buttonStyle(.plain)
 
-                // Quick book
+                Divider()
+                    .frame(width: 24)
+
                 Button {
                     // TODO: Quick book
                 } label: {
                     Image(systemName: "bolt.fill")
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(.white)
-                        .frame(width: 32, height: 32)
-                        .background(ForMe.accent)
-                        .clipShape(Circle())
+                        .font(.system(size: 16))
+                        .foregroundColor(ForMe.accent)
+                        .frame(width: 44, height: 44)
                 }
                 .buttonStyle(.plain)
             }
+            .background(ForMe.background)
+            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
         }
         .padding(12)
         .background(ForMe.surface)
