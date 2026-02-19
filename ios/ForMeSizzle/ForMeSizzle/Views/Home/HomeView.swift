@@ -129,26 +129,44 @@ struct HomeView: View {
 struct CategoryCard: View {
     let category: ServiceCategory
     let action: () -> Void
+    @State private var isPressed = false
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 8) {
-                ZStack {
-                    Circle()
-                        .fill(ForMe.categoryColor(category.rawValue).opacity(0.15))
-                        .frame(width: 56, height: 56)
-
-                    Image(systemName: category.icon)
-                        .font(.title3)
-                        .foregroundColor(ForMe.categoryColor(category.rawValue))
-                }
+            VStack(spacing: 6) {
+                Image(systemName: category.icon)
+                    .font(.system(size: 20, weight: .medium))
+                    .foregroundColor(isPressed ? ForMe.accent : ForMe.textSecondary)
+                    .frame(width: 52, height: 52)
+                    .background(
+                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                            .fill(isPressed ? ForMe.accent.opacity(0.1) : ForMe.surface)
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                            .stroke(isPressed ? ForMe.accent.opacity(0.3) : Color.clear, lineWidth: 1)
+                    )
+                    .shadow(color: .black.opacity(0.04), radius: 4, x: 0, y: 2)
 
                 Text(category.rawValue)
-                    .font(.caption.weight(.medium))
-                    .foregroundColor(ForMe.textPrimary)
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundColor(isPressed ? ForMe.accent : ForMe.textSecondary)
             }
         }
-        .buttonStyle(.plain)
+        .buttonStyle(CategoryButtonStyle(isPressed: $isPressed))
+    }
+}
+
+struct CategoryButtonStyle: ButtonStyle {
+    @Binding var isPressed: Bool
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
+            .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
+            .onChange(of: configuration.isPressed) { _, newValue in
+                isPressed = newValue
+            }
     }
 }
 
