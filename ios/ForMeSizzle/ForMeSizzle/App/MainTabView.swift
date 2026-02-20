@@ -19,7 +19,7 @@ struct MainTabView: View {
                     NavigationStack { ProfileView() }
                 }
             }
-            .padding(.bottom, 56)
+            .padding(.bottom, 70)
 
             ForMeTabBar(selectedTab: $appState.selectedTab)
         }
@@ -31,6 +31,7 @@ struct MainTabView: View {
 
 private struct ForMeTabBar: View {
     @Binding var selectedTab: AppState.Tab
+    @Namespace private var tabNamespace
 
     private let tabs: [(tab: AppState.Tab, label: String, icon: String, activeIcon: String)] = [
         (.home, "Discover", "house", "house.fill"),
@@ -41,46 +42,53 @@ private struct ForMeTabBar: View {
     ]
 
     var body: some View {
-        VStack(spacing: 0) {
-            // Top border matching PageSearch border style
-            Rectangle()
-                .fill(Color(hex: "D6D3D1").opacity(0.5))
-                .frame(height: 0.5)
+        HStack(spacing: 4) {
+            ForEach(tabs, id: \.tab) { item in
+                let isActive = selectedTab == item.tab
 
-            HStack(spacing: 0) {
-                ForEach(tabs, id: \.tab) { item in
-                    let isActive = selectedTab == item.tab
-
-                    Button {
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-                            selectedTab = item.tab
-                        }
-                    } label: {
-                        VStack(spacing: 4) {
-                            Image(systemName: isActive ? item.activeIcon : item.icon)
-                                .font(.system(size: 18, weight: isActive ? .medium : .regular))
-                                .frame(height: 22)
-
-                            Text(item.label)
-                                .font(.system(size: 10, weight: isActive ? .semibold : .regular))
-                        }
-                        .foregroundStyle(isActive ? ForMe.textPrimary : Color(hex: "A8A29E"))
-                        .opacity(isActive ? 1.0 : 0.5)
-                        .frame(maxWidth: .infinity)
-                        .contentShape(Rectangle())
+                Button {
+                    withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+                        selectedTab = item.tab
                     }
-                    .buttonStyle(.plain)
+                } label: {
+                    VStack(spacing: 3) {
+                        Image(systemName: isActive ? item.activeIcon : item.icon)
+                            .font(.system(size: 18, weight: isActive ? .semibold : .medium))
+                            .foregroundColor(isActive ? ForMe.accent : ForMe.textTertiary)
+
+                        Text(item.label)
+                            .font(.system(size: 9, weight: .medium))
+                            .foregroundColor(isActive ? ForMe.accent : ForMe.textTertiary)
+                    }
+                    .frame(width: 58, height: 44)
+                    .background(
+                        isActive
+                            ? ForMe.accent.opacity(0.1)
+                            : Color.clear
+                    )
+                    .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    .contentShape(Rectangle())
                 }
+                .buttonStyle(TabButtonStyle())
             }
-            .padding(.top, 8)
-            .padding(.bottom, 28)
         }
+        .padding(.horizontal, 8)
+        .padding(.vertical, 6)
         .background(
-            Color(hex: "F7F7F6").opacity(0.95)
-                .background(.ultraThinMaterial)
-                .shadow(color: .black.opacity(0.04), radius: 1, x: 0, y: -1)
-                .ignoresSafeArea()
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .fill(ForMe.surface)
+                .shadow(color: .black.opacity(0.12), radius: 20, x: 0, y: 4)
         )
+        .padding(.horizontal, 20)
+        .padding(.bottom, 8)
+    }
+}
+
+private struct TabButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.92 : 1.0)
+            .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
     }
 }
 

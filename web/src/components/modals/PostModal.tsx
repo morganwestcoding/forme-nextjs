@@ -48,7 +48,6 @@ import { X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 import usePostModal from '@/app/hooks/usePostModal';
-import useRegisterModal from '@/app/hooks/useRegisterModal';
 import Avatar from '@/components/ui/avatar';
 import ListingCard from '@/components/listings/ListingCard';
 import ShopCard from '@/components/shop/ShopCard';
@@ -58,7 +57,6 @@ import { usePostStore } from '@/app/hooks/usePostStore';
 const PostModal = () => {
   const router = useRouter();
   const postModal = usePostModal();
-  const registerModal = useRegisterModal();
   const post = postModal.post;
   const currentUser = postModal.currentUser;
   const posts = postModal.posts || [];

@@ -96,6 +96,38 @@ struct User: Codable, Identifiable, Hashable {
     var isVerified: Bool {
         verificationStatus == .verified
     }
+
+    // Convenience initializer for previews
+    init(
+        id: String,
+        name: String? = nil,
+        email: String? = nil,
+        image: String? = nil,
+        bio: String? = nil,
+        location: String? = nil,
+        role: String? = nil,
+        isVerified: Bool = false
+    ) {
+        self.id = id
+        self.name = name
+        self.email = email
+        self.image = image
+        self.bio = bio
+        self.location = location
+        self.backgroundImage = nil
+        self.galleryImages = nil
+        self.isSubscribed = nil
+        self.subscriptionTier = nil
+        self.verificationStatus = isVerified ? .verified : .none
+        self.stripeConnectAccountId = nil
+        self.stripeConnectOnboardingComplete = nil
+        self.stripeConnectChargesEnabled = nil
+        self.followingIds = nil
+        self.followerIds = nil
+        self.managedListings = nil
+        self.role = role
+        self.createdAt = nil
+    }
 }
 
 enum VerificationStatus: String, Codable {

@@ -2,14 +2,11 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import NotificationsModal from '@/components/modals/NotificationModal';
-import RegisterModal from '@/components/modals/RegisterModal';
 import ToasterProvider from './providers/ToasterProvider';
 import LoginModal from '@/components/modals/LoginModal';
 import getCurrentUser from './actions/getCurrentUser';
-import RentModal from '@/components/modals/ListingModal';
 import ProfileModal from '@/components/modals/ProfileModal';
 import ProfileGalleryModal from '@/components/modals/profileGalleryModal';
-import ClientOnly from '@/components/ClientOnly';
 import ClientProviders from '@/components/ClientProviders';
 import MessageModal from '@/components/modals/MessageModal';
 import ListingGalleryModal from '@/components/modals/listingGalleryModal';
@@ -21,15 +18,11 @@ import ResetPasswordModal from '@/components/modals/ResetPasswordModal';
 import SubscribeModal from '@/components/modals/SubscribeModal';
 import InboxModal from '@/components/modals/InboxModal';
 import PostModal from '@/components/modals/PostModal';
-import { ColorProvider } from './context/ColorContext';
 import { ThemeProvider } from './context/ThemeContext';
 import StripeCheckoutModal from '@/components/modals/StripeCheckoutModal';
 import ShopModal from '@/components/modals/ShopModal';
 import SettingsModal from '@/components/modals/SettingsModal';
-import CreatePostModal from '@/components/modals/CreatePostModal';
-import ReservationModal from '@/components/modals/ReservationModal';
 import ReviewModal from '@/components/modals/ReviewModal';
-import AuthModalController from '@/components/AuthModalController';
 import ComingSoonGate from '@/ComingSoonGate';
 import LayoutContent from '@/LayoutContent';
 import Sidebar from '@/components/sidebar/Sidebar';
@@ -76,10 +69,7 @@ export default async function RootLayout({
                 {/* Modals */}
                 <ShopModal/>
                 <ToasterProvider/>
-                <ReservationModal/>
                 <ReviewModal/>
-                <RentModal/>
-                <CreatePostModal />
                 <InboxModal/>
                 <ProfileModal/>
                 <StripeCheckoutModal />
@@ -93,7 +83,6 @@ export default async function RootLayout({
                 <PostModal/>
                 <FilterModal/>
                 <LoginModal />
-                <RegisterModal />
                 <SettingsModal />
               </ComingSoonGate>
               </body>

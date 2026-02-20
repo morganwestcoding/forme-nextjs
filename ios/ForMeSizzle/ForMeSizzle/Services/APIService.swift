@@ -261,6 +261,14 @@ class APIService {
         let _: EmptyResponse = try await perform(request)
     }
 
+    // MARK: - Providers
+
+    func getProviders(limit: Int = 10) async throws -> [User] {
+        let queryItems = [URLQueryItem(name: "limit", value: "\(limit)")]
+        let request = try buildRequest(endpoint: "/providers", queryItems: queryItems)
+        return try await perform(request)
+    }
+
     // MARK: - Profile
 
     func updateProfile(_ update: ProfileUpdateRequest) async throws -> User {

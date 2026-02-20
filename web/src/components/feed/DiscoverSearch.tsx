@@ -1,8 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useSearchParams } from 'next/navigation';
-import useCreatePostModal from '@/app/hooks/useCreatePostModal';
+import { useSearchParams, useRouter } from 'next/navigation';
 import useFilterModal from '@/app/hooks/useFilterModal';
 import GlobalSearch from '../search/GlobalSearch';
 import { useTheme } from '@/app/context/ThemeContext';
@@ -15,12 +14,12 @@ const DiscoverSearch: React.FC<DiscoverSearchProps> = ({
   isHeroMode = false
 }) => {
   const params = useSearchParams();
-  const createPostModal = useCreatePostModal();
+  const router = useRouter();
   const filterModal = useFilterModal();
   const { accentColor } = useTheme();
 
   const handleCreatePost = () => {
-    createPostModal.onOpen();
+    router.push('/post/new');
   };
 
   const handleOpenFilters = () => {

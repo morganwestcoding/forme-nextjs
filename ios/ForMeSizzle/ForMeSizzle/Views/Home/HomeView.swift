@@ -89,12 +89,52 @@ struct HomeView: View {
                     }
                 }
 
-                // Recently Added
+                // Top Providers
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("Recently Added")
-                        .font(.headline)
-                        .foregroundColor(ForMe.textPrimary)
-                        .padding(.horizontal)
+                    HStack {
+                        Text("Top Providers")
+                            .font(.headline)
+                            .foregroundColor(ForMe.textPrimary)
+
+                        Spacer()
+
+                        Button("See All") {
+                            appState.selectedTab = .search
+                        }
+                        .font(.subheadline)
+                        .foregroundColor(ForMe.accent)
+                    }
+                    .padding(.horizontal)
+
+                    if !viewModel.topProviders.isEmpty {
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 14) {
+                                ForEach(Array(viewModel.topProviders.enumerated()), id: \.element.id) { index, provider in
+                                    ProviderCard(user: provider)
+                                        .staggeredFadeIn(index: index + 3)
+                                }
+                            }
+                            .padding(.horizontal)
+                        }
+                    }
+                }
+
+                // Browse Services
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack {
+                        Text("Browse Services")
+                            .font(.headline)
+                            .foregroundColor(ForMe.textPrimary)
+
+                        Spacer()
+
+                        Button("See All") {
+                            appState.selectedTab = .search
+                        }
+                        .font(.subheadline)
+                        .foregroundColor(ForMe.accent)
+                    }
+                    .padding(.horizontal)
 
                     LazyVStack(spacing: 12) {
                         ForEach(Array(viewModel.recentListings.enumerated()), id: \.element.id) { index, listing in
@@ -102,7 +142,7 @@ struct HomeView: View {
                                 ListingRow(listing: listing)
                             }
                             .buttonStyle(.plain)
-                            .staggeredFadeIn(index: index + 4)
+                            .staggeredFadeIn(index: index + 5)
                         }
                     }
                     .padding(.horizontal)
@@ -453,6 +493,84 @@ struct FeaturedListingCard: View {
     }
 }
 
+// MARK: - Provider Card
+
+struct ProviderCard: View {
+    let user: User
+
+    var body: some View {
+        VStack(spacing: 12) {
+            // Avatar
+            ZStack(alignment: .bottomTrailing) {
+                AsyncImage(url: URL(string: user.image ?? "")) { image in
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                } placeholder: {
+                    Circle()
+                        .fill(ForMe.accent.opacity(0.1))
+                        .overlay(
+                            Text(user.name?.prefix(1).uppercased() ?? "?")
+                                .font(.system(size: 28, weight: .semibold))
+                                .foregroundColor(ForMe.accent)
+                        )
+                }
+                .frame(width: 72, height: 72)
+                .clipShape(Circle())
+
+                // Verified badge
+                if user.isVerified {
+                    Image(systemName: "checkmark.seal.fill")
+                        .font(.system(size: 18))
+                        .foregroundColor(ForMe.accent)
+                        .background(
+                            Circle()
+                                .fill(ForMe.surface)
+                                .frame(width: 22, height: 22)
+                        )
+                        .offset(x: 2, y: 2)
+                }
+            }
+
+            // Info
+            VStack(spacing: 4) {
+                Text(user.name ?? "Provider")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(ForMe.textPrimary)
+                    .lineLimit(1)
+
+                if let role = user.role {
+                    Text(role)
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundColor(ForMe.textTertiary)
+                        .lineLimit(1)
+                }
+            }
+
+            // Quick action
+            Button {
+                // TODO: View profile
+            } label: {
+                Text("View")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(ForMe.accent)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
+                    .background(
+                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            .fill(ForMe.accent.opacity(0.1))
+                    )
+            }
+            .buttonStyle(.plain)
+        }
+        .frame(width: 110)
+        .padding(12)
+        .background(ForMe.surface)
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .shadow(color: .black.opacity(0.04), radius: 8, x: 0, y: 2)
+    }
+}
+
 // MARK: - Listing Row
 
 struct ListingRow: View {
@@ -541,7 +659,7 @@ struct ListingRow: View {
                 } label: {
                     Image(systemName: "bolt.fill")
                         .font(.system(size: 16))
-                        .foregroundColor(ForMe.accent)
+                        .foregroundColor(ForMe.textTertiary)
                         .frame(width: 44, height: 44)
                 }
                 .buttonStyle(.plain)
@@ -592,4 +710,13 @@ struct ListingRow: View {
         userId: "1"
     ))
     .padding(20)
+}
+
+#Preview("Provider Card") {
+    HStack(spacing: 14) {
+        ProviderCard(user: User(id: "1", name: "Marcus Johnson", role: "Barber"))
+        ProviderCard(user: User(id: "2", name: "Sarah Chen", role: "Stylist", isVerified: true))
+    }
+    .padding(20)
+    .background(ForMe.background)
 }
