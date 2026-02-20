@@ -7,52 +7,63 @@ struct WelcomeView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
+            VStack {
                 Spacer()
 
-                // Logo and tagline
-                VStack(spacing: 20) {
-                    ForMeLoader(size: .large, color: ForMe.accent)
-                        .opacity(appeared ? 1 : 0)
-                        .offset(y: appeared ? 0 : 10)
+                VStack(spacing: 28) {
+                    // Logo
+                    Image("Logo")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 160)
 
-                    Text("ForMe")
-                        .font(.system(size: 48, weight: .bold, design: .rounded))
-                        .foregroundColor(ForMe.textPrimary)
-                        .opacity(appeared ? 1 : 0)
-                        .offset(y: appeared ? 0 : 10)
-
-                    Text("Book beauty & wellness services")
-                        .font(.title3)
-                        .foregroundColor(ForMe.textSecondary)
-                        .opacity(appeared ? 1 : 0)
-                        .offset(y: appeared ? 0 : 10)
+                    // Tagline — serif + sans mix
+                    VStack(spacing: 6) {
+                        Text("Everything you need,")
+                            .font(.system(size: 20, weight: .regular, design: .serif))
+                            .foregroundColor(Color(hex: "37352F"))
+                        Text("all in one place.")
+                            .font(.system(size: 20, weight: .regular, design: .serif))
+                            .italic()
+                            .foregroundColor(Color(hex: "9B9A97"))
+                    }
                 }
+                .opacity(appeared ? 1 : 0)
 
                 Spacer()
 
-                // Buttons
-                VStack(spacing: 12) {
+                // Actions
+                VStack(spacing: 0) {
                     Button {
                         showRegister = true
                     } label: {
                         Text("Get Started")
+                            .font(.system(size: 15, weight: .medium))
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 48)
+                            .background(Color(hex: "37352F"))
+                            .cornerRadius(10)
                     }
-                    .buttonStyle(ForMeAccentButtonStyle())
+                    .buttonStyle(WelcomePressStyle())
 
                     Button {
                         showLogin = true
                     } label: {
-                        Text("I already have an account")
+                        Text("Log in")
+                            .font(.system(size: 14, weight: .regular))
+                            .foregroundColor(Color(hex: "9B9A97"))
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 48)
                     }
-                    .buttonStyle(ForMeSecondaryButtonStyle())
+                    .buttonStyle(WelcomePressStyle())
                 }
-                .padding(.horizontal, 24)
-                .padding(.bottom, 48)
+                .padding(.horizontal, 32)
+                .padding(.bottom, 40)
                 .opacity(appeared ? 1 : 0)
-                .offset(y: appeared ? 0 : 16)
+                .offset(y: appeared ? 0 : 8)
             }
-            .background(ForMe.background)
+            .background(Color(hex: "FFFFFF").ignoresSafeArea())
             .navigationDestination(isPresented: $showLogin) {
                 LoginView()
             }
@@ -60,11 +71,19 @@ struct WelcomeView: View {
                 OnboardingFlowView()
             }
             .onAppear {
-                withAnimation(.easeOut(duration: 0.6).delay(0.1)) {
+                withAnimation(.easeOut(duration: 0.6).delay(0.15)) {
                     appeared = true
                 }
             }
         }
+    }
+}
+
+private struct WelcomePressStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .opacity(configuration.isPressed ? 0.6 : 1.0)
+            .animation(.easeOut(duration: 0.12), value: configuration.isPressed)
     }
 }
 

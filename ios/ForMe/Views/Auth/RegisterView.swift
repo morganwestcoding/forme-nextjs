@@ -129,8 +129,7 @@ struct RegisterView: View {
                     }
                 } label: {
                     if authViewModel.isLoading {
-                        ProgressView()
-                            .tint(.white)
+                        GridLoader(size: .small, startColor: .white, endColor: .gray)
                     } else {
                         Text("Create Account")
                     }
