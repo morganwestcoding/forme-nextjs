@@ -33,12 +33,17 @@ struct LoginView: View {
                             .font(.subheadline.weight(.medium))
                             .foregroundColor(ForMe.textPrimary)
 
-                        TextField("you@example.com", text: $email)
-                            .textContentType(.emailAddress)
-                            .keyboardType(.emailAddress)
-                            .autocapitalization(.none)
-                            .focused($focusedField, equals: .email)
-                            .forMeInput()
+                        ZStack(alignment: .leading) {
+                            if email.isEmpty {
+                                Text("Email address")
+                                    .foregroundColor(ForMe.textTertiary)
+                            }
+                            TextField("", text: $email)
+                                .keyboardType(.emailAddress)
+                                .autocapitalization(.none)
+                                .focused($focusedField, equals: .email)
+                        }
+                        .forMeInput()
                     }
 
                     // Password field
@@ -118,6 +123,7 @@ struct LoginView: View {
             }
             .padding(.horizontal, 24)
         }
+        .tint(ForMe.textPrimary)
         .background(ForMe.background)
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {

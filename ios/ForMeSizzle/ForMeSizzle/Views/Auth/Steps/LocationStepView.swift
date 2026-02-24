@@ -73,7 +73,7 @@ struct LocationStepView: View {
                     HStack(spacing: 12) {
                         ZStack {
                             Circle()
-                                .fill(ForMe.accent)
+                                .fill(ForMe.textPrimary)
                                 .frame(width: 40, height: 40)
 
                             Image(systemName: "mappin")

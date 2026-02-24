@@ -27,11 +27,11 @@ struct JobTitleStepView: View {
                         HStack(spacing: 16) {
                             ZStack {
                                 RoundedRectangle(cornerRadius: 8)
-                                    .stroke(viewModel.isOwnerManager ? ForMe.accent : ForMe.border, lineWidth: 2)
+                                    .stroke(viewModel.isOwnerManager ? ForMe.textPrimary : ForMe.border, lineWidth: 2)
                                     .frame(width: 24, height: 24)
                                     .background(
                                         RoundedRectangle(cornerRadius: 8)
-                                            .fill(viewModel.isOwnerManager ? ForMe.accent : Color.clear)
+                                            .fill(viewModel.isOwnerManager ? ForMe.textPrimary : Color.clear)
                                     )
 
                                 if viewModel.isOwnerManager {
@@ -54,12 +54,13 @@ struct JobTitleStepView: View {
                             Spacer()
                         }
                         .padding(16)
-                        .background(viewModel.isOwnerManager ? ForMe.accentLight : ForMe.surface)
+                        .background(viewModel.isOwnerManager ? Color(hex: "F3F4F6") : ForMe.surface)
                         .overlay(
                             RoundedRectangle(cornerRadius: 12)
-                                .stroke(viewModel.isOwnerManager ? ForMe.accent : ForMe.border, lineWidth: viewModel.isOwnerManager ? 2 : 1)
+                                .stroke(viewModel.isOwnerManager ? ForMe.borderHover : ForMe.border, lineWidth: viewModel.isOwnerManager ? 2 : 1)
                         )
                         .cornerRadius(12)
+                        .shadow(color: viewModel.isOwnerManager ? .black.opacity(0.08) : .clear, radius: 2, x: 0, y: 1)
                     }
                 }
 

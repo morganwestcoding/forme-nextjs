@@ -26,7 +26,7 @@ struct UserTypeStepView: View {
                         HStack(spacing: 16) {
                             ZStack {
                                 RoundedRectangle(cornerRadius: 12)
-                                    .fill(isSelected ? ForMe.accent : ForMe.inputBg)
+                                    .fill(isSelected ? ForMe.textPrimary : ForMe.inputBg)
                                     .frame(width: 48, height: 48)
 
                                 Image(systemName: type.icon)
@@ -47,12 +47,13 @@ struct UserTypeStepView: View {
                             Spacer()
                         }
                         .padding(16)
-                        .background(isSelected ? ForMe.accentLight : ForMe.surface)
+                        .background(isSelected ? Color(hex: "F3F4F6") : ForMe.surface)
                         .overlay(
                             RoundedRectangle(cornerRadius: 12)
-                                .stroke(isSelected ? ForMe.accent : ForMe.border, lineWidth: isSelected ? 2 : 1)
+                                .stroke(isSelected ? ForMe.borderHover : ForMe.border, lineWidth: isSelected ? 2 : 1)
                         )
                         .cornerRadius(12)
+                        .shadow(color: isSelected ? .black.opacity(0.08) : .clear, radius: 2, x: 0, y: 1)
                     }
                 }
             }

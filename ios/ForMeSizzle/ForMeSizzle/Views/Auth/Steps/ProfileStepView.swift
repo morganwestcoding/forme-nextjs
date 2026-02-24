@@ -44,7 +44,7 @@ struct ProfileStepView: View {
                             .overlay(alignment: .bottomTrailing) {
                                 ZStack {
                                     Circle()
-                                        .fill(ForMe.accent)
+                                        .fill(ForMe.textPrimary)
                                         .frame(width: 24, height: 24)
 
                                     Image(systemName: "pencil")

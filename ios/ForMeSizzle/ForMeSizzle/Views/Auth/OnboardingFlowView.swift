@@ -15,7 +15,7 @@ struct OnboardingFlowView: View {
                         .frame(height: 3)
 
                     Rectangle()
-                        .fill(ForMe.accent)
+                        .fill(Color(hex: "171717"))
                         .frame(width: geo.size.width * viewModel.progress, height: 3)
                         .animation(.easeInOut(duration: 0.3), value: viewModel.progress)
                 }
@@ -82,6 +82,7 @@ struct OnboardingFlowView: View {
             }
             .padding(.bottom, 8)
         }
+        .tint(ForMe.textPrimary)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {

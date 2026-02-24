@@ -37,13 +37,18 @@ struct AccountStepView: View {
                     Text("Email")
                         .font(.subheadline.weight(.medium))
 
-                    TextField("you@example.com", text: $viewModel.email)
-                        .textContentType(.emailAddress)
-                        .keyboardType(.emailAddress)
-                        .autocapitalization(.none)
-                        .autocorrectionDisabled()
-                        .focused($focusedField, equals: .email)
-                        .forMeInput()
+                    ZStack(alignment: .leading) {
+                        if viewModel.email.isEmpty {
+                            Text("Email address")
+                                .foregroundColor(ForMe.textTertiary)
+                        }
+                        TextField("", text: $viewModel.email)
+                            .keyboardType(.emailAddress)
+                            .autocapitalization(.none)
+                            .autocorrectionDisabled()
+                            .focused($focusedField, equals: .email)
+                    }
+                    .forMeInput()
                         .onChange(of: viewModel.email) {
                             viewModel.emailExists = false
                         }

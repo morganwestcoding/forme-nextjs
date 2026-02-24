@@ -3,91 +3,30 @@ import SwiftUI
 struct WelcomeView: View {
     @State private var showLogin = false
     @State private var showRegister = false
-    @State private var appeared = false
-    @State private var drift = false
-
-    private let floatingIcons: [(String, Color)] = [
-        ("scissors", Color(hex: "60A5FA")),
-        ("sparkles", Color(hex: "F472B6")),
-        ("figure.run", Color(hex: "34D399")),
-        ("hand.wave.fill", Color(hex: "FBBF24")),
-        ("leaf.fill", Color(hex: "A78BFA")),
-        ("comb.fill", Color(hex: "FB923C")),
-        ("heart.fill", Color(hex: "F87171")),
-        ("paintbrush.fill", Color(hex: "E879F9")),
-        ("face.smiling", Color(hex: "60A5FA")),
-        ("bolt.fill", Color(hex: "FBBF24")),
-        ("flame.fill", Color(hex: "FB923C")),
-        ("star.fill", Color(hex: "F472B6")),
-        ("hands.sparkles.fill", Color(hex: "A78BFA")),
-        ("drop.fill", Color(hex: "34D399")),
-        ("wand.and.stars", Color(hex: "E879F9")),
-        ("eye", Color(hex: "60A5FA")),
-        ("mouth.fill", Color(hex: "F87171")),
-        ("comb", Color(hex: "FB923C")),
-        ("moon.fill", Color(hex: "A78BFA")),
-        ("sun.max.fill", Color(hex: "FBBF24")),
-    ]
+    @State private var particlesReady = false
+    @State private var contentReady = false
 
     var body: some View {
         NavigationStack {
             ZStack {
                 Color(hex: "0A0A0A").ignoresSafeArea()
 
-                // Floating icons — fills the whole background
-                GeometryReader { geo in
-                    ForEach(Array(floatingIcons.enumerated()), id: \.offset) { index, item in
-                        FloatingIcon(
-                            icon: item.0,
-                            color: item.1,
-                            drift: drift,
-                            index: index,
-                            bounds: geo.size
-                        )
-                        .opacity(appeared ? 0.5 : 0)
-                    }
-                }
-                .ignoresSafeArea()
-
-                // Edge fades
-                VStack(spacing: 0) {
-                    LinearGradient(colors: [Color(hex: "0A0A0A"), .clear], startPoint: .top, endPoint: .bottom)
-                        .frame(height: 140)
-                    Spacer()
-                    LinearGradient(colors: [.clear, Color(hex: "0A0A0A")], startPoint: .top, endPoint: .bottom)
-                        .frame(height: 220)
-                }
-                .ignoresSafeArea()
+                // Particle field
+                ParticleFieldView()
+                    .ignoresSafeArea()
+                    .opacity(particlesReady ? 1 : 0)
 
                 // Content
                 VStack(spacing: 0) {
                     Spacer()
 
-                    VStack(spacing: 24) {
-                        Image("LogoWhite")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 140)
-
-                        // Tagline with shine
-                        Text("Everything you need,\nall in one place.")
-                            .font(.system(size: 22, weight: .bold, design: .rounded))
-                            .multilineTextAlignment(.center)
-                            .lineSpacing(5)
-                            .foregroundStyle(
-                                LinearGradient(
-                                    colors: [
-                                        .white.opacity(0.9),
-                                        .white.opacity(0.5),
-                                        .white.opacity(0.9),
-                                    ],
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
-                            )
-                    }
-                    .opacity(appeared ? 1 : 0)
-                    .scaleEffect(appeared ? 1 : 0.97)
+                    Image("LogoWhite")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 200)
+                        .shadow(color: .white.opacity(0.15), radius: 20, x: 0, y: 0)
+                        .opacity(contentReady ? 1 : 0)
+                        .scaleEffect(contentReady ? 1 : 0.97)
 
                     Spacer()
 
@@ -104,6 +43,7 @@ struct WelcomeView: View {
                                 .background(
                                     RoundedRectangle(cornerRadius: 16, style: .continuous)
                                         .fill(.white)
+                                        .shadow(color: .white.opacity(0.15), radius: 20, x: 0, y: 0)
                                 )
                         }
                         .buttonStyle(WelcomePressStyle())
@@ -121,8 +61,8 @@ struct WelcomeView: View {
                     }
                     .padding(.horizontal, 28)
                     .padding(.bottom, 36)
-                    .opacity(appeared ? 1 : 0)
-                    .offset(y: appeared ? 0 : 12)
+                    .opacity(contentReady ? 1 : 0)
+                    .offset(y: contentReady ? 0 : 12)
                 }
             }
             .navigationDestination(isPresented: $showLogin) {
@@ -132,68 +72,91 @@ struct WelcomeView: View {
                 OnboardingFlowView()
             }
             .onAppear {
-                withAnimation(.easeOut(duration: 0.9)) {
-                    appeared = true
+                withAnimation(.easeOut(duration: 0.8)) {
+                    particlesReady = true
                 }
-                withAnimation(
-                    .easeInOut(duration: 6)
-                    .repeatForever(autoreverses: true)
-                ) {
-                    drift = true
+                withAnimation(.easeOut(duration: 0.9).delay(0.6)) {
+                    contentReady = true
                 }
             }
         }
     }
 }
 
-// MARK: - Floating icon
+// MARK: - Particle field
 
-private struct FloatingIcon: View {
-    let icon: String
+private struct Particle: Identifiable {
+    let id = UUID()
+    var x: CGFloat
+    var y: CGFloat
+    let size: CGFloat
+    let opacity: Double
+    let speed: CGFloat
     let color: Color
-    let drift: Bool
-    let index: Int
-    let bounds: CGSize
+}
 
-    private var basePosition: CGPoint {
-        let positions: [(CGFloat, CGFloat)] = [
-            (0.10, 0.08), (0.45, 0.06), (0.80, 0.10), (0.25, 0.18),
-            (0.65, 0.20), (0.90, 0.28), (0.08, 0.32), (0.50, 0.30),
-            (0.75, 0.42), (0.18, 0.48), (0.55, 0.50), (0.88, 0.52),
-            (0.30, 0.58), (0.70, 0.62), (0.12, 0.68), (0.48, 0.72),
-            (0.82, 0.70), (0.22, 0.80), (0.60, 0.82), (0.40, 0.90),
-        ]
-        let pos = positions[index % positions.count]
-        return CGPoint(x: bounds.width * pos.0, y: bounds.height * pos.1)
-    }
+private struct ParticleFieldView: View {
+    @State private var particles: [Particle] = []
 
-    private var driftOffset: CGSize {
-        let dx: CGFloat = index.isMultiple(of: 2) ? 10 : -12
-        let dy: CGFloat = index.isMultiple(of: 3) ? -8 : 10
-        return CGSize(width: drift ? dx : -dx, height: drift ? dy : -dy)
-    }
+    private let colors: [Color] = [
+        Color(hex: "60A5FA"),
+        Color(hex: "A78BFA"),
+        Color(hex: "F472B6"),
+        Color(hex: "34D399"),
+        .white,
+        .white,
+        .white,
+    ]
 
     var body: some View {
-        Image(systemName: icon)
-            .font(.system(size: 18, weight: .medium))
-            .foregroundColor(color)
-            .frame(width: 44, height: 44)
-            .background(
-                Circle()
-                    .fill(color.opacity(0.1))
-                    .overlay(
-                        Circle()
-                            .stroke(color.opacity(0.12), lineWidth: 1)
+        TimelineView(.animation(minimumInterval: 1.0 / 30.0)) { timeline in
+            Canvas { context, size in
+                for particle in particles {
+                    let rect = CGRect(
+                        x: particle.x - particle.size / 2,
+                        y: particle.y - particle.size / 2,
+                        width: particle.size,
+                        height: particle.size
                     )
+                    context.opacity = particle.opacity
+                    context.fill(
+                        Circle().path(in: rect),
+                        with: .color(particle.color)
+                    )
+                }
+            }
+            .onChange(of: timeline.date) {
+                updateParticles()
+            }
+        }
+        .onAppear {
+            spawnInitialParticles()
+        }
+    }
+
+    private func spawnInitialParticles() {
+        particles = (0..<60).map { _ in
+            Particle(
+                x: CGFloat.random(in: 0...UIScreen.main.bounds.width),
+                y: CGFloat.random(in: 0...UIScreen.main.bounds.height),
+                size: CGFloat.random(in: 2...5),
+                opacity: Double.random(in: 0.25...0.7),
+                speed: CGFloat.random(in: 0.15...0.6),
+                color: colors.randomElement()!
             )
-            .position(basePosition)
-            .offset(driftOffset)
-            .animation(
-                .easeInOut(duration: Double(5 + index % 4))
-                .repeatForever(autoreverses: true)
-                .delay(Double(index) * 0.2),
-                value: drift
-            )
+        }
+    }
+
+    private func updateParticles() {
+        for i in particles.indices {
+            particles[i].y -= particles[i].speed
+            particles[i].x += CGFloat.random(in: -0.15...0.15)
+
+            if particles[i].y < -10 {
+                particles[i].y = UIScreen.main.bounds.height + 10
+                particles[i].x = CGFloat.random(in: 0...UIScreen.main.bounds.width)
+            }
+        }
     }
 }
 

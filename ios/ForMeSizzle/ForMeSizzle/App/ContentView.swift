@@ -5,9 +5,7 @@ struct ContentView: View {
 
     var body: some View {
         Group {
-            if authViewModel.isCheckingAuth {
-                ForMeLoadingView()
-            } else if authViewModel.isAuthenticated {
+            if authViewModel.isAuthenticated {
                 MainTabView()
             } else {
                 WelcomeView()

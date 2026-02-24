@@ -123,7 +123,7 @@ struct ForMeAccentButtonStyle: ButtonStyle {
             .foregroundColor(.white)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 14)
-            .background(isEnabled ? ForMe.accent : ForMe.textTertiary)
+            .background(isEnabled ? ForMe.textPrimary : ForMe.textTertiary)
             .cornerRadius(12)
             .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
             .animation(.easeInOut(duration: 0.15), value: configuration.isPressed)
