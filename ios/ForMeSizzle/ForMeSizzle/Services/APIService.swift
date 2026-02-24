@@ -45,13 +45,13 @@ class APIService {
 
     private let decoder: JSONDecoder = {
         let decoder = JSONDecoder()
-        let isoFractional = ISO8601DateFormatter()
-        isoFractional.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        let isoBasic = ISO8601DateFormatter()
-        isoBasic.formatOptions = [.withInternetDateTime]
         decoder.dateDecodingStrategy = .custom { decoder in
             let container = try decoder.singleValueContainer()
             let string = try container.decode(String.self)
+            let isoFractional = ISO8601DateFormatter()
+            isoFractional.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+            let isoBasic = ISO8601DateFormatter()
+            isoBasic.formatOptions = [.withInternetDateTime]
             if let date = isoFractional.date(from: string) { return date }
             if let date = isoBasic.date(from: string) { return date }
             throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid date: \(string)")
@@ -259,14 +259,6 @@ class APIService {
     func removeFavorite(listingId: String) async throws {
         let request = try buildRequest(endpoint: "/favorites/\(listingId)", method: "DELETE")
         let _: EmptyResponse = try await perform(request)
-    }
-
-    // MARK: - Providers
-
-    func getProviders(limit: Int = 10) async throws -> [User] {
-        let queryItems = [URLQueryItem(name: "limit", value: "\(limit)")]
-        let request = try buildRequest(endpoint: "/providers", queryItems: queryItems)
-        return try await perform(request)
     }
 
     // MARK: - Profile

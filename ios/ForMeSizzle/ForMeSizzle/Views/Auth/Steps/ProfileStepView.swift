@@ -110,7 +110,7 @@ struct ProfileStepView: View {
             }
         }
         .onChange(of: selectedPhoto) {
-            Task {
+            Task { @MainActor in
                 if let data = try? await selectedPhoto?.loadTransferable(type: Data.self) {
                     viewModel.profileImageData = data
                 }

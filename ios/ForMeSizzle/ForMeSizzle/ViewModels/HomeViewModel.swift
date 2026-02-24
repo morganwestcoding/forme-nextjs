@@ -16,19 +16,33 @@ class HomeViewModel: ObservableObject {
         isLoading = true
         error = nil
 
-        do {
-            async let featured = api.getListings(limit: 10)
-            async let recent = api.getListings(limit: 5)
-            async let providers = api.getProviders(limit: 8)
+        async let featured: () = loadFeatured()
+        async let recent: () = loadRecent()
 
-            let (featuredResponse, recentResponse, providersResponse) = try await (featured, recent, providers)
-            featuredListings = featuredResponse.listings
-            recentListings = recentResponse.listings
-            topProviders = providersResponse
+        await featured
+        await recent
+
+        isLoading = false
+    }
+
+    private func loadFeatured() async {
+        do {
+            let response = try await api.getListings(limit: 10)
+            featuredListings = response.listings
+            // Extract providers from listing owners
+            var seen = Set<String>()
+            topProviders = response.listings.compactMap { $0.user }.filter { seen.insert($0.id).inserted }
         } catch {
             self.error = error.localizedDescription
         }
+    }
 
-        isLoading = false
+    private func loadRecent() async {
+        do {
+            let response = try await api.getListings(limit: 5)
+            recentListings = response.listings
+        } catch {
+            // Featured already sets error if needed
+        }
     }
 }

@@ -97,6 +97,7 @@ private struct Particle: Identifiable {
 
 private struct ParticleFieldView: View {
     @State private var particles: [Particle] = []
+    @State private var canvasSize: CGSize = .zero
 
     private let colors: [Color] = [
         Color(hex: "60A5FA"),
@@ -109,36 +110,42 @@ private struct ParticleFieldView: View {
     ]
 
     var body: some View {
-        TimelineView(.animation(minimumInterval: 1.0 / 30.0)) { timeline in
-            Canvas { context, size in
-                for particle in particles {
-                    let rect = CGRect(
-                        x: particle.x - particle.size / 2,
-                        y: particle.y - particle.size / 2,
-                        width: particle.size,
-                        height: particle.size
-                    )
-                    context.opacity = particle.opacity
-                    context.fill(
-                        Circle().path(in: rect),
-                        with: .color(particle.color)
-                    )
+        GeometryReader { geo in
+            TimelineView(.animation(minimumInterval: 1.0 / 30.0)) { timeline in
+                Canvas { context, size in
+                    for particle in particles {
+                        let rect = CGRect(
+                            x: particle.x - particle.size / 2,
+                            y: particle.y - particle.size / 2,
+                            width: particle.size,
+                            height: particle.size
+                        )
+                        context.opacity = particle.opacity
+                        context.fill(
+                            Circle().path(in: rect),
+                            with: .color(particle.color)
+                        )
+                    }
+                }
+                .onChange(of: timeline.date) {
+                    updateParticles()
                 }
             }
-            .onChange(of: timeline.date) {
-                updateParticles()
+            .onAppear {
+                canvasSize = geo.size
+                spawnInitialParticles()
             }
-        }
-        .onAppear {
-            spawnInitialParticles()
+            .onChange(of: geo.size) {
+                canvasSize = geo.size
+            }
         }
     }
 
     private func spawnInitialParticles() {
         particles = (0..<60).map { _ in
             Particle(
-                x: CGFloat.random(in: 0...UIScreen.main.bounds.width),
-                y: CGFloat.random(in: 0...UIScreen.main.bounds.height),
+                x: CGFloat.random(in: 0...canvasSize.width),
+                y: CGFloat.random(in: 0...canvasSize.height),
                 size: CGFloat.random(in: 2...5),
                 opacity: Double.random(in: 0.25...0.7),
                 speed: CGFloat.random(in: 0.15...0.6),
@@ -153,8 +160,8 @@ private struct ParticleFieldView: View {
             particles[i].x += CGFloat.random(in: -0.15...0.15)
 
             if particles[i].y < -10 {
-                particles[i].y = UIScreen.main.bounds.height + 10
-                particles[i].x = CGFloat.random(in: 0...UIScreen.main.bounds.width)
+                particles[i].y = canvasSize.height + 10
+                particles[i].x = CGFloat.random(in: 0...canvasSize.width)
             }
         }
     }

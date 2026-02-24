@@ -131,7 +131,8 @@ struct User: Codable, Identifiable, Hashable {
 }
 
 enum VerificationStatus: String, Codable {
-    case none, pending, verified, rejected
+    case unverified = "none"
+    case pending, verified, rejected
 }
 
 struct AuthResponse: Codable {

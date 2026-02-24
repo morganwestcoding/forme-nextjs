@@ -55,7 +55,7 @@ struct HomeView: View {
                             appState.selectedTab = .search
                         }
                         .font(.subheadline)
-                        .foregroundColor(ForMe.accent)
+                        .foregroundColor(ForMe.textSecondary)
                     }
                     .padding(.horizontal)
 
@@ -102,7 +102,7 @@ struct HomeView: View {
                             appState.selectedTab = .search
                         }
                         .font(.subheadline)
-                        .foregroundColor(ForMe.accent)
+                        .foregroundColor(ForMe.textSecondary)
                     }
                     .padding(.horizontal)
 
@@ -132,7 +132,7 @@ struct HomeView: View {
                             appState.selectedTab = .search
                         }
                         .font(.subheadline)
-                        .foregroundColor(ForMe.accent)
+                        .foregroundColor(ForMe.textSecondary)
                     }
                     .padding(.horizontal)
 
@@ -176,21 +176,21 @@ struct CategoryCard: View {
             VStack(spacing: 6) {
                 Image(systemName: category.icon)
                     .font(.system(size: 20, weight: .medium))
-                    .foregroundColor(isPressed ? ForMe.accent : ForMe.textSecondary)
+                    .foregroundColor(isPressed ? ForMe.textPrimary : ForMe.textSecondary)
                     .frame(width: 52, height: 52)
                     .background(
                         RoundedRectangle(cornerRadius: 14, style: .continuous)
-                            .fill(isPressed ? ForMe.accent.opacity(0.1) : ForMe.surface)
+                            .fill(isPressed ? ForMe.textPrimary.opacity(0.08) : ForMe.surface)
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: 14, style: .continuous)
-                            .stroke(isPressed ? ForMe.accent.opacity(0.3) : Color.clear, lineWidth: 1)
+                            .stroke(isPressed ? ForMe.borderHover : Color.clear, lineWidth: 1)
                     )
                     .shadow(color: .black.opacity(0.04), radius: 4, x: 0, y: 2)
 
                 Text(category.rawValue)
                     .font(.system(size: 11, weight: .medium))
-                    .foregroundColor(isPressed ? ForMe.accent : ForMe.textSecondary)
+                    .foregroundColor(isPressed ? ForMe.textPrimary : ForMe.textSecondary)
             }
         }
         .buttonStyle(CategoryButtonStyle(isPressed: $isPressed))
@@ -498,76 +498,106 @@ struct FeaturedListingCard: View {
 struct ProviderCard: View {
     let user: User
 
+    private let cardWidth: CGFloat = 140
+    private let cardHeight: CGFloat = 190
+
     var body: some View {
-        VStack(spacing: 12) {
-            // Avatar
-            ZStack(alignment: .bottomTrailing) {
-                AsyncImage(url: URL(string: user.image ?? "")) { image in
+        ZStack(alignment: .bottom) {
+            // Background image
+            AsyncImage(url: URL(string: user.image ?? "")) { phase in
+                switch phase {
+                case .success(let image):
                     image
                         .resizable()
                         .aspectRatio(contentMode: .fill)
-                } placeholder: {
-                    Circle()
-                        .fill(ForMe.accent.opacity(0.1))
-                        .overlay(
-                            Text(user.name?.prefix(1).uppercased() ?? "?")
-                                .font(.system(size: 28, weight: .semibold))
-                                .foregroundColor(ForMe.accent)
-                        )
-                }
-                .frame(width: 72, height: 72)
-                .clipShape(Circle())
-
-                // Verified badge
-                if user.isVerified {
-                    Image(systemName: "checkmark.seal.fill")
-                        .font(.system(size: 18))
-                        .foregroundColor(ForMe.accent)
-                        .background(
-                            Circle()
-                                .fill(ForMe.surface)
-                                .frame(width: 22, height: 22)
-                        )
-                        .offset(x: 2, y: 2)
+                        .scaleEffect(1.05)
+                case .failure, .empty:
+                    providerPlaceholder
+                @unknown default:
+                    providerPlaceholder
                 }
             }
+            .frame(width: cardWidth, height: cardHeight)
+            .clipped()
 
-            // Info
-            VStack(spacing: 4) {
+            // Bottom gradient
+            LinearGradient(
+                stops: [
+                    .init(color: .clear, location: 0.3),
+                    .init(color: .black.opacity(0.5), location: 0.55),
+                    .init(color: .black.opacity(0.9), location: 0.8),
+                    .init(color: .black.opacity(0.95), location: 1.0)
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+
+            // Content
+            VStack(spacing: 3) {
+                // Verified badge
+                if user.isVerified {
+                    HStack(spacing: 4) {
+                        Image(systemName: "checkmark.seal.fill")
+                            .font(.system(size: 10))
+                        Text("Verified")
+                            .font(.system(size: 10, weight: .medium))
+                    }
+                    .foregroundColor(.white.opacity(0.7))
+                }
+
                 Text(user.name ?? "Provider")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(ForMe.textPrimary)
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundColor(.white)
                     .lineLimit(1)
 
-                if let role = user.role {
+                if let location = user.location {
+                    HStack(spacing: 3) {
+                        Image(systemName: "mappin")
+                            .font(.system(size: 8, weight: .semibold))
+                        Text(location)
+                            .font(.system(size: 10, weight: .medium))
+                    }
+                    .foregroundColor(.white.opacity(0.6))
+                    .lineLimit(1)
+                } else if let role = user.role {
                     Text(role)
-                        .font(.system(size: 11, weight: .medium))
-                        .foregroundColor(ForMe.textTertiary)
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundColor(.white.opacity(0.6))
                         .lineLimit(1)
                 }
             }
-
-            // Quick action
-            Button {
-                // TODO: View profile
-            } label: {
-                Text("View")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundColor(ForMe.accent)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 8)
-                    .background(
-                        RoundedRectangle(cornerRadius: 8, style: .continuous)
-                            .fill(ForMe.accent.opacity(0.1))
-                    )
-            }
-            .buttonStyle(.plain)
+            .shadow(color: .black.opacity(0.5), radius: 4, x: 0, y: 2)
+            .padding(.horizontal, 10)
+            .padding(.bottom, 14)
         }
-        .frame(width: 110)
-        .padding(12)
-        .background(ForMe.surface)
+        .frame(width: cardWidth, height: cardHeight)
         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .shadow(color: .black.opacity(0.04), radius: 8, x: 0, y: 2)
+        .overlay(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(
+                    LinearGradient(
+                        colors: [.white.opacity(0.25), .white.opacity(0.08), .clear],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 0.5
+                )
+        )
+        .shadow(color: .black.opacity(0.12), radius: 10, x: 0, y: 5)
+    }
+
+    private var providerPlaceholder: some View {
+        ZStack {
+            LinearGradient(
+                colors: [Color(hex: "1a1a2e"), Color(hex: "16213e"), Color(hex: "0f0f23")],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+
+            Text(user.name?.prefix(1).uppercased() ?? "?")
+                .font(.system(size: 40, weight: .bold, design: .rounded))
+                .foregroundColor(.white.opacity(0.25))
+        }
     }
 }
 
