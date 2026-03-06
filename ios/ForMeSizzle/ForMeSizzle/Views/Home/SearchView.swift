@@ -2,12 +2,39 @@ import SwiftUI
 
 struct SearchView: View {
     @StateObject private var viewModel = SearchViewModel()
+    @EnvironmentObject var appState: AppState
+    @EnvironmentObject var authViewModel: AuthViewModel
     @State private var searchText = ""
 
     var body: some View {
-        VStack(spacing: 0) {
-            // Search header
+        ScrollView {
             VStack(spacing: 12) {
+                // Header
+                HStack(alignment: .center) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Search")
+                            .font(.largeTitle.bold())
+                            .foregroundColor(ForMe.textPrimary)
+
+                        Text("Find services near you")
+                            .font(.subheadline)
+                            .foregroundColor(ForMe.textSecondary)
+                    }
+
+                    Spacer()
+
+                    Button {
+                        appState.selectedTab = .profile
+                    } label: {
+                        DynamicAvatar(
+                            name: authViewModel.currentUser?.name ?? "User",
+                            imageUrl: authViewModel.currentUser?.image,
+                            size: .smallMedium
+                        )
+                    }
+                }
+                .padding(.horizontal)
+
                 ForMeSearchBar(text: $searchText, placeholder: "Looking for something?")
                     .padding(.horizontal)
 
@@ -34,34 +61,23 @@ struct SearchView: View {
                     }
                     .padding(.horizontal)
                 }
-            }
-            .padding(.top, 8)
-            .padding(.bottom, 12)
-            .background(ForMe.background)
 
-            // Thin separator
-            Rectangle()
-                .fill(ForMe.border.opacity(0.5))
-                .frame(height: 0.5)
-
-            // Results
-            if viewModel.isLoading {
-                Spacer()
-                ForMeLoader(size: .medium)
-                Spacer()
-            } else if viewModel.listings.isEmpty {
-                Spacer()
-                VStack(spacing: 12) {
-                    Image(systemName: "magnifyingglass")
-                        .font(.system(size: 40))
-                        .foregroundColor(ForMe.textTertiary)
-                    Text(searchText.isEmpty ? "Start typing to search" : "No results found")
-                        .font(.subheadline)
-                        .foregroundColor(ForMe.textSecondary)
-                }
-                Spacer()
-            } else {
-                ScrollView {
+                // Results
+                if viewModel.isLoading {
+                    Spacer()
+                    ForMeLoader(size: .medium)
+                    Spacer()
+                } else if viewModel.listings.isEmpty {
+                    VStack(spacing: 12) {
+                        Image(systemName: "magnifyingglass")
+                            .font(.system(size: 40))
+                            .foregroundColor(ForMe.textTertiary)
+                        Text(searchText.isEmpty ? "Start typing to search" : "No results found")
+                            .font(.subheadline)
+                            .foregroundColor(ForMe.textSecondary)
+                    }
+                    .padding(.top, 60)
+                } else {
                     LazyVStack(spacing: 12) {
                         ForEach(Array(viewModel.listings.enumerated()), id: \.element.id) { index, listing in
                             NavigationLink(value: listing) {
@@ -71,9 +87,10 @@ struct SearchView: View {
                             .staggeredFadeIn(index: index)
                         }
                     }
-                    .padding()
+                    .padding(.horizontal)
                 }
             }
+            .padding(.top, 8)
         }
         .background(ForMe.background)
         .navigationBarHidden(true)
@@ -107,10 +124,10 @@ struct FilterChip: View {
                 .background(isSelected ? ForMe.textPrimary : Color(hex: "F7F7F6"))
                 .foregroundColor(isSelected ? .white : ForMe.textSecondary)
                 .overlay(
-                    RoundedRectangle(cornerRadius: 20)
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
                         .stroke(isSelected ? Color.clear : ForMe.border, lineWidth: 1)
                 )
-                .cornerRadius(20)
+                .cornerRadius(8)
         }
     }
 }

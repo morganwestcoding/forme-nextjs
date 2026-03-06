@@ -2,9 +2,39 @@ import SwiftUI
 
 struct MessagesListView: View {
     @StateObject private var viewModel = MessagesViewModel()
+    @EnvironmentObject var appState: AppState
+    @EnvironmentObject var authViewModel: AuthViewModel
 
     var body: some View {
-        Group {
+        VStack(spacing: 0) {
+            // Header
+            HStack(alignment: .center) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Vendors")
+                        .font(.largeTitle.bold())
+                        .foregroundColor(ForMe.textPrimary)
+
+                    Text("Your conversations")
+                        .font(.subheadline)
+                        .foregroundColor(ForMe.textSecondary)
+                }
+
+                Spacer()
+
+                Button {
+                    appState.selectedTab = .profile
+                } label: {
+                    DynamicAvatar(
+                        name: authViewModel.currentUser?.name ?? "User",
+                        imageUrl: authViewModel.currentUser?.image,
+                        size: .smallMedium
+                    )
+                }
+            }
+            .padding(.horizontal)
+            .padding(.top, 8)
+
+            Group {
             if viewModel.isLoading {
                 ForMeLoader(size: .medium)
             } else if viewModel.conversations.isEmpty {
@@ -35,8 +65,9 @@ struct MessagesListView: View {
                 }
             }
         }
+        }
         .background(ForMe.background)
-        .navigationTitle("Messages")
+        .navigationBarHidden(true)
         .navigationDestination(for: Conversation.self) { conversation in
             ChatView(conversation: conversation)
         }

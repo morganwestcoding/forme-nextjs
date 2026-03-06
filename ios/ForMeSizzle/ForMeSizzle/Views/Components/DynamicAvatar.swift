@@ -6,12 +6,13 @@ struct DynamicAvatar: View {
     var size: Size = .medium
 
     enum Size {
-        case tiny, small, medium, large
+        case tiny, small, smallMedium, medium, large
 
         var dimension: CGFloat {
             switch self {
             case .tiny: return 22
             case .small: return 32
+            case .smallMedium: return 38
             case .medium: return 48
             case .large: return 80
             }
@@ -21,6 +22,7 @@ struct DynamicAvatar: View {
             switch self {
             case .tiny: return 9
             case .small: return 12
+            case .smallMedium: return 15
             case .medium: return 18
             case .large: return 28
             }
@@ -30,6 +32,7 @@ struct DynamicAvatar: View {
             switch self {
             case .tiny: return 1
             case .small: return 1.5
+            case .smallMedium: return 1.5
             case .medium: return 2
             case .large: return 2.5
             }

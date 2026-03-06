@@ -2,10 +2,39 @@ import SwiftUI
 
 struct BookingsView: View {
     @StateObject private var viewModel = BookingsListViewModel()
+    @EnvironmentObject var appState: AppState
+    @EnvironmentObject var authViewModel: AuthViewModel
     @State private var selectedTab = 0
 
     var body: some View {
         VStack(spacing: 0) {
+            // Header
+            HStack(alignment: .center) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Bookings")
+                        .font(.largeTitle.bold())
+                        .foregroundColor(ForMe.textPrimary)
+
+                    Text("Your upcoming appointments")
+                        .font(.subheadline)
+                        .foregroundColor(ForMe.textSecondary)
+                }
+
+                Spacer()
+
+                Button {
+                    appState.selectedTab = .profile
+                } label: {
+                    DynamicAvatar(
+                        name: authViewModel.currentUser?.name ?? "User",
+                        imageUrl: authViewModel.currentUser?.image,
+                        size: .smallMedium
+                    )
+                }
+            }
+            .padding(.horizontal)
+            .padding(.top, 8)
+
             // Tabs
             Picker("", selection: $selectedTab) {
                 Text("Upcoming").tag(0)
@@ -45,7 +74,7 @@ struct BookingsView: View {
                 }
             }
         }
-        .navigationTitle("Bookings")
+        .navigationBarHidden(true)
         .refreshable {
             await viewModel.loadReservations()
         }

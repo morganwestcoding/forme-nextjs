@@ -2,7 +2,6 @@ import SwiftUI
 
 struct MainTabView: View {
     @EnvironmentObject var appState: AppState
-
     var body: some View {
         ZStack(alignment: .bottom) {
             Group {
@@ -19,8 +18,6 @@ struct MainTabView: View {
                     NavigationStack { ProfileView() }
                 }
             }
-            .padding(.bottom, 70)
-
             ForMeTabBar(selectedTab: $appState.selectedTab)
         }
         .ignoresSafeArea(.keyboard)
@@ -33,53 +30,74 @@ private struct ForMeTabBar: View {
     @Binding var selectedTab: AppState.Tab
     @Namespace private var tabNamespace
 
-    private let tabs: [(tab: AppState.Tab, label: String, icon: String, activeIcon: String)] = [
-        (.home, "Discover", "house", "house.fill"),
-        (.search, "Search", "magnifyingglass", "magnifyingglass"),
-        (.bookings, "Bookings", "calendar", "calendar"),
-        (.messages, "Inbox", "bubble.left", "bubble.left.fill"),
-        (.profile, "Profile", "person", "person.fill"),
+    private struct TabItem: Identifiable {
+        let id: AppState.Tab
+        let label: String
+        let icon: String
+        let activeIcon: String
+        let isCustom: Bool
+
+        init(_ tab: AppState.Tab, _ label: String, _ icon: String, _ activeIcon: String, isCustom: Bool = false) {
+            self.id = tab; self.label = label; self.icon = icon; self.activeIcon = activeIcon; self.isCustom = isCustom
+        }
+    }
+
+    private let tabs: [TabItem] = [
+        TabItem(.home, "Discover", "TabDiscover", "TabDiscover", isCustom: true),
+        TabItem(.search, "Search", "TabSearch", "TabSearch", isCustom: true),
+        TabItem(.bookings, "Bookings", "TabBooking", "TabBooking", isCustom: true),
+        TabItem(.messages, "Vendors", "TabVendors", "TabVendors", isCustom: true),
     ]
 
     var body: some View {
-        HStack(spacing: 4) {
-            ForEach(tabs, id: \.tab) { item in
-                let isActive = selectedTab == item.tab
+        HStack(spacing: 0) {
+            ForEach(tabs) { item in
+                let isActive = selectedTab == item.id
 
                 Button {
-                    withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
-                        selectedTab = item.tab
+                    withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
+                        selectedTab = item.id
                     }
                 } label: {
-                    VStack(spacing: 3) {
-                        Image(systemName: isActive ? item.activeIcon : item.icon)
-                            .font(.system(size: 18, weight: isActive ? .semibold : .medium))
-                            .foregroundColor(isActive ? ForMe.accent : ForMe.textTertiary)
+                    VStack(spacing: 4) {
+                        Group {
+                            if item.isCustom {
+                                Image(isActive ? item.activeIcon : item.icon)
+                                    .renderingMode(.template)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 22, height: 22)
+                            } else {
+                                Image(systemName: isActive ? item.activeIcon : item.icon)
+                                    .font(.system(size: 22, weight: isActive ? .semibold : .regular))
+                            }
+                        }
+                        .foregroundColor(isActive ? ForMe.textPrimary : ForMe.textTertiary)
 
                         Text(item.label)
-                            .font(.system(size: 9, weight: .medium))
-                            .foregroundColor(isActive ? ForMe.accent : ForMe.textTertiary)
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundColor(isActive ? ForMe.textPrimary : ForMe.textTertiary)
                     }
-                    .frame(width: 58, height: 44)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
                     .background(
-                        isActive
-                            ? ForMe.accent.opacity(0.1)
-                            : Color.clear
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .fill(isActive ? ForMe.textPrimary.opacity(0.08) : Color.clear)
                     )
-                    .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(TabButtonStyle())
             }
         }
-        .padding(.horizontal, 8)
+        .padding(.horizontal, 6)
         .padding(.vertical, 6)
         .background(
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .fill(ForMe.surface)
-                .shadow(color: .black.opacity(0.12), radius: 20, x: 0, y: 4)
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(.ultraThinMaterial)
+                .shadow(color: .black.opacity(0.1), radius: 16, x: 0, y: 4)
         )
-        .padding(.horizontal, 20)
+        .fixedSize(horizontal: false, vertical: true)
+        .padding(.horizontal, 16)
         .padding(.bottom, 8)
     }
 }

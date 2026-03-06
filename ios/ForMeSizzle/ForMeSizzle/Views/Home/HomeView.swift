@@ -3,43 +3,78 @@ import SwiftUI
 struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
     @EnvironmentObject var appState: AppState
-
+    @EnvironmentObject var authViewModel: AuthViewModel
     var body: some View {
         ScrollView {
-            VStack(spacing: 28) {
+            VStack(spacing: 24) {
                 // Header
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Discover")
-                        .font(.largeTitle.bold())
-                        .foregroundColor(ForMe.textPrimary)
+                HStack(alignment: .center) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Discover")
+                            .font(.largeTitle.bold())
+                            .foregroundColor(ForMe.textPrimary)
 
-                    Text("Find what you're looking for")
-                        .font(.subheadline)
-                        .foregroundColor(ForMe.textSecondary)
+                        Text("Find what you're looking for")
+                            .font(.subheadline)
+                            .foregroundColor(ForMe.textSecondary)
+                    }
+
+                    Spacer()
+
+                    Button {
+                        appState.selectedTab = .profile
+                    } label: {
+                        DynamicAvatar(
+                            name: authViewModel.currentUser?.name ?? "User",
+                            imageUrl: authViewModel.currentUser?.image,
+                            size: .smallMedium
+                        )
+                    }
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal)
                 .staggeredFadeIn(index: 0)
 
-                // Categories
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("Categories")
-                        .font(.headline)
-                        .foregroundColor(ForMe.textPrimary)
-                        .padding(.horizontal)
+                // Search Bar
+                Button {
+                    appState.selectedTab = .search
+                } label: {
+                    HStack(spacing: 0) {
+                        Image(systemName: "magnifyingglass")
+                            .font(.system(size: 15, weight: .regular))
+                            .foregroundColor(ForMe.textTertiary)
+                            .padding(.leading, 16)
 
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 16) {
-                            ForEach(Array(ServiceCategory.allCases.enumerated()), id: \.element) { index, category in
-                                CategoryCard(category: category) {
-                                    viewModel.selectedCategory = category
-                                    appState.selectedTab = .search
-                                }
-                                .staggeredFadeIn(index: index + 1)
+                        Text("Looking for something?")
+                            .font(.system(size: 15))
+                            .foregroundColor(ForMe.textTertiary)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 13)
+
+                        Spacer()
+                    }
+                    .background(ForMe.surface)
+                    .cornerRadius(14)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 14)
+                            .stroke(ForMe.border, lineWidth: 1)
+                    )
+                }
+                .padding(.horizontal)
+
+                // Categories
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(ServiceCategory.allCases, id: \.self) { category in
+                            FilterChip(
+                                title: category.rawValue,
+                                isSelected: false
+                            ) {
+                                viewModel.selectedCategory = category
+                                appState.selectedTab = .search
                             }
                         }
-                        .padding(.horizontal)
                     }
+                    .padding(.horizontal)
                 }
 
                 // Featured Listings
@@ -108,7 +143,7 @@ struct HomeView: View {
 
                     if !viewModel.topProviders.isEmpty {
                         ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 14) {
+                            HStack(spacing: 8) {
                                 ForEach(Array(viewModel.topProviders.enumerated()), id: \.element.id) { index, provider in
                                     ProviderCard(user: provider)
                                         .staggeredFadeIn(index: index + 3)
@@ -278,14 +313,6 @@ struct FeaturedListingCard: View {
                             .foregroundColor(.white)
                             .padding(.horizontal, 14)
                             .padding(.vertical, 8)
-                            .background(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .fill(.white.opacity(0.12))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .stroke(.white.opacity(0.25), lineWidth: 1)
-                                    )
-                            )
                     }
 
                     Spacer()
@@ -298,14 +325,6 @@ struct FeaturedListingCard: View {
                             .font(.system(size: 14, weight: .medium))
                             .foregroundColor(.white)
                             .frame(width: 38, height: 38)
-                            .background(
-                                Circle()
-                                    .fill(.white.opacity(0.12))
-                                    .overlay(
-                                        Circle()
-                                            .stroke(.white.opacity(0.25), lineWidth: 1)
-                                    )
-                            )
                     }
                     .buttonStyle(.plain)
 
@@ -317,14 +336,6 @@ struct FeaturedListingCard: View {
                             .font(.system(size: 14, weight: .medium))
                             .foregroundColor(.white)
                             .frame(width: 38, height: 38)
-                            .background(
-                                Circle()
-                                    .fill(.white.opacity(0.12))
-                                    .overlay(
-                                        Circle()
-                                            .stroke(.white.opacity(0.25), lineWidth: 1)
-                                    )
-                            )
                     }
                     .buttonStyle(.plain)
                 }
@@ -359,28 +370,18 @@ struct FeaturedListingCard: View {
 
                 Spacer()
 
-                // Bottom rating section - frosted glass
+                // Bottom rating section
                 HStack(spacing: 0) {
                     if let rating = listing.rating {
-                        // Star cluster
-                        HStack(spacing: 3) {
-                            ForEach(0..<5) { i in
-                                Image(systemName: "star.fill")
-                                    .font(.system(size: 10))
-                                    .foregroundColor(
-                                        i < Int(rating.rounded())
-                                            ? Color(hex: "FBBF24")
-                                            : .white.opacity(0.2)
-                                    )
-                            }
+                        HStack(spacing: 5) {
+                            Image(systemName: "star.fill")
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundColor(Color(hex: "FBBF24"))
+
+                            Text(String(format: "%.1f", rating))
+                                .font(.system(size: 26, weight: .bold, design: .rounded))
+                                .foregroundColor(.white)
                         }
-
-                        Spacer()
-
-                        // Rating number
-                        Text(String(format: "%.1f", rating))
-                            .font(.system(size: 26, weight: .bold, design: .rounded))
-                            .foregroundColor(.white)
 
                         Spacer()
 
@@ -396,20 +397,15 @@ struct FeaturedListingCard: View {
                             }
                         }
                     } else {
-                        // No rating - show 0.0 with 0 reviews
-                        HStack(spacing: 3) {
-                            ForEach(0..<5) { _ in
-                                Image(systemName: "star.fill")
-                                    .font(.system(size: 10))
-                                    .foregroundColor(.white.opacity(0.2))
-                            }
+                        HStack(spacing: 5) {
+                            Image(systemName: "star.fill")
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundColor(.white.opacity(0.2))
+
+                            Text("0.0")
+                                .font(.system(size: 26, weight: .bold, design: .rounded))
+                                .foregroundColor(.white)
                         }
-
-                        Spacer()
-
-                        Text("0.0")
-                            .font(.system(size: 26, weight: .bold, design: .rounded))
-                            .foregroundColor(.white)
 
                         Spacer()
 
@@ -425,35 +421,12 @@ struct FeaturedListingCard: View {
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 12)
-                .background(.black.opacity(0.35), in: RoundedRectangle(cornerRadius: 12))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .strokeBorder(
-                            LinearGradient(
-                                colors: [.white.opacity(0.3), .white.opacity(0.1)],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            ),
-                            lineWidth: 0.5
-                        )
-                )
                 .padding(.horizontal, 12)
                 .padding(.bottom, 16)
             }
         }
         .frame(width: cardWidth, height: cardHeight)
         .clipShape(RoundedRectangle(cornerRadius: 20))
-        .overlay(
-            RoundedRectangle(cornerRadius: 20)
-                .stroke(
-                    LinearGradient(
-                        colors: [.white.opacity(0.3), .white.opacity(0.1), .clear],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    ),
-                    lineWidth: 1
-                )
-        )
         .shadow(color: .black.opacity(0.15), radius: 12, x: 0, y: 6)
     }
 
@@ -498,106 +471,92 @@ struct FeaturedListingCard: View {
 struct ProviderCard: View {
     let user: User
 
-    private let cardWidth: CGFloat = 140
-    private let cardHeight: CGFloat = 190
-
     var body: some View {
-        ZStack(alignment: .bottom) {
-            // Background image
-            AsyncImage(url: URL(string: user.image ?? "")) { phase in
-                switch phase {
-                case .success(let image):
+        VStack(spacing: 0) {
+            // Avatar
+            ZStack(alignment: .bottomTrailing) {
+                AsyncImage(url: URL(string: user.image ?? "")) { image in
                     image
                         .resizable()
                         .aspectRatio(contentMode: .fill)
-                        .scaleEffect(1.05)
-                case .failure, .empty:
-                    providerPlaceholder
-                @unknown default:
-                    providerPlaceholder
+                } placeholder: {
+                    Circle()
+                        .fill(
+                            LinearGradient(
+                                colors: [Color(hex: "F3F4F6"), Color(hex: "E5E7EB")],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .overlay(
+                            Text(user.name?.prefix(1).uppercased() ?? "?")
+                                .font(.system(size: 28, weight: .bold, design: .rounded))
+                                .foregroundColor(ForMe.textTertiary)
+                        )
                 }
-            }
-            .frame(width: cardWidth, height: cardHeight)
-            .clipped()
+                .frame(width: 88, height: 88)
+                .clipShape(Circle())
+                .shadow(color: .black.opacity(0.04), radius: 2, x: 0, y: 1)
 
-            // Bottom gradient
-            LinearGradient(
-                stops: [
-                    .init(color: .clear, location: 0.3),
-                    .init(color: .black.opacity(0.5), location: 0.55),
-                    .init(color: .black.opacity(0.9), location: 0.8),
-                    .init(color: .black.opacity(0.95), location: 1.0)
-                ],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-
-            // Content
-            VStack(spacing: 3) {
-                // Verified badge
                 if user.isVerified {
-                    HStack(spacing: 4) {
-                        Image(systemName: "checkmark.seal.fill")
-                            .font(.system(size: 10))
-                        Text("Verified")
-                            .font(.system(size: 10, weight: .medium))
-                    }
-                    .foregroundColor(.white.opacity(0.7))
-                }
-
-                Text(user.name ?? "Provider")
-                    .font(.system(size: 14, weight: .bold))
-                    .foregroundColor(.white)
-                    .lineLimit(1)
-
-                if let location = user.location {
-                    HStack(spacing: 3) {
-                        Image(systemName: "mappin")
-                            .font(.system(size: 8, weight: .semibold))
-                        Text(location)
-                            .font(.system(size: 10, weight: .medium))
-                    }
-                    .foregroundColor(.white.opacity(0.6))
-                    .lineLimit(1)
-                } else if let role = user.role {
-                    Text(role)
-                        .font(.system(size: 10, weight: .medium))
-                        .foregroundColor(.white.opacity(0.6))
-                        .lineLimit(1)
+                    Image(systemName: "checkmark.seal.fill")
+                        .font(.system(size: 16))
+                        .foregroundColor(ForMe.textPrimary)
+                        .background(
+                            Circle()
+                                .fill(ForMe.background)
+                                .frame(width: 20, height: 20)
+                        )
+                        .offset(x: 2, y: 2)
                 }
             }
-            .shadow(color: .black.opacity(0.5), radius: 4, x: 0, y: 2)
-            .padding(.horizontal, 10)
-            .padding(.bottom, 14)
+            .padding(.top, 20)
+
+            // Info section
+            VStack(spacing: 8) {
+                Text(user.name ?? "Provider")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(ForMe.textPrimary)
+                    .lineLimit(1)
+
+                Text(user.role ?? "Service Provider")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(ForMe.textSecondary)
+                    .lineLimit(1)
+
+                Text(user.location ?? "Location not set")
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundColor(ForMe.textTertiary)
+                    .lineLimit(1)
+
+                // Stats row
+                HStack(spacing: 16) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "star.fill")
+                            .font(.system(size: 10))
+                            .foregroundColor(Color(hex: "FBBF24"))
+                        Text("5.0")
+                            .font(.system(size: 13, weight: .bold, design: .rounded))
+                            .foregroundColor(ForMe.textPrimary)
+                    }
+
+                    RoundedRectangle(cornerRadius: 1)
+                        .fill(ForMe.border)
+                        .frame(width: 1, height: 14)
+
+                    Text("0 reviews")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(ForMe.textTertiary)
+                }
+            }
+            .padding(.top, 10)
+            .padding(.horizontal, 16)
+
+            Spacer(minLength: 16)
         }
-        .frame(width: cardWidth, height: cardHeight)
+        .frame(width: 180)
+        .background(ForMe.background)
         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .stroke(
-                    LinearGradient(
-                        colors: [.white.opacity(0.25), .white.opacity(0.08), .clear],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    ),
-                    lineWidth: 0.5
-                )
-        )
-        .shadow(color: .black.opacity(0.12), radius: 10, x: 0, y: 5)
-    }
-
-    private var providerPlaceholder: some View {
-        ZStack {
-            LinearGradient(
-                colors: [Color(hex: "1a1a2e"), Color(hex: "16213e"), Color(hex: "0f0f23")],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-
-            Text(user.name?.prefix(1).uppercased() ?? "?")
-                .font(.system(size: 40, weight: .bold, design: .rounded))
-                .foregroundColor(.white.opacity(0.25))
-        }
     }
 }
 
@@ -608,99 +567,84 @@ struct ListingRow: View {
 
     var body: some View {
         HStack(spacing: 14) {
-            // Image
-            AsyncImage(url: URL(string: listing.imageSrc ?? "")) { image in
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-            } placeholder: {
-                Rectangle()
-                    .fill(Color(hex: "F8F8F7"))
-                    .overlay(
-                        Image(systemName: listing.category.icon)
-                            .font(.system(size: 22, weight: .light))
-                            .foregroundColor(ForMe.textTertiary)
-                    )
+            // Image with phase handling
+            AsyncImage(url: URL(string: listing.imageSrc ?? "")) { phase in
+                switch phase {
+                case .success(let image):
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                case .failure:
+                    listingPlaceholder
+                case .empty:
+                    listingPlaceholder
+                        .overlay(
+                            ProgressView()
+                                .tint(ForMe.textTertiary)
+                        )
+                @unknown default:
+                    listingPlaceholder
+                }
             }
-            .frame(width: 88, height: 88)
-            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .frame(width: 96, height: 96)
+            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
 
             // Content
-            VStack(alignment: .leading, spacing: 8) {
-                // Title + Category
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(listing.category.rawValue)
-                        .font(.system(size: 11, weight: .medium))
-                        .foregroundColor(ForMe.textTertiary)
+            VStack(alignment: .leading, spacing: 6) {
+                Text(listing.title)
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundColor(ForMe.textPrimary)
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: 200, alignment: .leading)
 
-                    Text(listing.title)
-                        .font(.system(size: 15, weight: .semibold))
-                        .foregroundColor(ForMe.textPrimary)
-                        .lineLimit(2)
+                if let location = listing.location {
+                    Text(location)
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(ForMe.textTertiary)
+                        .lineLimit(1)
                 }
 
-                // Rating + Price
-                HStack(spacing: 10) {
-                    // Rating
+                // Rating + Reviews
+                HStack(spacing: 16) {
                     HStack(spacing: 4) {
                         Image(systemName: "star.fill")
                             .font(.system(size: 10))
                             .foregroundColor(Color(hex: "FBBF24"))
-
                         Text(String(format: "%.1f", listing.rating ?? 0))
-                            .font(.system(size: 12, weight: .medium))
-                            .foregroundColor(ForMe.textSecondary)
-
-                        if let count = listing.ratingCount, count > 0 {
-                            Text("(\(count))")
-                                .font(.system(size: 11))
-                                .foregroundColor(ForMe.textTertiary)
-                        }
+                            .font(.system(size: 13, weight: .bold, design: .rounded))
+                            .foregroundColor(ForMe.textPrimary)
                     }
 
-                    // Price
-                    if let priceRange = listing.priceRange {
-                        Text(priceRange)
-                            .font(.system(size: 12, weight: .medium))
-                            .foregroundColor(ForMe.textSecondary)
-                    }
+                    RoundedRectangle(cornerRadius: 1)
+                        .fill(ForMe.border)
+                        .frame(width: 1, height: 14)
+
+                    Text("\(listing.ratingCount ?? 0) reviews")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(ForMe.textTertiary)
                 }
+
             }
 
             Spacer()
 
-            // Actions pill
-            VStack(spacing: 0) {
-                Button {
-                    // TODO: Toggle favorite
-                } label: {
-                    Image(systemName: "heart.fill")
-                        .font(.system(size: 16))
-                        .foregroundColor(ForMe.textTertiary)
-                        .frame(width: 44, height: 44)
-                }
-                .buttonStyle(.plain)
-
-                Divider()
-                    .frame(width: 24)
-
-                Button {
-                    // TODO: Quick book
-                } label: {
-                    Image(systemName: "bolt.fill")
-                        .font(.system(size: 16))
-                        .foregroundColor(ForMe.textTertiary)
-                        .frame(width: 44, height: 44)
-                }
-                .buttonStyle(.plain)
-            }
-            .background(ForMe.background)
-            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+            Image(systemName: "ellipsis")
+                .font(.system(size: 14, weight: .medium))
+                .foregroundColor(ForMe.textTertiary)
         }
         .padding(12)
-        .background(ForMe.surface)
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .shadow(color: .black.opacity(0.04), radius: 8, x: 0, y: 2)
+    }
+
+    private var listingPlaceholder: some View {
+        Rectangle()
+            .fill(
+                LinearGradient(
+                    colors: [Color(hex: "F3F4F6"), Color(hex: "E9EAEC")],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
     }
 }
 
@@ -743,7 +687,7 @@ struct ListingRow: View {
 }
 
 #Preview("Provider Card") {
-    HStack(spacing: 14) {
+    HStack(spacing: 8) {
         ProviderCard(user: User(id: "1", name: "Marcus Johnson", role: "Barber"))
         ProviderCard(user: User(id: "2", name: "Sarah Chen", role: "Stylist", isVerified: true))
     }
