@@ -36,7 +36,7 @@ struct MessagesListView: View {
 
             Group {
             if viewModel.isLoading {
-                ForMeLoader(size: .medium)
+                ProgressView()
             } else if viewModel.conversations.isEmpty {
                 VStack(spacing: 12) {
                     Image(systemName: "bubble.left.and.bubble.right")

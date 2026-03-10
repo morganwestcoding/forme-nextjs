@@ -46,24 +46,32 @@ struct HomeView: View {
 
                         Text("Looking for something?")
                             .font(.system(size: 15))
-                            .foregroundColor(ForMe.textTertiary)
+                            .foregroundColor(Color(UIColor.placeholderText))
                             .padding(.horizontal, 10)
-                            .padding(.vertical, 13)
+                            .padding(.vertical, 15)
 
                         Spacer()
                     }
-                    .background(ForMe.surface)
-                    .cornerRadius(14)
+                    .background(Color(hex: "F7F7F6"))
                     .overlay(
-                        RoundedRectangle(cornerRadius: 14)
+                        RoundedRectangle(cornerRadius: 16)
                             .stroke(ForMe.border, lineWidth: 1)
                     )
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .shadow(color: .black.opacity(0.04), radius: 1, x: 0, y: 1)
                 }
                 .padding(.horizontal)
 
                 // Categories
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {
+                        FilterChip(
+                            title: "All",
+                            isSelected: false
+                        ) {
+                            appState.selectedTab = .search
+                        }
+
                         ForEach(ServiceCategory.allCases, id: \.self) { category in
                             FilterChip(
                                 title: category.rawValue,
@@ -95,7 +103,7 @@ struct HomeView: View {
                     .padding(.horizontal)
 
                     if viewModel.isLoading {
-                        ForMeLoader(size: .medium)
+                        ProgressView()
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 40)
                     } else if viewModel.featuredListings.isEmpty {
@@ -171,7 +179,7 @@ struct HomeView: View {
                     }
                     .padding(.horizontal)
 
-                    LazyVStack(spacing: 12) {
+                    LazyVStack(spacing: 0) {
                         ForEach(Array(viewModel.recentListings.enumerated()), id: \.element.id) { index, listing in
                             NavigationLink(value: listing) {
                                 ListingRow(listing: listing)

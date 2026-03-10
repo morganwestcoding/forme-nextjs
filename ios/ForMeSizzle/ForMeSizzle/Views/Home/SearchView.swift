@@ -8,7 +8,7 @@ struct SearchView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 12) {
+            VStack(spacing: 24) {
                 // Header
                 HStack(alignment: .center) {
                     VStack(alignment: .leading, spacing: 4) {
@@ -65,7 +65,7 @@ struct SearchView: View {
                 // Results
                 if viewModel.isLoading {
                     Spacer()
-                    ForMeLoader(size: .medium)
+                    ProgressView()
                     Spacer()
                 } else if viewModel.listings.isEmpty {
                     VStack(spacing: 12) {
@@ -78,7 +78,7 @@ struct SearchView: View {
                     }
                     .padding(.top, 60)
                 } else {
-                    LazyVStack(spacing: 12) {
+                    LazyVStack(spacing: 4) {
                         ForEach(Array(viewModel.listings.enumerated()), id: \.element.id) { index, listing in
                             NavigationLink(value: listing) {
                                 ListingRow(listing: listing)
@@ -90,7 +90,7 @@ struct SearchView: View {
                     .padding(.horizontal)
                 }
             }
-            .padding(.top, 8)
+            .padding(.vertical)
         }
         .background(ForMe.background)
         .navigationBarHidden(true)

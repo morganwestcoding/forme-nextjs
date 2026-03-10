@@ -45,7 +45,7 @@ struct BookingsView: View {
 
             if viewModel.isLoading {
                 Spacer()
-                ForMeLoader(size: .medium)
+                ProgressView()
                 Spacer()
             } else if currentBookings.isEmpty {
                 Spacer()

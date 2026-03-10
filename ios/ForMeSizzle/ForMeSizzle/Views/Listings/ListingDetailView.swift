@@ -167,7 +167,7 @@ struct ListingDetailView: View {
                                 .staggeredFadeIn(index: index + 4)
                             }
                         } else if viewModel.isLoading {
-                            ForMeLoader(size: .small)
+                            ProgressView()
                                 .frame(maxWidth: .infinity)
                                 .padding()
                         } else if !viewModel.services.isEmpty {

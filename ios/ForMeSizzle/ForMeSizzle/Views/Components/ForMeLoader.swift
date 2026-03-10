@@ -4,65 +4,38 @@ struct ForMeLoader: View {
     enum Size {
         case small, medium, large
 
-        var blockSize: CGFloat {
+        var dimension: CGFloat {
             switch self {
-            case .small: return 6
-            case .medium: return 10
-            case .large: return 14
+            case .small: return 16
+            case .medium: return 24
+            case .large: return 32
             }
         }
 
-        var spacing: CGFloat {
+        var lineWidth: CGFloat {
             switch self {
-            case .small: return 3
-            case .medium: return 4
-            case .large: return 5
+            case .small: return 2
+            case .medium: return 2.5
+            case .large: return 3
             }
         }
     }
 
     var size: Size = .medium
-    var color: Color = ForMe.accent
+    var color: Color = ForMe.textTertiary
 
-    @State private var animating = false
+    @State private var isSpinning = false
 
     var body: some View {
-        let blocks = 9
-        let columns = 3
-
-        VStack(spacing: size.spacing) {
-            ForEach(0..<columns, id: \.self) { row in
-                HStack(spacing: size.spacing) {
-                    ForEach(0..<columns, id: \.self) { col in
-                        let index = row * columns + col
-                        RoundedRectangle(cornerRadius: size.blockSize * 0.2)
-                            .fill(color)
-                            .frame(width: size.blockSize, height: size.blockSize)
-                            .opacity(animating ? opacity(for: index, total: blocks) : 0.2)
-                            .scaleEffect(animating ? scale(for: index, total: blocks) : 0.6)
-                            .animation(
-                                .easeInOut(duration: 0.6)
-                                    .repeatForever(autoreverses: true)
-                                    .delay(Double(index) * 0.08),
-                                value: animating
-                            )
-                    }
-                }
+        Circle()
+            .trim(from: 0, to: 0.7)
+            .stroke(color, style: StrokeStyle(lineWidth: size.lineWidth, lineCap: .round))
+            .frame(width: size.dimension, height: size.dimension)
+            .rotationEffect(.degrees(isSpinning ? 360 : 0))
+            .animation(.linear(duration: 0.8).repeatForever(autoreverses: false), value: isSpinning)
+            .onAppear {
+                isSpinning = true
             }
-        }
-        .onAppear {
-            animating = true
-        }
-    }
-
-    private func opacity(for index: Int, total: Int) -> Double {
-        let phase = Double(index) / Double(total)
-        return 0.4 + (0.6 * phase)
-    }
-
-    private func scale(for index: Int, total: Int) -> CGFloat {
-        let phase = Double(index) / Double(total)
-        return 0.8 + (0.2 * CGFloat(phase))
     }
 }
 
@@ -94,6 +67,6 @@ struct ForMeLoadingView: View {
     VStack(spacing: 40) {
         ForMeLoader(size: .small)
         ForMeLoader(size: .medium)
-        ForMeLoader(size: .large, color: .red)
+        ForMeLoader(size: .large)
     }
 }
