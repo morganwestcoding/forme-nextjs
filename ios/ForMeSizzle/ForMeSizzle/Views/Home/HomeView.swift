@@ -21,14 +21,30 @@ struct HomeView: View {
 
                     Spacer()
 
-                    Button {
-                        appState.selectedTab = .profile
-                    } label: {
-                        DynamicAvatar(
-                            name: authViewModel.currentUser?.name ?? "User",
-                            imageUrl: authViewModel.currentUser?.image,
-                            size: .smallMedium
-                        )
+                    HStack(spacing: 12) {
+                        Button {
+                            // TODO: alerts
+                        } label: {
+                            Image("AlertBell")
+                                .renderingMode(.template)
+                                .resizable()
+                                .frame(width: 18, height: 18)
+                                .foregroundColor(ForMe.textSecondary)
+                                .frame(width: 38, height: 38)
+                                .background(.white)
+                                .clipShape(Circle())
+                                .overlay(Circle().stroke(ForMe.border, lineWidth: 1.5))
+                        }
+
+                        Button {
+                            appState.selectedTab = .profile
+                        } label: {
+                            DynamicAvatar(
+                                name: authViewModel.currentUser?.name ?? "User",
+                                imageUrl: authViewModel.currentUser?.image,
+                                size: .smallMedium
+                            )
+                        }
                     }
                 }
                 .padding(.horizontal)
@@ -65,13 +81,6 @@ struct HomeView: View {
                 // Categories
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {
-                        FilterChip(
-                            title: "All",
-                            isSelected: false
-                        ) {
-                            appState.selectedTab = .search
-                        }
-
                         ForEach(ServiceCategory.allCases, id: \.self) { category in
                             FilterChip(
                                 title: category.rawValue,

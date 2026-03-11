@@ -7,59 +7,68 @@ struct BookingsView: View {
     @State private var selectedTab = 0
 
     var body: some View {
-        VStack(spacing: 0) {
-            // Header
-            HStack(alignment: .center) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Bookings")
-                        .font(.largeTitle.bold())
-                        .foregroundColor(ForMe.textPrimary)
+        ScrollView {
+            VStack(spacing: 24) {
+                // Header
+                HStack(alignment: .center) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Bookings")
+                            .font(.largeTitle.bold())
+                            .foregroundColor(ForMe.textPrimary)
 
-                    Text("Your upcoming appointments")
-                        .font(.subheadline)
-                        .foregroundColor(ForMe.textSecondary)
+                        Text("Your upcoming appointments")
+                            .font(.subheadline)
+                            .foregroundColor(ForMe.textSecondary)
+                    }
+
+                    Spacer()
+
+                    HStack(spacing: 12) {
+                        Button {
+                            // TODO: alerts
+                        } label: {
+                            Image("AlertBell")
+                                .renderingMode(.template)
+                                .resizable()
+                                .frame(width: 18, height: 18)
+                                .foregroundColor(ForMe.textSecondary)
+                                .frame(width: 38, height: 38)
+                                .background(.white)
+                                .clipShape(Circle())
+                                .overlay(Circle().stroke(ForMe.border, lineWidth: 1.5))
+                        }
+
+                        Button {
+                            appState.selectedTab = .profile
+                        } label: {
+                            DynamicAvatar(
+                                name: authViewModel.currentUser?.name ?? "User",
+                                imageUrl: authViewModel.currentUser?.image,
+                                size: .smallMedium
+                            )
+                        }
+                    }
                 }
+                .padding(.horizontal)
 
-                Spacer()
+                // Toggle
+                SlidingToggle(selectedTab: $selectedTab)
+                    .padding(.horizontal)
 
-                Button {
-                    appState.selectedTab = .profile
-                } label: {
-                    DynamicAvatar(
-                        name: authViewModel.currentUser?.name ?? "User",
-                        imageUrl: authViewModel.currentUser?.image,
-                        size: .smallMedium
-                    )
-                }
-            }
-            .padding(.horizontal)
-            .padding(.top, 8)
-
-            // Tabs
-            Picker("", selection: $selectedTab) {
-                Text("Upcoming").tag(0)
-                Text("Past").tag(1)
-            }
-            .pickerStyle(.segmented)
-            .padding()
-
-            if viewModel.isLoading {
-                Spacer()
-                ProgressView()
-                Spacer()
-            } else if currentBookings.isEmpty {
-                Spacer()
-                VStack(spacing: 12) {
-                    Image(systemName: "calendar")
-                        .font(.system(size: 40))
-                        .foregroundColor(ForMe.textTertiary)
-                    Text(selectedTab == 0 ? "No upcoming bookings" : "No past bookings")
-                        .font(.subheadline)
-                        .foregroundColor(ForMe.textSecondary)
-                }
-                Spacer()
-            } else {
-                ScrollView {
+                if viewModel.isLoading {
+                    ProgressView()
+                        .padding(.top, 60)
+                } else if currentBookings.isEmpty {
+                    VStack(spacing: 12) {
+                        Image(systemName: "calendar")
+                            .font(.system(size: 40))
+                            .foregroundColor(ForMe.textTertiary)
+                        Text(selectedTab == 0 ? "No upcoming bookings" : "No past bookings")
+                            .font(.subheadline)
+                            .foregroundColor(ForMe.textSecondary)
+                    }
+                    .padding(.top, 60)
+                } else {
                     LazyVStack(spacing: 12) {
                         ForEach(Array(currentBookings.enumerated()), id: \.element.id) { index, reservation in
                             BookingCard(reservation: reservation) {
@@ -70,10 +79,12 @@ struct BookingsView: View {
                             .staggeredFadeIn(index: index)
                         }
                     }
-                    .padding()
+                    .padding(.horizontal)
                 }
             }
+            .padding(.vertical)
         }
+        .background(ForMe.background)
         .navigationBarHidden(true)
         .refreshable {
             await viewModel.loadReservations()
@@ -205,6 +216,46 @@ struct StatusBadge: View {
         case .completed: return ForMe.statusCompleted
         case .none: return ForMe.statusClosed
         }
+    }
+}
+
+private struct SlidingToggle: View {
+    @Binding var selectedTab: Int
+    @Namespace private var toggleNamespace
+
+    private let tabs = ["Upcoming", "Past"]
+
+    var body: some View {
+        HStack(spacing: 4) {
+            ForEach(Array(tabs.enumerated()), id: \.offset) { index, title in
+                Button {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        selectedTab = index
+                    }
+                } label: {
+                    Text(title)
+                        .font(.system(size: 13, weight: selectedTab == index ? .semibold : .medium))
+                        .foregroundColor(selectedTab == index ? .white : ForMe.textSecondary)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 13)
+                        .background {
+                            if selectedTab == index {
+                                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                    .fill(ForMe.textPrimary)
+                                    .matchedGeometryEffect(id: "toggle", in: toggleNamespace)
+                            }
+                        }
+                }
+            }
+        }
+        .padding(4)
+        .background(Color(hex: "F7F7F6"))
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(ForMe.border, lineWidth: 1)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(color: .black.opacity(0.04), radius: 1, x: 0, y: 1)
     }
 }
 
