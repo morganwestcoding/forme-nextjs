@@ -46,7 +46,7 @@ private struct ForMeTabBar: View {
         TabItem(.home, "Discover", "TabDiscover", "TabDiscover", isCustom: true),
         TabItem(.search, "Search", "TabSearch", "TabSearch", isCustom: true),
         TabItem(.bookings, "Bookings", "TabBooking", "TabBooking", isCustom: true),
-        TabItem(.messages, "Vendors", "TabVendors", "TabVendors", isCustom: true),
+        TabItem(.messages, "Brands", "TabVendors", "TabVendors", isCustom: true),
     ]
 
     var body: some View {

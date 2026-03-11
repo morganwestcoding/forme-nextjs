@@ -6,54 +6,52 @@ struct MessagesListView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
 
     var body: some View {
-        VStack(spacing: 0) {
-            // Header
-            HStack(alignment: .center) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Vendors")
-                        .font(.largeTitle.bold())
-                        .foregroundColor(ForMe.textPrimary)
+        ScrollView {
+            VStack(spacing: 24) {
+                // Header
+                HStack(alignment: .center) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Brands")
+                            .font(.largeTitle.bold())
+                            .foregroundColor(ForMe.textPrimary)
 
-                    Text("Your conversations")
-                        .font(.subheadline)
-                        .foregroundColor(ForMe.textSecondary)
+                        Text("Your conversations")
+                            .font(.subheadline)
+                            .foregroundColor(ForMe.textSecondary)
+                    }
+
+                    Spacer()
+
+                    Button {
+                        appState.selectedTab = .profile
+                    } label: {
+                        DynamicAvatar(
+                            name: authViewModel.currentUser?.name ?? "User",
+                            imageUrl: authViewModel.currentUser?.image,
+                            size: .smallMedium
+                        )
+                    }
                 }
+                .padding(.horizontal)
 
-                Spacer()
-
-                Button {
-                    appState.selectedTab = .profile
-                } label: {
-                    DynamicAvatar(
-                        name: authViewModel.currentUser?.name ?? "User",
-                        imageUrl: authViewModel.currentUser?.image,
-                        size: .smallMedium
-                    )
-                }
-            }
-            .padding(.horizontal)
-            .padding(.top, 8)
-
-            Group {
-            if viewModel.isLoading {
-                ProgressView()
-            } else if viewModel.conversations.isEmpty {
-                VStack(spacing: 12) {
-                    Image(systemName: "bubble.left.and.bubble.right")
-                        .font(.system(size: 40))
-                        .foregroundColor(ForMe.textTertiary)
-                    Text("No messages yet")
-                        .font(.subheadline.weight(.medium))
-                        .foregroundColor(ForMe.textSecondary)
-                    Text("Your conversations will appear here")
-                        .font(.caption)
-                        .foregroundColor(ForMe.textTertiary)
-                        .multilineTextAlignment(.center)
-                }
-                .padding()
-            } else {
-                ScrollView {
-                    LazyVStack(spacing: 2) {
+                if viewModel.isLoading {
+                    ProgressView()
+                } else if viewModel.conversations.isEmpty {
+                    VStack(spacing: 12) {
+                        Image(systemName: "bubble.left.and.bubble.right")
+                            .font(.system(size: 40))
+                            .foregroundColor(ForMe.textTertiary)
+                        Text("No messages yet")
+                            .font(.subheadline.weight(.medium))
+                            .foregroundColor(ForMe.textSecondary)
+                        Text("Your conversations will appear here")
+                            .font(.caption)
+                            .foregroundColor(ForMe.textTertiary)
+                            .multilineTextAlignment(.center)
+                    }
+                    .padding(.top, 60)
+                } else {
+                    LazyVStack(spacing: 0) {
                         ForEach(Array(viewModel.conversations.enumerated()), id: \.element.id) { index, conversation in
                             NavigationLink(value: conversation) {
                                 ConversationRow(conversation: conversation)
@@ -64,7 +62,7 @@ struct MessagesListView: View {
                     }
                 }
             }
-        }
+            .padding(.vertical)
         }
         .background(ForMe.background)
         .navigationBarHidden(true)
