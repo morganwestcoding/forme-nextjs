@@ -2,8 +2,7 @@ import SwiftUI
 
 struct MessagesListView: View {
     @StateObject private var viewModel = MessagesViewModel()
-    @EnvironmentObject var appState: AppState
-    @EnvironmentObject var authViewModel: AuthViewModel
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         ScrollView {
@@ -11,7 +10,7 @@ struct MessagesListView: View {
                 // Header
                 HStack(alignment: .center) {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("Brands")
+                        Text("Messages")
                             .font(.largeTitle.bold())
                             .foregroundColor(ForMe.textPrimary)
 
@@ -22,30 +21,16 @@ struct MessagesListView: View {
 
                     Spacer()
 
-                    HStack(spacing: 12) {
-                        Button {
-                            // TODO: alerts
-                        } label: {
-                            Image("AlertBell")
-                                .renderingMode(.template)
-                                .resizable()
-                                .frame(width: 18, height: 18)
-                                .foregroundColor(ForMe.textSecondary)
-                                .frame(width: 38, height: 38)
-                                .background(.white)
-                                .clipShape(Circle())
-                                .overlay(Circle().stroke(ForMe.border, lineWidth: 1.5))
-                        }
-
-                        Button {
-                            appState.selectedTab = .profile
-                        } label: {
-                            DynamicAvatar(
-                                name: authViewModel.currentUser?.name ?? "User",
-                                imageUrl: authViewModel.currentUser?.image,
-                                size: .smallMedium
-                            )
-                        }
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundColor(ForMe.textSecondary)
+                            .frame(width: 38, height: 38)
+                            .background(.white)
+                            .clipShape(Circle())
+                            .overlay(Circle().stroke(ForMe.border, lineWidth: 1.5))
                     }
                 }
                 .padding(.horizontal)

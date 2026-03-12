@@ -6,6 +6,7 @@ class AppState: ObservableObject {
     enum Tab: Int, CaseIterable {
         case home = 0
         case search
+        case maps
         case bookings
         case messages
         case profile

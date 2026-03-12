@@ -10,10 +10,12 @@ struct MainTabView: View {
                     NavigationStack { HomeView() }
                 case .search:
                     NavigationStack { SearchView() }
+                case .maps:
+                    NavigationStack { MapsView() }
                 case .bookings:
                     NavigationStack { BookingsView() }
                 case .messages:
-                    NavigationStack { MessagesListView() }
+                    NavigationStack { BrandsView() }
                 case .profile:
                     NavigationStack { ProfileView() }
                 }
@@ -45,6 +47,7 @@ private struct ForMeTabBar: View {
     private let tabs: [TabItem] = [
         TabItem(.home, "Discover", "TabDiscover", "TabDiscover", isCustom: true),
         TabItem(.search, "Search", "TabSearch", "TabSearch", isCustom: true),
+        TabItem(.maps, "Maps", "TabMaps", "TabMaps", isCustom: true),
         TabItem(.bookings, "Bookings", "TabBooking", "TabBooking", isCustom: true),
         TabItem(.messages, "Brands", "TabVendors", "TabVendors", isCustom: true),
     ]

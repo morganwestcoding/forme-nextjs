@@ -212,6 +212,27 @@ struct ForMeSearchBar: View {
     }
 }
 
+// MARK: - Header Icon Button
+
+struct HeaderIconButton: View {
+    let icon: String
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Image(icon)
+                .renderingMode(.template)
+                .resizable()
+                .frame(width: 18, height: 18)
+                .foregroundColor(ForMe.textSecondary)
+                .frame(width: 38, height: 38)
+                .background(.white)
+                .clipShape(Circle())
+                .overlay(Circle().stroke(ForMe.border, lineWidth: 1.5))
+        }
+    }
+}
+
 // MARK: - Staggered Fade-In Animation
 
 struct StaggeredFadeIn: ViewModifier {

@@ -1,10 +1,9 @@
 import SwiftUI
 
-struct SearchView: View {
-    @StateObject private var viewModel = SearchViewModel()
+struct BrandsView: View {
+    @StateObject private var viewModel = BrandsViewModel()
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var authViewModel: AuthViewModel
-    @State private var searchText = ""
     @State private var showMessages = false
 
     var body: some View {
@@ -13,11 +12,11 @@ struct SearchView: View {
                 // Header
                 HStack(alignment: .center) {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("Search")
+                        Text("Brands")
                             .font(.largeTitle.bold())
                             .foregroundColor(ForMe.textPrimary)
 
-                        Text("Find services near you")
+                        Text("Discover top shops")
                             .font(.subheadline)
                             .foregroundColor(ForMe.textSecondary)
                     }
@@ -46,9 +45,6 @@ struct SearchView: View {
                 }
                 .padding(.horizontal)
 
-                ForMeSearchBar(text: $searchText, placeholder: "Looking for something?")
-                    .padding(.horizontal)
-
                 // Category filter
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {
@@ -62,30 +58,29 @@ struct SearchView: View {
                                 } else {
                                     viewModel.selectedCategory = category
                                 }
-                                Task { await viewModel.search() }
+                                Task { await viewModel.loadListings() }
                             }
                         }
                     }
                     .padding(.horizontal)
                 }
 
-                // Results
+                // Shops list
                 if viewModel.isLoading {
-                    Spacer()
                     ProgressView()
-                    Spacer()
+                        .padding(.top, 60)
                 } else if viewModel.listings.isEmpty {
                     VStack(spacing: 12) {
-                        Image(systemName: "magnifyingglass")
+                        Image(systemName: "bag")
                             .font(.system(size: 40))
                             .foregroundColor(ForMe.textTertiary)
-                        Text(searchText.isEmpty ? "Start typing to search" : "No results found")
+                        Text("No shops found")
                             .font(.subheadline)
                             .foregroundColor(ForMe.textSecondary)
                     }
                     .padding(.top, 60)
                 } else {
-                    LazyVStack(spacing: 4) {
+                    LazyVStack(spacing: 0) {
                         ForEach(Array(viewModel.listings.enumerated()), id: \.element.id) { index, listing in
                             NavigationLink(value: listing) {
                                 ListingRow(listing: listing)
@@ -104,15 +99,11 @@ struct SearchView: View {
         .navigationDestination(for: Listing.self) { listing in
             ListingDetailView(listing: listing)
         }
-        .onChange(of: searchText) { _, newValue in
-            viewModel.query = newValue
-            Task {
-                try? await Task.sleep(nanoseconds: 300_000_000)
-                await viewModel.search()
-            }
+        .refreshable {
+            await viewModel.loadListings()
         }
         .task {
-            await viewModel.search()
+            await viewModel.loadListings()
         }
         .sheet(isPresented: $showMessages) {
             NavigationStack {
@@ -122,28 +113,6 @@ struct SearchView: View {
     }
 }
 
-struct FilterChip: View {
-    let title: String
-    let isSelected: Bool
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            Text(title)
-                .font(.system(size: 13, weight: isSelected ? .semibold : .medium))
-                .padding(.horizontal, 14)
-                .padding(.vertical, 7)
-                .background(isSelected ? ForMe.textPrimary : Color(hex: "F7F7F6"))
-                .foregroundColor(isSelected ? .white : ForMe.textSecondary)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8, style: .continuous)
-                        .stroke(isSelected ? Color.clear : ForMe.border, lineWidth: 1)
-                )
-                .cornerRadius(8)
-        }
-    }
-}
-
 #Preview {
-    SearchView()
+    BrandsView()
 }

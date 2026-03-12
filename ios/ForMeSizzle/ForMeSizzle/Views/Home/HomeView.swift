@@ -4,6 +4,7 @@ struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var authViewModel: AuthViewModel
+    @State private var showMessages = false
     var body: some View {
         ScrollView {
             VStack(spacing: 24) {
@@ -22,18 +23,12 @@ struct HomeView: View {
                     Spacer()
 
                     HStack(spacing: 12) {
-                        Button {
+                        HeaderIconButton(icon: "AlertBell") {
                             // TODO: alerts
-                        } label: {
-                            Image("AlertBell")
-                                .renderingMode(.template)
-                                .resizable()
-                                .frame(width: 18, height: 18)
-                                .foregroundColor(ForMe.textSecondary)
-                                .frame(width: 38, height: 38)
-                                .background(.white)
-                                .clipShape(Circle())
-                                .overlay(Circle().stroke(ForMe.border, lineWidth: 1.5))
+                        }
+
+                        HeaderIconButton(icon: "HeaderChat") {
+                            showMessages = true
                         }
 
                         Button {
@@ -212,6 +207,11 @@ struct HomeView: View {
         }
         .task {
             await viewModel.loadData()
+        }
+        .sheet(isPresented: $showMessages) {
+            NavigationStack {
+                MessagesListView()
+            }
         }
     }
 }
