@@ -54,15 +54,23 @@ struct BookingsView: View {
                     ProgressView()
                         .padding(.top, 60)
                 } else if currentBookings.isEmpty {
-                    VStack(spacing: 12) {
-                        Image(systemName: "calendar")
-                            .font(.system(size: 40))
+                    VStack(spacing: 8) {
+                        Image("TabBooking")
+                            .renderingMode(.template)
+                            .resizable()
+                            .frame(width: 40, height: 40)
                             .foregroundColor(ForMe.textTertiary)
-                        Text(selectedTab == 0 ? "No upcoming bookings" : "No past bookings")
-                            .font(.subheadline)
+                            .padding(.bottom, 4)
+                        Text(selectedTab == 0 ? "Nothing scheduled yet" : "No past visits")
+                            .font(.subheadline.weight(.medium))
                             .foregroundColor(ForMe.textSecondary)
+                        Text(selectedTab == 0 ? "Book a service and it'll show up here" : "Your completed bookings will appear here")
+                            .font(.caption)
+                            .foregroundColor(ForMe.textTertiary)
+                            .multilineTextAlignment(.center)
                     }
-                    .padding(.top, 60)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .padding(.top, UIScreen.main.bounds.height * 0.2)
                 } else {
                     LazyVStack(spacing: 12) {
                         ForEach(Array(currentBookings.enumerated()), id: \.element.id) { index, reservation in

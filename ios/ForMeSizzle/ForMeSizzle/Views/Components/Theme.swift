@@ -226,9 +226,10 @@ struct HeaderIconButton: View {
                 .frame(width: 18, height: 18)
                 .foregroundColor(ForMe.textSecondary)
                 .frame(width: 38, height: 38)
-                .background(.white)
+                .background(Color(hex: "F7F7F6"))
                 .clipShape(Circle())
-                .overlay(Circle().stroke(ForMe.border, lineWidth: 1.5))
+                .overlay(Circle().stroke(ForMe.border, lineWidth: 1))
+                .shadow(color: .black.opacity(0.04), radius: 1, x: 0, y: 1)
         }
     }
 }
