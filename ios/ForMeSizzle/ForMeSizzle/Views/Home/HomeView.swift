@@ -190,6 +190,14 @@ struct HomeView: View {
                             }
                             .buttonStyle(.plain)
                             .staggeredFadeIn(index: index + 5)
+
+                            // Interleave a worker row after every 2 listings
+                            if (index + 1) % 2 == 0,
+                               index / 2 < viewModel.topProviders.count {
+                                WorkerRow(user: viewModel.topProviders[index / 2])
+                                    .padding(.horizontal, 12)
+                                    .staggeredFadeIn(index: index + 6)
+                            }
                         }
                     }
                     .padding(.horizontal)
@@ -662,6 +670,95 @@ struct ListingRow: View {
                     endPoint: .bottomTrailing
                 )
             )
+    }
+}
+
+// MARK: - Worker Row (inline with listings)
+
+struct WorkerRow: View {
+    let user: User
+
+    var body: some View {
+        HStack(spacing: 14) {
+            // Avatar
+            ZStack(alignment: .bottomTrailing) {
+                AsyncImage(url: URL(string: user.image ?? "")) { image in
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                } placeholder: {
+                    Circle()
+                        .fill(
+                            LinearGradient(
+                                colors: [Color(hex: "F3F4F6"), Color(hex: "E5E7EB")],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .overlay(
+                            Text(user.name?.prefix(1).uppercased() ?? "?")
+                                .font(.system(size: 22, weight: .bold, design: .rounded))
+                                .foregroundColor(ForMe.textTertiary)
+                        )
+                }
+                .frame(width: 64, height: 64)
+                .clipShape(Circle())
+
+                if user.isVerified {
+                    Image(systemName: "checkmark.seal.fill")
+                        .font(.system(size: 14))
+                        .foregroundColor(ForMe.textPrimary)
+                        .background(
+                            Circle()
+                                .fill(ForMe.background)
+                                .frame(width: 18, height: 18)
+                        )
+                        .offset(x: 2, y: 2)
+                }
+            }
+
+            // Info
+            VStack(alignment: .leading, spacing: 4) {
+                HStack(spacing: 6) {
+                    Text(user.name ?? "Provider")
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundColor(ForMe.textPrimary)
+                        .lineLimit(1)
+
+                    // Worker badge
+                    Text("Worker")
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundColor(ForMe.accent)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(ForMe.accentLight)
+                        .clipShape(Capsule())
+                }
+
+                if let role = user.role {
+                    Text(role)
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(ForMe.textSecondary)
+                        .lineLimit(1)
+                }
+
+                if let location = user.location {
+                    Text(location)
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(ForMe.textTertiary)
+                        .lineLimit(1)
+                }
+            }
+
+            Spacer()
+
+            Image(systemName: "chevron.right")
+                .font(.system(size: 12, weight: .medium))
+                .foregroundColor(ForMe.textTertiary)
+        }
+        .padding(12)
+        .background(ForMe.accentLight)
+        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 }
 

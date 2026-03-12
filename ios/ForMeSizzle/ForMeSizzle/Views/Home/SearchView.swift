@@ -7,6 +7,10 @@ struct SearchView: View {
     @State private var searchText = ""
     @State private var showMessages = false
 
+    private var hasResults: Bool {
+        !viewModel.listings.isEmpty || !viewModel.workers.isEmpty
+    }
+
     var body: some View {
         ScrollView {
             VStack(spacing: 24) {
@@ -74,7 +78,7 @@ struct SearchView: View {
                     Spacer()
                     ProgressView()
                     Spacer()
-                } else if viewModel.listings.isEmpty {
+                } else if !hasResults {
                     VStack(spacing: 12) {
                         Image(systemName: "magnifyingglass")
                             .font(.system(size: 40))
@@ -85,16 +89,50 @@ struct SearchView: View {
                     }
                     .padding(.top, 60)
                 } else {
-                    LazyVStack(spacing: 4) {
-                        ForEach(Array(viewModel.listings.enumerated()), id: \.element.id) { index, listing in
-                            NavigationLink(value: listing) {
-                                ListingRow(listing: listing)
+                    VStack(spacing: 24) {
+                        // Workers section
+                        if !viewModel.workers.isEmpty {
+                            VStack(alignment: .leading, spacing: 12) {
+                                Text("Workers")
+                                    .font(.headline)
+                                    .foregroundColor(ForMe.textPrimary)
+                                    .padding(.horizontal)
+
+                                ScrollView(.horizontal, showsIndicators: false) {
+                                    HStack(spacing: 8) {
+                                        ForEach(Array(viewModel.workers.enumerated()), id: \.element.id) { index, worker in
+                                            ProviderCard(user: worker)
+                                                .staggeredFadeIn(index: index)
+                                        }
+                                    }
+                                    .padding(.horizontal)
+                                }
                             }
-                            .buttonStyle(.plain)
-                            .staggeredFadeIn(index: index)
+                        }
+
+                        // Listings section
+                        if !viewModel.listings.isEmpty {
+                            VStack(alignment: .leading, spacing: 12) {
+                                if !viewModel.workers.isEmpty {
+                                    Text("Services")
+                                        .font(.headline)
+                                        .foregroundColor(ForMe.textPrimary)
+                                        .padding(.horizontal)
+                                }
+
+                                LazyVStack(spacing: 4) {
+                                    ForEach(Array(viewModel.listings.enumerated()), id: \.element.id) { index, listing in
+                                        NavigationLink(value: listing) {
+                                            ListingRow(listing: listing)
+                                        }
+                                        .buttonStyle(.plain)
+                                        .staggeredFadeIn(index: index)
+                                    }
+                                }
+                                .padding(.horizontal)
+                            }
                         }
                     }
-                    .padding(.horizontal)
                 }
             }
             .padding(.vertical)
