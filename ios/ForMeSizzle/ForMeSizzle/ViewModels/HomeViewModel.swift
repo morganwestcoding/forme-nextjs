@@ -6,6 +6,7 @@ class HomeViewModel: ObservableObject {
     @Published var featuredListings: [Listing] = []
     @Published var recentListings: [Listing] = []
     @Published var topProviders: [User] = []
+    @Published var posts: [Post] = []
     @Published var isLoading = false
     @Published var error: String?
     @Published var selectedCategory: ServiceCategory?
@@ -18,9 +19,11 @@ class HomeViewModel: ObservableObject {
 
         async let featured: () = loadFeatured()
         async let recent: () = loadRecent()
+        async let feed: () = loadPosts()
 
         await featured
         await recent
+        await feed
 
         isLoading = false
     }
@@ -43,6 +46,14 @@ class HomeViewModel: ObservableObject {
             recentListings = response.listings
         } catch {
             // Featured already sets error if needed
+        }
+    }
+
+    private func loadPosts() async {
+        do {
+            posts = try await api.getFeed()
+        } catch {
+            // Non-critical — listings still show
         }
     }
 }

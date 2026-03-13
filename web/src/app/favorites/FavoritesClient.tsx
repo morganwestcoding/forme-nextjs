@@ -258,7 +258,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
                     onViewAll={handleBackToMain}
                     viewAllLabel="Back to Favorites"
                   />
-                  <div className={`grid ${gridColsClass} gap-5 transition-all duration-300`}>
+                  <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
                     {safeListings.map((listing, idx) => (
                       <div
                         key={listing.id}
@@ -289,7 +289,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
                     onViewAll={handleBackToMain}
                     viewAllLabel="Back to Favorites"
                   />
-                  <div className={`grid ${gridColsClass} gap-5 transition-all duration-300`}>
+                  <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
                     {safeWorkers.map((worker, idx) => {
                       const associatedListing = getAssociatedListing(worker);
                       return (
@@ -329,7 +329,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
                     onViewAll={handleBackToMain}
                     viewAllLabel="Back to Favorites"
                   />
-                  <div className={`grid ${gridColsClass} gap-5 transition-all duration-300`}>
+                  <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
                     {safeShops.map((shop, idx) => (
                       <div
                         key={shop.id}
@@ -356,7 +356,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
                     onViewAll={handleBackToMain}
                     viewAllLabel="Back to Favorites"
                   />
-                  <div className={`grid ${gridColsClass} gap-5 transition-all duration-300`}>
+                  <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
                     {safePosts.map((post, idx) => (
                       <div
                         key={post.id}
@@ -391,7 +391,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
                         onViewAll={handleViewAllListings}
                       />
                       <div id="listings-rail">
-                        <div className={`grid ${gridColsClass} gap-5 transition-all duration-300`}>
+                        <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
                           {currentListings.map((listing, idx) => (
                             <div
                               key={`${listing.id}-${listingsIndex}`}
@@ -426,7 +426,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
                         onViewAll={handleViewAllWorkers}
                       />
                       <div id="workers-rail">
-                        <div className={`grid ${gridColsClass} gap-5 transition-all duration-300`}>
+                        <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
                           {currentWorkers.map((worker, idx) => {
                             const associatedListing = getAssociatedListing(worker);
                             return (
@@ -470,7 +470,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
                         onViewAll={handleViewAllShops}
                       />
                       <div id="shops-rail">
-                        <div className={`grid ${gridColsClass} gap-5 transition-all duration-300`}>
+                        <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
                           {currentShops.map((shop, idx) => (
                             <div
                               key={`${shop.id}-${shopsIndex}`}
@@ -501,7 +501,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
                         onViewAll={handleViewAllPosts}
                       />
                       <div id="posts-rail">
-                        <div className={`grid ${gridColsClass} gap-5 pb-8 transition-all duration-300`}>
+                        <div className={`grid ${gridColsClass} gap-4 pb-8 transition-all duration-300`}>
                           {currentPosts.map((post, idx) => (
                             <div
                               key={`${post.id}-${postsIndex}`}

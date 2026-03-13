@@ -98,15 +98,22 @@ struct SearchView: View {
                                     .foregroundColor(ForMe.textPrimary)
                                     .padding(.horizontal)
 
-                                ScrollView(.horizontal, showsIndicators: false) {
-                                    HStack(spacing: 8) {
-                                        ForEach(Array(viewModel.workers.enumerated()), id: \.element.id) { index, worker in
-                                            ProviderCard(user: worker)
+                                LazyVStack(spacing: 4) {
+                                    ForEach(Array(viewModel.workers.enumerated()), id: \.element.id) { index, worker in
+                                        let workerListing = viewModel.listings.first { $0.userId == worker.id || $0.user?.id == worker.id }
+                                        if let listing = workerListing {
+                                            NavigationLink(value: listing) {
+                                                WorkerRow(user: worker, listing: listing)
+                                            }
+                                            .buttonStyle(.plain)
+                                            .staggeredFadeIn(index: index)
+                                        } else {
+                                            WorkerRow(user: worker, listing: nil)
                                                 .staggeredFadeIn(index: index)
                                         }
                                     }
-                                    .padding(.horizontal)
                                 }
+                                .padding(.horizontal)
                             }
                         }
 

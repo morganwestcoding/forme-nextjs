@@ -88,9 +88,6 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
     { label: "Shops", href: "/shops", active: isActive("/shops", ["/shops"]) },
     ...(currentUser ? [
       { label: "Appointments", href: "/bookings/reservations", active: isActive("/bookings/reservations", ["/bookings"]) },
-      { label: "Favorites", href: "/favorites", active: isActive("/favorites") },
-      { label: "Inbox", onClick: () => inboxModal.onOpen(currentUser), active: false },
-      { label: "Notifications", onClick: () => notificationsModal.onOpen(), active: false },
     ] : []),
     { label: "Settings", href: "/settings", active: isActive("/settings") },
   ];
@@ -192,6 +189,10 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
                 <DropdownMenuItem onClick={() => router.push(`/profile/${currentUser.id}`)}>Profile</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => router.push("/properties")}>Listings</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => router.push("/analytics")}>Analytics</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => inboxModal.onOpen(currentUser)}>Inbox</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => notificationsModal.onOpen()}>Notifications</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push("/favorites")}>Favorites</DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => router.push("/subscription")}>Subscription</DropdownMenuItem>
                 <DropdownMenuSeparator />

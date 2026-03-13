@@ -114,11 +114,7 @@ const ReserveCard: React.FC<ReserveCardProps> = ({
   return (
     <div
       onClick={onCardClick}
-      className="group cursor-pointer rounded-xl border border-stone-300/90 p-3 transition-all duration-300 hover:border-stone-400 hover:shadow-sm"
-      style={{
-        background: 'linear-gradient(to bottom, #FAFAF9, #F7F7F6)',
-        boxShadow: '0 1px 2px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.7)',
-      }}
+      className="group cursor-pointer rounded-xl transition-all duration-300 hover:bg-neutral-50"
     >
       <div className="flex flex-row gap-4 items-center w-full relative">
         {/* Image card */}

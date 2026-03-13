@@ -49,28 +49,31 @@ const StatusIndicator = ({ storeHours }: { storeHours?: { dayOfWeek: string; ope
 
   const { status, label } = getStatus();
 
-  const colors = {
-    open: { bg: 'linear-gradient(135deg, #6ee7b7 0%, #34d399 50%, #10b981 100%)', shadow: '0 0 4px 1px rgba(52,211,153,0.4)' },
-    soon: { bg: 'linear-gradient(135deg, #fde047 0%, #facc15 50%, #eab308 100%)', shadow: '0 0 4px 1px rgba(250,204,21,0.4)' },
-    closing: { bg: 'linear-gradient(135deg, #fdba74 0%, #fb923c 50%, #f97316 100%)', shadow: '0 0 4px 1px rgba(251,146,60,0.4)' },
-    closed: { bg: 'linear-gradient(135deg, #d4d4d4 0%, #a3a3a3 100%)', shadow: 'none' },
+  const dotColors = {
+    open: { color: '#10b981', glow: 'rgba(16,185,129,0.5)' },
+    soon: { color: '#eab308', glow: 'rgba(234,179,8,0.5)' },
+    closing: { color: '#f97316', glow: 'rgba(249,115,22,0.5)' },
+    closed: { color: '#a3a3a3', glow: 'none' },
   };
 
-  // Fixed widths for each label to enable smooth animation
-  const expandedWidth = { open: '38px', soon: '38px', closing: '48px', closed: '44px' };
+  const d = dotColors[status];
+  const isActive = status === 'open' || status === 'soon';
 
   return (
-    <span
-      className="group/status flex items-center justify-center h-3.5 w-3.5 hover:w-[--expanded] rounded-[4px] cursor-default overflow-hidden transition-all duration-300 ease-out"
-      style={{
-        '--expanded': expandedWidth[status],
-        background: colors[status].bg,
-        boxShadow: colors[status].shadow,
-      } as React.CSSProperties}
-    >
-      <span className="text-[9px] font-semibold text-white opacity-0 group-hover/status:opacity-100 transition-opacity duration-200 whitespace-nowrap drop-shadow-sm">
-        {label}
-      </span>
+    <span className="relative flex items-center justify-center w-2.5 h-2.5">
+      {isActive && (
+        <span
+          className="absolute inset-0 rounded-full animate-ping"
+          style={{ backgroundColor: d.color, opacity: 0.4, animationDuration: '2s' }}
+        />
+      )}
+      <span
+        className="relative w-2.5 h-2.5 rounded-full"
+        style={{
+          backgroundColor: d.color,
+          boxShadow: isActive ? `0 0 6px 2px ${d.glow}` : 'none',
+        }}
+      />
     </span>
   );
 };
@@ -278,42 +281,26 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
   return (
     <div
       onClick={() => router.push(`/listings/${data.id}`)}
-      className="group cursor-pointer rounded-xl border border-stone-300/90 p-3 transition-all duration-300 hover:border-stone-400 hover:shadow-sm"
-      style={{
-        background: 'linear-gradient(to bottom, #FAFAF9, #F7F7F6)',
-        boxShadow: '0 1px 2px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.7)',
-      }}
+      className="group cursor-pointer rounded-xl p-3 transition-all duration-300 hover:bg-neutral-50"
     >
-      <div className="flex flex-row gap-4 items-center w-full relative">
-        {/* Heart button - top right */}
-        <div className="absolute top-0 right-0 z-20">
-          <HeartButton
-            listingId={data.id}
-            currentUser={currentUser}
-            variant="listingHead"
-          />
-        </div>
+      <div className="flex flex-row gap-4 items-center w-full">
         {/* Image card */}
         <div
           className={`
-            relative overflow-hidden rounded-lg bg-neutral-900 flex-shrink-0
-            transition-[transform,filter] duration-500 ease-out
-            group-hover:scale-[1.02] border-0 outline-none ring-0
-            ${compact ? 'w-[100px] h-[100px]' : 'w-[120px] h-[120px]'}
+            relative overflow-hidden rounded-lg flex-shrink-0
+            transition-transform duration-500 ease-out group-hover:scale-[1.03]
+            ${compact ? 'w-[80px] h-[80px]' : 'w-[100px] h-[100px]'}
           `}
+          style={{ boxShadow: '0 4px 10px rgba(0,0,0,0.11)' }}
         >
           <Image
             src={cardImage}
             alt={data.title}
             fill
-            className="object-cover transition-[transform,filter] duration-700 ease-out group-hover:brightness-105 border-0"
-            sizes="120px"
+            className="object-cover"
+            sizes="100px"
             priority={false}
           />
-          {/* Status indicator */}
-          <div className="absolute bottom-2 left-2 z-20">
-            <StatusIndicator storeHours={data.storeHours} />
-          </div>
         </div>
 
         {/* Text content */}
@@ -325,18 +312,21 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
                 {data.category}
               </span>
             )}
-            <h1 className="text-neutral-900 text-[15px] leading-snug font-semibold tracking-[-0.01em] line-clamp-2 max-w-[140px]">
+            <h1 className="text-neutral-900 text-[15px] leading-snug font-semibold tracking-[-0.01em] line-clamp-1">
               {data.title}
             </h1>
             <p className="text-neutral-400 text-[11px] line-clamp-1">
               {city && state ? `${city}, ${state}` : city || state || 'Location'}
             </p>
-            <div className="mt-1.5 flex items-center gap-1.5 text-[11px]">
-              <span className="font-semibold text-neutral-900 tabular-nums">{Number(data.rating ?? 5.0).toFixed(1)}</span>
+            <div className="mt-1.5 flex items-center gap-1.5 text-[11px] whitespace-nowrap overflow-hidden">
+              <svg className="w-2.5 h-2.5 text-amber-400" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+              <span className="font-bold text-neutral-900 tabular-nums">{Number(data.rating ?? 0).toFixed(1)}</span>
+              <span className="w-px h-3 bg-neutral-200 mx-0.5" />
+              <span className="text-neutral-400">{data.ratingCount ?? 0} reviews</span>
               {priceRange && (
                 <>
-                  <span className="text-neutral-300">|</span>
-                  <span className="text-neutral-500">{priceRange}</span>
+                  <span className="w-px h-3 bg-neutral-200 mx-0.5" />
+                  <span className="text-neutral-500 font-medium">{priceRange}</span>
                 </>
               )}
             </div>
@@ -348,24 +338,28 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
                 {data.category}
               </span>
             )}
-            <h1 className="text-neutral-900 text-[16px] leading-snug font-semibold tracking-[-0.01em] line-clamp-2 max-w-[160px]">
-              {renderTitleWithBadge(data.title)}
+            <h1 className="text-neutral-900 text-[16px] leading-snug font-semibold tracking-[-0.01em] line-clamp-1">
+              {data.title}
             </h1>
             <p className="text-neutral-400 text-[12px] line-clamp-1">
               {city && state ? `${city}, ${state}` : city || state || 'Location'}
             </p>
-            <div className="mt-2 flex items-center gap-2 text-[12px]">
-              <span className="font-semibold text-neutral-900 tabular-nums">{Number(data.rating ?? 5.0).toFixed(1)}</span>
+            <div className="mt-2 flex items-center gap-2 text-[12px] whitespace-nowrap overflow-hidden">
+              <svg className="w-3 h-3 text-amber-400" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+              <span className="font-bold text-neutral-900 tabular-nums">{Number(data.rating ?? 0).toFixed(1)}</span>
+              <span className="w-px h-3.5 bg-neutral-200 mx-0.5" />
+              <span className="text-neutral-400">{data.ratingCount ?? 0} reviews</span>
               {priceRange && (
                 <>
-                  <span className="text-neutral-300">|</span>
-                  <span className="text-neutral-500">{priceRange}</span>
+                  <span className="w-px h-3.5 bg-neutral-200 mx-0.5" />
+                  <span className="text-neutral-500 font-medium">{priceRange}</span>
                 </>
               )}
             </div>
           </>
         )}
         </div>
+
       </div>
     </div>
   );

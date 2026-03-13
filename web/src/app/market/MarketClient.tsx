@@ -276,7 +276,7 @@ const MarketClient: React.FC<MarketClientProps> = ({
                       viewAllLabel="← Back to Businesses"
                     />
 
-                    <div className={`grid ${gridColsClass} gap-5 transition-all duration-300`}>
+                    <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
                       {shuffledListings.map((listing, idx) => (
                           <div
                             key={listing.id}
@@ -304,7 +304,7 @@ const MarketClient: React.FC<MarketClientProps> = ({
                       viewAllLabel="← Back to Businesses"
                     />
 
-                    <div className={`grid ${gridColsClass} gap-5 transition-all duration-300`}>
+                    <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
                       {shuffledTrending.map(({ employee, listing }, idx) => {
                         const li: any = listing as any;
                         const imageSrc =
@@ -363,7 +363,7 @@ const MarketClient: React.FC<MarketClientProps> = ({
                     {/* Listings Row - Dynamic columns based on sidebar */}
                     {!viewAllMode && (
                       <div id="featured-rail">
-                        <div className={`grid ${gridColsClass} gap-5 transition-all duration-300`}>
+                        <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
                           {currentFeaturedListings.map((listing, idx) => (
                             <div
                               key={`${listing.id}-${featuredIndex}`}
@@ -400,7 +400,7 @@ const MarketClient: React.FC<MarketClientProps> = ({
                         />
 
                         <div id="trending-rail">
-                          <div className={`grid ${gridColsClass} gap-5 transition-all pb-8 duration-300`}>
+                          <div className={`grid ${gridColsClass} gap-4 transition-all pb-8 duration-300`}>
                             {currentTrendingItems.map(({ employee, listing }, idx) => {
                               const li: any = listing as any;
                               const imageSrc =

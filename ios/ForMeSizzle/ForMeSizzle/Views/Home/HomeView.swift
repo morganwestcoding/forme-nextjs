@@ -89,10 +89,10 @@ struct HomeView: View {
                     .padding(.horizontal)
                 }
 
-                // Featured Listings
+                // Posts We Think You'll Love
                 VStack(alignment: .leading, spacing: 12) {
                     HStack {
-                        Text("Popular Near You")
+                        Text("Posts We Think You'll Love")
                             .font(.headline)
                             .foregroundColor(ForMe.textPrimary)
 
@@ -110,25 +110,22 @@ struct HomeView: View {
                         ProgressView()
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 40)
-                    } else if viewModel.featuredListings.isEmpty {
+                    } else if viewModel.posts.isEmpty {
                         VStack(spacing: 8) {
-                            Image(systemName: "sparkles")
+                            Image(systemName: "square.stack")
                                 .font(.title)
                                 .foregroundColor(ForMe.textTertiary)
-                            Text("No listings found")
+                            Text("No posts yet")
                                 .foregroundColor(ForMe.textSecondary)
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 40)
                     } else {
                         ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 16) {
-                                ForEach(Array(viewModel.featuredListings.enumerated()), id: \.element.id) { index, listing in
-                                    NavigationLink(value: listing) {
-                                        FeaturedListingCard(listing: listing)
-                                    }
-                                    .buttonStyle(.plain)
-                                    .staggeredFadeIn(index: index + 2)
+                            HStack(spacing: 12) {
+                                ForEach(Array(viewModel.posts.prefix(10).enumerated()), id: \.element.id) { index, post in
+                                    PostCard(post: post)
+                                        .staggeredFadeIn(index: index + 2)
                                 }
                             }
                             .padding(.horizontal)
@@ -157,8 +154,14 @@ struct HomeView: View {
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 8) {
                                 ForEach(Array(viewModel.topProviders.enumerated()), id: \.element.id) { index, provider in
-                                    ProviderCard(user: provider)
-                                        .staggeredFadeIn(index: index + 3)
+                                    if let providerListing = viewModel.featuredListings.first(where: { $0.user?.id == provider.id || $0.userId == provider.id }) {
+                                        NavigationLink(value: providerListing) {
+                                            ProviderCard(user: provider)
+                                        }
+                                        .buttonStyle(.plain)
+                                    } else {
+                                        ProviderCard(user: provider)
+                                    }
                                 }
                             }
                             .padding(.horizontal)
@@ -194,9 +197,15 @@ struct HomeView: View {
                             // Interleave a worker row after every 2 listings
                             if (index + 1) % 2 == 0,
                                index / 2 < viewModel.topProviders.count {
-                                WorkerRow(user: viewModel.topProviders[index / 2])
-                                    .padding(.horizontal, 12)
+                                let worker = viewModel.topProviders[index / 2]
+                                let workerListing = viewModel.featuredListings.first { $0.user?.id == worker.id }
+                                if let targetListing = workerListing {
+                                    NavigationLink(value: targetListing) {
+                                        WorkerRow(user: worker, listing: targetListing)
+                                    }
+                                    .buttonStyle(.plain)
                                     .staggeredFadeIn(index: index + 6)
+                                }
                             }
                         }
                     }
@@ -673,67 +682,46 @@ struct ListingRow: View {
     }
 }
 
-// MARK: - Worker Row (inline with listings)
+// MARK: - Worker Row (matches ListingRow but with circular avatar)
 
 struct WorkerRow: View {
     let user: User
+    let listing: Listing?
 
     var body: some View {
         HStack(spacing: 14) {
-            // Avatar
-            ZStack(alignment: .bottomTrailing) {
-                AsyncImage(url: URL(string: user.image ?? "")) { image in
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                } placeholder: {
-                    Circle()
-                        .fill(
-                            LinearGradient(
-                                colors: [Color(hex: "F3F4F6"), Color(hex: "E5E7EB")],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
+            // Circular profile pic
+            AsyncImage(url: URL(string: user.image ?? "")) { image in
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+            } placeholder: {
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            colors: [Color(hex: "F3F4F6"), Color(hex: "E9EAEC")],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
                         )
-                        .overlay(
-                            Text(user.name?.prefix(1).uppercased() ?? "?")
-                                .font(.system(size: 22, weight: .bold, design: .rounded))
-                                .foregroundColor(ForMe.textTertiary)
-                        )
-                }
-                .frame(width: 64, height: 64)
-                .clipShape(Circle())
-
-                if user.isVerified {
-                    Image(systemName: "checkmark.seal.fill")
-                        .font(.system(size: 14))
-                        .foregroundColor(ForMe.textPrimary)
-                        .background(
-                            Circle()
-                                .fill(ForMe.background)
-                                .frame(width: 18, height: 18)
-                        )
-                        .offset(x: 2, y: 2)
-                }
+                    )
+                    .overlay(
+                        Text(user.name?.prefix(1).uppercased() ?? "?")
+                            .font(.system(size: 24, weight: .bold, design: .rounded))
+                            .foregroundColor(ForMe.textTertiary)
+                    )
             }
+            .frame(width: 88, height: 88)
+            .clipShape(Circle())
+            .frame(width: 96, height: 96)
 
-            // Info
-            VStack(alignment: .leading, spacing: 4) {
-                HStack(spacing: 6) {
-                    Text(user.name ?? "Provider")
-                        .font(.system(size: 15, weight: .semibold))
-                        .foregroundColor(ForMe.textPrimary)
-                        .lineLimit(1)
-
-                    // Worker badge
-                    Text("Worker")
-                        .font(.system(size: 10, weight: .semibold))
-                        .foregroundColor(ForMe.accent)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
-                        .background(ForMe.accentLight)
-                        .clipShape(Capsule())
-                }
+            // Content — same layout as ListingRow
+            VStack(alignment: .leading, spacing: 6) {
+                Text(user.name ?? "Provider")
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundColor(ForMe.textPrimary)
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: 200, alignment: .leading)
 
                 if let role = user.role {
                     Text(role)
@@ -742,23 +730,43 @@ struct WorkerRow: View {
                         .lineLimit(1)
                 }
 
-                if let location = user.location {
+                if let location = user.location ?? listing?.location {
                     Text(location)
                         .font(.system(size: 12, weight: .medium))
                         .foregroundColor(ForMe.textTertiary)
                         .lineLimit(1)
                 }
+
+                // Rating row — mirrors ListingRow
+                if let listing = listing {
+                    HStack(spacing: 16) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "star.fill")
+                                .font(.system(size: 10))
+                                .foregroundColor(Color(hex: "FBBF24"))
+                            Text(String(format: "%.1f", listing.rating ?? 0))
+                                .font(.system(size: 13, weight: .bold, design: .rounded))
+                                .foregroundColor(ForMe.textPrimary)
+                        }
+
+                        RoundedRectangle(cornerRadius: 1)
+                            .fill(ForMe.border)
+                            .frame(width: 1, height: 14)
+
+                        Text("\(listing.ratingCount ?? 0) reviews")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(ForMe.textTertiary)
+                    }
+                }
             }
 
             Spacer()
 
-            Image(systemName: "chevron.right")
-                .font(.system(size: 12, weight: .medium))
+            Image(systemName: "ellipsis")
+                .font(.system(size: 14, weight: .medium))
                 .foregroundColor(ForMe.textTertiary)
         }
         .padding(12)
-        .background(ForMe.accentLight)
-        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 }
 

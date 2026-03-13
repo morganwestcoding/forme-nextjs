@@ -33,14 +33,6 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
   const hasThumbnail = isVideo && post.thumbnailUrl;
   const hasBeforeAfter = Boolean(post.beforeImageSrc) && !isVideo;
 
-  // Debug logging - always log for first few posts
-  console.log('[PostCard] Rendering:', {
-    id: post.id,
-    hasBeforeAfter,
-    beforeImageSrc: post.beforeImageSrc || 'NOT SET',
-    imageSrc: post.imageSrc ? 'SET' : 'NOT SET',
-    isVideo
-  });
 
   const handleCardClick = async () => {
     try {
@@ -86,52 +78,32 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
+  const likeCount = post.likes?.length ?? 0;
+  const commentCount = post.comments?.length ?? 0;
+
   return (
     <div
       onClick={handleCardClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className="group cursor-pointer rounded-xl border border-stone-300/90 p-3 transition-all duration-300 hover:border-stone-400 hover:shadow-sm w-full"
-      style={{
-        background: 'linear-gradient(to bottom, #FAFAF9, #F7F7F6)',
-        boxShadow: '0 1px 2px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.7)',
-      }}
+      className="group cursor-pointer w-full rounded-xl px-4 py-3 transition-all duration-300 hover:bg-neutral-50"
     >
-      {/* Media container */}
+      {/* Media container — extends slightly past the info area */}
       <div
-        className="relative overflow-hidden rounded-lg bg-neutral-100 dark:bg-neutral-900"
-        style={{ aspectRatio: '1' }}
+        className="relative overflow-hidden rounded-lg bg-neutral-100 dark:bg-neutral-900 transition-transform duration-500 ease-out group-hover:scale-[1.03] -mx-1"
+        style={{ aspectRatio: '5 / 6', boxShadow: '0 4px 10px rgba(0,0,0,0.11)' }}
       >
       {/* Text post */}
       {isTextPost ? (
         <>
-          {/* White background */}
-          <div className="absolute inset-0 bg-white" />
-
-          {/* Subtle pattern overlay */}
-          <div
-            className="absolute inset-0 opacity-[0.3]"
-            style={{
-              backgroundImage: `radial-gradient(circle at 1px 1px, #a8a29e 0.5px, transparent 0)`,
-              backgroundSize: '16px 16px',
-            }}
-          />
-
-          {/* Text content */}
-          <div className="absolute inset-0 flex items-center justify-center p-6">
-            <p className="text-neutral-800 text-[13px] leading-relaxed font-medium text-center line-clamp-6 break-words whitespace-pre-wrap">
+          <div className="absolute inset-0 bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900" />
+          <div className="absolute inset-0 flex items-center justify-center p-8">
+            <p className="text-white/90 text-sm leading-relaxed font-medium text-center line-clamp-8 break-words whitespace-pre-wrap">
               {post.content}
             </p>
           </div>
-
-          {/* Quote mark accent */}
-          <div className="absolute top-3 left-3 text-stone-300 text-3xl font-serif leading-none select-none">
-            "
-          </div>
-
-          {/* Closing quote mark */}
-          <div className="absolute bottom-2 right-3 text-stone-300 text-3xl font-serif leading-none select-none rotate-180">
-            "
+          <div className="absolute top-4 left-4 text-white/20 text-4xl font-serif leading-none select-none">
+            &ldquo;
           </div>
         </>
       ) : isVideo ? (
@@ -139,7 +111,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
           <video
             ref={videoRef}
             src={post.mediaUrl || post.imageSrc || ''}
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+            className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
             style={{ opacity: hasThumbnail ? (hasPlayed ? 1 : 0) : 1, transition: 'opacity 400ms' }}
             muted
             loop
@@ -155,31 +127,17 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
               <Image src={post.thumbnailUrl!} alt="" fill className="object-cover" sizes="300px" priority />
             </div>
           )}
-          {/* Video indicator - subtle */}
-          <div className="absolute bottom-3 right-3 w-6 h-6 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center opacity-60 group-hover:opacity-100 transition-opacity">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="white">
-              <path d="M8 5v14l11-7z" />
-            </svg>
+          {/* Video play icon */}
+          <div className="absolute top-3 right-3 flex items-center gap-1 px-2 py-1 rounded-full bg-black/50 backdrop-blur-sm">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z" /></svg>
           </div>
         </>
       ) : hasBeforeAfter ? (
         <>
-          {/* Before image (underneath) */}
-          <Image
-            src={post.beforeImageSrc || ''}
-            alt=""
-            fill
-            className="object-cover"
-            sizes="300px"
-          />
-          {/* After image with clip reveal */}
+          <Image src={post.beforeImageSrc || ''} alt="" fill className="object-cover" sizes="300px" />
           <div
             className="absolute inset-0 transition-[clip-path] duration-500 ease-out"
-            style={{
-              clipPath: showBefore
-                ? 'inset(0 100% 0 0)'
-                : 'inset(0 0% 0 0)',
-            }}
+            style={{ clipPath: showBefore ? 'inset(0 100% 0 0)' : 'inset(0 0% 0 0)' }}
           >
             <Image
               src={post.mediaUrl || post.imageSrc || ''}
@@ -190,41 +148,14 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
               sizes="300px"
             />
           </div>
-          {/* Slider line */}
           <div
             className="absolute top-0 bottom-0 w-0.5 bg-white shadow-[0_0_12px_rgba(255,255,255,0.8)] transition-all duration-500 ease-out z-10"
-            style={{
-              left: showBefore ? '0%' : '100%',
-              opacity: showBefore ? 1 : 0,
-            }}
+            style={{ left: showBefore ? '0%' : '100%', opacity: showBefore ? 1 : 0 }}
           />
-          {/* Centered labels with crossfade */}
-          <div className="absolute bottom-3 left-0 right-0 flex justify-center pointer-events-none">
+          <div className="absolute bottom-12 left-0 right-0 flex justify-center pointer-events-none z-20">
             <div className="relative w-[52px] h-[26px]">
-              {/* Before label */}
-              <span
-                className={`
-                  absolute inset-0 flex items-center justify-center
-                  rounded-md text-[11px] font-medium
-                  bg-white/95 text-neutral-900 backdrop-blur-md
-                  transition-all duration-500 ease-out
-                  ${showBefore ? 'opacity-100 blur-0' : 'opacity-0 blur-sm'}
-                `}
-              >
-                Before
-              </span>
-              {/* After label */}
-              <span
-                className={`
-                  absolute inset-0 flex items-center justify-center
-                  rounded-md text-[11px] font-medium
-                  bg-white/95 text-neutral-900 backdrop-blur-md
-                  transition-all duration-500 ease-out
-                  ${showBefore ? 'opacity-0 blur-sm' : 'opacity-100 blur-0'}
-                `}
-              >
-                After
-              </span>
+              <span className={`absolute inset-0 flex items-center justify-center rounded-md text-[11px] font-medium bg-white/95 text-neutral-900 backdrop-blur-md transition-all duration-500 ease-out ${showBefore ? 'opacity-100 blur-0' : 'opacity-0 blur-sm'}`}>Before</span>
+              <span className={`absolute inset-0 flex items-center justify-center rounded-md text-[11px] font-medium bg-white/95 text-neutral-900 backdrop-blur-md transition-all duration-500 ease-out ${showBefore ? 'opacity-0 blur-sm' : 'opacity-100 blur-0'}`}>After</span>
             </div>
           </div>
         </>
@@ -233,47 +164,50 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
           src={post.mediaUrl || post.imageSrc || ''}
           alt=""
           fill
-          className={`object-cover transition-all duration-500 group-hover:scale-[1.02] ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+          className={`object-cover transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
           onLoad={() => setImageLoaded(true)}
           sizes="300px"
         />
       )}
+
+        {/* Heart button — top right */}
+        <div
+          className="absolute top-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <HeartButton listingId={post.id} currentUser={currentUser} />
+        </div>
+
+        {/* Profile pic — bottom left corner on image */}
+        {post.user?.image && (
+          <div className="absolute bottom-3 left-3 z-20 w-7 h-7 rounded-full overflow-hidden ring-2 ring-white shadow-sm">
+            <Image
+              src={post.user.image}
+              alt={post.user.name || ''}
+              fill
+              className="object-cover"
+              sizes="28px"
+            />
+          </div>
+        )}
       </div>
 
-      {/* Info section */}
-      <div className="mt-3 flex items-start justify-between gap-2">
-        <div className="flex flex-col gap-1 min-w-0 flex-1">
-          {post.user && (
-            <div className="flex items-center gap-1.5">
-              {post.user.image && (
-                <div className="w-5 h-5 rounded-full overflow-hidden relative flex-shrink-0">
-                  <Image
-                    src={post.user.image}
-                    alt={post.user.name || ''}
-                    fill
-                    className="object-cover"
-                    sizes="20px"
-                  />
-                </div>
-              )}
-              <span className="text-neutral-900 text-xs font-medium truncate">
-                {post.user.name}
-              </span>
-            </div>
-          )}
-          <div className="flex items-center gap-2 text-[10px] text-neutral-400">
-            <span>{(post as any).viewCount ?? 0} views</span>
-            {post.createdAt && (
-              <span>{formatDate(post.createdAt)}</span>
-            )}
-          </div>
-        </div>
-        <div className="flex-shrink-0 mt-0.5">
-          <HeartButton
-            listingId={post.id}
-            currentUser={currentUser}
-            variant="listingHead"
-          />
+      {/* Info section — below image */}
+      <div className="mt-3.5 flex flex-col gap-0.5">
+        {post.user && (
+          <span className="text-neutral-900 dark:text-white text-[14px] font-semibold truncate block">
+            {post.user.name}
+          </span>
+        )}
+        <p className="text-neutral-500 dark:text-neutral-400 text-[13px] leading-snug line-clamp-1">
+          {post.content || 'This is a description.'}
+        </p>
+        <div className="mt-1.5 flex items-center gap-1.5 text-[11px] whitespace-nowrap overflow-hidden">
+          <span className="text-neutral-400">{formatDate(post.createdAt)}</span>
+          <span className="w-px h-3 bg-neutral-200 mx-0.5" />
+          <span className="text-neutral-400">{likeCount} {likeCount === 1 ? 'like' : 'likes'}</span>
+          <span className="w-px h-3 bg-neutral-200 mx-0.5" />
+          <span className="text-neutral-400">{commentCount} {commentCount === 1 ? 'comment' : 'comments'}</span>
         </div>
       </div>
     </div>

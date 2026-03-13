@@ -373,7 +373,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                       onViewAll={handleBackToMain}
                       viewAllLabel="← Back to Discover"
                     />
-                    <div className="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-5 transition-all duration-300">
+                    <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-2 transition-all duration-300">
                       {(initialPosts || []).map((post, idx) => (
                         <div
                           key={post.id}
@@ -400,7 +400,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                       onViewAll={handleBackToMain}
                       viewAllLabel="← Back to Discover"
                     />
-                    <div className={`grid ${gridColsClass} gap-5 transition-all duration-300`}>
+                    <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
                       {listings.filter(l => l.category !== 'Personal').map((listing, idx) => (
                         <div
                           key={listing.id}
@@ -427,7 +427,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                       onViewAll={handleBackToMain}
                       viewAllLabel="← Back to Discover"
                     />
-                    <div className={`grid ${gridColsClass} gap-5 transition-all duration-300`}>
+                    <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
                       {employees.map((employee, idx) => {
                         const listing = listings.find(l => l.id === employee.listingId) || listings[0];
                         const li: any = listing as any;
@@ -470,7 +470,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                       onViewAll={handleBackToMain}
                       viewAllLabel="← Back to Discover"
                     />
-                    <div className={`grid ${gridColsClass} gap-5 transition-all duration-300`}>
+                    <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
                       {shops.map((shop, idx) => (
                         <div
                           key={shop.id}
@@ -501,7 +501,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                           onViewAll={handleViewAllPosts}
                         />
                         <div id="posts-rail">
-                          <div className="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-5 transition-all duration-300">
+                          <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-2 transition-all duration-300">
                             {currentPosts.map((post, idx) => (
                               <div
                                 key={`${post.id}-${postsIndex}`}
@@ -532,7 +532,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                           onViewAll={handleViewAllListings}
                         />
                         <div id="listings-rail">
-                          <div className={`grid ${gridColsClass} gap-5 transition-all duration-300`}>
+                          <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
                             {currentListings.map((listing, idx) => (
                               <div
                                 key={`${listing.id}-${listingsIndex}`}
@@ -563,7 +563,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                           onViewAll={handleViewAllProfessionals}
                         />
                         <div id="employees-rail">
-                          <div className={`grid ${gridColsClass} gap-5 transition-all duration-300`}>
+                          <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
                             {currentEmployees.map((employee, idx) => {
                               const listing = listings.find(l => l.id === employee.listingId) || listings[0];
                               const li: any = listing as any;
@@ -610,7 +610,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                           onViewAll={handleViewAllShops}
                         />
                         <div id="shops-rail">
-                          <div className={`grid ${gridColsClass} gap-5 pb-8 transition-all duration-300`}>
+                          <div className={`grid ${gridColsClass} gap-4 pb-8 transition-all duration-300`}>
                             {currentShops.map((shop, idx) => (
                               <div
                                 key={`${shop.id}-${shopsIndex}`}
@@ -642,7 +642,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
 
                     {/* ===== Filtered Results Grid ===== */}
                     {filterInfo.isFiltered && (
-                      <div className={`grid ${gridColsClass} gap-5 transition-all duration-300`}>
+                      <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
                         {allContentItems.map((item, idx) => (
                           <div
                             key={`${item.type}-${item.data.id}`}

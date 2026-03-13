@@ -13,6 +13,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import useLoginModal from "@/app/hooks/useLoginModal";
 import useSettingsModal from "@/app/hooks/useSettingsModal";
+import useInboxModal from "@/app/hooks/useInboxModal";
+import useNotificationsModal from "@/app/hooks/useNotificationsModal";
 import { SafePost, SafeUser } from "@/app/types";
 import { clearEarlyAccess } from "@/app/utils/earlyAccess";
 
@@ -30,6 +32,8 @@ const UserButton: React.FC<UserButtonProps> = ({
   const router = useRouter();
   const loginModal = useLoginModal();
   const settingsModal = useSettingsModal();
+  const inboxModal = useInboxModal();
+  const notificationsModal = useNotificationsModal();
   const [isOpen, setIsOpen] = useState(false);
 
   const formatTier = (tier?: string | null) => {
@@ -77,6 +81,9 @@ const UserButton: React.FC<UserButtonProps> = ({
   const handleLicensing = handleClick(() => router.push("/licensing"));
   const handleAnalytics = handleClick(() => router.push("/analytics"));
   const handleSettings = handleClick(() => settingsModal.onOpen());
+  const handleInbox = handleClick(() => inboxModal.onOpen(currentUser));
+  const handleNotifications = handleClick(() => notificationsModal.onOpen());
+  const handleFavorites = handleClick(() => router.push("/favorites"));
   const handleClearEarlyAccess = handleClick(() => {
     if (window.confirm('Are you sure you want to clear early access? You will need the access code to re-enter the app.')) {
       clearEarlyAccess();
@@ -159,6 +166,11 @@ const UserButton: React.FC<UserButtonProps> = ({
         <DropdownMenuItem onClick={handleProfile}>My Profile</DropdownMenuItem>
         <DropdownMenuItem onClick={handleListings}>My Listings</DropdownMenuItem>
         <DropdownMenuItem onClick={handleAnalytics}>My Analytics</DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={handleInbox}>Inbox</DropdownMenuItem>
+        <DropdownMenuItem onClick={handleNotifications}>Notifications</DropdownMenuItem>
+        <DropdownMenuItem onClick={handleFavorites}>Favorites</DropdownMenuItem>
+        <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSubscribe}>Subscription</DropdownMenuItem>
         <DropdownMenuItem onClick={handleLicensing}>Licensing</DropdownMenuItem>
         <DropdownMenuItem onClick={handleSettings}>Settings</DropdownMenuItem>

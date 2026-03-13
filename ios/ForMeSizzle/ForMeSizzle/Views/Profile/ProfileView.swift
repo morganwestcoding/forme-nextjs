@@ -7,12 +7,18 @@ struct ProfileView: View {
 
     private var user: User? { authViewModel.currentUser }
 
+    private var memberSince: String? {
+        guard let date = user?.createdAt else { return nil }
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM yyyy"
+        return formatter.string(from: date)
+    }
+
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(spacing: 0) {
-                // MARK: - Hero Header
+                // MARK: - Header
                 ZStack(alignment: .bottom) {
-                    // Background
                     ZStack {
                         if let bgUrl = user?.backgroundImage, let url = URL(string: bgUrl) {
                             AsyncImage(url: url) { phase in
@@ -32,14 +38,13 @@ struct ProfileView: View {
                             profileHeaderGradient
                         }
                     }
-                    .frame(height: 220)
+                    .frame(height: 200)
                     .clipped()
                     .overlay(
-                        // Bottom fade
                         LinearGradient(
                             stops: [
                                 .init(color: .clear, location: 0.0),
-                                .init(color: ForMe.background.opacity(0.3), location: 0.5),
+                                .init(color: ForMe.background.opacity(0.4), location: 0.55),
                                 .init(color: ForMe.background, location: 1.0)
                             ],
                             startPoint: .top,
@@ -47,15 +52,15 @@ struct ProfileView: View {
                         )
                     )
 
-                    // Avatar + Name overlay
-                    VStack(spacing: 12) {
+                    // Avatar bleeds into content
+                    VStack(spacing: 0) {
                         ZStack(alignment: .bottomTrailing) {
                             DynamicAvatar(
                                 name: user?.name ?? "User",
                                 imageUrl: user?.image,
                                 size: .large
                             )
-                            .shadow(color: .black.opacity(0.12), radius: 8, x: 0, y: 4)
+                            .shadow(color: .black.opacity(0.15), radius: 12, x: 0, y: 6)
 
                             if user?.verificationStatus == .verified {
                                 Image(systemName: "checkmark.seal.fill")
@@ -69,175 +74,171 @@ struct ProfileView: View {
                                     .offset(x: 2, y: 2)
                             }
                         }
-
-                        VStack(spacing: 4) {
-                            Text(user?.name ?? "User")
-                                .font(.system(size: 24, weight: .bold))
-                                .foregroundColor(ForMe.textPrimary)
-
-                            if let location = user?.location {
-                                HStack(spacing: 4) {
-                                    Image(systemName: "mappin")
-                                        .font(.system(size: 11))
-                                    Text(location)
-                                        .font(.system(size: 13, weight: .medium))
-                                }
-                                .foregroundColor(ForMe.textTertiary)
-                            }
-                        }
                     }
-                    .padding(.bottom, -30)
+                    .offset(y: 40)
                 }
                 .staggeredFadeIn(index: 0)
 
-                // Spacer for overlap
-                Spacer().frame(height: 42)
+                Spacer().frame(height: 52)
 
-                // MARK: - Bio
-                if let bio = user?.bio, !bio.isEmpty {
-                    Text(bio)
-                        .font(.system(size: 14, weight: .regular))
+                // MARK: - Identity
+                VStack(spacing: 6) {
+                    Text(user?.name ?? "User")
+                        .font(.system(size: 26, weight: .bold))
+                        .tracking(-0.5)
+                        .foregroundColor(ForMe.textPrimary)
+
+                    // Role + Location inline
+                    HStack(spacing: 6) {
+                        if let role = user?.role {
+                            Text(role)
+                                .font(.system(size: 13, weight: .semibold))
+                                .foregroundColor(ForMe.textSecondary)
+                        }
+                        if user?.role != nil && user?.location != nil {
+                            Text("·")
+                                .font(.system(size: 13, weight: .bold))
+                                .foregroundColor(ForMe.textTertiary)
+                        }
+                        if let location = user?.location {
+                            Text(location)
+                                .font(.system(size: 13, weight: .medium))
+                                .foregroundColor(ForMe.textTertiary)
+                        }
+                    }
+
+                    Text("Barber & stylist based in Long Beach. 10+ years crafting fresh cuts and clean fades.")
+                        .font(.system(size: 14))
                         .foregroundColor(ForMe.textSecondary)
                         .multilineTextAlignment(.center)
-                        .lineSpacing(3)
-                        .padding(.horizontal, 40)
-                        .staggeredFadeIn(index: 1)
+                        .lineSpacing(2)
+                        .padding(.top, 4)
+                        .padding(.horizontal, 32)
                 }
+                .staggeredFadeIn(index: 1)
 
-                // MARK: - Edit Profile Button
-                Button {
-                    showEditProfile = true
-                } label: {
-                    Text("Edit Profile")
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundColor(ForMe.textPrimary)
-                        .padding(.horizontal, 28)
-                        .padding(.vertical, 10)
-                        .background(
-                            Capsule()
-                                .fill(ForMe.surface)
-                        )
-                        .overlay(
-                            Capsule()
-                                .stroke(ForMe.border, lineWidth: 1)
-                        )
-                        .shadow(color: .black.opacity(0.04), radius: 2, x: 0, y: 1)
+                // MARK: - Actions
+                HStack(spacing: 10) {
+                    Button {
+                        showEditProfile = true
+                    } label: {
+                        Text("Edit Profile")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundColor(ForMe.textPrimary)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 11)
+                            .background(ForMe.surface)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                    .stroke(ForMe.border, lineWidth: 1)
+                            )
+                            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                    }
+
+                    Button {} label: {
+                        Text("Share")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundColor(ForMe.textPrimary)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 11)
+                            .background(ForMe.surface)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                    .stroke(ForMe.border, lineWidth: 1)
+                            )
+                            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                    }
                 }
-                .padding(.top, 16)
+                .padding(.top, 18)
+                .padding(.horizontal, 16)
                 .staggeredFadeIn(index: 2)
 
-                // MARK: - Stats Row
+                // MARK: - Stats
                 HStack(spacing: 0) {
                     ProfileStat(
                         value: "\(user?.followingIds?.count ?? 0)",
                         label: "Following"
                     )
 
-                    RoundedRectangle(cornerRadius: 1)
-                        .fill(ForMe.borderLight)
-                        .frame(width: 1, height: 28)
-
                     ProfileStat(
                         value: "\(user?.followerIds?.count ?? 0)",
                         label: "Followers"
                     )
 
-                    RoundedRectangle(cornerRadius: 1)
-                        .fill(ForMe.borderLight)
-                        .frame(width: 1, height: 28)
-
                     ProfileStat(
-                        value: user?.isSubscribed == true ? "Pro" : "Free",
-                        label: "Plan"
+                        value: "5.0",
+                        label: "Rating"
                     )
                 }
-                .padding(.vertical, 20)
-                .padding(.horizontal, 24)
+                .padding(.top, 20)
+                .padding(.bottom, 6)
+                .padding(.horizontal, 16)
                 .staggeredFadeIn(index: 3)
 
-                // MARK: - Editorial Service Options
-                VStack(spacing: 10) {
-                    // Row 1 — two cards
-                    HStack(spacing: 10) {
-                        EditorialProfileCard(
-                            icon: "heart",
-                            title: "Favorites",
-                            subtitle: "Saved",
-                            accentColor: Color(hex: "FB7185"),
-                            watermark: "heart.fill"
-                        ) {}
+                // Divider
+                Rectangle()
+                    .fill(ForMe.borderLight)
+                    .frame(height: 1)
+                    .padding(.horizontal, 16)
 
-                        EditorialProfileCard(
-                            icon: "clock.arrow.circlepath",
-                            title: "History",
-                            subtitle: "Bookings",
-                            accentColor: Color(hex: "60A5FA"),
-                            watermark: "clock"
-                        ) {}
-                    }
+                // MARK: - Activity
+                VStack(alignment: .leading, spacing: 0) {
+                    Text("Activity")
+                        .font(.system(size: 12, weight: .semibold))
+                        .tracking(0.8)
+                        .textCase(.uppercase)
+                        .foregroundColor(ForMe.textTertiary)
+                        .padding(.horizontal, 16)
+                        .padding(.top, 20)
+                        .padding(.bottom, 10)
 
-                    // Row 2 — two cards
-                    HStack(spacing: 10) {
-                        EditorialProfileCard(
-                            icon: "creditcard",
-                            title: "Payment",
-                            subtitle: "Methods",
-                            accentColor: Color(hex: "34D399"),
-                            watermark: "creditcard.fill"
-                        ) {}
-
-                        EditorialProfileCard(
-                            icon: "bell",
-                            title: "Alerts",
-                            subtitle: "Notifications",
-                            accentColor: Color(hex: "FBBF24"),
-                            watermark: "bell.fill"
-                        ) {}
-                    }
-
-                    // Row 3 — two cards
-                    HStack(spacing: 10) {
-                        EditorialProfileCard(
-                            icon: "gearshape",
-                            title: "Settings",
-                            subtitle: "Preferences",
-                            accentColor: Color(hex: "A78BFA"),
-                            watermark: "gearshape.fill"
-                        ) {
-                            showSettings = true
-                        }
-
-                        EditorialProfileCard(
-                            icon: "questionmark.circle",
-                            title: "Support",
-                            subtitle: "Help",
-                            accentColor: Color(hex: "6B7280"),
-                            watermark: "questionmark"
-                        ) {}
-                    }
+                    ProfileMenuRow(icon: "heart", title: "Favorites") {}
+                    ProfileMenuRow(icon: "clock.arrow.circlepath", title: "Booking History") {}
+                    ProfileMenuRow(icon: "creditcard", title: "Payment Methods") {}
                 }
-                .padding(.horizontal, 16)
                 .staggeredFadeIn(index: 4)
+
+                // Divider
+                Rectangle()
+                    .fill(ForMe.borderLight)
+                    .frame(height: 1)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 4)
+
+                // MARK: - Preferences
+                VStack(alignment: .leading, spacing: 0) {
+                    Text("Preferences")
+                        .font(.system(size: 12, weight: .semibold))
+                        .tracking(0.8)
+                        .textCase(.uppercase)
+                        .foregroundColor(ForMe.textTertiary)
+                        .padding(.horizontal, 16)
+                        .padding(.top, 16)
+                        .padding(.bottom, 10)
+
+                    ProfileMenuRow(icon: "bell", title: "Notifications") {}
+                    ProfileMenuRow(icon: "gearshape", title: "Settings") {
+                        showSettings = true
+                    }
+                    ProfileMenuRow(icon: "questionmark.circle", title: "Help & Support") {}
+                }
+                .staggeredFadeIn(index: 5)
 
                 // MARK: - Logout
                 Button(role: .destructive) {
                     authViewModel.logout()
                 } label: {
-                    HStack(spacing: 8) {
-                        Image(systemName: "rectangle.portrait.and.arrow.right")
-                            .font(.system(size: 13))
-                        Text("Log Out")
-                            .font(.system(size: 14, weight: .medium))
-                    }
-                    .foregroundColor(ForMe.textTertiary)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
+                    Text("Log Out")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(ForMe.statusCancelled)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
                 }
-                .padding(.top, 8)
+                .padding(.top, 20)
                 .padding(.horizontal, 16)
-                .staggeredFadeIn(index: 5)
+                .staggeredFadeIn(index: 6)
 
-                Spacer().frame(height: 32)
+                Spacer().frame(height: 40)
             }
         }
         .background(ForMe.background)
@@ -250,7 +251,6 @@ struct ProfileView: View {
         }
     }
 
-    // Gradient for header when no background image
     private var profileHeaderGradient: some View {
         LinearGradient(
             colors: [
@@ -271,9 +271,9 @@ struct ProfileStat: View {
     let label: String
 
     var body: some View {
-        VStack(spacing: 2) {
+        VStack(spacing: 3) {
             Text(value)
-                .font(.system(size: 17, weight: .bold, design: .rounded))
+                .font(.system(size: 16, weight: .bold, design: .rounded))
                 .foregroundColor(ForMe.textPrimary)
             Text(label)
                 .font(.system(size: 11, weight: .medium))
@@ -283,94 +283,73 @@ struct ProfileStat: View {
     }
 }
 
-// MARK: - Editorial Profile Card (magazine-style service option)
+// MARK: - Profile Menu Row
 
-struct EditorialProfileCard: View {
+struct ProfileMenuRow: View {
     let icon: String
     let title: String
-    let subtitle: String
-    let accentColor: Color
-    let watermark: String
     let action: () -> Void
-
-    @State private var isPressed = false
 
     var body: some View {
         Button(action: action) {
-            ZStack(alignment: .topLeading) {
-                // Watermark icon — large, faded, offset to bottom-right
-                Image(systemName: watermark)
-                    .font(.system(size: 54, weight: .ultraLight))
-                    .foregroundColor(accentColor.opacity(0.08))
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
-                    .padding(.trailing, 8)
-                    .padding(.bottom, 6)
+            HStack(spacing: 12) {
+                Image(systemName: icon)
+                    .font(.system(size: 15, weight: .regular))
+                    .foregroundColor(ForMe.textSecondary)
+                    .frame(width: 22)
 
-                // Content
-                VStack(alignment: .leading, spacing: 0) {
-                    // Icon circle
-                    Image(systemName: icon)
-                        .font(.system(size: 15, weight: .medium))
-                        .foregroundColor(accentColor)
-                        .frame(width: 36, height: 36)
-                        .background(
-                            Circle()
-                                .fill(accentColor.opacity(0.1))
-                        )
+                Text(title)
+                    .font(.system(size: 15))
+                    .foregroundColor(ForMe.textPrimary)
 
-                    Spacer()
+                Spacer()
 
-                    // Title — bold editorial
-                    Text(title)
-                        .font(.system(size: 18, weight: .bold))
-                        .foregroundColor(ForMe.textPrimary)
-                        .tracking(-0.3)
-
-                    // Subtitle
-                    Text(subtitle)
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(ForMe.textTertiary)
-                        .padding(.top, 1)
-
-                    // Arrow indicator
-                    HStack {
-                        Spacer()
-                        Image(systemName: "arrow.up.right")
-                            .font(.system(size: 12, weight: .medium))
-                            .foregroundColor(ForMe.textTertiary)
-                    }
-                    .padding(.top, 6)
-                }
-                .padding(16)
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundColor(ForMe.textTertiary.opacity(0.6))
             }
-            .frame(height: 140)
-            .frame(maxWidth: .infinity)
-            .background(ForMe.surface)
-            .overlay(
-                RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .stroke(ForMe.borderLight, lineWidth: 1)
-            )
-            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-            .shadow(color: .black.opacity(0.03), radius: 2, x: 0, y: 1)
-            .scaleEffect(isPressed ? 0.97 : 1.0)
-            .animation(.easeOut(duration: 0.15), value: isPressed)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 13)
         }
-        .buttonStyle(EditorialCardButtonStyle(isPressed: $isPressed))
     }
 }
 
-struct EditorialCardButtonStyle: ButtonStyle {
-    @Binding var isPressed: Bool
+// MARK: - Previews
 
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .onChange(of: configuration.isPressed) { _, newValue in
-                isPressed = newValue
-            }
-    }
+#Preview("Full Profile") {
+    let vm = AuthViewModel()
+    vm.currentUser = User(
+        id: "1",
+        name: "Marcus Johnson",
+        bio: "Barber & stylist based in Long Beach. 10+ years crafting fresh cuts and clean fades.",
+        location: "Long Beach, CA",
+        role: "Barber",
+        isVerified: true
+    )
+    return ProfileView()
+        .environmentObject(vm)
 }
 
-#Preview {
-    ProfileView()
-        .environmentObject(AuthViewModel())
+#Preview("No Photo") {
+    let vm = AuthViewModel()
+    vm.currentUser = User(
+        id: "2",
+        name: "Sarah Chen",
+        bio: "Barber & stylist based in Long Beach. 10+ years crafting fresh cuts and clean fades.",
+        location: "Los Angeles, CA",
+        role: "Stylist"
+    )
+    return ProfileView()
+        .environmentObject(vm)
+}
+
+#Preview("Minimal") {
+    let vm = AuthViewModel()
+    vm.currentUser = User(
+        id: "3",
+        name: "New User",
+        bio: "Barber & stylist based in Long Beach. 10+ years crafting fresh cuts and clean fades."
+    )
+    return ProfileView()
+        .environmentObject(vm)
 }
