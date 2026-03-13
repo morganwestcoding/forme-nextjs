@@ -86,6 +86,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
     { label: "Discover", href: "/", active: isActive("/", ["/post"]) },
     { label: "Businesses", href: "/market", active: isActive("/market", ["/market", "/listings"]) },
     { label: "Shops", href: "/shops", active: isActive("/shops", ["/shops"]) },
+    { label: "Maps", href: "/maps", active: isActive("/maps", ["/maps"]) },
     ...(currentUser ? [
       { label: "Appointments", href: "/bookings/reservations", active: isActive("/bookings/reservations", ["/bookings"]) },
     ] : []),
