@@ -70,7 +70,7 @@ struct PostCard: View {
             .shadow(color: .black.opacity(0.11), radius: 5, x: 0, y: 4)
 
             // Info section below image
-            VStack(alignment: .leading, spacing: 1) {
+            VStack(alignment: .leading, spacing: 6) {
                 // User name
                 if let user = post.user {
                     Text(user.name ?? "")
