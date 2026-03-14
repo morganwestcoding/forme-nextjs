@@ -163,7 +163,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
                 {/* Avatar */}
                 <div className="mb-3">
                   {shouldShowImage ? (
-                    <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-neutral-900 shadow-sm relative">
+                    <div className="w-12 h-12 rounded-full overflow-hidden relative">
                       <Image
                         src={profileImage}
                         alt={employee.fullName}
@@ -177,7 +177,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
                     </div>
                   ) : (
                     <div
-                      className="w-12 h-12 rounded-full flex items-center justify-center text-white text-sm font-semibold border-2 border-neutral-900 shadow-sm"
+                      className="w-12 h-12 rounded-full flex items-center justify-center text-white text-sm font-semibold"
                       style={{ backgroundColor: avatarBg }}
                     >
                       {initials}

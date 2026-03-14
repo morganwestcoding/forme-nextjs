@@ -83,10 +83,9 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
   };
 
   const navItems = [
-    { label: "Discover", href: "/", active: isActive("/", ["/post"]) },
-    { label: "Businesses", href: "/market", active: isActive("/market", ["/market", "/listings"]) },
-    { label: "Shops", href: "/shops", active: isActive("/shops", ["/shops"]) },
+    { label: "Discover", href: "/", active: isActive("/", ["/post", "/listings"]) },
     { label: "Maps", href: "/maps", active: isActive("/maps", ["/maps"]) },
+    { label: "Brands", href: "/shops", active: isActive("/shops", ["/shops"]) },
     ...(currentUser ? [
       { label: "Appointments", href: "/bookings/reservations", active: isActive("/bookings/reservations", ["/bookings"]) },
     ] : []),
