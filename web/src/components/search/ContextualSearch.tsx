@@ -260,7 +260,7 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
             : '0 1px 2px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.7)',
         }}
       >
-        <div className="relative flex items-center gap-2 px-4 py-2.5">
+        <div className="relative flex items-center gap-2 px-3 py-1.5">
           <input
             ref={inputRef}
             type="text"
@@ -269,7 +269,7 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
             onFocus={() => results.length && setOpen(true)}
             onKeyDown={onKeyDown}
             placeholder={placeholder}
-            className={`flex-1 pl-3 text-[15px] bg-transparent border-none outline-none ${
+            className={`flex-1 pl-3 text-[14px] bg-transparent border-none outline-none ${
               isDarkMode
                 ? 'text-white placeholder-zinc-500'
                 : 'text-stone-900 placeholder-stone-400'

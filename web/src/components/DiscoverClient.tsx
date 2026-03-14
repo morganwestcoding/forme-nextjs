@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import ClientProviders from '@/components/ClientProviders';
 import { categories } from '@/components/Categories';
 import { SafePost, SafeUser, SafeListing, SafeEmployee, SafeShop } from '@/app/types';
@@ -9,13 +9,14 @@ import { useViewMode } from '@/app/hooks/useViewMode';
 import { useSidebarState } from '@/app/hooks/useSidebarState';
 import Container from './Container';
 import PageSearch from '@/components/search/PageSearch';
-import CategoryNav from '@/app/market/CategoryNav';
 import PostCard from './feed/PostCard';
 import TikTokView from './feed/TikTokView';
 import ListingCard from '@/components/listings/ListingCard';
 import WorkerCard from '@/components/listings/WorkerCard';
 import ShopCard from '@/components/shop/ShopCard';
 import SectionHeader from '@/app/market/SectionHeader';
+import Image from 'next/image';
+import useLoginModal from '@/app/hooks/useLoginModal';
 
 interface DiscoverClientProps {
   initialPosts: SafePost[];
@@ -56,6 +57,8 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
   const { viewMode, setViewMode } = useViewMode();
   const isSidebarCollapsed = useSidebarState();
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const loginModal = useLoginModal();
 
   // Support both legacy single category and new multi-select categories
   const currentCategories = searchParams?.get('categories')?.split(',').filter(Boolean) ||
@@ -333,25 +336,64 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
 
               {/* Content */}
               <div className="relative z-10 pb-6">
-                {/* Main Discover Title */}
-                <div className="text-center">
-                  <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white leading-tight tracking-tight">
-                    Discover
-                  </h1>
-                  <p className="text-gray-500 dark:text-gray-400 text-base mt-3 max-w-2xl mx-auto">Share what&apos;s new with you and your business</p>
-                </div>
-
                 {/* Search and Controls */}
-                <div className="mt-8 max-w-3xl mx-auto">
-                  <PageSearch actionContext="discover" />
+                <div className="max-w-3xl flex items-center gap-3">
+                  <div className="flex-1">
+                    <PageSearch actionContext="discover" />
+                  </div>
+                  <button
+                    onClick={() => {
+                      if (currentUser?.id) {
+                        router.push(`/profile/${currentUser.id}`);
+                      } else {
+                        loginModal.onOpen();
+                      }
+                    }}
+                    className="shrink-0 w-10 h-10 rounded-full overflow-hidden border border-zinc-200 dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-500 transition-colors"
+                  >
+                    <Image
+                      src={currentUser?.image || "/people/rooster.webp"}
+                      alt="Profile"
+                      width={40}
+                      height={40}
+                      className="object-cover w-full h-full"
+                    />
+                  </button>
                 </div>
 
-                {/* Category Navigation - Sticky */}
-                <div className="mt-3 -mx-6 md:-mx-24">
-                  <div className="sticky top-0 z-20 transition-all duration-300" id="discover-category-nav-wrapper">
-                    <div className="px-6 md:px-24">
-                      <CategoryNav searchParams={headerSearchParams} basePath="/" />
-                    </div>
+                {/* Shop by Category */}
+                <div className="mt-8">
+                  <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white mb-4">Shop by category</h2>
+                  <div className="flex gap-5 overflow-x-auto pb-2 scrollbar-hide">
+                    {categories.map((cat) => {
+                      const isSelected = currentCategories.includes(cat.label);
+                      return (
+                        <button
+                          key={cat.label}
+                          onClick={() => {
+                            const params = new URLSearchParams(searchParams?.toString() || '');
+                            if (isSelected) {
+                              params.delete('category');
+                            } else {
+                              params.set('category', cat.label);
+                            }
+                            router.push(`/?${params.toString()}`);
+                          }}
+                          className="flex flex-col items-center gap-2 shrink-0 group"
+                        >
+                          <div className={`w-16 h-16 rounded-full ${cat.color} transition-all duration-200 ${
+                            isSelected
+                              ? 'ring-2 ring-offset-2 ring-gray-900 dark:ring-white scale-105'
+                              : 'group-hover:scale-105 group-hover:shadow-md'
+                          }`} />
+                          <span className={`text-xs font-medium transition-colors ${
+                            isSelected
+                              ? 'text-gray-900 dark:text-white'
+                              : 'text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300'
+                          }`}>{cat.label}</span>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 

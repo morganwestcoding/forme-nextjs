@@ -59,8 +59,7 @@ export default async function RootLayout({
             <html lang="en">
               <body className={inter.className}>
               <ComingSoonGate>
-                <div className="min-h-screen flex">
-                  <Sidebar currentUser={currentUser ?? null} />
+                <div className="min-h-screen">
                   <LayoutContent>
                     {children}
                   </LayoutContent>
