@@ -393,21 +393,31 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                   <div className="flex items-center gap-2 ml-auto">
                     <button
                       onClick={() => router.push('/post/new')}
-                      className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors"
+                      className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-stone-400 dark:text-zinc-500 hover:text-stone-600 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-zinc-800 transition-colors"
                     >
-                      <PlusSignIcon className="w-5 h-5" strokeWidth={1.5} />
+                      <PlusSignIcon className="w-5 h-5 sm:w-[22px] sm:h-[22px]" strokeWidth={1.5} />
+                    </button>
+                    <button
+                      className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-stone-400 dark:text-zinc-500 hover:text-stone-600 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-zinc-800 transition-colors"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5 sm:w-[22px] sm:h-[22px]" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M17.5 8.75L15.0447 19.5532C15.015 19.684 15 19.8177 15 19.9518C15 20.9449 15.8051 21.75 16.7982 21.75H18" />
+                        <path d="M19.2192 21.75H4.78078C3.79728 21.75 3 20.9527 3 19.9692C3 19.8236 3.01786 19.6786 3.05317 19.5373L5.24254 10.7799C5.60631 9.32474 5.78821 8.59718 6.33073 8.17359C6.87325 7.75 7.6232 7.75 9.12311 7.75H14.8769C16.3768 7.75 17.1267 7.75 17.6693 8.17359C18.2118 8.59718 18.3937 9.32474 18.7575 10.7799L20.9468 19.5373C20.9821 19.6786 21 19.8236 21 19.9692C21 20.9527 20.2027 21.75 19.2192 21.75Z" />
+                        <path d="M15 7.75V5.75C15 4.09315 13.6569 2.75 12 2.75C10.3431 2.75 9 4.09315 9 5.75V7.75" />
+                        <path d="M10 10.75H12.5" />
+                      </svg>
                     </button>
                     <button
                       onClick={() => notificationsModal.onOpen()}
-                      className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors"
+                      className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-stone-400 dark:text-zinc-500 hover:text-stone-600 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-zinc-800 transition-colors"
                     >
-                      <Notification03Icon className="w-5 h-5" strokeWidth={1.5} />
+                      <Notification03Icon className="w-5 h-5 sm:w-[22px] sm:h-[22px]" strokeWidth={1.5} />
                     </button>
                     <button
                       onClick={() => inboxModal.onOpen(currentUser)}
-                      className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors"
+                      className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-stone-400 dark:text-zinc-500 hover:text-stone-600 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-zinc-800 transition-colors"
                     >
-                      <MessageMultiple01Icon className="w-5 h-5" strokeWidth={1.5} />
+                      <MessageMultiple01Icon className="w-5 h-5 sm:w-[22px] sm:h-[22px]" strokeWidth={1.5} />
                     </button>
                     <button
                       onClick={() => {
@@ -459,19 +469,19 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
             <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white mb-6">Shop By Category</h2>
             <div className="flex gap-6 overflow-x-auto pb-2 pt-2 pl-4 pr-4 -ml-4 scrollbar-hide">
               {(() => {
-                const iconMap: Record<string, any> = {
-                  Massage: TreatmentIcon,
-                  Wellness: Yoga01Icon,
-                  Fitness: WorkoutRunIcon,
-                  Nails: BlushBrush01Icon,
-                  Spa: HotTubeIcon,
-                  Barber: ChairBarberIcon,
-                  Beauty: PerfumeIcon,
-                  Salon: HairDryerIcon,
+                const imageMap: Record<string, string> = {
+                  Massage: '/assets/massage.jpg',
+                  Wellness: '/assets/wellness.jpg',
+                  Fitness: '/assets/fitness.jpg',
+                  Nails: '/assets/nails.jpg',
+                  Spa: '/assets/spa.png',
+                  Barber: '/assets/Barber.png',
+                  Beauty: '/assets/Beauty.png',
+                  Salon: '/assets/Salon.png',
                 };
                 return categories.map((cat) => {
                   const isSelected = currentCategories.includes(cat.label);
-                  const Icon = iconMap[cat.label] || PerfumeIcon;
+                  const imageSrc = imageMap[cat.label] || '/categories/default.svg';
                   return (
                     <button
                       key={cat.label}
@@ -487,15 +497,21 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                       className="flex flex-col items-center gap-2 shrink-0 group"
                     >
                       <div
-                        className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300 ease-out border ${
+                        className={`w-[78px] h-[78px] rounded-full overflow-hidden relative transition-all duration-300 ease-out border ${
                           isSelected
-                            ? 'border-stone-300 dark:border-zinc-500 bg-stone-100 dark:bg-zinc-800 scale-105'
-                            : 'border-stone-200/80 dark:border-zinc-700/50 bg-stone-50 dark:bg-zinc-800/50 group-hover:border-stone-300 dark:group-hover:border-zinc-600 group-hover:bg-stone-100 dark:group-hover:bg-zinc-800'
+                            ? 'border-stone-300 dark:border-zinc-500 scale-105 ring-2 ring-stone-300 dark:ring-zinc-500'
+                            : 'border-stone-200/80 dark:border-zinc-700/50 group-hover:border-stone-300 dark:group-hover:border-zinc-600'
                         }`}
                       >
-                        <Icon className={`w-5 h-5 transition-colors duration-300 ${isSelected ? 'text-stone-700 dark:text-zinc-200' : 'text-stone-400 dark:text-zinc-500 group-hover:text-stone-500 dark:group-hover:text-zinc-400'}`} strokeWidth={1.5} />
+                        <Image
+                          src={imageSrc}
+                          alt={cat.label}
+                          fill
+                          className="object-cover"
+                          sizes="78px"
+                        />
                       </div>
-                      <span className={`text-[11px] font-medium transition-colors duration-300 ${
+                      <span className={`text-sm font-normal transition-colors duration-300 ${
                         isSelected
                           ? 'text-stone-700 dark:text-zinc-200'
                           : 'text-stone-400 dark:text-zinc-500 group-hover:text-stone-600 dark:group-hover:text-zinc-300'
@@ -508,14 +524,14 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                 onClick={() => {/* TODO: show more categories */}}
                 className="flex flex-col items-center gap-2 shrink-0 group"
               >
-                <div className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300 ease-out border border-stone-200/80 dark:border-zinc-700/50 bg-stone-50 dark:bg-zinc-800/50 group-hover:border-stone-300 dark:group-hover:border-zinc-600 group-hover:bg-stone-100 dark:group-hover:bg-zinc-800">
+                <div className="w-[78px] h-[78px] rounded-full flex items-center justify-center transition-all duration-300 ease-out border border-stone-200/80 dark:border-zinc-700/50 bg-stone-50 dark:bg-zinc-800/50 group-hover:border-stone-300 dark:group-hover:border-zinc-600 group-hover:bg-stone-100 dark:group-hover:bg-zinc-800">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="w-5 h-5 text-stone-400 dark:text-zinc-500 group-hover:text-stone-500 dark:group-hover:text-zinc-400 transition-colors duration-300">
                     <circle cx="5" cy="12" r="1" fill="currentColor" stroke="none" />
                     <circle cx="12" cy="12" r="1" fill="currentColor" stroke="none" />
                     <circle cx="19" cy="12" r="1" fill="currentColor" stroke="none" />
                   </svg>
                 </div>
-                <span className="text-[11px] font-medium text-stone-400 dark:text-zinc-500 group-hover:text-stone-600 dark:group-hover:text-zinc-300 transition-colors duration-300">More</span>
+                <span className="text-sm font-normal text-stone-400 dark:text-zinc-500 group-hover:text-stone-600 dark:group-hover:text-zinc-300 transition-colors duration-300">More</span>
               </button>
             </div>
           </div>

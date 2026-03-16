@@ -242,7 +242,7 @@ const MapsClient: React.FC<MapsClientProps> = ({ listings }) => {
   const filteredCount = filter === 'all' ? items.length : items.filter(i => i.type === filter).length;
 
   return (
-    <div className={`fixed inset-0 bg-white transition-all duration-300 ${sidebarCollapsed ? 'left-16' : 'left-56'}`}>
+    <div className="fixed inset-0 bg-white">
       {/* Top bar */}
       <div className="absolute top-0 left-0 right-0 z-10 flex items-center gap-3 px-6 py-4">
         <div className="flex items-center gap-1.5 bg-white/90 backdrop-blur-md rounded-full border border-zinc-200 shadow-sm px-1 py-1">
