@@ -68,12 +68,12 @@ const TextContentStep: React.FC<TextContentStepProps> = ({ content, onContentCha
 
           {/* Quote mark accent */}
           <div className="absolute top-3 left-3 text-stone-300 text-3xl font-serif leading-none select-none">
-            "
+            &ldquo;
           </div>
 
           {/* Closing quote mark */}
           <div className="absolute bottom-2 right-3 text-stone-300 text-3xl font-serif leading-none select-none rotate-180">
-            "
+            &rdquo;
           </div>
         </div>
       </div>

@@ -168,6 +168,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
 
   const typeFilter = searchParams?.get('type') as 'posts' | 'listings' | 'professionals' | 'shops' | null;
 
+
   // Responsive grid - adds 1 column when sidebar is collapsed
   const gridColsClass = isSidebarCollapsed
     ? 'grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
@@ -469,17 +470,27 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
             <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white mb-6">Shop By Category</h2>
             <div className="flex gap-6 overflow-x-auto pb-2 pt-2 pl-4 pr-4 -ml-4 scrollbar-hide">
               {(() => {
+                const iconMap: Record<string, React.ElementType> = {
+                  Massage: TreatmentIcon,
+                  Wellness: Yoga01Icon,
+                  Fitness: WorkoutRunIcon,
+                  Nails: BlushBrush01Icon,
+                  Spa: HotTubeIcon,
+                  Barber: ChairBarberIcon,
+                  Beauty: PerfumeIcon,
+                  Salon: HairDryerIcon,
+                };
                 const imageMap: Record<string, string> = {
                   Massage: '/assets/massage.jpg',
                   Wellness: '/assets/wellness.jpg',
                   Fitness: '/assets/fitness.jpg',
-                  Nails: '/assets/nails.jpg',
+                  Nails: '/assets/nails.png',
                   Spa: '/assets/spa.png',
                   Barber: '/assets/Barber.png',
                   Beauty: '/assets/Beauty.png',
                   Salon: '/assets/Salon.png',
                 };
-                return categories.map((cat) => {
+                return categories.map((cat, catIdx) => {
                   const isSelected = currentCategories.includes(cat.label);
                   const imageSrc = imageMap[cat.label] || '/categories/default.svg';
                   return (
@@ -497,7 +508,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                       className="flex flex-col items-center gap-2 shrink-0 group"
                     >
                       <div
-                        className={`w-[78px] h-[78px] rounded-full overflow-hidden relative transition-all duration-300 ease-out border ${
+                        className={`w-[78px] h-[78px] rounded-full overflow-hidden relative transition-all duration-300 ease-out border shadow-sm ${
                           isSelected
                             ? 'border-stone-300 dark:border-zinc-500 scale-105 ring-2 ring-stone-300 dark:ring-zinc-500'
                             : 'border-stone-200/80 dark:border-zinc-700/50 group-hover:border-stone-300 dark:group-hover:border-zinc-600'
@@ -507,9 +518,13 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                           src={imageSrc}
                           alt={cat.label}
                           fill
-                          className="object-cover"
+                          className="object-cover blur-[2px] scale-110 grayscale group-hover:grayscale-0 transition-all duration-300"
                           sizes="78px"
                         />
+                        <div className="absolute inset-0 bg-black/30 group-hover:bg-black/20 transition-all duration-300" />
+                        <div className="absolute inset-0 flex items-center justify-center text-white z-10">
+                          {(() => { const Icon = iconMap[cat.label]; return Icon ? <Icon size={24} strokeWidth={1.5} /> : null; })()}
+                        </div>
                       </div>
                       <span className={`text-sm font-normal transition-colors duration-300 ${
                         isSelected
@@ -524,7 +539,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                 onClick={() => {/* TODO: show more categories */}}
                 className="flex flex-col items-center gap-2 shrink-0 group"
               >
-                <div className="w-[78px] h-[78px] rounded-full flex items-center justify-center transition-all duration-300 ease-out border border-stone-200/80 dark:border-zinc-700/50 bg-stone-50 dark:bg-zinc-800/50 group-hover:border-stone-300 dark:group-hover:border-zinc-600 group-hover:bg-stone-100 dark:group-hover:bg-zinc-800">
+                <div className="w-[78px] h-[78px] rounded-full flex items-center justify-center transition-all duration-300 ease-out border border-stone-200/80 dark:border-zinc-700/50 bg-stone-50 dark:bg-zinc-800/50 group-hover:border-stone-300 dark:group-hover:border-zinc-600 group-hover:bg-stone-100 dark:group-hover:bg-zinc-800 shadow-sm">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="w-5 h-5 text-stone-400 dark:text-zinc-500 group-hover:text-stone-500 dark:group-hover:text-zinc-400 transition-colors duration-300">
                     <circle cx="5" cy="12" r="1" fill="currentColor" stroke="none" />
                     <circle cx="12" cy="12" r="1" fill="currentColor" stroke="none" />

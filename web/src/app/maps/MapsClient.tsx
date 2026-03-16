@@ -245,6 +245,15 @@ const MapsClient: React.FC<MapsClientProps> = ({ listings }) => {
     <div className="fixed inset-0 bg-white">
       {/* Top bar */}
       <div className="absolute top-0 left-0 right-0 z-10 flex items-center gap-3 px-6 py-4">
+        <button
+          onClick={() => router.push('/')}
+          className="shrink-0 w-10 h-10 rounded-full bg-white/90 backdrop-blur-md border border-zinc-200 shadow-sm flex items-center justify-center text-zinc-600 hover:text-zinc-900 hover:bg-white transition-colors"
+          aria-label="Back to home"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
         <div className="flex items-center gap-1.5 bg-white/90 backdrop-blur-md rounded-full border border-zinc-200 shadow-sm px-1 py-1">
           {(['all', 'listing', 'worker'] as const).map((f) => (
             <button
