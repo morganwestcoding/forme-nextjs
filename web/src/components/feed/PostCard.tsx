@@ -15,9 +15,10 @@ interface PostCardProps {
   categories?: any[];
   variant?: string;
   hideUserInfo?: boolean;
+  isHero?: boolean;
 }
 
-const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) => {
+const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, isHero = false }) => {
   const postModal = usePostModal();
   const { posts } = usePostStore();
   const post = posts.find((p) => p.id === initialPost.id) || initialPost;
@@ -32,6 +33,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
   const isVideo = post.mediaType === 'video';
   const hasThumbnail = isVideo && post.thumbnailUrl;
   const hasBeforeAfter = Boolean(post.beforeImageSrc) && !isVideo;
+
 
 
   const handleCardClick = async () => {
@@ -86,12 +88,12 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
       onClick={handleCardClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className="group cursor-pointer w-full rounded-xl px-4 py-3 transition-all duration-300 hover:bg-neutral-50"
+      className="group cursor-pointer w-full relative transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] hover:z-10 hover:shadow-xl hover:shadow-black/20"
     >
-      {/* Media container — extends slightly past the info area */}
+      {/* Media container */}
       <div
-        className="relative overflow-hidden rounded-lg bg-neutral-100 dark:bg-neutral-900 transition-transform duration-500 ease-out group-hover:scale-[1.03] -mx-1"
-        style={{ aspectRatio: '5 / 6', boxShadow: '0 4px 10px rgba(0,0,0,0.11)' }}
+        className="relative overflow-hidden bg-stone-100 dark:bg-zinc-800 transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] brightness-[0.97] group-hover:brightness-100 group-hover:scale-[1.02]"
+        style={{ aspectRatio: isHero ? undefined : '5 / 6', height: isHero ? '100%' : undefined, boxShadow: 'inset 0 0 30px rgba(0,0,0,0.08), inset 0 0 6px rgba(0,0,0,0.04)' }}
       >
       {/* Text post */}
       {isTextPost ? (
@@ -172,42 +174,55 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser }) =
 
         {/* Heart button — top right */}
         <div
-          className="absolute top-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          className="absolute top-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center gap-0.5"
           onClick={(e) => e.stopPropagation()}
         >
           <HeartButton listingId={post.id} currentUser={currentUser} />
+          <span className="text-[10px] font-medium text-white/80 tabular-nums drop-shadow-sm">{likeCount}</span>
         </div>
 
-        {/* Profile pic — bottom left corner on image */}
-        {post.user?.image && (
-          <div className="absolute bottom-3 left-3 z-20 w-7 h-7 rounded-full overflow-hidden ring-2 ring-white shadow-sm">
-            <Image
-              src={post.user.image}
-              alt={post.user.name || ''}
-              fill
-              className="object-cover"
-              sizes="28px"
-            />
-          </div>
-        )}
-      </div>
+        {/* Bottom gradient overlay — reveal on hover */}
+        <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/60 via-black/25 to-transparent z-10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-600" />
 
-      {/* Info section — below image */}
-      <div className="mt-3.5 flex flex-col gap-0.5">
-        {post.user && (
-          <span className="text-neutral-900 dark:text-white text-[14px] font-semibold truncate block">
-            {post.user.name}
-          </span>
-        )}
-        <p className="text-neutral-500 dark:text-neutral-400 text-[13px] leading-snug line-clamp-1">
-          {post.content || 'This is a description.'}
-        </p>
-        <div className="mt-1.5 flex items-center gap-1.5 text-[11px] whitespace-nowrap overflow-hidden">
-          <span className="text-neutral-400">{formatDate(post.createdAt)}</span>
-          <span className="w-px h-3 bg-neutral-200 mx-0.5" />
-          <span className="text-neutral-400">{likeCount} {likeCount === 1 ? 'like' : 'likes'}</span>
-          <span className="w-px h-3 bg-neutral-200 mx-0.5" />
-          <span className="text-neutral-400">{commentCount} {commentCount === 1 ? 'comment' : 'comments'}</span>
+        {/* Info overlay — reveal on hover */}
+        <div className="absolute bottom-0 left-0 right-0 z-20 p-3 flex items-center gap-2.5 opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-600 ease-[cubic-bezier(0.23,1,0.32,1)]">
+          {post.user?.image && (
+            <div className="relative w-7 h-7 rounded-full overflow-hidden ring-[1.5px] ring-white/80 shrink-0">
+              <Image
+                src={post.user.image}
+                alt={post.user.name || ''}
+                fill
+                className="object-cover"
+                sizes="28px"
+              />
+            </div>
+          )}
+          <div className="flex-1 min-w-0">
+            {post.user && (
+              <span className="text-white text-[13px] font-semibold truncate block drop-shadow-sm">
+                {post.user.name}
+              </span>
+            )}
+            <div className="flex items-center gap-2 mt-0.5">
+              <p className="text-white/70 text-[11px] leading-snug line-clamp-1 drop-shadow-sm flex-1 min-w-0">
+                {post.content || 'This is a description.'}
+              </p>
+              <div className="flex items-center gap-2 shrink-0 text-white/60">
+                {likeCount > 0 && (
+                  <span className="flex items-center gap-0.5 text-[10px]">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    {likeCount}
+                  </span>
+                )}
+                {commentCount > 0 && (
+                  <span className="flex items-center gap-0.5 text-[10px]">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    {commentCount}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

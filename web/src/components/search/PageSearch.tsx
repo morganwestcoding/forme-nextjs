@@ -46,6 +46,8 @@ interface PageSearchProps {
   enableLocalFilter?: boolean;
   /** Context for action button dropdown */
   actionContext?: ActionContext;
+  /** Icon to render on the left side of the search input */
+  leftIcon?: React.ReactNode;
 }
 
 interface ActionItem {
@@ -67,6 +69,7 @@ const PageSearch: React.FC<PageSearchProps> = ({
   onSearchChange,
   enableLocalFilter = false,
   actionContext,
+  leftIcon,
 }) => {
   const params = useSearchParams();
   const router = useRouter();
@@ -266,6 +269,7 @@ const PageSearch: React.FC<PageSearchProps> = ({
         placeholder={placeholder}
         filterTypes={filterTypes}
         actionButtons={actionButtons || defaultActionButtons}
+        leftIcon={leftIcon}
         entityId={entityId}
         entityType={entityType}
         onSearchChange={onSearchChange}

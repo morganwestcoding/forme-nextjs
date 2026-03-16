@@ -281,17 +281,24 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
   return (
     <div
       onClick={() => router.push(`/listings/${data.id}`)}
-      className="group cursor-pointer rounded-xl p-3 transition-all duration-300 hover:bg-neutral-50"
+      className="group cursor-pointer rounded-2xl p-3.5 transition-all duration-300 hover:bg-stone-50 dark:hover:bg-zinc-800/50 relative"
     >
+      {/* Heart button — top right, visible on hover */}
+      <div
+        className="absolute top-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center gap-0.5"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <HeartButton listingId={data.id} currentUser={currentUser} variant="listingHead" />
+        <span className="text-[10px] font-medium text-stone-400 dark:text-zinc-500 tabular-nums">{data.ratingCount ?? 0}</span>
+      </div>
       <div className="flex flex-row gap-4 items-center w-full">
         {/* Image card */}
         <div
           className={`
-            relative overflow-hidden rounded-lg flex-shrink-0
-            transition-transform duration-500 ease-out group-hover:scale-[1.03]
+            relative overflow-hidden rounded-xl flex-shrink-0 shadow-md
+            transition-transform duration-500 ease-out group-hover:scale-[1.02]
             ${compact ? 'w-[80px] h-[80px]' : 'w-[100px] h-[100px]'}
           `}
-          style={{ boxShadow: '0 4px 10px rgba(0,0,0,0.11)' }}
         >
           <Image
             src={cardImage}
@@ -308,25 +315,25 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
         {compact ? (
           <>
             {data.category && (
-              <span className="text-[11px] text-neutral-400">
+              <span className="text-[10px] italic text-stone-400 dark:text-zinc-500 tracking-wide">
                 {data.category}
               </span>
             )}
-            <h1 className="text-neutral-900 text-[15px] leading-snug font-semibold tracking-[-0.01em] line-clamp-1">
+            <h1 className="text-neutral-900 dark:text-zinc-100 text-[15px] leading-snug font-semibold tracking-[-0.02em] line-clamp-1">
               {data.title}
             </h1>
-            <p className="text-neutral-400 text-[11px] line-clamp-1">
+            <p className="text-stone-400 dark:text-zinc-500 text-[11px] line-clamp-1">
               {city && state ? `${city}, ${state}` : city || state || 'Location'}
             </p>
-            <div className="mt-1.5 flex items-center gap-1.5 text-[11px] whitespace-nowrap overflow-hidden">
-              <svg className="w-2.5 h-2.5 text-amber-400" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
-              <span className="font-bold text-neutral-900 tabular-nums">{Number(data.rating ?? 0).toFixed(1)}</span>
-              <span className="w-px h-3 bg-neutral-200 mx-0.5" />
-              <span className="text-neutral-400">{data.ratingCount ?? 0} reviews</span>
+            <div className="mt-2 flex items-center gap-1.5 text-[11px] whitespace-nowrap overflow-hidden">
+              <span className="font-semibold text-neutral-900 dark:text-zinc-100 tabular-nums">{Number(data.rating ?? 0).toFixed(1)}</span>
+              <svg className="w-2.5 h-2.5 text-stone-400 dark:text-zinc-500" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+              <span className="text-stone-300 dark:text-zinc-600 mx-0.5">&middot;</span>
+              <span className="text-stone-400 dark:text-zinc-500">{data.ratingCount ?? 0} reviews</span>
               {priceRange && (
                 <>
-                  <span className="w-px h-3 bg-neutral-200 mx-0.5" />
-                  <span className="text-neutral-500 font-medium">{priceRange}</span>
+                  <span className="text-stone-300 dark:text-zinc-600 mx-0.5">&middot;</span>
+                  <span className="text-stone-500 dark:text-zinc-400 font-medium">{priceRange}</span>
                 </>
               )}
             </div>
@@ -334,25 +341,25 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
         ) : (
           <>
             {data.category && (
-              <span className="text-[12px] text-neutral-400">
+              <span className="text-[11px] italic text-stone-400 dark:text-zinc-500 tracking-wide">
                 {data.category}
               </span>
             )}
-            <h1 className="text-neutral-900 text-[16px] leading-snug font-semibold tracking-[-0.01em] line-clamp-1">
+            <h1 className="text-neutral-900 dark:text-zinc-100 text-[16px] leading-snug font-semibold tracking-[-0.02em] line-clamp-1">
               {data.title}
             </h1>
-            <p className="text-neutral-400 text-[12px] line-clamp-1">
+            <p className="text-stone-400 dark:text-zinc-500 text-[12px] line-clamp-1">
               {city && state ? `${city}, ${state}` : city || state || 'Location'}
             </p>
             <div className="mt-2 flex items-center gap-2 text-[12px] whitespace-nowrap overflow-hidden">
-              <svg className="w-3 h-3 text-amber-400" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
-              <span className="font-bold text-neutral-900 tabular-nums">{Number(data.rating ?? 0).toFixed(1)}</span>
-              <span className="w-px h-3.5 bg-neutral-200 mx-0.5" />
-              <span className="text-neutral-400">{data.ratingCount ?? 0} reviews</span>
+              <span className="font-semibold text-neutral-900 dark:text-zinc-100 tabular-nums">{Number(data.rating ?? 0).toFixed(1)}</span>
+              <svg className="w-3 h-3 text-stone-400 dark:text-zinc-500" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+              <span className="text-stone-300 dark:text-zinc-600 mx-0.5">&middot;</span>
+              <span className="text-stone-400 dark:text-zinc-500">{data.ratingCount ?? 0} reviews</span>
               {priceRange && (
                 <>
-                  <span className="w-px h-3.5 bg-neutral-200 mx-0.5" />
-                  <span className="text-neutral-500 font-medium">{priceRange}</span>
+                  <span className="text-stone-300 dark:text-zinc-600 mx-0.5">&middot;</span>
+                  <span className="text-stone-500 dark:text-zinc-400 font-medium">{priceRange}</span>
                 </>
               )}
             </div>

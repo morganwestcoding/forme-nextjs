@@ -139,6 +139,16 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
   const shouldShowImage = profileImage && !imageError;
   const rating = employee.rating ?? 5.0;
 
+  // Get price range from listing services
+  const prices = listing.services?.map(s => s.price).filter(p => p > 0) || [];
+  const minPrice = prices.length > 0 ? Math.min(...prices) : null;
+  const maxPrice = prices.length > 0 ? Math.max(...prices) : null;
+  const priceRange = minPrice !== null
+    ? minPrice === maxPrice
+      ? `$${minPrice}`
+      : `$${minPrice} - $${maxPrice}`
+    : null;
+
   // Solid background editorial layout (matches ServiceCard style on listing page)
   if (solidBackground) {
     return (
@@ -148,6 +158,12 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
       >
         {/* White background */}
         <div className="absolute inset-0 bg-white rounded-xl border border-neutral-200/60" />
+
+        {/* Heart button - visible on hover */}
+        <div className="absolute top-3 right-3 z-30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center gap-0.5" onClick={(e) => e.stopPropagation()}>
+          <HeartButton listingId={listing.id} currentUser={currentUser} variant="listingHead" />
+          <span className="text-[10px] font-medium text-stone-400 dark:text-zinc-500 tabular-nums">{employee.followerCount ?? 0}</span>
+        </div>
 
         <div className="relative z-10">
           <div className={compact ? 'relative h-[180px]' : 'relative h-[280px]'}>
@@ -226,13 +242,21 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
   return (
     <div
       onClick={handleCardClick}
-      className="group cursor-pointer rounded-xl p-3 transition-all duration-300 hover:bg-neutral-50"
+      className="group cursor-pointer rounded-2xl p-3.5 transition-all duration-300 hover:bg-stone-50 dark:hover:bg-zinc-800/50 relative"
     >
+      {/* Heart button — top right, visible on hover */}
+      <div
+        className="absolute top-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center gap-0.5"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <HeartButton listingId={listing.id} currentUser={currentUser} variant="listingHead" />
+        <span className="text-[10px] font-medium text-stone-400 dark:text-zinc-500 tabular-nums">{employee.followerCount ?? 0}</span>
+      </div>
       <div className="flex flex-row gap-4 items-center w-full">
-        {/* Avatar container - matches ListingCard image size */}
+        {/* Avatar container */}
         <div className={`flex-shrink-0 flex items-center justify-center ${compact ? 'w-[80px] h-[80px]' : 'w-[100px] h-[100px]'}`}>
           {shouldShowImage ? (
-            <div className={`${compact ? 'w-[64px] h-[64px]' : 'w-[78px] h-[78px]'} rounded-full overflow-hidden relative transition-transform duration-300 group-hover:scale-105`} style={{ boxShadow: '0 4px 10px rgba(0,0,0,0.11)' }}>
+            <div className={`${compact ? 'w-[64px] h-[64px]' : 'w-[78px] h-[78px]'} rounded-full overflow-hidden relative transition-transform duration-300 group-hover:scale-105 shadow-md`}>
               <Image
                 src={profileImage}
                 alt={employee.fullName}
@@ -246,8 +270,8 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
             </div>
           ) : (
             <div
-              className={`${compact ? 'w-[64px] h-[64px] text-base' : 'w-[78px] h-[78px] text-lg'} rounded-full flex items-center justify-center text-white font-semibold transition-transform duration-300 group-hover:scale-105`}
-              style={{ backgroundColor: avatarBg, boxShadow: '0 4px 10px rgba(0,0,0,0.11)' }}
+              className={`${compact ? 'w-[64px] h-[64px] text-base' : 'w-[78px] h-[78px] text-lg'} rounded-full flex items-center justify-center text-white font-semibold transition-transform duration-300 group-hover:scale-105 shadow-md`}
+              style={{ backgroundColor: avatarBg }}
             >
               {initials}
             </div>
@@ -258,38 +282,50 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
         <div className="flex flex-col justify-center min-w-0 flex-1 gap-0.5">
         {compact ? (
           <>
-            <span className="text-[11px] text-neutral-400">
+            <span className="text-[10px] italic text-stone-400 dark:text-zinc-500 tracking-wide">
               {employee.jobTitle || 'Specialist'}
             </span>
-            <h1 className="text-neutral-900 text-[15px] leading-snug font-semibold tracking-[-0.01em] line-clamp-1">
+            <h1 className="text-neutral-900 dark:text-zinc-100 text-[15px] leading-snug font-semibold tracking-[-0.02em] line-clamp-1">
               {employee.fullName}
             </h1>
-            <p className="text-neutral-400 text-[11px] line-clamp-1">
+            <p className="text-stone-400 dark:text-zinc-500 text-[11px] line-clamp-1">
               {listingTitle}
             </p>
-            <div className="mt-1.5 flex items-center gap-1.5 text-[11px]">
-              <svg className="w-2.5 h-2.5 text-amber-400" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
-              <span className="font-bold text-neutral-900 tabular-nums">{Number(rating).toFixed(1)}</span>
-              <span className="w-px h-3 bg-neutral-200 mx-0.5" />
-              <span className="text-neutral-400">0 reviews</span>
+            <div className="mt-2 flex items-center gap-1.5 text-[11px] whitespace-nowrap overflow-hidden">
+              <span className="font-semibold text-neutral-900 dark:text-zinc-100 tabular-nums">{Number(rating).toFixed(1)}</span>
+              <svg className="w-2.5 h-2.5 text-stone-400 dark:text-zinc-500" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+              <span className="text-stone-300 dark:text-zinc-600 mx-0.5">&middot;</span>
+              <span className="text-stone-400 dark:text-zinc-500">0 reviews</span>
+              {priceRange && (
+                <>
+                  <span className="text-stone-300 dark:text-zinc-600 mx-0.5">&middot;</span>
+                  <span className="text-stone-500 dark:text-zinc-400 font-medium">{priceRange}</span>
+                </>
+              )}
             </div>
           </>
         ) : (
           <>
-            <span className="text-[12px] text-neutral-400">
+            <span className="text-[11px] italic text-stone-400 dark:text-zinc-500 tracking-wide">
               {employee.jobTitle || 'Specialist'}
             </span>
-            <h1 className="text-neutral-900 text-[16px] leading-snug font-semibold tracking-[-0.01em] line-clamp-1">
+            <h1 className="text-neutral-900 dark:text-zinc-100 text-[16px] leading-snug font-semibold tracking-[-0.02em] line-clamp-1">
               {employee.fullName}
             </h1>
-            <p className="text-neutral-400 text-[12px] line-clamp-1">
+            <p className="text-stone-400 dark:text-zinc-500 text-[12px] line-clamp-1">
               {listingTitle}
             </p>
-            <div className="mt-2 flex items-center gap-2 text-[12px]">
-              <svg className="w-3 h-3 text-amber-400" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
-              <span className="font-bold text-neutral-900 tabular-nums">{Number(rating).toFixed(1)}</span>
-              <span className="w-px h-3.5 bg-neutral-200 mx-0.5" />
-              <span className="text-neutral-400">0 reviews</span>
+            <div className="mt-2 flex items-center gap-2 text-[12px] whitespace-nowrap overflow-hidden">
+              <span className="font-semibold text-neutral-900 dark:text-zinc-100 tabular-nums">{Number(rating).toFixed(1)}</span>
+              <svg className="w-3 h-3 text-stone-400 dark:text-zinc-500" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+              <span className="text-stone-300 dark:text-zinc-600 mx-0.5">&middot;</span>
+              <span className="text-stone-400 dark:text-zinc-500">0 reviews</span>
+              {priceRange && (
+                <>
+                  <span className="text-stone-300 dark:text-zinc-600 mx-0.5">&middot;</span>
+                  <span className="text-stone-500 dark:text-zinc-400 font-medium">{priceRange}</span>
+                </>
+              )}
             </div>
           </>
         )}

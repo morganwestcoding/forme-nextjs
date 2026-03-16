@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import ClientProviders from '@/components/ClientProviders';
 import { categories } from '@/components/Categories';
 import { SafePost, SafeUser, SafeListing, SafeEmployee, SafeShop } from '@/app/types';
@@ -15,8 +16,11 @@ import ListingCard from '@/components/listings/ListingCard';
 import WorkerCard from '@/components/listings/WorkerCard';
 import ShopCard from '@/components/shop/ShopCard';
 import SectionHeader from '@/app/market/SectionHeader';
+import { Search01Icon, PlusSignIcon, Notification03Icon, MessageMultiple01Icon, TreatmentIcon, Yoga01Icon, WorkoutRunIcon, BlushBrush01Icon, HotTubeIcon, ChairBarberIcon, PerfumeIcon, HairDryerIcon } from 'hugeicons-react';
 import Image from 'next/image';
 import useLoginModal from '@/app/hooks/useLoginModal';
+import useInboxModal from '@/app/hooks/useInboxModal';
+import useNotificationsModal from '@/app/hooks/useNotificationsModal';
 
 interface DiscoverClientProps {
   initialPosts: SafePost[];
@@ -58,14 +62,33 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
   const isSidebarCollapsed = useSidebarState();
   const searchParams = useSearchParams();
   const router = useRouter();
+  const pathname = usePathname();
   const loginModal = useLoginModal();
+  const inboxModal = useInboxModal();
+  const notificationsModal = useNotificationsModal();
+
+  const isNavActive = (path: string, includes?: string[]) => {
+    if (pathname === path) return true;
+    if (includes?.some(p => pathname?.startsWith(p))) return true;
+    return false;
+  };
+
+  const navItems = [
+    { label: "Home", href: "/", active: isNavActive("/", ["/post", "/listings"]) },
+    { label: "Maps", href: "/maps", active: isNavActive("/maps") },
+    { label: "Brands", href: "/shops", active: isNavActive("/shops") },
+    ...(currentUser ? [
+      { label: "Bookings", href: "/bookings/reservations", active: isNavActive("/bookings/reservations", ["/bookings"]) },
+    ] : []),
+    { label: "Settings", href: "/settings", active: isNavActive("/settings") },
+  ];
 
   // Support both legacy single category and new multi-select categories
   const currentCategories = searchParams?.get('categories')?.split(',').filter(Boolean) ||
     (searchParams?.get('category') ? [searchParams.get('category')!] : []);
 
-  // Dynamic items per page: 12 when sidebar collapsed, 10 when expanded
-  const ITEMS_PER_PAGE = isSidebarCollapsed ? 12 : 10;
+  // Items per page: 14 for posts grid (2x7), others based on sidebar state
+  const ITEMS_PER_PAGE = 14;
 
   // Generate a stable seed for this session (changes on page refresh)
   const [shuffleSeed] = useState(() => Date.now());
@@ -331,26 +354,71 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
       <div className="min-h-screen">
         <Container>
           {/* Hero Section - Clean minimal design (matching Market) */}
-          <div className="-mx-6 md:-mx-24 -mt-2 md:-mt-8">
-            <div className="relative px-6 md:px-24 pt-12 pb-8">
+          <div className="-mx-6 md:-mx-24 -mt-2 md:-mt-8 overflow-visible">
+            <div className="relative px-6 md:px-24 pt-12 pb-0 overflow-visible">
 
               {/* Content */}
-              <div className="relative z-10 pb-6">
+              <div className="relative z-10 pb-0">
                 {/* Search and Controls */}
-                <div className="max-w-3xl flex items-center gap-3">
-                  <div className="flex-1">
-                    <PageSearch actionContext="discover" />
-                  </div>
-                  <button
-                    onClick={() => {
-                      if (currentUser?.id) {
-                        router.push(`/profile/${currentUser.id}`);
-                      } else {
-                        loginModal.onOpen();
+                <div className="flex items-center gap-3 w-full">
+                  <Link href="/" className="mr-4">
+                    <Image src="/logos/fm-logo.png" alt="Logo" width={72} height={46} className="opacity-90 hover:opacity-100 transition-opacity duration-200 shrink-0" />
+                  </Link>
+                  <div className="flex-1 max-w-xl">
+                    <PageSearch
+                      actionContext="discover"
+                      showAttach={false}
+                      showCreate={false}
+                      showFilters={false}
+                      showDefaultActions={false}
+                      leftIcon={
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-6 h-6 shrink-0 ml-1.5">
+                          <path d="M2.5 12C2.5 7.52166 2.5 5.28249 3.89124 3.89124C5.28249 2.5 7.52166 2.5 12 2.5C16.4783 2.5 18.7175 2.5 20.1088 3.89124C21.5 5.28249 21.5 7.52166 21.5 12C21.5 16.4783 21.5 18.7175 20.1088 20.1088C18.7175 21.5 16.4783 21.5 12 21.5C7.52166 21.5 5.28249 21.5 3.89124 20.1088C2.5 18.7175 2.5 16.4783 2.5 12Z" fill="currentColor" className="text-stone-500 dark:text-zinc-400" />
+                          <path d="M14.8284 14.8284L17 17M16 12C16 9.79086 14.2091 8 12 8C9.79086 8 8 9.79086 8 12C8 14.2091 9.79086 16 12 16C14.2091 16 16 14.2091 16 12Z" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
                       }
-                    }}
-                    className="shrink-0 w-10 h-10 rounded-full overflow-hidden border border-zinc-200 dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-500 transition-colors"
-                  >
+                      actionButtons={
+                        <button
+                          type="button"
+                          className="flex items-center gap-2 px-6 py-1.5 rounded-lg text-stone-500 dark:text-zinc-400 hover:text-stone-700 dark:hover:text-zinc-200 hover:bg-stone-100 dark:hover:bg-zinc-800 transition-colors text-[13px] whitespace-nowrap"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor" stroke="none">
+                            <path d="M12 2C7.58 2 4 5.58 4 10c0 5.25 7 12 8 12s8-6.75 8-12c0-4.42-3.58-8-8-8Zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z" />
+                          </svg>
+                          New York, NY
+                        </button>
+                      }
+                    />
+                  </div>
+                  <div className="flex items-center gap-2 ml-auto">
+                    <button
+                      onClick={() => router.push('/post/new')}
+                      className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors"
+                    >
+                      <PlusSignIcon className="w-5 h-5" strokeWidth={1.5} />
+                    </button>
+                    <button
+                      onClick={() => notificationsModal.onOpen()}
+                      className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors"
+                    >
+                      <Notification03Icon className="w-5 h-5" strokeWidth={1.5} />
+                    </button>
+                    <button
+                      onClick={() => inboxModal.onOpen(currentUser)}
+                      className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors"
+                    >
+                      <MessageMultiple01Icon className="w-5 h-5" strokeWidth={1.5} />
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (currentUser?.id) {
+                          router.push(`/profile/${currentUser.id}`);
+                        } else {
+                          loginModal.onOpen();
+                        }
+                      }}
+                      className="shrink-0 w-10 h-10 rounded-full overflow-hidden border border-zinc-200 dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-500 transition-colors"
+                    >
                     <Image
                       src={currentUser?.image || "/people/rooster.webp"}
                       alt="Profile"
@@ -358,51 +426,102 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                       height={40}
                       className="object-cover w-full h-full"
                     />
-                  </button>
-                </div>
-
-                {/* Shop by Category */}
-                <div className="mt-8">
-                  <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white mb-4">Shop by category</h2>
-                  <div className="flex gap-5 overflow-x-auto pb-2 scrollbar-hide">
-                    {categories.map((cat) => {
-                      const isSelected = currentCategories.includes(cat.label);
-                      return (
-                        <button
-                          key={cat.label}
-                          onClick={() => {
-                            const params = new URLSearchParams(searchParams?.toString() || '');
-                            if (isSelected) {
-                              params.delete('category');
-                            } else {
-                              params.set('category', cat.label);
-                            }
-                            router.push(`/?${params.toString()}`);
-                          }}
-                          className="flex flex-col items-center gap-2 shrink-0 group"
-                        >
-                          <div className={`w-16 h-16 rounded-full ${cat.color} transition-all duration-200 ${
-                            isSelected
-                              ? 'ring-2 ring-offset-2 ring-gray-900 dark:ring-white scale-105'
-                              : 'group-hover:scale-105 group-hover:shadow-md'
-                          }`} />
-                          <span className={`text-xs font-medium transition-colors ${
-                            isSelected
-                              ? 'text-gray-900 dark:text-white'
-                              : 'text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300'
-                          }`}>{cat.label}</span>
-                        </button>
-                      );
-                    })}
+                    </button>
                   </div>
                 </div>
+
+                {/* Navigation */}
+                <nav className="flex items-center gap-3 mt-4" style={{ paddingLeft: 'calc(72px + 1rem + 1.25rem)' }}>
+                  {navItems.map((item, i) => (
+                    <React.Fragment key={item.label}>
+                      {i > 0 && <span className="text-gray-300 dark:text-gray-600 text-[13px]">/</span>}
+                      <Link
+                        href={item.href}
+                        className={`text-[14px] transition-colors duration-200 ${
+                          item.active
+                            ? 'text-gray-900 dark:text-white font-medium'
+                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                        }`}
+                      >
+                        {item.label}
+                      </Link>
+                    </React.Fragment>
+                  ))}
+                </nav>
+
 
               </div>
             </div>
           </div>
 
+          {/* Shop By Category */}
+          <div className="mt-8 mb-6">
+            <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white mb-6">Shop By Category</h2>
+            <div className="flex gap-6 overflow-x-auto pb-2 pt-2 pl-4 pr-4 -ml-4 scrollbar-hide">
+              {(() => {
+                const iconMap: Record<string, any> = {
+                  Massage: TreatmentIcon,
+                  Wellness: Yoga01Icon,
+                  Fitness: WorkoutRunIcon,
+                  Nails: BlushBrush01Icon,
+                  Spa: HotTubeIcon,
+                  Barber: ChairBarberIcon,
+                  Beauty: PerfumeIcon,
+                  Salon: HairDryerIcon,
+                };
+                return categories.map((cat) => {
+                  const isSelected = currentCategories.includes(cat.label);
+                  const Icon = iconMap[cat.label] || PerfumeIcon;
+                  return (
+                    <button
+                      key={cat.label}
+                      onClick={() => {
+                        const params = new URLSearchParams(searchParams?.toString() || '');
+                        if (isSelected) {
+                          params.delete('category');
+                        } else {
+                          params.set('category', cat.label);
+                        }
+                        router.push(`/?${params.toString()}`);
+                      }}
+                      className="flex flex-col items-center gap-2 shrink-0 group"
+                    >
+                      <div
+                        className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300 ease-out border ${
+                          isSelected
+                            ? 'border-stone-300 dark:border-zinc-500 bg-stone-100 dark:bg-zinc-800 scale-105'
+                            : 'border-stone-200/80 dark:border-zinc-700/50 bg-stone-50 dark:bg-zinc-800/50 group-hover:border-stone-300 dark:group-hover:border-zinc-600 group-hover:bg-stone-100 dark:group-hover:bg-zinc-800'
+                        }`}
+                      >
+                        <Icon className={`w-5 h-5 transition-colors duration-300 ${isSelected ? 'text-stone-700 dark:text-zinc-200' : 'text-stone-400 dark:text-zinc-500 group-hover:text-stone-500 dark:group-hover:text-zinc-400'}`} strokeWidth={1.5} />
+                      </div>
+                      <span className={`text-[11px] font-medium transition-colors duration-300 ${
+                        isSelected
+                          ? 'text-stone-700 dark:text-zinc-200'
+                          : 'text-stone-400 dark:text-zinc-500 group-hover:text-stone-600 dark:group-hover:text-zinc-300'
+                      }`}>{cat.label}</span>
+                    </button>
+                  );
+                });
+              })()}
+              <button
+                onClick={() => {/* TODO: show more categories */}}
+                className="flex flex-col items-center gap-2 shrink-0 group"
+              >
+                <div className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300 ease-out border border-stone-200/80 dark:border-zinc-700/50 bg-stone-50 dark:bg-zinc-800/50 group-hover:border-stone-300 dark:group-hover:border-zinc-600 group-hover:bg-stone-100 dark:group-hover:bg-zinc-800">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="w-5 h-5 text-stone-400 dark:text-zinc-500 group-hover:text-stone-500 dark:group-hover:text-zinc-400 transition-colors duration-300">
+                    <circle cx="5" cy="12" r="1" fill="currentColor" stroke="none" />
+                    <circle cx="12" cy="12" r="1" fill="currentColor" stroke="none" />
+                    <circle cx="19" cy="12" r="1" fill="currentColor" stroke="none" />
+                  </svg>
+                </div>
+                <span className="text-[11px] font-medium text-stone-400 dark:text-zinc-500 group-hover:text-stone-600 dark:group-hover:text-zinc-300 transition-colors duration-300">More</span>
+              </button>
+            </div>
+          </div>
+
           {/* Content */}
-          <div className="relative -mt-[69px]">
+          <div className="relative">
             <div>
             {hasContent ? (
               <>
@@ -415,7 +534,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                       onViewAll={handleBackToMain}
                       viewAllLabel="← Back to Discover"
                     />
-                    <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-2 transition-all duration-300">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-0.5 rounded-xl overflow-hidden transition-all duration-300">
                       {(initialPosts || []).map((post, idx) => (
                         <div
                           key={post.id}
@@ -543,8 +662,8 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                           onViewAll={handleViewAllPosts}
                         />
                         <div id="posts-rail">
-                          <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-2 transition-all duration-300">
-                            {currentPosts.map((post, idx) => (
+                          <div className="grid grid-cols-7 grid-rows-2 gap-0.5 rounded-xl overflow-hidden transition-all duration-300">
+                            {currentPosts.slice(0, 14).map((post, idx) => (
                               <div
                                 key={`${post.id}-${postsIndex}`}
                                 style={{
