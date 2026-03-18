@@ -41,7 +41,8 @@ export type SafeListing = Omit<Listing, "createdAt" | "rating" | "ratingCount"> 
     rating?: number | null;
   ratingCount?: number;
   isTrending?: boolean;
-  
+  lat?: number | null;
+  lng?: number | null;
 };
 
 export type SafeReservation = Omit<

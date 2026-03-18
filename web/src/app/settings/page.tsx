@@ -3,7 +3,6 @@ import ClientOnly from "@/components/ClientOnly";
 import SettingsClient from "./SettingsClient";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import { redirect } from "next/navigation";
-import Container from "@/components/Container";
 import prisma from "@/app/libs/prismadb";
 
 export default async function SettingsPage() {
@@ -22,9 +21,7 @@ export default async function SettingsPage() {
 
   return (
     <ClientOnly>
-      <Container>
-        <SettingsClient currentUser={currentUser} isEmployee={isEmployee} />
-      </Container>
+      <SettingsClient currentUser={currentUser} isEmployee={isEmployee} />
     </ClientOnly>
   );
 }

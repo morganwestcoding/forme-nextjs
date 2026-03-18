@@ -462,24 +462,41 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                 <button className="text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors">View all</button>
               </div>
               {posts.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                  {posts.slice(0, 8).map((post, idx) => (
-                    <div
-                      key={post.id}
-                      style={{
-                        opacity: 0,
-                        animation: `fadeInUp 520ms ease-out both`,
-                        animationDelay: `${Math.min(60 + idx * 30, 360)}ms`,
-                      }}
-                    >
-                      <PostCard
-                        post={post}
-                        currentUser={currentUser}
-                        categories={categories}
-                        hideUserInfo
-                      />
-                    </div>
-                  ))}
+                <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-0.5 overflow-hidden rounded-xl">
+                  {posts.slice(0, 16).map((post, idx) => {
+                    // Calculate which corners to round (outside corners only)
+                    const cols = 8; // max columns at lg
+                    const total = Math.min(posts.length, 16);
+                    const isFirstRow = idx < cols;
+                    const isLastRow = idx >= total - (total % cols || cols);
+                    const isFirstCol = idx % cols === 0;
+                    const isLastCol = idx % cols === cols - 1 || idx === total - 1;
+
+                    let roundedClass = '';
+                    if (isFirstRow && isFirstCol) roundedClass += ' rounded-tl-xl';
+                    if (isFirstRow && isLastCol) roundedClass += ' rounded-tr-xl';
+                    if (isLastRow && isFirstCol) roundedClass += ' rounded-bl-xl';
+                    if (isLastRow && isLastCol) roundedClass += ' rounded-br-xl';
+
+                    return (
+                      <div
+                        key={post.id}
+                        className={`overflow-hidden ${roundedClass}`}
+                        style={{
+                          opacity: 0,
+                          animation: `fadeInUp 520ms ease-out both`,
+                          animationDelay: `${Math.min(60 + idx * 30, 360)}ms`,
+                        }}
+                      >
+                        <PostCard
+                          post={post}
+                          currentUser={currentUser}
+                          categories={categories}
+                          hideUserInfo
+                        />
+                      </div>
+                    );
+                  })}
                 </div>
               ) : (
                 <div className="text-center py-10 bg-gray-50 rounded-xl">

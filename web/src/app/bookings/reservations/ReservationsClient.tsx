@@ -10,6 +10,7 @@ import ReserveCard from "@/components/listings/ReserveCard";
 import PageSearch from "@/components/search/PageSearch";
 import CategoryNav from "@/app/bookings/CategoryNav";
 import SectionHeader from "@/app/market/SectionHeader";
+import PageHeader from "@/components/PageHeader";
 import { useSidebarState } from "@/app/hooks/useSidebarState";
 
 interface ReservationsClientProps {
@@ -19,6 +20,28 @@ interface ReservationsClientProps {
 }
 
 const FADE_OUT_DURATION = 200;
+
+// ── Mock reservations for representation ──
+const mockListing = (id: string, title: string, img: string, cat: string, loc: string, addr: string, empName: string) => ({
+  id, title, description: '', imageSrc: img, category: cat, location: loc, userId: 'mock-owner',
+  createdAt: new Date().toISOString(), services: [{ id: 's1', serviceName: title, price: 0, category: cat }],
+  phoneNumber: null, website: null, address: addr, zipCode: '10001', galleryImages: [], employees: [{ id: `emp-${id}`, fullName: empName }], storeHours: [],
+});
+const mockUser = (id: string, name: string): SafeUser => ({
+  id, name, email: null, image: null, imageSrc: null, bio: '', isSubscribed: false,
+  subscriptionStartDate: null, subscriptionEndDate: null, following: [], followers: [],
+  managedListings: [], resetTokenExpiry: null, createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(), emailVerified: null,
+} as any);
+
+const MOCK_RESERVATIONS: SafeReservation[] = [
+  { id: 'mock-res-1', createdAt: new Date().toISOString(), date: new Date(Date.now() + 2 * 86400000), time: '10:00', serviceName: 'Classic Fade', totalPrice: 45, status: 'pending', employeeId: 'emp-l1', userId: 'mc1', listingId: 'l1', user: mockUser('mc1', 'Jordan Ellis'), listing: mockListing('l1', 'Studio Noir Barbershop', '/assets/people/barber.png', 'Barber', 'Brooklyn, NY', '142 Bedford Ave', 'Marcus J.') } as any,
+  { id: 'mock-res-2', createdAt: new Date().toISOString(), date: new Date(Date.now() + 4 * 86400000), time: '14:30', serviceName: 'Hydra Glow Facial', totalPrice: 120, status: 'accepted', employeeId: 'emp-l2', userId: 'mc2', listingId: 'l2', user: mockUser('mc2', 'Ava Chen'), listing: mockListing('l2', 'Glow Aesthetics', '/assets/people/skincare.png', 'Skincare', 'Manhattan, NY', '88 Spring St', 'Priya M.') } as any,
+  { id: 'mock-res-3', createdAt: new Date().toISOString(), date: new Date(Date.now() + 1 * 86400000), time: '11:00', serviceName: 'Volume Lash Set', totalPrice: 150, status: 'pending', employeeId: 'emp-l3', userId: 'mc3', listingId: 'l3', user: mockUser('mc3', 'Sofia R.'), listing: mockListing('l3', 'Lash Lounge', '/assets/people/lashes.png', 'Lash', 'Queens, NY', '25-11 Broadway', 'Luna K.') } as any,
+  { id: 'mock-res-4', createdAt: new Date().toISOString(), date: new Date(Date.now() + 5 * 86400000), time: '16:00', serviceName: 'Gel Art Manicure', totalPrice: 65, status: 'accepted', employeeId: 'emp-l4', userId: 'mc4', listingId: 'l4', user: mockUser('mc4', 'Derek W.'), listing: mockListing('l4', 'The Nail Bar', '/assets/people/nails.png', 'Nails', 'Manhattan, NY', '401 W 14th St', 'Nina T.') } as any,
+  { id: 'mock-res-5', createdAt: new Date().toISOString(), date: new Date(Date.now() - 2 * 86400000), time: '09:00', serviceName: 'Power Hour Training', totalPrice: 75, status: 'declined', employeeId: 'emp-l5', userId: 'mc5', listingId: 'l5', user: mockUser('mc5', 'Marcus J.'), listing: mockListing('l5', 'Iron Temple', '/assets/people/fitness.png', 'Training', 'Bronx, NY', '900 Grand Concourse', 'Derek W.') } as any,
+  { id: 'mock-res-6', createdAt: new Date().toISOString(), date: new Date(Date.now() + 7 * 86400000), time: '13:00', serviceName: 'Brow Lamination & Tint', totalPrice: 85, status: 'pending', employeeId: 'emp-l6', userId: 'mc6', listingId: 'l6', user: mockUser('mc6', 'Jasmine L.'), listing: mockListing('l6', 'Brow Studio', '/assets/people/brows.png', 'Brows', 'Brooklyn, NY', '58 N 3rd St', 'Jasmine L.') } as any,
+];
 
 const ReservationsClient: React.FC<ReservationsClientProps> = ({
   incomingReservations,
@@ -93,7 +116,13 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
 
   // Determine which reservations to show based on direction filter
   const isOutgoingSelected = selectedCategories.includes('outgoing');
-  const baseReservations = isOutgoingSelected ? outgoingReservations : incomingReservations;
+  const realBase = isOutgoingSelected ? outgoingReservations : incomingReservations;
+  // Merge mock data so the page always has content
+  const baseReservations = useMemo(() => {
+    const realIds = new Set(realBase.map(r => r.id));
+    const mocks = MOCK_RESERVATIONS.filter(r => !realIds.has(r.id));
+    return [...realBase, ...mocks];
+  }, [realBase]);
 
   // Filter reservations based on selected status categories
   const filteredReservations = useMemo(() => {
@@ -159,77 +188,90 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Generate section header based on active filters
-  const getSectionHeader = () => {
-    const directionLabel = isOutgoingSelected ? "Outgoing" : "Incoming";
-    const statusFilters = selectedCategories.filter(cat => !['incoming', 'outgoing'].includes(cat));
+  // Upcoming / Past toggle
+  const [timeFilter, setTimeFilter] = useState<'upcoming' | 'past'>('upcoming');
 
-    if (statusFilters.length > 0) {
-      const statusText = statusFilters.map(status =>
-        status.charAt(0).toUpperCase() + status.slice(1)
-      ).join(' & ');
-      return `${statusText} ${directionLabel} Reservations`;
-    }
+  const now = new Date();
+  const upcomingReservations = useMemo(
+    () => filteredReservations.filter(r => new Date(r.date) >= now),
+    [filteredReservations]
+  );
+  const pastReservations = useMemo(
+    () => filteredReservations.filter(r => new Date(r.date) < now),
+    [filteredReservations]
+  );
 
-    return `${directionLabel} Reservations`;
-  };
+  const activeReservations = timeFilter === 'upcoming' ? upcomingReservations : pastReservations;
+
+  // Paginated items (recalculate for active set)
+  const paginatedReservations = useMemo(() => {
+    if (activeReservations.length <= ITEMS_PER_PAGE) return activeReservations;
+    const start = reservationsIndex * ITEMS_PER_PAGE;
+    return activeReservations.slice(start, start + ITEMS_PER_PAGE);
+  }, [activeReservations, reservationsIndex]);
+
+  const totalPages = Math.max(1, Math.ceil(activeReservations.length / ITEMS_PER_PAGE));
 
   return (
     <Container>
-      {/* Hero Section - Clean minimal design (matching Market) */}
-      <div className="-mx-6 md:-mx-24 -mt-2 md:-mt-8">
-        <div className="relative px-6 md:px-24 pt-12 pb-8 bg-white">
+      <PageHeader currentUser={currentUser} />
 
-          {/* Content */}
-          <div className="relative z-10 pb-6">
-            {/* Main Reservations Title */}
-            <div className="text-center">
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight tracking-tight">
-                Reservations
-              </h1>
-              <p className="text-gray-500 text-base mt-3 max-w-2xl mx-auto">
-                {isOutgoingSelected
-                  ? "Reservations you've made at other businesses"
-                  : "Reservations you've received from customers"}
-              </p>
-            </div>
-
-            {/* Search */}
-            <div className="mt-8 flex justify-center">
-              <div className="w-full max-w-3xl">
-                <PageSearch />
-              </div>
-            </div>
-
-            {/* Category Navigation - Sticky */}
-            <div className="mt-3 -mx-6 md:-mx-24">
-              <div className="sticky top-0 z-20 transition-all duration-300" id="reservations-category-nav-wrapper">
-                <div className="px-6 md:px-24">
-                  <CategoryNav />
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
+      {/* Upcoming / Past Toggle */}
+      <div className="flex items-center gap-1 mt-8 mb-6">
+        <button
+          onClick={() => { setTimeFilter('upcoming'); setReservationsIndex(0); }}
+          className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
+            timeFilter === 'upcoming'
+              ? 'bg-neutral-900 text-white'
+              : 'bg-neutral-100 text-neutral-500 hover:bg-neutral-200 hover:text-neutral-700'
+          }`}
+          type="button"
+        >
+          Upcoming
+          {upcomingReservations.length > 0 && (
+            <span className={`ml-2 text-[11px] px-1.5 py-0.5 rounded-md ${
+              timeFilter === 'upcoming' ? 'bg-white/20' : 'bg-neutral-200'
+            }`}>
+              {upcomingReservations.length}
+            </span>
+          )}
+        </button>
+        <button
+          onClick={() => { setTimeFilter('past'); setReservationsIndex(0); }}
+          className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
+            timeFilter === 'past'
+              ? 'bg-neutral-900 text-white'
+              : 'bg-neutral-100 text-neutral-500 hover:bg-neutral-200 hover:text-neutral-700'
+          }`}
+          type="button"
+        >
+          Past
+          {pastReservations.length > 0 && (
+            <span className={`ml-2 text-[11px] px-1.5 py-0.5 rounded-md ${
+              timeFilter === 'past' ? 'bg-white/20' : 'bg-neutral-200'
+            }`}>
+              {pastReservations.length}
+            </span>
+          )}
+        </button>
       </div>
 
       {/* Content */}
-      <div className="relative -mt-[69px]">
+      <div className="relative">
         <div>
-          {hasReservations ? (
+          {activeReservations.length > 0 ? (
             <>
               {/* View All Mode */}
               {viewAllMode && (
                 <>
                   <SectionHeader
-                    title={getSectionHeader()}
+                    title={timeFilter === 'upcoming' ? 'Upcoming Reservations' : 'Past Reservations'}
                     className="mb-6"
                     onViewAll={handleBackToMain}
-                    viewAllLabel="← Back to Reservations"
+                    viewAllLabel="← Back"
                   />
                   <div className={`grid ${gridColsClass} gap-5 transition-all duration-300`}>
-                    {filteredReservations.map((reservation, idx) => (
+                    {activeReservations.map((reservation, idx) => (
                       <div
                         key={reservation.id}
                         style={{
@@ -256,18 +298,18 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
                 </>
               )}
 
-              {/* Normal View - Show sections with pagination */}
+              {/* Normal View */}
               {!viewAllMode && (
                 <>
                   <SectionHeader
-                    title={getSectionHeader()}
-                    onPrev={() => scrollReservations('left')}
-                    onNext={() => scrollReservations('right')}
-                    onViewAll={handleViewAll}
+                    title={timeFilter === 'upcoming' ? 'Upcoming Reservations' : 'Past Reservations'}
+                    onPrev={totalPages > 1 ? () => scrollReservations('left') : undefined}
+                    onNext={totalPages > 1 ? () => scrollReservations('right') : undefined}
+                    onViewAll={activeReservations.length > ITEMS_PER_PAGE ? handleViewAll : undefined}
                   />
                   <div id="reservations-rail">
                     <div className={`grid ${gridColsClass} gap-5 pb-8 transition-all duration-300`}>
-                      {currentReservations.map((reservation, idx) => (
+                      {paginatedReservations.map((reservation, idx) => (
                         <div
                           key={`${reservation.id}-${reservationsIndex}`}
                           style={{
@@ -298,8 +340,8 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
               )}
             </>
           ) : (
-            <div className="px-8 pt-32 text-center text-gray-500">
-              No reservations found. Try adjusting your filters.
+            <div className="px-8 pt-16 text-center text-gray-500">
+              {timeFilter === 'upcoming' ? 'No upcoming reservations.' : 'No past reservations.'}
             </div>
           )}
         </div>

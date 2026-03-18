@@ -10,6 +10,7 @@ import ReserveCard from "@/components/listings/ReserveCard";
 import PageSearch from "@/components/search/PageSearch";
 import CategoryNav from "@/app/bookings/CategoryNav";
 import SectionHeader from "@/app/market/SectionHeader";
+import PageHeader from "@/components/PageHeader";
 import { useSidebarState } from "@/app/hooks/useSidebarState";
 
 interface TripsClientProps {
@@ -18,6 +19,28 @@ interface TripsClientProps {
 }
 
 const FADE_OUT_DURATION = 200;
+
+// ── Mock reservations for representation ──
+const mockListing = (id: string, title: string, img: string, cat: string, loc: string, addr: string, empName: string) => ({
+  id, title, description: '', imageSrc: img, category: cat, location: loc, userId: 'mock-owner',
+  createdAt: new Date().toISOString(), services: [{ id: 's1', serviceName: title, price: 0, category: cat }],
+  phoneNumber: null, website: null, address: addr, zipCode: '10001', galleryImages: [], employees: [{ id: `emp-${id}`, fullName: empName }], storeHours: [],
+});
+const mockUser = (id: string, name: string): SafeUser => ({
+  id, name, email: null, image: null, imageSrc: null, bio: '', isSubscribed: false,
+  subscriptionStartDate: null, subscriptionEndDate: null, following: [], followers: [],
+  managedListings: [], resetTokenExpiry: null, createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(), emailVerified: null,
+} as any);
+
+const MOCK_TRIPS: SafeReservation[] = [
+  { id: 'mock-trip-1', createdAt: new Date().toISOString(), date: new Date(Date.now() + 3 * 86400000), time: '10:30', serviceName: 'Deep Tissue Massage', totalPrice: 95, status: 'accepted', employeeId: 'emp-t1', userId: 'mc1', listingId: 't1', user: mockUser('mc1', 'You'), listing: mockListing('t1', 'Zen Wellness Spa', '/assets/people/wellness.png', 'Wellness', 'Brooklyn, NY', '58 N 3rd St', 'Luna K.') } as any,
+  { id: 'mock-trip-2', createdAt: new Date().toISOString(), date: new Date(Date.now() + 1 * 86400000), time: '15:00', serviceName: 'Signature Fade + Beard', totalPrice: 60, status: 'pending', employeeId: 'emp-t2', userId: 'mc1', listingId: 't2', user: mockUser('mc1', 'You'), listing: mockListing('t2', 'Studio Noir Barbershop', '/assets/people/barber.png', 'Barber', 'Brooklyn, NY', '142 Bedford Ave', 'Marcus J.') } as any,
+  { id: 'mock-trip-3', createdAt: new Date().toISOString(), date: new Date(Date.now() + 6 * 86400000), time: '12:00', serviceName: 'Classic Full Set', totalPrice: 85, status: 'accepted', employeeId: 'emp-t3', userId: 'mc1', listingId: 't3', user: mockUser('mc1', 'You'), listing: mockListing('t3', 'Lash Lounge', '/assets/people/lashes.png', 'Lash', 'Queens, NY', '25-11 Broadway', 'Priya M.') } as any,
+  { id: 'mock-trip-4', createdAt: new Date().toISOString(), date: new Date(Date.now() - 1 * 86400000), time: '09:00', serviceName: 'Custom Ink Session', totalPrice: 200, status: 'accepted', employeeId: 'emp-t4', userId: 'mc1', listingId: 't4', user: mockUser('mc1', 'You'), listing: mockListing('t4', 'Ink Masters', '/assets/people/ink.png', 'Ink', 'Manhattan, NY', '21 E 1st St', 'Rio V.') } as any,
+  { id: 'mock-trip-5', createdAt: new Date().toISOString(), date: new Date(Date.now() + 10 * 86400000), time: '14:00', serviceName: 'Luxury Spa Manicure', totalPrice: 75, status: 'pending', employeeId: 'emp-t5', userId: 'mc1', listingId: 't5', user: mockUser('mc1', 'You'), listing: mockListing('t5', 'The Nail Bar', '/assets/people/nails.png', 'Nails', 'Manhattan, NY', '401 W 14th St', 'Sofia R.') } as any,
+  { id: 'mock-trip-6', createdAt: new Date().toISOString(), date: new Date(Date.now() - 5 * 86400000), time: '17:00', serviceName: 'Blowout & Style', totalPrice: 55, status: 'declined', employeeId: 'emp-t6', userId: 'mc1', listingId: 't6', user: mockUser('mc1', 'You'), listing: mockListing('t6', 'Salon Luxe', '/assets/people/salon.png', 'Salon', 'Manhattan, NY', '155 Mercer St', 'Ava Chen') } as any,
+];
 
 const TripsClient: React.FC<TripsClientProps> = ({
   reservations,
@@ -65,9 +88,16 @@ const TripsClient: React.FC<TripsClientProps> = ({
     }
   }, [router]);
 
+  // Merge mock data so the page always has content
+  const allReservations = useMemo(() => {
+    const realIds = new Set(reservations.map(r => r.id));
+    const mocks = MOCK_TRIPS.filter(r => !realIds.has(r.id));
+    return [...reservations, ...mocks];
+  }, [reservations]);
+
   // Filter reservations based on selected categories
   const filteredReservations = useMemo(() => {
-    return reservations.filter(reservation => {
+    return allReservations.filter(reservation => {
       if (selectedCategories.length === 0) return true;
 
       return selectedCategories.some(category => {
@@ -76,7 +106,7 @@ const TripsClient: React.FC<TripsClientProps> = ({
         return reservation.status === category;
       });
     });
-  }, [reservations, selectedCategories]);
+  }, [allReservations, selectedCategories]);
 
   const hasTrips = filteredReservations.length > 0;
 
@@ -131,77 +161,90 @@ const TripsClient: React.FC<TripsClientProps> = ({
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Generate section header based on active filters
-  const getSectionHeader = () => {
-    if (selectedCategories.length === 0) {
-      return "All Outgoing Trips";
-    }
+  // Upcoming / Past toggle
+  const [timeFilter, setTimeFilter] = useState<'upcoming' | 'past'>('upcoming');
 
-    const statusFilters = selectedCategories.filter(cat => !['incoming', 'outgoing'].includes(cat));
-    const hasOutgoing = selectedCategories.includes('outgoing');
+  const now = new Date();
+  const upcomingTrips = useMemo(
+    () => filteredReservations.filter(r => new Date(r.date) >= now),
+    [filteredReservations]
+  );
+  const pastTrips = useMemo(
+    () => filteredReservations.filter(r => new Date(r.date) < now),
+    [filteredReservations]
+  );
 
-    if (statusFilters.length > 0) {
-      const statusText = statusFilters.map(status =>
-        status.charAt(0).toUpperCase() + status.slice(1)
-      ).join(' & ');
-      return hasOutgoing ? `${statusText} Outgoing Trips` : `${statusText} Trips`;
-    }
+  const activeTrips = timeFilter === 'upcoming' ? upcomingTrips : pastTrips;
 
-    return hasOutgoing ? "Outgoing Trips" : "Filtered Trips";
-  };
+  // Paginated items (recalculate for active set)
+  const paginatedTrips = useMemo(() => {
+    if (activeTrips.length <= ITEMS_PER_PAGE) return activeTrips;
+    const start = tripsIndex * ITEMS_PER_PAGE;
+    return activeTrips.slice(start, start + ITEMS_PER_PAGE);
+  }, [activeTrips, tripsIndex]);
+
+  const totalPages = Math.max(1, Math.ceil(activeTrips.length / ITEMS_PER_PAGE));
 
   return (
     <Container>
-      {/* Hero Section - Clean minimal design (matching Market) */}
-      <div className="-mx-6 md:-mx-24 -mt-2 md:-mt-8">
-        <div className="relative px-6 md:px-24 pt-12 pb-8 bg-white">
+      <PageHeader currentUser={currentUser} />
 
-          {/* Content */}
-          <div className="relative z-10 pb-6">
-            {/* Main Trips Title */}
-            <div className="text-center">
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight tracking-tight">
-                Trips
-              </h1>
-              <p className="text-gray-500 text-base mt-3 max-w-2xl mx-auto">Bookings you&apos;ve made with other businesses</p>
-            </div>
-
-            {/* Search */}
-            <div className="mt-8 flex justify-center">
-              <div className="w-full max-w-3xl">
-                <PageSearch />
-              </div>
-            </div>
-
-            {/* Category Navigation - Sticky */}
-            <div className="mt-3 -mx-6 md:-mx-24">
-              <div className="sticky top-0 z-20 transition-all duration-300" id="trips-category-nav-wrapper">
-                <div className="px-6 md:px-24">
-                  <CategoryNav />
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
+      {/* Upcoming / Past Toggle */}
+      <div className="flex items-center gap-1 mt-8 mb-6">
+        <button
+          onClick={() => { setTimeFilter('upcoming'); setTripsIndex(0); }}
+          className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
+            timeFilter === 'upcoming'
+              ? 'bg-neutral-900 text-white'
+              : 'bg-neutral-100 text-neutral-500 hover:bg-neutral-200 hover:text-neutral-700'
+          }`}
+          type="button"
+        >
+          Upcoming
+          {upcomingTrips.length > 0 && (
+            <span className={`ml-2 text-[11px] px-1.5 py-0.5 rounded-md ${
+              timeFilter === 'upcoming' ? 'bg-white/20' : 'bg-neutral-200'
+            }`}>
+              {upcomingTrips.length}
+            </span>
+          )}
+        </button>
+        <button
+          onClick={() => { setTimeFilter('past'); setTripsIndex(0); }}
+          className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
+            timeFilter === 'past'
+              ? 'bg-neutral-900 text-white'
+              : 'bg-neutral-100 text-neutral-500 hover:bg-neutral-200 hover:text-neutral-700'
+          }`}
+          type="button"
+        >
+          Past
+          {pastTrips.length > 0 && (
+            <span className={`ml-2 text-[11px] px-1.5 py-0.5 rounded-md ${
+              timeFilter === 'past' ? 'bg-white/20' : 'bg-neutral-200'
+            }`}>
+              {pastTrips.length}
+            </span>
+          )}
+        </button>
       </div>
 
       {/* Content */}
-      <div className="relative -mt-[69px]">
+      <div className="relative">
         <div>
-          {hasTrips ? (
+          {activeTrips.length > 0 ? (
             <>
               {/* View All Mode */}
               {viewAllMode && (
                 <>
                   <SectionHeader
-                    title={getSectionHeader()}
+                    title={timeFilter === 'upcoming' ? 'Upcoming Trips' : 'Past Trips'}
                     className="mb-6"
                     onViewAll={handleBackToMain}
-                    viewAllLabel="← Back to Trips"
+                    viewAllLabel="← Back"
                   />
                   <div className={`grid ${gridColsClass} gap-5 transition-all duration-300`}>
-                    {filteredReservations.map((reservation, idx) => (
+                    {activeTrips.map((reservation, idx) => (
                       <div
                         key={reservation.id}
                         style={{
@@ -226,18 +269,18 @@ const TripsClient: React.FC<TripsClientProps> = ({
                 </>
               )}
 
-              {/* Normal View - Show sections with pagination */}
+              {/* Normal View */}
               {!viewAllMode && (
                 <>
                   <SectionHeader
-                    title={getSectionHeader()}
-                    onPrev={() => scrollTrips('left')}
-                    onNext={() => scrollTrips('right')}
-                    onViewAll={handleViewAll}
+                    title={timeFilter === 'upcoming' ? 'Upcoming Trips' : 'Past Trips'}
+                    onPrev={totalPages > 1 ? () => scrollTrips('left') : undefined}
+                    onNext={totalPages > 1 ? () => scrollTrips('right') : undefined}
+                    onViewAll={activeTrips.length > ITEMS_PER_PAGE ? handleViewAll : undefined}
                   />
                   <div id="trips-rail">
                     <div className={`grid ${gridColsClass} gap-5 pb-8 transition-all duration-300`}>
-                      {currentTrips.map((reservation, idx) => (
+                      {paginatedTrips.map((reservation, idx) => (
                         <div
                           key={`${reservation.id}-${tripsIndex}`}
                           style={{
@@ -266,8 +309,8 @@ const TripsClient: React.FC<TripsClientProps> = ({
               )}
             </>
           ) : (
-            <div className="px-8 pt-32 text-center text-gray-500">
-              No trips found. Try adjusting your filters.
+            <div className="px-8 pt-16 text-center text-gray-500">
+              {timeFilter === 'upcoming' ? 'No upcoming trips.' : 'No past trips.'}
             </div>
           )}
         </div>

@@ -122,6 +122,8 @@ model Listing {
   shops         Shop[]
   rating        Float?
   ratingCount   Int           @default(0)
+  lat           Float?
+  lng           Float?
 }
 
 model Reservation {

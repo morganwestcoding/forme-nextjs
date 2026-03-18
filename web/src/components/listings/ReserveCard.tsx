@@ -114,7 +114,7 @@ const ReserveCard: React.FC<ReserveCardProps> = ({
   return (
     <div
       onClick={onCardClick}
-      className="group cursor-pointer rounded-xl transition-all duration-300 hover:bg-neutral-50"
+      className="group cursor-pointer rounded-xl transition-all duration-300"
     >
       <div className="flex flex-row gap-4 items-center w-full relative">
         {/* Image card */}
@@ -138,8 +138,60 @@ const ReserveCard: React.FC<ReserveCardProps> = ({
           </div>
         </div>
 
+        {/* Action circles — pinned right with left divider */}
+        {showActions && (
+          <div className="absolute top-1/2 -translate-y-1/2 right-0 flex flex-col items-center gap-2.5 pl-4 border-l border-neutral-900">
+            {isPending && !isTransitioning ? (
+              <>
+                <button
+                  disabled={disabled}
+                  onClick={handleAccept}
+                  className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 ${
+                    disabled
+                      ? 'bg-neutral-100 text-neutral-300'
+                      : 'bg-neutral-900 text-white hover:bg-neutral-800 hover:scale-110 active:scale-95'
+                  }`}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                </button>
+                <button
+                  disabled={disabled}
+                  onClick={handleReject}
+                  className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 ${
+                    disabled
+                      ? 'bg-neutral-100 text-neutral-300'
+                      : 'bg-neutral-100 text-neutral-500 hover:bg-neutral-200 hover:text-neutral-700 hover:scale-110 active:scale-95'
+                  }`}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              </>
+            ) : (
+              <button
+                disabled={disabled}
+                onClick={handleReject}
+                className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 ${
+                  disabled
+                    ? 'bg-neutral-100 text-neutral-300'
+                    : 'bg-neutral-100 text-neutral-500 hover:bg-neutral-200 hover:text-neutral-700 hover:scale-110 active:scale-95'
+                }`}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            )}
+          </div>
+        )}
+
         {/* Text content */}
-        <div className="flex flex-col justify-center min-w-0 flex-1 gap-0.5">
+        <div className={`flex flex-col justify-center min-w-0 flex-1 gap-1 ${showActions ? 'pr-16' : ''}`}>
           {/* Date & Time */}
           <span className="text-[12px] text-neutral-400">
             {format(new Date(reservation.date), 'EEE, MMM d')} · {formatTime(reservation.time)}
@@ -156,7 +208,7 @@ const ReserveCard: React.FC<ReserveCardProps> = ({
           </p>
 
           {/* Employee & Price */}
-          <div className="mt-2 flex items-center gap-2 text-[12px]">
+          <div className="flex items-center gap-2 text-[12px]">
             {employeeName && (
               <>
                 <span className="text-neutral-500">with {employeeName}</span>
@@ -165,50 +217,6 @@ const ReserveCard: React.FC<ReserveCardProps> = ({
             )}
             <span className="font-semibold text-neutral-900 tabular-nums">${reservation.totalPrice}</span>
           </div>
-
-          {/* Actions */}
-          {showActions && (
-            <div className="mt-2 flex gap-2">
-              {isPending && !isTransitioning ? (
-                <>
-                  <button
-                    disabled={disabled}
-                    onClick={handleAccept}
-                    className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-colors ${
-                      disabled
-                        ? 'bg-neutral-100 text-neutral-400'
-                        : 'bg-neutral-900 text-white hover:bg-neutral-800'
-                    }`}
-                  >
-                    Accept
-                  </button>
-                  <button
-                    disabled={disabled}
-                    onClick={handleReject}
-                    className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-colors ${
-                      disabled
-                        ? 'bg-neutral-100 text-neutral-400'
-                        : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
-                    }`}
-                  >
-                    {showAcceptDecline ? 'Decline' : 'Cancel'}
-                  </button>
-                </>
-              ) : (
-                <button
-                  disabled={disabled}
-                  onClick={handleReject}
-                  className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-colors ${
-                    disabled
-                      ? 'bg-neutral-100 text-neutral-400'
-                      : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
-                  }`}
-                >
-                  Cancel
-                </button>
-              )}
-            </div>
-          )}
         </div>
       </div>
     </div>

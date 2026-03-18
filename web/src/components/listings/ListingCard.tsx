@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { SafeListing, SafeUser } from '@/app/types';
 import HeartButton from '../HeartButton';
-import VerificationBadge from '../VerificationBadge';
 
 interface ListingCardProps {
   data: SafeListing;
@@ -93,40 +92,6 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
       ? `$${minPrice}`
       : `$${minPrice} - $${maxPrice}`
     : null;
-
-  // Function to render title with verification badge that stays with last word
-  const renderTitleWithBadge = (title: string, size: number = 14) => {
-    const words = title.trim().split(' ');
-    if (words.length === 0) return null;
-
-    const Badge = () => (
-      <span className="inline-flex items-center align-middle ml-0.5" aria-label="Verified">
-        <VerificationBadge size={size} />
-      </span>
-    );
-
-    if (words.length === 1) {
-      return (
-        <span className="whitespace-nowrap">
-          {words[0]}
-          <Badge />
-        </span>
-      );
-    }
-
-    const firstWords = words.slice(0, -1);
-    const lastWord = words[words.length - 1];
-
-    return (
-      <>
-        {firstWords.join(' ')}{' '}
-        <span className="whitespace-nowrap">
-          {lastWord}
-          <Badge />
-        </span>
-      </>
-    );
-  };
 
   // Solid background editorial layout (matches WorkerCard/ServiceCard style on profile page)
   if (solidBackground) {
@@ -249,9 +214,9 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
                   {data.category}
                 </span>
               )}
-              {/* Title with verification badge */}
+              {/* Title */}
               <h1 className="text-white text-[17px] leading-snug font-semibold tracking-[-0.02em] drop-shadow line-clamp-2">
-                {renderTitleWithBadge(data.title, 16)}
+                {data.title}
               </h1>
 
               {/* Location */}
@@ -277,96 +242,54 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
     );
   }
 
-  // Horizontal layout (new style - default)
+  // Horizontal layout (default)
+  const ratingNum = Number(data.rating ?? 0).toFixed(1);
+
   return (
     <div
       onClick={() => router.push(`/listings/${data.id}`)}
-      className="group cursor-pointer rounded-2xl p-3.5 transition-all duration-300 hover:bg-stone-50 dark:hover:bg-zinc-800/50 relative"
+      className="group cursor-pointer rounded-2xl p-3 -mx-3 flex flex-row gap-4 relative transition-colors duration-200 hover:bg-stone-50/80 dark:hover:bg-zinc-900/40"
     >
-      {/* Heart button — top right, visible on hover */}
-      <div
-        className="absolute top-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center gap-0.5"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <HeartButton listingId={data.id} currentUser={currentUser} variant="listingHead" />
-        <span className="text-[10px] font-medium text-stone-400 dark:text-zinc-500 tabular-nums">{data.ratingCount ?? 0}</span>
+      {/* Image */}
+      <div className="relative overflow-hidden rounded-[14px] flex-shrink-0 w-[120px] h-[120px]">
+        <Image
+          src={cardImage}
+          alt={data.title}
+          fill
+          className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+          sizes="120px"
+          priority={false}
+        />
+        {/* Heart — top-right, only on hover */}
+        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200" onClick={(e) => e.stopPropagation()}>
+          <HeartButton listingId={data.id} currentUser={currentUser} variant="default" />
+        </div>
       </div>
-      <div className="flex flex-row gap-4 items-center w-full">
-        {/* Image card */}
-        <div
-          className={`
-            relative overflow-hidden rounded-xl flex-shrink-0 shadow-md
-            transition-transform duration-500 ease-out group-hover:scale-[1.02]
-            ${compact ? 'w-[80px] h-[80px]' : 'w-[100px] h-[100px]'}
-          `}
-        >
-          <Image
-            src={cardImage}
-            alt={data.title}
-            fill
-            className="object-cover"
-            sizes="100px"
-            priority={false}
-          />
-        </div>
 
-        {/* Text content */}
-        <div className="flex flex-col justify-center min-w-0 flex-1 gap-0.5">
-        {compact ? (
-          <>
-            {data.category && (
-              <span className="text-[10px] italic text-stone-400 dark:text-zinc-500 tracking-wide">
-                {data.category}
-              </span>
-            )}
-            <h1 className="text-neutral-900 dark:text-zinc-100 text-[15px] leading-snug font-semibold tracking-[-0.02em] line-clamp-1">
-              {data.title}
-            </h1>
-            <p className="text-stone-400 dark:text-zinc-500 text-[11px] line-clamp-1">
-              {city && state ? `${city}, ${state}` : city || state || 'Location'}
-            </p>
-            <div className="mt-2 flex items-center gap-1.5 text-[11px] whitespace-nowrap overflow-hidden">
-              <span className="font-semibold text-neutral-900 dark:text-zinc-100 tabular-nums">{Number(data.rating ?? 0).toFixed(1)}</span>
-              <svg className="w-2.5 h-2.5 text-stone-400 dark:text-zinc-500" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
-              <span className="text-stone-300 dark:text-zinc-600 mx-0.5">&middot;</span>
-              <span className="text-stone-400 dark:text-zinc-500">{data.ratingCount ?? 0} reviews</span>
-              {priceRange && (
-                <>
-                  <span className="text-stone-300 dark:text-zinc-600 mx-0.5">&middot;</span>
-                  <span className="text-stone-500 dark:text-zinc-400 font-medium">{priceRange}</span>
-                </>
-              )}
-            </div>
-          </>
-        ) : (
-          <>
-            {data.category && (
-              <span className="text-[11px] italic text-stone-400 dark:text-zinc-500 tracking-wide">
-                {data.category}
-              </span>
-            )}
-            <h1 className="text-neutral-900 dark:text-zinc-100 text-[16px] leading-snug font-semibold tracking-[-0.02em] line-clamp-1">
-              {data.title}
-            </h1>
-            <p className="text-stone-400 dark:text-zinc-500 text-[12px] line-clamp-1">
-              {city && state ? `${city}, ${state}` : city || state || 'Location'}
-            </p>
-            <div className="mt-2 flex items-center gap-2 text-[12px] whitespace-nowrap overflow-hidden">
-              <span className="font-semibold text-neutral-900 dark:text-zinc-100 tabular-nums">{Number(data.rating ?? 0).toFixed(1)}</span>
-              <svg className="w-3 h-3 text-stone-400 dark:text-zinc-500" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
-              <span className="text-stone-300 dark:text-zinc-600 mx-0.5">&middot;</span>
-              <span className="text-stone-400 dark:text-zinc-500">{data.ratingCount ?? 0} reviews</span>
-              {priceRange && (
-                <>
-                  <span className="text-stone-300 dark:text-zinc-600 mx-0.5">&middot;</span>
-                  <span className="text-stone-500 dark:text-zinc-400 font-medium">{priceRange}</span>
-                </>
-              )}
-            </div>
-          </>
+      {/* Text */}
+      <div className="flex flex-col justify-center min-w-0 flex-1">
+        {/* Category — editorial cursive */}
+        {data.category && (
+          <p className="text-[11px] text-stone-400 dark:text-zinc-500 leading-none" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}>
+            {data.category}
+          </p>
         )}
-        </div>
 
+        {/* Title */}
+        <h2 className="text-[15px] font-semibold text-neutral-900 dark:text-zinc-100 tracking-[-0.01em] leading-tight line-clamp-2 mt-0.5">
+          {data.title}
+        </h2>
+
+        {/* Location */}
+        <p className="text-[11px] text-stone-400 dark:text-zinc-500 leading-none mt-1.5">
+          {city && state ? `${city}, ${state}` : city || state || 'Location'}
+        </p>
+
+        {/* Rating | Price */}
+        <p className="text-[11px] text-stone-400 dark:text-zinc-500 leading-none mt-2 tabular-nums">
+          <span className="text-stone-500 dark:text-zinc-400">{ratingNum === '0.0' ? '5.0' : ratingNum}</span>
+          {priceRange && <><span className="mx-1.5 text-stone-300 dark:text-zinc-600">|</span>{priceRange}</>}
+        </p>
       </div>
     </div>
   );

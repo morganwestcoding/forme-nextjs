@@ -88,11 +88,11 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, isH
       onClick={handleCardClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className="group cursor-pointer w-full relative transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] hover:z-10 hover:shadow-xl hover:shadow-black/20"
+      className="group cursor-pointer w-full relative overflow-hidden"
     >
       {/* Media container */}
       <div
-        className="relative overflow-hidden bg-stone-100 dark:bg-zinc-800 transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] brightness-[0.97] group-hover:brightness-100 group-hover:scale-[1.02]"
+        className="relative overflow-hidden bg-stone-100 dark:bg-zinc-800 transition-all duration-700 ease-out group-hover:scale-105"
         style={{ aspectRatio: isHero ? undefined : '5 / 6', height: isHero ? '100%' : undefined, boxShadow: 'inset 0 0 30px rgba(0,0,0,0.08), inset 0 0 6px rgba(0,0,0,0.04)' }}
       >
       {/* Text post */}

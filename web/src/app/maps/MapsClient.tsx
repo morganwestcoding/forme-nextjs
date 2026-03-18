@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { SafeListing, SafeUser } from '@/app/types';
 
@@ -26,9 +27,18 @@ interface GeocodedItem {
   listing?: SafeListing;
   workerName?: string;
   workerImage?: string;
+  distance?: number;
 }
 
-const MapsClient: React.FC<MapsClientProps> = ({ listings }) => {
+function haversine(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const R = 3958.8; // Earth radius in miles
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+const MapsClient: React.FC<MapsClientProps> = ({ listings, currentUser }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<mapboxgl.Marker[]>([]);
@@ -37,22 +47,45 @@ const MapsClient: React.FC<MapsClientProps> = ({ listings }) => {
   const [items, setItems] = useState<GeocodedItem[]>([]);
   const [selected, setSelected] = useState<GeocodedItem | null>(null);
   const [loading, setLoading] = useState(true);
+  const [mapReady, setMapReady] = useState(false);
   const [filter, setFilter] = useState<'all' | 'listing' | 'worker'>('all');
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sort, setSort] = useState<'nearest' | 'name'>('nearest');
+  const [search, setSearch] = useState('');
+  const [userLoc, setUserLoc] = useState<{ lat: number; lng: number } | null>(null);
+
+  // Get user location
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => setUserLoc({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+        () => {} // silently fail
+      );
+    }
+  }, []);
+
+  // Compute distances when items or user location changes
+  useEffect(() => {
+    if (!userLoc || items.length === 0) return;
+    setItems(prev => prev.map(item => ({
+      ...item,
+      distance: Math.round(haversine(userLoc.lat, userLoc.lng, item.lat, item.lng) * 10) / 10,
+    })));
+  }, [userLoc]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Sync with sidebar state
   useEffect(() => {
     const check = () => {
-      setSidebarCollapsed(localStorage.getItem('sidebarCollapsed') === 'true');
-      // Resize map after sidebar animation
-      setTimeout(() => map.current?.resize(), 350);
+      setTimeout(() => {
+        if (map.current) {
+          map.current.resize();
+        }
+      }, 350);
     };
-    check();
     window.addEventListener('sidebarToggle', check);
     return () => window.removeEventListener('sidebarToggle', check);
   }, []);
 
-  // Geocode a location string via Mapbox
+  // Geocode a location string via Mapbox (fallback for listings without stored coords)
   const geocode = useCallback(async (location: string): Promise<{ lng: number; lat: number } | null> => {
     try {
       const res = await fetch(
@@ -67,35 +100,45 @@ const MapsClient: React.FC<MapsClientProps> = ({ listings }) => {
     return null;
   }, []);
 
-  // Geocode all listings and workers
+  // Build map items from listings — use stored coords, fallback to geocoding
   useEffect(() => {
-    async function geocodeAll() {
+    async function buildItems() {
       setLoading(true);
 
-      // Dedupe locations to minimize API calls
-      const locationMap = new Map<string, { lng: number; lat: number }>();
-      const uniqueLocations = Array.from(new Set(
-        listings
-          .map(l => l.address || l.location)
-          .filter(Boolean) as string[]
-      ));
+      // Find listings that need geocoding (missing stored coords)
+      const needsGeocoding = listings.filter(l => l.lat == null || l.lng == null);
 
-      await Promise.all(
-        uniqueLocations.map(async (loc) => {
-          const coords = await geocode(loc);
-          if (coords) locationMap.set(loc, coords);
-        })
-      );
+      // Geocode only the ones missing coordinates
+      const locationMap = new Map<string, { lng: number; lat: number }>();
+      if (needsGeocoding.length > 0) {
+        const uniqueLocations = Array.from(new Set(
+          needsGeocoding
+            .map(l => l.address || l.location)
+            .filter(Boolean) as string[]
+        ));
+        await Promise.all(
+          uniqueLocations.map(async (loc) => {
+            const coords = await geocode(loc);
+            if (coords) locationMap.set(loc, coords);
+          })
+        );
+      }
 
       const geocoded: GeocodedItem[] = [];
 
       for (const listing of listings) {
-        const loc = listing.address || listing.location;
-        if (!loc) continue;
-        const coords = locationMap.get(loc);
+        // Use stored coords or fall back to geocoded
+        let coords: { lng: number; lat: number } | null = null;
+        if (listing.lat != null && listing.lng != null) {
+          coords = { lat: listing.lat, lng: listing.lng };
+        } else {
+          const loc = listing.address || listing.location;
+          if (loc) coords = locationMap.get(loc) || null;
+        }
         if (!coords) continue;
 
-        // Add the listing itself
+        const loc = listing.address || listing.location || '';
+
         geocoded.push({
           type: 'listing',
           id: listing.id,
@@ -108,7 +151,6 @@ const MapsClient: React.FC<MapsClientProps> = ({ listings }) => {
           listing,
         });
 
-        // Add individual workers from this listing
         if (listing.employees?.length) {
           for (const emp of listing.employees) {
             geocoded.push({
@@ -118,7 +160,6 @@ const MapsClient: React.FC<MapsClientProps> = ({ listings }) => {
               image: emp.user?.imageSrc || emp.user?.image || listing.imageSrc,
               category: emp.jobTitle || listing.category,
               location: loc,
-              // Slightly offset workers so they don't overlap the listing pin
               lng: coords.lng + (Math.random() - 0.5) * 0.002,
               lat: coords.lat + (Math.random() - 0.5) * 0.002,
               workerName: emp.fullName,
@@ -134,7 +175,7 @@ const MapsClient: React.FC<MapsClientProps> = ({ listings }) => {
     }
 
     if (listings.length) {
-      geocodeAll();
+      buildItems();
     } else {
       setLoading(false);
     }
@@ -146,13 +187,28 @@ const MapsClient: React.FC<MapsClientProps> = ({ listings }) => {
 
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/light-v11',
+      style: 'mapbox://styles/mapbox/standard',
       center: [-98.5795, 39.8283],
       zoom: 3.5,
       attributionControl: false,
+      logoPosition: 'bottom-right',
     });
 
     map.current.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
+
+    // Hide Mapbox logo and attribution
+    const container = mapContainer.current;
+    const style = document.createElement('style');
+    style.textContent = `
+      .mapboxgl-ctrl-logo, .mapboxgl-ctrl-attrib { display: none !important; }
+    `;
+    container.appendChild(style);
+
+    // Resize once loaded and signal ready
+    map.current.on('load', () => {
+      map.current?.resize();
+      setMapReady(true);
+    });
 
     return () => {
       map.current?.remove();
@@ -168,11 +224,11 @@ const MapsClient: React.FC<MapsClientProps> = ({ listings }) => {
     markersRef.current.forEach(m => m.remove());
     markersRef.current = [];
 
-    const filtered = filter === 'all' ? items : items.filter(i => i.type === filter);
+    const visibleItems = filter === 'all' ? items : items.filter(i => i.type === filter);
 
-    if (!filtered.length) return;
+    if (!visibleItems.length) return;
 
-    for (const item of filtered) {
+    for (const item of visibleItems) {
       const el = document.createElement('div');
       el.className = 'map-marker';
 
@@ -230,112 +286,246 @@ const MapsClient: React.FC<MapsClientProps> = ({ listings }) => {
     }
 
     // Fit bounds if we have items
-    if (filtered.length > 1) {
+    if (visibleItems.length > 1) {
       const bounds = new mapboxgl.LngLatBounds();
-      filtered.forEach(i => bounds.extend([i.lng, i.lat]));
+      visibleItems.forEach(i => bounds.extend([i.lng, i.lat]));
       map.current.fitBounds(bounds, { padding: 80, maxZoom: 13, duration: 1000 });
-    } else if (filtered.length === 1) {
-      map.current.flyTo({ center: [filtered[0].lng, filtered[0].lat], zoom: 12, duration: 1000 });
+    } else if (visibleItems.length === 1) {
+      map.current.flyTo({ center: [visibleItems[0].lng, visibleItems[0].lat], zoom: 12, duration: 1000 });
     }
   }, [items, filter]);
 
-  const filteredCount = filter === 'all' ? items.length : items.filter(i => i.type === filter).length;
+  const filtered = filter === 'all' ? items : items.filter(i => i.type === filter);
+  const searchMatched = search.trim()
+    ? filtered.filter(i => i.title.toLowerCase().includes(search.toLowerCase()) || i.category.toLowerCase().includes(search.toLowerCase()))
+    : filtered;
+  const searchFiltered = [...searchMatched].sort((a, b) => {
+    if (sort === 'nearest') return (a.distance ?? Infinity) - (b.distance ?? Infinity);
+    return a.title.localeCompare(b.title);
+  });
+
+  const handleItemClick = (item: GeocodedItem) => {
+    setSelected(item);
+    map.current?.flyTo({ center: [item.lng, item.lat], zoom: 14, duration: 800 });
+  };
+
+  const ready = mapReady;
 
   return (
-    <div className="fixed inset-0 bg-white">
-      {/* Top bar */}
-      <div className="absolute top-0 left-0 right-0 z-10 flex items-center gap-3 px-6 py-4">
-        <button
-          onClick={() => router.push('/')}
-          className="shrink-0 w-10 h-10 rounded-full bg-white/90 backdrop-blur-md border border-zinc-200 shadow-sm flex items-center justify-center text-zinc-600 hover:text-zinc-900 hover:bg-white transition-colors"
-          aria-label="Back to home"
+    <div className="fixed inset-0 bg-zinc-950">
+      {/* Sidebar — floating, detached from edges */}
+      <div
+        className="absolute top-4 left-4 bottom-4 w-[370px] flex flex-col bg-black border border-zinc-800/60 rounded-2xl z-10 shadow-2xl shadow-black/40 overflow-hidden px-8 pb-5 pt-7 gap-4"
+        style={{
+          opacity: ready ? 1 : 0,
+          transition: 'opacity 0.6s ease-out 0.1s',
+        }}
+      >
+        {/* Back + Logo */}
+        <div
+          className="flex items-center justify-between"
+          style={{
+            opacity: ready ? 1 : 0,
+            transition: 'opacity 0.5s ease-out 0.25s',
+          }}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-        <div className="flex items-center gap-1.5 bg-white/90 backdrop-blur-md rounded-full border border-zinc-200 shadow-sm px-1 py-1">
-          {(['all', 'listing', 'worker'] as const).map((f) => (
-            <button
-              key={f}
-              onClick={() => setFilter(f)}
-              className={`px-4 py-1.5 rounded-full text-[13px] font-medium transition-all duration-200 ${
-                filter === f
-                  ? 'bg-zinc-900 text-white shadow-sm'
-                  : 'text-zinc-500 hover:text-zinc-800'
-              }`}
-            >
-              {f === 'all' ? 'All' : f === 'listing' ? 'Businesses' : 'Workers'}
-            </button>
-          ))}
+          <Image src="/logos/fm-logo-white.png" alt="Logo" width={72} height={46} className="opacity-90 shrink-0 -ml-0.5" />
+          <Link href="/" className="w-8 h-8 rounded-full flex items-center justify-center text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-colors">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 12H5M5 12l7-7M5 12l7 7"/>
+            </svg>
+          </Link>
         </div>
 
+        {/* Search */}
+        <div
+          className="relative"
+          style={{
+            opacity: ready ? 1 : 0,
+            transition: 'opacity 0.5s ease-out 0.35s',
+          }}
+        >
+          <input
+            type="text"
+            placeholder="Search..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3.5 py-2.5 text-[13px] text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-zinc-600 transition-colors"
+          />
+          <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.3-4.3"/>
+          </svg>
+        </div>
+
+        {/* Filters row */}
+        <div
+          className="grid grid-cols-3 gap-2"
+          style={{
+            opacity: ready ? 1 : 0,
+            transition: 'opacity 0.5s ease-out 0.4s',
+          }}
+        >
+          <div className="relative">
+            <select
+              value={filter}
+              onChange={(e) => setFilter(e.target.value as 'all' | 'listing' | 'worker')}
+              className="w-full appearance-none bg-transparent border border-zinc-700 rounded-xl px-3 py-2 pr-7 text-[13px] text-zinc-300 focus:outline-none focus:border-zinc-500 transition-colors cursor-pointer"
+            >
+              <option value="all">All</option>
+              <option value="listing">Businesses</option>
+              <option value="worker">Workers</option>
+            </select>
+            <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="m6 9 6 6 6-6"/>
+            </svg>
+          </div>
+          <div className="relative">
+            <select
+              value={sort}
+              onChange={(e) => setSort(e.target.value as 'nearest' | 'name')}
+              className="w-full appearance-none bg-transparent border border-zinc-700 rounded-xl px-3 py-2 pr-7 text-[13px] text-zinc-300 focus:outline-none focus:border-zinc-500 transition-colors cursor-pointer"
+            >
+              <option value="nearest">Nearest</option>
+              <option value="name">Name</option>
+            </select>
+            <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="m6 9 6 6 6-6"/>
+            </svg>
+          </div>
+          <div className="relative">
+            <button className="w-full appearance-none bg-transparent border border-zinc-700 rounded-xl px-3 py-2 pr-7 text-[13px] text-zinc-300 text-left hover:border-zinc-500 transition-colors cursor-pointer">
+              Filters
+            </button>
+            <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="m6 9 6 6 6-6"/>
+            </svg>
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div className="h-px bg-zinc-800/60" style={{ opacity: ready ? 1 : 0, transition: 'opacity 0.5s ease-out 0.45s' }} />
+
+        {/* Results list */}
+        <div
+          className="flex-1 overflow-y-auto -mx-8 px-8 space-y-0.5"
+          style={{
+            opacity: ready ? 1 : 0,
+            transition: 'opacity 0.5s ease-out 0.5s',
+          }}
+        >
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-16 gap-3">
+              <div className="w-6 h-6 border-2 border-zinc-700 border-t-zinc-400 rounded-full animate-spin" />
+              <p className="text-[12px] text-zinc-500">Loading...</p>
+            </div>
+          ) : searchFiltered.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <p className="text-[13px] text-zinc-500">No results found</p>
+            </div>
+          ) : (
+            searchFiltered.map((item) => (
+              <button
+                key={`${item.type}-${item.id}`}
+                onClick={() => handleItemClick(item)}
+                className={`w-full flex items-center gap-3 py-3 rounded-xl text-left transition-all duration-150 group ${
+                  selected?.id === item.id && selected?.type === item.type
+                    ? 'bg-zinc-800/80 ring-1 ring-zinc-700'
+                    : 'hover:bg-zinc-900/80'
+                }`}
+              >
+                {/* Image */}
+                <div className="w-11 h-11 rounded-full overflow-hidden bg-zinc-800 shrink-0 ring-1 ring-zinc-700/50">
+                  <Image
+                    src={item.image}
+                    alt={item.title}
+                    width={44}
+                    height={44}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+
+                {/* Info */}
+                <div className="flex-1 min-w-0">
+                  <p className="text-[13px] font-medium text-zinc-200 truncate">{item.title}</p>
+                  <p className="text-[12px] text-zinc-500 truncate">{item.category}</p>
+                  <p className="text-[11px] text-zinc-600 truncate">{item.location}</p>
+                </div>
+
+                {/* Distance */}
+                <span className="text-[11px] text-zinc-500 shrink-0">
+                  {item.distance != null ? `${item.distance} mi` : '—'}
+                </span>
+              </button>
+            ))
+          )}
+        </div>
+
+        {/* Footer count */}
         {!loading && (
-          <span className="text-[13px] text-zinc-400 font-medium">
-            {filteredCount} {filteredCount === 1 ? 'result' : 'results'}
-          </span>
+          <div className="px-4 py-3 border-t border-zinc-800/60">
+            <p className="text-[11px] text-zinc-500">
+              {searchFiltered.length} {searchFiltered.length === 1 ? 'result' : 'results'}
+            </p>
+          </div>
         )}
       </div>
 
-      {/* Map */}
-      <div ref={mapContainer} className="w-full h-full" />
+      {/* Map — full screen behind sidebar */}
+      <div
+        className="absolute inset-0"
+        style={{
+          opacity: ready ? 1 : 0,
+          transition: 'opacity 0.8s ease-out',
+        }}
+      >
+        <div ref={mapContainer} className="w-full h-full" />
 
-      {/* Loading overlay */}
-      {loading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-white/60 backdrop-blur-sm z-20">
-          <div className="flex flex-col items-center gap-3">
-            <div className="w-8 h-8 border-2 border-zinc-300 border-t-zinc-800 rounded-full animate-spin" />
-            <p className="text-sm text-zinc-500">Loading map...</p>
-          </div>
-        </div>
-      )}
-
-      {/* Selected card */}
-      {selected && (
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 w-full max-w-sm px-4">
-          <div
-            className="bg-white rounded-2xl shadow-xl border border-zinc-100 overflow-hidden cursor-pointer hover:shadow-2xl transition-shadow duration-200"
-            onClick={() => {
-              if (selected.type === 'listing') {
-                router.push(`/listings/${selected.id}`);
-              } else if (selected.listing) {
-                router.push(`/listings/${selected.listing.id}`);
-              }
-            }}
-          >
-            <div className="relative h-40">
-              <Image
-                src={selected.image}
-                alt={selected.title}
-                fill
-                className="object-cover"
-              />
-              <button
-                onClick={(e) => { e.stopPropagation(); setSelected(null); }}
-                className="absolute top-3 right-3 w-7 h-7 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/60 transition-colors"
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                  <path d="M18 6L6 18M6 6l12 12"/>
-                </svg>
-              </button>
-              <div className="absolute bottom-3 left-3">
-                <span className={`px-2.5 py-1 rounded-full text-[11px] font-semibold tracking-wide uppercase backdrop-blur-md ${
-                  selected.type === 'listing'
-                    ? 'bg-zinc-900/70 text-white'
-                    : 'bg-white/80 text-zinc-800'
-                }`}>
-                  {selected.type === 'listing' ? 'Business' : 'Worker'}
-                </span>
+        {/* Selected popup on map */}
+        {selected && (
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 w-full max-w-sm px-4">
+            <div
+              className="bg-zinc-950/95 backdrop-blur-md rounded-2xl border border-zinc-800 overflow-hidden cursor-pointer hover:border-zinc-700 transition-colors"
+              onClick={() => {
+                if (selected.type === 'listing') {
+                  router.push(`/listings/${selected.id}`);
+                } else if (selected.listing) {
+                  router.push(`/listings/${selected.listing.id}`);
+                }
+              }}
+            >
+              <div className="flex items-center gap-3 p-3.5">
+                <div className="w-12 h-12 rounded-xl overflow-hidden bg-zinc-800 shrink-0">
+                  <Image
+                    src={selected.image}
+                    alt={selected.title}
+                    width={48}
+                    height={48}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-[14px] font-semibold text-white truncate">{selected.title}</h3>
+                  <p className="text-[12px] text-zinc-400 truncate">{selected.category} · {selected.location}</p>
+                </div>
+                <button
+                  onClick={(e) => { e.stopPropagation(); setSelected(null); }}
+                  className="w-7 h-7 rounded-full flex items-center justify-center text-zinc-500 hover:text-white hover:bg-zinc-800 transition-colors shrink-0"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                    <path d="M18 6L6 18M6 6l12 12"/>
+                  </svg>
+                </button>
+              </div>
+              <div className="px-3.5 pb-3.5">
+                <button className="w-full py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-[13px] font-medium text-zinc-200 transition-colors">
+                  More Details
+                </button>
               </div>
             </div>
-            <div className="p-4">
-              <h3 className="text-[15px] font-semibold text-zinc-900 truncate">{selected.title}</h3>
-              <p className="text-[13px] text-zinc-500 mt-0.5 truncate">{selected.category}</p>
-              <p className="text-[12px] text-zinc-400 mt-1 truncate">{selected.location}</p>
-            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

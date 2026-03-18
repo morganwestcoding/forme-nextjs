@@ -11,7 +11,7 @@ interface InterestsStepProps {
 }
 
 const categories = [
-  'Massage', 'Wellness', 'Fitness', 'Nails', 'Spa', 'Barber', 'Beauty', 'Salon',
+  'Massage', 'Wellness', 'Fitness', 'Nails', 'Skincare', 'Spa', 'Barber', 'Beauty', 'Salon',
   'Clothing', 'Accessories', 'Electronics', 'Home & Garden', 'Sports', 'Toys & Games', 'Books & Media',
 ];
 

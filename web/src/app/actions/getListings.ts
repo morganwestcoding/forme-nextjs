@@ -232,6 +232,8 @@ export default async function getListings(params: IListingsParams = {}): Promise
       rating: listing.rating ?? null,
       ratingCount: listing.ratingCount ?? 0,
       // Additional computed fields
+      lat: listing.lat ?? null,
+      lng: listing.lng ?? null,
       city: listing.location?.split(',')[0]?.trim() || null,
       state: listing.location?.split(',')[1]?.trim() || null,
       // ADD THIS: Map the listing owner/user

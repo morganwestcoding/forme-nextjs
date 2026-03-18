@@ -14,6 +14,7 @@ interface ShopClientProps {
   currentUser?: SafeUser | null;
   posts?: SafePost[];
   categories?: any[];
+  relatedShops?: SafeShop[];
 }
 
 const ShopClient: React.FC<ShopClientProps> = ({
@@ -21,6 +22,7 @@ const ShopClient: React.FC<ShopClientProps> = ({
   currentUser,
   posts = [],
   categories = [],
+  relatedShops = [],
 }) => {
   return (
     <Container>
@@ -31,6 +33,7 @@ const ShopClient: React.FC<ShopClientProps> = ({
         Products={shop.products}
         posts={posts}
         categories={categories}
+        relatedShops={relatedShops}
       />
     </Container>
   );

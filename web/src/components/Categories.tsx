@@ -6,56 +6,59 @@ import CategoryChoice from './CategoryChoice';
 
 export const categories = [
   {
-    label: 'Massage',
-    color: 'bg-[#D4B185]',
-    description: 'This storefront provides Massages!',
-    gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
-  },
-  {
     label: 'Wellness',
     color: 'bg-[#C4D4A9]',
-    description: 'This property has skiing activies!',
+    description: 'Wellness services',
     gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
   },
   {
-    label: 'Fitness',
+    label: 'Training',
     color: 'bg-[#86A4BB]',
-    description: 'This property is near a lake!',
-    gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
-  },
-  {
-    label: 'Nails',
-    color: 'bg-[#E5B9AD]',
-    description: 'This property is close to the beach!',
-    gradient: 'bg-gradient-to-b from-[#dac6be] to-[#6d635f]'
-  },
-  {
-    label: 'Spa',
-    color: 'bg-[#D8C3CE]',
-    description: 'This property is on an island!',
+    description: 'Training services',
     gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
   },
   {
     label: 'Barber',
     color: 'bg-[#D6C3B6]',
-    description: 'This property is has windmills!',
+    description: 'Barber services',
     gradient: 'bg-gradient-to-b from-[#cdb3a8] to-[#907d76]'
-  },
-
-  {
-    label: 'Beauty',
-    color: 'bg-[#E6C9B3]',
-    description: 'This is property has a beautiful pool!',
-    gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
   },
   {
     label: 'Salon',
     color: 'bg-[#B3C5D1]',
-    description: 'This property is modern!',
+    description: 'Salon services',
     gradient: 'bg-gradient-to-b from-[#dac6be] to-[#c1a093]'
   },
-
-
+  {
+    label: 'Nails',
+    color: 'bg-[#E8B4B8]',
+    description: 'Nail services',
+    gradient: 'bg-gradient-to-b from-[#e8b4b8] to-[#c4868b]'
+  },
+  {
+    label: 'Skincare',
+    color: 'bg-[#F5E6D3]',
+    description: 'Skincare services',
+    gradient: 'bg-gradient-to-b from-[#f5e6d3] to-[#d4c4b0]'
+  },
+  {
+    label: 'Lash',
+    color: 'bg-[#D4B5A0]',
+    description: 'Lash services',
+    gradient: 'bg-gradient-to-b from-[#d4b5a0] to-[#b8967e]'
+  },
+  {
+    label: 'Brows',
+    color: 'bg-[#C4A882]',
+    description: 'Brow services',
+    gradient: 'bg-gradient-to-b from-[#c4a882] to-[#a08660]'
+  },
+  {
+    label: 'Ink',
+    color: 'bg-[#A3A3A3]',
+    description: 'Tattoo services',
+    gradient: 'bg-gradient-to-b from-[#71717a] to-[#3f3f46]'
+  },
 ]
 const Categories = () => {
   const params = useSearchParams();

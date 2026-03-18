@@ -2,17 +2,17 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
-  PaintBrush01Icon,
   Moon02Icon,
   Sun03Icon,
   CreditCardIcon,
   CheckmarkCircle02Icon,
   ArrowRight01Icon,
-  Settings02Icon,
   AlertCircleIcon,
 } from "hugeicons-react";
 import { SafeUser } from "@/app/types";
 import { useTheme, DEFAULT_ACCENT_COLOR } from "@/app/context/ThemeContext";
+import PageHeader from "@/components/PageHeader";
+import Container from "@/components/Container";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 
@@ -131,60 +131,33 @@ const SettingsClient = ({ currentUser, isEmployee }: SettingsClientProps) => {
     setPendingColor(color);
   };
 
-  const handleBackToProfile = () => {
-    if (currentUser?.id) {
-      router.push(`/profile/${currentUser.id}`);
-    } else {
-      router.push('/');
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900">
-      {/* Clean Header */}
-      <div className="border-b border-gray-100 dark:border-gray-800">
-        <div className="max-w-6xl mx-auto px-6 md:px-24 pt-12 pb-8">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white leading-tight tracking-tight">
-              Settings
-            </h1>
-            <p className="text-gray-500 dark:text-gray-400 text-base mt-3 max-w-2xl mx-auto">
-              Customize your app experience and manage your account
-            </p>
-          </div>
-        </div>
-      </div>
+    <Container>
+      <PageHeader currentUser={currentUser} />
 
-      <div className="max-w-4xl mx-auto px-6 md:px-24 py-12">
-        {/* Appearance Section */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-8 mb-8">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
-              <PaintBrush01Icon size={20} className="text-gray-600 dark:text-gray-300" strokeWidth={1.5} />
-            </div>
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white tracking-tight">
-                Appearance
-              </h2>
-              <p className="text-[13px] text-gray-500 dark:text-gray-400">
-                Customize how the app looks and feels
-              </p>
-            </div>
-          </div>
+      <div className="mt-8">
+        {/* ── Appearance ── */}
+        <div className="mb-10">
+          <h2 className="text-[22px] font-bold text-neutral-900 tracking-tight">
+            Appearance
+          </h2>
+          <p className="text-[13px] text-neutral-400 mt-1">
+            Customize how the app looks and feels
+          </p>
 
           {/* Dark Mode Toggle */}
-          <div className="flex items-center justify-between py-5 border-b border-gray-100 dark:border-gray-700">
+          <div className="flex items-center justify-between py-5 border-b border-neutral-100">
             <div className="flex items-center gap-3">
               {pendingDarkMode ? (
-                <Moon02Icon size={18} className="text-gray-500 dark:text-gray-400" strokeWidth={1.5} />
+                <Moon02Icon size={18} className="text-neutral-400" strokeWidth={1.5} />
               ) : (
-                <Sun03Icon size={18} className="text-gray-500 dark:text-gray-400" strokeWidth={1.5} />
+                <Sun03Icon size={18} className="text-neutral-400" strokeWidth={1.5} />
               )}
               <div>
-                <h3 className="text-sm font-medium text-gray-900 dark:text-white">
+                <h3 className="text-[14px] font-medium text-neutral-900">
                   Dark Mode
                 </h3>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                <p className="text-[12px] text-neutral-400 mt-0.5">
                   Switch between light and dark themes
                 </p>
               </div>
@@ -194,7 +167,7 @@ const SettingsClient = ({ currentUser, isEmployee }: SettingsClientProps) => {
               onClick={() => setPendingDarkMode(!pendingDarkMode)}
               className={`
                 relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200
-                ${pendingDarkMode ? 'bg-[var(--accent-color)]' : 'bg-gray-300 dark:bg-gray-600'}
+                ${pendingDarkMode ? '' : 'bg-neutral-200'}
               `}
               style={{ backgroundColor: pendingDarkMode ? pendingColor : undefined }}
             >
@@ -208,26 +181,26 @@ const SettingsClient = ({ currentUser, isEmployee }: SettingsClientProps) => {
           </div>
 
           {/* Accent Color */}
-          <div className="py-5">
-            <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-1">
+          <div className="pt-5">
+            <h3 className="text-[14px] font-medium text-neutral-900 mb-0.5">
               Accent Color
             </h3>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
-              Choose your preferred accent color for buttons, badges, and highlights
+            <p className="text-[12px] text-neutral-400 mb-5">
+              Choose your preferred accent color
             </p>
 
             {/* Preset Colors */}
-            <div className="flex flex-wrap gap-3 mb-4">
+            <div className="flex flex-wrap gap-3 mb-5">
               {PRESET_COLORS.map((color) => (
                 <button
                   key={color}
                   type="button"
                   onClick={() => handleColorSelect(color)}
                   className={`
-                    w-10 h-10 rounded-xl transition-all duration-200
+                    w-9 h-9 rounded-full transition-all duration-200
                     ${pendingColor === color
-                      ? 'ring-2 ring-offset-2 ring-gray-900 dark:ring-white scale-110'
-                      : 'hover:scale-105'
+                      ? 'ring-2 ring-offset-2 ring-neutral-900 scale-110'
+                      : 'hover:scale-110'
                     }
                   `}
                   style={{ backgroundColor: color }}
@@ -238,15 +211,13 @@ const SettingsClient = ({ currentUser, isEmployee }: SettingsClientProps) => {
 
             {/* Custom Color Picker */}
             <div className="flex items-center gap-3">
-              <label className="text-xs text-gray-500 dark:text-gray-400">
-                Custom:
-              </label>
+              <span className="text-[12px] text-neutral-400">Custom</span>
               <div className="relative">
                 <input
                   type="color"
                   value={customColor}
                   onChange={handleCustomColorChange}
-                  className="w-10 h-10 rounded-xl cursor-pointer border-0 p-0 overflow-hidden"
+                  className="w-9 h-9 rounded-full cursor-pointer border-0 p-0 overflow-hidden"
                   style={{ backgroundColor: customColor }}
                 />
               </div>
@@ -262,185 +233,172 @@ const SettingsClient = ({ currentUser, isEmployee }: SettingsClientProps) => {
                     }
                   }
                 }}
-                className="w-24 px-3 py-2 text-xs font-mono bg-gray-100 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white"
+                className="w-24 px-3 py-1.5 text-[12px] font-mono bg-neutral-50 rounded-lg border border-neutral-200 text-neutral-900"
                 placeholder="#60A5FA"
               />
             </div>
 
             {/* Preview */}
-            <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
-              <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">Preview</p>
-              <div className="flex items-center gap-3">
-                <button
-                  type="button"
-                  className="px-4 py-2 text-sm font-medium text-white rounded-xl shadow-lg transition-all duration-200"
-                  style={{
-                    backgroundColor: pendingColor,
-                    boxShadow: `0 4px 14px ${pendingColor}40`
-                  }}
-                >
-                  Primary Button
-                </button>
-                <span
-                  className="px-2 py-1 text-xs font-medium text-white rounded-full"
-                  style={{ backgroundColor: pendingColor }}
-                >
-                  Badge
-                </span>
-                <span
-                  className="text-sm font-medium"
-                  style={{ color: pendingColor }}
-                >
-                  Selected Text
-                </span>
-              </div>
-            </div>
-
-            {/* Reset Button */}
-            <div className="pt-4">
+            <div className="mt-6 flex items-center gap-3">
               <button
                 type="button"
-                onClick={handleReset}
-                className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 underline underline-offset-2 transition-colors"
+                className="px-4 py-2 text-[13px] font-semibold text-white rounded-xl transition-all duration-200"
+                style={{
+                  backgroundColor: pendingColor,
+                  boxShadow: `0 4px 14px ${pendingColor}40`
+                }}
               >
-                Reset to defaults
+                Primary Button
               </button>
+              <span
+                className="px-2.5 py-1 text-[11px] font-semibold text-white rounded-full"
+                style={{ backgroundColor: pendingColor }}
+              >
+                Badge
+              </span>
+              <span
+                className="text-[13px] font-semibold"
+                style={{ color: pendingColor }}
+              >
+                Accent Text
+              </span>
             </div>
+
+            {/* Reset */}
+            <button
+              type="button"
+              onClick={handleReset}
+              className="mt-4 text-[12px] text-neutral-400 hover:text-neutral-600 transition-colors"
+            >
+              Reset to defaults
+            </button>
           </div>
         </div>
 
-        {/* Payments Section - Only for employees */}
+        {/* ── Payments ── */}
         {isEmployee && (
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-8 mb-8">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
-                <CreditCardIcon size={20} className="text-gray-600 dark:text-gray-300" strokeWidth={1.5} />
-              </div>
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-white tracking-tight">
-                  Payments
-                </h2>
-                <p className="text-[13px] text-gray-500 dark:text-gray-400">
-                  Set up your account to receive payments for services
-                </p>
-              </div>
-            </div>
+          <div className="mb-10">
+            <h2 className="text-[22px] font-bold text-neutral-900 tracking-tight">
+              Payments
+            </h2>
+            <p className="text-[13px] text-neutral-400 mt-1 mb-5">
+              Set up your account to receive payments
+            </p>
 
             {connectLoading ? (
-              <div className="animate-pulse">
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-3"></div>
-                <div className="h-3 bg-gray-100 dark:bg-gray-600 rounded w-2/3 mb-4"></div>
-                <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded w-1/3"></div>
+              <div className="animate-pulse space-y-3">
+                <div className="h-4 bg-neutral-100 rounded w-1/3"></div>
+                <div className="h-3 bg-neutral-100 rounded w-2/3"></div>
+                <div className="h-10 bg-neutral-100 rounded w-1/3"></div>
               </div>
             ) : !connectStatus?.hasAccount ? (
-              // Not set up yet
-              <div className="rounded-xl border border-gray-200 dark:border-gray-600 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 p-6">
-                <div className="flex items-start gap-4">
-                  <div className="p-3 rounded-xl bg-blue-50 dark:bg-blue-900/30 flex-shrink-0">
-                    <CreditCardIcon size={24} className="text-blue-500" strokeWidth={1.5} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-gray-900 dark:text-white text-base mb-1">
-                      Set Up Payments
-                    </h3>
-                    <p className="text-[13px] text-gray-500 dark:text-gray-400 mb-4 leading-relaxed">
-                      Connect your bank account to receive payments for your services. ForMe takes a 10% platform fee on each transaction.
-                    </p>
-                    <button
-                      onClick={handleOnboard}
-                      disabled={actionLoading}
-                      className="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-medium rounded-xl hover:bg-gray-800 dark:hover:bg-gray-100 transition-all disabled:opacity-50"
-                    >
-                      {actionLoading ? 'Loading...' : 'Get Started'}
-                      <ArrowRight01Icon size={16} strokeWidth={2} />
-                    </button>
-                  </div>
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-full bg-neutral-100 flex items-center justify-center flex-shrink-0">
+                  <CreditCardIcon size={18} className="text-neutral-500" strokeWidth={1.5} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-[15px] font-semibold text-neutral-900 mb-1">
+                    Set Up Payments
+                  </h3>
+                  <p className="text-[13px] text-neutral-400 mb-4 leading-relaxed">
+                    Connect your bank account to receive payments. ForMe takes a 10% platform fee on each transaction.
+                  </p>
+                  <button
+                    onClick={handleOnboard}
+                    disabled={actionLoading}
+                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-neutral-900 text-white text-[13px] font-semibold rounded-xl hover:bg-neutral-800 transition-all disabled:opacity-50"
+                  >
+                    {actionLoading ? 'Loading...' : 'Get Started'}
+                    <ArrowRight01Icon size={14} strokeWidth={2.5} />
+                  </button>
                 </div>
               </div>
             ) : !connectStatus.onboardingComplete || !connectStatus.chargesEnabled ? (
-              // Onboarding incomplete
-              <div className="rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 p-6">
-                <div className="flex items-start gap-4">
-                  <div className="p-3 rounded-xl bg-amber-100 dark:bg-amber-900/40 flex-shrink-0">
-                    <AlertCircleIcon size={24} className="text-amber-600 dark:text-amber-400" strokeWidth={1.5} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-gray-900 dark:text-white text-base mb-1">
-                      Complete Payment Setup
-                    </h3>
-                    <p className="text-[13px] text-gray-600 dark:text-gray-300 mb-4 leading-relaxed">
-                      Your payment account needs additional information before you can receive payments.
-                    </p>
-                    <button
-                      onClick={handleOnboard}
-                      disabled={actionLoading}
-                      className="inline-flex items-center gap-2 px-4 py-2.5 bg-amber-600 text-white text-sm font-medium rounded-xl hover:bg-amber-700 transition-all disabled:opacity-50"
-                    >
-                      {actionLoading ? 'Loading...' : 'Continue Setup'}
-                      <ArrowRight01Icon size={16} strokeWidth={2} />
-                    </button>
-                  </div>
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center flex-shrink-0">
+                  <AlertCircleIcon size={18} className="text-amber-500" strokeWidth={1.5} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-[15px] font-semibold text-neutral-900 mb-1">
+                    Complete Payment Setup
+                  </h3>
+                  <p className="text-[13px] text-neutral-400 mb-4 leading-relaxed">
+                    Your payment account needs additional information before you can receive payments.
+                  </p>
+                  <button
+                    onClick={handleOnboard}
+                    disabled={actionLoading}
+                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-amber-500 text-white text-[13px] font-semibold rounded-xl hover:bg-amber-600 transition-all disabled:opacity-50"
+                  >
+                    {actionLoading ? 'Loading...' : 'Continue Setup'}
+                    <ArrowRight01Icon size={14} strokeWidth={2.5} />
+                  </button>
                 </div>
               </div>
             ) : (
-              // Fully set up
-              <div className="rounded-xl border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20 p-6">
-                <div className="flex items-start gap-4">
-                  <div className="p-3 rounded-xl bg-green-100 dark:bg-green-900/40 flex-shrink-0">
-                    <CheckmarkCircle02Icon size={24} className="text-green-600 dark:text-green-400" strokeWidth={1.5} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-gray-900 dark:text-white text-base mb-1">
-                      Payments Active
-                    </h3>
-                    <p className="text-[13px] text-gray-600 dark:text-gray-300 mb-4 leading-relaxed">
-                      You&apos;ll receive payments automatically when customers complete bookings. View your earnings and manage payouts in your dashboard.
-                    </p>
-                    <button
-                      onClick={handleOpenDashboard}
-                      disabled={actionLoading}
-                      className="inline-flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 text-sm font-medium rounded-xl hover:bg-gray-50 dark:hover:bg-gray-600 transition-all disabled:opacity-50"
-                    >
-                      {actionLoading ? 'Loading...' : 'View Dashboard'}
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                        <polyline points="15 3 21 3 21 9"/>
-                        <line x1="10" y1="14" x2="21" y2="3"/>
-                      </svg>
-                    </button>
-                  </div>
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center flex-shrink-0">
+                  <CheckmarkCircle02Icon size={18} className="text-emerald-500" strokeWidth={1.5} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-[15px] font-semibold text-neutral-900 mb-1">
+                    Payments Active
+                  </h3>
+                  <p className="text-[13px] text-neutral-400 mb-4 leading-relaxed">
+                    You&apos;ll receive payments automatically when customers complete bookings.
+                  </p>
+                  <button
+                    onClick={handleOpenDashboard}
+                    disabled={actionLoading}
+                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-neutral-100 text-neutral-700 text-[13px] font-semibold rounded-xl hover:bg-neutral-200 transition-all disabled:opacity-50"
+                  >
+                    {actionLoading ? 'Loading...' : 'View Dashboard'}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                      <polyline points="15 3 21 3 21 9"/>
+                      <line x1="10" y1="14" x2="21" y2="3"/>
+                    </svg>
+                  </button>
                 </div>
               </div>
             )}
           </div>
         )}
 
-        {/* Actions */}
-        <div className="flex flex-col sm:flex-row gap-4">
-          <button
-            onClick={handleBackToProfile}
-            className="flex-1 py-3 px-6 border border-gray-200 dark:border-gray-700 rounded-xl font-semibold text-[13px] tracking-tight text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-200"
-          >
-            Back to Profile
-          </button>
+        {/* ── Actions ── */}
+        <div className="border-t border-neutral-100 pt-6 pb-12">
+          <div className="flex gap-3">
+            <button
+              onClick={() => {
+                if (currentUser?.id) {
+                  router.push(`/profile/${currentUser.id}`);
+                } else {
+                  router.push('/');
+                }
+              }}
+              className="px-5 py-2.5 rounded-xl text-[13px] font-semibold text-neutral-500 bg-neutral-100 hover:bg-neutral-200 hover:text-neutral-700 transition-all duration-200"
+            >
+              Back to Profile
+            </button>
 
-          <button
-            onClick={handleSave}
-            disabled={!hasUnsavedChanges}
-            className="flex-1 py-3 px-6 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-semibold text-[13px] tracking-tight hover:bg-black dark:hover:bg-gray-100 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-          >
-            {hasUnsavedChanges ? (
-              <>
-                Save Changes
-                <ArrowRight01Icon size={14} strokeWidth={2.5} />
-              </>
-            ) : (
-              'No Changes'
-            )}
-          </button>
+            <button
+              onClick={handleSave}
+              disabled={!hasUnsavedChanges}
+              className="px-5 py-2.5 bg-neutral-900 text-white rounded-xl text-[13px] font-semibold hover:bg-neutral-800 transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed inline-flex items-center gap-2"
+            >
+              {hasUnsavedChanges ? (
+                <>
+                  Save Changes
+                  <ArrowRight01Icon size={14} strokeWidth={2.5} />
+                </>
+              ) : (
+                'No Changes'
+              )}
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </Container>
   );
 };
 

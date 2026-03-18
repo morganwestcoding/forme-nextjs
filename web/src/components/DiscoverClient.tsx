@@ -16,11 +16,12 @@ import ListingCard from '@/components/listings/ListingCard';
 import WorkerCard from '@/components/listings/WorkerCard';
 import ShopCard from '@/components/shop/ShopCard';
 import SectionHeader from '@/app/market/SectionHeader';
-import { Search01Icon, PlusSignIcon, Notification03Icon, MessageMultiple01Icon, TreatmentIcon, Yoga01Icon, WorkoutRunIcon, BlushBrush01Icon, HotTubeIcon, ChairBarberIcon, PerfumeIcon, HairDryerIcon } from 'hugeicons-react';
+import { Search01Icon, PlusSignIcon, Notification03Icon, MessageMultiple01Icon } from 'hugeicons-react';
 import Image from 'next/image';
 import useLoginModal from '@/app/hooks/useLoginModal';
 import useInboxModal from '@/app/hooks/useInboxModal';
 import useNotificationsModal from '@/app/hooks/useNotificationsModal';
+import PageHeader from '@/components/PageHeader';
 
 interface DiscoverClientProps {
   initialPosts: SafePost[];
@@ -354,113 +355,65 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
     <ClientProviders>
       <div className="min-h-screen">
         <Container>
-          {/* Hero Section - Clean minimal design (matching Market) */}
-          <div className="-mx-6 md:-mx-24 -mt-2 md:-mt-8 overflow-visible">
-            <div className="relative px-6 md:px-24 pt-12 pb-0 overflow-visible">
+          <PageHeader currentUser={currentUser} />
 
-              {/* Content */}
-              <div className="relative z-10 pb-0">
-                {/* Search and Controls */}
-                <div className="flex items-center gap-3 w-full">
-                  <Link href="/" className="mr-4">
-                    <Image src="/logos/fm-logo.png" alt="Logo" width={72} height={46} className="opacity-90 hover:opacity-100 transition-opacity duration-200 shrink-0" />
-                  </Link>
-                  <div className="flex-1 max-w-xl">
-                    <PageSearch
-                      actionContext="discover"
-                      showAttach={false}
-                      showCreate={false}
-                      showFilters={false}
-                      showDefaultActions={false}
-                      leftIcon={
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-6 h-6 shrink-0 ml-1.5">
-                          <path d="M2.5 12C2.5 7.52166 2.5 5.28249 3.89124 3.89124C5.28249 2.5 7.52166 2.5 12 2.5C16.4783 2.5 18.7175 2.5 20.1088 3.89124C21.5 5.28249 21.5 7.52166 21.5 12C21.5 16.4783 21.5 18.7175 20.1088 20.1088C18.7175 21.5 16.4783 21.5 12 21.5C7.52166 21.5 5.28249 21.5 3.89124 20.1088C2.5 18.7175 2.5 16.4783 2.5 12Z" fill="currentColor" className="text-stone-500 dark:text-zinc-400" />
-                          <path d="M14.8284 14.8284L17 17M16 12C16 9.79086 14.2091 8 12 8C9.79086 8 8 9.79086 8 12C8 14.2091 9.79086 16 12 16C14.2091 16 16 14.2091 16 12Z" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                      }
-                      actionButtons={
-                        <button
-                          type="button"
-                          className="flex items-center gap-2 px-6 py-1.5 rounded-lg text-stone-500 dark:text-zinc-400 hover:text-stone-700 dark:hover:text-zinc-200 hover:bg-stone-100 dark:hover:bg-zinc-800 transition-colors text-[13px] whitespace-nowrap"
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor" stroke="none">
-                            <path d="M12 2C7.58 2 4 5.58 4 10c0 5.25 7 12 8 12s8-6.75 8-12c0-4.42-3.58-8-8-8Zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z" />
-                          </svg>
-                          New York, NY
-                        </button>
-                      }
-                    />
-                  </div>
-                  <div className="flex items-center gap-2 ml-auto">
-                    <button
-                      onClick={() => router.push('/post/new')}
-                      className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-stone-400 dark:text-zinc-500 hover:text-stone-600 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-zinc-800 transition-colors"
-                    >
-                      <PlusSignIcon className="w-5 h-5 sm:w-[22px] sm:h-[22px]" strokeWidth={1.5} />
-                    </button>
-                    <button
-                      className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-stone-400 dark:text-zinc-500 hover:text-stone-600 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-zinc-800 transition-colors"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5 sm:w-[22px] sm:h-[22px]" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M17.5 8.75L15.0447 19.5532C15.015 19.684 15 19.8177 15 19.9518C15 20.9449 15.8051 21.75 16.7982 21.75H18" />
-                        <path d="M19.2192 21.75H4.78078C3.79728 21.75 3 20.9527 3 19.9692C3 19.8236 3.01786 19.6786 3.05317 19.5373L5.24254 10.7799C5.60631 9.32474 5.78821 8.59718 6.33073 8.17359C6.87325 7.75 7.6232 7.75 9.12311 7.75H14.8769C16.3768 7.75 17.1267 7.75 17.6693 8.17359C18.2118 8.59718 18.3937 9.32474 18.7575 10.7799L20.9468 19.5373C20.9821 19.6786 21 19.8236 21 19.9692C21 20.9527 20.2027 21.75 19.2192 21.75Z" />
-                        <path d="M15 7.75V5.75C15 4.09315 13.6569 2.75 12 2.75C10.3431 2.75 9 4.09315 9 5.75V7.75" />
-                        <path d="M10 10.75H12.5" />
-                      </svg>
-                    </button>
-                    <button
-                      onClick={() => notificationsModal.onOpen()}
-                      className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-stone-400 dark:text-zinc-500 hover:text-stone-600 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-zinc-800 transition-colors"
-                    >
-                      <Notification03Icon className="w-5 h-5 sm:w-[22px] sm:h-[22px]" strokeWidth={1.5} />
-                    </button>
-                    <button
-                      onClick={() => inboxModal.onOpen(currentUser)}
-                      className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-stone-400 dark:text-zinc-500 hover:text-stone-600 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-zinc-800 transition-colors"
-                    >
-                      <MessageMultiple01Icon className="w-5 h-5 sm:w-[22px] sm:h-[22px]" strokeWidth={1.5} />
-                    </button>
-                    <button
-                      onClick={() => {
-                        if (currentUser?.id) {
-                          router.push(`/profile/${currentUser.id}`);
-                        } else {
-                          loginModal.onOpen();
-                        }
-                      }}
-                      className="shrink-0 w-10 h-10 rounded-full overflow-hidden border border-zinc-200 dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-500 transition-colors"
-                    >
-                    <Image
-                      src={currentUser?.image || "/people/rooster.webp"}
-                      alt="Profile"
-                      width={40}
-                      height={40}
-                      className="object-cover w-full h-full"
-                    />
-                    </button>
-                  </div>
+          {/* Editorial Banners */}
+          <div className="grid grid-cols-3 gap-0.5 mt-8">
+            <div
+              className="relative group overflow-hidden rounded-l-2xl cursor-pointer"
+              onClick={() => router.push('/shops')}
+            >
+              <div className="aspect-[2/1] bg-stone-900 relative">
+                <Image
+                  src="/assets/people/banner-1.png"
+                  alt="New Arrivals"
+                  fill
+                  className="object-cover object-center group-hover:scale-105 transition-all duration-700 ease-out"
+                />
+                <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/80 to-transparent" />
+                <div className="absolute bottom-0 left-0 p-5">
+                  <p className="text-xs tracking-wide text-white/80 mb-0.5" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}>Curated</p>
+                  <h3 className="text-xl font-bold text-white leading-snug">New Arrivals</h3>
+                  <p className="text-sm text-white/70 mt-0.5">Fresh brands on Forme</p>
                 </div>
-
-                {/* Navigation */}
-                <nav className="flex items-center gap-3 mt-4" style={{ paddingLeft: 'calc(72px + 1rem + 1.25rem)' }}>
-                  {navItems.map((item, i) => (
-                    <React.Fragment key={item.label}>
-                      {i > 0 && <span className="text-gray-300 dark:text-gray-600 text-[13px]">/</span>}
-                      <Link
-                        href={item.href}
-                        className={`text-[14px] transition-colors duration-200 ${
-                          item.active
-                            ? 'text-gray-900 dark:text-white font-medium'
-                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-                        }`}
-                      >
-                        {item.label}
-                      </Link>
-                    </React.Fragment>
-                  ))}
-                </nav>
-
-
+              </div>
+            </div>
+            <div
+              className="relative group overflow-hidden cursor-pointer"
+              onClick={() => router.push('/maps')}
+            >
+              <div className="aspect-[2/1] bg-stone-900 relative">
+                <Image
+                  src="/assets/people/banner-2.png"
+                  alt="Near You"
+                  fill
+                  className="object-cover object-center group-hover:scale-105 transition-all duration-700 ease-out"
+                />
+                <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/80 to-transparent" />
+                <div className="absolute bottom-0 left-0 p-5">
+                  <p className="text-xs tracking-wide text-white/80 mb-0.5" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}>Local</p>
+                  <h3 className="text-xl font-bold text-white leading-snug">Near You</h3>
+                  <p className="text-sm text-white/70 mt-0.5">Top-rated in your area</p>
+                </div>
+              </div>
+            </div>
+            <div
+              className="relative group overflow-hidden rounded-r-2xl cursor-pointer"
+              onClick={() => router.push('/shops?category=Wellness')}
+            >
+              <div className="aspect-[2/1] bg-stone-900 relative">
+                <Image
+                  src="/assets/people/banner-3.png"
+                  alt="Trending"
+                  fill
+                  className="object-cover object-center group-hover:scale-105 transition-all duration-700 ease-out"
+                />
+                <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/80 to-transparent" />
+                <div className="absolute bottom-0 left-0 p-5">
+                  <p className="text-xs tracking-wide text-white/80 mb-0.5" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}>Trending</p>
+                  <h3 className="text-xl font-bold text-white leading-snug">Most Popular</h3>
+                  <p className="text-sm text-white/70 mt-0.5">What everyone is booking</p>
+                </div>
               </div>
             </div>
           </div>
@@ -470,29 +423,20 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
             <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white mb-6">Shop By Category</h2>
             <div className="flex gap-6 overflow-x-auto pb-2 pt-2 pl-4 pr-4 -ml-4 scrollbar-hide">
               {(() => {
-                const iconMap: Record<string, React.ElementType> = {
-                  Massage: TreatmentIcon,
-                  Wellness: Yoga01Icon,
-                  Fitness: WorkoutRunIcon,
-                  Nails: BlushBrush01Icon,
-                  Spa: HotTubeIcon,
-                  Barber: ChairBarberIcon,
-                  Beauty: PerfumeIcon,
-                  Salon: HairDryerIcon,
-                };
                 const imageMap: Record<string, string> = {
-                  Massage: '/assets/massage.jpg',
-                  Wellness: '/assets/wellness.jpg',
-                  Fitness: '/assets/fitness.jpg',
-                  Nails: '/assets/nails.png',
-                  Spa: '/assets/spa.png',
-                  Barber: '/assets/Barber.png',
-                  Beauty: '/assets/Beauty.png',
-                  Salon: '/assets/Salon.png',
+                  Wellness: '/assets/people/wellness.png',
+                  Training: '/assets/people/fitness.png',
+                  Barber: '/assets/people/barber.png',
+                  Salon: '/assets/people/salon.png',
+                  Nails: '/assets/people/nails.png',
+                  Skincare: '/assets/people/skincare.png',
+                  Lash: '/assets/people/lashes.png',
+                  Brows: '/assets/people/brows.png',
+                  Ink: '/assets/people/ink.png',
                 };
-                return categories.map((cat, catIdx) => {
+                return categories.map((cat) => {
                   const isSelected = currentCategories.includes(cat.label);
-                  const imageSrc = imageMap[cat.label] || '/categories/default.svg';
+                  const imageSrc = imageMap[cat.label];
                   return (
                     <button
                       key={cat.label}
@@ -508,27 +452,25 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                       className="flex flex-col items-center gap-2 shrink-0 group"
                     >
                       <div
-                        className={`w-[78px] h-[78px] rounded-full overflow-hidden relative transition-all duration-300 ease-out border shadow-sm ${
+                        className={`w-[88px] h-[88px] rounded-full overflow-hidden flex items-center justify-center bg-black transition-all duration-500 ease-out border-2 ${
                           isSelected
-                            ? 'border-stone-300 dark:border-zinc-500 scale-105 ring-2 ring-stone-300 dark:ring-zinc-500'
-                            : 'border-stone-200/80 dark:border-zinc-700/50 group-hover:border-stone-300 dark:group-hover:border-zinc-600'
+                            ? 'border-zinc-900 dark:border-white scale-105 shadow-lg'
+                            : 'border-stone-200 dark:border-zinc-700 group-hover:border-stone-400 dark:group-hover:border-zinc-500 group-hover:scale-105 group-hover:shadow-md'
                         }`}
                       >
-                        <Image
-                          src={imageSrc}
-                          alt={cat.label}
-                          fill
-                          className="object-cover blur-[2px] scale-110 grayscale group-hover:grayscale-0 transition-all duration-300"
-                          sizes="78px"
-                        />
-                        <div className="absolute inset-0 bg-black/30 group-hover:bg-black/20 transition-all duration-300" />
-                        <div className="absolute inset-0 flex items-center justify-center text-white z-10">
-                          {(() => { const Icon = iconMap[cat.label]; return Icon ? <Icon size={24} strokeWidth={1.5} /> : null; })()}
-                        </div>
+                        {imageSrc && (
+                          <Image
+                            src={imageSrc}
+                            alt={cat.label}
+                            width={88}
+                            height={88}
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                          />
+                        )}
                       </div>
-                      <span className={`text-sm font-normal transition-colors duration-300 ${
+                      <span className={`text-sm font-normal transition-all duration-500 ${
                         isSelected
-                          ? 'text-stone-700 dark:text-zinc-200'
+                          ? 'text-stone-800 dark:text-zinc-100'
                           : 'text-stone-400 dark:text-zinc-500 group-hover:text-stone-600 dark:group-hover:text-zinc-300'
                       }`}>{cat.label}</span>
                     </button>
@@ -539,7 +481,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                 onClick={() => {/* TODO: show more categories */}}
                 className="flex flex-col items-center gap-2 shrink-0 group"
               >
-                <div className="w-[78px] h-[78px] rounded-full flex items-center justify-center transition-all duration-300 ease-out border border-stone-200/80 dark:border-zinc-700/50 bg-stone-50 dark:bg-zinc-800/50 group-hover:border-stone-300 dark:group-hover:border-zinc-600 group-hover:bg-stone-100 dark:group-hover:bg-zinc-800 shadow-sm">
+                <div className="w-[88px] h-[88px] rounded-full flex items-center justify-center transition-all duration-300 ease-out border border-stone-200/80 dark:border-zinc-700/50 bg-stone-50 dark:bg-zinc-800/50 group-hover:border-stone-300 dark:group-hover:border-zinc-600 group-hover:bg-stone-100 dark:group-hover:bg-zinc-800 shadow-sm">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="w-5 h-5 text-stone-400 dark:text-zinc-500 group-hover:text-stone-500 dark:group-hover:text-zinc-400 transition-colors duration-300">
                     <circle cx="5" cy="12" r="1" fill="currentColor" stroke="none" />
                     <circle cx="12" cy="12" r="1" fill="currentColor" stroke="none" />

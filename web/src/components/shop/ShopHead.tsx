@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { Link02Icon, UserAdd01Icon, UserCheck01Icon, Location01Icon, Call02Icon, Globe02Icon, Share08Icon } from 'hugeicons-react';
 import ProductCard from './ProductCard';
+import ShopCard from './ShopCard';
 import WorkerCard from '../listings/WorkerCard';
 import PostCard from '../feed/PostCard';
 import ShopCategoryNav from './ShopCategoryNav';
@@ -25,6 +26,7 @@ interface ShopHeadProps {
   Products: SafeProduct[];
   posts?: SafePost[];
   categories?: any[];
+  relatedShops?: SafeShop[];
 }
 
 const ShopHead: React.FC<ShopHeadProps> = ({
@@ -32,7 +34,8 @@ const ShopHead: React.FC<ShopHeadProps> = ({
   currentUser,
   Products = [],
   posts = [],
-  categories = []
+  categories = [],
+  relatedShops = []
 }) => {
   const router = useRouter();
 
@@ -278,8 +281,8 @@ const ShopHead: React.FC<ShopHeadProps> = ({
                   <span className="text-gray-300 mx-2">·</span>
                   <span className={operatingStatus.isOpen ? 'text-emerald-600' : 'text-rose-600'}>
                     {operatingStatus.isOpen
-                      ? `Open til ${operatingStatus.closeTime}`
-                      : `Closed · Opens ${operatingStatus.openTime}`
+                      ? `Open until ${operatingStatus.closeTime}`
+                      : `Closed until ${operatingStatus.openTime}`
                     }
                   </span>
                 </>

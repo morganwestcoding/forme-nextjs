@@ -4,6 +4,22 @@ import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/app/libs/prismadb";
 import { canModifyResource } from "@/app/libs/authorization";
 
+async function geocodeAddress(address: string): Promise<{ lat: number; lng: number } | null> {
+  try {
+    const token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
+    if (!token) return null;
+    const res = await fetch(
+      `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=${token}&limit=1`
+    );
+    const data = await res.json();
+    if (data.features?.length) {
+      const [lng, lat] = data.features[0].center;
+      return { lat, lng };
+    }
+  } catch {}
+  return null;
+}
+
 interface IParams {
   listingId?: string;
 }
@@ -45,6 +61,13 @@ export async function PUT(request: Request, { params }: { params: IParams }) {
     const incomingEmployees: EmployeeInput[] = Array.isArray(body.employees) ? body.employees : [];
     const incomingHours = Array.isArray(body.storeHours) ? body.storeHours : [];
 
+    // Re-geocode if address or location changed
+    const addressChanged = body.address !== listing.address || body.location !== listing.location;
+    let coords: { lat: number; lng: number } | null = null;
+    if (addressChanged) {
+      coords = await geocodeAddress(body.address || body.location || '');
+    }
+
     const fresh = await prisma.$transaction(async (tx) => {
       // 1) Update top-level fields
       await tx.listing.update({
@@ -60,6 +83,7 @@ export async function PUT(request: Request, { params }: { params: IParams }) {
           phoneNumber: body.phoneNumber,
           website: body.website,
           galleryImages: body.galleryImages,
+          ...(addressChanged && coords ? { lat: coords.lat, lng: coords.lng } : {}),
         },
       });
 

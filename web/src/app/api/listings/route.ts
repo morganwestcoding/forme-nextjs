@@ -3,6 +3,22 @@ import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 
+async function geocodeAddress(address: string): Promise<{ lat: number; lng: number } | null> {
+  try {
+    const token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
+    if (!token) return null;
+    const res = await fetch(
+      `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=${token}&limit=1`
+    );
+    const data = await res.json();
+    if (data.features?.length) {
+      const [lng, lat] = data.features[0].center;
+      return { lat, lng };
+    }
+  } catch {}
+  return null;
+}
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const category = searchParams.get('category');
@@ -126,6 +142,9 @@ export async function POST(request: Request) {
       }));
     }
 
+    // Geocode the address for map coordinates
+    const coords = await geocodeAddress(address || location || '');
+
     const listing = await prisma.listing.create({
       data: {
         title,
@@ -135,6 +154,8 @@ export async function POST(request: Request) {
         galleryImages: galleryImages || [],
         location,
         userId: currentUser.id,
+        lat: coords?.lat ?? null,
+        lng: coords?.lng ?? null,
 
         services: {
           create: (parsedServices || []).map((s: any) => ({
