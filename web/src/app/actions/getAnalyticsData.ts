@@ -236,7 +236,7 @@ export default async function getAnalyticsData(userId: string): Promise<Analytic
     // Calculate review statistics
     const totalReviews = userReviews.length;
     const averageRating = totalReviews > 0
-      ? Math.round((userReviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews) * 10) / 10
+      ? Math.round((userReviews.reduce((sum: number, r: any) => sum + r.rating, 0) / totalReviews) * 10) / 10
       : 0;
     const ratingDistribution = [1, 2, 3, 4, 5].map(rating => ({
       rating,
