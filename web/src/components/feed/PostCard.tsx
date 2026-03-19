@@ -172,39 +172,55 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, isH
         />
       )}
 
-        {/* Heart button — top right */}
+        {/* Heart + share — top right */}
         <div
-          className="absolute top-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center gap-0.5"
+          className="absolute top-4 right-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center gap-3"
           onClick={(e) => e.stopPropagation()}
         >
-          <HeartButton listingId={post.id} currentUser={currentUser} />
-          <span className="text-[10px] font-medium text-white/80 tabular-nums drop-shadow-sm">{likeCount}</span>
+          <div className="-ml-0.5"><HeartButton listingId={post.id} currentUser={currentUser} /></div>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              if (navigator.share) {
+                navigator.share({ title: post.title ?? '', url: `${window.location.origin}/posts/${post.id}` });
+              } else {
+                navigator.clipboard.writeText(`${window.location.origin}/posts/${post.id}`);
+              }
+            }}
+            aria-label="Share"
+            className="text-white/80 hover:text-white transition-colors duration-200 drop-shadow-sm"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9.39584 4.5H8.35417C5.40789 4.5 3.93475 4.5 3.01946 5.37868C2.10417 6.25736 2.10417 7.67157 2.10417 10.5V14.5C2.10417 17.3284 2.10417 18.7426 3.01946 19.6213C3.93475 20.5 5.40789 20.5 8.35417 20.5H12.5608C15.5071 20.5 16.9802 20.5 17.8955 19.6213C18.4885 19.052 18.6973 18.2579 18.7708 17" />
+              <path d="M16.1667 7V3.85355C16.1667 3.65829 16.3316 3.5 16.535 3.5C16.6326 3.5 16.7263 3.53725 16.7954 3.60355L21.5275 8.14645C21.7634 8.37282 21.8958 8.67986 21.8958 9C21.8958 9.32014 21.7634 9.62718 21.5275 9.85355L16.7954 14.3964C16.7263 14.4628 16.6326 14.5 16.535 14.5C16.3316 14.5 16.1667 14.3417 16.1667 14.1464V11H13.1157C8.875 11 7.3125 14.5 7.3125 14.5V12C7.3125 9.23858 9.64435 7 12.5208 7H16.1667Z" />
+            </svg>
+          </button>
         </div>
 
         {/* Bottom gradient overlay — reveal on hover */}
         <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/60 via-black/25 to-transparent z-10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-600" />
 
         {/* Info overlay — reveal on hover */}
-        <div className="absolute bottom-0 left-0 right-0 z-20 p-3 flex items-center gap-2.5 opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-600 ease-[cubic-bezier(0.23,1,0.32,1)]">
+        <div className="absolute bottom-6 left-6 right-6 z-20 flex items-center gap-2 opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-600 ease-[cubic-bezier(0.23,1,0.32,1)]">
           {post.user?.image && (
-            <div className="relative w-7 h-7 rounded-full overflow-hidden ring-[1.5px] ring-white/80 shrink-0">
+            <div className="relative w-6 h-6 rounded-full overflow-hidden ring-[1.5px] ring-white/80 shrink-0">
               <Image
                 src={post.user.image}
                 alt={post.user.name || ''}
                 fill
                 className="object-cover"
-                sizes="28px"
+                sizes="24px"
               />
             </div>
           )}
           <div className="flex-1 min-w-0">
             {post.user && (
-              <span className="text-white text-[13px] font-semibold truncate block drop-shadow-sm">
+              <span className="text-white text-[12px] font-semibold truncate block drop-shadow-sm leading-none">
                 {post.user.name}
               </span>
             )}
-            <div className="flex items-center gap-2 mt-0.5">
-              <p className="text-white/70 text-[11px] leading-snug line-clamp-1 drop-shadow-sm flex-1 min-w-0">
+            <div className="flex items-center gap-2 mt-[2px]">
+              <p className="text-white/70 text-[11px] leading-none line-clamp-1 drop-shadow-sm flex-1 min-w-0">
                 {post.content || 'This is a description.'}
               </p>
               <div className="flex items-center gap-2 shrink-0 text-white/60">

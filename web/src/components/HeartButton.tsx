@@ -8,7 +8,7 @@ import { useTheme } from '@/app/context/ThemeContext';
 interface HeartButtonProps {
   listingId: string;
   currentUser?: SafeUser | null;
-  variant?: 'default' | 'listingHead' | 'worker';
+  variant?: 'default' | 'listingHead' | 'worker' | 'card';
   favoriteIds?: string[];
 }
 
@@ -104,14 +104,45 @@ const HeartButton: React.FC<HeartButtonProps> = ({
     );
   }
 
+  /** ----- Card variant (visible on white backgrounds) ----- */
+  if (variant === 'card') {
+    return (
+      <svg
+        onClick={handleToggle}
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        width="20"
+        height="20"
+        className="transition-all duration-500 ease-out cursor-pointer active:scale-[0.97]"
+        aria-label={hasFavorited ? 'Remove from favorites' : 'Add to favorites'}
+        role="button"
+      >
+        <defs>
+          <linearGradient id={`${gradientId}-card`} x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor={accentColor} />
+            <stop offset="100%" stopColor={darkerColor} />
+          </linearGradient>
+        </defs>
+        <path
+          d="M10.4107 19.9677C7.58942 17.858 2 13.0348 2 8.69444C2 5.82563 4.10526 3.5 7 3.5C8.5 3.5 10 4 12 6C14 4 15.5 3.5 17 3.5C19.8947 3.5 22 5.82563 22 8.69444C22 13.0348 16.4106 17.858 13.5893 19.9677C12.6399 20.6776 11.3601 20.6776 10.4107 19.9677Z"
+          fill={hasFavorited ? `url(#${gradientId}-card)` : 'none'}
+          stroke={hasFavorited ? darkerColor : '#000000'}
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    );
+  }
+
   /** ----- Default variant ----- */
   return (
     <svg
       onClick={handleToggle}
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
-      width="24"
-      height="24"
+      width="20"
+      height="20"
       className="transition-all duration-500 ease-out cursor-pointer active:scale-[0.97]"
       aria-label={hasFavorited ? 'Remove from favorites' : 'Add to favorites'}
       role="button"
@@ -125,8 +156,8 @@ const HeartButton: React.FC<HeartButtonProps> = ({
       </defs>
       <path
         d="M10.4107 19.9677C7.58942 17.858 2 13.0348 2 8.69444C2 5.82563 4.10526 3.5 7 3.5C8.5 3.5 10 4 12 6C14 4 15.5 3.5 17 3.5C19.8947 3.5 22 5.82563 22 8.69444C22 13.0348 16.4106 17.858 13.5893 19.9677C12.6399 20.6776 11.3601 20.6776 10.4107 19.9677Z"
-        fill={hasFavorited ? `url(#${gradientId})` : 'rgba(255,255,255,0.4)'}
-        stroke={hasFavorited ? darkerColor : 'rgba(255,255,255,0.5)'}
+        fill={hasFavorited ? `url(#${gradientId})` : 'none'}
+        stroke={hasFavorited ? darkerColor : 'rgba(255,255,255,0.8)'}
         strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"

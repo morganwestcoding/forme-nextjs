@@ -275,8 +275,8 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
             placeholder={placeholder}
             className={`flex-1 pl-1.5 text-[14px] bg-transparent border-none outline-none ${
               isDarkMode
-                ? 'text-white placeholder-zinc-500'
-                : 'text-stone-900 placeholder-stone-400'
+                ? 'text-white placeholder-zinc-400'
+                : 'text-stone-900 placeholder-stone-500'
             }`}
           />
 

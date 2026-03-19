@@ -210,118 +210,91 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
   return (
     <div
       onClick={handleCardClick}
-      className="group cursor-pointer py-3 flex flex-row items-center gap-3.5 relative max-w-[400px]"
+      className="group cursor-pointer rounded-2xl p-3 -mx-3 flex flex-row gap-4 relative transition-colors duration-200 hover:bg-stone-50/80 dark:hover:bg-zinc-900/40"
     >
-      {/* Avatar */}
-      {shouldShowImage ? (
-        <div className={`relative overflow-hidden rounded-full flex-shrink-0 shadow-sm transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] brightness-[0.97] group-hover:brightness-100 group-hover:scale-[1.02] ${imgSize}`}>
+      {/* Avatar — 100px circle centered in 120px to align with ListingCard */}
+      <div className="flex-shrink-0 w-[120px] h-[120px] flex items-center justify-center">
+      <div className="relative overflow-hidden rounded-full w-[100px] h-[100px] shadow-sm">
+        {shouldShowImage ? (
           <Image
             src={profileImage}
             alt={employee.fullName}
             fill
-            className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
-            sizes="100px"
+            className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+            sizes="120px"
             priority={false}
             onError={handleImageError}
             onLoad={handleImageLoad}
           />
-        </div>
-      ) : (
-        <div
-          className={`${imgSize} rounded-full flex-shrink-0 flex items-center justify-center text-white font-semibold transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:scale-[1.02] ${compact ? 'text-base' : 'text-lg'}`}
-          style={{ backgroundColor: avatarBg }}
-        >
-          {initials}
-        </div>
-      )}
+        ) : (
+          <div
+            className="w-full h-full flex items-center justify-center text-white text-xl font-semibold"
+            style={{ backgroundColor: avatarBg }}
+          >
+            {initials}
+          </div>
+        )}
+      </div>
+      </div>
 
       {/* Info */}
-      <div className="flex flex-col min-w-0 flex-1">
-        {/* Rating + Heart — pinned right with left divider */}
-        <div className="absolute top-5 right-0 flex flex-col items-center pl-3 border-l border-neutral-200 dark:border-zinc-700/50 gap-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          {/* Star + rating count */}
-          <div className="flex flex-col items-center">
-            <svg width="18" height="18" viewBox="0 0 24 24" className="text-stone-500 dark:text-zinc-400">
-              <path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z" fill="none" stroke="currentColor" strokeWidth="1.5" />
-            </svg>
-            <span className="text-[11px] text-stone-400 dark:text-zinc-500 tabular-nums mt-0.5">
-              {Number(rating).toFixed(1)}
-            </span>
-          </div>
-          {/* Heart + favorite count */}
-          <div className="flex flex-col items-center" onClick={(e) => e.stopPropagation()}>
-            <HeartButton listingId={listing.id} currentUser={currentUser} variant="listingHead" />
-            <span className="text-[11px] text-stone-400 dark:text-zinc-500 tabular-nums mt-0.5">
-              {employee.followerCount ?? 0}
-            </span>
-          </div>
-        </div>
-
-        {/* Text stack — padded right to avoid overlapping rating */}
-        <div className="pr-0 group-hover:pr-16 transition-all duration-300">
-          {/* Name */}
-          <h1 className="text-neutral-900 dark:text-zinc-100 text-[15px] leading-tight font-semibold tracking-[-0.02em] line-clamp-2">
-            {employee.fullName}
-          </h1>
-
-          {/* Job title + listing */}
-          <p className="text-stone-500 dark:text-zinc-400 text-[12px] mt-1 line-clamp-1">
-            {employee.jobTitle || 'Specialist'} · {listingTitle}
+      <div className="flex flex-col justify-center min-w-0 flex-1">
+        {/* Category — editorial cursive */}
+        {(employee.jobTitle || listing.category) && (
+          <p className="text-[11px] text-stone-400 dark:text-zinc-500 leading-none" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}>
+            {employee.jobTitle || listing.category}
           </p>
+        )}
+
+        {/* Name */}
+        <h2 className="text-[15px] font-semibold text-neutral-900 dark:text-zinc-100 tracking-[-0.01em] leading-tight line-clamp-2 mt-0.5">
+          {employee.fullName}
+        </h2>
+
+        {/* Location — listing title */}
+        <p className="text-[11px] text-stone-400 dark:text-zinc-500 leading-none mt-1.5">
+          {listingTitle}
+        </p>
+
+        {/* Rating | Price */}
+        <div className="flex items-center text-[11px] text-stone-400 dark:text-zinc-500 leading-none mt-2 tabular-nums">
+          <svg width="11" height="11" viewBox="0 0 24 24" className="text-stone-400 dark:text-zinc-500 mr-1 -mt-px flex-shrink-0">
+            <defs>
+              <linearGradient id="workerStarGold" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#f5c842" />
+                <stop offset="100%" stopColor="#d4a017" />
+              </linearGradient>
+            </defs>
+            <path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z" fill="url(#workerStarGold)" />
+          </svg>
+          <span className="text-stone-500 dark:text-zinc-400">{Number(rating).toFixed(1)}</span>
+          {priceRange && <><span className="mx-1.5 text-stone-300 dark:text-zinc-600">|</span>{priceRange}</>}
         </div>
+      </div>
 
-        {/* Price + Open status + Rating */}
-        <div className="mt-1 flex items-center gap-2 text-[11px]">
-          {priceRange && (
-            <span className="text-stone-600 dark:text-zinc-400 font-medium">{priceRange}</span>
-          )}
-          {priceRange && <span className="text-stone-400 dark:text-zinc-600">·</span>}
-          <span className="flex items-center gap-0.5 text-stone-500 dark:text-zinc-400">
-            <svg width="11" height="11" viewBox="0 0 24 24" className="text-stone-400 dark:text-zinc-500">
-              <path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z" fill="currentColor" />
-            </svg>
-            <span className="tabular-nums">{Number(rating).toFixed(1)}</span>
-          </span>
-          <span className="text-stone-400 dark:text-zinc-600">·</span>
-          {(() => {
-            const storeHours = employee.storeHours;
-            const now = new Date();
-            const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-            const today = (storeHours as any[])?.find((h: any) => h.dayOfWeek.toLowerCase() === dayNames[now.getDay()].toLowerCase());
-
-            const to12 = (t: string) => {
-              if (t.includes('M')) return t;
-              const [h, m] = t.split(':').map(Number);
-              const period = h >= 12 ? 'PM' : 'AM';
-              const hour = h % 12 || 12;
-              return m === 0 ? `${hour}${period}` : `${hour}:${m.toString().padStart(2, '0')}${period}`;
-            };
-            const to24 = (t: string) => t.includes('M') ? t.replace(/(\d+):(\d+)\s*(AM|PM)/i, (_, h, m, p) => `${(p.toUpperCase() === 'PM' && h !== '12' ? +h + 12 : h === '12' && p.toUpperCase() === 'AM' ? '00' : h).toString().padStart(2, '0')}:${m}`) : t;
-            const toMinutes = (t: string) => { const [h, m] = t.split(':').map(Number); return h * 60 + m; };
-
-            if (!storeHours?.length) return <span className="text-emerald-500 font-medium">Open until 9PM</span>;
-
-            const findNextOpen = () => {
-              for (let i = 1; i <= 7; i++) {
-                const nextDay = (storeHours as any[])?.find((h: any) => h.dayOfWeek.toLowerCase() === dayNames[(now.getDay() + i) % 7].toLowerCase());
-                if (nextDay && !nextDay.isClosed) return to12(nextDay.openTime);
-              }
-              return '9AM';
-            };
-
-            if (!today || today.isClosed) return <span className="text-stone-400 dark:text-zinc-500 font-medium">{`Closed until ${findNextOpen()}`}</span>;
-
-            const curr = toMinutes(now.toTimeString().slice(0, 5));
-            const open = toMinutes(to24(today.openTime));
-            const close = toMinutes(to24(today.closeTime));
-
-            if (curr < open) return <span className="text-stone-400 dark:text-zinc-500 font-medium">{`Closed until ${to12(today.openTime)}`}</span>;
-            if (curr >= close) return <span className="text-stone-400 dark:text-zinc-500 font-medium">{`Closed until ${findNextOpen()}`}</span>;
-            const minsLeft = close - curr;
-            if (minsLeft <= 30) return <span className="text-amber-500 font-medium">{`Closing in ${minsLeft} min`}</span>;
-            return <span className="text-emerald-500 font-medium">{`Open until ${to12(today.closeTime)}`}</span>;
-          })()}
-        </div>
+      {/* Right actions — heart + share, hover only */}
+      <div
+        className="flex flex-col items-center justify-center gap-3 flex-shrink-0 mr-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="-ml-0.5"><HeartButton listingId={listing.id} currentUser={currentUser} variant="card" /></div>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            if (navigator.share) {
+              navigator.share({ title: employee.fullName, url: `${window.location.origin}/listings/${listing.id}` });
+            } else {
+              navigator.clipboard.writeText(`${window.location.origin}/listings/${listing.id}`);
+            }
+          }}
+          aria-label="Share"
+          className="transition-colors duration-200 text-black dark:text-zinc-400 hover:text-stone-700 dark:hover:text-zinc-200"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9.39584 4.5H8.35417C5.40789 4.5 3.93475 4.5 3.01946 5.37868C2.10417 6.25736 2.10417 7.67157 2.10417 10.5V14.5C2.10417 17.3284 2.10417 18.7426 3.01946 19.6213C3.93475 20.5 5.40789 20.5 8.35417 20.5H12.5608C15.5071 20.5 16.9802 20.5 17.8955 19.6213C18.4885 19.052 18.6973 18.2579 18.7708 17" />
+            <path d="M16.1667 7V3.85355C16.1667 3.65829 16.3316 3.5 16.535 3.5C16.6326 3.5 16.7263 3.53725 16.7954 3.60355L21.5275 8.14645C21.7634 8.37282 21.8958 8.67986 21.8958 9C21.8958 9.32014 21.7634 9.62718 21.5275 9.85355L16.7954 14.3964C16.7263 14.4628 16.6326 14.5 16.535 14.5C16.3316 14.5 16.1667 14.3417 16.1667 14.1464V11H13.1157C8.875 11 7.3125 14.5 7.3125 14.5V12C7.3125 9.23858 9.64435 7 12.5208 7H16.1667Z" />
+          </svg>
+        </button>
       </div>
     </div>
   );

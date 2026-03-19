@@ -260,10 +260,6 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
           sizes="120px"
           priority={false}
         />
-        {/* Heart — top-right, only on hover */}
-        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200" onClick={(e) => e.stopPropagation()}>
-          <HeartButton listingId={data.id} currentUser={currentUser} variant="default" />
-        </div>
       </div>
 
       {/* Text */}
@@ -286,10 +282,47 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
         </p>
 
         {/* Rating | Price */}
-        <p className="text-[11px] text-stone-400 dark:text-zinc-500 leading-none mt-2 tabular-nums">
+        <div className="flex items-center text-[11px] text-stone-400 dark:text-zinc-500 leading-none mt-2 tabular-nums">
+          <svg width="11" height="11" viewBox="0 0 24 24" className="text-stone-400 dark:text-zinc-500 mr-1 -mt-px flex-shrink-0">
+            <defs>
+              <linearGradient id="listingStarGold" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#f5c842" />
+                <stop offset="100%" stopColor="#d4a017" />
+              </linearGradient>
+            </defs>
+            <path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z" fill="url(#listingStarGold)" />
+          </svg>
           <span className="text-stone-500 dark:text-zinc-400">{ratingNum === '0.0' ? '5.0' : ratingNum}</span>
           {priceRange && <><span className="mx-1.5 text-stone-300 dark:text-zinc-600">|</span>{priceRange}</>}
-        </p>
+        </div>
+      </div>
+
+      {/* Right actions — heart + count + share */}
+      <div
+        className="flex flex-col items-center justify-center gap-3 flex-shrink-0 mr-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Heart */}
+        <div className="-ml-0.5"><HeartButton listingId={data.id} currentUser={currentUser} variant="card" /></div>
+
+        {/* Share */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            if (navigator.share) {
+              navigator.share({ title: data.title, url: `${window.location.origin}/listings/${data.id}` });
+            } else {
+              navigator.clipboard.writeText(`${window.location.origin}/listings/${data.id}`);
+            }
+          }}
+          aria-label="Share"
+          className="transition-colors duration-200 text-black dark:text-zinc-400 hover:text-stone-700 dark:hover:text-zinc-200"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9.39584 4.5H8.35417C5.40789 4.5 3.93475 4.5 3.01946 5.37868C2.10417 6.25736 2.10417 7.67157 2.10417 10.5V14.5C2.10417 17.3284 2.10417 18.7426 3.01946 19.6213C3.93475 20.5 5.40789 20.5 8.35417 20.5H12.5608C15.5071 20.5 16.9802 20.5 17.8955 19.6213C18.4885 19.052 18.6973 18.2579 18.7708 17" />
+            <path d="M16.1667 7V3.85355C16.1667 3.65829 16.3316 3.5 16.535 3.5C16.6326 3.5 16.7263 3.53725 16.7954 3.60355L21.5275 8.14645C21.7634 8.37282 21.8958 8.67986 21.8958 9C21.8958 9.32014 21.7634 9.62718 21.5275 9.85355L16.7954 14.3964C16.7263 14.4628 16.6326 14.5 16.535 14.5C16.3316 14.5 16.1667 14.3417 16.1667 14.1464V11H13.1157C8.875 11 7.3125 14.5 7.3125 14.5V12C7.3125 9.23858 9.64435 7 12.5208 7H16.1667Z" />
+          </svg>
+        </button>
       </div>
     </div>
   );

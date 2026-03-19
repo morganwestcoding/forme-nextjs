@@ -37,6 +37,33 @@ interface ShopClientProps {
 
 const FADE_OUT_DURATION = 200;
 
+const BANNERS = [
+  {
+    src: '/assets/people/banner-7.png',
+    alt: 'Most Popular',
+    tag: 'Trending',
+    title: 'Most Popular',
+    subtitle: 'What everyone is booking',
+    href: '/shops?category=Barber',
+  },
+  {
+    src: '/assets/people/banner-6.png',
+    alt: 'New on Forme',
+    tag: 'Curated',
+    title: 'New on Forme',
+    subtitle: 'Fresh brands joining our community',
+    href: '/shops?category=Wellness',
+  },
+  {
+    src: '/assets/people/banner-5.png',
+    alt: 'Near You',
+    tag: 'Local',
+    title: 'Near You',
+    subtitle: 'Top-rated in your area',
+    href: '/maps',
+  },
+];
+
 // ── Mock data so the page always has content ──
 const MOCK_SHOPS: SafeShop[] = [
   {
@@ -193,6 +220,9 @@ const ShopClient: React.FC<ShopClientProps> = ({
 
   // Dynamic items per page: 12 when sidebar collapsed, 10 when expanded
   const ITEMS_PER_PAGE = isSidebarCollapsed ? 12 : 10;
+
+  // Banner state
+  const [activeBanner, setActiveBanner] = useState(0);
 
   // Pagination state
   const [shopsIndex, setShopsIndex] = useState(0);
@@ -383,52 +413,59 @@ const ShopClient: React.FC<ShopClientProps> = ({
     <>
       <PageHeader currentUser={currentUser} />
 
-      {/* Editorial Banners */}
-      <div className="grid grid-cols-2 gap-0.5 mt-8">
+      {/* Editorial Banner */}
+      <div className="mt-8">
         <div
-          className="relative group overflow-hidden rounded-l-2xl cursor-pointer"
-          onClick={() => router.push('/shops?category=Wellness')}
+          className="relative group overflow-hidden rounded-2xl cursor-pointer"
+          onClick={() => router.push(BANNERS[activeBanner].href)}
         >
-          <div className="aspect-[3/1] bg-stone-900 relative">
+          <div className="aspect-[4/1] bg-stone-900 relative">
             <Image
-              src="/assets/people/banner-4.png"
-              alt="New on Forme"
+              key={activeBanner}
+              src={BANNERS[activeBanner].src}
+              alt={BANNERS[activeBanner].alt}
               fill
-              className="object-cover object-center group-hover:scale-105 transition-all duration-700 ease-out"
+              className="object-contain group-hover:scale-[1.02] transition-all duration-700 ease-out"
             />
             <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/80 to-transparent" />
+            {/* Forme wordmark icon — top right */}
+            <div className="absolute top-4 right-4 text-white/75">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="30" height="30" color="currentColor" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5.50586 16.9916L8.03146 10.0288C8.49073 9.06222 9.19305 8.26286 9.99777 10.18C10.7406 11.9497 11.8489 15.1903 12.5031 16.9954M6.65339 14.002H11.3215" />
+                <path d="M3.46447 5.31802C2 6.63604 2 8.75736 2 13C2 17.2426 2 19.364 3.46447 20.682C4.92893 22 7.28596 22 12 22C16.714 22 19.0711 22 20.5355 20.682C22 19.364 22 17.2426 22 13C22 8.75736 22 6.63604 20.5355 5.31802C19.0711 4 16.714 4 12 4C7.28596 4 4.92893 4 3.46447 5.31802Z" />
+                <path d="M18.4843 9.98682V12.9815M18.4843 12.9815V16.9252M18.4843 12.9815H16.466C16.2263 12.9815 15.9885 13.0261 15.7645 13.113C14.0707 13.7702 14.0707 16.2124 15.7645 16.8696C15.9885 16.9565 16.2263 17.0011 16.466 17.0011H18.4843" />
+              </svg>
+            </div>
             <div className="absolute bottom-0 left-0 p-5">
-              <p className="text-xs italic tracking-wide text-white/80 mb-0.5">Curated</p>
-              <h3 className="text-xl font-bold text-white leading-snug">New on Forme</h3>
-              <p className="text-sm text-white/70 mt-0.5">Discover the latest brands joining our community</p>
+              <p className="text-xs tracking-wide text-white/80 mb-0.5" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}>{BANNERS[activeBanner].tag}</p>
+              <h3 className="text-xl font-bold text-white leading-snug">{BANNERS[activeBanner].title}</h3>
+              <p className="text-sm text-white/70 mt-0.5">{BANNERS[activeBanner].subtitle}</p>
             </div>
           </div>
         </div>
-        <div
-          className="relative group overflow-hidden rounded-r-2xl cursor-pointer"
-          onClick={() => router.push('/maps')}
-        >
-          <div className="aspect-[3/1] bg-stone-900 relative">
-            <Image
-              src="/assets/people/banner-5.png"
-              alt="Trending Near You"
-              fill
-              className="object-cover object-center group-hover:scale-105 transition-all duration-700 ease-out"
+        <div className="flex gap-1.5 mt-3 justify-center items-center">
+          {BANNERS.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setActiveBanner(i)}
+              className={`rounded-full transition-all duration-300 ${
+                activeBanner === i
+                  ? 'w-4 h-1.5 bg-stone-900 dark:bg-white'
+                  : 'w-1.5 h-1.5 bg-stone-300 dark:bg-zinc-600 hover:bg-stone-400 dark:hover:bg-zinc-500'
+              }`}
             />
-            <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/80 to-transparent" />
-            <div className="absolute bottom-0 left-0 p-5">
-              <p className="text-xs italic tracking-wide text-white/80 mb-0.5">Local</p>
-              <h3 className="text-xl font-bold text-white leading-snug">Trending Near You</h3>
-              <p className="text-sm text-white/70 mt-0.5">Top-rated brands in your area right now</p>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
 
       {/* Shop By Category */}
-      <div className="mt-8 mb-6">
-        <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white mb-6">Shop By Category</h2>
-        <div className="flex gap-6 overflow-x-auto pb-2 pt-2 pl-4 pr-4 -ml-4 scrollbar-hide">
+      <div>
+        <SectionHeader
+          title="Shop By Category"
+          onViewAll={() => {/* TODO: show more categories */}}
+          viewAllLabel="View all"
+        />
+        <div className="flex gap-6 overflow-x-auto pb-2 pl-4 pr-4 -ml-4 scrollbar-hide">
           {(() => {
             const imageMap: Record<string, string> = {
               Wellness: '/assets/people/wellness.png',
@@ -459,7 +496,7 @@ const ShopClient: React.FC<ShopClientProps> = ({
                   className="flex flex-col items-center gap-2 shrink-0 group"
                 >
                   <div
-                    className={`w-[88px] h-[88px] rounded-full overflow-hidden flex items-center justify-center bg-black transition-all duration-500 ease-out border-2 ${
+                    className={`w-[100px] h-[100px] rounded-full overflow-hidden flex items-center justify-center bg-black transition-all duration-500 ease-out border-2 ${
                       isSelected
                         ? 'border-zinc-900 dark:border-white scale-105 shadow-lg'
                         : 'border-stone-200 dark:border-zinc-700 group-hover:border-stone-400 dark:group-hover:border-zinc-500 group-hover:scale-105 group-hover:shadow-md'
@@ -469,34 +506,21 @@ const ShopClient: React.FC<ShopClientProps> = ({
                       <Image
                         src={imageSrc}
                         alt={cat.label}
-                        width={88}
-                        height={88}
+                        width={100}
+                        height={100}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       />
                     )}
                   </div>
-                  <span className={`text-sm font-normal transition-all duration-500 ${
+                  <span className={`text-sm transition-all duration-200 ${
                     isSelected
-                      ? 'text-stone-800 dark:text-zinc-100'
-                      : 'text-stone-400 dark:text-zinc-500 group-hover:text-stone-600 dark:group-hover:text-zinc-300'
+                      ? 'text-gray-900 dark:text-white font-medium'
+                      : 'text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300'
                   }`}>{cat.label}</span>
                 </button>
               );
             });
           })()}
-          <button
-            onClick={() => {/* TODO: show more categories */}}
-            className="flex flex-col items-center gap-2 shrink-0 group"
-          >
-            <div className="w-[88px] h-[88px] rounded-full flex items-center justify-center transition-all duration-300 ease-out border border-stone-200/80 dark:border-zinc-700/50 bg-stone-50 dark:bg-zinc-800/50 group-hover:border-stone-300 dark:group-hover:border-zinc-600 group-hover:bg-stone-100 dark:group-hover:bg-zinc-800 shadow-sm">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="w-5 h-5 text-stone-400 dark:text-zinc-500 group-hover:text-stone-500 dark:group-hover:text-zinc-400 transition-colors duration-300">
-                <circle cx="5" cy="12" r="1" fill="currentColor" stroke="none" />
-                <circle cx="12" cy="12" r="1" fill="currentColor" stroke="none" />
-                <circle cx="19" cy="12" r="1" fill="currentColor" stroke="none" />
-              </svg>
-            </div>
-            <span className="text-sm font-normal text-stone-400 dark:text-zinc-500 group-hover:text-stone-600 dark:group-hover:text-zinc-300 transition-colors duration-300">More</span>
-          </button>
         </div>
       </div>
 

@@ -315,7 +315,7 @@ const MapsClient: React.FC<MapsClientProps> = ({ listings, currentUser }) => {
     <div className="fixed inset-0 bg-zinc-950">
       {/* Sidebar — floating, detached from edges */}
       <div
-        className="absolute top-4 left-4 bottom-4 w-[370px] flex flex-col bg-black border border-zinc-800/60 rounded-2xl z-10 shadow-2xl shadow-black/40 overflow-hidden px-8 pb-5 pt-7 gap-4"
+        className="absolute top-4 left-8 bottom-4 w-[370px] flex flex-col bg-white border border-stone-200/80 rounded-2xl z-10 shadow-2xl shadow-black/10 overflow-hidden px-8 pb-5 pt-7 gap-4"
         style={{
           opacity: ready ? 1 : 0,
           transition: 'opacity 0.6s ease-out 0.1s',
@@ -329,8 +329,8 @@ const MapsClient: React.FC<MapsClientProps> = ({ listings, currentUser }) => {
             transition: 'opacity 0.5s ease-out 0.25s',
           }}
         >
-          <Image src="/logos/fm-logo-white.png" alt="Logo" width={72} height={46} className="opacity-90 shrink-0 -ml-0.5" />
-          <Link href="/" className="w-8 h-8 rounded-full flex items-center justify-center text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-colors">
+          <Image src="/logos/fm-logo.png" alt="Logo" width={72} height={46} className="opacity-90 shrink-0 mt-[1.2px]" />
+          <Link href="/" className="w-8 h-8 rounded-full flex items-center justify-center text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition-colors">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M19 12H5M5 12l7-7M5 12l7 7"/>
             </svg>
@@ -350,9 +350,9 @@ const MapsClient: React.FC<MapsClientProps> = ({ listings, currentUser }) => {
             placeholder="Search..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3.5 py-2.5 text-[13px] text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-zinc-600 transition-colors"
+            className="w-full bg-stone-50 border border-stone-200 rounded-lg px-3.5 py-2.5 text-[13px] text-stone-900 placeholder-stone-400 focus:outline-none focus:border-stone-400 transition-colors"
           />
-          <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+          <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
             <circle cx="11" cy="11" r="8"/>
             <path d="m21 21-4.3-4.3"/>
           </svg>
@@ -370,13 +370,13 @@ const MapsClient: React.FC<MapsClientProps> = ({ listings, currentUser }) => {
             <select
               value={filter}
               onChange={(e) => setFilter(e.target.value as 'all' | 'listing' | 'worker')}
-              className="w-full appearance-none bg-transparent border border-zinc-700 rounded-xl px-3 py-2 pr-7 text-[13px] text-zinc-300 focus:outline-none focus:border-zinc-500 transition-colors cursor-pointer"
+              className="w-full appearance-none bg-transparent border border-stone-200 rounded-xl px-3 py-2 pr-7 text-[13px] text-stone-600 focus:outline-none focus:border-stone-400 transition-colors cursor-pointer"
             >
               <option value="all">All</option>
               <option value="listing">Businesses</option>
               <option value="worker">Workers</option>
             </select>
-            <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-stone-400 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="m6 9 6 6 6-6"/>
             </svg>
           </div>
@@ -384,27 +384,27 @@ const MapsClient: React.FC<MapsClientProps> = ({ listings, currentUser }) => {
             <select
               value={sort}
               onChange={(e) => setSort(e.target.value as 'nearest' | 'name')}
-              className="w-full appearance-none bg-transparent border border-zinc-700 rounded-xl px-3 py-2 pr-7 text-[13px] text-zinc-300 focus:outline-none focus:border-zinc-500 transition-colors cursor-pointer"
+              className="w-full appearance-none bg-transparent border border-stone-200 rounded-xl px-3 py-2 pr-7 text-[13px] text-stone-600 focus:outline-none focus:border-stone-400 transition-colors cursor-pointer"
             >
               <option value="nearest">Nearest</option>
               <option value="name">Name</option>
             </select>
-            <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-stone-400 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="m6 9 6 6 6-6"/>
             </svg>
           </div>
           <div className="relative">
-            <button className="w-full appearance-none bg-transparent border border-zinc-700 rounded-xl px-3 py-2 pr-7 text-[13px] text-zinc-300 text-left hover:border-zinc-500 transition-colors cursor-pointer">
+            <button className="w-full appearance-none bg-transparent border border-stone-200 rounded-xl px-3 py-2 pr-7 text-[13px] text-stone-600 text-left hover:border-stone-400 transition-colors cursor-pointer">
               Filters
             </button>
-            <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-stone-400 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="m6 9 6 6 6-6"/>
             </svg>
           </div>
         </div>
 
         {/* Divider */}
-        <div className="h-px bg-zinc-800/60" style={{ opacity: ready ? 1 : 0, transition: 'opacity 0.5s ease-out 0.45s' }} />
+        <div className="h-px bg-stone-200" style={{ opacity: ready ? 1 : 0, transition: 'opacity 0.5s ease-out 0.45s' }} />
 
         {/* Results list */}
         <div
@@ -416,12 +416,12 @@ const MapsClient: React.FC<MapsClientProps> = ({ listings, currentUser }) => {
         >
           {loading ? (
             <div className="flex flex-col items-center justify-center py-16 gap-3">
-              <div className="w-6 h-6 border-2 border-zinc-700 border-t-zinc-400 rounded-full animate-spin" />
-              <p className="text-[12px] text-zinc-500">Loading...</p>
+              <div className="w-6 h-6 border-2 border-stone-200 border-t-stone-500 rounded-full animate-spin" />
+              <p className="text-[12px] text-stone-400">Loading...</p>
             </div>
           ) : searchFiltered.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
-              <p className="text-[13px] text-zinc-500">No results found</p>
+              <p className="text-[13px] text-stone-400">No results found</p>
             </div>
           ) : (
             searchFiltered.map((item) => (
@@ -430,12 +430,12 @@ const MapsClient: React.FC<MapsClientProps> = ({ listings, currentUser }) => {
                 onClick={() => handleItemClick(item)}
                 className={`w-full flex items-center gap-3 py-3 rounded-xl text-left transition-all duration-150 group ${
                   selected?.id === item.id && selected?.type === item.type
-                    ? 'bg-zinc-800/80 ring-1 ring-zinc-700'
-                    : 'hover:bg-zinc-900/80'
+                    ? 'bg-stone-100 ring-1 ring-stone-200'
+                    : 'hover:bg-stone-50'
                 }`}
               >
                 {/* Image */}
-                <div className="w-11 h-11 rounded-full overflow-hidden bg-zinc-800 shrink-0 ring-1 ring-zinc-700/50">
+                <div className="w-11 h-11 rounded-full overflow-hidden bg-stone-100 shrink-0 ring-1 ring-stone-200/80">
                   <Image
                     src={item.image}
                     alt={item.title}
@@ -447,13 +447,13 @@ const MapsClient: React.FC<MapsClientProps> = ({ listings, currentUser }) => {
 
                 {/* Info */}
                 <div className="flex-1 min-w-0">
-                  <p className="text-[13px] font-medium text-zinc-200 truncate">{item.title}</p>
-                  <p className="text-[12px] text-zinc-500 truncate">{item.category}</p>
-                  <p className="text-[11px] text-zinc-600 truncate">{item.location}</p>
+                  <p className="text-[13px] font-medium text-stone-800 truncate">{item.title}</p>
+                  <p className="text-[12px] text-stone-500 truncate">{item.category}</p>
+                  <p className="text-[11px] text-stone-400 truncate">{item.location}</p>
                 </div>
 
                 {/* Distance */}
-                <span className="text-[11px] text-zinc-500 shrink-0">
+                <span className="text-[11px] text-stone-400 shrink-0">
                   {item.distance != null ? `${item.distance} mi` : '—'}
                 </span>
               </button>
@@ -463,8 +463,8 @@ const MapsClient: React.FC<MapsClientProps> = ({ listings, currentUser }) => {
 
         {/* Footer count */}
         {!loading && (
-          <div className="px-4 py-3 border-t border-zinc-800/60">
-            <p className="text-[11px] text-zinc-500">
+          <div className="px-4 py-3 border-t border-stone-200">
+            <p className="text-[11px] text-stone-400">
               {searchFiltered.length} {searchFiltered.length === 1 ? 'result' : 'results'}
             </p>
           </div>
