@@ -240,7 +240,7 @@ export default async function getAnalyticsData(userId: string): Promise<Analytic
       : 0;
     const ratingDistribution = [1, 2, 3, 4, 5].map(rating => ({
       rating,
-      count: userReviews.filter(r => r.rating === rating).length,
+      count: userReviews.filter((r: any) => r.rating === rating).length,
     }));
 
     // Process monthly data
