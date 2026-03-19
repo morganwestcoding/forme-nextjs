@@ -44,7 +44,7 @@ async function main() {
   // Dedupe locations
   const locationMap = new Map<string, { lat: number; lng: number }>();
   const uniqueLocations = Array.from(new Set(
-    listings.map(l => l.address || l.location).filter(Boolean) as string[]
+    listings.map((l: any) => l.address || l.location).filter(Boolean) as string[]
   ));
 
   console.log(`Geocoding ${uniqueLocations.length} unique locations...`);
