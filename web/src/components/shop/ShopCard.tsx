@@ -29,7 +29,7 @@ const ShopCard: React.FC<ShopCardProps> = ({
 
   return (
     <div
-      onClick={() => router.push(`/shops/${data.id}`)}
+      onClick={() => { if (/^[a-f\d]{24}$/i.test(data.id)) router.push(`/shops/${data.id}`); }}
       className="group cursor-pointer transition-all duration-300"
     >
       {/* Brand header */}
@@ -95,32 +95,28 @@ const ShopCard: React.FC<ShopCardProps> = ({
         </div>
       </div>
 
-      {/* Product grid */}
-      {productItems.length > 0 && (
-        <div className="grid grid-cols-4 gap-1.5">
-          {productItems.map((product, i) => (
+      {/* Product grid — always show 4 slots */}
+      <div className="grid grid-cols-4 gap-1.5">
+        {[0, 1, 2, 3].map((i) => {
+          const product = productItems[i];
+          return (
             <div
               key={i}
               className="relative aspect-square rounded-lg overflow-hidden bg-stone-100 dark:bg-zinc-800"
             >
-              <Image
-                src={product.image || '/placeholder.jpg'}
-                alt={product.name || 'Product'}
-                fill
-                className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
-                sizes="120px"
-              />
+              {product ? (
+                <Image
+                  src={product.image || '/placeholder.jpg'}
+                  alt={product.name || 'Product'}
+                  fill
+                  className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                  sizes="120px"
+                />
+              ) : null}
             </div>
-          ))}
-          {/* Fill empty slots with placeholders */}
-          {Array.from({ length: Math.max(0, 4 - productItems.length) }).map((_, i) => (
-            <div
-              key={`empty-${i}`}
-              className="aspect-square rounded-lg bg-stone-100 dark:bg-zinc-800"
-            />
-          ))}
-        </div>
-      )}
+          );
+        })}
+      </div>
 
       {/* Location + product count under grid */}
       <div className="flex items-center justify-between mt-2">

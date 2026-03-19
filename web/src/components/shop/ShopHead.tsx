@@ -3,6 +3,7 @@
 import React, { useMemo, useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { Link02Icon, UserAdd01Icon, UserCheck01Icon, Location01Icon, Call02Icon, Globe02Icon, Share08Icon } from 'hugeicons-react';
 import ProductCard from './ProductCard';
 import ShopCard from './ShopCard';
@@ -130,13 +131,19 @@ const ShopHead: React.FC<ShopHeadProps> = ({
     }
   };
 
-  const validProducts = useMemo(
-    () =>
-      (Products || []).filter(
-        (p) => (p.name?.trim()?.length ?? 0) > 0 && Number(p.price) > 0
-      ),
-    [Products]
-  );
+  const MOCK_PRODUCTS: SafeProduct[] = useMemo(() => [
+    { id: 'mp1', name: 'Classic Service', description: 'Our signature offering', price: 45, mainImage: shop.logo || '/placeholder.jpg', galleryImages: [], shopId: shop.id, createdAt: '', updatedAt: '', categoryId: '', tags: [], isPublished: true, isFeatured: true, inventory: 99, lowStockThreshold: 5, shop: { id: shop.id, name: shop.name, logo: shop.logo }, favoritedBy: [] },
+    { id: 'mp2', name: 'Premium Package', description: 'Deluxe treatment experience', price: 85, mainImage: shop.coverImage || shop.logo || '/placeholder.jpg', galleryImages: [], shopId: shop.id, createdAt: '', updatedAt: '', categoryId: '', tags: [], isPublished: true, isFeatured: true, inventory: 99, lowStockThreshold: 5, shop: { id: shop.id, name: shop.name, logo: shop.logo }, favoritedBy: [] },
+    { id: 'mp3', name: 'Express Treatment', description: 'Quick & effective', price: 30, mainImage: shop.galleryImages?.[0] || shop.logo || '/placeholder.jpg', galleryImages: [], shopId: shop.id, createdAt: '', updatedAt: '', categoryId: '', tags: [], isPublished: true, isFeatured: true, inventory: 99, lowStockThreshold: 5, shop: { id: shop.id, name: shop.name, logo: shop.logo }, favoritedBy: [] },
+    { id: 'mp4', name: 'VIP Experience', description: 'The full luxury package', price: 120, mainImage: shop.galleryImages?.[1] || shop.coverImage || shop.logo || '/placeholder.jpg', galleryImages: [], shopId: shop.id, createdAt: '', updatedAt: '', categoryId: '', tags: [], isPublished: true, isFeatured: true, inventory: 99, lowStockThreshold: 5, shop: { id: shop.id, name: shop.name, logo: shop.logo }, favoritedBy: [] },
+  ], [shop.id, shop.name, shop.logo, shop.coverImage, shop.galleryImages]);
+
+  const validProducts = useMemo(() => {
+    const real = (Products || []).filter(
+      (p) => (p.name?.trim()?.length ?? 0) > 0 && Number(p.price) > 0
+    );
+    return real.length > 0 ? real : MOCK_PRODUCTS;
+  }, [Products, MOCK_PRODUCTS]);
 
   const handleAddProduct = () => {
     if (!isOwner) return;
@@ -330,6 +337,28 @@ const ShopHead: React.FC<ShopHeadProps> = ({
                 <span><span className="font-semibold text-neutral-900">{(shop as any).favoriteCount || 0}</span> likes</span>
               </button>
             </div>
+
+            {/* Featured Product Circles */}
+            {validProducts.length > 0 && (
+              <div className="mt-6 flex items-center justify-center gap-5">
+                {validProducts.slice(0, 4).map((product) => (
+                  <div key={product.id} className="flex flex-col items-center gap-1.5">
+                    <div className="w-16 h-16 rounded-full overflow-hidden border border-stone-200 dark:border-zinc-700 bg-stone-100 dark:bg-zinc-800 relative">
+                      <Image
+                        src={product.mainImage || '/placeholder.jpg'}
+                        alt={product.name}
+                        fill
+                        className="object-cover"
+                        sizes="64px"
+                      />
+                    </div>
+                    <span className="text-[10px] text-stone-500 dark:text-zinc-400 font-medium truncate max-w-[72px] text-center leading-tight">
+                      {product.name}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
 
             {/* Search Bar - Centered */}
             <div className="mt-6 max-w-3xl mx-auto">

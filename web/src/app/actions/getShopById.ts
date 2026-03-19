@@ -8,8 +8,7 @@ interface IParams {
 export default async function getShopById(params: IParams) {
   try {
     const id = params.shopId ?? params.shopsId;
-    if (!id) {
-      // match your listing getter pattern: return null when id missing
+    if (!id || !/^[a-f\d]{24}$/i.test(id)) {
       return null;
     }
 

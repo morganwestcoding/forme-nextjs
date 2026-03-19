@@ -67,69 +67,69 @@ const BANNERS = [
 // ── Mock data so the page always has content ──
 const MOCK_SHOPS: SafeShop[] = [
   {
-    id: 'mock-shop-1', name: 'Studio Noir', description: 'Premium barber studio in the heart of Brooklyn',
+    id: 'aaaaaaaaaaaaaaaaaaaaa001', name: 'Studio Noir', description: 'Premium barber studio in the heart of Brooklyn',
     logo: '/assets/people/barber.png', coverImage: '/assets/people/barber.png',
     location: 'Brooklyn, NY', address: '142 Bedford Ave', zipCode: '11249',
-    userId: 'mock-user', storeUrl: null, galleryImages: [], createdAt: new Date().toISOString(),
+    userId: 'bbbbbbbbbbbbbbbbbbbbbb01', storeUrl: null, galleryImages: [], createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(), isVerified: true, shopEnabled: true,
     featuredProducts: [], followers: ['a','b','c'], listingId: null, category: 'Barber',
-    user: { id: 'mock-user', name: 'Marcus J.', image: null },
-    products: [{ name: 'Fade', image: '/assets/people/barber.png', price: 45 }],
+    user: { id: 'bbbbbbbbbbbbbbbbbbbbbb01', name: 'Marcus J.', image: null },
+    products: [{ name: 'Fade', image: '/assets/people/barber.png', price: 45 }, { name: 'Line Up', image: '/assets/people/barber.png', price: 30 }, { name: 'Hot Towel', image: '/assets/people/barber.png', price: 20 }, { name: 'Beard Trim', image: '/assets/people/barber.png', price: 25 }],
     productCount: 6, followerCount: 312, rating: 4.9,
   },
   {
-    id: 'mock-shop-2', name: 'Glow Aesthetics', description: 'Skincare & facial treatments',
+    id: 'aaaaaaaaaaaaaaaaaaaaa002', name: 'Glow Aesthetics', description: 'Skincare & facial treatments',
     logo: '/assets/people/skincare.png', coverImage: '/assets/people/skincare.png',
     location: 'Manhattan, NY', address: '88 Spring St', zipCode: '10012',
-    userId: 'mock-user-2', storeUrl: null, galleryImages: [], createdAt: new Date().toISOString(),
+    userId: 'bbbbbbbbbbbbbbbbbbbbbb02', storeUrl: null, galleryImages: [], createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(), isVerified: true, shopEnabled: true,
     featuredProducts: [], followers: ['a','b'], listingId: null, category: 'Skincare',
-    user: { id: 'mock-user-2', name: 'Ava Chen', image: null },
-    products: [{ name: 'Hydrafacial', image: '/assets/people/skincare.png', price: 120 }],
+    user: { id: 'bbbbbbbbbbbbbbbbbbbbbb02', name: 'Ava Chen', image: null },
+    products: [{ name: 'Hydrafacial', image: '/assets/people/skincare.png', price: 120 }, { name: 'Peel', image: '/assets/people/skincare.png', price: 90 }, { name: 'Serum', image: '/assets/people/skincare.png', price: 45 }, { name: 'Mask', image: '/assets/people/skincare.png', price: 60 }],
     productCount: 12, followerCount: 587, rating: 4.8,
   },
   {
-    id: 'mock-shop-3', name: 'Lash Lounge', description: 'Lash extensions & lifts',
+    id: 'aaaaaaaaaaaaaaaaaaaaa003', name: 'Lash Lounge', description: 'Lash extensions & lifts',
     logo: '/assets/people/lashes.png', coverImage: '/assets/people/lashes.png',
     location: 'Queens, NY', address: '25-11 Broadway', zipCode: '11106',
-    userId: 'mock-user-3', storeUrl: null, galleryImages: [], createdAt: new Date().toISOString(),
+    userId: 'bbbbbbbbbbbbbbbbbbbbbb03', storeUrl: null, galleryImages: [], createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(), isVerified: false, shopEnabled: true,
     featuredProducts: [], followers: ['a'], listingId: null, category: 'Lash',
-    user: { id: 'mock-user-3', name: 'Priya M.', image: null },
-    products: [{ name: 'Classic Full Set', image: '/assets/people/lashes.png', price: 85 }],
+    user: { id: 'bbbbbbbbbbbbbbbbbbbbbb03', name: 'Priya M.', image: null },
+    products: [{ name: 'Classic Set', image: '/assets/people/lashes.png', price: 85 }, { name: 'Volume', image: '/assets/people/lashes.png', price: 120 }, { name: 'Lash Lift', image: '/assets/people/lashes.png', price: 65 }, { name: 'Refill', image: '/assets/people/lashes.png', price: 50 }],
     productCount: 8, followerCount: 204, rating: 4.7,
   },
   {
-    id: 'mock-shop-4', name: 'Iron Temple', description: 'Personal training & fitness coaching',
+    id: 'aaaaaaaaaaaaaaaaaaaaa004', name: 'Iron Temple', description: 'Personal training & fitness coaching',
     logo: '/assets/people/fitness.png', coverImage: '/assets/people/fitness.png',
     location: 'Bronx, NY', address: '900 Grand Concourse', zipCode: '10451',
-    userId: 'mock-user-4', storeUrl: null, galleryImages: [], createdAt: new Date().toISOString(),
+    userId: 'bbbbbbbbbbbbbbbbbbbbbb04', storeUrl: null, galleryImages: [], createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(), isVerified: true, shopEnabled: true,
     featuredProducts: [], followers: ['a','b','c','d'], listingId: null, category: 'Training',
-    user: { id: 'mock-user-4', name: 'Derek W.', image: null },
-    products: [{ name: '1-on-1 Session', image: '/assets/people/fitness.png', price: 75 }],
+    user: { id: 'bbbbbbbbbbbbbbbbbbbbbb04', name: 'Derek W.', image: null },
+    products: [{ name: '1-on-1', image: '/assets/people/fitness.png', price: 75 }, { name: 'Group', image: '/assets/people/fitness.png', price: 40 }, { name: 'HIIT', image: '/assets/people/fitness.png', price: 55 }, { name: 'Stretch', image: '/assets/people/fitness.png', price: 30 }],
     productCount: 4, followerCount: 891, rating: 5.0,
   },
   {
-    id: 'mock-shop-5', name: 'The Nail Bar', description: 'Luxury nail art & spa',
+    id: 'aaaaaaaaaaaaaaaaaaaaa005', name: 'The Nail Bar', description: 'Luxury nail art & spa',
     logo: '/assets/people/nails.png', coverImage: '/assets/people/nails.png',
     location: 'Manhattan, NY', address: '401 W 14th St', zipCode: '10014',
-    userId: 'mock-user-5', storeUrl: null, galleryImages: [], createdAt: new Date().toISOString(),
+    userId: 'bbbbbbbbbbbbbbbbbbbbbb05', storeUrl: null, galleryImages: [], createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(), isVerified: true, shopEnabled: true,
     featuredProducts: [], followers: ['a','b','c'], listingId: null, category: 'Nails',
-    user: { id: 'mock-user-5', name: 'Sofia R.', image: null },
-    products: [{ name: 'Gel Manicure', image: '/assets/people/nails.png', price: 55 }],
+    user: { id: 'bbbbbbbbbbbbbbbbbbbbbb05', name: 'Sofia R.', image: null },
+    products: [{ name: 'Gel Mani', image: '/assets/people/nails.png', price: 55 }, { name: 'Pedicure', image: '/assets/people/nails.png', price: 45 }, { name: 'Nail Art', image: '/assets/people/nails.png', price: 70 }, { name: 'Dip Set', image: '/assets/people/nails.png', price: 60 }],
     productCount: 10, followerCount: 445, rating: 4.9,
   },
   {
-    id: 'mock-shop-6', name: 'Zen Wellness', description: 'Holistic wellness & meditation',
+    id: 'aaaaaaaaaaaaaaaaaaaaa006', name: 'Zen Wellness', description: 'Holistic wellness & meditation',
     logo: '/assets/people/wellness.png', coverImage: '/assets/people/wellness.png',
     location: 'Brooklyn, NY', address: '58 N 3rd St', zipCode: '11249',
-    userId: 'mock-user-6', storeUrl: null, galleryImages: [], createdAt: new Date().toISOString(),
+    userId: 'bbbbbbbbbbbbbbbbbbbbbb06', storeUrl: null, galleryImages: [], createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(), isVerified: false, shopEnabled: true,
     featuredProducts: [], followers: ['a','b'], listingId: null, category: 'Wellness',
-    user: { id: 'mock-user-6', name: 'Luna K.', image: null },
-    products: [{ name: 'Sound Bath', image: '/assets/people/wellness.png', price: 40 }],
+    user: { id: 'bbbbbbbbbbbbbbbbbbbbbb06', name: 'Luna K.', image: null },
+    products: [{ name: 'Sound Bath', image: '/assets/people/wellness.png', price: 40 }, { name: 'Reiki', image: '/assets/people/wellness.png', price: 65 }, { name: 'Yoga', image: '/assets/people/wellness.png', price: 25 }, { name: 'Breathwork', image: '/assets/people/wellness.png', price: 35 }],
     productCount: 5, followerCount: 178, rating: 4.6,
   },
 ];
@@ -137,74 +137,74 @@ const MOCK_SHOPS: SafeShop[] = [
 const MOCK_PRODUCTS: SafeProduct[] = [
   {
     id: 'mock-prod-1', name: 'Signature Fade', description: 'Clean taper fade with hot towel finish',
-    price: 45, mainImage: '/assets/people/barber.png', galleryImages: [], shopId: 'mock-shop-1',
+    price: 45, mainImage: '/assets/people/barber.png', galleryImages: [], shopId: 'aaaaaaaaaaaaaaaaaaaaa001',
     createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
     categoryId: 'cat-1', category: { id: 'cat-1', name: 'Haircuts' }, tags: ['barber', 'fade'],
     isPublished: true, isFeatured: true, inventory: 99, lowStockThreshold: 5,
-    shop: { id: 'mock-shop-1', name: 'Studio Noir', logo: '/assets/people/barber.png' },
+    shop: { id: 'aaaaaaaaaaaaaaaaaaaaa001', name: 'Studio Noir', logo: '/assets/people/barber.png' },
     favoritedBy: [],
   },
   {
     id: 'mock-prod-2', name: 'Hydra Glow Facial', description: 'Deep cleansing & hydration treatment',
-    price: 120, mainImage: '/assets/people/skincare.png', galleryImages: [], shopId: 'mock-shop-2',
+    price: 120, mainImage: '/assets/people/skincare.png', galleryImages: [], shopId: 'aaaaaaaaaaaaaaaaaaaaa002',
     createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
     categoryId: 'cat-2', category: { id: 'cat-2', name: 'Skincare' }, tags: ['facial', 'glow'],
     isPublished: true, isFeatured: true, inventory: 50, lowStockThreshold: 5,
-    shop: { id: 'mock-shop-2', name: 'Glow Aesthetics', logo: '/assets/people/skincare.png' },
+    shop: { id: 'aaaaaaaaaaaaaaaaaaaaa002', name: 'Glow Aesthetics', logo: '/assets/people/skincare.png' },
     favoritedBy: [],
   },
   {
     id: 'mock-prod-3', name: 'Volume Lash Set', description: 'Full volume lash extensions',
-    price: 150, mainImage: '/assets/people/lashes.png', galleryImages: [], shopId: 'mock-shop-3',
+    price: 150, mainImage: '/assets/people/lashes.png', galleryImages: [], shopId: 'aaaaaaaaaaaaaaaaaaaaa003',
     createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
     categoryId: 'cat-3', category: { id: 'cat-3', name: 'Lash' }, tags: ['lash', 'extensions'],
     isPublished: true, isFeatured: true, inventory: 30, lowStockThreshold: 5,
-    shop: { id: 'mock-shop-3', name: 'Lash Lounge', logo: '/assets/people/lashes.png' },
+    shop: { id: 'aaaaaaaaaaaaaaaaaaaaa003', name: 'Lash Lounge', logo: '/assets/people/lashes.png' },
     favoritedBy: [],
   },
   {
     id: 'mock-prod-4', name: 'Power Hour Training', description: '60-minute personalized training session',
-    price: 75, mainImage: '/assets/people/fitness.png', galleryImages: [], shopId: 'mock-shop-4',
+    price: 75, mainImage: '/assets/people/fitness.png', galleryImages: [], shopId: 'aaaaaaaaaaaaaaaaaaaaa004',
     createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
     categoryId: 'cat-4', category: { id: 'cat-4', name: 'Training' }, tags: ['fitness', 'personal'],
     isPublished: true, isFeatured: true, inventory: 99, lowStockThreshold: 5,
-    shop: { id: 'mock-shop-4', name: 'Iron Temple', logo: '/assets/people/fitness.png' },
+    shop: { id: 'aaaaaaaaaaaaaaaaaaaaa004', name: 'Iron Temple', logo: '/assets/people/fitness.png' },
     favoritedBy: [],
   },
   {
     id: 'mock-prod-5', name: 'Gel Art Manicure', description: 'Custom nail art with gel polish',
-    price: 65, mainImage: '/assets/people/nails.png', galleryImages: [], shopId: 'mock-shop-5',
+    price: 65, mainImage: '/assets/people/nails.png', galleryImages: [], shopId: 'aaaaaaaaaaaaaaaaaaaaa005',
     createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
     categoryId: 'cat-5', category: { id: 'cat-5', name: 'Nails' }, tags: ['nails', 'gel'],
     isPublished: true, isFeatured: true, inventory: 80, lowStockThreshold: 5,
-    shop: { id: 'mock-shop-5', name: 'The Nail Bar', logo: '/assets/people/nails.png' },
+    shop: { id: 'aaaaaaaaaaaaaaaaaaaaa005', name: 'The Nail Bar', logo: '/assets/people/nails.png' },
     favoritedBy: [],
   },
   {
     id: 'mock-prod-6', name: 'Guided Sound Bath', description: 'Crystal bowl meditation session',
-    price: 40, mainImage: '/assets/people/wellness.png', galleryImages: [], shopId: 'mock-shop-6',
+    price: 40, mainImage: '/assets/people/wellness.png', galleryImages: [], shopId: 'aaaaaaaaaaaaaaaaaaaaa006',
     createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
     categoryId: 'cat-6', category: { id: 'cat-6', name: 'Wellness' }, tags: ['wellness', 'meditation'],
     isPublished: true, isFeatured: true, inventory: 25, lowStockThreshold: 5,
-    shop: { id: 'mock-shop-6', name: 'Zen Wellness', logo: '/assets/people/wellness.png' },
+    shop: { id: 'aaaaaaaaaaaaaaaaaaaaa006', name: 'Zen Wellness', logo: '/assets/people/wellness.png' },
     favoritedBy: [],
   },
   {
     id: 'mock-prod-7', name: 'Brow Lamination', description: 'Full brow lamination & tint',
-    price: 85, mainImage: '/assets/people/brows.png', galleryImages: [], shopId: 'mock-shop-7',
+    price: 85, mainImage: '/assets/people/brows.png', galleryImages: [], shopId: 'aaaaaaaaaaaaaaaaaaaaa007',
     createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
     categoryId: 'cat-7', category: { id: 'cat-7', name: 'Brows' }, tags: ['brows', 'lamination'],
     isPublished: true, isFeatured: true, inventory: 40, lowStockThreshold: 5,
-    shop: { id: 'mock-shop-7', name: 'Brow Studio', logo: '/assets/people/brows.png' },
+    shop: { id: 'aaaaaaaaaaaaaaaaaaaaa007', name: 'Brow Studio', logo: '/assets/people/brows.png' },
     favoritedBy: [],
   },
   {
     id: 'mock-prod-8', name: 'Custom Tattoo Consult', description: 'Design consultation for custom ink',
-    price: 100, mainImage: '/assets/people/ink.png', galleryImages: [], shopId: 'mock-shop-8',
+    price: 100, mainImage: '/assets/people/ink.png', galleryImages: [], shopId: 'aaaaaaaaaaaaaaaaaaaaa008',
     createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
     categoryId: 'cat-8', category: { id: 'cat-8', name: 'Ink' }, tags: ['tattoo', 'custom'],
     isPublished: true, isFeatured: true, inventory: 15, lowStockThreshold: 5,
-    shop: { id: 'mock-shop-8', name: 'Ink Masters', logo: '/assets/people/ink.png' },
+    shop: { id: 'aaaaaaaaaaaaaaaaaaaaa008', name: 'Ink Masters', logo: '/assets/people/ink.png' },
     favoritedBy: [],
   },
 ];
@@ -252,6 +252,11 @@ const ShopClient: React.FC<ShopClientProps> = ({
   const gridColsClass = isSidebarCollapsed
     ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6'
     : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5';
+
+  // Wider cards for shops (header + product grid needs more space)
+  const shopGridColsClass = isSidebarCollapsed
+    ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4'
+    : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3';
 
   // Reset pagination on sidebar change
   useEffect(() => {
@@ -538,7 +543,7 @@ const ShopClient: React.FC<ShopClientProps> = ({
                     onViewAll={handleBackToMain}
                     viewAllLabel="← Back to Shops"
                   />
-                  <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
+                  <div className={`grid ${shopGridColsClass} gap-6 transition-all duration-300`}>
                     {shops.map((shop, idx) => (
                       <div
                         key={shop.id}

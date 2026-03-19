@@ -249,18 +249,18 @@ export default async function getAnalyticsData(userId: string): Promise<Analytic
       const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const nextMonth = new Date(now.getFullYear(), now.getMonth() - i + 1, 1);
       
-      const monthReservations = monthlyReservations.filter(r => 
+      const monthReservations = monthlyReservations.filter((r: any) =>
         r.createdAt >= date && r.createdAt < nextMonth
       );
-      
-      const monthPosts = monthlyPosts.filter(p => 
+
+      const monthPosts = monthlyPosts.filter((p: any) =>
         p.createdAt >= date && p.createdAt < nextMonth
       );
 
       monthlyData.push({
         month: date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
         reservations: monthReservations.length,
-        revenue: monthReservations.reduce((sum, r) => sum + r.totalPrice, 0),
+        revenue: monthReservations.reduce((sum: number, r: any) => sum + r.totalPrice, 0),
         posts: monthPosts.length
       });
     }
@@ -273,13 +273,13 @@ export default async function getAnalyticsData(userId: string): Promise<Analytic
       revenue: number;
     }> = [];
 
-    userListings.forEach(listing => {
-      listing.services.forEach(service => {
+    userListings.forEach((listing: any) => {
+      listing.services.forEach((service: any) => {
         allServices.push({
           serviceName: service.serviceName,
           category: service.category,
           bookings: service.reservations.length,
-          revenue: service.reservations.reduce((sum, r) => sum + r.totalPrice, 0)
+          revenue: service.reservations.reduce((sum: number, r: any) => sum + r.totalPrice, 0)
         });
       });
     });
@@ -308,12 +308,12 @@ export default async function getAnalyticsData(userId: string): Promise<Analytic
       .slice(0, 10);
 
     // Process listings with performance data
-    const listingsWithStats = userListings.map(listing => ({
+    const listingsWithStats = userListings.map((listing: any) => ({
       id: listing.id,
       title: listing.title,
       category: listing.category,
       reservations: listing.reservations.length,
-      revenue: listing.reservations.reduce((sum, r) => sum + r.totalPrice, 0),
+      revenue: listing.reservations.reduce((sum: number, r: any) => sum + r.totalPrice, 0),
       createdAt: listing.createdAt.toISOString()
     }));
 
