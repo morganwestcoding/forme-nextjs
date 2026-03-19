@@ -543,7 +543,7 @@ const ShopClient: React.FC<ShopClientProps> = ({
                     onViewAll={handleBackToMain}
                     viewAllLabel="← Back to Shops"
                   />
-                  <div className={`grid ${shopGridColsClass} gap-6 transition-all duration-300`}>
+                  <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
                     {shops.map((shop, idx) => (
                       <div
                         key={shop.id}

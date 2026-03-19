@@ -333,7 +333,7 @@ export default async function getAnalyticsData(userId: string): Promise<Analytic
         ratingDistribution
       },
       recentActivity: {
-        reservations: recentReservations.map(reservation => ({
+        reservations: recentReservations.map((reservation: any) => ({
           id: reservation.id,
           serviceName: reservation.serviceName,
           date: reservation.date.toISOString(),
@@ -347,7 +347,7 @@ export default async function getAnalyticsData(userId: string): Promise<Analytic
             title: reservation.listing.title
           }
         })),
-        posts: recentPosts.map(post => ({
+        posts: recentPosts.map((post: any) => ({
           id: post.id,
           content: post.content,
           createdAt: post.createdAt.toISOString(),
