@@ -34,7 +34,7 @@ export async function POST(
   const isBookmarking = !updatedBookmarks.includes(currentUser.id);
 
   if (updatedBookmarks.includes(currentUser.id)) {
-    updatedBookmarks = updatedBookmarks.filter((id) => id !== currentUser.id);
+    updatedBookmarks = updatedBookmarks.filter((id: string) => id !== currentUser.id);
   } else {
     updatedBookmarks.push(currentUser.id);
   }

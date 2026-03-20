@@ -29,11 +29,11 @@ export async function POST(
     });
     if (!shop) throw new Error("Invalid ID");
 
-    const followers = Array.isArray(shop.followers) ? shop.followers : [];
+    const followers: string[] = Array.isArray(shop.followers) ? shop.followers : [];
     const already = followers.includes(currentUser.id);
 
     const next = already
-      ? followers.filter((uid) => uid !== currentUser.id)
+      ? followers.filter((uid: string) => uid !== currentUser.id)
       : [...followers, currentUser.id];
 
     const updatedShop = await prisma.shop.update({
@@ -65,11 +65,11 @@ export async function POST(
     });
     if (!listing) throw new Error("Invalid ID");
 
-    const followers = Array.isArray(listing.followers) ? listing.followers : [];
+    const followers: string[] = Array.isArray(listing.followers) ? listing.followers : [];
     const already = followers.includes(currentUser.id);
 
     const next = already
-      ? followers.filter((uid) => uid !== currentUser.id)
+      ? followers.filter((uid: string) => uid !== currentUser.id)
       : [...followers, currentUser.id];
 
     const updatedListing = await prisma.listing.update({
@@ -96,17 +96,17 @@ export async function POST(
   const target = await prisma.user.findUnique({ where: { id: userId } });
   if (!target) throw new Error("Invalid ID");
 
-  const meFollowing = Array.isArray(currentUser.following) ? [...currentUser.following] : [];
-  const targetFollowers = Array.isArray(target.followers) ? [...target.followers] : [];
+  const meFollowing: string[] = Array.isArray(currentUser.following) ? [...currentUser.following] : [];
+  const targetFollowers: string[] = Array.isArray(target.followers) ? [...target.followers] : [];
 
   const already = meFollowing.includes(userId);
 
   const newFollowing = already
-    ? meFollowing.filter((id) => id !== userId)
+    ? meFollowing.filter((id: string) => id !== userId)
     : [...meFollowing, userId];
 
   const newFollowers = already
-    ? targetFollowers.filter((id) => id !== currentUser.id)
+    ? targetFollowers.filter((id: string) => id !== currentUser.id)
     : [...targetFollowers, currentUser.id];
 
   await prisma.user.update({
