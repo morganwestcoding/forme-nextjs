@@ -68,7 +68,7 @@ export async function PUT(request: Request, { params }: { params: IParams }) {
       coords = await geocodeAddress(body.address || body.location || '');
     }
 
-    const fresh = await prisma.$transaction(async (tx) => {
+    const fresh = await prisma.$transaction(async (tx: typeof prisma) => {
       // 1) Update top-level fields
       await tx.listing.update({
         where: { id: listingId },
