@@ -277,12 +277,12 @@ export default function ReservationFlow({
         customerEmail: currentUser.email || '',
       };
 
-      // Navigate back and open Stripe modal
-      router.push(`/listings/${listing.id}`);
+      // Navigate to bookings and open Stripe modal after page loads
+      router.push(`/bookings/reservations`);
 
       setTimeout(() => {
         stripeCheckoutModal.onOpen(stripeData);
-      }, 200);
+      }, 800);
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message ||

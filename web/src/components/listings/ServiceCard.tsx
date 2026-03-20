@@ -112,17 +112,16 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   return (
     <div
       onClick={handleCardClick}
-      className={`group cursor-pointer rounded-xl overflow-hidden relative transition-all duration-300 ${
+      className={`group cursor-pointer rounded-2xl overflow-hidden relative transition-all duration-300 ${
         solidBackground
-          ? 'hover:border-neutral-300 hover:shadow-sm'
+          ? 'hover:-translate-y-1 hover:shadow-lg'
           : 'hover:-translate-y-1 hover:scale-[1.01] hover:shadow-md'
       } ${compact ? '' : 'max-w-[250px]'}`}
     >
       {/* Background with image or empty state */}
       <div className="absolute inset-0 z-0">
         {solidBackground ? (
-          /* Ultra-minimal white background */
-          <div className="absolute inset-0 bg-white rounded-xl border border-neutral-200/60" />
+          <div className="absolute inset-0 bg-gradient-to-br from-white to-stone-50/80 rounded-2xl border border-stone-200/80 group-hover:border-stone-300 transition-colors" />
         ) : hasImage ? (
           <>
             <Image
@@ -227,19 +226,22 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
             /* Bold editorial layout */
             <div className="absolute inset-0 flex flex-col z-20 overflow-hidden">
               {/* Large price watermark in background */}
-              <div className="absolute -right-2 -top-4 text-[80px] font-black text-neutral-100 leading-none select-none pointer-events-none">
+              <div className="absolute -right-2 -top-4 text-[80px] font-black text-stone-100/80 leading-none select-none pointer-events-none">
                 {priceNum}
               </div>
 
-              {/* Content */}
+              {/* Content — matches WorkerCard text position */}
               <div className="relative flex flex-col h-full p-5">
+                {/* Spacer to match WorkerCard avatar height */}
+                <div className="mb-3 h-12" />
+
                 {/* Service name - large and bold */}
                 <h3 className="text-[17px] font-black text-neutral-900 leading-[1.15] line-clamp-3 tracking-tight pr-8">
                   {service.serviceName || 'Untitled Service'}
                 </h3>
 
                 {/* Duration - understated */}
-                <p className="mt-2.5 text-[11px] text-neutral-400 font-medium">
+                <p className="mt-1.5 text-[11px] text-neutral-400 font-medium">
                   {durationDisplay}
                 </p>
 

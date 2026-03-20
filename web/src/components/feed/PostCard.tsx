@@ -117,10 +117,6 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, isH
               <Image src={post.thumbnailUrl!} alt="" fill className="object-cover" sizes="300px" priority />
             </div>
           )}
-          {/* Video play icon */}
-          <div className="absolute top-3 right-3 flex items-center gap-1 px-2 py-1 rounded-full bg-black/50 backdrop-blur-sm">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z" /></svg>
-          </div>
         </>
       ) : hasBeforeAfter ? (
         <>
@@ -179,8 +175,8 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, isH
             className="text-white/80 hover:text-white transition-colors duration-200 drop-shadow-sm"
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M9.39584 4.5H8.35417C5.40789 4.5 3.93475 4.5 3.01946 5.37868C2.10417 6.25736 2.10417 7.67157 2.10417 10.5V14.5C2.10417 17.3284 2.10417 18.7426 3.01946 19.6213C3.93475 20.5 5.40789 20.5 8.35417 20.5H12.5608C15.5071 20.5 16.9802 20.5 17.8955 19.6213C18.4885 19.052 18.6973 18.2579 18.7708 17" />
-              <path d="M16.1667 7V3.85355C16.1667 3.65829 16.3316 3.5 16.535 3.5C16.6326 3.5 16.7263 3.53725 16.7954 3.60355L21.5275 8.14645C21.7634 8.37282 21.8958 8.67986 21.8958 9C21.8958 9.32014 21.7634 9.62718 21.5275 9.85355L16.7954 14.3964C16.7263 14.4628 16.6326 14.5 16.535 14.5C16.3316 14.5 16.1667 14.3417 16.1667 14.1464V11H13.1157C8.875 11 7.3125 14.5 7.3125 14.5V12C7.3125 9.23858 9.64435 7 12.5208 7H16.1667Z" />
+              <path d="M10.0017 3C7.05534 3.03208 5.41096 3.21929 4.31838 4.31188C2.99988 5.63037 2.99988 7.75248 2.99988 11.9966C2.99988 16.2409 2.99988 18.363 4.31838 19.6815C5.63688 21 7.75899 21 12.0032 21C16.2474 21 18.3695 21 19.688 19.6815C20.7808 18.5887 20.9678 16.9438 20.9999 13.9963" />
+              <path d="M14 3H18C19.4142 3 20.1213 3 20.5607 3.43934C21 3.87868 21 4.58579 21 6V10M20 4L11 13" />
             </svg>
           </button>
         </div>
@@ -211,20 +207,6 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, isH
               <p className="text-white/70 text-[11px] leading-none line-clamp-1 drop-shadow-sm flex-1 min-w-0">
                 {post.content || 'This is a description.'}
               </p>
-              <div className="flex items-center gap-2 shrink-0 text-white/60">
-                {likeCount > 0 && (
-                  <span className="flex items-center gap-0.5 text-[10px]">
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                    {likeCount}
-                  </span>
-                )}
-                {commentCount > 0 && (
-                  <span className="flex items-center gap-0.5 text-[10px]">
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                    {commentCount}
-                  </span>
-                )}
-              </div>
             </div>
           </div>
         </div>

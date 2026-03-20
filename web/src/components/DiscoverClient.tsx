@@ -158,8 +158,14 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
     return shuffleArray(filtered, shuffleSeed + 3);
   }, [shops, shuffleSeed, currentCategories]);
 
-  // Banner state
+  // Banner state — auto-rotate every 12 seconds
   const [activeBanner, setActiveBanner] = useState(0);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveBanner((prev) => (prev + 1) % BANNERS.length);
+    }, 12000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Pagination state
   const [postsIndex, setPostsIndex] = useState(0);
@@ -399,17 +405,24 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
             }}
           >
             <div
-              className="relative group overflow-hidden rounded-2xl cursor-pointer"
-              onClick={() => router.push(BANNERS[activeBanner].href)}
+              className="relative group overflow-hidden rounded-2xl"
             >
               <div className="aspect-[4/1] bg-stone-900 relative">
-                <Image
-                  key={activeBanner}
-                  src={BANNERS[activeBanner].src}
-                  alt={BANNERS[activeBanner].alt}
-                  fill
-                  className="object-contain group-hover:scale-[1.02] transition-all duration-700 ease-out"
-                />
+                {BANNERS.map((banner, i) => (
+                  <div
+                    key={i}
+                    className="absolute inset-0 transition-opacity duration-1000 ease-in-out"
+                    style={{ opacity: i === activeBanner ? 1 : 0 }}
+                  >
+                    <Image
+                      src={banner.src}
+                      alt={banner.alt}
+                      fill
+                      className="object-contain"
+                      priority={i === 0}
+                    />
+                  </div>
+                ))}
                 <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/80 to-transparent" />
                 {/* Forme wordmark icon — top right */}
                 <div className="absolute top-4 right-4 text-white/75">
@@ -420,9 +433,9 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                   </svg>
                 </div>
                 <div className="absolute bottom-0 left-0 p-5">
-                  <p className="text-xs tracking-wide text-white/80 mb-0.5" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}>{BANNERS[activeBanner].tag}</p>
-                  <h3 className="text-xl font-bold text-white leading-snug">{BANNERS[activeBanner].title}</h3>
-                  <p className="text-sm text-white/70 mt-0.5">{BANNERS[activeBanner].subtitle}</p>
+                  <p className="text-xs tracking-wide text-white/80 mb-0.5 transition-opacity duration-700" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}>{BANNERS[activeBanner].tag}</p>
+                  <h3 className="text-xl font-bold text-white leading-snug transition-opacity duration-700">{BANNERS[activeBanner].title}</h3>
+                  <p className="text-sm text-white/70 mt-0.5 transition-opacity duration-700">{BANNERS[activeBanner].subtitle}</p>
                 </div>
               </div>
             </div>
@@ -681,7 +694,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                         />
                         <div id="listings-rail">
                           <div className={`grid ${gridColsClass} gap-x-8 gap-y-1 transition-all duration-300`}>
-                            {currentListings.map((listing, idx) => (
+                            {currentListings.slice(0, 9).map((listing, idx) => (
                               <div
                                 key={`${listing.id}-${listingsIndex}`}
                                 style={{
@@ -712,7 +725,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                         />
                         <div id="employees-rail">
                           <div className={`grid ${gridColsClass} gap-x-8 gap-y-1 transition-all duration-300`}>
-                            {currentEmployees.map((employee, idx) => {
+                            {currentEmployees.slice(0, 9).map((employee, idx) => {
                               const listing = listings.find(l => l.id === employee.listingId) || listings[0];
                               const li: any = listing as any;
                               const imageSrc = li?.imageSrc || (Array.isArray(li?.galleryImages) ? li.galleryImages[0] : undefined) || '/placeholder.jpg';

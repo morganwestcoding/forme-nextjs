@@ -2,14 +2,11 @@
 
 import { toast } from "react-hot-toast";
 import axios from "axios";
-import { useCallback, useState, useEffect, useMemo } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { SafeReservation, SafeUser } from "@/app/types";
 import Container from "@/components/Container";
 import ReserveCard from "@/components/listings/ReserveCard";
-import PageSearch from "@/components/search/PageSearch";
-import CategoryNav from "@/app/bookings/CategoryNav";
-import SectionHeader from "@/app/market/SectionHeader";
 import PageHeader from "@/components/PageHeader";
 import { useSidebarState } from "@/app/hooks/useSidebarState";
 
@@ -18,9 +15,7 @@ interface TripsClientProps {
   currentUser?: SafeUser | null;
 }
 
-const FADE_OUT_DURATION = 200;
-
-// ── Mock reservations for representation ──
+// ── Mock trips for representation ──
 const mockListing = (id: string, title: string, img: string, cat: string, loc: string, addr: string, empName: string) => ({
   id, title, description: '', imageSrc: img, category: cat, location: loc, userId: 'mock-owner',
   createdAt: new Date().toISOString(), services: [{ id: 's1', serviceName: title, price: 0, category: cat }],
@@ -42,278 +37,119 @@ const MOCK_TRIPS: SafeReservation[] = [
   { id: 'mock-trip-6', createdAt: new Date().toISOString(), date: new Date(Date.now() - 5 * 86400000), time: '17:00', serviceName: 'Blowout & Style', totalPrice: 55, status: 'declined', employeeId: 'emp-t6', userId: 'mc1', listingId: 't6', user: mockUser('mc1', 'You'), listing: mockListing('t6', 'Salon Luxe', '/assets/people/salon.png', 'Salon', 'Manhattan, NY', '155 Mercer St', 'Ava Chen') } as any,
 ];
 
+type TimeTab = 'upcoming' | 'past';
+
 const TripsClient: React.FC<TripsClientProps> = ({
   reservations,
   currentUser,
 }) => {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [deletingId, setDeletingId] = useState('');
   const isSidebarCollapsed = useSidebarState();
+  const [timeTab, setTimeTab] = useState<TimeTab>('upcoming');
 
-  // Dynamic items per page: 12 when sidebar collapsed, 10 when expanded
-  const ITEMS_PER_PAGE = isSidebarCollapsed ? 12 : 10;
-
-  // Pagination state
-  const [tripsIndex, setTripsIndex] = useState(0);
-  const [tripsVisible, setTripsVisible] = useState(true);
-  const [isAnimating, setIsAnimating] = useState(false);
-
-  // View all mode
-  const [viewAllMode, setViewAllMode] = useState(false);
-
-  // Responsive grid - adds 1 column when sidebar is collapsed
   const gridColsClass = isSidebarCollapsed
-    ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6'
-    : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5';
-
-  // Reset pagination on sidebar change
-  useEffect(() => {
-    setTripsIndex(0);
-  }, [isSidebarCollapsed]);
-
-  // Get selected categories from URL
-  const selectedCategories = searchParams?.get('categories')?.split(',').filter(Boolean) || [];
+    ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+    : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3';
 
   const onCancel = useCallback(async (id: string) => {
     setDeletingId(id);
     try {
       await axios.delete(`/api/reservations/${id}`);
-      toast.success('Reservation cancelled');
+      toast.success('Trip cancelled');
       router.refresh();
-    } catch (error: any) {
-      toast.error(error?.response?.data?.error || 'Something went wrong.');
-    } finally {
-      setDeletingId('');
-    }
+    } catch { toast.error('Something went wrong.'); }
+    finally { setDeletingId(''); }
   }, [router]);
 
-  // Merge mock data so the page always has content
-  const allReservations = useMemo(() => {
+  // Merge real + mock
+  const allTrips = useMemo(() => {
     const realIds = new Set(reservations.map(r => r.id));
     const mocks = MOCK_TRIPS.filter(r => !realIds.has(r.id));
     return [...reservations, ...mocks];
   }, [reservations]);
 
-  // Filter reservations based on selected categories
-  const filteredReservations = useMemo(() => {
-    return allReservations.filter(reservation => {
-      if (selectedCategories.length === 0) return true;
-
-      return selectedCategories.some(category => {
-        if (category === 'outgoing') return true;
-        if (category === 'incoming') return false;
-        return reservation.status === category;
-      });
-    });
-  }, [allReservations, selectedCategories]);
-
-  const hasTrips = filteredReservations.length > 0;
-
-  // Animated transition helper
-  const animateTransition = (
-    setVisible: (visible: boolean) => void,
-    setIndex: (index: number) => void,
-    currentIndex: number,
-    totalPages: number,
-    direction: 'left' | 'right'
-  ) => {
-    if (totalPages <= 1 || isAnimating) return;
-
-    setIsAnimating(true);
-    setVisible(false);
-
-    setTimeout(() => {
-      const newIndex = direction === 'right'
-        ? (currentIndex + 1) % totalPages
-        : currentIndex === 0 ? totalPages - 1 : currentIndex - 1;
-
-      setIndex(newIndex);
-      setTimeout(() => {
-        setVisible(true);
-        setIsAnimating(false);
-      }, 50);
-    }, FADE_OUT_DURATION);
-  };
-
-  // Paginated items
-  const currentTrips = useMemo(() => {
-    if (filteredReservations.length <= ITEMS_PER_PAGE) return filteredReservations;
-    const start = tripsIndex * ITEMS_PER_PAGE;
-    return filteredReservations.slice(start, start + ITEMS_PER_PAGE);
-  }, [filteredReservations, tripsIndex]);
-
-  // Total pages
-  const totalTripsPages = Math.max(1, Math.ceil(filteredReservations.length / ITEMS_PER_PAGE));
-
-  // Scroll handler
-  const scrollTrips = (dir: 'left' | 'right') =>
-    animateTransition(setTripsVisible, setTripsIndex, tripsIndex, totalTripsPages, dir);
-
-  // View all handlers
-  const handleViewAll = () => {
-    setViewAllMode(true);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleBackToMain = () => {
-    setViewAllMode(false);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  // Upcoming / Past toggle
-  const [timeFilter, setTimeFilter] = useState<'upcoming' | 'past'>('upcoming');
-
+  // Time filter
   const now = new Date();
-  const upcomingTrips = useMemo(
-    () => filteredReservations.filter(r => new Date(r.date) >= now),
-    [filteredReservations]
-  );
-  const pastTrips = useMemo(
-    () => filteredReservations.filter(r => new Date(r.date) < now),
-    [filteredReservations]
-  );
+  const filteredTrips = useMemo(() => {
+    return allTrips.filter(r =>
+      timeTab === 'upcoming' ? new Date(r.date) >= now : new Date(r.date) < now
+    );
+  }, [allTrips, timeTab]);
 
-  const activeTrips = timeFilter === 'upcoming' ? upcomingTrips : pastTrips;
-
-  // Paginated items (recalculate for active set)
-  const paginatedTrips = useMemo(() => {
-    if (activeTrips.length <= ITEMS_PER_PAGE) return activeTrips;
-    const start = tripsIndex * ITEMS_PER_PAGE;
-    return activeTrips.slice(start, start + ITEMS_PER_PAGE);
-  }, [activeTrips, tripsIndex]);
-
-  const totalPages = Math.max(1, Math.ceil(activeTrips.length / ITEMS_PER_PAGE));
+  const totalCount = filteredTrips.length;
 
   return (
     <Container>
       <PageHeader currentUser={currentUser} />
 
-      {/* Upcoming / Past Toggle */}
-      <div className="flex items-center gap-1 mt-8 mb-6">
-        <button
-          onClick={() => { setTimeFilter('upcoming'); setTripsIndex(0); }}
-          className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
-            timeFilter === 'upcoming'
-              ? 'bg-neutral-900 text-white'
-              : 'bg-neutral-100 text-neutral-500 hover:bg-neutral-200 hover:text-neutral-700'
-          }`}
-          type="button"
-        >
-          Upcoming
-          {upcomingTrips.length > 0 && (
-            <span className={`ml-2 text-[11px] px-1.5 py-0.5 rounded-md ${
-              timeFilter === 'upcoming' ? 'bg-white/20' : 'bg-neutral-200'
-            }`}>
-              {upcomingTrips.length}
-            </span>
-          )}
-        </button>
-        <button
-          onClick={() => { setTimeFilter('past'); setTripsIndex(0); }}
-          className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
-            timeFilter === 'past'
-              ? 'bg-neutral-900 text-white'
-              : 'bg-neutral-100 text-neutral-500 hover:bg-neutral-200 hover:text-neutral-700'
-          }`}
-          type="button"
-        >
-          Past
-          {pastTrips.length > 0 && (
-            <span className={`ml-2 text-[11px] px-1.5 py-0.5 rounded-md ${
-              timeFilter === 'past' ? 'bg-white/20' : 'bg-neutral-200'
-            }`}>
-              {pastTrips.length}
-            </span>
-          )}
-        </button>
-      </div>
-
-      {/* Content */}
-      <div className="relative">
-        <div>
-          {activeTrips.length > 0 ? (
-            <>
-              {/* View All Mode */}
-              {viewAllMode && (
-                <>
-                  <SectionHeader
-                    title={timeFilter === 'upcoming' ? 'Upcoming Trips' : 'Past Trips'}
-                    className="mb-6"
-                    onViewAll={handleBackToMain}
-                    viewAllLabel="← Back"
-                  />
-                  <div className={`grid ${gridColsClass} gap-5 transition-all duration-300`}>
-                    {activeTrips.map((reservation, idx) => (
-                      <div
-                        key={reservation.id}
-                        style={{
-                          opacity: 0,
-                          animation: `fadeInUp 520ms ease-out both`,
-                          animationDelay: `${Math.min(idx * 30, 300)}ms`,
-                          willChange: 'transform, opacity',
-                        }}
-                      >
-                        <ReserveCard
-                          reservation={reservation}
-                          listing={reservation.listing}
-                          currentUser={currentUser}
-                          disabled={deletingId === reservation.id}
-                          onCancel={() => onCancel(reservation.id)}
-                          showCancel={true}
-                          onCardClick={() => router.push(`/listings/${reservation.listing.id}`)}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </>
-              )}
-
-              {/* Normal View */}
-              {!viewAllMode && (
-                <>
-                  <SectionHeader
-                    title={timeFilter === 'upcoming' ? 'Upcoming Trips' : 'Past Trips'}
-                    onPrev={totalPages > 1 ? () => scrollTrips('left') : undefined}
-                    onNext={totalPages > 1 ? () => scrollTrips('right') : undefined}
-                    onViewAll={activeTrips.length > ITEMS_PER_PAGE ? handleViewAll : undefined}
-                  />
-                  <div id="trips-rail">
-                    <div className={`grid ${gridColsClass} gap-5 pb-8 transition-all duration-300`}>
-                      {paginatedTrips.map((reservation, idx) => (
-                        <div
-                          key={`${reservation.id}-${tripsIndex}`}
-                          style={{
-                            opacity: tripsVisible ? 0 : 0,
-                            animation: tripsVisible ? `fadeInUp 520ms ease-out both` : 'none',
-                            animationDelay: tripsVisible ? `${140 + idx * 30}ms` : '0ms',
-                            willChange: 'transform, opacity',
-                            transition: !tripsVisible ? `opacity ${FADE_OUT_DURATION}ms ease-out` : 'none',
-                          }}
-                          className={!tripsVisible ? 'opacity-0' : ''}
-                        >
-                          <ReserveCard
-                            reservation={reservation}
-                            listing={reservation.listing}
-                            currentUser={currentUser}
-                            disabled={deletingId === reservation.id}
-                            onCancel={() => onCancel(reservation.id)}
-                            showCancel={true}
-                            onCardClick={() => router.push(`/listings/${reservation.listing.id}`)}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </>
-              )}
-            </>
-          ) : (
-            <div className="px-8 pt-16 text-center text-gray-500">
-              {timeFilter === 'upcoming' ? 'No upcoming trips.' : 'No past trips.'}
-            </div>
-          )}
+      <div className="mt-8">
+        {/* Page title */}
+        <div className="mb-8">
+          <h1 className="text-2xl font-semibold text-stone-900 tracking-tight">My Trips</h1>
+          <p className="text-[14px] text-stone-400 mt-1">{totalCount} {totalCount === 1 ? 'trip' : 'trips'}</p>
         </div>
+
+        {/* Tab bar */}
+        <div className="flex items-center gap-2 mb-8">
+          {(['upcoming', 'past'] as TimeTab[]).map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setTimeTab(tab)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap ${
+                timeTab === tab
+                  ? 'bg-stone-900 text-white'
+                  : 'bg-stone-50 text-stone-500 hover:bg-stone-100 border border-stone-200/60'
+              }`}
+            >
+              {tab === 'upcoming' ? 'Upcoming' : 'Past'}
+            </button>
+          ))}
+        </div>
+
+        {/* Content */}
+        {filteredTrips.length > 0 ? (
+          <div className={`grid ${gridColsClass} gap-5`}>
+            {filteredTrips.map((reservation, idx) => (
+              <div
+                key={reservation.id}
+                style={{
+                  opacity: 0,
+                  animation: 'fadeInUp 520ms ease-out both',
+                  animationDelay: `${Math.min(60 + idx * 30, 360)}ms`,
+                }}
+              >
+                <ReserveCard
+                  reservation={reservation}
+                  listing={reservation.listing}
+                  currentUser={currentUser}
+                  disabled={deletingId === reservation.id}
+                  onCancel={() => onCancel(reservation.id)}
+                  onCardClick={() => router.push(`/listings/${reservation.listing.id}`)}
+                />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-24 text-center">
+            <div className="w-16 h-16 rounded-2xl bg-stone-100 flex items-center justify-center mb-5">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-stone-400">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
+              </svg>
+            </div>
+            <p className="text-[15px] font-medium text-stone-700 mb-1">
+              No {timeTab} trips
+            </p>
+            <p className="text-[13px] text-stone-400 max-w-xs">
+              {timeTab === 'upcoming'
+                ? 'Book a service to see your upcoming trips here.'
+                : 'Your completed trips will show up here.'}
+            </p>
+          </div>
+        )}
       </div>
     </Container>
   );

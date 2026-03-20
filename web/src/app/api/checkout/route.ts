@@ -71,23 +71,14 @@ export async function POST(request: Request) {
     // Check if employee has a valid Stripe Connect account
     const employeeStripeAccountId = employee.user.stripeConnectAccountId;
     const employeeChargesEnabled = employee.user.stripeConnectChargesEnabled;
-
-    if (!employeeStripeAccountId || !employeeChargesEnabled) {
-      return NextResponse.json(
-        {
-          error: "This worker has not set up their payment account yet. Please contact them or choose another provider.",
-          code: "STRIPE_CONNECT_NOT_SETUP"
-        },
-        { status: 400 }
-      );
-    }
+    const hasStripeConnect = employeeStripeAccountId && employeeChargesEnabled;
 
     // Calculate amounts
     const totalAmountCents = totalPrice * 100;
     const applicationFeeCents = Math.round(totalAmountCents * (PLATFORM_FEE_PERCENT / 100));
 
-    // Create Stripe checkout session with destination charge
-    const checkoutSession = await stripe.checkout.sessions.create({
+    // Build checkout session config
+    const sessionConfig: Stripe.Checkout.SessionCreateParams = {
       payment_method_types: ['card'],
       line_items: [
         {
@@ -105,13 +96,6 @@ export async function POST(request: Request) {
       mode: 'payment',
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/bookings/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/listings/${listingId}`,
-      // Destination charge: funds go to employee's Connect account
-      payment_intent_data: {
-        application_fee_amount: applicationFeeCents,
-        transfer_data: {
-          destination: employeeStripeAccountId,
-        },
-      },
       metadata: {
         userId: currentUser.id,
         listingId,
@@ -123,11 +107,22 @@ export async function POST(request: Request) {
         time,
         note: note || '',
         businessName: businessName || employee.listing.title,
-        // Store for reference
         employeeUserId: employee.userId,
         platformFeePercent: String(PLATFORM_FEE_PERCENT),
       },
-    });
+    };
+
+    // Only add destination charge if employee has Stripe Connect set up
+    if (hasStripeConnect) {
+      sessionConfig.payment_intent_data = {
+        application_fee_amount: applicationFeeCents,
+        transfer_data: {
+          destination: employeeStripeAccountId,
+        },
+      };
+    }
+
+    const checkoutSession = await stripe.checkout.sessions.create(sessionConfig);
 
     return NextResponse.json({ sessionId: checkoutSession.id });
   } catch (error: any) {

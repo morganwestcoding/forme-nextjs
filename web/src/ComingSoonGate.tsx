@@ -302,16 +302,16 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
             <img
               src="/logos/fm-logo-white.png"
               alt="ForMe Logo"
-              className="loader-logo h-12 w-auto mx-auto mb-10"
+              className="loader-logo h-20 w-auto mx-auto mb-10"
               style={{ opacity: 0 }}
             />
             <div className="loader-dots-container flex justify-center items-center">
-              <span className="loader-dot" style={{ backgroundColor: '#60A5FA', animationDelay: '0s' }} />
-              <span className="loader-dot" style={{ backgroundColor: '#7AB8FB', animationDelay: '0.1s' }} />
-              <span className="loader-dot" style={{ backgroundColor: '#93CAFC', animationDelay: '0.2s' }} />
-              <span className="loader-dot" style={{ backgroundColor: '#ADDBFD', animationDelay: '0.3s' }} />
-              <span className="loader-dot" style={{ backgroundColor: '#C7ECFE', animationDelay: '0.4s' }} />
-              <span className="loader-dot" style={{ backgroundColor: '#E0F4FF', animationDelay: '0.5s' }} />
+              <span className="loader-dot" style={{ backgroundColor: '#1c1917', animationDelay: '0s' }} />
+              <span className="loader-dot" style={{ backgroundColor: '#33302e', animationDelay: '0.1s' }} />
+              <span className="loader-dot" style={{ backgroundColor: '#57534e', animationDelay: '0.2s' }} />
+              <span className="loader-dot" style={{ backgroundColor: '#78716c', animationDelay: '0.3s' }} />
+              <span className="loader-dot" style={{ backgroundColor: '#a8a29e', animationDelay: '0.4s' }} />
+              <span className="loader-dot" style={{ backgroundColor: '#d6d3d1', animationDelay: '0.5s' }} />
               <span className="loader-dot" style={{ backgroundColor: '#FFFFFF', animationDelay: '0.6s' }} />
             </div>
           </div>

@@ -26,6 +26,9 @@ import ReviewModal from '@/components/modals/ReviewModal';
 import ComingSoonGate from '@/ComingSoonGate';
 import LayoutContent from '@/LayoutContent';
 import Sidebar from '@/components/sidebar/Sidebar';
+import UserMenuModal from '@/components/modals/UserMenuModal';
+import CreateModal from '@/components/modals/CreateModal';
+import LocationModal from '@/components/modals/LocationModal';
 
 export const metadata: Metadata = {
   title: 'ForMe App',
@@ -83,6 +86,9 @@ export default async function RootLayout({
                 <FilterModal/>
                 <LoginModal />
                 <SettingsModal />
+                <UserMenuModal currentUser={currentUser} />
+                <CreateModal />
+                <LocationModal />
               </ComingSoonGate>
               </body>
             </html>

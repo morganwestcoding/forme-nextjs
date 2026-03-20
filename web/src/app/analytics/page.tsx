@@ -22,13 +22,10 @@ const AnalyticsPage = async () => {
 
     return (
       <ClientProviders>
-        <Container>
         <AnalyticsClient
           currentUser={currentUser}
           analyticsData={analyticsData}
         />
-        </Container>
-     
       </ClientProviders>
     );
   } catch (error) {

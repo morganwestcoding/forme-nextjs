@@ -2,14 +2,11 @@
 
 import { toast } from "react-hot-toast";
 import axios from "axios";
-import { useCallback, useState, useEffect, useMemo } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { SafeReservation, SafeUser } from "@/app/types";
 import Container from "@/components/Container";
 import ReserveCard from "@/components/listings/ReserveCard";
-import PageSearch from "@/components/search/PageSearch";
-import CategoryNav from "@/app/bookings/CategoryNav";
-import SectionHeader from "@/app/market/SectionHeader";
 import PageHeader from "@/components/PageHeader";
 import { useSidebarState } from "@/app/hooks/useSidebarState";
 
@@ -18,8 +15,6 @@ interface ReservationsClientProps {
   outgoingReservations: SafeReservation[];
   currentUser?: SafeUser | null;
 }
-
-const FADE_OUT_DURATION = 200;
 
 // ── Mock reservations for representation ──
 const mockListing = (id: string, title: string, img: string, cat: string, loc: string, addr: string, empName: string) => ({
@@ -43,39 +38,23 @@ const MOCK_RESERVATIONS: SafeReservation[] = [
   { id: 'mock-res-6', createdAt: new Date().toISOString(), date: new Date(Date.now() + 7 * 86400000), time: '13:00', serviceName: 'Brow Lamination & Tint', totalPrice: 85, status: 'pending', employeeId: 'emp-l6', userId: 'mc6', listingId: 'l6', user: mockUser('mc6', 'Jasmine L.'), listing: mockListing('l6', 'Brow Studio', '/assets/people/brows.png', 'Brows', 'Brooklyn, NY', '58 N 3rd St', 'Jasmine L.') } as any,
 ];
 
+type BookingTab = 'incoming' | 'outgoing';
+type TimeTab = 'upcoming' | 'past';
+
 const ReservationsClient: React.FC<ReservationsClientProps> = ({
   incomingReservations,
   outgoingReservations,
   currentUser,
 }) => {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [processingId, setProcessingId] = useState('');
   const isSidebarCollapsed = useSidebarState();
+  const [directionTab, setDirectionTab] = useState<BookingTab>('incoming');
+  const [timeTab, setTimeTab] = useState<TimeTab>('upcoming');
 
-  // Dynamic items per page: 12 when sidebar collapsed, 10 when expanded
-  const ITEMS_PER_PAGE = isSidebarCollapsed ? 12 : 10;
-
-  // Pagination state
-  const [reservationsIndex, setReservationsIndex] = useState(0);
-  const [reservationsVisible, setReservationsVisible] = useState(true);
-  const [isAnimating, setIsAnimating] = useState(false);
-
-  // View all mode
-  const [viewAllMode, setViewAllMode] = useState(false);
-
-  // Responsive grid - matches MarketClient for consistent card sizing
   const gridColsClass = isSidebarCollapsed
-    ? 'grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-    : 'grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3';
-
-  // Reset pagination on sidebar change
-  useEffect(() => {
-    setReservationsIndex(0);
-  }, [isSidebarCollapsed]);
-
-  // Get selected categories from URL
-  const selectedCategories = searchParams?.get('categories')?.split(',').filter(Boolean) || [];
+    ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+    : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3';
 
   const onAccept = useCallback(async (id: string) => {
     setProcessingId(id);
@@ -83,11 +62,8 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
       await axios.patch(`/api/reservations/${id}`, { action: 'accept' });
       toast.success('Reservation accepted');
       router.refresh();
-    } catch {
-      toast.error('Something went wrong.');
-    } finally {
-      setProcessingId('');
-    }
+    } catch { toast.error('Something went wrong.'); }
+    finally { setProcessingId(''); }
   }, [router]);
 
   const onDecline = useCallback(async (id: string) => {
@@ -96,11 +72,8 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
       await axios.delete(`/api/reservations/${id}`);
       toast.success('Reservation declined');
       router.refresh();
-    } catch {
-      toast.error('Something went wrong.');
-    } finally {
-      setProcessingId('');
-    }
+    } catch { toast.error('Something went wrong.'); }
+    finally { setProcessingId(''); }
   }, [router]);
 
   const onCancel = useCallback(async (id: string) => {
@@ -109,242 +82,123 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
       await axios.delete(`/api/reservations/${id}`);
       toast.success('Reservation cancelled');
       router.refresh();
-    } finally {
-      setProcessingId('');
-    }
+    } finally { setProcessingId(''); }
   }, [router]);
 
-  // Determine which reservations to show based on direction filter
-  const isOutgoingSelected = selectedCategories.includes('outgoing');
-  const realBase = isOutgoingSelected ? outgoingReservations : incomingReservations;
-  // Merge mock data so the page always has content
+  // Base reservations with mocks
   const baseReservations = useMemo(() => {
-    const realIds = new Set(realBase.map(r => r.id));
+    const real = directionTab === 'outgoing' ? outgoingReservations : incomingReservations;
+    const realIds = new Set(real.map(r => r.id));
     const mocks = MOCK_RESERVATIONS.filter(r => !realIds.has(r.id));
-    return [...realBase, ...mocks];
-  }, [realBase]);
+    return [...real, ...mocks];
+  }, [directionTab, incomingReservations, outgoingReservations]);
 
-  // Filter reservations based on selected status categories
-  const filteredReservations = useMemo(() => {
-    const statusFilters = selectedCategories.filter(cat => !['incoming', 'outgoing'].includes(cat));
-
-    if (statusFilters.length === 0) return baseReservations;
-
-    return baseReservations.filter(reservation =>
-      statusFilters.includes(reservation.status)
-    );
-  }, [baseReservations, selectedCategories]);
-
-  const hasReservations = filteredReservations.length > 0;
-
-  // Animated transition helper
-  const animateTransition = (
-    setVisible: (visible: boolean) => void,
-    setIndex: (index: number) => void,
-    currentIndex: number,
-    totalPages: number,
-    direction: 'left' | 'right'
-  ) => {
-    if (totalPages <= 1 || isAnimating) return;
-
-    setIsAnimating(true);
-    setVisible(false);
-
-    setTimeout(() => {
-      const newIndex = direction === 'right'
-        ? (currentIndex + 1) % totalPages
-        : currentIndex === 0 ? totalPages - 1 : currentIndex - 1;
-
-      setIndex(newIndex);
-      setTimeout(() => {
-        setVisible(true);
-        setIsAnimating(false);
-      }, 50);
-    }, FADE_OUT_DURATION);
-  };
-
-  // Paginated items
-  const currentReservations = useMemo(() => {
-    if (filteredReservations.length <= ITEMS_PER_PAGE) return filteredReservations;
-    const start = reservationsIndex * ITEMS_PER_PAGE;
-    return filteredReservations.slice(start, start + ITEMS_PER_PAGE);
-  }, [filteredReservations, reservationsIndex]);
-
-  // Total pages
-  const totalReservationsPages = Math.max(1, Math.ceil(filteredReservations.length / ITEMS_PER_PAGE));
-
-  // Scroll handler
-  const scrollReservations = (dir: 'left' | 'right') =>
-    animateTransition(setReservationsVisible, setReservationsIndex, reservationsIndex, totalReservationsPages, dir);
-
-  // View all handlers
-  const handleViewAll = () => {
-    setViewAllMode(true);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleBackToMain = () => {
-    setViewAllMode(false);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  // Upcoming / Past toggle
-  const [timeFilter, setTimeFilter] = useState<'upcoming' | 'past'>('upcoming');
-
+  // Time filter
   const now = new Date();
-  const upcomingReservations = useMemo(
-    () => filteredReservations.filter(r => new Date(r.date) >= now),
-    [filteredReservations]
-  );
-  const pastReservations = useMemo(
-    () => filteredReservations.filter(r => new Date(r.date) < now),
-    [filteredReservations]
-  );
+  const filteredReservations = useMemo(() => {
+    return baseReservations.filter(r =>
+      timeTab === 'upcoming' ? new Date(r.date) >= now : new Date(r.date) < now
+    );
+  }, [baseReservations, timeTab]);
 
-  const activeReservations = timeFilter === 'upcoming' ? upcomingReservations : pastReservations;
-
-  // Paginated items (recalculate for active set)
-  const paginatedReservations = useMemo(() => {
-    if (activeReservations.length <= ITEMS_PER_PAGE) return activeReservations;
-    const start = reservationsIndex * ITEMS_PER_PAGE;
-    return activeReservations.slice(start, start + ITEMS_PER_PAGE);
-  }, [activeReservations, reservationsIndex]);
-
-  const totalPages = Math.max(1, Math.ceil(activeReservations.length / ITEMS_PER_PAGE));
+  const totalCount = filteredReservations.length;
 
   return (
     <Container>
       <PageHeader currentUser={currentUser} />
 
-      {/* Upcoming / Past Toggle */}
-      <div className="flex items-center gap-1 mt-8 mb-6">
-        <button
-          onClick={() => { setTimeFilter('upcoming'); setReservationsIndex(0); }}
-          className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
-            timeFilter === 'upcoming'
-              ? 'bg-neutral-900 text-white'
-              : 'bg-neutral-100 text-neutral-500 hover:bg-neutral-200 hover:text-neutral-700'
-          }`}
-          type="button"
-        >
-          Upcoming
-          {upcomingReservations.length > 0 && (
-            <span className={`ml-2 text-[11px] px-1.5 py-0.5 rounded-md ${
-              timeFilter === 'upcoming' ? 'bg-white/20' : 'bg-neutral-200'
-            }`}>
-              {upcomingReservations.length}
-            </span>
-          )}
-        </button>
-        <button
-          onClick={() => { setTimeFilter('past'); setReservationsIndex(0); }}
-          className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
-            timeFilter === 'past'
-              ? 'bg-neutral-900 text-white'
-              : 'bg-neutral-100 text-neutral-500 hover:bg-neutral-200 hover:text-neutral-700'
-          }`}
-          type="button"
-        >
-          Past
-          {pastReservations.length > 0 && (
-            <span className={`ml-2 text-[11px] px-1.5 py-0.5 rounded-md ${
-              timeFilter === 'past' ? 'bg-white/20' : 'bg-neutral-200'
-            }`}>
-              {pastReservations.length}
-            </span>
-          )}
-        </button>
-      </div>
-
-      {/* Content */}
-      <div className="relative">
-        <div>
-          {activeReservations.length > 0 ? (
-            <>
-              {/* View All Mode */}
-              {viewAllMode && (
-                <>
-                  <SectionHeader
-                    title={timeFilter === 'upcoming' ? 'Upcoming Reservations' : 'Past Reservations'}
-                    className="mb-6"
-                    onViewAll={handleBackToMain}
-                    viewAllLabel="← Back"
-                  />
-                  <div className={`grid ${gridColsClass} gap-5 transition-all duration-300`}>
-                    {activeReservations.map((reservation, idx) => (
-                      <div
-                        key={reservation.id}
-                        style={{
-                          opacity: 0,
-                          animation: `fadeInUp 520ms ease-out both`,
-                          animationDelay: `${Math.min(idx * 30, 300)}ms`,
-                          willChange: 'transform, opacity',
-                        }}
-                      >
-                        <ReserveCard
-                          reservation={reservation}
-                          listing={reservation.listing}
-                          currentUser={currentUser}
-                          disabled={processingId === reservation.id}
-                          onAccept={() => onAccept(reservation.id)}
-                          onDecline={() => onDecline(reservation.id)}
-                          onCancel={() => onCancel(reservation.id)}
-                          showAcceptDecline={!isOutgoingSelected}
-                          onCardClick={() => router.push(`/listings/${reservation.listing.id}`)}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </>
-              )}
-
-              {/* Normal View */}
-              {!viewAllMode && (
-                <>
-                  <SectionHeader
-                    title={timeFilter === 'upcoming' ? 'Upcoming Reservations' : 'Past Reservations'}
-                    onPrev={totalPages > 1 ? () => scrollReservations('left') : undefined}
-                    onNext={totalPages > 1 ? () => scrollReservations('right') : undefined}
-                    onViewAll={activeReservations.length > ITEMS_PER_PAGE ? handleViewAll : undefined}
-                  />
-                  <div id="reservations-rail">
-                    <div className={`grid ${gridColsClass} gap-5 pb-8 transition-all duration-300`}>
-                      {paginatedReservations.map((reservation, idx) => (
-                        <div
-                          key={`${reservation.id}-${reservationsIndex}`}
-                          style={{
-                            opacity: reservationsVisible ? 0 : 0,
-                            animation: reservationsVisible ? `fadeInUp 520ms ease-out both` : 'none',
-                            animationDelay: reservationsVisible ? `${140 + idx * 30}ms` : '0ms',
-                            willChange: 'transform, opacity',
-                            transition: !reservationsVisible ? `opacity ${FADE_OUT_DURATION}ms ease-out` : 'none',
-                          }}
-                          className={!reservationsVisible ? 'opacity-0' : ''}
-                        >
-                          <ReserveCard
-                            reservation={reservation}
-                            listing={reservation.listing}
-                            currentUser={currentUser}
-                            disabled={processingId === reservation.id}
-                            onAccept={() => onAccept(reservation.id)}
-                            onDecline={() => onDecline(reservation.id)}
-                            onCancel={() => onCancel(reservation.id)}
-                            showAcceptDecline={!isOutgoingSelected}
-                            onCardClick={() => router.push(`/listings/${reservation.listing.id}`)}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </>
-              )}
-            </>
-          ) : (
-            <div className="px-8 pt-16 text-center text-gray-500">
-              {timeFilter === 'upcoming' ? 'No upcoming reservations.' : 'No past reservations.'}
-            </div>
-          )}
+      <div className="mt-8">
+        {/* Page title */}
+        <div className="mb-8">
+          <h1 className="text-2xl font-semibold text-stone-900 tracking-tight">Bookings</h1>
+          <p className="text-[14px] text-stone-400 mt-1">{totalCount} {totalCount === 1 ? 'reservation' : 'reservations'}</p>
         </div>
+
+        {/* Tab bars */}
+        <div className="flex items-center gap-6 mb-8">
+          {/* Direction tabs */}
+          <div className="flex items-center gap-2">
+            {(['incoming', 'outgoing'] as BookingTab[]).map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setDirectionTab(tab)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap ${
+                  directionTab === tab
+                    ? 'bg-stone-900 text-white'
+                    : 'bg-stone-50 text-stone-500 hover:bg-stone-100 border border-stone-200/60'
+                }`}
+              >
+                {tab === 'incoming' ? 'Incoming' : 'Outgoing'}
+              </button>
+            ))}
+          </div>
+
+          <div className="w-px h-6 bg-stone-200" />
+
+          {/* Time tabs */}
+          <div className="flex items-center gap-2">
+            {(['upcoming', 'past'] as TimeTab[]).map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setTimeTab(tab)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap ${
+                  timeTab === tab
+                    ? 'bg-stone-900 text-white'
+                    : 'bg-stone-50 text-stone-500 hover:bg-stone-100 border border-stone-200/60'
+                }`}
+              >
+                {tab === 'upcoming' ? 'Upcoming' : 'Past'}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Content */}
+        {filteredReservations.length > 0 ? (
+          <div className={`grid ${gridColsClass} gap-5`}>
+            {filteredReservations.map((reservation, idx) => (
+              <div
+                key={reservation.id}
+                style={{
+                  opacity: 0,
+                  animation: 'fadeInUp 520ms ease-out both',
+                  animationDelay: `${Math.min(60 + idx * 30, 360)}ms`,
+                }}
+              >
+                <ReserveCard
+                  reservation={reservation}
+                  listing={reservation.listing}
+                  currentUser={currentUser}
+                  disabled={processingId === reservation.id}
+                  onAccept={() => onAccept(reservation.id)}
+                  onDecline={() => onDecline(reservation.id)}
+                  onCancel={() => onCancel(reservation.id)}
+                  showAcceptDecline={directionTab === 'incoming'}
+                  onCardClick={() => router.push(`/listings/${reservation.listing.id}`)}
+                />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-24 text-center">
+            <div className="w-16 h-16 rounded-2xl bg-stone-100 flex items-center justify-center mb-5">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-stone-400">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
+              </svg>
+            </div>
+            <p className="text-[15px] font-medium text-stone-700 mb-1">
+              No {timeTab} {directionTab} reservations
+            </p>
+            <p className="text-[13px] text-stone-400 max-w-xs">
+              {timeTab === 'upcoming'
+                ? 'When you receive new bookings, they\'ll appear here.'
+                : 'Your completed reservations will show up here.'}
+            </p>
+          </div>
+        )}
       </div>
     </Container>
   );

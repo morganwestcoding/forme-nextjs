@@ -11,13 +11,8 @@ const uploadOptions = {
   multiple: false,
   maxFiles: 1,
   sources: ['local', 'camera'] as ('local' | 'camera')[],
-  resourceType: 'image' as const,
-  clientAllowedFormats: ['png', 'jpg', 'jpeg', 'webp'],
-  maxImageFileSize: 10_000_000,
-  cropping: true,
-  croppingAspectRatio: 1,
-  croppingShowBackButton: true,
-  showSkipCropButton: false,
+  resourceType: 'auto' as const,
+  maxFileSize: 100_000_000,
   folder: 'uploads/posts',
 };
 
@@ -33,6 +28,7 @@ type UploadTarget = 'before' | 'after' | null;
 
 const MediaStep: React.FC<MediaStepProps> = ({
   mediaSrc,
+  mediaType,
   beforeImageSrc,
   onMediaChange,
   onBeforeImageChange,
@@ -46,9 +42,13 @@ const MediaStep: React.FC<MediaStepProps> = ({
   // Store the open function from the widget
   const openFnRef = useRef<(() => void) | null>(null);
 
-  const processUrl = (result: CldUploadWidgetResults): string | null => {
+  const processResult = (result: CldUploadWidgetResults): { url: string; type: 'image' | 'video' } | null => {
     const info = result?.info;
     if (info && typeof info === 'object' && 'secure_url' in info) {
+      const resourceType = (info as any).resource_type;
+      const format = ((info as any).format || '').toLowerCase();
+      const url = info.secure_url as string;
+      const isVideo = resourceType === 'video' || ['mp4', 'mov', 'avi', 'webm'].includes(format) || /\.(mp4|mov|avi|webm)/i.test(url);
       const publicId = info.public_id;
       let cloudName: string | null = null;
 
@@ -57,26 +57,30 @@ const MediaStep: React.FC<MediaStepProps> = ({
         cloudName = urlMatch ? urlMatch[1] : null;
       }
 
+      if (isVideo) {
+        return { url: info.secure_url as string, type: 'video' };
+      }
+
       if (publicId && cloudName) {
         const transformations = `q_auto:good,f_auto,w_600,h_600,c_fill,g_auto`;
-        return `https://res.cloudinary.com/${cloudName}/image/upload/${transformations}/${publicId}`;
+        return { url: `https://res.cloudinary.com/${cloudName}/image/upload/${transformations}/${publicId}`, type: 'image' };
       }
-      return info.secure_url as string;
+      return { url: info.secure_url as string, type: 'image' };
     }
     return null;
   };
 
   const handleSuccess = (result: CldUploadWidgetResults) => {
-    const url = processUrl(result);
+    const processed = processResult(result);
     const target = uploadTargetRef.current;
 
-    console.log(`[MediaStep] Upload success - target: ${target}, url: ${url}`);
+    console.log(`[MediaStep] Upload success - target: ${target}, type: ${processed?.type}, url: ${processed?.url}`);
 
-    if (url && target) {
+    if (processed && target) {
       if (target === 'before') {
-        onBeforeImageChange(url);
+        onBeforeImageChange(processed.url);
       } else {
-        onMediaChange(url, 'image');
+        onMediaChange(processed.url, processed.type);
       }
     }
     uploadTargetRef.current = null;
@@ -101,11 +105,13 @@ const MediaStep: React.FC<MediaStepProps> = ({
   const UploadBox = ({
     target,
     imageSrc,
+    isVideo: boxIsVideo,
     label,
     onRemove,
   }: {
     target: 'before' | 'after';
     imageSrc: string;
+    isVideo?: boolean;
     label: string;
     onRemove: () => void;
   }) => (
@@ -123,7 +129,11 @@ const MediaStep: React.FC<MediaStepProps> = ({
       >
         {imageSrc ? (
           <>
-            <Image src={imageSrc} alt={label} fill className="object-cover" />
+            {boxIsVideo ? (
+              <video src={imageSrc} className="absolute inset-0 w-full h-full object-cover" muted loop autoPlay playsInline />
+            ) : (
+              <Image src={imageSrc} alt={label} fill className="object-cover" />
+            )}
             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100">
               <div className="flex gap-2">
                 <span className="px-2 py-1 bg-white rounded-md text-xs font-medium text-gray-900">
@@ -144,11 +154,14 @@ const MediaStep: React.FC<MediaStepProps> = ({
             {widgetOpen && uploadTargetRef.current === target ? (
               <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
             ) : (
-              <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center group-hover:bg-gray-300 transition-colors">
-                <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                </svg>
-              </div>
+              <>
+                <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center group-hover:bg-gray-300 transition-colors">
+                  <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                  </svg>
+                </div>
+                <p className="text-[11px] text-gray-400">Photo or video</p>
+              </>
             )}
           </div>
         )}
@@ -164,7 +177,7 @@ const MediaStep: React.FC<MediaStepProps> = ({
         subtitle={showBeforeAfter ? "Upload before & after photos to showcase your transformation." : "Upload a photo or video. Square format works best."}
       />
 
-      {/* Single CldUploadWidget */}
+      {/* Upload Widget — accepts both photos and videos */}
       <CldUploadWidget
         uploadPreset={UPLOAD_PRESET}
         onSuccess={handleSuccess}
@@ -178,7 +191,7 @@ const MediaStep: React.FC<MediaStepProps> = ({
 
           return (
             <>
-              {showBeforeAfter ? (
+              {showBeforeAfter && mediaType !== 'video' ? (
                 <div className="flex items-center justify-center gap-4">
                   <UploadBox
                     target="before"
@@ -207,6 +220,7 @@ const MediaStep: React.FC<MediaStepProps> = ({
                   <UploadBox
                     target="after"
                     imageSrc={mediaSrc}
+                    isVideo={mediaType === 'video'}
                     label="After"
                     onRemove={() => onMediaChange('', 'image')}
                   />
@@ -216,6 +230,7 @@ const MediaStep: React.FC<MediaStepProps> = ({
                   <UploadBox
                     target="after"
                     imageSrc={mediaSrc}
+                    isVideo={mediaType === 'video'}
                     label="Your work"
                     onRemove={() => onMediaChange('', 'image')}
                   />
@@ -226,7 +241,8 @@ const MediaStep: React.FC<MediaStepProps> = ({
         }}
       </CldUploadWidget>
 
-      {/* Before/After toggle */}
+      {/* Before/After toggle — only for images */}
+      {mediaType !== 'video' && (
       <div className="mt-8 flex justify-center">
         <button
           type="button"
@@ -245,6 +261,7 @@ const MediaStep: React.FC<MediaStepProps> = ({
           <span>Before & after transformation</span>
         </button>
       </div>
+      )}
     </div>
   );
 };

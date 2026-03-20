@@ -14,9 +14,7 @@ export default async function LicensingPage() {
 
   return (
     <ClientOnly>
-      <Container>
-        <LicensingClient currentUser={currentUser} />
-      </Container>
+      <LicensingClient currentUser={currentUser} />
     </ClientOnly>
   );
 }

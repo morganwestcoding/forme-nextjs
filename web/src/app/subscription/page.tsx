@@ -3,7 +3,6 @@ import ClientOnly from "@/components/ClientOnly";
 import SubscriptionClient from "./SubscriptionClient";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import { redirect } from "next/navigation";
-import Container from "@/components/Container";
 import dynamicImport from "next/dynamic";
 
 const SubscriptionSuccess = dynamicImport(
@@ -17,11 +16,9 @@ export default async function SubscriptionPage() {
 
   return (
     <ClientOnly>
-      <Container>
-        {/* This component confirms the session on return from Stripe and forces a refresh */}
-        <SubscriptionSuccess />
-        <SubscriptionClient currentUser={currentUser} />
-      </Container>
+      {/* This component confirms the session on return from Stripe and forces a refresh */}
+      <SubscriptionSuccess />
+      <SubscriptionClient currentUser={currentUser} />
     </ClientOnly>
   );
 }

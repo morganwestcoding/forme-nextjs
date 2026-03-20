@@ -16,6 +16,8 @@ import {
   Upload01Icon
 } from "hugeicons-react";
 import { SafeUser } from "@/app/types";
+import Container from "@/components/Container";
+import PageHeader from "@/components/PageHeader";
 
 interface LicensingClientProps {
   currentUser: SafeUser | null;
@@ -144,62 +146,47 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Clean Header - matches Market page */}
-      <div className="border-b border-gray-100">
-        <div className="max-w-6xl mx-auto px-6 md:px-24 pt-12 pb-8">
-          <div className="text-center">
-            {isOnboarding && (
-              <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-4">Step 1 of 2</p>
-            )}
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight tracking-tight">
-              Licensing
-            </h1>
-            <p className="text-gray-500 text-base mt-3 max-w-2xl mx-auto">
-              Build trust with clients by verifying your credentials
-            </p>
-            <div className="mt-4">
-              {getStatusBadge()}
-            </div>
-          </div>
+    <Container>
+      <PageHeader currentUser={currentUser} currentPage="Licensing" />
 
-          {/* Tab Navigation - matches Analytics tab style */}
-          <div className="flex justify-center mt-8">
-            <div className="flex items-center gap-1.5">
-              <button
-                onClick={() => setActiveTab('upload')}
-                className={`
-                  px-4 py-1.5 text-[13px] font-medium rounded-xl border transition-all duration-300 ease-out active:scale-[0.97] flex items-center gap-2
-                  ${activeTab === 'upload'
-                    ? 'bg-[#60A5FA] border-[#60A5FA] text-white shadow-md shadow-[#60A5FA]/25'
-                    : 'bg-transparent border-neutral-300 text-neutral-500 hover:border-[#60A5FA] hover:text-[#60A5FA] hover:bg-[#60A5FA]/5'
-                  }
-                `}
-              >
-                <Certificate01Icon size={14} strokeWidth={2} />
-                I Have a License
-              </button>
-              <button
-                onClick={() => setActiveTab('training')}
-                className={`
-                  px-4 py-1.5 text-[13px] font-medium rounded-xl border transition-all duration-300 ease-out active:scale-[0.97] flex items-center gap-2
-                  ${activeTab === 'training'
-                    ? 'bg-[#60A5FA] border-[#60A5FA] text-white shadow-md shadow-[#60A5FA]/25'
-                    : 'bg-transparent border-neutral-300 text-neutral-500 hover:border-[#60A5FA] hover:text-[#60A5FA] hover:bg-[#60A5FA]/5'
-                  }
-                `}
-              >
-                <Mortarboard01Icon size={14} strokeWidth={2} />
-                Need Training
-              </button>
-            </div>
-          </div>
+      <div className="mt-8">
+        {/* Header */}
+        <div className="mb-8">
+          {isOnboarding && (
+            <p className="text-[12px] text-stone-400 mb-2">Step 1 of 2</p>
+          )}
+          <h1 className="text-2xl font-semibold text-stone-900 tracking-tight">Licensing</h1>
+          <p className="text-[14px] text-stone-400 mt-1">Build trust with clients by verifying your credentials</p>
+          {getStatusBadge() && <div className="mt-3">{getStatusBadge()}</div>}
         </div>
-      </div>
+
+        {/* Tabs */}
+        <div className="flex items-center gap-2 mb-8">
+          <button
+            onClick={() => setActiveTab('upload')}
+            className={`px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap ${
+              activeTab === 'upload'
+                ? 'bg-stone-900 text-white'
+                : 'bg-stone-50 text-stone-500 hover:bg-stone-100 border border-stone-200/60'
+            }`}
+          >
+            I Have a License
+          </button>
+          <button
+            onClick={() => setActiveTab('training')}
+            className={`px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap ${
+              activeTab === 'training'
+                ? 'bg-stone-900 text-white'
+                : 'bg-stone-50 text-stone-500 hover:bg-stone-100 border border-stone-200/60'
+            }`}
+          >
+            Need Training
+          </button>
+        </div>
 
       {/* Upload Tab */}
       {activeTab === 'upload' && (
-        <div className="max-w-7xl mx-auto px-6 md:px-24 py-12">
+        <div>
           {/* Status Messages */}
           {verificationStatus === 'pending' && (
             <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 flex items-start gap-4 mb-8">
@@ -245,9 +232,9 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
 
           {/* Benefits Grid - Matching subscription card style */}
           <div className="grid md:grid-cols-3 gap-4 mb-8">
-            <div className="group relative rounded-2xl border p-8 transition-all duration-300 bg-white border-gray-200 hover:border-gray-300 hover:shadow-md">
+            <div className="group relative rounded-2xl border border-stone-200/60 p-6 transition-all duration-300 bg-white hover:border-stone-300 hover:-translate-y-0.5 hover:shadow-lg">
               <div className="mb-8">
-                <h3 className="text-xs font-semibold uppercase tracking-wider mb-4 text-gray-400">
+                <h3 className="text-[12px] text-stone-400 mb-3">
                   Build Trust
                 </h3>
                 <div className="mb-4">
@@ -259,9 +246,9 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
               </div>
             </div>
 
-            <div className="group relative rounded-2xl border p-8 transition-all duration-300 bg-white border-gray-200 hover:border-gray-300 hover:shadow-md">
+            <div className="group relative rounded-2xl border border-stone-200/60 p-6 transition-all duration-300 bg-white hover:border-stone-300 hover:-translate-y-0.5 hover:shadow-lg">
               <div className="mb-8">
-                <h3 className="text-xs font-semibold uppercase tracking-wider mb-4 text-gray-400">
+                <h3 className="text-[12px] text-stone-400 mb-3">
                   Stand Out
                 </h3>
                 <div className="mb-4">
@@ -273,9 +260,9 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
               </div>
             </div>
 
-            <div className="group relative rounded-2xl border p-8 transition-all duration-300 bg-white border-gray-200 hover:border-gray-300 hover:shadow-md">
+            <div className="group relative rounded-2xl border border-stone-200/60 p-6 transition-all duration-300 bg-white hover:border-stone-300 hover:-translate-y-0.5 hover:shadow-lg">
               <div className="mb-8">
-                <h3 className="text-xs font-semibold uppercase tracking-wider mb-4 text-gray-400">
+                <h3 className="text-[12px] text-stone-400 mb-3">
                   Fast Process
                 </h3>
                 <div className="mb-4">
@@ -420,7 +407,7 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
 
       {/* Training Tab */}
       {activeTab === 'training' && (
-        <div className="max-w-7xl mx-auto px-6 md:px-24 py-12">
+        <div>
           {/* Hero Section */}
           <div className="bg-blue-50 border border-blue-200 rounded-xl p-8 mb-12">
             <div className="flex items-start gap-6">
@@ -460,8 +447,8 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
                   key={academy.id}
                   className={`group relative rounded-2xl border p-8 transition-all duration-300 cursor-pointer ${
                     isSelected
-                      ? "bg-gradient-to-br from-gray-900 to-gray-800 border-gray-700 shadow-xl scale-[1.02]"
-                      : "bg-white border-gray-200 hover:border-gray-300 hover:shadow-md"
+                      ? "bg-stone-900 border-stone-800 shadow-xl"
+                      : "bg-white border-stone-200/60 hover:border-stone-300 hover:-translate-y-0.5 hover:shadow-lg"
                   }`}
                   onClick={() => setSelectedAcademy(isSelected ? '' : academy.id)}
                 >
@@ -474,7 +461,7 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
                   )}
 
                   <div className="mb-8">
-                    <h3 className="text-xs font-semibold uppercase tracking-wider mb-4 text-gray-400">
+                    <h3 className="text-[12px] text-stone-400 mb-3">
                       {academy.name}
                     </h3>
                     <p className={`text-[13px] ${isSelected ? 'text-gray-300' : 'text-gray-600'}`}>{academy.description}</p>
@@ -524,8 +511,8 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
 
           {/* Why Choose Section - Matching subscription card style */}
           <div className="grid md:grid-cols-3 gap-4">
-            <div className="group relative rounded-2xl border p-8 transition-all duration-300 bg-white border-gray-200 hover:border-gray-300 hover:shadow-md">
-              <h3 className="text-xs font-semibold uppercase tracking-wider mb-4 text-gray-400">
+            <div className="group relative rounded-2xl border border-stone-200/60 p-6 transition-all duration-300 bg-white hover:border-stone-300 hover:-translate-y-0.5 hover:shadow-lg">
+              <h3 className="text-[12px] text-stone-400 mb-3">
                 Instant Verification
               </h3>
               <div className="mb-4">
@@ -536,8 +523,8 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
               </p>
             </div>
 
-            <div className="group relative rounded-2xl border p-8 transition-all duration-300 bg-white border-gray-200 hover:border-gray-300 hover:shadow-md">
-              <h3 className="text-xs font-semibold uppercase tracking-wider mb-4 text-gray-400">
+            <div className="group relative rounded-2xl border border-stone-200/60 p-6 transition-all duration-300 bg-white hover:border-stone-300 hover:-translate-y-0.5 hover:shadow-lg">
+              <h3 className="text-[12px] text-stone-400 mb-3">
                 Special Pricing
               </h3>
               <div className="mb-4">
@@ -548,8 +535,8 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
               </p>
             </div>
 
-            <div className="group relative rounded-2xl border p-8 transition-all duration-300 bg-white border-gray-200 hover:border-gray-300 hover:shadow-md">
-              <h3 className="text-xs font-semibold uppercase tracking-wider mb-4 text-gray-400">
+            <div className="group relative rounded-2xl border border-stone-200/60 p-6 transition-all duration-300 bg-white hover:border-stone-300 hover:-translate-y-0.5 hover:shadow-lg">
+              <h3 className="text-[12px] text-stone-400 mb-3">
                 Flexible Learning
               </h3>
               <div className="mb-4">
@@ -564,20 +551,17 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
       )}
 
       {/* Privacy Notice */}
-      <div className="border-t border-gray-100 bg-gray-50/30">
-        <div className="max-w-7xl mx-auto px-6 md:px-24 py-12">
-          <div className="bg-white border border-gray-200 rounded-xl p-8 text-center">
-            <div className="flex items-center justify-center gap-2 mb-3">
-              <ShieldUserIcon size={20} color="#60A5FA" strokeWidth={2} />
-              <h4 className="font-semibold text-gray-900 tracking-tight">Your Privacy is Protected</h4>
-            </div>
-            <p className="text-gray-600 text-[13px] max-w-2xl mx-auto">
-              All documents are encrypted and only reviewed by our verification team. They will never be publicly displayed or shared with third parties.
-            </p>
-          </div>
+      <div className="mt-12 mb-8 rounded-2xl border border-stone-200/60 p-6 text-center bg-white">
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <ShieldUserIcon size={18} color="#78716c" strokeWidth={1.5} />
+          <h4 className="font-semibold text-stone-900 text-[14px] tracking-tight">Your Privacy is Protected</h4>
         </div>
+        <p className="text-stone-400 text-[13px] max-w-2xl mx-auto">
+          All documents are encrypted and only reviewed by our verification team. They will never be publicly displayed or shared with third parties.
+        </p>
       </div>
-    </div>
+      </div>
+    </Container>
   );
 };
 

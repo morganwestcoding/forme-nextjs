@@ -52,6 +52,35 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
 
   const [showDropdown, setShowDropdown] = useState(false);
 
+  // Extract dominant color from profile image
+  const profileImage = image || imageSrc || '/placeholder.jpg';
+  const [dominantColor, setDominantColor] = useState<string | null>(null);
+  useEffect(() => {
+    if (profileImage === '/placeholder.jpg') return;
+    const img = new window.Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      try {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        canvas.width = 20;
+        canvas.height = 20;
+        ctx.drawImage(img, 0, 0, 20, 20);
+        const data = ctx.getImageData(0, 0, 20, 20).data;
+        let r = 0, g = 0, b = 0, count = 0;
+        for (let i = 0; i < data.length; i += 4) {
+          const brightness = (data[i] + data[i + 1] + data[i + 2]) / 3;
+          if (brightness > 30 && brightness < 220) {
+            r += data[i]; g += data[i + 1]; b += data[i + 2]; count++;
+          }
+        }
+        if (count > 0) setDominantColor(`${Math.round(r / count)}, ${Math.round(g / count)}, ${Math.round(b / count)}`);
+      } catch {}
+    };
+    img.src = profileImage;
+  }, [profileImage]);
+
   const leftColumnRef = useRef<HTMLDivElement>(null);
   const rightColumnRef = useRef<HTMLDivElement>(null);
 
@@ -231,67 +260,56 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
       <div className="flex gap-6 -mx-6 md:-mx-24 px-6 md:px-24 -mt-2 md:-mt-8 md:h-[calc(100vh-2rem)] md:overflow-hidden">
 
         {/* ===== LEFT COLUMN - Profile Card ===== */}
-        <div ref={leftColumnRef} className="w-[300px] flex-shrink-0 hidden md:flex flex-col gap-4 py-10">
-          <div className="rounded-2xl overflow-hidden bg-gray-50 border border-gray-200/60 shadow-sm">
+        <div ref={leftColumnRef} className="w-[320px] flex-shrink-0 hidden md:flex flex-col gap-4 py-10">
+          <div
+            className="rounded-2xl overflow-hidden border border-stone-200/40 shadow-sm transition-colors duration-700"
+            style={{
+              background: dominantColor
+                ? `linear-gradient(180deg, rgba(${dominantColor}, 0.06) 0%, rgba(${dominantColor}, 0.02) 40%, white 100%)`
+                : 'white',
+            }}
+          >
             {/* Centered Avatar & Identity */}
             <div className="pt-8 pb-5 px-6 text-center relative">
+              {/* Back button - top left */}
+              <button
+                onClick={() => router.back()}
+                className="absolute top-3 left-3 w-8 h-8 flex items-center justify-center text-stone-400 hover:text-stone-600 hover:bg-stone-100 rounded-full transition-all z-20"
+                type="button"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M19 12H5M5 12l7-7M5 12l7 7"/>
+                </svg>
+              </button>
               {/* 3-dot menu - top right */}
               <button
                 onClick={handleDropdownToggle}
-                className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-all"
+                className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center text-stone-400 hover:text-stone-600 hover:bg-stone-100 rounded-full transition-all"
                 type="button"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                   <circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/>
                 </svg>
               </button>
-              <div className="w-24 h-24 rounded-full mx-auto overflow-hidden ring-2 ring-gray-100 shadow-lg">
+              <div className="w-24 h-24 rounded-full mx-auto overflow-hidden" style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.06)' }}>
                 <img
-                  src={image || imageSrc || '/placeholder.jpg'}
+                  src={profileImage}
                   alt={name ?? 'User'}
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="mt-4">
-                <h1 className="text-xl font-bold text-gray-900 text-center">
-                  {(() => {
-                    const displayName = name ?? 'User';
-                    const words = displayName.trim().split(' ');
-                    if (words.length <= 2) {
-                      // Keep all words together with badge
-                      return (
-                        <span className="whitespace-nowrap">
-                          {displayName}
-                          <span className="inline-flex items-center align-middle ml-1">
-                            <VerificationBadge size={18} />
-                          </span>
-                        </span>
-                      );
-                    }
-                    // Keep last 2 words together with badge to prevent orphans
-                    const firstWords = words.slice(0, -2);
-                    const lastTwoWords = words.slice(-2).join(' ');
-                    return (
-                      <>
-                        {firstWords.join(' ')}{' '}
-                        <span className="whitespace-nowrap">
-                          {lastTwoWords}
-                          <span className="inline-flex items-center align-middle ml-1">
-                            <VerificationBadge size={18} />
-                          </span>
-                        </span>
-                      </>
-                    );
-                  })()}
+              <div className="mt-3">
+                <h1 className="text-lg font-semibold text-stone-900 text-center tracking-tight">
+                  {name ?? 'User'}
                 </h1>
-                <p className="text-sm text-gray-500 mt-1">{jobTitle || 'Member'}</p>
+                <p className="text-[13px] text-stone-400 mt-1">{jobTitle || 'Member'}</p>
                 {location && (
                   <a
                     href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className="text-sm text-gray-400 mt-0.5 hover:text-gray-600 transition-colors"
+                    className="text-[13px] text-stone-400 mt-1 hover:text-stone-600 transition-colors"
                   >
                     {city}{state ? `, ${state}` : ''}
                   </a>
@@ -324,60 +342,58 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
             </div>
 
             {/* Stats */}
-            <div className="px-6 py-4 border-t border-gray-100">
+            <div className="px-6 py-5">
               <div className="flex items-center justify-between text-center">
                 <div className="flex-1">
-                  <p className="text-lg font-semibold text-gray-900">{followersCount}</p>
-                  <p className="text-[11px] text-gray-500 uppercase tracking-wide">Followers</p>
+                  <p className="text-[18px] font-bold text-stone-900 tabular-nums">{followersCount}</p>
+                  <p className="text-[12px] text-stone-400 mt-0.5">followers</p>
                 </div>
-                <div className="w-px h-10 bg-gray-100" />
+                <div className="w-px h-10 bg-stone-100" />
                 <div className="flex-1">
-                  <p className="text-lg font-semibold text-gray-900">{posts.length}</p>
-                  <p className="text-[11px] text-gray-500 uppercase tracking-wide">Posts</p>
+                  <p className="text-[18px] font-bold text-stone-900 tabular-nums">{posts.length}</p>
+                  <p className="text-[12px] text-stone-400 mt-0.5">posts</p>
                 </div>
-                <div className="w-px h-10 bg-gray-100" />
+                <div className="w-px h-10 bg-stone-100" />
                 <div className="flex-1">
-                  <p className="text-lg font-semibold text-gray-900">{reviewStats?.totalCount || 0}</p>
-                  <p className="text-[11px] text-gray-500 uppercase tracking-wide">Reviews</p>
+                  <p className="text-[18px] font-bold text-stone-900 tabular-nums">{reviewStats?.totalCount || 0}</p>
+                  <p className="text-[12px] text-stone-400 mt-0.5">reviews</p>
                 </div>
               </div>
             </div>
 
             {/* Bio Section */}
-            <div className="px-6 py-4 border-t border-gray-100">
-              <p className="text-sm text-gray-600 leading-relaxed">
+            <div className="px-6 py-5">
+              <p className="text-[13px] text-stone-500 leading-[1.7]">
                 {`${firstName} hasn't added a bio yet. When they do, you'll be able to learn more about them, their interests, and what they're all about.`}
               </p>
 
-              {/* Social Icons */}
+              {/* Share */}
               <div className="flex items-center justify-center gap-4 mt-6 mb-2">
-                <a href="#" className="text-gray-400 hover:text-gray-600 transition-colors">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                <button
+                  onClick={() => {
+                    const url = `${window.location.origin}/profile/${id}`;
+                    if (navigator.share) {
+                      navigator.share({ title: name ?? 'Profile', url });
+                    } else {
+                      navigator.clipboard.writeText(url);
+                      toast.success('Link copied');
+                    }
+                  }}
+                  className="flex items-center gap-1.5 text-stone-400 hover:text-stone-600 transition-colors"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M10.0017 3C7.05534 3.03208 5.41096 3.21929 4.31838 4.31188C2.99988 5.63037 2.99988 7.75248 2.99988 11.9966C2.99988 16.2409 2.99988 18.363 4.31838 19.6815C5.63688 21 7.75899 21 12.0032 21C16.2474 21 18.3695 21 19.688 19.6815C20.7808 18.5887 20.9678 16.9438 20.9999 13.9963" />
+                    <path d="M14 3H18C19.4142 3 20.1213 3 20.5607 3.43934C21 3.87868 21 4.58579 21 6V10M20 4L11 13" />
                   </svg>
-                </a>
-                <a href="#" className="text-gray-400 hover:text-gray-600 transition-colors">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                  </svg>
-                </a>
-                <a href="#" className="text-gray-400 hover:text-gray-600 transition-colors">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
-                  </svg>
-                </a>
-                <a href="#" className="text-gray-400 hover:text-gray-600 transition-colors">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                  </svg>
-                </a>
+                  <span className="text-[12px]">Share</span>
+                </button>
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="px-6 py-5 border-t border-gray-100">
+            <div className="px-6 py-5">
               {!isOwner && (
-                <div className="flex gap-2">
+                <div className="flex gap-2.5">
                   <button
                     onClick={() => {
                       if (!currentUser) {
@@ -390,14 +406,15 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                         })
                         .catch(() => toast.error('Failed to start conversation'));
                     }}
-                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 bg-gray-900 hover:bg-gray-800 text-white rounded-xl text-sm font-medium transition-all"
+                    className="flex-1 flex items-center justify-center gap-2 px-3 py-3 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-[13px] font-medium transition-all"
                     type="button"
+                    style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.12)' }}
                   >
                     Message
                   </button>
                   <button
                     onClick={handleFollow}
-                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-sm font-medium transition-all border border-gray-200/60"
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-stone-50 hover:bg-stone-100 text-stone-700 rounded-xl text-[13px] font-medium transition-all border border-stone-200/60"
                     type="button"
                   >
                     {isFollowing ? 'Following' : 'Follow'}
@@ -407,8 +424,9 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
               {canEdit && (
                 <button
                   onClick={openEditProfile}
-                  className="w-full flex items-center justify-center gap-2 px-3 py-2.5 bg-gray-900 hover:bg-gray-800 text-white rounded-xl text-sm font-medium transition-all"
+                  className="w-full flex items-center justify-center gap-2 px-3 py-3 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-[13px] font-medium transition-all"
                   type="button"
+                  style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.12)' }}
                 >
                   Edit Profile
                 </button>
@@ -433,7 +451,6 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <h1 className="text-lg font-bold text-gray-900 truncate">{name ?? 'User'}</h1>
-                  <VerificationBadge size={16} />
                 </div>
                 <p className="text-sm text-gray-500">{jobTitle || 'Member'}</p>
               </div>
@@ -450,14 +467,14 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
           </div>
 
           {/* Content Sections */}
-          <div className="space-y-10">
+          <div className="space-y-12">
 
             {/* Posts Section */}
             <section>
               <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-4">
-                  <h3 className="text-xl font-bold text-gray-900 tracking-tight">Posts</h3>
-                  <span className="text-[11px] font-semibold text-gray-600 bg-gray-200/80 px-2.5 py-1 rounded-lg">{posts.length}</span>
+                  <h3 className="text-xl font-semibold text-stone-900 tracking-tight">Posts</h3>
+                  <span className="text-[11px] font-medium text-stone-500 bg-stone-100 px-2.5 py-1 rounded-full tabular-nums">{posts.length}</span>
                 </div>
                 <button className="text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors">View all</button>
               </div>
@@ -509,8 +526,8 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
             <section>
               <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-4">
-                  <h3 className="text-xl font-bold text-gray-900 tracking-tight">Businesses</h3>
-                  <span className="text-[11px] font-semibold text-gray-600 bg-gray-200/80 px-2.5 py-1 rounded-lg">{visibleListings.length}</span>
+                  <h3 className="text-xl font-semibold text-stone-900 tracking-tight">Businesses</h3>
+                  <span className="text-[11px] font-medium text-stone-500 bg-stone-100 px-2.5 py-1 rounded-full tabular-nums">{visibleListings.length}</span>
                 </div>
                 <button className="text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors">View all</button>
               </div>
@@ -546,8 +563,8 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
             <section>
               <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-4">
-                  <h3 className="text-xl font-bold text-gray-900 tracking-tight">Gallery</h3>
-                  <span className="text-[11px] font-semibold text-gray-600 bg-gray-200/80 px-2.5 py-1 rounded-lg">{galleryImages.length}</span>
+                  <h3 className="text-xl font-semibold text-stone-900 tracking-tight">Gallery</h3>
+                  <span className="text-[11px] font-medium text-stone-500 bg-stone-100 px-2.5 py-1 rounded-full tabular-nums">{galleryImages.length}</span>
                 </div>
                 <button className="text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors">View all</button>
               </div>
@@ -582,8 +599,8 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
             <section>
               <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-4">
-                  <h3 className="text-xl font-bold text-gray-900 tracking-tight">Reviews</h3>
-                  <span className="text-[11px] font-semibold text-gray-600 bg-gray-200/80 px-2.5 py-1 rounded-lg">{reviews.length}</span>
+                  <h3 className="text-xl font-semibold text-stone-900 tracking-tight">Reviews</h3>
+                  <span className="text-[11px] font-medium text-stone-500 bg-stone-100 px-2.5 py-1 rounded-full tabular-nums">{reviews.length}</span>
                 </div>
                 <button className="text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors">View all</button>
               </div>

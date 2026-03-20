@@ -16,6 +16,7 @@ interface PreviewStepProps {
 
 const PreviewStep: React.FC<PreviewStepProps> = ({
   mediaSrc,
+  mediaType,
   caption,
   beforeImageSrc,
   currentUser,
@@ -66,6 +67,17 @@ const PreviewStep: React.FC<PreviewStepProps> = ({
               <div className="absolute bottom-2 right-3 text-stone-300 text-3xl font-serif leading-none select-none rotate-180">
                 &rdquo;
               </div>
+            </>
+          ) : mediaType === 'video' ? (
+            <>
+              <video
+                src={mediaSrc}
+                className="absolute inset-0 w-full h-full object-cover"
+                autoPlay
+                muted
+                loop
+                playsInline
+              />
             </>
           ) : (
             <>

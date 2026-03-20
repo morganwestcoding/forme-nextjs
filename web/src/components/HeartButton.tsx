@@ -3,7 +3,6 @@
 import React, { useCallback } from 'react';
 import useFavorite from "@/app/hooks/useFavorite";
 import { SafeUser } from "@/app/types";
-import { useTheme } from '@/app/context/ThemeContext';
 
 interface HeartButtonProps {
   listingId: string;
@@ -11,6 +10,8 @@ interface HeartButtonProps {
   variant?: 'default' | 'listingHead' | 'worker' | 'card';
   favoriteIds?: string[];
 }
+
+const FILL_COLOR = '#292524'; // stone-900 — solid dark fill when active
 
 const HeartButton: React.FC<HeartButtonProps> = ({
   listingId,
@@ -21,22 +22,6 @@ const HeartButton: React.FC<HeartButtonProps> = ({
     listingId,
     currentUser
   });
-  const { accentColor } = useTheme();
-
-  // Calculate a slightly darker shade for the gradient (same as VerificationBadge)
-  const getDarkerShade = (hex: string): string => {
-    const num = parseInt(hex.replace('#', ''), 16);
-    const amt = -20;
-    const R = Math.max(0, Math.min(255, (num >> 16) + Math.round(2.55 * amt)));
-    const G = Math.max(0, Math.min(255, ((num >> 8) & 0x00FF) + Math.round(2.55 * amt)));
-    const B = Math.max(0, Math.min(255, (num & 0x0000FF) + Math.round(2.55 * amt)));
-    return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
-  };
-
-  const darkerColor = getDarkerShade(accentColor);
-
-  // Generate unique gradient IDs to avoid conflicts
-  const gradientId = `heartGrad-${React.useId().replace(/:/g, '')}`;
 
   const handleToggle = useCallback((e: React.MouseEvent<SVGSVGElement>) => {
     e.stopPropagation();
@@ -57,16 +42,10 @@ const HeartButton: React.FC<HeartButtonProps> = ({
         role="button"
       >
         <title>Save</title>
-        <defs>
-          <linearGradient id={`${gradientId}-worker`} x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor={accentColor} />
-            <stop offset="100%" stopColor={darkerColor} />
-          </linearGradient>
-        </defs>
         <path
           d="M10.4107 19.9677C7.58942 17.858 2 13.0348 2 8.69444C2 5.82563 4.10526 3.5 7 3.5C8.5 3.5 10 4 12 6C14 4 15.5 3.5 17 3.5C19.8947 3.5 22 5.82563 22 8.69444C22 13.0348 16.4106 17.858 13.5893 19.9677C12.6399 20.6776 11.3601 20.6776 10.4107 19.9677Z"
-          fill={hasFavorited ? `url(#${gradientId}-worker)` : 'rgba(255,255,255,0.4)'}
-          stroke={hasFavorited ? darkerColor : 'rgba(255,255,255,0.5)'}
+          fill={hasFavorited ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.3)'}
+          stroke={hasFavorited ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.5)'}
           strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -84,20 +63,14 @@ const HeartButton: React.FC<HeartButtonProps> = ({
         viewBox="0 0 24 24"
         width="18"
         height="18"
-        className={`transition-all duration-300 ease-out cursor-pointer active:scale-[0.92] hover:scale-110`}
+        className="transition-all duration-300 ease-out cursor-pointer active:scale-[0.92] hover:scale-110"
         aria-label={hasFavorited ? 'Remove from favorites' : 'Add to favorites'}
         role="button"
       >
-        <defs>
-          <linearGradient id={`${gradientId}-listing`} x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor={accentColor} />
-            <stop offset="100%" stopColor={darkerColor} />
-          </linearGradient>
-        </defs>
         <path
           d="M10.4107 19.9677C7.58942 17.858 2 13.0348 2 8.69444C2 5.82563 4.10526 3.5 7 3.5C8.5 3.5 10 4 12 6C14 4 15.5 3.5 17 3.5C19.8947 3.5 22 5.82563 22 8.69444C22 13.0348 16.4106 17.858 13.5893 19.9677C12.6399 20.6776 11.3601 20.6776 10.4107 19.9677Z"
-          fill={hasFavorited ? `url(#${gradientId}-listing)` : 'none'}
-          stroke={hasFavorited ? 'none' : '#78716c'}
+          fill={hasFavorited ? FILL_COLOR : 'none'}
+          stroke={hasFavorited ? FILL_COLOR : '#a8a29e'}
           strokeWidth="1.5"
         />
       </svg>
@@ -117,16 +90,10 @@ const HeartButton: React.FC<HeartButtonProps> = ({
         aria-label={hasFavorited ? 'Remove from favorites' : 'Add to favorites'}
         role="button"
       >
-        <defs>
-          <linearGradient id={`${gradientId}-card`} x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor={accentColor} />
-            <stop offset="100%" stopColor={darkerColor} />
-          </linearGradient>
-        </defs>
         <path
           d="M10.4107 19.9677C7.58942 17.858 2 13.0348 2 8.69444C2 5.82563 4.10526 3.5 7 3.5C8.5 3.5 10 4 12 6C14 4 15.5 3.5 17 3.5C19.8947 3.5 22 5.82563 22 8.69444C22 13.0348 16.4106 17.858 13.5893 19.9677C12.6399 20.6776 11.3601 20.6776 10.4107 19.9677Z"
-          fill={hasFavorited ? `url(#${gradientId}-card)` : 'none'}
-          stroke={hasFavorited ? darkerColor : '#000000'}
+          fill={hasFavorited ? FILL_COLOR : 'none'}
+          stroke={hasFavorited ? FILL_COLOR : '#78716c'}
           strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -135,7 +102,7 @@ const HeartButton: React.FC<HeartButtonProps> = ({
     );
   }
 
-  /** ----- Default variant ----- */
+  /** ----- Default variant (on dark/image backgrounds) ----- */
   return (
     <svg
       onClick={handleToggle}
@@ -148,16 +115,10 @@ const HeartButton: React.FC<HeartButtonProps> = ({
       role="button"
     >
       <title>Save</title>
-      <defs>
-        <linearGradient id={gradientId} x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor={accentColor} />
-          <stop offset="100%" stopColor={darkerColor} />
-        </linearGradient>
-      </defs>
       <path
         d="M10.4107 19.9677C7.58942 17.858 2 13.0348 2 8.69444C2 5.82563 4.10526 3.5 7 3.5C8.5 3.5 10 4 12 6C14 4 15.5 3.5 17 3.5C19.8947 3.5 22 5.82563 22 8.69444C22 13.0348 16.4106 17.858 13.5893 19.9677C12.6399 20.6776 11.3601 20.6776 10.4107 19.9677Z"
-        fill={hasFavorited ? `url(#${gradientId})` : 'none'}
-        stroke={hasFavorited ? darkerColor : 'rgba(255,255,255,0.8)'}
+        fill={hasFavorited ? 'rgba(255,255,255,0.9)' : 'none'}
+        stroke={hasFavorited ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.8)'}
         strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"

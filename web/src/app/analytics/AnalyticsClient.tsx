@@ -4,6 +4,8 @@ import { SafeUser } from '@/app/types';
 import { AnalyticsData } from '@/app/actions/getAnalyticsData';
 import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { TrendingUp, TrendingDown, Users, Calendar, DollarSign, FileText, Eye, Heart, MessageCircle, Star } from 'lucide-react';
+import Container from '@/components/Container';
+import PageHeader from '@/components/PageHeader';
 
 interface AnalyticsClientProps {
   currentUser: SafeUser;
@@ -14,7 +16,8 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
   currentUser,
   analyticsData
 }) => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'listings' | 'revenue' | 'engagement' | 'reviews'>('overview');
+  type TabType = 'overview' | 'listings' | 'revenue' | 'engagement' | 'reviews';
+  const [activeTab, setActiveTab] = useState('overview' as TabType);
 
   const { overview, recentActivity, monthlyData, topServices, listings, reviews } = analyticsData;
 
@@ -43,26 +46,28 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
     ? ((currentMonthData.revenue - previousMonthData.revenue) / Math.max(previousMonthData.revenue, 1)) * 100
     : 0;
 
-  const StatCard = ({ title, value, growth }: {
+  function StatCard({ title, value, growth }: {
     title: string;
     value: string | number;
     growth?: number;
-  }) => (
-    <div className="group relative rounded-2xl border p-8 transition-all duration-300 bg-white border-gray-200 hover:border-gray-300 hover:shadow-md">
-      <div className="flex items-center justify-between mb-3">
-        <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">{title}</p>
-        {growth !== undefined && (
-          <div className={`flex items-center gap-1 text-xs font-semibold ${
-            growth >= 0 ? 'text-green-600' : 'text-red-600'
-          }`}>
-            {growth >= 0 ? <TrendingUp size={13} strokeWidth={2.5} /> : <TrendingDown size={13} strokeWidth={2.5} />}
-            {Math.abs(growth).toFixed(1)}%
-          </div>
-        )}
+  }) {
+    return (
+      <div className="group relative rounded-2xl border border-stone-200/60 p-6 transition-all duration-300 bg-white hover:border-stone-300 hover:-translate-y-0.5 hover:shadow-lg">
+        <div className="flex items-center justify-between mb-2">
+          <p className="text-[12px] text-stone-400">{title}</p>
+          {growth !== undefined && (
+            <div className={`flex items-center gap-1 text-[11px] font-medium ${
+              growth >= 0 ? 'text-emerald-600' : 'text-red-500'
+            }`}>
+              {growth >= 0 ? <TrendingUp size={12} strokeWidth={2} /> : <TrendingDown size={12} strokeWidth={2} />}
+              {Math.abs(growth).toFixed(1)}%
+            </div>
+          )}
+        </div>
+        <div className="text-[28px] font-bold tracking-tight text-stone-900 tabular-nums">{value}</div>
       </div>
-      <div className="text-4xl font-semibold tracking-tight text-gray-900">{value}</div>
-    </div>
-  );
+    );
+  }
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -82,88 +87,34 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Clean Header - matches Market page */}
-      <div className="border-b border-gray-100">
-        <div className="max-w-6xl mx-auto px-6 md:px-24 pt-12 pb-8">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight tracking-tight">
-              Analytics
-            </h1>
-            <p className="text-gray-500 text-base mt-3 max-w-2xl mx-auto">
-              Welcome back, {currentUser.name}
-            </p>
+    <Container>
+      <PageHeader currentUser={currentUser} currentPage="Analytics" />
+      <div>
+        <div className="mt-8">
+          <div className="mb-8">
+            <h1 className="text-2xl font-semibold text-stone-900 tracking-tight">Analytics</h1>
+            <p className="text-[14px] text-stone-400 mt-1">Welcome back, {currentUser.name}</p>
           </div>
 
-          {/* Tab Toggle - matches Market CategoryNav style */}
-          <div className="flex justify-center mt-8">
-            <div className="flex items-center gap-1.5">
+          {/* Tab bar */}
+          <div className="flex items-center gap-2 mb-8 overflow-x-auto scrollbar-hide pb-1">
+            {['overview', 'listings', 'revenue', 'engagement', 'reviews'].map((tab) => (
               <button
-                onClick={() => setActiveTab('overview')}
-                className={`
-                  px-4 py-1.5 text-[13px] font-medium rounded-xl border transition-all duration-300 ease-out active:scale-[0.97]
-                  ${activeTab === 'overview'
-                    ? 'bg-[#60A5FA] border-[#60A5FA] text-white shadow-md shadow-[#60A5FA]/25'
-                    : 'bg-transparent border-neutral-300 text-neutral-500 hover:border-[#60A5FA] hover:text-[#60A5FA] hover:bg-[#60A5FA]/5'
-                  }
-                `}
+                key={tab}
+                onClick={() => setActiveTab(tab as typeof activeTab)}
+                className={`px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap ${
+                  activeTab === tab
+                    ? 'bg-stone-900 text-white'
+                    : 'bg-stone-50 text-stone-500 hover:bg-stone-100 border border-stone-200/60'
+                }`}
               >
-                Overview
+                {tab.charAt(0).toUpperCase() + tab.slice(1)}
               </button>
-              <button
-                onClick={() => setActiveTab('listings')}
-                className={`
-                  px-4 py-1.5 text-[13px] font-medium rounded-xl border transition-all duration-300 ease-out active:scale-[0.97]
-                  ${activeTab === 'listings'
-                    ? 'bg-[#60A5FA] border-[#60A5FA] text-white shadow-md shadow-[#60A5FA]/25'
-                    : 'bg-transparent border-neutral-300 text-neutral-500 hover:border-[#60A5FA] hover:text-[#60A5FA] hover:bg-[#60A5FA]/5'
-                  }
-                `}
-              >
-                Listings
-              </button>
-              <button
-                onClick={() => setActiveTab('revenue')}
-                className={`
-                  px-4 py-1.5 text-[13px] font-medium rounded-xl border transition-all duration-300 ease-out active:scale-[0.97]
-                  ${activeTab === 'revenue'
-                    ? 'bg-[#60A5FA] border-[#60A5FA] text-white shadow-md shadow-[#60A5FA]/25'
-                    : 'bg-transparent border-neutral-300 text-neutral-500 hover:border-[#60A5FA] hover:text-[#60A5FA] hover:bg-[#60A5FA]/5'
-                  }
-                `}
-              >
-                Revenue
-              </button>
-              <button
-                onClick={() => setActiveTab('engagement')}
-                className={`
-                  px-4 py-1.5 text-[13px] font-medium rounded-xl border transition-all duration-300 ease-out active:scale-[0.97]
-                  ${activeTab === 'engagement'
-                    ? 'bg-[#60A5FA] border-[#60A5FA] text-white shadow-md shadow-[#60A5FA]/25'
-                    : 'bg-transparent border-neutral-300 text-neutral-500 hover:border-[#60A5FA] hover:text-[#60A5FA] hover:bg-[#60A5FA]/5'
-                  }
-                `}
-              >
-                Engagement
-              </button>
-              <button
-                onClick={() => setActiveTab('reviews')}
-                className={`
-                  px-4 py-1.5 text-[13px] font-medium rounded-xl border transition-all duration-300 ease-out active:scale-[0.97]
-                  ${activeTab === 'reviews'
-                    ? 'bg-[#60A5FA] border-[#60A5FA] text-white shadow-md shadow-[#60A5FA]/25'
-                    : 'bg-transparent border-neutral-300 text-neutral-500 hover:border-[#60A5FA] hover:text-[#60A5FA] hover:bg-[#60A5FA]/5'
-                  }
-                `}
-              >
-                Reviews
-              </button>
-            </div>
+            ))}
           </div>
         </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-6 md:px-24 py-12">
+        <div className="pb-12">
 
         {/* Overview Tab */}
         {activeTab === 'overview' && (
@@ -201,8 +152,8 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
             {/* Charts Row */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
               {/* Revenue & Reservations Chart */}
-              <div className="bg-white rounded-2xl p-8 border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all duration-300">
-                <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-gray-400">Revenue & Reservations</h3>
+              <div className="bg-white rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
+                <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-stone-400">Revenue & Reservations</h3>
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={monthlyData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
@@ -237,18 +188,18 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
               </div>
 
               {/* Top Services */}
-              <div className="bg-white rounded-2xl p-8 border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all duration-300">
-                <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-gray-400">Top Services</h3>
+              <div className="bg-white rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
+                <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-stone-400">Top Services</h3>
                 <div className="space-y-3">
                   {topServices.slice(0, 5).map((service) => (
-                    <div key={service.serviceName} className="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
+                    <div key={service.serviceName} className="flex items-center justify-between py-3 border-b border-stone-100 last:border-0">
                       <div>
-                        <p className="text-sm font-medium text-gray-900">{service.serviceName}</p>
-                        <p className="text-xs text-gray-500 mt-0.5">{service.category}</p>
+                        <p className="text-sm font-medium text-stone-900">{service.serviceName}</p>
+                        <p className="text-xs text-stone-500 mt-0.5">{service.category}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm font-semibold text-gray-900">{service.bookings}</p>
-                        <p className="text-xs text-gray-500 mt-0.5">{formatCurrency(service.revenue)}</p>
+                        <p className="text-sm font-semibold text-stone-900">{service.bookings}</p>
+                        <p className="text-xs text-stone-500 mt-0.5">{formatCurrency(service.revenue)}</p>
                       </div>
                     </div>
                   ))}
@@ -259,19 +210,19 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
             {/* Recent Activity */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
               {/* Recent Reservations */}
-              <div className="bg-white rounded-2xl p-8 border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all duration-300">
-                <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-gray-400">Recent Reservations</h3>
+              <div className="bg-white rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
+                <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-stone-400">Recent Reservations</h3>
                 <div className="space-y-1">
                   {recentActivity.reservations.slice(0, 5).map((reservation) => (
-                    <div key={reservation.id} className="flex items-center gap-4 py-3 border-b border-gray-100 last:border-0">
+                    <div key={reservation.id} className="flex items-center gap-4 py-3 border-b border-stone-100 last:border-0">
                       <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-900">{reservation.serviceName}</p>
-                        <p className="text-xs text-gray-500 mt-0.5">
+                        <p className="text-sm font-medium text-stone-900">{reservation.serviceName}</p>
+                        <p className="text-xs text-stone-500 mt-0.5">
                           {reservation.user.name} • {formatDate(reservation.date)}
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm font-semibold text-gray-900">{formatCurrency(reservation.totalPrice)}</p>
+                        <p className="text-sm font-semibold text-stone-900">{formatCurrency(reservation.totalPrice)}</p>
                         <span className={`text-xs font-medium mt-0.5 inline-block ${
                           reservation.status === 'accepted' ? 'text-green-600' :
                           reservation.status === 'pending' ? 'text-yellow-600' :
@@ -286,13 +237,13 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
               </div>
 
               {/* Recent Posts */}
-              <div className="bg-white rounded-2xl p-8 border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all duration-300">
-                <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-gray-400">Recent Posts</h3>
+              <div className="bg-white rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
+                <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-stone-400">Recent Posts</h3>
                 <div className="space-y-1">
                   {recentActivity.posts.slice(0, 5).map((post) => (
-                    <div key={post.id} className="py-3 border-b border-gray-100 last:border-0">
+                    <div key={post.id} className="py-3 border-b border-stone-100 last:border-0">
                       <p className="text-sm text-gray-700 mb-2 line-clamp-2">{post.content}</p>
-                      <div className="flex items-center gap-4 text-xs text-gray-500">
+                      <div className="flex items-center gap-4 text-xs text-stone-500">
                         <span className="flex items-center gap-1">
                           <Heart size={12} />
                           {post.likes.length}
@@ -313,37 +264,37 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
 
         {/* Listings Tab */}
         {activeTab === 'listings' && (
-          <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:border-gray-300 hover:shadow-md transition-all duration-300">
+          <div className="bg-white rounded-2xl border border-stone-200/60 overflow-hidden hover:border-stone-300 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-gray-200">
-                    <th className="px-8 py-4 text-left text-xs font-semibold text-gray-500 tracking-tight">Listing</th>
-                    <th className="px-8 py-4 text-left text-xs font-semibold text-gray-500 tracking-tight">Category</th>
-                    <th className="px-8 py-4 text-left text-xs font-semibold text-gray-500 tracking-tight">Reservations</th>
-                    <th className="px-8 py-4 text-left text-xs font-semibold text-gray-500 tracking-tight">Revenue</th>
-                    <th className="px-8 py-4 text-left text-xs font-semibold text-gray-500 tracking-tight">Created</th>
+                    <th className="px-8 py-4 text-left text-xs font-semibold text-stone-500 tracking-tight">Listing</th>
+                    <th className="px-8 py-4 text-left text-xs font-semibold text-stone-500 tracking-tight">Category</th>
+                    <th className="px-8 py-4 text-left text-xs font-semibold text-stone-500 tracking-tight">Reservations</th>
+                    <th className="px-8 py-4 text-left text-xs font-semibold text-stone-500 tracking-tight">Revenue</th>
+                    <th className="px-8 py-4 text-left text-xs font-semibold text-stone-500 tracking-tight">Created</th>
                   </tr>
                 </thead>
                 <tbody>
                   {listings.map((listing) => (
-                    <tr key={listing.id} className="border-b border-gray-100 last:border-0 hover:bg-white/50 transition-colors">
+                    <tr key={listing.id} className="border-b border-stone-100 last:border-0 hover:bg-white/50 transition-colors">
                       <td className="px-8 py-4">
-                        <div className="font-medium text-sm text-gray-900">{listing.title}</div>
+                        <div className="font-medium text-sm text-stone-900">{listing.title}</div>
                       </td>
                       <td className="px-8 py-4">
-                        <span className="text-xs font-medium text-gray-600">
+                        <span className="text-xs font-medium text-stone-600">
                           {listing.category}
                         </span>
                       </td>
                       <td className="px-8 py-4">
-                        <div className="text-sm text-gray-900">{listing.reservations}</div>
+                        <div className="text-sm text-stone-900">{listing.reservations}</div>
                       </td>
                       <td className="px-8 py-4">
-                        <div className="text-sm font-semibold text-gray-900">{formatCurrency(listing.revenue)}</div>
+                        <div className="text-sm font-semibold text-stone-900">{formatCurrency(listing.revenue)}</div>
                       </td>
                       <td className="px-8 py-4">
-                        <div className="text-sm text-gray-500">{formatDate(listing.createdAt)}</div>
+                        <div className="text-sm text-stone-500">{formatDate(listing.createdAt)}</div>
                       </td>
                     </tr>
                   ))}
@@ -357,8 +308,8 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
         {activeTab === 'revenue' && (
           <div className="space-y-5">
             {/* Revenue Chart */}
-            <div className="bg-white rounded-2xl p-8 border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all duration-300">
-              <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-gray-400">Monthly Revenue</h3>
+            <div className="bg-white rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
+              <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-stone-400">Monthly Revenue</h3>
               <ResponsiveContainer width="100%" height={400}>
                 <AreaChart data={monthlyData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
@@ -386,8 +337,8 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
             </div>
 
             {/* Revenue by Service */}
-            <div className="bg-white rounded-2xl p-8 border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all duration-300">
-              <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-gray-400">Revenue by Service</h3>
+            <div className="bg-white rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
+              <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-stone-400">Revenue by Service</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={topServices}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
@@ -428,8 +379,8 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
             </div>
 
             {/* Posts Chart */}
-            <div className="bg-white rounded-2xl p-8 border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all duration-300">
-              <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-gray-400">Monthly Posts</h3>
+            <div className="bg-white rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
+              <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-stone-400">Monthly Posts</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={monthlyData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
@@ -456,12 +407,12 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
             {/* Rating Overview */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               <div className="group relative rounded-2xl border p-8 transition-all duration-300 bg-white border-gray-200 hover:border-gray-300 hover:shadow-md">
-                <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">Average Rating</p>
+                <p className="text-xs font-semibold uppercase tracking-wider text-stone-400 mb-3">Average Rating</p>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-semibold tracking-tight text-gray-900">
+                  <span className="text-4xl font-semibold tracking-tight text-stone-900">
                     {reviews.averageRating.toFixed(1)}
                   </span>
-                  <span className="text-xl text-gray-400">/5</span>
+                  <span className="text-xl text-stone-400">/5</span>
                 </div>
                 <div className="flex items-center gap-1 mt-3">
                   {[1, 2, 3, 4, 5].map((star) => (
@@ -474,18 +425,18 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
                 </div>
               </div>
               <div className="group relative rounded-2xl border p-8 transition-all duration-300 bg-white border-gray-200 hover:border-gray-300 hover:shadow-md">
-                <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">Total Reviews</p>
-                <div className="text-4xl font-semibold tracking-tight text-gray-900">
+                <p className="text-xs font-semibold uppercase tracking-wider text-stone-400 mb-3">Total Reviews</p>
+                <div className="text-4xl font-semibold tracking-tight text-stone-900">
                   {reviews.totalReviews}
                 </div>
-                <p className="text-sm text-gray-500 mt-3">Reviews received</p>
+                <p className="text-sm text-stone-500 mt-3">Reviews received</p>
               </div>
               <div className="group relative rounded-2xl border p-8 transition-all duration-300 bg-white border-gray-200 hover:border-gray-300 hover:shadow-md">
-                <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">5-Star Reviews</p>
-                <div className="text-4xl font-semibold tracking-tight text-gray-900">
+                <p className="text-xs font-semibold uppercase tracking-wider text-stone-400 mb-3">5-Star Reviews</p>
+                <div className="text-4xl font-semibold tracking-tight text-stone-900">
                   {reviews.ratingDistribution.find(r => r.rating === 5)?.count || 0}
                 </div>
-                <p className="text-sm text-gray-500 mt-3">
+                <p className="text-sm text-stone-500 mt-3">
                   {reviews.totalReviews > 0
                     ? `${Math.round(((reviews.ratingDistribution.find(r => r.rating === 5)?.count || 0) / reviews.totalReviews) * 100)}% of total`
                     : 'No reviews yet'}
@@ -496,8 +447,8 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
             {/* Rating Distribution & Goal Calculator */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
               {/* Rating Distribution */}
-              <div className="bg-white rounded-2xl p-8 border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all duration-300">
-                <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-gray-400">Rating Distribution</h3>
+              <div className="bg-white rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
+                <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-stone-400">Rating Distribution</h3>
                 <div className="space-y-4">
                   {[5, 4, 3, 2, 1].map((rating) => {
                     const count = reviews.ratingDistribution.find(r => r.rating === rating)?.count || 0;
@@ -514,7 +465,7 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
                             style={{ width: `${percentage}%` }}
                           />
                         </div>
-                        <span className="text-sm text-gray-500 w-12 text-right">{count}</span>
+                        <span className="text-sm text-stone-500 w-12 text-right">{count}</span>
                       </div>
                     );
                   })}
@@ -522,14 +473,14 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
               </div>
 
               {/* Goal Calculator */}
-              <div className="bg-white rounded-2xl p-8 border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all duration-300">
-                <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-gray-400">Rating Goal Calculator</h3>
+              <div className="bg-white rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
+                <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-stone-400">Rating Goal Calculator</h3>
 
                 {reviews.totalReviews === 0 ? (
                   <div className="text-center py-8">
                     <Star size={48} className="text-gray-200 mx-auto mb-4" />
-                    <p className="text-gray-500">No reviews yet</p>
-                    <p className="text-sm text-gray-400 mt-2">Start collecting reviews to see your goal progress</p>
+                    <p className="text-stone-500">No reviews yet</p>
+                    <p className="text-sm text-stone-400 mt-2">Start collecting reviews to see your goal progress</p>
                   </div>
                 ) : reviews.averageRating >= 5 ? (
                   <div className="text-center py-8">
@@ -538,16 +489,16 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
                         <Star key={star} size={32} className="text-yellow-400 fill-yellow-400" />
                       ))}
                     </div>
-                    <p className="text-xl font-semibold text-gray-900">Perfect 5-Star Rating!</p>
-                    <p className="text-sm text-gray-500 mt-2">You&apos;ve achieved the highest possible rating</p>
+                    <p className="text-xl font-semibold text-stone-900">Perfect 5-Star Rating!</p>
+                    <p className="text-sm text-stone-500 mt-2">You&apos;ve achieved the highest possible rating</p>
                   </div>
                 ) : (
                   <div className="space-y-6">
                     {/* Current Status */}
-                    <div className="p-4 bg-gray-50 rounded-xl">
-                      <p className="text-sm text-gray-600 mb-1">Current Rating</p>
+                    <div className="p-4 bg-stone-50 rounded-xl">
+                      <p className="text-sm text-stone-600 mb-1">Current Rating</p>
                       <div className="flex items-center gap-2">
-                        <span className="text-2xl font-bold text-gray-900">{reviews.averageRating.toFixed(1)}</span>
+                        <span className="text-2xl font-bold text-stone-900">{reviews.averageRating.toFixed(1)}</span>
                         <div className="flex gap-0.5">
                           {[1, 2, 3, 4, 5].map((star) => (
                             <Star
@@ -557,7 +508,7 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
                             />
                           ))}
                         </div>
-                        <span className="text-sm text-gray-500">from {reviews.totalReviews} reviews</span>
+                        <span className="text-sm text-stone-500">from {reviews.totalReviews} reviews</span>
                       </div>
                     </div>
 
@@ -577,9 +528,9 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
                           >
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2">
-                                <span className="text-lg font-semibold text-gray-900">{target.toFixed(1)}</span>
+                                <span className="text-lg font-semibold text-stone-900">{target.toFixed(1)}</span>
                                 <Star size={16} className="text-yellow-400 fill-yellow-400" />
-                                <span className="text-sm text-gray-500">rating goal</span>
+                                <span className="text-sm text-stone-500">rating goal</span>
                               </div>
                               {isAchieved ? (
                                 <span className="text-sm font-medium text-green-600 flex items-center gap-1">
@@ -614,8 +565,9 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
             </div>
           </div>
         )}
+        </div>
       </div>
-    </div>
+    </Container>
   );
 };
 

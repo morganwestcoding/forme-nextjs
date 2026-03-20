@@ -1,6 +1,8 @@
 'use client';
 
 import { ArrowLeft } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Cancel01Icon } from 'hugeicons-react';
 
 interface TypeformNavigationProps {
   canProceed: boolean;
@@ -10,6 +12,7 @@ interface TypeformNavigationProps {
   onNext: () => void;
   onBack: () => void;
   submitLabel?: string;
+  onExit?: () => void;
 }
 
 export default function TypeformNavigation({
@@ -20,51 +23,73 @@ export default function TypeformNavigation({
   onNext,
   onBack,
   submitLabel = 'Create account',
+  onExit,
 }: TypeformNavigationProps) {
+  const router = useRouter();
+
+  const handleExit = () => {
+    if (onExit) {
+      onExit();
+    } else {
+      router.back();
+    }
+  };
+
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-6 py-4">
-      <div className="max-w-xl mx-auto flex items-center justify-between">
-        {/* Back button */}
-        <div>
-          {showBack && (
+    <>
+      {/* Exit button — top right */}
+      <button
+        type="button"
+        onClick={handleExit}
+        className="fixed top-6 right-6 z-50 w-10 h-10 rounded-full flex items-center justify-center text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition-all"
+      >
+        <Cancel01Icon className="w-5 h-5" strokeWidth={1.5} />
+      </button>
+
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-6 py-4">
+        <div className="max-w-xl mx-auto flex items-center justify-between">
+          {/* Back button */}
+          <div>
+            {showBack && (
+              <button
+                type="button"
+                onClick={onBack}
+                className="flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span className="text-sm">Back</span>
+              </button>
+            )}
+          </div>
+
+          {/* Continue button + hint */}
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-gray-400 hidden sm:block">
+              Press <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs font-mono">Enter</kbd>
+            </span>
             <button
               type="button"
-              onClick={onBack}
-              className="flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors"
+              onClick={onNext}
+              disabled={!canProceed || isLoading}
+              className={`
+                px-6 py-2.5 rounded-lg font-medium text-sm transition-transform duration-200
+                ${canProceed && !isLoading
+                  ? 'bg-gray-900 text-white hover:bg-gray-800 active:scale-[0.98]'
+                  : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                }
+              `}
             >
-              <ArrowLeft className="w-4 h-4" />
-              <span className="text-sm">Back</span>
+              {isLoading ? (
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : isLastStep ? (
+                submitLabel
+              ) : (
+                'Continue'
+              )}
             </button>
-          )}
-        </div>
-
-        {/* Continue button + hint */}
-        <div className="flex items-center gap-4">
-          <span className="text-sm text-gray-400 hidden sm:block">
-            Press <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs font-mono">Enter</kbd>
-          </span>
-          <button
-            type="button"
-            onClick={onNext}
-            disabled={!canProceed || isLoading}
-            className={`
-              px-6 py-2.5 rounded-lg font-medium text-sm transition-transform duration-200
-              ${canProceed && !isLoading
-                ? 'bg-gray-900 text-white hover:bg-gray-800 active:scale-[0.98]'
-                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-              }
-            `}
-          >
-            {isLoading ? (
-              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-            ) : isLastStep ? (
-              submitLabel
-            ) : (
-              'Continue'
-            )}
-          </button>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

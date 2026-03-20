@@ -16,6 +16,8 @@ interface ListingCardProps {
   compact?: boolean;
   variant?: 'horizontal' | 'vertical';
   solidBackground?: boolean;
+  hideActions?: boolean;
+  customActions?: React.ReactNode;
 }
 
 // Inline status indicator for the image
@@ -77,7 +79,7 @@ const StatusIndicator = ({ storeHours }: { storeHours?: { dayOfWeek: string; ope
   );
 };
 
-const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = false, variant = 'horizontal', solidBackground = false }) => {
+const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = false, variant = 'horizontal', solidBackground = false, hideActions = false, customActions }) => {
   const router = useRouter();
 
   const [city, state] = data.location?.split(',').map((s) => s.trim()) || [];
@@ -297,33 +299,32 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
         </div>
       </div>
 
-      {/* Right actions — heart + count + share */}
-      <div
-        className="flex flex-col items-center justify-center gap-3 flex-shrink-0 mr-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Heart */}
-        <div className="-ml-0.5"><HeartButton listingId={data.id} currentUser={currentUser} variant="card" /></div>
-
-        {/* Share */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            if (navigator.share) {
-              navigator.share({ title: data.title, url: `${window.location.origin}/listings/${data.id}` });
-            } else {
-              navigator.clipboard.writeText(`${window.location.origin}/listings/${data.id}`);
-            }
-          }}
-          aria-label="Share"
-          className="transition-colors duration-200 text-black dark:text-zinc-400 hover:text-stone-700 dark:hover:text-zinc-200"
+      {/* Right actions */}
+      {customActions ? customActions : !hideActions && (
+        <div
+          className="flex flex-col items-center justify-center gap-3 flex-shrink-0 mr-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+          onClick={(e) => e.stopPropagation()}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M9.39584 4.5H8.35417C5.40789 4.5 3.93475 4.5 3.01946 5.37868C2.10417 6.25736 2.10417 7.67157 2.10417 10.5V14.5C2.10417 17.3284 2.10417 18.7426 3.01946 19.6213C3.93475 20.5 5.40789 20.5 8.35417 20.5H12.5608C15.5071 20.5 16.9802 20.5 17.8955 19.6213C18.4885 19.052 18.6973 18.2579 18.7708 17" />
-            <path d="M16.1667 7V3.85355C16.1667 3.65829 16.3316 3.5 16.535 3.5C16.6326 3.5 16.7263 3.53725 16.7954 3.60355L21.5275 8.14645C21.7634 8.37282 21.8958 8.67986 21.8958 9C21.8958 9.32014 21.7634 9.62718 21.5275 9.85355L16.7954 14.3964C16.7263 14.4628 16.6326 14.5 16.535 14.5C16.3316 14.5 16.1667 14.3417 16.1667 14.1464V11H13.1157C8.875 11 7.3125 14.5 7.3125 14.5V12C7.3125 9.23858 9.64435 7 12.5208 7H16.1667Z" />
-          </svg>
-        </button>
-      </div>
+          <div className="-ml-0.5"><HeartButton listingId={data.id} currentUser={currentUser} variant="card" /></div>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              if (navigator.share) {
+                navigator.share({ title: data.title, url: `${window.location.origin}/listings/${data.id}` });
+              } else {
+                navigator.clipboard.writeText(`${window.location.origin}/listings/${data.id}`);
+              }
+            }}
+            aria-label="Share"
+            className="transition-colors duration-200 text-stone-500 dark:text-zinc-400 hover:text-stone-700 dark:hover:text-zinc-200"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M10.0017 3C7.05534 3.03208 5.41096 3.21929 4.31838 4.31188C2.99988 5.63037 2.99988 7.75248 2.99988 11.9966C2.99988 16.2409 2.99988 18.363 4.31838 19.6815C5.63688 21 7.75899 21 12.0032 21C16.2474 21 18.3695 21 19.688 19.6815C20.7808 18.5887 20.9678 16.9438 20.9999 13.9963" />
+              <path d="M14 3H18C19.4142 3 20.1213 3 20.5607 3.43934C21 3.87868 21 4.58579 21 6V10M20 4L11 13" />
+            </svg>
+          </button>
+        </div>
+      )}
     </div>
   );
 };

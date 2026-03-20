@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import Container from '@/components/Container';
 import ListingCard from '@/components/listings/ListingCard';
 import WorkerCard from '@/components/listings/WorkerCard';
@@ -8,27 +8,10 @@ import ShopCard from '@/components/shop/ShopCard';
 import PostCard from '@/components/feed/PostCard';
 import { categories } from '@/components/Categories';
 import { SafeListing, SafeUser, SafeEmployee, SafeShop, SafePost } from '@/app/types';
-import PageSearch from '@/components/search/PageSearch';
-import CategoryNav from '@/components/favorites/CategoryNav';
-import SectionHeader from '../market/SectionHeader';
+import PageHeader from '@/components/PageHeader';
 import { useSidebarState } from '@/app/hooks/useSidebarState';
 
-// Shuffle array using Fisher-Yates algorithm (seeded for stability during session)
-function shuffleArray<T>(array: T[], seed: number): T[] {
-  const shuffled = [...array];
-  let currentSeed = seed;
-  const random = () => {
-    currentSeed = (currentSeed * 9301 + 49297) % 233280;
-    return currentSeed / 233280;
-  };
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-  return shuffled;
-}
-
-type FavoriteTab = 'Businesses' | 'Professionals' | 'Shops' | 'Posts';
+type FavoriteTab = 'all' | 'businesses' | 'professionals' | 'shops' | 'posts';
 
 interface FavoritesClientProps {
   listings: SafeListing[];
@@ -38,8 +21,6 @@ interface FavoritesClientProps {
   currentUser?: SafeUser | null;
 }
 
-const FADE_OUT_DURATION = 200;
-
 const FavoritesClient: React.FC<FavoritesClientProps> = ({
   listings,
   workers,
@@ -47,515 +28,173 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
   posts,
   currentUser,
 }) => {
-  const [activeTabs, setActiveTabs] = useState<FavoriteTab[]>([]);
+  const [activeTab, setActiveTab] = useState<FavoriteTab>('all');
   const isSidebarCollapsed = useSidebarState();
 
-  // Dynamic items per page: 12 when sidebar collapsed, 10 when expanded
-  const ITEMS_PER_PAGE = isSidebarCollapsed ? 12 : 10;
+  const safeListings = listings || [];
+  const safeWorkers = workers || [];
+  const safeShops = shops || [];
+  const safePosts = posts || [];
 
-  // Pagination state for each section
-  const [listingsIndex, setListingsIndex] = useState(0);
-  const [workersIndex, setWorkersIndex] = useState(0);
-  const [shopsIndex, setShopsIndex] = useState(0);
-  const [postsIndex, setPostsIndex] = useState(0);
+  const totalCount = safeListings.length + safeWorkers.length + safeShops.length + safePosts.length;
 
-  // Animation visibility state
-  const [listingsVisible, setListingsVisible] = useState(true);
-  const [workersVisible, setWorkersVisible] = useState(true);
-  const [shopsVisible, setShopsVisible] = useState(true);
-  const [postsVisible, setPostsVisible] = useState(true);
-
-  const [isAnimating, setIsAnimating] = useState(false);
-
-  // View all mode
-  const [viewAllMode, setViewAllMode] = useState<'listings' | 'workers' | 'shops' | 'posts' | null>(null);
-
-  // Seed for shuffling (stable during session, changes on page refresh)
-  const [shuffleSeed] = useState(() => Date.now());
-
-  // Safely handle potentially undefined arrays and shuffle for randomized display
-  const safeListings = useMemo(() => shuffleArray(listings || [], shuffleSeed), [listings, shuffleSeed]);
-  const safeWorkers = useMemo(() => shuffleArray(workers || [], shuffleSeed + 1), [workers, shuffleSeed]);
-  const safeShops = useMemo(() => shuffleArray(shops || [], shuffleSeed + 2), [shops, shuffleSeed]);
-  const safePosts = useMemo(() => shuffleArray(posts || [], shuffleSeed + 3), [posts, shuffleSeed]);
-
-  // Responsive grid - adds 1 column when sidebar is collapsed
   const gridColsClass = isSidebarCollapsed
-    ? 'grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-    : 'grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3';
+    ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+    : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3';
 
-  // Reset pagination on sidebar change
-  useEffect(() => {
-    setListingsIndex(0);
-    setWorkersIndex(0);
-    setShopsIndex(0);
-    setPostsIndex(0);
-  }, [isSidebarCollapsed]);
+  const tabs: { key: FavoriteTab; label: string; count: number }[] = [
+    { key: 'all', label: 'All', count: totalCount },
+    { key: 'businesses', label: 'Businesses', count: safeListings.length },
+    { key: 'professionals', label: 'Professionals', count: safeWorkers.length },
+    { key: 'shops', label: 'Shops', count: safeShops.length },
+    { key: 'posts', label: 'Posts', count: safePosts.length },
+  ];
 
-  // Check content availability
-  const hasListings = safeListings.length > 0;
-  const hasWorkers = safeWorkers.length > 0;
-  const hasShops = safeShops.length > 0;
-  const hasPosts = safePosts.length > 0;
-  const hasContent = hasListings || hasWorkers || hasShops || hasPosts;
-
-  // Animated transition helper (matching market pattern)
-  const animateTransition = (
-    setVisible: (visible: boolean) => void,
-    setIndex: (index: number) => void,
-    currentIndex: number,
-    totalPages: number,
-    direction: 'left' | 'right'
-  ) => {
-    if (totalPages <= 1 || isAnimating) return;
-
-    setIsAnimating(true);
-    setVisible(false);
-
-    setTimeout(() => {
-      const newIndex = direction === 'right'
-        ? (currentIndex + 1) % totalPages
-        : currentIndex === 0 ? totalPages - 1 : currentIndex - 1;
-
-      setIndex(newIndex);
-      setTimeout(() => {
-        setVisible(true);
-        setIsAnimating(false);
-      }, 50);
-    }, FADE_OUT_DURATION);
-  };
-
-  // Paginated items
-  const currentListings = useMemo(() => {
-    if (safeListings.length <= ITEMS_PER_PAGE) return safeListings;
-    const start = listingsIndex * ITEMS_PER_PAGE;
-    return safeListings.slice(start, start + ITEMS_PER_PAGE);
-  }, [safeListings, listingsIndex]);
-
-  const currentWorkers = useMemo(() => {
-    if (safeWorkers.length <= ITEMS_PER_PAGE) return safeWorkers;
-    const start = workersIndex * ITEMS_PER_PAGE;
-    return safeWorkers.slice(start, start + ITEMS_PER_PAGE);
-  }, [safeWorkers, workersIndex]);
-
-  const currentShops = useMemo(() => {
-    if (safeShops.length <= ITEMS_PER_PAGE) return safeShops;
-    const start = shopsIndex * ITEMS_PER_PAGE;
-    return safeShops.slice(start, start + ITEMS_PER_PAGE);
-  }, [safeShops, shopsIndex]);
-
-  const currentPosts = useMemo(() => {
-    if (safePosts.length <= ITEMS_PER_PAGE) return safePosts;
-    const start = postsIndex * ITEMS_PER_PAGE;
-    return safePosts.slice(start, start + ITEMS_PER_PAGE);
-  }, [safePosts, postsIndex]);
-
-  // Total pages
-  const totalListingsPages = Math.max(1, Math.ceil(safeListings.length / ITEMS_PER_PAGE));
-  const totalWorkersPages = Math.max(1, Math.ceil(safeWorkers.length / ITEMS_PER_PAGE));
-  const totalShopsPages = Math.max(1, Math.ceil(safeShops.length / ITEMS_PER_PAGE));
-  const totalPostsPages = Math.max(1, Math.ceil(safePosts.length / ITEMS_PER_PAGE));
-
-  // Scroll handlers
-  const scrollListings = (dir: 'left' | 'right') =>
-    animateTransition(setListingsVisible, setListingsIndex, listingsIndex, totalListingsPages, dir);
-
-  const scrollWorkers = (dir: 'left' | 'right') =>
-    animateTransition(setWorkersVisible, setWorkersIndex, workersIndex, totalWorkersPages, dir);
-
-  const scrollShops = (dir: 'left' | 'right') =>
-    animateTransition(setShopsVisible, setShopsIndex, shopsIndex, totalShopsPages, dir);
-
-  const scrollPosts = (dir: 'left' | 'right') =>
-    animateTransition(setPostsVisible, setPostsIndex, postsIndex, totalPostsPages, dir);
-
-  // View all handlers
-  const handleViewAllListings = () => {
-    setViewAllMode('listings');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleViewAllWorkers = () => {
-    setViewAllMode('workers');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleViewAllShops = () => {
-    setViewAllMode('shops');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleViewAllPosts = () => {
-    setViewAllMode('posts');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleBackToMain = () => {
-    setViewAllMode(null);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  // Helper to get associated listing for a worker
   const getAssociatedListing = (worker: SafeEmployee) => {
     return safeListings.find(listing =>
       listing.employees?.some(emp => emp.id === worker.id)
     ) || safeListings[0];
   };
 
-  // Determine if we should show sections based on active tabs (show all if none selected)
-  const shouldShowListings = activeTabs.length === 0 || activeTabs.includes('Businesses');
-  const shouldShowWorkers = activeTabs.length === 0 || activeTabs.includes('Professionals');
-  const shouldShowShops = activeTabs.length === 0 || activeTabs.includes('Shops');
-  const shouldShowPosts = activeTabs.length === 0 || activeTabs.includes('Posts');
+  // Build content items based on active tab
+  const contentItems = useMemo(() => {
+    const items: Array<{ type: 'listing' | 'worker' | 'shop' | 'post'; data: any; listing?: any }> = [];
+
+    if (activeTab === 'all' || activeTab === 'businesses') {
+      safeListings.forEach(l => items.push({ type: 'listing', data: l }));
+    }
+    if (activeTab === 'all' || activeTab === 'professionals') {
+      safeWorkers.forEach(w => items.push({ type: 'worker', data: w, listing: getAssociatedListing(w) }));
+    }
+    if (activeTab === 'all' || activeTab === 'shops') {
+      safeShops.forEach(s => items.push({ type: 'shop', data: s }));
+    }
+    if (activeTab === 'all' || activeTab === 'posts') {
+      safePosts.forEach(p => items.push({ type: 'post', data: p }));
+    }
+
+    return items;
+  }, [activeTab, safeListings, safeWorkers, safeShops, safePosts]);
 
   return (
     <Container>
-      {/* Hero Section - Clean minimal design (matching Market) */}
-      <div className="-mx-6 md:-mx-24 -mt-2 md:-mt-8">
-        <div className="relative px-6 md:px-24 pt-12 pb-8 bg-white">
+      <PageHeader currentUser={currentUser} currentPage="Favorites" />
 
-          {/* Content */}
-          <div className="relative z-10 pb-6">
-            {/* Main Favorites Title */}
-            <div className="text-center">
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight tracking-tight">
-                Favorites
-              </h1>
-              <p className="text-gray-500 text-base mt-3 max-w-2xl mx-auto">A one stop shop for all of your favorite things</p>
-            </div>
+      <div className="mt-8">
+        {/* Page header */}
+        <div className="mb-8">
+          <h1 className="text-2xl font-semibold text-stone-900 tracking-tight">Favorites</h1>
+          <p className="text-[14px] text-stone-400 mt-1">{totalCount} saved {totalCount === 1 ? 'item' : 'items'}</p>
+        </div>
 
-            {/* Search */}
-            <div className="mt-8 flex justify-center">
-              <div className="w-full max-w-3xl">
-                <PageSearch />
+        {/* Tab bar */}
+        <div className="flex items-center gap-2 mb-8 overflow-x-auto scrollbar-hide pb-1">
+          {tabs.map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap ${
+                activeTab === tab.key
+                  ? 'bg-stone-900 text-white'
+                  : 'bg-stone-50 text-stone-500 hover:bg-stone-100 border border-stone-200/60'
+              }`}
+            >
+              {tab.label}
+              <span className={`text-[11px] tabular-nums ${
+                activeTab === tab.key ? 'text-white/60' : 'text-stone-400'
+              }`}>
+                {tab.count}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {/* Content */}
+        {contentItems.length > 0 ? (
+          <>
+            {/* Non-post items */}
+            {contentItems.some(i => i.type !== 'post') && (
+              <div className={`grid ${gridColsClass} gap-x-6 gap-y-2`}>
+                {contentItems.filter(i => i.type !== 'post').map((item, idx) => (
+                  <div
+                    key={`${item.type}-${item.data.id}`}
+                    style={{
+                      opacity: 0,
+                      animation: 'fadeInUp 520ms ease-out both',
+                      animationDelay: `${Math.min(60 + idx * 30, 360)}ms`,
+                    }}
+                  >
+                    {item.type === 'listing' && (
+                      <ListingCard
+                        categories={categories}
+                        data={item.data}
+                        currentUser={currentUser}
+                      />
+                    )}
+                    {item.type === 'worker' && item.listing && (
+                      <WorkerCard
+                        employee={item.data}
+                        listingTitle={item.listing?.title || ''}
+                        data={{
+                          title: item.listing?.title || '',
+                          imageSrc: item.listing?.imageSrc || '',
+                          category: (item.listing as any)?.category || '',
+                        }}
+                        listing={item.listing}
+                        currentUser={currentUser}
+                      />
+                    )}
+                    {item.type === 'shop' && (
+                      <ShopCard data={item.data} currentUser={currentUser} />
+                    )}
+                  </div>
+                ))}
               </div>
-            </div>
+            )}
 
-            {/* Category Navigation - Sticky */}
-            <div className="mt-3 -mx-6 md:-mx-24">
-              <div className="sticky top-0 z-20 transition-all duration-300" id="favorites-category-nav-wrapper">
-                <div className="px-6 md:px-24">
-                  <CategoryNav activeTabs={activeTabs} setActiveTabs={setActiveTabs} />
+            {/* Posts — denser grid */}
+            {contentItems.some(i => i.type === 'post') && (
+              <>
+                {activeTab === 'all' && contentItems.some(i => i.type !== 'post') && (
+                  <div className="mt-10 mb-6 flex items-center gap-3">
+                    <h2 className="text-xl font-semibold text-stone-900 tracking-tight">Posts</h2>
+                    <span className="text-[11px] font-medium text-stone-500 bg-stone-100 px-2.5 py-1 rounded-full tabular-nums">
+                      {contentItems.filter(i => i.type === 'post').length}
+                    </span>
+                  </div>
+                )}
+                <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-0.5 rounded-xl overflow-hidden">
+                  {contentItems.filter(i => i.type === 'post').map((item, idx) => (
+                    <div
+                      key={`post-${item.data.id}`}
+                      style={{
+                        opacity: 0,
+                        animation: 'fadeInUp 520ms ease-out both',
+                        animationDelay: `${Math.min(60 + idx * 30, 360)}ms`,
+                      }}
+                    >
+                      <PostCard post={item.data} currentUser={currentUser} categories={categories} />
+                    </div>
+                  ))}
                 </div>
-              </div>
+              </>
+            )}
+          </>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-24 text-center">
+            <div className="w-16 h-16 rounded-2xl bg-stone-100 flex items-center justify-center mb-5">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-stone-400">
+                <path d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z" />
+              </svg>
             </div>
-
+            <p className="text-[15px] font-medium text-stone-700 mb-1">
+              {activeTab === 'all' ? 'No favorites yet' : `No favorite ${activeTab}`}
+            </p>
+            <p className="text-[13px] text-stone-400 max-w-xs">
+              Save listings, professionals, shops, and posts to find them here.
+            </p>
           </div>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="relative -mt-[69px]">
-        <div>
-          {hasContent ? (
-            <>
-              {/* View All Listings Mode */}
-              {viewAllMode === 'listings' && (
-                <>
-                  <SectionHeader
-                    title="All Favorite Listings"
-                    className="mb-6"
-                    onViewAll={handleBackToMain}
-                    viewAllLabel="Back to Favorites"
-                  />
-                  <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
-                    {safeListings.map((listing, idx) => (
-                      <div
-                        key={listing.id}
-                        style={{
-                          opacity: 0,
-                          animation: `fadeInUp 520ms ease-out both`,
-                          animationDelay: `${Math.min(idx * 30, 300)}ms`,
-                          willChange: 'transform, opacity',
-                        }}
-                      >
-                        <ListingCard
-                          categories={categories}
-                          currentUser={currentUser}
-                          data={listing}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </>
-              )}
-
-              {/* View All Workers Mode */}
-              {viewAllMode === 'workers' && (
-                <>
-                  <SectionHeader
-                    title="All Favorite Professionals"
-                    className="mb-6"
-                    onViewAll={handleBackToMain}
-                    viewAllLabel="Back to Favorites"
-                  />
-                  <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
-                    {safeWorkers.map((worker, idx) => {
-                      const associatedListing = getAssociatedListing(worker);
-                      return (
-                        <div
-                          key={worker.id}
-                          style={{
-                            opacity: 0,
-                            animation: `fadeInUp 520ms ease-out both`,
-                            animationDelay: `${Math.min(idx * 30, 300)}ms`,
-                            willChange: 'transform, opacity',
-                          }}
-                        >
-                          <WorkerCard
-                            employee={worker}
-                            listingTitle={associatedListing?.title || 'Professional'}
-                            data={{
-                              title: associatedListing?.title || '',
-                              imageSrc: associatedListing?.imageSrc || '',
-                              category: associatedListing?.category || ''
-                            }}
-                            listing={associatedListing}
-                            currentUser={currentUser}
-                          />
-                        </div>
-                      );
-                    })}
-                  </div>
-                </>
-              )}
-
-              {/* View All Shops Mode */}
-              {viewAllMode === 'shops' && (
-                <>
-                  <SectionHeader
-                    title="All Favorite Shops"
-                    className="mb-6"
-                    onViewAll={handleBackToMain}
-                    viewAllLabel="Back to Favorites"
-                  />
-                  <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
-                    {safeShops.map((shop, idx) => (
-                      <div
-                        key={shop.id}
-                        style={{
-                          opacity: 0,
-                          animation: `fadeInUp 520ms ease-out both`,
-                          animationDelay: `${Math.min(idx * 30, 300)}ms`,
-                          willChange: 'transform, opacity',
-                        }}
-                      >
-                        <ShopCard data={shop} currentUser={currentUser} />
-                      </div>
-                    ))}
-                  </div>
-                </>
-              )}
-
-              {/* View All Posts Mode */}
-              {viewAllMode === 'posts' && (
-                <>
-                  <SectionHeader
-                    title="All Favorite Posts"
-                    className="mb-6"
-                    onViewAll={handleBackToMain}
-                    viewAllLabel="Back to Favorites"
-                  />
-                  <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
-                    {safePosts.map((post, idx) => (
-                      <div
-                        key={post.id}
-                        style={{
-                          opacity: 0,
-                          animation: `fadeInUp 520ms ease-out both`,
-                          animationDelay: `${Math.min(idx * 30, 300)}ms`,
-                          willChange: 'transform, opacity',
-                        }}
-                      >
-                        <PostCard
-                          post={post}
-                          currentUser={currentUser}
-                          categories={categories}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </>
-              )}
-
-              {/* Normal View - Show sections with pagination */}
-              {!viewAllMode && (
-                <>
-                  {/* ===== Favorite Listings Section ===== */}
-                  {shouldShowListings && hasListings && (
-                    <>
-                      <SectionHeader
-                        title="Favorite Listings"
-                        onPrev={() => scrollListings('left')}
-                        onNext={() => scrollListings('right')}
-                        onViewAll={handleViewAllListings}
-                      />
-                      <div id="listings-rail">
-                        <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
-                          {currentListings.map((listing, idx) => (
-                            <div
-                              key={`${listing.id}-${listingsIndex}`}
-                              style={{
-                                opacity: listingsVisible ? 0 : 0,
-                                animation: listingsVisible ? `fadeInUp 520ms ease-out both` : 'none',
-                                animationDelay: listingsVisible ? `${140 + idx * 30}ms` : '0ms',
-                                willChange: 'transform, opacity',
-                                transition: !listingsVisible ? `opacity ${FADE_OUT_DURATION}ms ease-out` : 'none',
-                              }}
-                              className={!listingsVisible ? 'opacity-0' : ''}
-                            >
-                              <ListingCard
-                                categories={categories}
-                                currentUser={currentUser}
-                                data={listing}
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </>
-                  )}
-
-                  {/* ===== Favorite Professionals Section ===== */}
-                  {shouldShowWorkers && hasWorkers && (
-                    <>
-                      <SectionHeader
-                        title="Favorite Professionals"
-                        onPrev={() => scrollWorkers('left')}
-                        onNext={() => scrollWorkers('right')}
-                        onViewAll={handleViewAllWorkers}
-                      />
-                      <div id="workers-rail">
-                        <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
-                          {currentWorkers.map((worker, idx) => {
-                            const associatedListing = getAssociatedListing(worker);
-                            return (
-                              <div
-                                key={`${worker.id}-${workersIndex}`}
-                                style={{
-                                  opacity: workersVisible ? 0 : 0,
-                                  animation: workersVisible ? `fadeInUp 520ms ease-out both` : 'none',
-                                  animationDelay: workersVisible ? `${140 + idx * 30}ms` : '0ms',
-                                  willChange: 'transform, opacity',
-                                  transition: !workersVisible ? `opacity ${FADE_OUT_DURATION}ms ease-out` : 'none',
-                                }}
-                                className={!workersVisible ? 'opacity-0' : ''}
-                              >
-                                <WorkerCard
-                                  employee={worker}
-                                  listingTitle={associatedListing?.title || 'Professional'}
-                                  data={{
-                                    title: associatedListing?.title || '',
-                                    imageSrc: associatedListing?.imageSrc || '',
-                                    category: associatedListing?.category || ''
-                                  }}
-                                  listing={associatedListing}
-                                  currentUser={currentUser}
-                                />
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    </>
-                  )}
-
-                  {/* ===== Favorite Shops Section ===== */}
-                  {shouldShowShops && hasShops && (
-                    <>
-                      <SectionHeader
-                        title="Favorite Shops"
-                        onPrev={() => scrollShops('left')}
-                        onNext={() => scrollShops('right')}
-                        onViewAll={handleViewAllShops}
-                      />
-                      <div id="shops-rail">
-                        <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
-                          {currentShops.map((shop, idx) => (
-                            <div
-                              key={`${shop.id}-${shopsIndex}`}
-                              style={{
-                                opacity: shopsVisible ? 0 : 0,
-                                animation: shopsVisible ? `fadeInUp 520ms ease-out both` : 'none',
-                                animationDelay: shopsVisible ? `${140 + idx * 30}ms` : '0ms',
-                                willChange: 'transform, opacity',
-                                transition: !shopsVisible ? `opacity ${FADE_OUT_DURATION}ms ease-out` : 'none',
-                              }}
-                              className={!shopsVisible ? 'opacity-0' : ''}
-                            >
-                              <ShopCard data={shop} currentUser={currentUser} />
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </>
-                  )}
-
-                  {/* ===== Favorite Posts Section ===== */}
-                  {shouldShowPosts && hasPosts && (
-                    <>
-                      <SectionHeader
-                        title="Favorite Posts"
-                        onPrev={() => scrollPosts('left')}
-                        onNext={() => scrollPosts('right')}
-                        onViewAll={handleViewAllPosts}
-                      />
-                      <div id="posts-rail">
-                        <div className={`grid ${gridColsClass} gap-4 pb-8 transition-all duration-300`}>
-                          {currentPosts.map((post, idx) => (
-                            <div
-                              key={`${post.id}-${postsIndex}`}
-                              style={{
-                                opacity: postsVisible ? 0 : 0,
-                                animation: postsVisible ? `fadeInUp 520ms ease-out both` : 'none',
-                                animationDelay: postsVisible ? `${140 + idx * 30}ms` : '0ms',
-                                willChange: 'transform, opacity',
-                                transition: !postsVisible ? `opacity ${FADE_OUT_DURATION}ms ease-out` : 'none',
-                              }}
-                              className={!postsVisible ? 'opacity-0' : ''}
-                            >
-                              <PostCard
-                                post={post}
-                                currentUser={currentUser}
-                                categories={categories}
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </>
-                  )}
-
-                  {/* Empty state for filtered tabs */}
-                  {activeTabs.includes('Businesses') && !hasListings && (
-                    <div className="px-8 pt-32 text-center text-gray-500">
-                      No favorite listings yet
-                    </div>
-                  )}
-                  {activeTabs.includes('Professionals') && !hasWorkers && (
-                    <div className="px-8 pt-32 text-center text-gray-500">
-                      No favorite professionals yet
-                    </div>
-                  )}
-                  {activeTabs.includes('Shops') && !hasShops && (
-                    <div className="px-8 pt-32 text-center text-gray-500">
-                      No favorite shops yet
-                    </div>
-                  )}
-                  {activeTabs.includes('Posts') && !hasPosts && (
-                    <div className="px-8 pt-32 text-center text-gray-500">
-                      No favorite posts yet
-                    </div>
-                  )}
-                </>
-              )}
-            </>
-          ) : (
-            <div className="px-8 pt-32 text-center text-gray-500">
-              No favorites yet. Start hearting items to build your collection.
-            </div>
-          )}
-        </div>
+        )}
       </div>
     </Container>
   );

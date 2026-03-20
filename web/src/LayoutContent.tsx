@@ -17,6 +17,8 @@ export default function LayoutContent({ children }: LayoutContentProps) {
   // Skip animation for full-screen pages (they have their own layouts)
   const isFullScreenPage = pathname?.startsWith('/register') || pathname?.startsWith('/listing/new') || pathname?.startsWith('/reserve') || pathname?.startsWith('/post/new') || pathname?.startsWith('/maps') || pathname?.startsWith('/newsfeed');
 
+  const hideLogoOnPage = pathname?.startsWith('/profile') || pathname?.startsWith('/listings');
+
   const [collapsed, setCollapsed] = useState(false);
   const [fadeKey, setFadeKey] = useState(0);
   const [visible, setVisible] = useState(false);
@@ -86,7 +88,7 @@ export default function LayoutContent({ children }: LayoutContentProps) {
   return (
     <div className="flex-1 relative">
       {/* Persistent logo — fades with content on navigation */}
-      <div className="absolute z-[70] pointer-events-none" style={{ top: '14px', left: 0, right: 0, opacity: visible ? 1 : 0, transition: 'opacity 0.4s ease-out' }}>
+      <div className="absolute z-[70] pointer-events-none" style={{ top: '14px', left: 0, right: 0, opacity: (visible && !hideLogoOnPage) ? 1 : 0, transition: 'opacity 0.4s ease-out' }}>
         <div className="px-4 sm:px-6 lg:px-8 xl:px-16 mt-4 sm:mt-6 lg:mt-8">
           <div className="-mx-6 md:-mx-24 -mt-2 md:-mt-8">
             <div className="px-6 md:px-24 pt-8">
