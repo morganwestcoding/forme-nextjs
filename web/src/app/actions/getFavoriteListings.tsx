@@ -30,13 +30,13 @@ export default async function getFavoriteListings() {
       ...favorite,
       createdAt: favorite.createdAt.toISOString(),
       favoriteIds: currentUser?.favoriteIds || [],
-      services: favorite.services.map(service => ({
+      services: favorite.services.map((service: typeof favorite.services[number]) => ({
         id: service.id,
         serviceName: service.serviceName,
         price: service.price,
         category: service.category,
       })),
-      employees: favorite.employees.map(employee => ({
+      employees: favorite.employees.map((employee: typeof favorite.employees[number]) => ({
         id: employee.id,
         fullName: employee.fullName,
         jobTitle: employee.jobTitle || null,
@@ -46,8 +46,8 @@ export default async function getFavoriteListings() {
         isActive: employee.isActive,
         isIndependent: employee.isIndependent,
         createdAt: employee.createdAt.toISOString(),
-        listingTitle: favorite.title, // Use the current listing's title
-        listingCategory: favorite.category, // Use the current listing's category
+        listingTitle: favorite.title,
+        listingCategory: favorite.category,
         user: {
           id: employee.user.id,
           name: employee.user.name,
@@ -55,7 +55,7 @@ export default async function getFavoriteListings() {
           imageSrc: employee.user.imageSrc,
         },
       })),
-      storeHours: favorite.storeHours.map(hours => ({
+      storeHours: favorite.storeHours.map((hours: typeof favorite.storeHours[number]) => ({
         dayOfWeek: hours.dayOfWeek,
         openTime: hours.openTime,
         closeTime: hours.closeTime,
