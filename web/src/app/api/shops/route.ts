@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
-import { Product } from "@prisma/client";
-
 interface ProductInput {
   name: string;
   description: string;
@@ -27,10 +25,10 @@ async function createProductsForShop(
   products: ProductInput[],
   shopId: string,
   userId: string
-): Promise<Product[]> {
+): Promise<any[]> {
   if (!products?.length) return [];
 
-  const created: Product[] = [];
+  const created: any[] = [];
   for (const productData of products) {
     const { name, description, price, category, image, images, sizes } = productData;
 
@@ -160,7 +158,7 @@ export async function POST(request: Request) {
       },
     });
 
-    let createdProducts: Product[] = [];
+    let createdProducts: any[] = [];
     if (products?.length) {
       createdProducts = await createProductsForShop(products as ProductInput[], shop.id, currentUser.id);
     }
