@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import Image from 'next/image';
-import Link from 'next/link';
+
 import { useRouter } from 'next/navigation';
 import { SafeListing, SafeUser } from '@/app/types';
 
@@ -48,6 +48,12 @@ const MapsClient: React.FC<MapsClientProps> = ({ listings, currentUser }) => {
   const [selected, setSelected] = useState<GeocodedItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [mapReady, setMapReady] = useState(false);
+  const [exiting, setExiting] = useState(false);
+
+  const navigateAway = useCallback((href: string) => {
+    setExiting(true);
+    setTimeout(() => router.push(href), 350);
+  }, [router]);
   const [filter, setFilter] = useState<'all' | 'listing' | 'worker'>('all');
   const [sort, setSort] = useState<'nearest' | 'name'>('nearest');
   const [search, setSearch] = useState('');
@@ -312,7 +318,7 @@ const MapsClient: React.FC<MapsClientProps> = ({ listings, currentUser }) => {
   const ready = mapReady;
 
   return (
-    <div className="fixed inset-0 bg-zinc-950">
+    <div className="fixed inset-0 bg-zinc-950" style={{ opacity: exiting ? 0 : 1, transition: 'opacity 0.35s ease-out' }}>
       {/* Sidebar — floating, detached from edges */}
       <div
         className="absolute top-4 left-8 bottom-4 w-[370px] flex flex-col bg-white border border-stone-200/80 rounded-2xl z-10 shadow-2xl shadow-black/10 overflow-hidden px-8 pb-5 pt-7 gap-4"
@@ -330,11 +336,11 @@ const MapsClient: React.FC<MapsClientProps> = ({ listings, currentUser }) => {
           }}
         >
           <Image src="/logos/fm-logo.png" alt="Logo" width={72} height={46} className="opacity-90 shrink-0 mt-[1.2px]" />
-          <Link href="/" className="w-8 h-8 rounded-full flex items-center justify-center text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition-colors">
+          <button onClick={() => navigateAway('/')} className="w-8 h-8 rounded-full flex items-center justify-center text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition-colors">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M19 12H5M5 12l7-7M5 12l7 7"/>
             </svg>
-          </Link>
+          </button>
         </div>
 
         {/* Search */}
@@ -488,9 +494,9 @@ const MapsClient: React.FC<MapsClientProps> = ({ listings, currentUser }) => {
               className="bg-zinc-950/95 backdrop-blur-md rounded-2xl border border-zinc-800 overflow-hidden cursor-pointer hover:border-zinc-700 transition-colors"
               onClick={() => {
                 if (selected.type === 'listing') {
-                  router.push(`/listings/${selected.id}`);
+                  navigateAway(`/listings/${selected.id}`);
                 } else if (selected.listing) {
-                  router.push(`/listings/${selected.listing.id}`);
+                  navigateAway(`/listings/${selected.listing.id}`);
                 }
               }}
             >
