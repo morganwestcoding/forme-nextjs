@@ -119,7 +119,7 @@ export async function DELETE(request: Request) {
       return new Response("User not found", { status: 404 });
     }
 
-    const updatedGalleryImages = user.galleryImages.filter((_, index) => index !== parseInt(imageIndex));
+    const updatedGalleryImages = user.galleryImages.filter((_: string, index: number) => index !== parseInt(imageIndex));
 
     const updatedUser = await prisma.user.update({
       where: { id: userIdToUpdate },
