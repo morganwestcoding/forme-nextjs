@@ -118,6 +118,7 @@ export type SafeUser = Omit<
   // Stripe Connect fields (for receiving payments as a worker)
   stripeConnectAccountId?: string | null;
   stripeConnectOnboardingComplete?: boolean;
+  stripeConnectDetailsSubmitted?: boolean;
   stripeConnectChargesEnabled?: boolean;
   stripeConnectPayoutsEnabled?: boolean;
   stripeConnectOnboardedAt?: Date | null;

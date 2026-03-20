@@ -80,8 +80,8 @@ const ShopHead: React.FC<ShopHeadProps> = ({
 
   // Responsive grid - matches Market pattern, adds 1 column when sidebar is collapsed
   const gridColsClass = sidebarCollapsed
-    ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6'
-    : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5';
+    ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3'
+    : 'grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3';
 
   const isFollowing = !!currentUser?.id && followers.includes(currentUser.id);
 
@@ -132,10 +132,10 @@ const ShopHead: React.FC<ShopHeadProps> = ({
   };
 
   const MOCK_PRODUCTS: SafeProduct[] = useMemo(() => [
-    { id: 'mp1', name: 'Classic Service', description: 'Our signature offering', price: 45, mainImage: shop.logo || '/placeholder.jpg', galleryImages: [], shopId: shop.id, createdAt: '', updatedAt: '', categoryId: '', tags: [], isPublished: true, isFeatured: true, inventory: 99, lowStockThreshold: 5, shop: { id: shop.id, name: shop.name, logo: shop.logo }, favoritedBy: [] },
-    { id: 'mp2', name: 'Premium Package', description: 'Deluxe treatment experience', price: 85, mainImage: shop.coverImage || shop.logo || '/placeholder.jpg', galleryImages: [], shopId: shop.id, createdAt: '', updatedAt: '', categoryId: '', tags: [], isPublished: true, isFeatured: true, inventory: 99, lowStockThreshold: 5, shop: { id: shop.id, name: shop.name, logo: shop.logo }, favoritedBy: [] },
-    { id: 'mp3', name: 'Express Treatment', description: 'Quick & effective', price: 30, mainImage: shop.galleryImages?.[0] || shop.logo || '/placeholder.jpg', galleryImages: [], shopId: shop.id, createdAt: '', updatedAt: '', categoryId: '', tags: [], isPublished: true, isFeatured: true, inventory: 99, lowStockThreshold: 5, shop: { id: shop.id, name: shop.name, logo: shop.logo }, favoritedBy: [] },
-    { id: 'mp4', name: 'VIP Experience', description: 'The full luxury package', price: 120, mainImage: shop.galleryImages?.[1] || shop.coverImage || shop.logo || '/placeholder.jpg', galleryImages: [], shopId: shop.id, createdAt: '', updatedAt: '', categoryId: '', tags: [], isPublished: true, isFeatured: true, inventory: 99, lowStockThreshold: 5, shop: { id: shop.id, name: shop.name, logo: shop.logo }, favoritedBy: [] },
+    { id: 'mp1', name: 'Classic Service', description: 'Our signature offering', price: 45, mainImage: shop.logo || '/placeholder.jpg', galleryImages: [], shopId: shop.id, createdAt: '', updatedAt: '', categoryId: '', category: { id: '', name: 'General' }, tags: [], isPublished: true, isFeatured: true, inventory: 99, lowStockThreshold: 5, shop: { id: shop.id, name: shop.name, logo: shop.logo }, favoritedBy: [] },
+    { id: 'mp2', name: 'Premium Package', description: 'Deluxe treatment experience', price: 85, mainImage: shop.coverImage || shop.logo || '/placeholder.jpg', galleryImages: [], shopId: shop.id, createdAt: '', updatedAt: '', categoryId: '', category: { id: '', name: 'General' }, tags: [], isPublished: true, isFeatured: true, inventory: 99, lowStockThreshold: 5, shop: { id: shop.id, name: shop.name, logo: shop.logo }, favoritedBy: [] },
+    { id: 'mp3', name: 'Express Treatment', description: 'Quick & effective', price: 30, mainImage: shop.galleryImages?.[0] || shop.logo || '/placeholder.jpg', galleryImages: [], shopId: shop.id, createdAt: '', updatedAt: '', categoryId: '', category: { id: '', name: 'General' }, tags: [], isPublished: true, isFeatured: true, inventory: 99, lowStockThreshold: 5, shop: { id: shop.id, name: shop.name, logo: shop.logo }, favoritedBy: [] },
+    { id: 'mp4', name: 'VIP Experience', description: 'The full luxury package', price: 120, mainImage: shop.galleryImages?.[1] || shop.coverImage || shop.logo || '/placeholder.jpg', galleryImages: [], shopId: shop.id, createdAt: '', updatedAt: '', categoryId: '', category: { id: '', name: 'General' }, tags: [], isPublished: true, isFeatured: true, inventory: 99, lowStockThreshold: 5, shop: { id: shop.id, name: shop.name, logo: shop.logo }, favoritedBy: [] },
   ], [shop.id, shop.name, shop.logo, shop.coverImage, shop.galleryImages]);
 
   const validProducts = useMemo(() => {

@@ -176,6 +176,12 @@ export default async function getReservations(params: IParams) {
         resetToken: reservation.user.resetToken || null,
         resetTokenExpiry: reservation.user.resetTokenExpiry || null,
         role: reservation.user.role,
+        stripeConnectAccountId: reservation.user.stripeConnectAccountId || null,
+        stripeConnectOnboardingComplete: reservation.user.stripeConnectOnboardingComplete || false,
+        stripeConnectDetailsSubmitted: reservation.user.stripeConnectDetailsSubmitted || false,
+        stripeConnectChargesEnabled: reservation.user.stripeConnectChargesEnabled || false,
+        stripeConnectPayoutsEnabled: reservation.user.stripeConnectPayoutsEnabled || false,
+        stripeConnectOnboardedAt: reservation.user.stripeConnectOnboardedAt || null,
       }
     }));
 

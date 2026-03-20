@@ -182,7 +182,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, isH
             onClick={(e) => {
               e.stopPropagation();
               if (navigator.share) {
-                navigator.share({ title: post.title ?? '', url: `${window.location.origin}/posts/${post.id}` });
+                navigator.share({ title: post.content?.slice(0, 50) ?? '', url: `${window.location.origin}/posts/${post.id}` });
               } else {
                 navigator.clipboard.writeText(`${window.location.origin}/posts/${post.id}`);
               }

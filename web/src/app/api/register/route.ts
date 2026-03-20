@@ -229,7 +229,7 @@ export async function POST(request: Request) {
       }
     }
 
-    const token = await signMobileToken(user.id, user.email);
+    const token = await signMobileToken(user.id, user.email!);
 
     return NextResponse.json({
       user: {

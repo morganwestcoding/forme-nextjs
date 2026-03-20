@@ -109,6 +109,8 @@ export default async function getListingById(params: IParams): Promise<(SafeList
       state: listing.location?.split(',')[1]?.trim() || null,
       rating: listing.rating ?? null,
       ratingCount: listing.ratingCount ?? 0,
+      lat: listing.lat ?? null,
+      lng: listing.lng ?? null,
     };
 
     const safeUser: SafeUser = {
@@ -147,6 +149,12 @@ export default async function getListingById(params: IParams): Promise<(SafeList
       resetToken: listing.user.resetToken || null,
       resetTokenExpiry: listing.user.resetTokenExpiry || null,
       role: listing.user.role,
+      stripeConnectAccountId: listing.user.stripeConnectAccountId || null,
+      stripeConnectOnboardingComplete: listing.user.stripeConnectOnboardingComplete || false,
+      stripeConnectDetailsSubmitted: listing.user.stripeConnectDetailsSubmitted || false,
+      stripeConnectChargesEnabled: listing.user.stripeConnectChargesEnabled || false,
+      stripeConnectPayoutsEnabled: listing.user.stripeConnectPayoutsEnabled || false,
+      stripeConnectOnboardedAt: listing.user.stripeConnectOnboardedAt || null,
     };
 
     return {

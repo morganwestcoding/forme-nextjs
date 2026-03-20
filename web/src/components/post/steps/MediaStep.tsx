@@ -10,7 +10,7 @@ const UPLOAD_PRESET = 'cs0am6m7';
 const uploadOptions = {
   multiple: false,
   maxFiles: 1,
-  sources: ['local', 'camera'] as const,
+  sources: ['local', 'camera'] as ('local' | 'camera')[],
   resourceType: 'image' as const,
   clientAllowedFormats: ['png', 'jpg', 'jpeg', 'webp'],
   maxImageFileSize: 10_000_000,

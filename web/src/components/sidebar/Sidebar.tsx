@@ -82,7 +82,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentUser }) => {
     return false;
   };
 
-  const navItems = [
+  const navItems: { label: string; href: string; active: boolean; onClick?: () => void }[] = [
     { label: "Home", href: "/", active: isActive("/", ["/post", "/listings"]) },
     { label: "Maps", href: "/maps", active: isActive("/maps", ["/maps"]) },
     { label: "Brands", href: "/shops", active: isActive("/shops", ["/shops"]) },
