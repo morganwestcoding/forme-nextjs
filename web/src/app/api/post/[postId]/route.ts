@@ -67,7 +67,7 @@ export async function GET(
       createdAt: post.user.createdAt.toISOString(),
       updatedAt: post.user.updatedAt.toISOString(),
     },
-    comments: post.comments.map((comment) => ({
+    comments: post.comments.map((comment: typeof post.comments[number]) => ({
       id: comment.id,
       content: comment.content,
       createdAt: comment.createdAt.toISOString(),

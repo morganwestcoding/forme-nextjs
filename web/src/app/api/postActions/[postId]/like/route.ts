@@ -30,7 +30,7 @@ export async function POST(
   if (isLiking) {
     updatedLikes.push(currentUser.id);
   } else {
-    updatedLikes = updatedLikes.filter(id => id !== currentUser.id);
+    updatedLikes = updatedLikes.filter((id: string) => id !== currentUser.id);
   }
 
   const updatedPost = await prisma.post.update({

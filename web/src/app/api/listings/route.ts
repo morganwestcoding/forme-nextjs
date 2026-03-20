@@ -125,15 +125,15 @@ export async function POST(request: Request) {
         select: { id: true, name: true }
       });
       
-      const existingUserIds = new Set(existingUsers.map(u => u.id));
-      const missingUserIds = userIds.filter(id => !existingUserIds.has(id));
+      const existingUserIds = new Set(existingUsers.map((u: typeof existingUsers[number]) => u.id));
+      const missingUserIds = userIds.filter((id: string) => !existingUserIds.has(id));
       
       if (missingUserIds.length > 0) {
         return new Response(`Users not found: ${missingUserIds.join(', ')}`, { status: 400 });
       }
 
       // Create lookup map for user names
-      const userNameMap = new Map(existingUsers.map(u => [u.id, u.name || 'Unnamed User']));
+      const userNameMap = new Map(existingUsers.map((u: typeof existingUsers[number]) => [u.id, u.name || 'Unnamed User']));
       
       // Add fullName to each employee
       employeesWithNames = employees.map((emp: EmployeeInput) => ({
@@ -172,7 +172,7 @@ export async function POST(request: Request) {
         zipCode,
 
         employees: {
-          create: employeesWithNames.map((employee) => ({
+          create: employeesWithNames.map((employee: typeof employeesWithNames[number]) => ({
             fullName: employee.fullName, // Now properly populated!
             jobTitle: employee.jobTitle || null,
             userId: employee.userId,

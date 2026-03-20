@@ -43,8 +43,8 @@ export async function GET(request: Request) {
     
     console.log('Raw conversations:', conversations); // Debug log
 
-    const safeConversations = conversations.map(conversation => {
-      const otherUser = conversation.users.find(user => user.id !== currentUser.id);
+    const safeConversations = conversations.map((conversation: typeof conversations[number]) => {
+      const otherUser = conversation.users.find((user: typeof conversation.users[number]) => user.id !== currentUser.id);
       const lastMessage = conversation.messages[0];
       
       const safeConversation = {

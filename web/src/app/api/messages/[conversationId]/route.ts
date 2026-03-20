@@ -48,7 +48,7 @@ export async function GET(
       }
     });
 
-    const safeMessages = messages.map(message => ({
+    const safeMessages = messages.map((message: typeof messages[number]) => ({
       id: message.id,
       content: message.content,
       createdAt: message.createdAt.toISOString(),
@@ -131,9 +131,9 @@ export async function POST(
       },
     });
 
-    const otherUsers = conversation.users.filter(user => user.id !== currentUser.id);
-    
-    await Promise.all(otherUsers.map(user => 
+    const otherUsers = conversation.users.filter((user: typeof conversation.users[number]) => user.id !== currentUser.id);
+
+    await Promise.all(otherUsers.map((user: typeof otherUsers[number]) =>
       prisma.notification.create({
         data: {
           type: 'NEW_MESSAGE',

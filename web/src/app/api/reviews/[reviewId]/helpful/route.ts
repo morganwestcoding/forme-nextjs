@@ -44,7 +44,7 @@ export async function POST(
 
     // Toggle vote
     const updatedVotes = hasVoted
-      ? helpfulVotes.filter(id => id !== currentUser.id)
+      ? helpfulVotes.filter((id: string) => id !== currentUser.id)
       : [...helpfulVotes, currentUser.id];
 
     const updatedReview = await prisma.review.update({

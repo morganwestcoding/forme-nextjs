@@ -77,7 +77,7 @@ export async function DELETE(
       },
       data: {
         hiddenBy: {
-          set: post.hiddenBy.filter(id => id !== currentUser.id)
+          set: post.hiddenBy.filter((id: string) => id !== currentUser.id)
         }
       }
     });

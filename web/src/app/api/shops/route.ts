@@ -188,7 +188,7 @@ export async function GET(request: Request) {
       orderBy: { createdAt: 'desc' }
     });
 
-    const safe = shops.map(s => ({
+    const safe = shops.map((s: typeof shops[number]) => ({
       ...s,
       createdAt: s.createdAt.toISOString(),
       updatedAt: s.updatedAt.toISOString(),

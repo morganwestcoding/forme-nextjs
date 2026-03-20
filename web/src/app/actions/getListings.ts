@@ -176,7 +176,7 @@ export default async function getListings(params: IListingsParams = {}): Promise
     // - Independent workers WILL show as WorkerCards (extracted from employees)
     const filteredListings = listings;
 
-    const safeListings: SafeListing[] = filteredListings.map((listing) => ({
+    const safeListings: SafeListing[] = filteredListings.map((listing: typeof filteredListings[number]) => ({
       id: listing.id,
       title: listing.title,
       description: listing.description,

@@ -171,7 +171,7 @@ export async function GET(req: Request) {
     ]);
 
     const results: Result[] = [
-      ...users.map((u) => ({
+      ...users.map((u: typeof users[number]) => ({
         id: u.id,
         type: "user" as const,
         title: u.name || u.email || "User",
@@ -179,7 +179,7 @@ export async function GET(req: Request) {
         image: u.imageSrc || u.image || null,
         href: "",
       })),
-      ...listings.map((l) => ({
+      ...listings.map((l: typeof listings[number]) => ({
         id: l.id,
         type: "listing" as const,
         title: l.title,
@@ -187,7 +187,7 @@ export async function GET(req: Request) {
         image: l.imageSrc,
         href: "",
       })),
-      ...posts.map((p) => ({
+      ...posts.map((p: typeof posts[number]) => ({
         id: p.id,
         type: "post" as const,
         title: p.content?.slice(0, 80) || "Post",
@@ -195,7 +195,7 @@ export async function GET(req: Request) {
         image: p.mediaUrl || null,
         href: "",
       })),
-      ...shops.map((s) => ({
+      ...shops.map((s: typeof shops[number]) => ({
         id: s.id,
         type: "shop" as const,
         title: s.name,
@@ -203,7 +203,7 @@ export async function GET(req: Request) {
         image: s.logo,
         href: "",
       })),
-      ...products.map((p) => ({
+      ...products.map((p: typeof products[number]) => ({
         id: p.id,
         type: "product" as const,
         title: p.name,
@@ -212,7 +212,7 @@ export async function GET(req: Request) {
         href: "",
         parentId: p.shopId,
       })),
-      ...employees.map((e) => ({
+      ...employees.map((e: typeof employees[number]) => ({
         id: e.id,
         type: "employee" as const,
         title: e.fullName,
@@ -221,7 +221,7 @@ export async function GET(req: Request) {
         href: "",
         parentId: e.listingId,
       })),
-      ...services.map((s) => ({
+      ...services.map((s: typeof services[number]) => ({
         id: s.id,
         type: "service" as const,
         title: s.serviceName,

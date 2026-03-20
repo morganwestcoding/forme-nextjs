@@ -21,7 +21,7 @@ export async function GET() {
       }
     });
 
-    const listingIds = userListings.map(listing => listing.id);
+    const listingIds = userListings.map((listing: typeof userListings[number]) => listing.id);
     
     const reservationCount = await prisma.reservation.count({
       where: {

@@ -162,7 +162,7 @@ export async function GET(request: Request) {
     });
 
     // Get user info for each review
-    const userIds = Array.from(new Set(reviews.map(r => r.userId)));
+    const userIds = Array.from(new Set(reviews.map((r: typeof reviews[number]) => r.userId)));
     const users = await prisma.user.findMany({
       where: { id: { in: userIds } },
       select: {
@@ -174,11 +174,11 @@ export async function GET(request: Request) {
       },
     });
 
-    const userMap = new Map(users.map(u => [u.id, u]));
+    const userMap = new Map(users.map((u: typeof users[number]) => [u.id, u]));
 
     // Check for verified bookings
     const reviewsWithBookingStatus = await Promise.all(
-      reviews.map(async (review) => {
+      reviews.map(async (review: typeof reviews[number]) => {
         let isVerifiedBooking = false;
 
         if (targetType === 'user') {
@@ -219,13 +219,13 @@ export async function GET(request: Request) {
 
     // Calculate average rating
     const avgRating = reviews.length > 0
-      ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+      ? reviews.reduce((sum: number, r: typeof reviews[number]) => sum + r.rating, 0) / reviews.length
       : 0;
 
     // Rating distribution
     const ratingDistribution = [1, 2, 3, 4, 5].map(rating => ({
       rating,
-      count: reviews.filter(r => r.rating === rating).length,
+      count: reviews.filter((r: typeof reviews[number]) => r.rating === rating).length,
     }));
 
     return NextResponse.json({

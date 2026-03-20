@@ -44,7 +44,7 @@ export default async function getProducts(params: IProductsParams): Promise<Safe
       });
       
       whereClause.shopId = {
-        in: userShops.map(shop => shop.id)
+        in: userShops.map((shop: typeof userShops[number]) => shop.id)
       };
     }
 

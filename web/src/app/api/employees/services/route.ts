@@ -46,7 +46,7 @@ export async function POST(request: Request) {
       }
     });
 
-    const existingServiceIds = new Set(existingServices.map(s => s.id));
+    const existingServiceIds = new Set(existingServices.map((s: typeof existingServices[number]) => s.id));
     const newServiceIds: string[] = [];
 
     // Process each service
@@ -86,8 +86,8 @@ export async function POST(request: Request) {
 
     // Delete services that are no longer referenced
     const servicesToDelete = existingServices
-      .filter(s => !newServiceIds.includes(s.id))
-      .map(s => s.id);
+      .filter((s: typeof existingServices[number]) => !newServiceIds.includes(s.id))
+      .map((s: typeof existingServices[number]) => s.id);
 
     if (servicesToDelete.length > 0) {
       await prisma.service.deleteMany({
@@ -144,7 +144,7 @@ export async function GET(request: Request) {
     }
 
     // Filter services by the employee's serviceIds
-    const services = employee.listing.services.filter(s =>
+    const services = employee.listing.services.filter((s: typeof employee.listing.services[number]) =>
       employee.serviceIds.includes(s.id)
     );
 

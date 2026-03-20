@@ -188,10 +188,10 @@ export async function GET(request: Request) {
         let filteredPosts = posts;
         
         if (currentUser) {
-            filteredPosts = filteredPosts.filter(post => !post.hiddenBy?.includes(currentUser.id));
-            
+            filteredPosts = filteredPosts.filter((post: typeof filteredPosts[number]) => !post.hiddenBy?.includes(currentUser.id));
+
             if (filter === 'following') {
-                filteredPosts = filteredPosts.filter(post => 
+                filteredPosts = filteredPosts.filter((post: typeof filteredPosts[number]) =>
                     currentUser.following.includes(post.userId) ||
                     post.userId === currentUser.id
                 );

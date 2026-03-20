@@ -89,7 +89,7 @@ export async function PUT(request: Request, { params }: { params: IParams }) {
 
       // 2) Services: upsert existing, create new (no deletions to avoid reservation conflicts)
       const existingServices = await tx.service.findMany({ where: { listingId } });
-      const existingServiceIds = new Set(existingServices.map((s) => s.id));
+      const existingServiceIds = new Set(existingServices.map((s: typeof existingServices[number]) => s.id));
 
       for (const s of incomingServices) {
         const priceInt = Math.round(Number(s.price) || 0);
@@ -120,7 +120,7 @@ export async function PUT(request: Request, { params }: { params: IParams }) {
       let employeesWithNames: Array<EmployeeInput & { fullName: string }> = [];
       
       if (incomingEmployees.length > 0) {
-        const userIds = incomingEmployees.map(emp => emp.userId);
+        const userIds = incomingEmployees.map((emp: EmployeeInput) => emp.userId);
         
         // Validate all users exist AND get their names
         const existingUsers = await tx.user.findMany({
@@ -128,15 +128,15 @@ export async function PUT(request: Request, { params }: { params: IParams }) {
           select: { id: true, name: true }
         });
         
-        const existingUserIds = new Set(existingUsers.map(u => u.id));
-        const missingUserIds = userIds.filter(id => !existingUserIds.has(id));
+        const existingUserIds = new Set(existingUsers.map((u: typeof existingUsers[number]) => u.id));
+        const missingUserIds = userIds.filter((id: string) => !existingUserIds.has(id));
         
         if (missingUserIds.length > 0) {
           throw new Error(`Users not found: ${missingUserIds.join(', ')}`);
         }
 
         // Create lookup map for user names
-        const userNameMap = new Map(existingUsers.map(u => [u.id, u.name || 'Unnamed User']));
+        const userNameMap = new Map(existingUsers.map((u: typeof existingUsers[number]) => [u.id, u.name || 'Unnamed User']));
         
         // Add fullName to each employee
         employeesWithNames = incomingEmployees.map((emp: EmployeeInput) => ({
@@ -152,8 +152,8 @@ export async function PUT(request: Request, { params }: { params: IParams }) {
         },
       });
 
-      const existingByUserId = new Map(existingEmployees.map((e) => [e.userId, e]));
-      const incomingUserIds = new Set(employeesWithNames.map(emp => emp.userId));
+      const existingByUserId = new Map(existingEmployees.map((e: typeof existingEmployees[number]) => [e.userId, e]));
+      const incomingUserIds = new Set(employeesWithNames.map((emp: typeof employeesWithNames[number]) => emp.userId));
 
       // Create or update employees
       for (const empWithName of employeesWithNames) {
@@ -188,9 +188,9 @@ export async function PUT(request: Request, { params }: { params: IParams }) {
       // Delete employees not in incoming list AND not referenced by reservations
       const deletableIds = existingEmployees
         .filter(
-          (e) => !incomingUserIds.has(e.userId) && e.reservations.length === 0
+          (e: typeof existingEmployees[number]) => !incomingUserIds.has(e.userId) && e.reservations.length === 0
         )
-        .map((e) => e.id);
+        .map((e: typeof existingEmployees[number]) => e.id);
 
       if (deletableIds.length) {
         await tx.employee.deleteMany({ where: { id: { in: deletableIds } } });

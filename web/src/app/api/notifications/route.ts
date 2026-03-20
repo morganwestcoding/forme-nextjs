@@ -22,7 +22,7 @@ export async function GET() {
     });
 
     // Format dates as strings
-    const formattedNotifications = notifications.map(notification => ({
+    const formattedNotifications = notifications.map((notification: typeof notifications[number]) => ({
       ...notification,
       createdAt: notification.createdAt.toISOString(),
     }));
