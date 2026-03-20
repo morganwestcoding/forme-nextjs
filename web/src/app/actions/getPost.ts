@@ -149,11 +149,11 @@ export default async function getPosts(params: IPostsParams) {
       }
     }
 
-    const safePosts = filteredPosts.map((post) => {
+    const safePosts = filteredPosts.map((post: typeof filteredPosts[number]) => {
       const user = post.user;
       
       // Process mentions from PostMention relations
-      const mentions: PostMention[] = post.mentions.map((mention) => ({
+      const mentions: PostMention[] = post.mentions.map((mention: typeof post.mentions[number]) => ({
         id: mention.id,
         postId: mention.postId,
         entityId: mention.entityId,
@@ -184,7 +184,7 @@ export default async function getPosts(params: IPostsParams) {
         hiddenBy: post.hiddenBy || [],
         viewedBy: post.viewedBy || [],
         mentions: mentions.length > 0 ? mentions : null, // NEW: Include processed mentions
-        comments: post.comments.map((comment) => ({
+        comments: post.comments.map((comment: typeof post.comments[number]) => ({
           id: comment.id,
           content: comment.content,
           createdAt: comment.createdAt.toISOString(),

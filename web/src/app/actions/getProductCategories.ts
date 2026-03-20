@@ -17,7 +17,7 @@ export default async function getProductCategories() {
     });
 
     // Transform to safe categories
-    const safeCategories = categories.map(category => ({
+    const safeCategories = categories.map((category: typeof categories[number]) => ({
       id: category.id,
       name: category.name,
       description: category.description,

@@ -49,7 +49,7 @@ export default async function getFavoriteWorkers(): Promise<SafeEmployee[]> {
       }
     });
 
-    const safeWorkers: SafeEmployee[] = workers.map((worker) => ({
+    const safeWorkers: SafeEmployee[] = workers.map((worker: typeof workers[number]) => ({
       id: worker.id,
       fullName: worker.fullName,
       jobTitle: worker.jobTitle,

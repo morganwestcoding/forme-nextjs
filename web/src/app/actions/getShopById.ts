@@ -51,7 +51,7 @@ export default async function getShopById(params: IParams) {
         backgroundImage: shop.user.backgroundImage ?? null,
         role: shop.user.role,
       },
-      products: (shop.products ?? []).map((p) => ({
+      products: (shop.products ?? []).map((p: typeof shop.products[number]) => ({
         ...p,
         createdAt: p.createdAt.toISOString(),
         updatedAt: p.updatedAt.toISOString(),

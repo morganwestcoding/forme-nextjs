@@ -100,7 +100,7 @@ export default async function getReservations(params: IParams) {
         location: reservation.listing.location || null,
         userId: reservation.listing.userId,
         createdAt: reservation.listing.createdAt.toISOString(),
-        services: reservation.listing.services.map(service => ({
+        services: reservation.listing.services.map((service: typeof reservation.listing.services[number]) => ({
           id: service.id,
           serviceName: service.serviceName,
           price: service.price,
@@ -114,7 +114,7 @@ export default async function getReservations(params: IParams) {
         // FIXED: Now properly includes user data since we fetch it in the query
         employees: reservation.listing.employees
           .filter(employee => employee.user) // Only include employees with user accounts
-          .map(employee => ({
+          .map((employee: typeof reservation.listing.employees[number]) => ({
             id: employee.id,
             fullName: employee.fullName,
             jobTitle: employee.jobTitle || null,
@@ -133,7 +133,7 @@ export default async function getReservations(params: IParams) {
               imageSrc: employee.user!.imageSrc,
             }
           })),
-        storeHours: reservation.listing.storeHours.map(hour => ({
+        storeHours: reservation.listing.storeHours.map((hour: typeof reservation.listing.storeHours[number]) => ({
           dayOfWeek: hour.dayOfWeek,
           openTime: hour.openTime,
           closeTime: hour.closeTime,

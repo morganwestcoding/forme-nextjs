@@ -45,7 +45,7 @@ export default async function getFavoriteShops(): Promise<SafeShop[]> {
       }
     });
 
-    const safeShops = shops.map((shop) => ({
+    const safeShops = shops.map((shop: typeof shops[number]) => ({
       id: shop.id,
       name: shop.name,
       description: shop.description,
@@ -72,14 +72,14 @@ export default async function getFavoriteShops(): Promise<SafeShop[]> {
         image: shop.user.image,
       },
       // Add computed fields with actual data
-      products: shop.products.map(product => ({
+      products: shop.products.map((product: typeof shop.products[number]) => ({
         name: product.name,
         image: product.mainImage,
         price: product.price,
       })),
       productCount: shop._count.products,
       followerCount: shop.followers?.length || 0,
-      featuredProductItems: shop.products.slice(0, 3).map(product => ({
+      featuredProductItems: shop.products.slice(0, 3).map((product: typeof shop.products[number]) => ({
         id: product.id,
         name: product.name,
         price: product.price,

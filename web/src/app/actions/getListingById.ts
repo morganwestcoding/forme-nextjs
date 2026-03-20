@@ -71,7 +71,7 @@ export default async function getListingById(params: IParams): Promise<(SafeList
       followers: listing.followers || [],
       followerCount: listing.followers?.length || 0,
       favoriteIds: [],
-      services: listing.services.map(service => ({
+      services: listing.services.map((service: typeof listing.services[number]) => ({
         id: service.id,
         serviceName: service.serviceName,
         price: service.price,
@@ -80,7 +80,7 @@ export default async function getListingById(params: IParams): Promise<(SafeList
       })),
       employees: listing.employees
         .filter(employee => employee.user)
-        .map(employee => ({
+        .map((employee: typeof listing.employees[number]) => ({
           id: employee.id,
           fullName: employee.fullName,
           jobTitle: employee.jobTitle || null,
@@ -99,7 +99,7 @@ export default async function getListingById(params: IParams): Promise<(SafeList
             imageSrc: employee.user!.imageSrc,
           }
         })),
-      storeHours: listing.storeHours.map(hour => ({
+      storeHours: listing.storeHours.map((hour: typeof listing.storeHours[number]) => ({
         dayOfWeek: hour.dayOfWeek,
         openTime: hour.openTime,
         closeTime: hour.closeTime,

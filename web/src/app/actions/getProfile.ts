@@ -34,7 +34,7 @@ export default async function getProfiles(params: IProfilesParams) {
       orderBy: { createdAt: order === "asc" ? "asc" : "desc" },
     });
 
-    const safeProfiles = users.map((u) => {
+    const safeProfiles = users.map((u: typeof users[number]) => {
       const followerCount = (u.followers ?? []).length;
       const followingCount = (u.following ?? []).length;
 

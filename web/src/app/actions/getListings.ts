@@ -193,7 +193,7 @@ export default async function getListings(params: IListingsParams = {}): Promise
       followers: listing.followers || [],
       followerCount: listing.followers?.length || 0,
       favoriteIds: [], // This might need to be populated based on your logic
-      services: listing.services.map(service => ({
+      services: listing.services.map((service: typeof listing.services[number]) => ({
         id: service.id,
         serviceName: service.serviceName,
         price: service.price,
@@ -202,7 +202,7 @@ export default async function getListings(params: IListingsParams = {}): Promise
       })),
       employees: listing.employees
         .filter(employee => employee.user) // Ensure user exists
-        .map(employee => ({
+        .map((employee: typeof listing.employees[number]) => ({
           id: employee.id,
           fullName: employee.fullName,
           jobTitle: employee.jobTitle || null,
@@ -222,7 +222,7 @@ export default async function getListings(params: IListingsParams = {}): Promise
             backgroundImage: employee.user!.backgroundImage,
           }
         })),
-      storeHours: listing.storeHours.map(hour => ({
+      storeHours: listing.storeHours.map((hour: typeof listing.storeHours[number]) => ({
         dayOfWeek: hour.dayOfWeek,
         openTime: hour.openTime,
         closeTime: hour.closeTime,

@@ -60,7 +60,7 @@ export default async function getReviews(
     });
 
     // Get user info for each review
-    const userIds = Array.from(new Set(reviews.map(r => r.userId)));
+    const userIds = Array.from(new Set(reviews.map((r: typeof reviews[number]) => r.userId)));
     const users = await prisma.user.findMany({
       where: { id: { in: userIds } },
       select: {
@@ -72,11 +72,11 @@ export default async function getReviews(
       },
     });
 
-    const userMap = new Map(users.map(u => [u.id, u]));
+    const userMap = new Map(users.map((u: typeof users[number]) => [u.id, u]));
 
     // Check for verified bookings
     const reviewsWithBookingStatus = await Promise.all(
-      reviews.map(async (review) => {
+      reviews.map(async (review: typeof reviews[number]) => {
         let isVerifiedBooking = false;
 
         if (targetType === 'user' && targetUserId) {

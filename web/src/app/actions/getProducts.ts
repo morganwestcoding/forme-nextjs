@@ -143,7 +143,7 @@ export default async function getProducts(params: IProductsParams): Promise<Safe
     });
 
     // Transform to safe products
-    const safeProducts = products.map(product => {
+    const safeProducts = products.map((product: typeof products[number]) => {
       // Process JSON fields
       let processedReviews: ProductReview[] | null = null;
       if (product.reviews) {

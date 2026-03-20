@@ -35,7 +35,7 @@ export default async function getFavoritePosts(): Promise<SafePost[]> {
       }
     });
 
-    const safePosts = posts.map((post) => ({
+    const safePosts = posts.map((post: typeof posts[number]) => ({
       id: post.id,
       content: post.content,
       imageSrc: post.imageSrc || null,
@@ -97,7 +97,7 @@ export default async function getFavoritePosts(): Promise<SafePost[]> {
         stripeConnectPayoutsEnabled: post.user.stripeConnectPayoutsEnabled || false,
         stripeConnectOnboardedAt: post.user.stripeConnectOnboardedAt || null,
       },
-      comments: post.comments.map(comment => ({
+      comments: post.comments.map((comment: typeof post.comments[number]) => ({
         id: comment.id,
         content: comment.content,
         userId: comment.userId,
