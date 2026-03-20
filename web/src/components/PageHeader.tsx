@@ -23,9 +23,10 @@ import PageSearch from '@/components/search/PageSearch';
 interface PageHeaderProps {
   currentUser?: SafeUser | null;
   embedded?: boolean;
+  currentCategories?: string[];
 }
 
-const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false }) => {
+const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, currentCategories = [] }) => {
   const router = useRouter();
   const pathname = usePathname();
   const loginModal = useLoginModal();
@@ -168,21 +169,38 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false }
 
           {/* Navigation */}
           <nav className="flex items-center gap-3 mt-4" style={{ paddingLeft: 'calc(72px + 1rem + 1.25rem)' }}>
-            {navItems.map((item, i) => (
-              <React.Fragment key={item.label}>
-                {i > 0 && <span className="text-gray-300 dark:text-gray-600 text-[13px]">/</span>}
+            {currentCategories.length > 0 ? (
+              <>
                 <Link
-                  href={item.href}
-                  className={`text-[14px] transition-colors duration-200 ${
-                    item.active
-                      ? 'text-gray-900 dark:text-white font-medium'
-                      : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-                  }`}
+                  href="/"
+                  className="text-[14px] transition-colors duration-200 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
                 >
-                  {item.label}
+                  Home
                 </Link>
-              </React.Fragment>
-            ))}
+                <span className="text-gray-300 dark:text-gray-600 text-[13px]">/</span>
+                <span className="text-[14px] text-gray-900 dark:text-white font-medium">
+                  {currentCategories.length === 1
+                    ? currentCategories[0]
+                    : `${currentCategories.length} Categories`}
+                </span>
+              </>
+            ) : (
+              navItems.map((item, i) => (
+                <React.Fragment key={item.label}>
+                  {i > 0 && <span className="text-gray-300 dark:text-gray-600 text-[13px]">/</span>}
+                  <Link
+                    href={item.href}
+                    className={`text-[14px] transition-colors duration-200 ${
+                      item.active
+                        ? 'text-gray-900 dark:text-white font-medium'
+                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                </React.Fragment>
+              ))
+            )}
           </nav>
         </div>
       </div>

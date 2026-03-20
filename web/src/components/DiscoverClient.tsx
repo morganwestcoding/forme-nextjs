@@ -385,10 +385,19 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
     <ClientProviders>
       <div className="min-h-screen">
         <Container>
-          <PageHeader currentUser={currentUser} />
+          <PageHeader currentUser={currentUser} currentCategories={currentCategories} />
 
-          {/* Editorial Banner */}
-          <div className="mt-8">
+          {/* Editorial Banner — fades out when filtered */}
+          <div
+            style={{
+              opacity: filterInfo.isFiltered ? 0 : 1,
+              maxHeight: filterInfo.isFiltered ? 0 : '600px',
+              marginTop: filterInfo.isFiltered ? 0 : '2rem',
+              overflow: 'hidden',
+              pointerEvents: filterInfo.isFiltered ? 'none' : 'auto',
+              transition: 'all 900ms ease-in-out',
+            }}
+          >
             <div
               className="relative group overflow-hidden rounded-2xl cursor-pointer"
               onClick={() => router.push(BANNERS[activeBanner].href)}
@@ -472,8 +481,8 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                       <div
                         className={`w-[100px] h-[100px] rounded-full overflow-hidden flex items-center justify-center bg-black transition-all duration-500 ease-out border-2 ${
                           isSelected
-                            ? 'border-zinc-900 dark:border-white scale-105 shadow-lg'
-                            : 'border-stone-200 dark:border-zinc-700 group-hover:border-stone-400 dark:group-hover:border-zinc-500 group-hover:scale-105 group-hover:shadow-md'
+                            ? 'border-zinc-900 dark:border-white shadow-lg'
+                            : 'border-stone-200 dark:border-zinc-700 group-hover:border-stone-400 dark:group-hover:border-zinc-500 group-hover:shadow-md'
                         }`}
                       >
                         {imageSrc && (
@@ -771,12 +780,19 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                     )}
 
                     {/* ===== Results Section Header (when filtered) ===== */}
-                    {filterInfo.isFiltered && filterInfo.resultsHeaderText && (
-                      <SectionHeader
-                        title={filterInfo.resultsHeaderText}
-                        onViewAll={handleBackToMain}
-                        viewAllLabel="← Back to Discover"
-                      />
+                    {filterInfo.isFiltered && (
+                      <div
+                        className="mt-6 mb-4"
+                        style={{
+                          opacity: 0,
+                          animation: 'fadeInUp 600ms ease-out 300ms both',
+                        }}
+                      >
+                        <h2 className="text-[22px] font-semibold text-gray-900 dark:text-white leading-tight">
+                          {allContentItems.length} {allContentItems.length === 1 ? 'Result' : 'Results'}
+                          {filterInfo.resultsHeaderText ? ` — ${filterInfo.resultsHeaderText}` : ''}
+                        </h2>
+                      </div>
                     )}
 
                     {/* ===== Filtered Results Grid ===== */}
@@ -788,7 +804,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                             style={{
                               opacity: 0,
                               animation: `fadeInUp 520ms ease-out both`,
-                              animationDelay: `${Math.min(idx * 30, 300)}ms`,
+                              animationDelay: `${400 + Math.min(idx * 30, 300)}ms`,
                               willChange: 'transform, opacity',
                             }}
                           >
