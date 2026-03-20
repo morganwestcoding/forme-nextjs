@@ -1,4 +1,4 @@
-import type {Listing , User, Reservation, Post} from '.prisma/client'
+import {Listing , User, Reservation, Post} from '@prisma/client'
 
 export type MediaType = 'image' | 'video' | 'gif';
 
