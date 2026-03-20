@@ -48,7 +48,7 @@ export async function POST(request: Request) {
     }
 
     // Format the conversation to match your SafeConversation type
-    const otherUser = updatedConversation.users.find(user => user.id !== currentUser.id);
+    const otherUser = updatedConversation.users.find((user: typeof updatedConversation.users[number]) => user.id !== currentUser.id);
     const lastMessage = updatedConversation.messages[0];
     
     const safeConversation = {

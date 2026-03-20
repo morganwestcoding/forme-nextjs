@@ -19,7 +19,7 @@ export default async function getReservations(params: IParams) {
         where: { userId: authorId },
         select: { id: true }
       });
-      validListingIds = authorListings.map(l => l.id);
+      validListingIds = authorListings.map((l: typeof authorListings[number]) => l.id);
     } else if (listingId) {
       const listing = await prisma.listing.findUnique({
         where: { id: listingId },
@@ -30,7 +30,7 @@ export default async function getReservations(params: IParams) {
       const allListings = await prisma.listing.findMany({
         select: { id: true }
       });
-      validListingIds = allListings.map(l => l.id);
+      validListingIds = allListings.map((l: typeof allListings[number]) => l.id);
     }
 
     // If no valid listings found, return empty array
