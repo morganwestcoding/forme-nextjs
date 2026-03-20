@@ -136,7 +136,7 @@ export async function PUT(request: Request, { params }: { params: IParams }) {
         }
 
         // Create lookup map for user names
-        const userNameMap = new Map(existingUsers.map((u: typeof existingUsers[number]) => [u.id, u.name || 'Unnamed User']));
+        const userNameMap = new Map<string, string>(existingUsers.map((u: typeof existingUsers[number]) => [u.id, u.name || 'Unnamed User']));
         
         // Add fullName to each employee
         employeesWithNames = incomingEmployees.map((emp: EmployeeInput) => ({
@@ -152,7 +152,7 @@ export async function PUT(request: Request, { params }: { params: IParams }) {
         },
       });
 
-      const existingByUserId = new Map(existingEmployees.map((e: typeof existingEmployees[number]) => [e.userId, e]));
+      const existingByUserId = new Map<string, typeof existingEmployees[number]>(existingEmployees.map((e: typeof existingEmployees[number]) => [e.userId, e]));
       const incomingUserIds = new Set(employeesWithNames.map((emp: typeof employeesWithNames[number]) => emp.userId));
 
       // Create or update employees

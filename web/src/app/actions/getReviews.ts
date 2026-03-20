@@ -72,7 +72,7 @@ export default async function getReviews(
       },
     });
 
-    const userMap = new Map(users.map((u: typeof users[number]) => [u.id, u]));
+    const userMap = new Map<string, typeof users[number]>(users.map((u: typeof users[number]) => [u.id, u]));
 
     // Check for verified bookings
     const reviewsWithBookingStatus = await Promise.all(

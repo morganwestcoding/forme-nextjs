@@ -133,7 +133,7 @@ export async function POST(request: Request) {
       }
 
       // Create lookup map for user names
-      const userNameMap = new Map(existingUsers.map((u: typeof existingUsers[number]) => [u.id, u.name || 'Unnamed User']));
+      const userNameMap = new Map<string, string>(existingUsers.map((u: typeof existingUsers[number]) => [u.id, u.name || 'Unnamed User']));
       
       // Add fullName to each employee
       employeesWithNames = employees.map((emp: EmployeeInput) => ({
