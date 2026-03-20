@@ -113,7 +113,7 @@ export default async function getReservations(params: IParams) {
         galleryImages: reservation.listing.galleryImages || [],
         // FIXED: Now properly includes user data since we fetch it in the query
         employees: reservation.listing.employees
-          .filter(employee => employee.user) // Only include employees with user accounts
+          .filter((employee: typeof reservation.listing.employees[number]) => employee.user)
           .map((employee: typeof reservation.listing.employees[number]) => ({
             id: employee.id,
             fullName: employee.fullName,

@@ -139,10 +139,10 @@ export default async function getPosts(params: IPostsParams) {
     let filteredPosts = allPosts;
 
     if (currentUser) {
-      filteredPosts = filteredPosts.filter(post => !post.hiddenBy?.includes(currentUser.id));
-      
+      filteredPosts = filteredPosts.filter((post: typeof filteredPosts[number]) => !post.hiddenBy?.includes(currentUser.id));
+
       if (filter === 'following') {
-        filteredPosts = filteredPosts.filter(post => 
+        filteredPosts = filteredPosts.filter((post: typeof filteredPosts[number]) =>
           currentUser.following.includes(post.userId) ||
           post.userId === currentUser.id
         );

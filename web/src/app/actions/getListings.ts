@@ -201,7 +201,7 @@ export default async function getListings(params: IListingsParams = {}): Promise
         imageSrc: service.imageSrc,
       })),
       employees: listing.employees
-        .filter(employee => employee.user) // Ensure user exists
+        .filter((employee: typeof listing.employees[number]) => employee.user)
         .map((employee: typeof listing.employees[number]) => ({
           id: employee.id,
           fullName: employee.fullName,

@@ -133,7 +133,7 @@ export default async function getReviews(
     // Rating distribution
     const ratingDistribution = [1, 2, 3, 4, 5].map(rating => ({
       rating,
-      count: allReviews.filter(r => r.rating === rating).length,
+      count: allReviews.filter((r: typeof allReviews[number]) => r.rating === rating).length,
     }));
 
     return {

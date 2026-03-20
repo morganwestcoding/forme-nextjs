@@ -79,7 +79,7 @@ export default async function getListingById(params: IParams): Promise<(SafeList
         imageSrc: service.imageSrc,
       })),
       employees: listing.employees
-        .filter(employee => employee.user)
+        .filter((employee: typeof listing.employees[number]) => employee.user)
         .map((employee: typeof listing.employees[number]) => ({
           id: employee.id,
           fullName: employee.fullName,
