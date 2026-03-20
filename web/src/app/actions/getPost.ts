@@ -118,7 +118,10 @@ export default async function getPosts(params: IPostsParams) {
     }
 
     const allPosts = await prisma.post.findMany({
-      where: query,
+      where: {
+        ...query,
+        user: { isNot: null },
+      },
       include: {
         user: true,
         mentions: true,
