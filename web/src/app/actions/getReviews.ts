@@ -127,7 +127,7 @@ export default async function getReviews(
 
     // Calculate average rating
     const avgRating = allReviews.length > 0
-      ? allReviews.reduce((sum, r) => sum + r.rating, 0) / allReviews.length
+      ? allReviews.reduce((sum: number, r: typeof allReviews[number]) => sum + r.rating, 0) / allReviews.length
       : 0;
 
     // Rating distribution

@@ -103,7 +103,7 @@ export async function POST(request: Request) {
 
       const totalRatings = allListingReviews.length;
       const avgRating = totalRatings > 0
-        ? allListingReviews.reduce((sum, r) => sum + r.rating, 0) / totalRatings
+        ? allListingReviews.reduce((sum: number, r: typeof allListingReviews[number]) => sum + r.rating, 0) / totalRatings
         : null;
 
       // Update the listing with the new rating

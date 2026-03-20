@@ -121,7 +121,7 @@ export default async function getShops(params: IShopsParams): Promise<SafeShop[]
     });
 
     const filtered = hasProducts
-      ? shopsRaw.filter((s) => (s.products?.length ?? 0) > 0)
+      ? shopsRaw.filter((s: typeof shopsRaw[number]) => (s.products?.length ?? 0) > 0)
       : shopsRaw;
 
     return filtered.map(toSafeShop);

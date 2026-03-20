@@ -29,7 +29,7 @@ export async function GET(
   if (!post) return new NextResponse("Not found", { status: 404 });
 
   // Process mentions from PostMention relations
-  const mentions: PostMention[] = post.mentions.map((mention) => ({
+  const mentions: PostMention[] = post.mentions.map((mention: typeof post.mentions[number]) => ({
     id: mention.id,
     postId: mention.postId,
     entityId: mention.entityId,
