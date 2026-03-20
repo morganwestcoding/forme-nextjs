@@ -76,7 +76,7 @@ export default async function getReservations(params: IParams) {
       },
     });
 
-    const safeReservations = reservations.map((reservation): SafeReservation => ({
+    const safeReservations = reservations.map((reservation: typeof reservations[number]): SafeReservation => ({
       id: reservation.id,
       userId: reservation.userId,
       listingId: reservation.listingId,
