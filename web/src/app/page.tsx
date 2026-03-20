@@ -35,10 +35,10 @@ const Discover = async ({ searchParams }: PostProps) => {
     limit: 20 // Limit for performance
   };
 
-  // Fetch all data in parallel
+  // Fetch all data in parallel — catch individually so one failure doesn't crash the page
   const [posts, currentUser, listings, shops] = await Promise.all([
-    getPosts({ 
-      ...searchParams, 
+    getPosts({
+      ...searchParams,
       category: categoryToUse,
       filter: filter as 'following' | 'for-you' | 'likes' | 'bookmarks'
     }),

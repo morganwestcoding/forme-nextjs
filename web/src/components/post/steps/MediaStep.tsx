@@ -220,7 +220,6 @@ const MediaStep: React.FC<MediaStepProps> = ({
                   <UploadBox
                     target="after"
                     imageSrc={mediaSrc}
-                    isVideo={mediaType === 'video'}
                     label="After"
                     onRemove={() => onMediaChange('', 'image')}
                   />

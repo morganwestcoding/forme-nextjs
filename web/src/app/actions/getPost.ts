@@ -121,7 +121,7 @@ export default async function getPosts(params: IPostsParams) {
       where: query,
       include: {
         user: true,
-        mentions: true, // NEW: Include PostMention relations
+        mentions: true,
         comments: {
           include: {
             user: true
@@ -183,7 +183,7 @@ export default async function getPosts(params: IPostsParams) {
         bookmarks: post.bookmarks || [],
         hiddenBy: post.hiddenBy || [],
         viewedBy: post.viewedBy || [],
-        mentions: mentions.length > 0 ? mentions : null, // NEW: Include processed mentions
+        mentions: mentions.length > 0 ? mentions : null,
         comments: post.comments.map((comment: typeof post.comments[number]) => ({
           id: comment.id,
           content: comment.content,
