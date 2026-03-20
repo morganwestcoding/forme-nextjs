@@ -300,7 +300,7 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
         <div className={`min-h-screen bg-[#09090B] flex items-center justify-center ${isFadingOut ? 'loader-fade-out' : ''}`}>
           <div className="text-center">
             <img
-              src="/logos/logo-white.svg"
+              src="/logos/fm-logo-white.png"
               alt="ForMe Logo"
               className="loader-logo h-12 w-auto mx-auto mb-10"
               style={{ opacity: 0 }}

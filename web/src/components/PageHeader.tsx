@@ -24,9 +24,10 @@ interface PageHeaderProps {
   currentUser?: SafeUser | null;
   embedded?: boolean;
   currentCategories?: string[];
+  hideLogo?: boolean;
 }
 
-const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, currentCategories = [] }) => {
+const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, currentCategories = [], hideLogo = false }) => {
   const router = useRouter();
   const pathname = usePathname();
   const loginModal = useLoginModal();
@@ -40,6 +41,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
 
   const navItems = [
     { label: "Home", href: "/", active: isNavActive("/", ["/post", "/listings"]) },
+    { label: "Newsfeed", href: "/newsfeed", active: isNavActive("/newsfeed") },
     { label: "Maps", href: "/maps", active: isNavActive("/maps") },
     { label: "Brands", href: "/shops", active: isNavActive("/shops") },
     ...(currentUser ? [
@@ -54,9 +56,8 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
         <div className="relative z-10 pb-0">
           {/* Search and Controls */}
           <div className="flex items-center gap-3 w-full">
-            <Link href="/" className="mr-4">
-              <Image src="/logos/fm-logo.png" alt="Logo" width={72} height={46} className="opacity-90 hover:opacity-100 transition-opacity duration-200 shrink-0" />
-            </Link>
+            {/* Invisible spacer — real logo rendered by LayoutContent outside fade */}
+            <div className="mr-4 shrink-0" style={{ width: 72, height: 46 }} />
             <div className="flex-1 max-w-xl">
               <PageSearch
                 actionContext="discover"
@@ -124,13 +125,13 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
               </button>
               <DropdownMenu>
                 <DropdownMenuTrigger className="outline-none">
-                  <div className="shrink-0 w-10 h-10 rounded-full overflow-hidden border border-zinc-200 dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-500 transition-colors cursor-pointer">
+                  <div className="shrink-0 w-12 h-12 rounded-full overflow-hidden cursor-pointer" style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.08)' }}>
                     {currentUser?.image ? (
                       <Image
                         src={currentUser.image}
                         alt="Profile"
-                        width={40}
-                        height={40}
+                        width={48}
+                        height={48}
                         className="object-cover w-full h-full"
                       />
                     ) : (

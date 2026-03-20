@@ -3,10 +3,8 @@
 
 import React, { useState, useRef } from 'react';
 import Image from 'next/image';
-import axios from 'axios';
+import { useRouter } from 'next/navigation';
 import { SafePost, SafeUser } from '@/app/types';
-import usePostModal from '@/app/hooks/usePostModal';
-import { usePostStore } from '@/app/hooks/usePostStore';
 import HeartButton from '../HeartButton';
 
 interface PostCardProps {
@@ -19,9 +17,8 @@ interface PostCardProps {
 }
 
 const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, isHero = false }) => {
-  const postModal = usePostModal();
-  const { posts } = usePostStore();
-  const post = posts.find((p) => p.id === initialPost.id) || initialPost;
+  const router = useRouter();
+  const post = initialPost;
 
   const [imageLoaded, setImageLoaded] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
@@ -36,17 +33,8 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, isH
 
 
 
-  const handleCardClick = async () => {
-    try {
-      const postIndex = posts.findIndex((p) => p.id === post.id);
-      const res = await axios.get(`/api/post/${post.id}`);
-      postModal.onOpen(res.data, currentUser, undefined, posts, postIndex >= 0 ? postIndex : 0);
-      axios.post(`/api/post/${post.id}/view`).catch(() => {});
-    } catch {
-      const postIndex = posts.findIndex((p) => p.id === post.id);
-      postModal.onOpen(post, currentUser, undefined, posts, postIndex >= 0 ? postIndex : 0);
-      axios.post(`/api/post/${post.id}/view`).catch(() => {});
-    }
+  const handleCardClick = () => {
+    router.push(`/newsfeed?postId=${post.id}`);
   };
 
   const handleMouseEnter = () => {

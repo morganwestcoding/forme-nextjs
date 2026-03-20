@@ -52,7 +52,7 @@ const MapsClient: React.FC<MapsClientProps> = ({ listings, currentUser }) => {
 
   const navigateAway = useCallback((href: string) => {
     setExiting(true);
-    setTimeout(() => router.push(href), 350);
+    setTimeout(() => router.push(href), 400);
   }, [router]);
   const [filter, setFilter] = useState<'all' | 'listing' | 'worker'>('all');
   const [sort, setSort] = useState<'nearest' | 'name'>('nearest');
@@ -315,16 +315,31 @@ const MapsClient: React.FC<MapsClientProps> = ({ listings, currentUser }) => {
     map.current?.flyTo({ center: [item.lng, item.lat], zoom: 14, duration: 800 });
   };
 
-  const ready = mapReady;
+  const [showUI, setShowUI] = useState(false);
+  useEffect(() => {
+    if (mapReady) {
+      // Double rAF — same pattern as discover logo
+      // Guarantees browser paints at opacity 0 before transitioning to 1
+      let cancelled = false;
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (!cancelled) setShowUI(true);
+        });
+      });
+      return () => { cancelled = true; };
+    }
+    setShowUI(false);
+  }, [mapReady]);
+  const ready = showUI;
 
   return (
-    <div className="fixed inset-0 bg-zinc-950" style={{ opacity: exiting ? 0 : 1, transition: 'opacity 0.35s ease-out' }}>
+    <div className="fixed inset-0 bg-zinc-950" style={{ opacity: exiting ? 0 : (ready ? 1 : 0), transition: 'opacity 0.4s ease-out' }}>
       {/* Sidebar — floating, detached from edges */}
       <div
         className="absolute top-4 left-8 bottom-4 w-[370px] flex flex-col bg-white border border-stone-200/80 rounded-2xl z-10 shadow-2xl shadow-black/10 overflow-hidden px-8 pb-5 pt-7 gap-4"
         style={{
           opacity: ready ? 1 : 0,
-          transition: 'opacity 0.6s ease-out 0.1s',
+          transition: 'opacity 0.4s ease-out',
         }}
       >
         {/* Back + Logo */}
@@ -332,7 +347,7 @@ const MapsClient: React.FC<MapsClientProps> = ({ listings, currentUser }) => {
           className="flex items-center justify-between"
           style={{
             opacity: ready ? 1 : 0,
-            transition: 'opacity 0.5s ease-out 0.25s',
+            transition: 'opacity 0.4s ease-out',
           }}
         >
           <Image src="/logos/fm-logo.png" alt="Logo" width={72} height={46} className="opacity-90 shrink-0 mt-[1.2px]" />
