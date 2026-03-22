@@ -4,10 +4,9 @@ import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { format, isSameDay } from 'date-fns';
 
-import TypeformStep from '../registration/TypeformStep';
 import TypeformProgress from '../registration/TypeformProgress';
 import TypeformNavigation from '../registration/TypeformNavigation';
 
@@ -376,25 +375,30 @@ export default function ReservationFlow({
       {/* Main content */}
       <div className="flex-1 flex items-center justify-center px-6 py-12">
         <div className="w-full max-w-xl">
-          {/* Business header */}
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-10 h-10 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
-              <img
-                src={listing.imageSrc || '/placeholder.jpg'}
-                alt={listing.title}
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-gray-900">{listing.title}</p>
-              <p className="text-xs text-gray-500">Booking appointment</p>
-            </div>
-          </div>
-
-          <AnimatePresence mode="wait" custom={direction}>
-            <TypeformStep key={step} direction={direction}>
+          <AnimatePresence initial={false} mode="wait" custom={direction}>
+            <motion.div
+              key={step}
+              custom={direction}
+              initial={(d: number) => ({ opacity: 0, y: d > 0 ? 30 : -30 })}
+              animate={{ opacity: 1, y: 0, transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] } }}
+              exit={(d: number) => ({ opacity: 0, y: d > 0 ? -15 : 15, transition: { duration: 0.25, ease: [0.22, 1, 0.36, 1] } })}
+            >
+              {/* Business header */}
+              <div className="flex items-center gap-3 mb-8">
+                <div className="w-10 h-10 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                  <img
+                    src={listing.imageSrc || '/placeholder.jpg'}
+                    alt={listing.title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-900">{listing.title}</p>
+                  <p className="text-xs text-gray-500">Booking appointment</p>
+                </div>
+              </div>
               {renderStep()}
-            </TypeformStep>
+            </motion.div>
           </AnimatePresence>
         </div>
       </div>
