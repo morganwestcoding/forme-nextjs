@@ -33,7 +33,7 @@ export default function ShopProductsStep({
         subtitle="Showcase the items you offer (optional)"
       />
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+      <div className="flex flex-wrap gap-3">
         {products.map((product, index) => {
           const src =
             (product.images && product.images.length > 0 ? product.images[0] : product.image) ||
@@ -42,7 +42,8 @@ export default function ShopProductsStep({
             <motion.div
               key={`${product.name}-${index}`}
               variants={itemVariants}
-              className="relative aspect-square rounded-xl overflow-hidden border border-gray-200 group"
+              className="relative rounded-xl overflow-hidden border border-gray-200 group"
+              style={{ width: '175px', height: '175px' }}
             >
               <Image
                 src={src}
@@ -72,7 +73,8 @@ export default function ShopProductsStep({
           type="button"
           onClick={onAddProduct}
           variants={itemVariants}
-          className="aspect-square rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 hover:border-gray-400 hover:bg-gray-100 transition-all flex flex-col items-center justify-center gap-2"
+          className="rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 hover:border-gray-400 hover:bg-gray-100 transition-all flex flex-col items-center justify-center gap-2"
+          style={{ width: '175px', height: '175px' }}
         >
           <svg className="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />

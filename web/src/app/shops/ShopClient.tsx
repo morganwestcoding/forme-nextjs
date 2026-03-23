@@ -250,8 +250,12 @@ const ShopClient: React.FC<ShopClientProps> = ({
 
   // Responsive grid - adds 1 column when sidebar is collapsed
   const gridColsClass = isSidebarCollapsed
-    ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3'
-    : 'grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3';
+    ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5'
+    : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5';
+
+  const shopGridColsClass = isSidebarCollapsed
+    ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3'
+    : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3';
 
   // Reset pagination on sidebar change
   useEffect(() => {
@@ -538,7 +542,7 @@ const ShopClient: React.FC<ShopClientProps> = ({
                     onViewAll={handleBackToMain}
                     viewAllLabel="← Back to Shops"
                   />
-                  <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
+                  <div className={`grid ${shopGridColsClass} gap-4 transition-all duration-300`}>
                     {shops.map((shop, idx) => (
                       <div
                         key={shop.id}
@@ -565,7 +569,7 @@ const ShopClient: React.FC<ShopClientProps> = ({
                     onViewAll={handleBackToMain}
                     viewAllLabel="← Back to Shops"
                   />
-                  <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
+                  <div className={`grid ${gridColsClass} gap-0.5 overflow-hidden rounded-xl transition-all duration-300`}>
                     {products.map((product, idx) => (
                       <div
                         key={product.id}
@@ -596,7 +600,7 @@ const ShopClient: React.FC<ShopClientProps> = ({
                         onViewAll={handleViewAllShops}
                       />
                       <div id="shops-rail">
-                        <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
+                        <div className={`grid ${shopGridColsClass} gap-4 transition-all duration-300`}>
                           {currentShops.map((shop, idx) => (
                             <div
                               key={`${shop.id}-${shopsIndex}`}
@@ -627,7 +631,7 @@ const ShopClient: React.FC<ShopClientProps> = ({
                         onViewAll={handleViewAllProducts}
                       />
                       <div id="products-rail">
-                        <div className={`grid ${gridColsClass} gap-4 pb-8 transition-all duration-300`}>
+                        <div className={`grid ${gridColsClass} gap-0.5 overflow-hidden rounded-xl pb-8 transition-all duration-300`}>
                           {currentProducts.map((product, idx) => (
                             <div
                               key={`${product.id}-${productsIndex}`}
@@ -659,7 +663,7 @@ const ShopClient: React.FC<ShopClientProps> = ({
 
                   {/* ===== Filtered Results - Shops Grid ===== */}
                   {filterInfo.isFiltered && hasShops && (
-                    <div className={`grid ${gridColsClass} gap-4 mb-8 transition-all duration-300`}>
+                    <div className={`grid ${shopGridColsClass} gap-4 mb-8 transition-all duration-300`}>
                       {shops.map((shop, idx) => (
                         <div
                           key={shop.id}
@@ -678,7 +682,7 @@ const ShopClient: React.FC<ShopClientProps> = ({
 
                   {/* ===== Filtered Results - Products Grid ===== */}
                   {filterInfo.isFiltered && hasProducts && (
-                    <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
+                    <div className={`grid ${gridColsClass} gap-0.5 overflow-hidden rounded-xl transition-all duration-300`}>
                       {products.map((product, idx) => (
                         <div
                           key={product.id}

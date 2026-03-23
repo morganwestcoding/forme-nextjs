@@ -448,7 +448,7 @@ export default function ListingFlow({ mode = 'create', listingId, initialData }:
 
         {/* Main content */}
         <div className="flex-1 flex items-center justify-center px-6 py-12">
-          <div className="w-full max-w-xl">
+          <div className="w-full max-w-2xl">
             <AnimatePresence mode="wait" custom={direction}>
               <TypeformStep key={step} direction={direction}>
                 {renderStep()}

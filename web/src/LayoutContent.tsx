@@ -17,7 +17,7 @@ export default function LayoutContent({ children }: LayoutContentProps) {
   // Skip animation for full-screen pages (they have their own layouts)
   const isFullScreenPage = pathname?.startsWith('/register') || pathname?.startsWith('/listing/new') || pathname?.startsWith('/reserve') || pathname?.startsWith('/post/new') || pathname?.startsWith('/maps') || pathname?.startsWith('/newsfeed');
 
-  const hideLogoOnPage = pathname?.startsWith('/profile') || pathname?.startsWith('/listings');
+  const hideLogoOnPage = pathname?.startsWith('/profile') || pathname?.startsWith('/listings') || pathname?.startsWith('/listing/') || pathname?.startsWith('/shop/') || pathname?.startsWith('/shops/');
 
   const [collapsed, setCollapsed] = useState(false);
   const [fadeKey, setFadeKey] = useState(0);

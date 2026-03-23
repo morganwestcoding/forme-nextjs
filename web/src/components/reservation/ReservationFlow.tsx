@@ -383,20 +383,6 @@ export default function ReservationFlow({
               animate={{ opacity: 1, y: 0, transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] } }}
               exit={(d: number) => ({ opacity: 0, y: d > 0 ? -15 : 15, transition: { duration: 0.25, ease: [0.22, 1, 0.36, 1] } })}
             >
-              {/* Business header */}
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-10 h-10 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
-                  <img
-                    src={listing.imageSrc || '/placeholder.jpg'}
-                    alt={listing.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-900">{listing.title}</p>
-                  <p className="text-xs text-gray-500">Booking appointment</p>
-                </div>
-              </div>
               {renderStep()}
             </motion.div>
           </AnimatePresence>

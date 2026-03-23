@@ -53,12 +53,13 @@ export default function GalleryStep({
         subtitle="Showcase your work with additional images (optional)"
       />
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="flex flex-wrap gap-3">
         {galleryImages.map((imgUrl, i) => (
           <motion.div
             key={`gallery-${i}`}
             variants={itemVariants}
-            className="relative aspect-square rounded-xl overflow-hidden group"
+            className="relative rounded-xl overflow-hidden group"
+            style={{ width: '175px', height: '175px' }}
           >
             <Image
               src={imgUrl}
@@ -98,7 +99,8 @@ export default function GalleryStep({
               type="button"
               onClick={() => open?.()}
               variants={itemVariants}
-              className="aspect-square rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 hover:border-gray-400 hover:bg-gray-100 transition-all flex flex-col items-center justify-center gap-2"
+              className="rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 hover:border-gray-400 hover:bg-gray-100 transition-all flex flex-col items-center justify-center gap-2"
+              style={{ width: '175px', height: '175px' }}
             >
               {uploading ? (
                 <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />

@@ -1,16 +1,12 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import { Link02Icon, UserAdd01Icon, UserCheck01Icon, Location01Icon, Call02Icon, Globe02Icon, Share08Icon } from 'hugeicons-react';
+import { toast } from 'react-hot-toast';
 import ProductCard from './ProductCard';
-import ShopCard from './ShopCard';
 import WorkerCard from '../listings/WorkerCard';
 import PostCard from '../feed/PostCard';
-import ShopCategoryNav from './ShopCategoryNav';
-import SectionHeader from '@/app/market/SectionHeader';
 import { SafePost, SafeUser, SafeShop, SafeProduct } from '@/app/types';
 import useFavorite from '@/app/hooks/useFavorite';
 import VerificationBadge from '@/components/VerificationBadge';
@@ -27,7 +23,6 @@ interface ShopHeadProps {
   Products: SafeProduct[];
   posts?: SafePost[];
   categories?: any[];
-  relatedShops?: SafeShop[];
 }
 
 const ShopHead: React.FC<ShopHeadProps> = ({
@@ -35,8 +30,7 @@ const ShopHead: React.FC<ShopHeadProps> = ({
   currentUser,
   Products = [],
   posts = [],
-  categories = [],
-  relatedShops = []
+  categories = []
 }) => {
   const router = useRouter();
 
@@ -59,29 +53,32 @@ const ShopHead: React.FC<ShopHeadProps> = ({
   const phoneNumber = (shop as any).phoneNumber;
   const website = (shop as any).website;
 
+  const starGradientId = `starGrad-${React.useId().replace(/:/g, '')}`;
+
   const initialFollowers = useMemo<string[]>(
     () => (Array.isArray(initialFollowersRaw) ? initialFollowersRaw : []),
     [initialFollowersRaw]
   );
   const [followers, setFollowers] = useState<string[]>(initialFollowers);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [chatInput, setChatInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<'About' | 'Products' | 'Professionals' | 'Posts' | 'Reviews' | null>(null);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
-  // Listen for sidebar collapse changes
-  React.useEffect(() => {
-    const checkSidebar = () => setSidebarCollapsed(localStorage.getItem('sidebarCollapsed') === 'true');
-    checkSidebar();
-    window.addEventListener('sidebarToggle', checkSidebar);
-    return () => window.removeEventListener('sidebarToggle', checkSidebar);
+  const leftColumnRef = useRef<HTMLDivElement>(null);
+  const rightColumnRef = useRef<HTMLDivElement>(null);
+
+  // Forward scroll events from left column to right column
+  useEffect(() => {
+    const leftCol = leftColumnRef.current;
+    const rightCol = rightColumnRef.current;
+    if (!leftCol || !rightCol) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      rightCol.scrollTop += e.deltaY;
+    };
+
+    leftCol.addEventListener('wheel', handleWheel, { passive: false });
+    return () => leftCol.removeEventListener('wheel', handleWheel);
   }, []);
-
-  // Responsive grid - matches Market pattern, adds 1 column when sidebar is collapsed
-  const gridColsClass = sidebarCollapsed
-    ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3'
-    : 'grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3';
 
   const isFollowing = !!currentUser?.id && followers.includes(currentUser.id);
 
@@ -91,6 +88,34 @@ const ShopHead: React.FC<ShopHeadProps> = ({
   });
 
   const mainImage = coverImage || logo || galleryImages?.[0] || '/placeholder.jpg';
+
+  // Extract dominant color from shop image
+  const [dominantColor, setDominantColor] = useState<string | null>(null);
+  useEffect(() => {
+    if (!mainImage || mainImage === '/placeholder.jpg') return;
+    const img = new window.Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      try {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        canvas.width = 20;
+        canvas.height = 20;
+        ctx.drawImage(img, 0, 0, 20, 20);
+        const data = ctx.getImageData(0, 0, 20, 20).data;
+        let r = 0, g = 0, b = 0, count = 0;
+        for (let i = 0; i < data.length; i += 4) {
+          const brightness = (data[i] + data[i + 1] + data[i + 2]) / 3;
+          if (brightness > 30 && brightness < 220) {
+            r += data[i]; g += data[i + 1]; b += data[i + 2]; count++;
+          }
+        }
+        if (count > 0) setDominantColor(`${Math.round(r / count)}, ${Math.round(g / count)}, ${Math.round(b / count)}`);
+      } catch {}
+    };
+    img.src = mainImage;
+  }, [mainImage]);
 
   const isOwner = !!currentUser?.id && currentUser.id === user?.id;
   const isEmployee = !!currentUser?.id && employees.some((emp: any) => emp.userId === currentUser.id);
@@ -131,26 +156,16 @@ const ShopHead: React.FC<ShopHeadProps> = ({
     }
   };
 
-  const MOCK_PRODUCTS: SafeProduct[] = useMemo(() => [
-    { id: 'mp1', name: 'Classic Service', description: 'Our signature offering', price: 45, mainImage: shop.logo || '/placeholder.jpg', galleryImages: [], shopId: shop.id, createdAt: '', updatedAt: '', categoryId: '', category: { id: '', name: 'General' }, tags: [], isPublished: true, isFeatured: true, inventory: 99, lowStockThreshold: 5, shop: { id: shop.id, name: shop.name, logo: shop.logo }, favoritedBy: [] },
-    { id: 'mp2', name: 'Premium Package', description: 'Deluxe treatment experience', price: 85, mainImage: shop.coverImage || shop.logo || '/placeholder.jpg', galleryImages: [], shopId: shop.id, createdAt: '', updatedAt: '', categoryId: '', category: { id: '', name: 'General' }, tags: [], isPublished: true, isFeatured: true, inventory: 99, lowStockThreshold: 5, shop: { id: shop.id, name: shop.name, logo: shop.logo }, favoritedBy: [] },
-    { id: 'mp3', name: 'Express Treatment', description: 'Quick & effective', price: 30, mainImage: shop.galleryImages?.[0] || shop.logo || '/placeholder.jpg', galleryImages: [], shopId: shop.id, createdAt: '', updatedAt: '', categoryId: '', category: { id: '', name: 'General' }, tags: [], isPublished: true, isFeatured: true, inventory: 99, lowStockThreshold: 5, shop: { id: shop.id, name: shop.name, logo: shop.logo }, favoritedBy: [] },
-    { id: 'mp4', name: 'VIP Experience', description: 'The full luxury package', price: 120, mainImage: shop.galleryImages?.[1] || shop.coverImage || shop.logo || '/placeholder.jpg', galleryImages: [], shopId: shop.id, createdAt: '', updatedAt: '', categoryId: '', category: { id: '', name: 'General' }, tags: [], isPublished: true, isFeatured: true, inventory: 99, lowStockThreshold: 5, shop: { id: shop.id, name: shop.name, logo: shop.logo }, favoritedBy: [] },
-  ], [shop.id, shop.name, shop.logo, shop.coverImage, shop.galleryImages]);
+  const handleEditShop = () => {
+    setShowDropdown(false);
+    router.push(`/shops/${shop.id}/edit`);
+  };
 
   const validProducts = useMemo(() => {
-    const real = (Products || []).filter(
+    return (Products || []).filter(
       (p) => (p.name?.trim()?.length ?? 0) > 0 && Number(p.price) > 0
     );
-    return real.length > 0 ? real : MOCK_PRODUCTS;
-  }, [Products, MOCK_PRODUCTS]);
-
-  const handleAddProduct = () => {
-    if (!isOwner) return;
-    const url = new URL(window.location.href);
-    url.searchParams.set('addProduct', '1');
-    router.push(`${url.pathname}?${url.searchParams.toString()}`, { scroll: false });
-  };
+  }, [Products]);
 
   const handleAddWorker = () => {
     if (!isOwner) return;
@@ -183,18 +198,6 @@ const ShopHead: React.FC<ShopHeadProps> = ({
 
   const operatingStatus = getOperatingStatus();
 
-  // AI chat submit handler
-  const handleChatSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!chatInput.trim() || isLoading) return;
-    setIsLoading(true);
-    console.log('Chat query:', chatInput);
-    setTimeout(() => {
-      setIsLoading(false);
-      setChatInput('');
-    }, 500);
-  };
-
   return (
     <>
       {/* Dropdown backdrop */}
@@ -215,11 +218,11 @@ const ShopHead: React.FC<ShopHeadProps> = ({
             <>
               {isOwner && (
                 <>
-                  <button onClick={handleAddProduct} className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-4" type="button">
+                  <button onClick={handleEditShop} className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-4" type="button">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
-                      <path d="M12 5v14M5 12h14"/>
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/>
                     </svg>
-                    Add Product
+                    Edit Shop
                   </button>
                   <button onClick={() => { setShowDropdown(false); handleAddWorker(); }} className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-4" type="button">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
@@ -251,518 +254,462 @@ const ShopHead: React.FC<ShopHeadProps> = ({
         </div>
       )}
 
-      {/* ========== SHOP HEADER ========== */}
-      <div className="-mx-6 md:-mx-24 -mt-2 md:-mt-8">
-        <div className="relative px-6 md:px-24 pt-12 pb-8">
+      {/* ========== TWO-COLUMN LAYOUT ========== */}
+      <div className="flex gap-6 -mx-6 md:-mx-24 px-6 md:px-24 -mt-2 md:-mt-8 md:h-[calc(100vh-2rem)] md:overflow-hidden">
 
-          {/* Centered Layout - Like Market */}
-          <div className="text-center">
+        {/* ===== LEFT COLUMN - Shop Card ===== */}
+        <div ref={leftColumnRef} className="w-[320px] flex-shrink-0 hidden md:flex flex-col gap-4 py-10">
+          <div
+            className="rounded-2xl overflow-hidden border border-stone-200/40 shadow-sm transition-colors duration-700"
+            style={{
+              background: dominantColor
+                ? `linear-gradient(180deg, rgba(${dominantColor}, 0.06) 0%, rgba(${dominantColor}, 0.02) 40%, white 100%)`
+                : 'white',
+            }}
+          >
+            {/* Hero section */}
+            <div className="relative">
+              {/* Back button - top left */}
+              <button
+                onClick={() => router.back()}
+                className="absolute top-3 left-3 w-8 h-8 flex items-center justify-center text-stone-400 hover:text-stone-600 hover:bg-stone-100 rounded-full transition-all z-20"
+                type="button"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M19 12H5M5 12l7-7M5 12l7 7"/>
+                </svg>
+              </button>
 
-            {/* Title + Verified Badge + 3 Dots Menu */}
-            <div className="flex items-center justify-center gap-4 relative">
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white leading-tight tracking-tight">
-                {name}
-              </h1>
-              {isVerified && (
-                <VerificationBadge size={22} />
-              )}
-
-              {/* 3 Dots Menu - Right Aligned */}
+              {/* 3-dot menu - top right */}
               <button
                 onClick={handleDropdownToggle}
-                className="absolute right-0 top-1/2 -translate-y-1/2 p-2 rounded-xl hover:bg-gray-50 text-gray-500 hover:text-gray-900 transition-all duration-200"
-                type="button"
-                title="More options"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/>
-                </svg>
-              </button>
-            </div>
-
-            {/* Address & Status */}
-            <p className="text-gray-500 text-base mt-3 max-w-2xl mx-auto">
-              {address && location ? `${address}, ${location}` : address || location}
-              {operatingStatus && (
-                <>
-                  <span className="text-gray-300 mx-2">·</span>
-                  <span className={operatingStatus.isOpen ? 'text-emerald-600' : 'text-rose-600'}>
-                    {operatingStatus.isOpen
-                      ? `Open until ${operatingStatus.closeTime}`
-                      : `Closed until ${operatingStatus.openTime}`
-                    }
-                  </span>
-                </>
-              )}
-            </p>
-
-            {/* Social Stats */}
-            <div className="flex items-center justify-center gap-4 sm:gap-5 mt-4 text-[13px] sm:text-[14px] text-neutral-500">
-              {/* Rating */}
-              <span className="flex items-center gap-1.5">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                <span className="font-semibold text-neutral-900">4.8</span>
-              </span>
-
-              {/* Followers */}
-              <span className="flex items-center gap-1.5">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <path d="M12 12C14.4853 12 16.5 9.98528 16.5 7.5C16.5 5.01472 14.4853 3 12 3C9.51472 3 7.5 5.01472 7.5 7.5C7.5 9.98528 9.51472 12 12 12Z" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M20 21C20 17.134 16.4183 14 12 14C7.58172 14 4 17.134 4 21" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                <span><span className="font-semibold text-neutral-900">{followers.length}</span> followers</span>
-              </span>
-
-              {/* Posts */}
-              <span className="flex items-center gap-1.5">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <path d="M2.5 12C2.5 7.52166 2.5 5.28249 3.89124 3.89124C5.28249 2.5 7.52166 2.5 12 2.5C16.4783 2.5 18.7175 2.5 20.1088 3.89124C21.5 5.28249 21.5 7.52166 21.5 12C21.5 16.4783 21.5 18.7175 20.1088 20.1088C18.7175 21.5 16.4783 21.5 12 21.5C7.52166 21.5 5.28249 21.5 3.89124 20.1088C2.5 18.7175 2.5 16.4783 2.5 12Z" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M2.5 12L21.5 12" strokeLinecap="round"/>
-                  <path d="M12 21.5V12" strokeLinecap="round"/>
-                </svg>
-                <span><span className="font-semibold text-neutral-900">{posts.length}</span> posts</span>
-              </span>
-
-              {/* Likes */}
-              <button
-                onClick={(e: any) => toggleFavorite(e)}
-                className="flex items-center gap-1.5 hover:opacity-70 transition-opacity"
+                className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center text-stone-400 hover:text-stone-600 hover:bg-stone-100 rounded-full transition-all z-20"
                 type="button"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className={`w-[18px] h-[18px] ${hasFavorited ? 'text-rose-500' : ''}`} fill={hasFavorited ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.5">
-                  <path d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z" strokeLinecap="round" strokeLinejoin="round"/>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/>
                 </svg>
-                <span><span className="font-semibold text-neutral-900">{(shop as any).favoriteCount || 0}</span> likes</span>
               </button>
-            </div>
 
-            {/* Featured Product Circles */}
-            {validProducts.length > 0 && (
-              <div className="mt-6 flex items-center justify-center gap-5">
-                {validProducts.slice(0, 4).map((product) => (
-                  <div key={product.id} className="flex flex-col items-center gap-1.5">
-                    <div className="w-16 h-16 rounded-full overflow-hidden border border-stone-200 dark:border-zinc-700 bg-stone-100 dark:bg-zinc-800 relative">
-                      <Image
-                        src={product.mainImage || '/placeholder.jpg'}
-                        alt={product.name}
-                        fill
-                        className="object-cover"
-                        sizes="64px"
-                      />
-                    </div>
-                    <span className="text-[10px] text-stone-500 dark:text-zinc-400 font-medium truncate max-w-[72px] text-center leading-tight">
-                      {product.name}
-                    </span>
+              {/* Content */}
+              <div className="relative z-10 pt-8 pb-5 px-6 text-center">
+                {/* Avatar */}
+                <div className="w-24 h-24 rounded-2xl mx-auto overflow-hidden border-[3px] border-white" style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.06)' }}>
+                  <img src={mainImage} alt={name} className="w-full h-full object-cover" />
+                </div>
+                <div className="mt-3">
+                  <div className="flex items-center justify-center gap-1.5">
+                    <h1 className="text-lg font-semibold text-stone-900 text-center tracking-tight">
+                      {name}
+                    </h1>
+                    {isVerified && <VerificationBadge size={16} />}
                   </div>
-                ))}
+                  {(address || location) && (
+                    <a
+                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address || location)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="text-[13px] text-stone-400 mt-1 hover:text-stone-600 transition-colors"
+                    >
+                      {address || location}
+                    </a>
+                  )}
+                  {operatingStatus && (
+                    <p className="text-sm mt-1">
+                      <span className={operatingStatus.isOpen ? 'text-green-600 font-medium' : 'text-red-500 font-medium'}>
+                        {operatingStatus.isOpen ? 'Open' : 'Closed'}
+                      </span>
+                      <span className="text-gray-400">
+                        {operatingStatus.isOpen
+                          ? ` · Closes ${operatingStatus.closeTime}`
+                          : ` · Opens ${operatingStatus.openTime}`
+                        }
+                      </span>
+                    </p>
+                  )}
+                </div>
+                {/* Rating */}
+                <div className="flex items-center justify-center gap-1 mt-3">
+                  <svg width="0" height="0" className="absolute">
+                    <defs>
+                      <linearGradient id={starGradientId} x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stopColor="#fbbf24" />
+                        <stop offset="100%" stopColor="#f59e0b" />
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <svg
+                      key={star}
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill={star <= 5 ? `url(#${starGradientId})` : '#e5e7eb'}
+                    >
+                      <path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z" />
+                    </svg>
+                  ))}
+                  <span className="text-xs text-gray-400 ml-1.5">0</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Stats */}
+            <div className="px-6 py-5">
+              <div className="flex items-center justify-between text-center">
+                <div className="flex-1">
+                  <p className="text-[18px] font-bold text-stone-900 tabular-nums">{validProducts.length}</p>
+                  <p className="text-[12px] text-stone-400 mt-0.5">products</p>
+                </div>
+                <div className="w-px h-10 bg-stone-100" />
+                <div className="flex-1">
+                  <p className="text-[18px] font-bold text-stone-900 tabular-nums">{followers.length}</p>
+                  <p className="text-[12px] text-stone-400 mt-0.5">followers</p>
+                </div>
+                <div className="w-px h-10 bg-stone-100" />
+                <div className="flex-1">
+                  <p className="text-[18px] font-bold text-stone-900 tabular-nums">{posts.length}</p>
+                  <p className="text-[12px] text-stone-400 mt-0.5">posts</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Description */}
+            {description && (
+              <div className="px-6 py-5">
+                <p className="text-[13px] text-stone-500 leading-[1.7] line-clamp-4">
+                  {description}
+                </p>
+
+                {/* Heart & Share */}
+                <div className="flex items-center justify-center gap-4 mt-6 mb-2">
+                  <button
+                    onClick={(e: any) => { e.stopPropagation(); toggleFavorite(e); }}
+                    className="flex items-center gap-1.5 text-stone-400 hover:text-red-400 transition-colors"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill={hasFavorited ? '#292524' : 'none'} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z" />
+                    </svg>
+                    <span className="text-[12px]">{hasFavorited ? 'Saved' : 'Save'}</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      const url = `${window.location.origin}/shops/${shop.id}`;
+                      if (navigator.share) {
+                        navigator.share({ title: name, url });
+                      } else {
+                        navigator.clipboard.writeText(url);
+                        toast.success('Link copied');
+                      }
+                    }}
+                    className="flex items-center gap-1.5 text-stone-400 hover:text-stone-600 transition-colors"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M10.0017 3C7.05534 3.03208 5.41096 3.21929 4.31838 4.31188C2.99988 5.63037 2.99988 7.75248 2.99988 11.9966C2.99988 16.2409 2.99988 18.363 4.31838 19.6815C5.63688 21 7.75899 21 12.0032 21C16.2474 21 18.3695 21 19.688 19.6815C20.7808 18.5887 20.9678 16.9438 20.9999 13.9963" />
+                      <path d="M14 3H18C19.4142 3 20.1213 3 20.5607 3.43934C21 3.87868 21 4.58579 21 6V10M20 4L11 13" />
+                    </svg>
+                    <span className="text-[12px]">Share</span>
+                  </button>
+                </div>
               </div>
             )}
 
-            {/* Search Bar - Centered */}
-            <div className="mt-6 max-w-3xl mx-auto">
-              <form onSubmit={handleChatSubmit}>
-                <div className="bg-neutral-100 border border-neutral-200 rounded-2xl overflow-hidden">
-                  <div className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5">
-                    <input
-                      type="text"
-                      value={chatInput}
-                      onChange={(e) => setChatInput(e.target.value)}
-                      placeholder="Looking for something?"
-                      className="flex-1 text-[13px] sm:text-[14px] bg-transparent border-none outline-none text-neutral-900 placeholder-neutral-400 font-normal pl-2 sm:pl-3"
-                    />
-
-                    <div className="w-px h-5 bg-neutral-300" />
-
-                    {/* Attach Button */}
+            {/* Action Buttons */}
+            <div className="px-6 py-5">
+              {!isOwner ? (
+                <div className="flex gap-2.5">
+                  {listingId && (
                     <button
-                      className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl hover:bg-neutral-200 text-neutral-600 hover:text-neutral-900 transition-all duration-200"
+                      onClick={handleReserveClick}
+                      className="flex-1 flex items-center justify-center gap-2 px-3 py-3 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-[13px] font-medium transition-all"
                       type="button"
-                      title="Attach"
+                      style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.12)' }}
                     >
-                      <Link02Icon size={20} strokeWidth={1.5} className="sm:w-[22px] sm:h-[22px]" />
+                      Reserve
                     </button>
-
-                    {/* Follow Button */}
-                    {currentUser && !isOwner && (
-                      <button
-                        onClick={handleToggleFollow}
-                        className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl hover:bg-neutral-200 text-neutral-600 hover:text-neutral-900 transition-all duration-200"
-                        type="button"
-                        title={isFollowing ? 'Following' : 'Follow'}
-                      >
-                        {isFollowing ? (
-                          <UserCheck01Icon size={20} className="sm:w-[22px] sm:h-[22px]" />
-                        ) : (
-                          <UserAdd01Icon size={20} className="sm:w-[22px] sm:h-[22px]" />
-                        )}
-                      </button>
-                    )}
-
-                    {/* Reserve/Book Button */}
-                    {currentUser && listingId && (
-                      <button
-                        onClick={handleReserveClick}
-                        className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl hover:bg-neutral-200 text-neutral-600 hover:text-neutral-900 transition-all duration-200"
-                        type="button"
-                        title="Book Appointment"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5 sm:w-[22px] sm:h-[22px]" fill="none" stroke="currentColor" strokeWidth="1.5">
-                          <path d="M18 2V4M6 2V4" strokeLinecap="round" strokeLinejoin="round"/>
-                          <path d="M11.9955 13H12.0045M11.9955 17H12.0045M15.991 13H16M8 13H8.00897M8 17H8.00897" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                          <path d="M3.5 8H20.5" strokeLinecap="round" strokeLinejoin="round"/>
-                          <path d="M2.5 12.2432C2.5 7.88594 2.5 5.70728 3.75212 4.35364C5.00424 3 7.01949 3 11.05 3H12.95C16.9805 3 18.9958 3 20.2479 4.35364C21.5 5.70728 21.5 7.88594 21.5 12.2432V12.7568C21.5 17.1141 21.5 19.2927 20.2479 20.6464C18.9958 22 16.9805 22 12.95 22H11.05C7.01949 22 5.00424 22 3.75212 20.6464C2.5 19.2927 2.5 17.1141 2.5 12.7568V12.2432Z" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                      </button>
-                    )}
-                  </div>
+                  )}
+                  <button
+                    onClick={handleToggleFollow}
+                    className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-[13px] font-medium transition-all ${
+                      listingId
+                        ? 'bg-stone-50 hover:bg-stone-100 text-stone-700 border border-stone-200/60'
+                        : 'bg-stone-900 hover:bg-stone-800 text-white'
+                    }`}
+                    type="button"
+                    style={!listingId ? { boxShadow: '0 2px 8px rgba(0,0,0,0.12)' } : undefined}
+                  >
+                    {isFollowing ? 'Following' : 'Follow'}
+                  </button>
                 </div>
-              </form>
+              ) : (
+                <button
+                  onClick={handleEditShop}
+                  className="w-full flex items-center justify-center gap-2 px-3 py-3 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-[13px] font-medium transition-all"
+                  type="button"
+                  style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.12)' }}
+                >
+                  Edit Shop
+                </button>
+              )}
             </div>
+          </div>
+        </div>
 
-            {/* Category Nav */}
-            <div className="mt-5 flex justify-center">
-              <ShopCategoryNav activeTab={activeTab} onTabChange={setActiveTab} />
+        {/* ===== RIGHT COLUMN - Content ===== */}
+        <div ref={rightColumnRef} className="flex-1 min-w-0 md:overflow-y-auto md:py-14 scrollbar-hide">
+          {/* Mobile Header (hidden on desktop) */}
+          <div className="md:hidden mb-6">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 rounded-xl bg-gray-100 border-2 border-white shadow-lg overflow-hidden flex-shrink-0">
+                <img
+                  src={mainImage}
+                  alt={name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <h1 className="text-lg font-bold text-gray-900 truncate">{name}</h1>
+                  {isVerified && <VerificationBadge size={14} />}
+                </div>
+                <p className="text-sm text-gray-500">{location || 'Shop'}</p>
+              </div>
+              <button
+                onClick={handleDropdownToggle}
+                className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+                type="button"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/>
+                </svg>
+              </button>
             </div>
-
           </div>
 
-        </div>
-      </div>
+          {/* Content Sections */}
+          <div className="space-y-12">
 
-      {/* ========== SIMPLE CONTENT SECTIONS ========== */}
-      <div className="space-y-12">
-
-        {/* Products */}
-        {validProducts.length > 0 && (!activeTab || activeTab === 'Products') && (
-          <section>
-            <SectionHeader
-              title="Our Products"
-              onViewAll={validProducts.length > 8 ? () => {} : undefined}
-              viewAllLabel={validProducts.length > 8 ? `View all ${validProducts.length}` : undefined}
-              className="!-mt-2 !mb-6"
-            />
-            <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
-              {validProducts.slice(0, 8).map((product, idx) => (
-                <div
-                  key={product.id}
-                  style={{
-                    opacity: 0,
-                    animation: `fadeInUp 520ms ease-out both`,
-                    animationDelay: `${Math.min(60 + idx * 30, 360)}ms`,
-                  }}
-                >
-                  <ProductCard
-                    data={product}
-                    currentUser={currentUser}
-                  />
+            {/* Products Section */}
+            <section>
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <h3 className="text-xl font-semibold text-stone-900 tracking-tight">Products</h3>
+                  <span className="text-[11px] font-medium text-stone-500 bg-stone-100 px-2.5 py-1 rounded-full tabular-nums">{validProducts.length}</span>
                 </div>
-              ))}
-              {isOwner && (
-                <div className="max-w-[250px]">
-                  <button
-                    onClick={handleAddProduct}
-                    type="button"
-                    className="group relative h-[284px] w-full rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 hover:border-gray-300 hover:bg-gray-100 transition-all"
-                  >
-                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-                      <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-400">
-                          <path d="M12 5v14M5 12h14"/>
-                        </svg>
-                      </div>
-                      <span className="text-sm font-medium text-gray-500">Add Product</span>
-                    </div>
-                  </button>
-                </div>
-              )}
-            </div>
-          </section>
-        )}
-
-        {/* Team */}
-        {employees.length > 0 && (!activeTab || activeTab === 'Professionals') && (
-          <section>
-            <SectionHeader
-              title="Our Professionals"
-              className="!-mt-2 !mb-6"
-            />
-            <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
-              {employees.slice(0, 8).map((employee: any, idx: number) => (
-                <div
-                  key={employee.id || idx}
-                  style={{
-                    opacity: 0,
-                    animation: `fadeInUp 520ms ease-out both`,
-                    animationDelay: `${Math.min(60 + idx * 30, 360)}ms`,
-                  }}
-                >
-                  <WorkerCard
-                    employee={employee}
-                    listingTitle={name}
-                    data={{ title: name, imageSrc: mainImage, category: (shop as any).category }}
-                    listing={shop as any}
-                    currentUser={currentUser}
-                    onFollow={() => {}}
-                    onBook={() => {}}
-                  />
-                </div>
-              ))}
-              {isOwner && (
-                <div className="max-w-[250px]">
-                  <button
-                    onClick={handleAddWorker}
-                    type="button"
-                    className="group relative h-[288px] w-full rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 hover:border-gray-300 hover:bg-gray-100 transition-all"
-                  >
-                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-                      <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-400">
-                          <path d="M12 5v14M5 12h14"/>
-                        </svg>
-                      </div>
-                      <span className="text-sm font-medium text-gray-500">Add Professional</span>
-                    </div>
-                  </button>
-                </div>
-              )}
-            </div>
-          </section>
-        )}
-
-        {/* Gallery / Posts */}
-        {((galleryImages && galleryImages.length > 0) || (posts && posts.length > 0) || isOwner) && (!activeTab || activeTab === 'Posts') && (
-          <section>
-            <SectionHeader
-              title="Photos & Gallery"
-              className="!-mt-2 !mb-6"
-            />
-            <div className={`grid ${gridColsClass} gap-4 transition-all duration-300`}>
-              {galleryImages && galleryImages.map((image: string, idx: number) => (
-                <div
-                  key={`image-${idx}`}
-                  className="relative rounded-xl overflow-hidden bg-gray-100 aspect-square group cursor-pointer"
-                  style={{
-                    opacity: 0,
-                    animation: `fadeInUp 520ms ease-out both`,
-                    animationDelay: `${Math.min(60 + idx * 30, 360)}ms`,
-                  }}
-                >
-                  <img
-                    src={image}
-                    alt={`${name} - Image ${idx + 1}`}
-                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-              ))}
-
-              {posts && posts.map((post) => (
-                <PostCard
-                  key={post.id}
-                  post={post}
-                  currentUser={currentUser}
-                  categories={categories}
-                  variant="listing"
-                />
-              ))}
-
-              {isOwner && (
-                <div className="relative aspect-square min-h-[200px]">
-                  <button
-                    onClick={handleAddMedia}
-                    type="button"
-                    className="group absolute inset-0 rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 hover:border-gray-300 hover:bg-gray-100 transition-all"
-                  >
-                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-                      <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-400">
-                          <path d="M12 5v14M5 12h14"/>
-                        </svg>
-                      </div>
-                      <span className="text-sm font-medium text-gray-500">Add Media</span>
-                    </div>
-                  </button>
-                </div>
-              )}
-            </div>
-          </section>
-        )}
-
-        {/* About & Hours */}
-        {(description || (storeHours && storeHours.length > 0)) && (!activeTab || activeTab === 'About') && (
-          <section>
-            <SectionHeader
-              title="Info & Business Hours"
-              className="!-mt-2 !mb-6"
-            />
-            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8">
-              {/* Left - Description & Contact */}
-              <div className="flex-1 max-w-lg">
-                {/* Description */}
-                {description && (
-                  <p className="text-sm text-gray-600 leading-relaxed">{description}</p>
+                {validProducts.length > 8 && (
+                  <button className="text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors">View all</button>
                 )}
-
-                {/* Contact Actions */}
-                <div className="flex flex-wrap gap-2 mt-6">
-                  {address ? (
-                    <a
-                      href={`https://maps.google.com/?q=${encodeURIComponent(address + (location ? ', ' + location : ''))}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-xl text-sm text-gray-700 transition-colors"
+              </div>
+              {validProducts.length > 0 ? (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-0.5 overflow-hidden rounded-xl">
+                  {validProducts.slice(0, 10).map((product, idx) => (
+                    <div
+                      key={product.id}
+                      style={{
+                        opacity: 0,
+                        animation: `fadeInUp 520ms ease-out both`,
+                        animationDelay: `${Math.min(60 + idx * 30, 360)}ms`,
+                      }}
                     >
-                      <Location01Icon size={18} strokeWidth={1.5} />
-                      Directions
-                    </a>
-                  ) : (
-                    <button
-                      type="button"
-                      className="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-xl text-sm text-gray-400 transition-colors cursor-not-allowed"
-                      disabled
-                    >
-                      <Location01Icon size={18} strokeWidth={1.5} />
-                      Directions
-                    </button>
-                  )}
-                  {phoneNumber ? (
-                    <a
-                      href={`tel:${phoneNumber}`}
-                      className="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-xl text-sm text-gray-700 transition-colors"
-                    >
-                      <Call02Icon size={18} strokeWidth={1.5} />
-                      Call
-                    </a>
-                  ) : (
-                    <button
-                      type="button"
-                      className="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-xl text-sm text-gray-400 transition-colors cursor-not-allowed"
-                      disabled
-                    >
-                      <Call02Icon size={18} strokeWidth={1.5} />
-                      Call
-                    </button>
-                  )}
-                  {website ? (
-                    <a
-                      href={website}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-xl text-sm text-gray-700 transition-colors"
-                    >
-                      <Globe02Icon size={18} strokeWidth={1.5} />
-                      Website
-                    </a>
-                  ) : (
-                    <button
-                      type="button"
-                      className="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-xl text-sm text-gray-400 transition-colors cursor-not-allowed"
-                      disabled
-                    >
-                      <Globe02Icon size={18} strokeWidth={1.5} />
-                      Website
-                    </button>
-                  )}
-                  <button
-                    type="button"
-                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-xl text-sm text-gray-700 transition-colors"
-                    onClick={() => {
-                      if (navigator.share) {
-                        navigator.share({ title: name, url: window.location.href });
-                      } else {
-                        navigator.clipboard.writeText(window.location.href);
-                      }
-                    }}
-                  >
-                    <Share08Icon size={18} strokeWidth={1.5} />
-                    Share
-                  </button>
+                      <ProductCard
+                        data={product}
+                        currentUser={currentUser}
+                      />
+                    </div>
+                  ))}
                 </div>
+              ) : (
+                <div className="text-center py-10 bg-gray-50 rounded-xl">
+                  <p className="text-sm text-gray-400">No products yet</p>
+                </div>
+              )}
+            </section>
+
+            {/* Professionals Section */}
+            <section>
+              <div className="flex items-center justify-between mb-5">
+                <div className="flex items-center gap-4">
+                  <h3 className="text-xl font-semibold text-stone-900 tracking-tight">Professionals</h3>
+                  <span className="text-[11px] font-medium text-stone-500 bg-stone-100 px-2.5 py-1 rounded-full tabular-nums">{employees.length}</span>
+                </div>
+                {employees.length > 8 && (
+                  <button className="text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors">View all</button>
+                )}
               </div>
-
-              {/* Right - Hours Card */}
-              {storeHours && storeHours.length > 0 && (() => {
-                const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
-                const todayData = storeHours.find((h: any) => h.dayOfWeek === today);
-                const isOpenNow = todayData && !todayData.isClosed;
-
-                return (
-                  <div className="flex-shrink-0 flex-1 max-w-[480px]">
-                    {/* Header */}
-                    <div className="flex items-center justify-between mb-4">
-                      <span className="text-sm font-medium text-gray-900">
-                        {isOpenNow ? 'Open Now' : 'Closed'}
-                        {todayData && !todayData.isClosed && (
-                          <span className="text-gray-400 font-normal"> · until {todayData.closeTime?.replace(':00', '')}</span>
-                        )}
-                      </span>
+              {employees.length > 0 ? (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {employees.slice(0, 8).map((employee: any, idx: number) => (
+                    <div
+                      key={employee.id || idx}
+                      style={{
+                        opacity: 0,
+                        animation: `fadeInUp 520ms ease-out both`,
+                        animationDelay: `${Math.min(60 + idx * 30, 360)}ms`,
+                      }}
+                    >
+                      <WorkerCard
+                        employee={employee}
+                        listingTitle={name}
+                        data={{ title: name, imageSrc: mainImage, category: (shop as any).category }}
+                        listing={shop as any}
+                        currentUser={currentUser}
+                        onFollow={() => {}}
+                        onBook={() => {}}
+                        compact
+                        solidBackground
+                      />
                     </div>
+                  ))}
+                  {isOwner && (
+                    <button
+                      onClick={handleAddWorker}
+                      type="button"
+                      className="group relative aspect-[3/4] rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 hover:border-gray-300 hover:bg-gray-100 transition-all"
+                    >
+                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+                        <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center group-hover:scale-110 transition-transform">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-400">
+                            <path d="M12 5v14M5 12h14"/>
+                          </svg>
+                        </div>
+                        <span className="text-sm font-medium text-gray-500">Add Professional</span>
+                      </div>
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center py-10 bg-gray-50 rounded-xl">
+                  <p className="text-sm text-gray-400">No professionals yet</p>
+                </div>
+              )}
+            </section>
 
-                    {/* Week Row */}
-                    <div className="flex gap-2">
-                      {storeHours.map((hours: any, idx: number) => {
-                        const isToday = hours.dayOfWeek === today;
-                        const dayAbbrev = hours.dayOfWeek.slice(0, 3);
-
-                        return (
-                          <div
-                            key={idx}
-                            className={`
-                              flex-1 flex flex-col items-center py-3 rounded-xl transition-all
-                              ${isToday
-                                ? 'bg-gray-900'
-                                : 'bg-gray-50'
-                              }
-                            `}
-                          >
-                            <span className={`text-[11px] font-medium ${isToday ? 'text-white' : hours.isClosed ? 'text-gray-300' : 'text-gray-500'}`}>
-                              {dayAbbrev}
-                            </span>
-                            <span className={`text-[10px] mt-1 ${isToday ? 'text-white/60' : hours.isClosed ? 'text-gray-300' : 'text-gray-400'}`}>
-                              {hours.isClosed ? '—' : hours.openTime?.replace(':00', '').replace(' ', '')}
-                            </span>
-                          </div>
-                        );
-                      })}
+            {/* Gallery Section */}
+            <section>
+              <div className="flex items-center justify-between mb-5">
+                <div className="flex items-center gap-4">
+                  <h3 className="text-xl font-semibold text-stone-900 tracking-tight">Gallery</h3>
+                  <span className="text-[11px] font-medium text-stone-500 bg-stone-100 px-2.5 py-1 rounded-full tabular-nums">{(galleryImages?.length || 0) + posts.length}</span>
+                </div>
+                {((galleryImages?.length || 0) + posts.length) > 8 && (
+                  <button className="text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors">View all</button>
+                )}
+              </div>
+              {(galleryImages && galleryImages.length > 0) || posts.length > 0 ? (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {galleryImages && galleryImages.map((image: string, idx: number) => (
+                    <div
+                      key={`image-${idx}`}
+                      className="relative rounded-xl overflow-hidden bg-gray-100 aspect-square group cursor-pointer"
+                      style={{
+                        opacity: 0,
+                        animation: `fadeInUp 520ms ease-out both`,
+                        animationDelay: `${Math.min(60 + idx * 30, 360)}ms`,
+                      }}
+                    >
+                      <img
+                        src={image}
+                        alt={`${name} - Image ${idx + 1}`}
+                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
                     </div>
+                  ))}
+                  {posts.map((post, idx) => (
+                    <div
+                      key={post.id}
+                      style={{
+                        opacity: 0,
+                        animation: `fadeInUp 520ms ease-out both`,
+                        animationDelay: `${Math.min(60 + (galleryImages?.length || 0) + idx * 30, 360)}ms`,
+                      }}
+                    >
+                      <PostCard
+                        post={post}
+                        currentUser={currentUser}
+                        categories={categories}
+                        variant="listing"
+                      />
+                    </div>
+                  ))}
+                  {isOwner && (
+                    <button
+                      onClick={handleAddMedia}
+                      type="button"
+                      className="group relative aspect-square rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 hover:border-gray-300 hover:bg-gray-100 transition-all"
+                    >
+                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+                        <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center group-hover:scale-110 transition-transform">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-400">
+                            <path d="M12 5v14M5 12h14"/>
+                          </svg>
+                        </div>
+                        <span className="text-sm font-medium text-gray-500">Add Media</span>
+                      </div>
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center py-10 bg-gray-50 rounded-xl">
+                  <p className="text-sm text-gray-400">No gallery images yet</p>
+                </div>
+              )}
+            </section>
+
+            {/* Hours Section */}
+            {storeHours && storeHours.length > 0 && (
+              <section>
+                <div className="flex items-center justify-between mb-5">
+                  <div className="flex items-center gap-4">
+                    <h3 className="text-xl font-semibold text-stone-900 tracking-tight">Hours</h3>
                   </div>
-                );
-              })()}
-            </div>
-          </section>
-        )}
+                </div>
+                {(() => {
+                  const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+                  const todayData = storeHours.find((h: any) => h.dayOfWeek === today);
+                  const isOpenNow = todayData && !todayData.isClosed;
 
-        {/* Empty States for owner */}
-        {validProducts.length === 0 && employees.length === 0 && isOwner && !activeTab && (
-          <section className="text-center py-12">
-            <div className="max-w-md mx-auto">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-gray-400">
-                  <path d="M12 5v14M5 12h14"/>
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Get started with your shop</h3>
-              <p className="text-gray-500 mb-6">Add products and team members to start selling.</p>
-              <div className="flex items-center justify-center gap-4">
-                <button
-                  onClick={handleAddProduct}
-                  className="px-4 py-2 bg-gray-900 text-white font-medium rounded-xl hover:bg-gray-800 transition-colors"
-                  type="button"
-                >
-                  Add Product
-                </button>
-                <button
-                  onClick={handleAddWorker}
-                  className="px-4 py-2 bg-white border border-gray-200 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-colors"
-                  type="button"
-                >
-                  Add Professional
-                </button>
-              </div>
-            </div>
-          </section>
-        )}
+                  return (
+                    <div className="max-w-[480px]">
+                      <div className="flex items-center justify-between mb-4">
+                        <span className="text-sm font-medium text-gray-900">
+                          {isOpenNow ? 'Open Now' : 'Closed'}
+                          {todayData && !todayData.isClosed && (
+                            <span className="text-gray-400 font-normal"> · until {todayData.closeTime?.replace(':00', '')}</span>
+                          )}
+                        </span>
+                      </div>
+                      <div className="flex gap-2">
+                        {storeHours.map((hours: any, idx: number) => {
+                          const isToday = hours.dayOfWeek === today;
+                          const dayAbbrev = hours.dayOfWeek.slice(0, 3);
+
+                          return (
+                            <div
+                              key={idx}
+                              className={`flex-1 flex flex-col items-center py-3 rounded-xl transition-all ${
+                                isToday ? 'bg-gray-900' : 'bg-gray-50'
+                              }`}
+                            >
+                              <span className={`text-[11px] font-medium ${isToday ? 'text-white' : hours.isClosed ? 'text-gray-300' : 'text-gray-500'}`}>
+                                {dayAbbrev}
+                              </span>
+                              <span className={`text-[10px] mt-1 ${isToday ? 'text-white/60' : hours.isClosed ? 'text-gray-300' : 'text-gray-400'}`}>
+                                {hours.isClosed ? '—' : hours.openTime?.replace(':00', '').replace(' ', '')}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })()}
+              </section>
+            )}
+
+          </div>
+        </div>
       </div>
     </>
   );

@@ -10,12 +10,12 @@ import { AnimatePresence } from 'framer-motion';
 import TypeformStep from '../registration/TypeformStep';
 import TypeformProgress from '../registration/TypeformProgress';
 import TypeformNavigation from '../registration/TypeformNavigation';
-import ProductModal from '../modals/ProductModal';
 
 import CategoryStep from '../listing/steps/CategoryStep';
 import ShopDetailsStep from './steps/ShopDetailsStep';
 import ShopLocationStep from './steps/ShopLocationStep';
 import ShopProductsStep from './steps/ShopProductsStep';
+import ShopProductFormStep from './steps/ShopProductFormStep';
 import ShopSettingsStep from './steps/ShopSettingsStep';
 
 import { SafeShop } from '@/app/types';
@@ -35,7 +35,8 @@ enum STEPS {
   DETAILS = 1,
   LOCATION = 2,
   PRODUCTS = 3,
-  SETTINGS = 4,
+  PRODUCT_FORM = 4,
+  SETTINGS = 5,
 }
 
 interface ShopFlowProps {
@@ -53,19 +54,23 @@ export default function ShopFlow({ mode = 'create', shopId, initialData }: ShopF
   const [isLoading, setIsLoading] = useState(false);
   const [products, setProducts] = useState<ProductData[]>(() => {
     if (isEditMode && Array.isArray((initialData as any)?.products)) {
-      return (initialData as any).products.map((p: any) => ({
-        name: p.name,
-        price: p.price,
-        image: p.image,
-        description: p.description ?? '',
-        category: p.category ?? '',
-        sizes: Array.isArray(p.sizes) ? p.sizes : [],
-        images: p.image ? [p.image] : Array.isArray(p.images) ? p.images : [],
-      }));
+      return (initialData as any).products.map((p: any) => {
+        const img = p.mainImage || p.image || '';
+        const categoryName = typeof p.category === 'object' ? p.category?.name : (p.category ?? '');
+        return {
+          name: p.name,
+          price: p.price,
+          image: img,
+          description: p.description ?? '',
+          category: categoryName,
+          sizes: Array.isArray(p.sizes) ? p.sizes : [],
+          images: img ? [img, ...(p.galleryImages || [])] : Array.isArray(p.images) ? p.images : [],
+        };
+      });
     }
     return [];
   });
-  const [showProductModal, setShowProductModal] = useState(false);
+  const [editingProductIndex, setEditingProductIndex] = useState<number | null>(null);
 
   const methods = useForm<FieldValues>({
     defaultValues: {
@@ -124,8 +129,11 @@ export default function ShopFlow({ mode = 'create', shopId, initialData }: ShopF
     clearErrors(fieldId);
   }, [clearErrors]);
 
-  const totalSteps = Object.keys(STEPS).length / 2;
+  const flowSteps = [STEPS.CATEGORY, STEPS.DETAILS, STEPS.LOCATION, STEPS.PRODUCTS, STEPS.SETTINGS];
+  const totalSteps = flowSteps.length;
   const isLastStep = step === STEPS.SETTINGS;
+  const isFormStep = step === STEPS.PRODUCT_FORM;
+  const currentIndex = flowSteps.indexOf(step);
 
   const canProceed = useCallback((): boolean => {
     switch (step) {
@@ -159,26 +167,37 @@ export default function ShopFlow({ mode = 'create', shopId, initialData }: ShopF
       if (invalid) return;
     }
 
-    if (step < STEPS.SETTINGS) {
+    const idx = flowSteps.indexOf(step);
+    if (idx < flowSteps.length - 1) {
       setDirection(1);
-      setStep(s => s + 1);
+      setStep(flowSteps[idx + 1]);
     }
-  }, [step, logo, name, description, isOnlineOnly, location, address, zipCode, setError]);
+  }, [step, logo, name, description, isOnlineOnly, location, address, zipCode, setError, flowSteps]);
 
   const handleBack = useCallback(() => {
-    if (step > STEPS.CATEGORY) {
+    if (step === STEPS.PRODUCT_FORM) {
+      setEditingProductIndex(null);
       setDirection(-1);
-      setStep(s => s - 1);
+      setStep(STEPS.PRODUCTS);
+      return;
+    }
+    const idx = flowSteps.indexOf(step);
+    if (idx > 0) {
+      setDirection(-1);
+      setStep(flowSteps[idx - 1]);
     } else {
       router.push('/shops');
     }
-  }, [step, router]);
+  }, [step, router, flowSteps]);
 
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
       const isInput = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA';
+
+      // Disable keyboard nav on product form step
+      if (step === STEPS.PRODUCT_FORM) return;
 
       if (e.key === 'Enter' && !e.shiftKey) {
         if (isInput && target.tagName === 'TEXTAREA') return;
@@ -225,7 +244,7 @@ export default function ShopFlow({ mode = 'create', shopId, initialData }: ShopF
       }
 
       router.refresh();
-      router.push('/shops');
+      router.push(isEditMode && shopId ? `/shops/${shopId}` : '/shops');
     } catch (error: any) {
       if (axios.isAxiosError(error) && error.response) {
         toast.error(`Error: ${error.response.data || 'Something went wrong'}`);
@@ -237,9 +256,27 @@ export default function ShopFlow({ mode = 'create', shopId, initialData }: ShopF
     }
   };
 
-  const handleAddProduct = (product: ProductData) => {
-    setProducts(prev => [...prev, product]);
-    setShowProductModal(false);
+  const handleAddProduct = () => {
+    setEditingProductIndex(null);
+    setDirection(1);
+    setStep(STEPS.PRODUCT_FORM);
+  };
+
+  const handleSaveProduct = (product: ProductData) => {
+    if (editingProductIndex !== null) {
+      setProducts(prev => prev.map((p, i) => i === editingProductIndex ? product : p));
+    } else {
+      setProducts(prev => [...prev, product]);
+    }
+    setEditingProductIndex(null);
+    setDirection(-1);
+    setStep(STEPS.PRODUCTS);
+  };
+
+  const handleExitProductForm = () => {
+    setEditingProductIndex(null);
+    setDirection(-1);
+    setStep(STEPS.PRODUCTS);
   };
 
   const handleRemoveProduct = (index: number) => {
@@ -277,8 +314,16 @@ export default function ShopFlow({ mode = 'create', shopId, initialData }: ShopF
         return (
           <ShopProductsStep
             products={products}
-            onAddProduct={() => setShowProductModal(true)}
+            onAddProduct={handleAddProduct}
             onRemoveProduct={handleRemoveProduct}
+          />
+        );
+      case STEPS.PRODUCT_FORM:
+        return (
+          <ShopProductFormStep
+            onSave={handleSaveProduct}
+            onBack={handleExitProductForm}
+            initialData={editingProductIndex !== null ? products[editingProductIndex] : null}
           />
         );
       case STEPS.SETTINGS:
@@ -297,14 +342,16 @@ export default function ShopFlow({ mode = 'create', shopId, initialData }: ShopF
     <FormProvider {...methods}>
       <div className="min-h-screen flex flex-col">
         {/* Progress bar */}
-        <TypeformProgress
-          currentStep={step + 1}
-          totalSteps={totalSteps}
-        />
+        {!isFormStep && (
+          <TypeformProgress
+            currentStep={currentIndex + 1}
+            totalSteps={totalSteps}
+          />
+        )}
 
         {/* Main content */}
         <div className="flex-1 flex items-center justify-center px-6 py-12">
-          <div className="w-full max-w-xl">
+          <div className="w-full max-w-2xl">
             <AnimatePresence mode="wait" custom={direction}>
               <TypeformStep key={step} direction={direction}>
                 {renderStep()}
@@ -314,23 +361,18 @@ export default function ShopFlow({ mode = 'create', shopId, initialData }: ShopF
         </div>
 
         {/* Navigation */}
-        <TypeformNavigation
-          canProceed={canProceed()}
-          showBack={step !== STEPS.CATEGORY}
-          isLastStep={isLastStep}
-          isLoading={isLoading}
-          onNext={isLastStep ? handleSubmit(onSubmit) : handleNext}
-          onBack={handleBack}
-          submitLabel={isEditMode ? 'Save changes' : 'Create shop'}
-        />
+        {!isFormStep && (
+          <TypeformNavigation
+            canProceed={canProceed()}
+            showBack={step !== STEPS.CATEGORY}
+            isLastStep={isLastStep}
+            isLoading={isLoading}
+            onNext={isLastStep ? handleSubmit(onSubmit) : handleNext}
+            onBack={handleBack}
+            submitLabel={isEditMode ? 'Save changes' : 'Create shop'}
+          />
+        )}
       </div>
-
-      {/* Product Modal */}
-      <ProductModal
-        isOpen={showProductModal}
-        onClose={() => setShowProductModal(false)}
-        onSubmit={handleAddProduct}
-      />
     </FormProvider>
   );
 }
