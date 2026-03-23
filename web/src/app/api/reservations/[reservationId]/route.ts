@@ -23,7 +23,7 @@ export async function PATCH(
 
  try {
    const body = await request.json();
-   const { action } = body; // 'accept' or 'decline'
+   const { action, newDate, newTime } = body; // action: 'accept' | 'decline' | 'reschedule'
 
    // First get the reservation details
    const reservation = await prisma.reservation.findUnique({
@@ -54,27 +54,39 @@ export async function PATCH(
      throw new Error('Unauthorized');
    }
 
-   // Update the reservation status
+   let updateData: Record<string, unknown> = {};
+   let notificationType = '';
+   let notificationContent = '';
+
+   if (action === 'reschedule') {
+     if (!newDate || !newTime) {
+       return NextResponse.json({ error: 'New date and time required for reschedule' }, { status: 400 });
+     }
+     updateData = { date: new Date(newDate), time: newTime, status: 'rescheduled' };
+     notificationType = 'RESERVATION_RESCHEDULED';
+     notificationContent = `Your reservation at ${reservation.listing.title} has been rescheduled to ${new Date(newDate).toLocaleDateString()} at ${newTime}`;
+   } else {
+     updateData = { status: action === 'accept' ? 'accepted' : 'declined' };
+     notificationType = action === 'accept' ? 'RESERVATION_ACCEPTED' : 'RESERVATION_DECLINED';
+     notificationContent = action === 'accept'
+       ? `Your reservation at ${reservation.listing.title} has been accepted`
+       : `Your reservation at ${reservation.listing.title} has been declined`;
+   }
+
    const updatedReservation = await prisma.reservation.update({
-    where: {
-      id: reservationId
-    },
-    data: {
-      status: action === 'accept' ? 'accepted' : 'declined'
-    },
-    include: {  // Add this to include all related data
+    where: { id: reservationId },
+    data: updateData,
+    include: {
       listing: true,
       user: true
     }
   });
 
-   // Create notification based on the action
+   // Create notification
    await prisma.notification.create({
      data: {
-       type: action === 'accept' ? 'RESERVATION_ACCEPTED' : 'RESERVATION_DECLINED',
-       content: action === 'accept'
-         ? `Your reservation at ${reservation.listing.title} has been accepted`
-         : `Your reservation at ${reservation.listing.title} has been declined`,
+       type: notificationType,
+       content: notificationContent,
        userId: reservation.userId
      }
    });

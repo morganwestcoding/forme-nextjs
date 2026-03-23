@@ -174,12 +174,13 @@ export async function PUT(request: Request, { params }: { params: IParams }) {
           // Create new employee with proper fullName
           await tx.employee.create({
             data: {
-              fullName: empWithName.fullName, // Now properly populated!
+              fullName: empWithName.fullName,
               jobTitle: empWithName.jobTitle || null,
               listingId,
               userId: empWithName.userId,
               serviceIds: empWithName.serviceIds || [],
               isActive: true,
+              teamRole: empWithName.userId === listing.userId ? 'owner' : 'staff',
             },
           });
         }

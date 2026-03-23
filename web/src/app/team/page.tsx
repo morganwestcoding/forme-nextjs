@@ -1,4 +1,5 @@
 import getCurrentUser from '@/app/actions/getCurrentUser';
+import getTeamData from '@/app/actions/getTeamData';
 import { redirect } from 'next/navigation';
 import TeamClient from './TeamClient';
 
@@ -11,5 +12,7 @@ export default async function TeamPage() {
     redirect('/');
   }
 
-  return <TeamClient currentUser={currentUser} />;
+  const teamData = await getTeamData(currentUser.id);
+
+  return <TeamClient currentUser={currentUser} teamData={teamData} />;
 }

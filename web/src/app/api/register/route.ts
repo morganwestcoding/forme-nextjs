@@ -140,11 +140,11 @@ export async function POST(request: Request) {
           data: {
             fullName: name,
             jobTitle: isOwnerManager ? 'Owner/Manager' : (jobTitle || ''),
-            // profileImage removed - use user.image/imageSrc instead
             listingId: selectedListing,
             userId: user.id,
             serviceIds: selectedServices || [],
             isActive: true,
+            teamRole: isOwnerManager ? 'manager' : 'staff',
           }
         });
 
@@ -216,9 +216,10 @@ export async function POST(request: Request) {
             jobTitle: jobTitle || null,
             listingId: listing.id,
             userId: user.id,
-            serviceIds: serviceIds, // Link to created services
+            serviceIds: serviceIds,
             isActive: true,
-            isIndependent: true, // Mark as independent worker
+            isIndependent: true,
+            teamRole: 'owner',
           }
         });
 
