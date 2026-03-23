@@ -6,7 +6,7 @@ import { FieldValues, FormProvider, SubmitHandler, useForm } from 'react-hook-fo
 import { signIn, useSession } from 'next-auth/react';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 
 import TypeformStep from './TypeformStep';
 import TypeformProgress from './TypeformProgress';
@@ -92,10 +92,12 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
   const [isLoading, setIsLoading] = useState(false);
   const [services, setServices] = useState<Service[]>([]);
   const [editingServiceIndex, setEditingServiceIndex] = useState<number | null>(null);
+  const [isExiting, setIsExiting] = useState(false);
 
   const methods = useForm<FieldValues>({
     defaultValues: {
-      name: initialData?.name || '',
+      firstName: initialData?.name?.split(' ')[0] || '',
+      lastName: initialData?.name?.split(' ').slice(1).join(' ') || '',
       email: initialData?.email || '',
       password: '',
       interests: initialData?.interests || [],
@@ -194,7 +196,7 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
     switch (step) {
       case STEPS.ACCOUNT:
         const p = validatePassword(data.password || '');
-        return Boolean(data.email?.trim() && data.name?.trim() && Object.values(p).every(Boolean));
+        return Boolean(data.email?.trim() && data.firstName?.trim() && data.lastName?.trim() && Object.values(p).every(Boolean));
       case STEPS.INTERESTS:
         return true; // Optional
       case STEPS.USER_TYPE:
@@ -296,10 +298,12 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
     setIsLoading(true);
 
     try {
+      const fullName = `${data.firstName?.trim() || ''} ${data.lastName?.trim() || ''}`.trim();
+
       // Edit mode - update existing profile
       if (isEditMode && userId) {
         await axios.put(`/api/users/${userId}`, {
-          name: data.name,
+          name: fullName,
           location: data.location,
           bio: data.bio,
           image: data.image,
@@ -320,7 +324,7 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
       );
 
       await axios.post('/api/register', {
-        name: data.name,
+        name: fullName,
         email: data.email,
         password: data.password,
         interests: data.interests,
@@ -340,8 +344,6 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
         listingImage: data.userType === 'individual' ? data.listingImage : undefined,
       });
 
-      toast.success('Registered! Logging you in...');
-
       const signInRes = await signIn('credentials', {
         email: data.email,
         password: data.password,
@@ -352,13 +354,12 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
         await update();
         router.refresh();
 
-        setTimeout(() => {
-          if (data.userType === 'individual' || data.userType === 'team') {
-            router.push('/licensing?onboarding=true');
-          } else {
-            router.push('/subscription');
-          }
-        }, 250);
+        // Smooth fade-out before navigating
+        setIsExiting(true);
+        const destination = (data.userType === 'individual' || data.userType === 'team')
+          ? '/licensing?onboarding=true'
+          : '/subscription?onboarding=true';
+        setTimeout(() => router.push(destination), 600);
         return;
       }
 
@@ -489,7 +490,15 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
 
   return (
     <FormProvider {...methods}>
-      <div className="min-h-screen flex flex-col">
+      <motion.div
+        className="min-h-screen flex flex-col"
+        animate={{
+          opacity: isExiting ? 0 : 1,
+          scale: isExiting ? 0.98 : 1,
+          y: isExiting ? -10 : 0,
+        }}
+        transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+      >
         {/* Progress bar */}
         <TypeformProgress
           currentStep={currentIndex + 1}
@@ -519,7 +528,7 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
             submitLabel={isEditMode ? 'Save changes' : 'Create account'}
           />
         )}
-      </div>
+      </motion.div>
     </FormProvider>
   );
 }

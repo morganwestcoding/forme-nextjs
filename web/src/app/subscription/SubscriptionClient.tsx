@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { SafeUser } from "@/app/types";
@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Container from "@/components/Container";
 import PageHeader from "@/components/PageHeader";
+import Celebration from "@/components/Celebration";
 
 function cleanLabel(label?: string | null) {
   const cleaned = String(label || "Bronze").replace(/\s*\(.*\)\s*$/, "").trim();
@@ -53,6 +54,7 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
   const [billing, setBilling] = useState("monthly" as "monthly" | "yearly");
   const [saving, setSaving] = useState(false);
   const [hasProcessedPayment, setHasProcessedPayment] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
   const [searchParams] = useState(() => {
     if (typeof window !== 'undefined') return new URLSearchParams(window.location.search);
     return new URLSearchParams();
@@ -69,10 +71,9 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
         try {
           await update();
           router.refresh();
-          toast.success("Subscription activated! Welcome to ForMe.");
-          setTimeout(() => router.push('/'), 1000);
+          setShowCelebration(true);
         } catch {
-          setTimeout(() => router.push('/'), 1000);
+          setShowCelebration(true);
         }
       } else if (status === 'cancelled' && isOnboarding && !hasProcessedPayment) {
         setHasProcessedPayment(true);
@@ -95,10 +96,11 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
       setSaving(true);
       if (planId === "bronze") {
         await axios.post("/api/subscription/select", { plan: "Bronze", interval: billing });
-        toast.success("Bronze plan selected");
         router.refresh();
         if (isOnboarding) {
-          setTimeout(() => { toast.success("Welcome to ForMe!"); router.push('/'); }, 800);
+          setShowCelebration(true);
+        } else {
+          toast.success("Bronze plan selected");
         }
         return;
       }
@@ -121,6 +123,14 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
       setSaving(false);
     }
   };
+
+  const handleCelebrationComplete = useCallback(() => {
+    router.push('/');
+  }, [router]);
+
+  if (showCelebration) {
+    return <Celebration onComplete={handleCelebrationComplete} userName={currentUser?.name?.split(' ')[0]} />;
+  }
 
   return (
     <Container>

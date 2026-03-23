@@ -12,7 +12,9 @@ export default function ImagesStep() {
 
   const image = watch('image');
   const bio = watch('bio');
-  const name = watch('name');
+  const firstName = watch('firstName');
+  const lastName = watch('lastName');
+  const name = [firstName, lastName].filter(Boolean).join(' ');
   const jobTitle = watch('jobTitle');
 
   const handleProfileUpload = (result: CldUploadWidgetResults) => {
@@ -54,6 +56,8 @@ export default function ImagesStep() {
               resourceType: 'image',
               clientAllowedFormats: ['png', 'jpg', 'jpeg', 'webp'],
               maxImageFileSize: 5_000_000,
+              minImageWidth: 400,
+              minImageHeight: 400,
               cropping: true,
               croppingAspectRatio: 1,
               croppingShowBackButton: true,

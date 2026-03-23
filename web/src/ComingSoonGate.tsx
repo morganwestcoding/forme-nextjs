@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import { Lock, Mail, ArrowRight, Check, Zap, AlertCircle, Calendar, Users, ShoppingBag, BarChart3 } from 'lucide-react';
+import { Lock, ArrowRight, Check, AlertCircle, Calendar, Users, ShoppingBag, BarChart3 } from 'lucide-react';
 
 // Routes that bypass the coming soon gate
 const BYPASS_ROUTES = ['/register', '/reset-password'];

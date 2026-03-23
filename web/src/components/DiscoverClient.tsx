@@ -16,7 +16,7 @@ import ListingCard from '@/components/listings/ListingCard';
 import WorkerCard from '@/components/listings/WorkerCard';
 import ShopCard from '@/components/shop/ShopCard';
 import SectionHeader from '@/app/market/SectionHeader';
-import { Search01Icon, PlusSignIcon, Notification03Icon, MessageMultiple01Icon } from 'hugeicons-react';
+import { PlusSignIcon, Notification03Icon, MessageMultiple01Icon } from 'hugeicons-react';
 import Image from 'next/image';
 import useLoginModal from '@/app/hooks/useLoginModal';
 import useInboxModal from '@/app/hooks/useInboxModal';
