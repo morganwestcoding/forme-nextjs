@@ -26,7 +26,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ data, currentUser, disabled =
 
   const handleCardClick = () => {
     if (disabled) return;
-    router.push(`/shop/products/${data.id}`);
+    router.push(`/shops/products/${data.id}`);
   };
 
   return (
