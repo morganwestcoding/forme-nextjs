@@ -66,12 +66,38 @@ export interface TeamData {
 }
 
 export default async function getTeamData(userId: string): Promise<TeamData> {
-  const listings = await prisma.listing.findMany({
-    where: { userId },
-    select: { id: true, title: true, category: true },
-  });
+  // Find listings the user owns OR is an employee of
+  const [ownedListings, employeeRecords] = await Promise.all([
+    prisma.listing.findMany({
+      where: { userId },
+      select: { id: true, title: true, category: true },
+    }),
+    prisma.employee.findMany({
+      where: { userId },
+      select: { listingId: true },
+    }),
+  ]);
 
-  const listingIds = listings.map((l) => l.id);
+  // Combine owned + employed listing IDs (deduplicated)
+  const employedListingIds = employeeRecords.map((e) => e.listingId);
+  const allListingIds = [...new Set([
+    ...ownedListings.map((l) => l.id),
+    ...employedListingIds,
+  ])];
+
+  // Fetch full listing details for any we don't already have
+  const missingIds = allListingIds.filter(
+    (id) => !ownedListings.some((l) => l.id === id)
+  );
+  const additionalListings = missingIds.length > 0
+    ? await prisma.listing.findMany({
+        where: { id: { in: missingIds } },
+        select: { id: true, title: true, category: true },
+      })
+    : [];
+
+  const listings = [...ownedListings, ...additionalListings];
+  const listingIds = allListingIds;
 
   if (listingIds.length === 0) {
     return {

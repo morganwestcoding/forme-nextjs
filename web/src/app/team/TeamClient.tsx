@@ -49,7 +49,24 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
   const [clients, setClients] = useState<any[]>([]);
   const [clientsLoaded, setClientsLoaded] = useState(false);
 
-  const { members, todayBookings, upcomingBookings, stats, listings } = teamData;
+  const { members: allMembers, todayBookings: allTodayBookings, upcomingBookings: allUpcomingBookings, stats: allStats, listings } = teamData;
+
+  // Listing filter — when connected to multiple listings
+  const [selectedListingId, setSelectedListingId] = useState<string>(listings[0]?.id || '');
+
+  // Filter everything by selected listing
+  const members = allMembers.filter((m) => m.listingId === selectedListingId);
+  const todayBookings = allTodayBookings.filter((b) => members.some((m) => m.id === b.employeeId));
+  const upcomingBookings = allUpcomingBookings.filter((b) => members.some((m) => m.id === b.employeeId));
+  const stats = {
+    totalMembers: members.length,
+    activeMembers: members.filter((m) => m.isActive).length,
+    todayBookingCount: todayBookings.length,
+    weekRevenue: allStats.weekRevenue, // TODO: filter by listing when needed
+    monthRevenue: members.reduce((sum, m) => sum + m.monthlyRevenue, 0),
+    pendingTimeOff: members.flatMap((m) => m.timeOffRequests).filter((t) => t.status === 'pending').length,
+  };
+  const selectedListing = listings.find((l) => l.id === selectedListingId);
 
   const tabs: { key: TeamTab; label: string; count?: number }[] = [
     { key: 'overview', label: 'Overview' },
@@ -127,11 +144,11 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
 
   // --- Load clients ---
   const loadClients = useCallback(async () => {
-    if (listings.length === 0) return;
+    if (!selectedListingId) return;
     setLoadingClients(true);
     try {
       const searchParam = searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : '';
-      const res = await fetch(`/api/team/clients?listingId=${listings[0].id}${searchParam}`);
+      const res = await fetch(`/api/team/clients?listingId=${selectedListingId}${searchParam}`);
       const data = await res.json();
       setClients(data.clients || []);
       setClientsLoaded(true);
@@ -140,17 +157,17 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
     } finally {
       setLoadingClients(false);
     }
-  }, [listings, searchQuery]);
+  }, [selectedListingId, searchQuery]);
 
   // --- Save client note ---
   const saveClientNote = useCallback(async (clientUserId: string) => {
-    if (listings.length === 0) return;
+    if (!selectedListingId) return;
     try {
       await fetch('/api/team/clients', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          listingId: listings[0].id,
+          listingId: selectedListingId,
           clientUserId,
           notes: clientNotes[clientUserId] || '',
         }),
@@ -159,7 +176,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
     } catch {
       toast.error('Failed to save note');
     }
-  }, [listings, clientNotes]);
+  }, [selectedListingId, clientNotes]);
 
   // Load clients when tab is switched to clients
   React.useEffect(() => {
@@ -227,11 +244,29 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
 
       <div className="mt-8 pb-16">
         <div className="mb-8">
-          <h1 className="text-2xl font-semibold text-stone-900 tracking-tight">Teammate Central</h1>
-          <p className="text-[14px] text-stone-400 mt-1">
-            {stats.totalMembers} team member{stats.totalMembers !== 1 ? 's' : ''}
-            {listings.length > 0 && ` · ${listings[0].title}`}
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-semibold text-stone-900 tracking-tight">Teammate Central</h1>
+              <p className="text-[14px] text-stone-400 mt-1">
+                {stats.totalMembers} team member{stats.totalMembers !== 1 ? 's' : ''}
+                {selectedListing && ` · ${selectedListing.title}`}
+              </p>
+            </div>
+            {listings.length > 1 && (
+              <select
+                value={selectedListingId}
+                onChange={(e) => {
+                  setSelectedListingId(e.target.value);
+                  setClientsLoaded(false);
+                }}
+                className="text-[13px] px-4 py-2 rounded-xl border border-stone-200 bg-white focus:outline-none focus:ring-2 focus:ring-stone-300"
+              >
+                {listings.map((l) => (
+                  <option key={l.id} value={l.id}>{l.title}</option>
+                ))}
+              </select>
+            )}
+          </div>
         </div>
 
         {/* Tabs */}
