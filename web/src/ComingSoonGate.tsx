@@ -237,7 +237,7 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
               filter: blur(10px);
             }
             100% {
-              opacity: 0.9;
+              opacity: 1;
               transform: scale(1) translateY(0);
               filter: blur(0);
             }
@@ -286,9 +286,9 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
           }
 
           .loader-dot {
-            width: 10px;
-            height: 10px;
-            margin: 0 5px;
+            width: 14px;
+            height: 14px;
+            margin: 0 6px;
             border-radius: 50%;
             animation: dotPulse 1.4s ease-in-out infinite;
           }
@@ -302,7 +302,7 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
             <img
               src="/logos/fm-logo-white.png"
               alt="ForMe Logo"
-              className="loader-logo h-20 w-auto mx-auto mb-10"
+              className="loader-logo h-32 w-auto mx-auto mb-12"
               style={{ opacity: 0 }}
             />
             <div className="loader-dots-container flex justify-center items-center">

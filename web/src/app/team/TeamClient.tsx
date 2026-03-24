@@ -3,6 +3,7 @@
 import React, { useState, useCallback } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { SafeUser } from '@/app/types';
 import { TeamData, TeamMember, TeamBooking } from '@/app/actions/getTeamData';
 import Container from '@/components/Container';
@@ -14,7 +15,7 @@ interface TeamClientProps {
   teamData: TeamData;
 }
 
-type TeamTab = 'overview' | 'schedule' | 'bookings' | 'clients';
+type TeamTab = 'overview' | 'schedule' | 'bookings' | 'clients' | 'pay';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const DAY_SHORT: Record<string, string> = {
@@ -29,7 +30,11 @@ const StatusBadge = ({ status }: { status: string }) => {
     declined: 'bg-red-50 text-red-600',
     rescheduled: 'bg-blue-50 text-blue-600',
     approved: 'bg-emerald-50 text-emerald-600',
+    completed: 'bg-emerald-50 text-emerald-600',
     denied: 'bg-red-50 text-red-600',
+    charged: 'bg-stone-100 text-stone-600',
+    waived: 'bg-purple-50 text-purple-600',
+    processing: 'bg-blue-50 text-blue-600',
   };
   return (
     <span className={`text-[11px] font-medium px-2.5 py-1 rounded-full capitalize ${styles[status] || 'bg-stone-100 text-stone-500'}`}>
@@ -40,6 +45,12 @@ const StatusBadge = ({ status }: { status: string }) => {
 
 const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
   const router = useRouter();
+  const { status } = useSession();
+
+  // Guard against sign-out re-render — session dying means user is logging out
+  if (!currentUser || status === 'unauthenticated') {
+    return null;
+  }
   const [activeTab, setActiveTab] = useState<TeamTab>('overview');
   const [searchQuery, setSearchQuery] = useState('');
   const [editingSchedule, setEditingSchedule] = useState<string | null>(null);
@@ -48,6 +59,13 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
   const [loadingClients, setLoadingClients] = useState(false);
   const [clients, setClients] = useState<any[]>([]);
   const [clientsLoaded, setClientsLoaded] = useState(false);
+
+  // Pay tab state
+  const [editingAgreement, setEditingAgreement] = useState<string | null>(null);
+  const [agreementForm, setAgreementForm] = useState<{ type: string; splitPercent: number; rentalAmount: number; rentalFrequency: string; autoApprovePayout: boolean }>({ type: 'chair_rental', splitPercent: 70, rentalAmount: 350, rentalFrequency: 'weekly', autoApprovePayout: false });
+  const [balances, setBalances] = useState<Record<string, any>>({});
+  const [payouts, setPayouts] = useState<Record<string, any[]>>({});
+  const [payPeriods, setPayPeriods] = useState<Record<string, any[]>>({});
 
   const { members: allMembers, todayBookings: allTodayBookings, upcomingBookings: allUpcomingBookings, stats: allStats, listings } = teamData;
 
@@ -73,6 +91,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
     { key: 'schedule', label: 'Schedule' },
     { key: 'bookings', label: 'Bookings', count: todayBookings.length },
     { key: 'clients', label: 'Clients' },
+    { key: 'pay', label: 'Pay' },
   ];
 
   // --- Schedule editing ---
@@ -178,6 +197,99 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
     }
   }, [selectedListingId, clientNotes]);
 
+  // --- Pay tab handlers ---
+  const loadPayData = useCallback(async (employeeId: string) => {
+    try {
+      const [balRes, payoutRes, periodRes] = await Promise.all([
+        fetch(`/api/team/pay/balance?employeeId=${employeeId}`),
+        fetch(`/api/team/pay/payout?employeeId=${employeeId}`),
+        fetch(`/api/team/pay/periods?employeeId=${employeeId}`),
+      ]);
+      const [bal, pay, per] = await Promise.all([balRes.json(), payoutRes.json(), periodRes.json()]);
+      setBalances((prev) => ({ ...prev, [employeeId]: bal }));
+      setPayouts((prev) => ({ ...prev, [employeeId]: pay.payouts || [] }));
+      setPayPeriods((prev) => ({ ...prev, [employeeId]: per.periods || [] }));
+    } catch {
+      toast.error('Failed to load pay data');
+    }
+  }, []);
+
+  const saveAgreement = useCallback(async (employeeId: string) => {
+    try {
+      const res = await fetch('/api/team/pay/agreement', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ employeeId, ...agreementForm }),
+      });
+      if (!res.ok) throw new Error('Failed');
+      toast.success('Pay agreement saved');
+      setEditingAgreement(null);
+      router.refresh();
+    } catch {
+      toast.error('Failed to save agreement');
+    }
+  }, [agreementForm, router]);
+
+  const handlePayoutAction = useCallback(async (payoutId: string, action: string) => {
+    try {
+      const res = await fetch('/api/team/pay/payout', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ payoutId, action }),
+      });
+      if (!res.ok) throw new Error('Failed');
+      toast.success(`Payout ${action === 'approve' ? 'approved' : 'denied'}`);
+      // Reload pay data for the affected employee
+      const payout = payouts[Object.keys(payouts).find((k) => payouts[k].some((p: any) => p.id === payoutId)) || ''];
+      if (payout) router.refresh();
+    } catch {
+      toast.error('Action failed');
+    }
+  }, [payouts, router]);
+
+  const waivePeriod = useCallback(async (periodId: string, employeeId: string) => {
+    try {
+      const res = await fetch('/api/team/pay/periods', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ periodId, action: 'waive' }),
+      });
+      if (!res.ok) throw new Error('Failed');
+      toast.success('Fee waived');
+      loadPayData(employeeId);
+    } catch {
+      toast.error('Failed to waive fee');
+    }
+  }, [loadPayData]);
+
+  const generatePeriod = useCallback(async (employeeId: string) => {
+    try {
+      const res = await fetch('/api/team/pay/periods', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ employeeId }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        if (res.status === 409) { toast.error('Period already exists'); return; }
+        throw new Error(data.error);
+      }
+      toast.success('Fee period created');
+      loadPayData(employeeId);
+    } catch {
+      toast.error('Failed to generate period');
+    }
+  }, [loadPayData]);
+
+  // Load pay data when tab is switched
+  React.useEffect(() => {
+    if (activeTab === 'pay') {
+      members.forEach((m) => {
+        if (!balances[m.id]) loadPayData(m.id);
+      });
+    }
+  }, [activeTab, members, balances, loadPayData]);
+
   // Load clients when tab is switched to clients
   React.useEffect(() => {
     if (activeTab === 'clients' && !clientsLoaded) {
@@ -185,10 +297,17 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
     }
   }, [activeTab, clientsLoaded, loadClients]);
 
+  const to12h = (time: string) => {
+    const [h, m] = time.split(':').map(Number);
+    const period = h >= 12 ? 'pm' : 'am';
+    const hour = h === 0 ? 12 : h > 12 ? h - 12 : h;
+    return m === 0 ? `${hour} ${period}` : `${hour}:${m.toString().padStart(2, '0')} ${period}`;
+  };
+
   const getScheduleDisplay = (member: TeamMember, day: string) => {
     const avail = member.availability.find((a) => a.dayOfWeek === day);
     if (!avail || avail.isOff) return 'Off';
-    return `${avail.startTime}-${avail.endTime}`;
+    return `${to12h(avail.startTime)} - ${to12h(avail.endTime)}`;
   };
 
   const pendingTimeOffRequests = members.flatMap((m) =>
@@ -746,6 +865,251 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
                   </div>
                 ))}
               </div>
+            )}
+          </div>
+        )}
+
+        {/* ===== PAY ===== */}
+        {activeTab === 'pay' && (
+          <div className="space-y-8">
+            {members.length === 0 ? (
+              <div className="rounded-2xl border border-stone-200/60 p-8 bg-white text-center">
+                <p className="text-stone-400 text-[14px]">No team members to manage pay for.</p>
+              </div>
+            ) : (
+              members.map((member, idx) => {
+                const bal = balances[member.id];
+                const memberPayouts = payouts[member.id] || [];
+                const memberPeriods = payPeriods[member.id] || [];
+                const isEditing = editingAgreement === member.id;
+
+                return (
+                  <div
+                    key={member.id}
+                    className="rounded-2xl border border-stone-200/60 bg-white overflow-hidden"
+                    style={{ opacity: 0, animation: 'fadeInUp 520ms ease-out both', animationDelay: `${60 + idx * 40}ms` }}
+                  >
+                    {/* Member header */}
+                    <div className="flex items-center justify-between p-5 border-b border-stone-100">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full overflow-hidden bg-stone-100">
+                          {(member.user.image || member.user.imageSrc) ? (
+                            <Image src={member.user.image || member.user.imageSrc || ''} alt="" width={40} height={40} className="object-cover w-full h-full" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-stone-500 text-[14px] font-semibold">{member.fullName[0]}</div>
+                          )}
+                        </div>
+                        <div>
+                          <p className="text-[14px] font-semibold text-stone-900">{member.fullName}</p>
+                          <p className="text-[12px] text-stone-400">
+                            {member.payAgreement
+                              ? member.payAgreement.type === 'commission'
+                                ? `${member.payAgreement.splitPercent}% commission`
+                                : `$${member.payAgreement.rentalAmount}/${member.payAgreement.rentalFrequency} chair rental`
+                              : 'No pay agreement'}
+                            {member.stripeConnectSetup ? '' : ' · Payment account not set up'}
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => {
+                          if (isEditing) {
+                            setEditingAgreement(null);
+                          } else {
+                            setAgreementForm(member.payAgreement ? {
+                              type: member.payAgreement.type,
+                              splitPercent: member.payAgreement.splitPercent || 70,
+                              rentalAmount: member.payAgreement.rentalAmount || 350,
+                              rentalFrequency: member.payAgreement.rentalFrequency || 'weekly',
+                              autoApprovePayout: member.payAgreement.autoApprovePayout,
+                            } : { type: 'chair_rental', splitPercent: 70, rentalAmount: 350, rentalFrequency: 'weekly', autoApprovePayout: false });
+                            setEditingAgreement(member.id);
+                          }
+                        }}
+                        className="text-[12px] text-stone-400 hover:text-stone-600 transition-colors px-3 py-1.5 rounded-lg hover:bg-stone-50"
+                      >
+                        {isEditing ? 'Cancel' : member.payAgreement ? 'Edit Agreement' : 'Set Up Pay'}
+                      </button>
+                    </div>
+
+                    {/* Agreement editor */}
+                    {isEditing && (
+                      <div className="p-5 border-b border-stone-100 bg-stone-50/50 space-y-4">
+                        <div className="flex gap-3">
+                          {['chair_rental', 'commission'].map((type) => (
+                            <button
+                              key={type}
+                              onClick={() => setAgreementForm((prev) => ({ ...prev, type }))}
+                              className={`px-4 py-2 rounded-xl text-[13px] font-medium transition-all ${
+                                agreementForm.type === type ? 'bg-stone-900 text-white' : 'bg-white border border-stone-200 text-stone-500'
+                              }`}
+                            >
+                              {type === 'chair_rental' ? 'Chair Rental' : 'Commission Split'}
+                            </button>
+                          ))}
+                        </div>
+
+                        {agreementForm.type === 'chair_rental' ? (
+                          <div className="flex items-center gap-4">
+                            <div>
+                              <label className="text-[11px] text-stone-400 block mb-1">Rental Amount ($)</label>
+                              <input
+                                type="number"
+                                value={agreementForm.rentalAmount}
+                                onChange={(e) => setAgreementForm((prev) => ({ ...prev, rentalAmount: Number(e.target.value) }))}
+                                className="w-32 text-[13px] px-3 py-2 rounded-lg border border-stone-200 bg-white"
+                              />
+                            </div>
+                            <div>
+                              <label className="text-[11px] text-stone-400 block mb-1">Frequency</label>
+                              <select
+                                value={agreementForm.rentalFrequency}
+                                onChange={(e) => setAgreementForm((prev) => ({ ...prev, rentalFrequency: e.target.value }))}
+                                className="text-[13px] px-3 py-2 rounded-lg border border-stone-200 bg-white"
+                              >
+                                <option value="daily">Daily</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="monthly">Monthly</option>
+                              </select>
+                            </div>
+                          </div>
+                        ) : (
+                          <div>
+                            <label className="text-[11px] text-stone-400 block mb-1">Employee keeps (%)</label>
+                            <input
+                              type="number"
+                              min={0}
+                              max={100}
+                              value={agreementForm.splitPercent}
+                              onChange={(e) => setAgreementForm((prev) => ({ ...prev, splitPercent: Number(e.target.value) }))}
+                              className="w-32 text-[13px] px-3 py-2 rounded-lg border border-stone-200 bg-white"
+                            />
+                            <p className="text-[11px] text-stone-400 mt-1">Business keeps {100 - agreementForm.splitPercent}%</p>
+                          </div>
+                        )}
+
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={agreementForm.autoApprovePayout}
+                            onChange={(e) => setAgreementForm((prev) => ({ ...prev, autoApprovePayout: e.target.checked }))}
+                            className="w-4 h-4 rounded border-stone-300"
+                          />
+                          <span className="text-[13px] text-stone-600">Auto-approve payout requests</span>
+                        </label>
+
+                        <button
+                          onClick={() => saveAgreement(member.id)}
+                          className="px-5 py-2 rounded-xl bg-stone-900 text-white text-[13px] font-medium hover:bg-stone-800 transition-all"
+                        >
+                          Save Agreement
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Balance summary */}
+                    {bal && (
+                      <div className="p-5 border-b border-stone-100">
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                          {[
+                            { label: 'Total Revenue', value: `$${bal.totalRevenue?.toLocaleString() || '0'}` },
+                            { label: 'Earnings', value: `$${bal.grossEarnings?.toLocaleString() || '0'}` },
+                            { label: 'Fees Charged', value: `$${bal.totalRentalFees?.toLocaleString() || '0'}` },
+                            { label: 'Available Balance', value: `$${bal.availableBalance?.toLocaleString() || '0'}`, highlight: bal.availableBalance < 0 },
+                          ].map((stat, i) => (
+                            <div key={i} className="text-center">
+                              <p className="text-[11px] text-stone-400">{stat.label}</p>
+                              <p className={`text-[18px] font-bold tabular-nums mt-0.5 ${stat.highlight ? 'text-red-500' : 'text-stone-900'}`}>{stat.value}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Rental fee periods (chair rental only) */}
+                    {member.payAgreement?.type === 'chair_rental' && memberPeriods.length > 0 && (
+                      <div className="p-5 border-b border-stone-100">
+                        <div className="flex items-center justify-between mb-3">
+                          <h4 className="text-[13px] font-semibold text-stone-900">Rental Fees</h4>
+                          <button
+                            onClick={() => generatePeriod(member.id)}
+                            className="text-[11px] text-stone-400 hover:text-stone-600 px-2 py-1 rounded-lg hover:bg-stone-50 transition-colors"
+                          >
+                            + Generate Period
+                          </button>
+                        </div>
+                        <div className="space-y-2">
+                          {memberPeriods.slice(0, 5).map((period: any) => (
+                            <div key={period.id} className="flex items-center justify-between py-2">
+                              <div>
+                                <p className="text-[12px] text-stone-700">
+                                  {new Date(period.periodStart).toLocaleDateString()} - {new Date(period.periodEnd).toLocaleDateString()}
+                                </p>
+                                <p className="text-[11px] text-stone-400">${period.feeAmount}</p>
+                              </div>
+                              {period.status === 'charged' ? (
+                                <div className="flex items-center gap-2">
+                                  <StatusBadge status="charged" />
+                                  <button
+                                    onClick={() => waivePeriod(period.id, member.id)}
+                                    className="text-[11px] text-stone-400 hover:text-stone-600 transition-colors"
+                                  >
+                                    Waive
+                                  </button>
+                                </div>
+                              ) : (
+                                <StatusBadge status={period.status} />
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Payout history */}
+                    {memberPayouts.length > 0 && (
+                      <div className="p-5">
+                        <h4 className="text-[13px] font-semibold text-stone-900 mb-3">Payouts</h4>
+                        <div className="space-y-2">
+                          {memberPayouts.slice(0, 5).map((payout: any) => (
+                            <div key={payout.id} className="flex items-center justify-between py-2">
+                              <div>
+                                <p className="text-[13px] font-medium text-stone-900 tabular-nums">${payout.amount.toFixed(2)}</p>
+                                <p className="text-[11px] text-stone-400">{new Date(payout.requestedAt).toLocaleDateString()}</p>
+                              </div>
+                              {payout.status === 'pending' ? (
+                                <div className="flex gap-1.5">
+                                  <button
+                                    onClick={() => handlePayoutAction(payout.id, 'approve')}
+                                    className="px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-600 text-[11px] font-medium hover:bg-emerald-100 transition-colors"
+                                  >
+                                    Approve
+                                  </button>
+                                  <button
+                                    onClick={() => handlePayoutAction(payout.id, 'deny')}
+                                    className="px-3 py-1.5 rounded-lg bg-red-50 text-red-600 text-[11px] font-medium hover:bg-red-100 transition-colors"
+                                  >
+                                    Deny
+                                  </button>
+                                </div>
+                              ) : (
+                                <StatusBadge status={payout.status} />
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Empty state for no pay data */}
+                    {!bal && !isEditing && (
+                      <div className="p-5 text-center">
+                        <p className="text-[12px] text-stone-400">Loading pay data...</p>
+                      </div>
+                    )}
+                  </div>
+                );
+              })
             )}
           </div>
         )}

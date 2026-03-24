@@ -33,6 +33,14 @@ export interface TeamMember {
   }[];
   upcomingBookings: number;
   monthlyRevenue: number;
+  payAgreement: {
+    type: string;
+    splitPercent: number | null;
+    rentalAmount: number | null;
+    rentalFrequency: string | null;
+    autoApprovePayout: boolean;
+  } | null;
+  stripeConnectSetup: boolean;
 }
 
 export interface TeamBooking {
@@ -80,10 +88,10 @@ export default async function getTeamData(userId: string): Promise<TeamData> {
 
   // Combine owned + employed listing IDs (deduplicated)
   const employedListingIds = employeeRecords.map((e) => e.listingId);
-  const allListingIds = [...new Set([
+  const allListingIds = Array.from(new Set([
     ...ownedListings.map((l) => l.id),
     ...employedListingIds,
-  ])];
+  ]));
 
   // Fetch full listing details for any we don't already have
   const missingIds = allListingIds.filter(
@@ -129,7 +137,10 @@ export default async function getTeamData(userId: string): Promise<TeamData> {
         where: { listingId: { in: listingIds } },
         include: {
           user: {
-            select: { id: true, name: true, image: true, imageSrc: true, email: true },
+            select: {
+              id: true, name: true, image: true, imageSrc: true, email: true,
+              stripeConnectAccountId: true, stripeConnectPayoutsEnabled: true,
+            },
           },
           availability: true,
           timeOffRequests: {
@@ -143,6 +154,7 @@ export default async function getTeamData(userId: string): Promise<TeamData> {
             },
             select: { totalPrice: true },
           },
+          payAgreement: true,
         },
       }),
 
@@ -229,6 +241,14 @@ export default async function getTeamData(userId: string): Promise<TeamData> {
     upcomingBookings: todayReservations.filter((r) => r.employee?.id === emp.id).length +
       upcomingReservations.filter((r) => r.employee?.id === emp.id).length,
     monthlyRevenue: emp.reservations.reduce((sum, r) => sum + r.totalPrice, 0),
+    payAgreement: emp.payAgreement ? {
+      type: emp.payAgreement.type,
+      splitPercent: emp.payAgreement.splitPercent,
+      rentalAmount: emp.payAgreement.rentalAmount,
+      rentalFrequency: emp.payAgreement.rentalFrequency,
+      autoApprovePayout: emp.payAgreement.autoApprovePayout,
+    } : null,
+    stripeConnectSetup: !!(emp.user as any).stripeConnectAccountId && !!(emp.user as any).stripeConnectPayoutsEnabled,
   }));
 
   const mapBooking = (r: typeof todayReservations[number]): TeamBooking => ({

@@ -49,18 +49,22 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Get the employee and their user's Stripe Connect account
+    // Get the employee and the listing owner's Stripe Connect account
     const employee = await prisma.employee.findUnique({
       where: { id: employeeId },
       include: {
-        user: {
-          select: {
-            stripeConnectAccountId: true,
-            stripeConnectChargesEnabled: true,
-            name: true,
+        listing: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                stripeConnectAccountId: true,
+                stripeConnectChargesEnabled: true,
+                name: true,
+              },
+            },
           },
         },
-        listing: true,
       },
     });
 
@@ -68,10 +72,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Employee not found" }, { status: 404 });
     }
 
-    // Check if employee has a valid Stripe Connect account
-    const employeeStripeAccountId = employee.user.stripeConnectAccountId;
-    const employeeChargesEnabled = employee.user.stripeConnectChargesEnabled;
-    const hasStripeConnect = employeeStripeAccountId && employeeChargesEnabled;
+    // Payment goes to the business owner's Stripe Connect account
+    const businessOwner = employee.listing.user;
+    const businessStripeAccountId = businessOwner.stripeConnectAccountId;
+    const businessChargesEnabled = businessOwner.stripeConnectChargesEnabled;
+    const hasStripeConnect = businessStripeAccountId && businessChargesEnabled;
 
     // Calculate amounts
     const totalAmountCents = totalPrice * 100;
@@ -107,17 +112,18 @@ export async function POST(request: Request) {
         time,
         note: note || '',
         businessName: businessName || employee.listing.title,
+        businessOwnerId: businessOwner.id,
         employeeUserId: employee.userId,
         platformFeePercent: String(PLATFORM_FEE_PERCENT),
       },
     };
 
-    // Only add destination charge if employee has Stripe Connect set up
+    // Payment goes to the business owner (not the employee directly)
     if (hasStripeConnect) {
       sessionConfig.payment_intent_data = {
         application_fee_amount: applicationFeeCents,
         transfer_data: {
-          destination: employeeStripeAccountId,
+          destination: businessStripeAccountId,
         },
       };
     }

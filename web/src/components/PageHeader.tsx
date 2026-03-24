@@ -18,11 +18,10 @@ interface PageHeaderProps {
   currentUser?: SafeUser | null;
   embedded?: boolean;
   currentCategories?: string[];
-  hideLogo?: boolean;
   currentPage?: string;
 }
 
-const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, currentCategories = [], hideLogo = false, currentPage }) => {
+const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, currentCategories = [], currentPage }) => {
   const router = useRouter();
   const pathname = usePathname();
   const inboxModal = useInboxModal();
@@ -54,8 +53,9 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
         <div className="relative z-10 pb-0">
           {/* Search and Controls */}
           <div className="flex items-center gap-3 w-full">
-            {/* Invisible spacer — real logo rendered by LayoutContent outside fade */}
-            <div className="mr-4 shrink-0" style={{ width: 72, height: 46 }} />
+            <Link href="/" className="mr-4 shrink-0">
+              <Image src="/logos/fm-logo.png" alt="Logo" width={72} height={46} className="opacity-90 hover:opacity-100 transition-opacity duration-200" />
+            </Link>
             <div className="flex-1 max-w-xl">
               <PageSearch
                 actionContext="discover"

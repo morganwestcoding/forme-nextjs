@@ -300,6 +300,9 @@ model Employee {
   reservations Reservation[]
   availability EmployeeAvailability[]
   timeOffRequests TimeOffRequest[]
+  payAgreement PayAgreement?
+  payouts      Payout[]
+  payPeriods   PayPeriod[]
 
   @@unique([userId, listingId])
 }
@@ -344,6 +347,53 @@ model ClientRecord {
   @@unique([listingId, userId])
 }
 
+model PayAgreement {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  employeeId      String   @unique @db.ObjectId
+  type            String   // "commission" | "chair_rental"
+
+  // Commission fields
+  splitPercent    Float?   // Employee's cut (e.g. 70 = employee gets 70%)
+
+  // Chair rental fields
+  rentalAmount    Float?   // Dollar amount
+  rentalFrequency String?  // "daily" | "weekly" | "monthly"
+
+  // Payout settings
+  autoApprovePayout Boolean @default(false)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  employee        Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+}
+
+model Payout {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  employeeId      String   @db.ObjectId
+  amount          Float    // Amount in dollars
+  status          String   @default("pending") // "pending" | "approved" | "processing" | "completed" | "denied"
+  note            String?  // Reason for denial or note from employee
+  stripeTransferId String? // Stripe transfer ID once processed
+  requestedAt     DateTime @default(now())
+  processedAt     DateTime?
+
+  employee        Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+}
+
+model PayPeriod {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  employeeId      String   @db.ObjectId
+  periodStart     DateTime
+  periodEnd       DateTime
+  feeAmount       Float    // The rental fee for this period
+  status          String   @default("pending") // "pending" | "charged" | "waived"
+  waivedAt        DateTime?
+  waivedReason    String?
+  createdAt       DateTime @default(now())
+
+  employee        Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+}
 
 model Shop {
   id             String     @id @default(auto()) @map("_id") @db.ObjectId

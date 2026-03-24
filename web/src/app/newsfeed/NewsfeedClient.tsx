@@ -366,7 +366,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                     <DropdownMenuItem onClick={() => router.push('/subscription')}>Subscription</DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => { if (confirm('Clear early access?')) clearEarlyAccess(); }} className="text-red-500">Clear Data</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => signOut()}>Sign Out</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => signOut({ callbackUrl: '/' })}>Sign Out</DropdownMenuItem>
                   </>
                 ) : (
                   <>

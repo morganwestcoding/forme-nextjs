@@ -140,7 +140,7 @@ const UserMenuModal: React.FC<UserMenuModalProps> = ({ currentUser }) => {
             <button
               onClick={() => {
                 userMenuModal.onClose();
-                signOut();
+                signOut({ callbackUrl: '/' });
               }}
               className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-[13px] font-medium transition-all"
               style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.12)' }}
