@@ -33,7 +33,6 @@ const ShopClient: React.FC<ShopClientProps> = ({
         Products={shop.products}
         posts={posts}
         categories={categories}
-        relatedShops={relatedShops}
       />
     </Container>
   );
