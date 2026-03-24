@@ -379,9 +379,9 @@ export default function ReservationFlow({
             <motion.div
               key={step}
               custom={direction}
-              initial={(d: number) => ({ opacity: 0, y: d > 0 ? 30 : -30 })}
+              initial={((d: number) => ({ opacity: 0, y: d > 0 ? 30 : -30 })) as any}
               animate={{ opacity: 1, y: 0, transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] } }}
-              exit={(d: number) => ({ opacity: 0, y: d > 0 ? -15 : 15, transition: { duration: 0.25, ease: [0.22, 1, 0.36, 1] } })}
+              exit={((d: number) => ({ opacity: 0, y: d > 0 ? -15 : 15, transition: { duration: 0.25, ease: [0.22, 1, 0.36, 1] } })) as any}
             >
               {renderStep()}
             </motion.div>
