@@ -216,6 +216,29 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
     }
   }, []);
 
+  const requestPayout = useCallback(async () => {
+    if (!myEmployee || !payoutAmount || Number(payoutAmount) <= 0) return;
+    setRequestingPayout(true);
+    try {
+      const res = await fetch('/api/team/pay/payout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ employeeId: myEmployee.id, amount: Number(payoutAmount) }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Failed');
+      }
+      toast.success('Payout requested');
+      setPayoutAmount('');
+      loadPayData(myEmployee.id);
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to request payout');
+    } finally {
+      setRequestingPayout(false);
+    }
+  }, [myEmployee, payoutAmount, loadPayData]);
+
   const saveAgreement = useCallback(async (employeeId: string) => {
     try {
       const res = await fetch('/api/team/pay/agreement', {
