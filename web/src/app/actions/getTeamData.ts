@@ -61,6 +61,7 @@ export interface TeamBooking {
 export interface TeamData {
   members: TeamMember[];
   listings: { id: string; title: string; category: string }[];
+  ownedListingIds: string[];
   todayBookings: TeamBooking[];
   upcomingBookings: TeamBooking[];
   stats: {
@@ -111,6 +112,7 @@ export default async function getTeamData(userId: string): Promise<TeamData> {
     return {
       members: [],
       listings: [],
+      ownedListingIds: ownedListings.map((l) => l.id),
       todayBookings: [],
       upcomingBookings: [],
       stats: {
@@ -139,7 +141,6 @@ export default async function getTeamData(userId: string): Promise<TeamData> {
           user: {
             select: {
               id: true, name: true, image: true, imageSrc: true, email: true,
-              stripeConnectAccountId: true, stripeConnectPayoutsEnabled: true,
             },
           },
           availability: true,
@@ -248,7 +249,7 @@ export default async function getTeamData(userId: string): Promise<TeamData> {
       rentalFrequency: emp.payAgreement.rentalFrequency,
       autoApprovePayout: emp.payAgreement.autoApprovePayout,
     } : null,
-    stripeConnectSetup: !!(emp.user as any).stripeConnectAccountId && !!(emp.user as any).stripeConnectPayoutsEnabled,
+    stripeConnectSetup: false, // Will be checked client-side via API
   }));
 
   const mapBooking = (r: typeof todayReservations[number]): TeamBooking => ({
@@ -269,6 +270,7 @@ export default async function getTeamData(userId: string): Promise<TeamData> {
   return {
     members,
     listings,
+    ownedListingIds: ownedListings.map((l) => l.id),
     todayBookings: todayReservations.map(mapBooking),
     upcomingBookings: upcomingReservations.map(mapBooking),
     stats: {

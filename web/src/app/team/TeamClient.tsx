@@ -47,10 +47,6 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
   const router = useRouter();
   const { status } = useSession();
 
-  // Guard against sign-out re-render — session dying means user is logging out
-  if (!currentUser || status === 'unauthenticated') {
-    return null;
-  }
   const [activeTab, setActiveTab] = useState<TeamTab>('overview');
   const [searchQuery, setSearchQuery] = useState('');
   const [editingSchedule, setEditingSchedule] = useState<string | null>(null);
@@ -67,7 +63,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
   const [payouts, setPayouts] = useState<Record<string, any[]>>({});
   const [payPeriods, setPayPeriods] = useState<Record<string, any[]>>({});
 
-  const { members: allMembers, todayBookings: allTodayBookings, upcomingBookings: allUpcomingBookings, stats: allStats, listings } = teamData;
+  const { members: allMembers, todayBookings: allTodayBookings, upcomingBookings: allUpcomingBookings, stats: allStats, listings, ownedListingIds } = teamData;
 
   // Listing filter — when connected to multiple listings
   const [selectedListingId, setSelectedListingId] = useState<string>(listings[0]?.id || '');
@@ -85,13 +81,42 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
     pendingTimeOff: members.flatMap((m) => m.timeOffRequests).filter((t) => t.status === 'pending').length,
   };
   const selectedListing = listings.find((l) => l.id === selectedListingId);
+  const isOwnerOfSelected = ownedListingIds.includes(selectedListingId);
+  const myEmployee = members.find((m) => m.userId === currentUser.id);
+
+  // Pay request state for employees
+  const [payoutAmount, setPayoutAmount] = useState('');
+  const [requestingPayout, setRequestingPayout] = useState(false);
+
+  const requestPayout = useCallback(async () => {
+    if (!myEmployee || !payoutAmount || Number(payoutAmount) <= 0) return;
+    setRequestingPayout(true);
+    try {
+      const res = await fetch('/api/team/pay/payout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ employeeId: myEmployee.id, amount: Number(payoutAmount) }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Failed');
+      }
+      toast.success('Payout requested');
+      setPayoutAmount('');
+      loadPayData(myEmployee.id);
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to request payout');
+    } finally {
+      setRequestingPayout(false);
+    }
+  }, [myEmployee, payoutAmount, loadPayData]);
 
   const tabs: { key: TeamTab; label: string; count?: number }[] = [
     { key: 'overview', label: 'Overview' },
     { key: 'schedule', label: 'Schedule' },
     { key: 'bookings', label: 'Bookings', count: todayBookings.length },
-    { key: 'clients', label: 'Clients' },
-    { key: 'pay', label: 'Pay' },
+    ...(isOwnerOfSelected ? [{ key: 'clients' as TeamTab, label: 'Clients' }] : []),
+    { key: 'pay', label: isOwnerOfSelected ? 'Pay' : 'My Pay' },
   ];
 
   // --- Schedule editing ---
@@ -282,13 +307,16 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
   }, [loadPayData]);
 
   // Load pay data when tab is switched
+  const payDataLoadedRef = React.useRef(false);
   React.useEffect(() => {
-    if (activeTab === 'pay') {
-      members.forEach((m) => {
-        if (!balances[m.id]) loadPayData(m.id);
-      });
+    if (activeTab === 'pay' && !payDataLoadedRef.current && members.length > 0) {
+      payDataLoadedRef.current = true;
+      members.forEach((m) => loadPayData(m.id));
     }
-  }, [activeTab, members, balances, loadPayData]);
+    if (activeTab !== 'pay') {
+      payDataLoadedRef.current = false;
+    }
+  }, [activeTab, members, loadPayData]);
 
   // Load clients when tab is switched to clients
   React.useEffect(() => {
@@ -296,6 +324,11 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
       loadClients();
     }
   }, [activeTab, clientsLoaded, loadClients]);
+
+  // Guard against sign-out re-render
+  if (!currentUser || status === 'unauthenticated') {
+    return null;
+  }
 
   const to12h = (time: string) => {
     const [h, m] = time.split(':').map(Number);
@@ -870,7 +903,114 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
         )}
 
         {/* ===== PAY ===== */}
-        {activeTab === 'pay' && (
+        {activeTab === 'pay' && !isOwnerOfSelected && myEmployee && (
+          <div className="space-y-6">
+            <h2 className="text-lg font-semibold text-stone-900 tracking-tight">My Pay</h2>
+
+            {/* Balance card */}
+            {balances[myEmployee.id] ? (
+              <div className="rounded-2xl border border-stone-200/60 bg-white p-6">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                  {[
+                    { label: 'Total Revenue', value: `$${balances[myEmployee.id].totalRevenue?.toLocaleString() || '0'}` },
+                    { label: 'My Earnings', value: `$${balances[myEmployee.id].grossEarnings?.toLocaleString() || '0'}` },
+                    { label: 'Fees Deducted', value: `$${balances[myEmployee.id].totalRentalFees?.toLocaleString() || '0'}` },
+                    { label: 'Available Balance', value: `$${balances[myEmployee.id].availableBalance?.toLocaleString() || '0'}`, highlight: balances[myEmployee.id].availableBalance < 0 },
+                  ].map((stat, i) => (
+                    <div key={i} className="text-center">
+                      <p className="text-[11px] text-stone-400">{stat.label}</p>
+                      <p className={`text-[22px] font-bold tabular-nums mt-1 ${stat.highlight ? 'text-red-500' : 'text-stone-900'}`}>{stat.value}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Agreement info */}
+                <div className="border-t border-stone-100 pt-4 mb-4">
+                  <p className="text-[12px] text-stone-400">
+                    {myEmployee.payAgreement
+                      ? myEmployee.payAgreement.type === 'commission'
+                        ? `You keep ${myEmployee.payAgreement.splitPercent}% of each booking`
+                        : `Chair rental: $${myEmployee.payAgreement.rentalAmount} ${myEmployee.payAgreement.rentalFrequency}`
+                      : 'No pay agreement set up — talk to your manager'}
+                  </p>
+                </div>
+
+                {/* Payout request */}
+                {balances[myEmployee.id].availableBalance > 0 && (
+                  <div className="border-t border-stone-100 pt-4">
+                    <h4 className="text-[13px] font-semibold text-stone-900 mb-3">Request Payout</h4>
+                    <div className="flex gap-3 items-end">
+                      <div>
+                        <label className="text-[11px] text-stone-400 block mb-1">Amount ($)</label>
+                        <input
+                          type="number"
+                          min={1}
+                          max={balances[myEmployee.id].availableBalance}
+                          value={payoutAmount}
+                          onChange={(e) => setPayoutAmount(e.target.value)}
+                          placeholder={`Up to $${balances[myEmployee.id].availableBalance.toFixed(2)}`}
+                          className="w-48 text-[13px] px-3 py-2 rounded-lg border border-stone-200 bg-white"
+                        />
+                      </div>
+                      <button
+                        onClick={requestPayout}
+                        disabled={requestingPayout || !payoutAmount || Number(payoutAmount) <= 0}
+                        className="px-5 py-2 rounded-xl bg-stone-900 text-white text-[13px] font-medium hover:bg-stone-800 transition-all disabled:opacity-50"
+                      >
+                        {requestingPayout ? 'Requesting...' : 'Request Payout'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="rounded-2xl border border-stone-200/60 p-8 bg-white text-center">
+                <p className="text-stone-400 text-[14px]">Loading pay data...</p>
+              </div>
+            )}
+
+            {/* Fee periods */}
+            {(payPeriods[myEmployee.id] || []).length > 0 && (
+              <div className="rounded-2xl border border-stone-200/60 bg-white p-5">
+                <h4 className="text-[13px] font-semibold text-stone-900 mb-3">Fee History</h4>
+                <div className="space-y-2">
+                  {(payPeriods[myEmployee.id] || []).map((period: any) => (
+                    <div key={period.id} className="flex items-center justify-between py-2">
+                      <div>
+                        <p className="text-[12px] text-stone-700">
+                          {new Date(period.periodStart).toLocaleDateString()} - {new Date(period.periodEnd).toLocaleDateString()}
+                        </p>
+                        <p className="text-[11px] text-stone-400">${period.feeAmount}</p>
+                      </div>
+                      <StatusBadge status={period.status} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Payout history */}
+            {(payouts[myEmployee.id] || []).length > 0 && (
+              <div className="rounded-2xl border border-stone-200/60 bg-white p-5">
+                <h4 className="text-[13px] font-semibold text-stone-900 mb-3">Payout History</h4>
+                <div className="space-y-2">
+                  {(payouts[myEmployee.id] || []).map((payout: any) => (
+                    <div key={payout.id} className="flex items-center justify-between py-2">
+                      <div>
+                        <p className="text-[13px] font-medium text-stone-900 tabular-nums">${payout.amount.toFixed(2)}</p>
+                        <p className="text-[11px] text-stone-400">{new Date(payout.requestedAt).toLocaleDateString()}</p>
+                      </div>
+                      <StatusBadge status={payout.status} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ===== PAY (Owner View) ===== */}
+        {activeTab === 'pay' && isOwnerOfSelected && (
           <div className="space-y-8">
             {members.length === 0 ? (
               <div className="rounded-2xl border border-stone-200/60 p-8 bg-white text-center">
