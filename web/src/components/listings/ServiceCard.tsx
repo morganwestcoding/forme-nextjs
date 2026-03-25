@@ -112,16 +112,20 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   return (
     <div
       onClick={handleCardClick}
-      className={`group cursor-pointer rounded-2xl overflow-hidden relative transition-all duration-300 ${
+      className={`group cursor-pointer rounded-2xl relative transition-all duration-300 ${
         solidBackground
-          ? 'hover:-translate-y-1 hover:shadow-lg'
-          : 'hover:-translate-y-1 hover:scale-[1.01] hover:shadow-md'
+          ? 'hover:-translate-y-1 hover:shadow-lg overflow-visible'
+          : 'hover:-translate-y-1 hover:scale-[1.01] hover:shadow-md overflow-hidden'
       } ${compact ? '' : 'max-w-[250px]'}`}
     >
       {/* Background with image or empty state */}
+      {/* Border overlay — renders on top of everything */}
+      {solidBackground && (
+        <div className="absolute inset-0 z-30 rounded-2xl border border-stone-200/80 group-hover:border-stone-300 transition-colors pointer-events-none" />
+      )}
       <div className="absolute inset-0 z-0">
         {solidBackground ? (
-          <div className="absolute inset-0 bg-gradient-to-br from-white to-stone-50/80 rounded-2xl border border-stone-200/80 group-hover:border-stone-300 transition-colors" />
+          <div className="absolute inset-0 bg-gradient-to-br from-white to-stone-50/80 rounded-2xl" />
         ) : hasImage ? (
           <>
             <Image
@@ -224,7 +228,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
         <div className={compact ? 'relative h-[180px]' : 'relative h-[280px]'}>
           {solidBackground ? (
             /* Bold editorial layout */
-            <div className="absolute inset-0 flex flex-col z-20 overflow-hidden">
+            <div className="absolute inset-0 flex flex-col z-20 overflow-hidden rounded-2xl">
               {/* Large price watermark in background */}
               <div className="absolute -right-2 -top-4 text-[80px] font-black text-stone-100/80 leading-none select-none pointer-events-none">
                 {priceNum}

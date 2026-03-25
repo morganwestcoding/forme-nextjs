@@ -100,17 +100,19 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
     return (
       <div
         onClick={() => router.push(`/listings/${data.id}`)}
-        className="group cursor-pointer rounded-xl overflow-hidden relative transition-all duration-300 hover:border-neutral-300 hover:shadow-sm"
+        className="group cursor-pointer rounded-xl overflow-visible relative transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
       >
         {/* White background */}
-        <div className="absolute inset-0 bg-white rounded-xl border border-neutral-200/60" />
+        <div className="absolute inset-0 bg-gradient-to-br from-white to-stone-50/80 rounded-xl" />
+        {/* Border overlay — renders on top of watermark */}
+        <div className="absolute inset-0 z-30 rounded-xl border border-stone-200/80 group-hover:border-stone-300 transition-colors pointer-events-none" />
 
         <div className="relative z-10">
           <div className={compact ? 'relative h-[180px]' : 'relative h-[280px]'}>
             {/* Bold editorial layout */}
-            <div className="absolute inset-0 flex flex-col z-20 overflow-hidden">
+            <div className="absolute inset-0 flex flex-col z-20 overflow-hidden rounded-xl">
               {/* Large rating watermark in background */}
-              <div className="absolute -right-2 -top-4 text-[80px] font-black text-neutral-100 leading-none select-none pointer-events-none">
+              <div className="absolute -right-2 -top-4 text-[80px] font-black text-stone-100/80 leading-none select-none pointer-events-none">
                 {Number(data.rating ?? 5.0).toFixed(1)}
               </div>
 

@@ -518,7 +518,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
         </div>
 
         {/* ===== RIGHT COLUMN - Content ===== */}
-        <div ref={rightColumnRef} className="flex-1 min-w-0 md:overflow-y-auto md:py-14 scrollbar-hide">
+        <div ref={rightColumnRef} className="flex-1 min-w-0 md:overflow-y-auto md:py-14 scrollbar-hide md:px-2 md:-mx-2">
           {/* Mobile Header (hidden on desktop) */}
           <div className="md:hidden mb-6">
             <div className="flex items-center gap-4">
@@ -562,7 +562,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 )}
               </div>
               {validServices.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 -mx-1 px-1 py-1">
                   {validServices.slice(0, 8).map((service, idx) => (
                     <div
                       key={service.id}
@@ -602,7 +602,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 )}
               </div>
               {employees.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 -mx-1 px-1 py-1">
                   {employees.slice(0, 8).map((employee: any, idx: number) => (
                     <div
                       key={employee.id || idx}
@@ -645,7 +645,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 )}
               </div>
               {(galleryImages && galleryImages.length > 0) || posts.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 -mx-1 px-1 py-1">
                   {galleryImages && galleryImages.map((image, idx) => (
                     <div
                       key={`image-${idx}`}

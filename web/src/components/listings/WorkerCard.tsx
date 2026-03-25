@@ -120,9 +120,11 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
     return (
       <div
         onClick={handleCardClick}
-        className="group cursor-pointer rounded-2xl overflow-hidden relative transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+        className="group cursor-pointer rounded-2xl overflow-visible relative transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-white to-stone-50/80 rounded-2xl border border-stone-200/80 group-hover:border-stone-300 transition-colors" />
+        <div className="absolute inset-0 bg-gradient-to-br from-white to-stone-50/80 rounded-2xl" />
+        {/* Border overlay — renders on top of watermark */}
+        <div className="absolute inset-0 z-30 rounded-2xl border border-stone-200/80 group-hover:border-stone-300 transition-colors pointer-events-none" />
 
         {/* Heart button - visible on hover */}
         <div className="absolute top-3 right-3 z-30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center gap-0.5" onClick={(e) => e.stopPropagation()}>
@@ -133,7 +135,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
         <div className="relative z-10">
           <div className={compact ? 'relative h-[180px]' : 'relative h-[280px]'}>
             {/* Bold editorial layout */}
-            <div className="absolute inset-0 flex flex-col z-20 overflow-hidden">
+            <div className="absolute inset-0 flex flex-col z-20 overflow-hidden rounded-2xl">
               {/* Large initials watermark in background */}
               <div className="absolute -right-2 -top-4 text-[80px] font-black text-stone-100/80 leading-none select-none pointer-events-none">
                 {initials}

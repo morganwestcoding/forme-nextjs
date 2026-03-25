@@ -437,7 +437,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
         </div>
 
         {/* ===== RIGHT COLUMN - Content ===== */}
-        <div ref={rightColumnRef} className="flex-1 min-w-0 md:overflow-y-auto md:py-14 scrollbar-hide">
+        <div ref={rightColumnRef} className="flex-1 min-w-0 md:overflow-y-auto md:py-14 scrollbar-hide md:px-2 md:-mx-2">
           {/* Mobile Profile Header (hidden on desktop) */}
           <div className="md:hidden mb-6">
             <div className="flex items-center gap-4">
@@ -532,7 +532,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                 <button className="text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors">View all</button>
               </div>
               {visibleListings.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 -mx-1 px-1 py-1">
                   {visibleListings.slice(0, 8).map((listing, idx) => (
                     <div
                       key={listing.id}
@@ -569,7 +569,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                 <button className="text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors">View all</button>
               </div>
               {galleryImages.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 -mx-1 px-1 py-1">
                   {galleryImages.map((img, idx) => (
                     <div
                       key={idx}
