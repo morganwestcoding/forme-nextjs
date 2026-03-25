@@ -131,88 +131,91 @@ const SettingsClient = ({ currentUser, isEmployee }: SettingsClientProps) => {
     setPendingColor(color);
   };
 
+  const [activeTab, setActiveTab] = useState<'appearance' | 'payments'>('appearance');
+
+  const tabs = [
+    { key: 'appearance' as const, label: 'Appearance' },
+    ...(isEmployee ? [{ key: 'payments' as const, label: 'Payments' }] : []),
+  ];
+
   return (
     <Container>
-      <PageHeader currentUser={currentUser} />
+      <PageHeader currentUser={currentUser} currentPage="Settings" />
 
-      <div className="mt-8">
-        {/* ── Appearance ── */}
-        <div className="mb-10">
-          <h2 className="text-[22px] font-bold text-neutral-900 tracking-tight">
-            Appearance
-          </h2>
-          <p className="text-[13px] text-neutral-400 mt-1">
-            Customize how the app looks and feels
-          </p>
+      <div className="mt-8 pb-16">
+        <div className="mb-8">
+          <h1 className="text-2xl font-semibold text-stone-900 tracking-tight">Settings</h1>
+          <p className="text-[14px] text-stone-400 mt-1">Manage your preferences</p>
+        </div>
 
-          {/* Dark Mode Toggle */}
-          <div className="flex items-center justify-between py-5 border-b border-neutral-100">
-            <div className="flex items-center gap-3">
-              {pendingDarkMode ? (
-                <Moon02Icon size={18} className="text-neutral-400" strokeWidth={1.5} />
-              ) : (
-                <Sun03Icon size={18} className="text-neutral-400" strokeWidth={1.5} />
-              )}
-              <div>
-                <h3 className="text-[14px] font-medium text-neutral-900">
-                  Dark Mode
-                </h3>
-                <p className="text-[12px] text-neutral-400 mt-0.5">
-                  Switch between light and dark themes
-                </p>
+        {/* Tabs */}
+        <div className="flex items-center gap-2 mb-8 overflow-x-auto scrollbar-hide pb-1">
+          {tabs.map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              className={`px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap ${
+                activeTab === tab.key
+                  ? 'bg-stone-900 text-white'
+                  : 'bg-stone-50 text-stone-500 hover:bg-stone-100 border border-stone-200/60'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="min-h-[400px]">
+        {/* ===== APPEARANCE ===== */}
+        {activeTab === 'appearance' && (
+          <div className="space-y-6">
+            {/* Dark Mode */}
+            <div className="rounded-2xl border border-stone-200/60 bg-white p-5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  {pendingDarkMode ? (
+                    <Moon02Icon size={18} className="text-stone-400" strokeWidth={1.5} />
+                  ) : (
+                    <Sun03Icon size={18} className="text-stone-400" strokeWidth={1.5} />
+                  )}
+                  <div>
+                    <h3 className="text-[14px] font-semibold text-stone-900">Dark Mode</h3>
+                    <p className="text-[12px] text-stone-400 mt-0.5">Switch between light and dark themes</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setPendingDarkMode(!pendingDarkMode)}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${pendingDarkMode ? '' : 'bg-stone-200'}`}
+                  style={{ backgroundColor: pendingDarkMode ? pendingColor : undefined }}
+                >
+                  <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform duration-200 ${pendingDarkMode ? 'translate-x-6' : 'translate-x-1'}`} />
+                </button>
               </div>
             </div>
-            <button
-              type="button"
-              onClick={() => setPendingDarkMode(!pendingDarkMode)}
-              className={`
-                relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200
-                ${pendingDarkMode ? '' : 'bg-neutral-200'}
-              `}
-              style={{ backgroundColor: pendingDarkMode ? pendingColor : undefined }}
-            >
-              <span
-                className={`
-                  inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform duration-200
-                  ${pendingDarkMode ? 'translate-x-6' : 'translate-x-1'}
-                `}
-              />
-            </button>
-          </div>
 
-          {/* Accent Color */}
-          <div className="pt-5">
-            <h3 className="text-[14px] font-medium text-neutral-900 mb-0.5">
-              Accent Color
-            </h3>
-            <p className="text-[12px] text-neutral-400 mb-5">
-              Choose your preferred accent color
-            </p>
+            {/* Accent Color */}
+            <div className="rounded-2xl border border-stone-200/60 bg-white p-5">
+              <h3 className="text-[14px] font-semibold text-stone-900 mb-0.5">Accent Color</h3>
+              <p className="text-[12px] text-stone-400 mb-5">Choose your preferred accent color</p>
 
-            {/* Preset Colors */}
-            <div className="flex flex-wrap gap-3 mb-5">
-              {PRESET_COLORS.map((color) => (
-                <button
-                  key={color}
-                  type="button"
-                  onClick={() => handleColorSelect(color)}
-                  className={`
-                    w-9 h-9 rounded-full transition-all duration-200
-                    ${pendingColor === color
-                      ? 'ring-2 ring-offset-2 ring-neutral-900 scale-110'
-                      : 'hover:scale-110'
-                    }
-                  `}
-                  style={{ backgroundColor: color }}
-                  aria-label={`Select color ${color}`}
-                />
-              ))}
-            </div>
+              <div className="flex flex-wrap gap-3 mb-5">
+                {PRESET_COLORS.map((color) => (
+                  <button
+                    key={color}
+                    type="button"
+                    onClick={() => handleColorSelect(color)}
+                    className={`w-9 h-9 rounded-full transition-all duration-200 ${
+                      pendingColor === color ? 'ring-2 ring-offset-2 ring-stone-900 scale-110' : 'hover:scale-110'
+                    }`}
+                    style={{ backgroundColor: color }}
+                    aria-label={`Select color ${color}`}
+                  />
+                ))}
+              </div>
 
-            {/* Custom Color Picker */}
-            <div className="flex items-center gap-3">
-              <span className="text-[12px] text-neutral-400">Custom</span>
-              <div className="relative">
+              <div className="flex items-center gap-3 mb-6">
+                <span className="text-[12px] text-stone-400">Custom</span>
                 <input
                   type="color"
                   value={customColor}
@@ -220,182 +223,140 @@ const SettingsClient = ({ currentUser, isEmployee }: SettingsClientProps) => {
                   className="w-9 h-9 rounded-full cursor-pointer border-0 p-0 overflow-hidden"
                   style={{ backgroundColor: customColor }}
                 />
-              </div>
-              <input
-                type="text"
-                value={customColor.toUpperCase()}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  if (/^#[0-9A-Fa-f]{0,6}$/.test(value)) {
-                    setCustomColor(value);
-                    if (value.length === 7) {
-                      setPendingColor(value);
+                <input
+                  type="text"
+                  value={customColor.toUpperCase()}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (/^#[0-9A-Fa-f]{0,6}$/.test(value)) {
+                      setCustomColor(value);
+                      if (value.length === 7) setPendingColor(value);
                     }
-                  }
-                }}
-                className="w-24 px-3 py-1.5 text-[12px] font-mono bg-neutral-50 rounded-lg border border-neutral-200 text-neutral-900"
-                placeholder="#60A5FA"
-              />
-            </div>
+                  }}
+                  className="w-24 px-3 py-1.5 text-[12px] font-mono bg-stone-50 rounded-lg border border-stone-200 text-stone-900"
+                  placeholder="#60A5FA"
+                />
+              </div>
 
-            {/* Preview */}
-            <div className="mt-6 flex items-center gap-3">
+              {/* Preview */}
+              <div className="flex items-center gap-3 pt-5 border-t border-stone-100">
+                <button
+                  type="button"
+                  className="px-4 py-2 text-[13px] font-semibold text-white rounded-xl"
+                  style={{ backgroundColor: pendingColor, boxShadow: `0 4px 14px ${pendingColor}40` }}
+                >
+                  Primary Button
+                </button>
+                <span className="px-2.5 py-1 text-[11px] font-semibold text-white rounded-full" style={{ backgroundColor: pendingColor }}>
+                  Badge
+                </span>
+                <span className="text-[13px] font-semibold" style={{ color: pendingColor }}>
+                  Accent Text
+                </span>
+              </div>
+
               <button
                 type="button"
-                className="px-4 py-2 text-[13px] font-semibold text-white rounded-xl transition-all duration-200"
-                style={{
-                  backgroundColor: pendingColor,
-                  boxShadow: `0 4px 14px ${pendingColor}40`
-                }}
+                onClick={handleReset}
+                className="mt-4 text-[12px] text-stone-400 hover:text-stone-600 transition-colors"
               >
-                Primary Button
+                Reset to defaults
               </button>
-              <span
-                className="px-2.5 py-1 text-[11px] font-semibold text-white rounded-full"
-                style={{ backgroundColor: pendingColor }}
-              >
-                Badge
-              </span>
-              <span
-                className="text-[13px] font-semibold"
-                style={{ color: pendingColor }}
-              >
-                Accent Text
-              </span>
             </div>
 
-            {/* Reset */}
-            <button
-              type="button"
-              onClick={handleReset}
-              className="mt-4 text-[12px] text-neutral-400 hover:text-neutral-600 transition-colors"
-            >
-              Reset to defaults
-            </button>
-          </div>
-        </div>
-
-        {/* ── Payments ── */}
-        {isEmployee && (
-          <div className="mb-10">
-            <h2 className="text-[22px] font-bold text-neutral-900 tracking-tight">
-              Payments
-            </h2>
-            <p className="text-[13px] text-neutral-400 mt-1 mb-5">
-              Set up your account to receive payments
-            </p>
-
-            {connectLoading ? (
-              <div className="animate-pulse space-y-3">
-                <div className="h-4 bg-neutral-100 rounded w-1/3"></div>
-                <div className="h-3 bg-neutral-100 rounded w-2/3"></div>
-                <div className="h-10 bg-neutral-100 rounded w-1/3"></div>
-              </div>
-            ) : !connectStatus?.hasAccount ? (
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-full bg-neutral-100 flex items-center justify-center flex-shrink-0">
-                  <CreditCardIcon size={18} className="text-neutral-500" strokeWidth={1.5} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-[15px] font-semibold text-neutral-900 mb-1">
-                    Set Up Payments
-                  </h3>
-                  <p className="text-[13px] text-neutral-400 mb-4 leading-relaxed">
-                    Connect your bank account to receive payments. ForMe takes a 10% platform fee on each transaction.
-                  </p>
-                  <button
-                    onClick={handleOnboard}
-                    disabled={actionLoading}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-neutral-900 text-white text-[13px] font-semibold rounded-xl hover:bg-neutral-800 transition-all disabled:opacity-50"
-                  >
-                    {actionLoading ? 'Loading...' : 'Get Started'}
-                    <ArrowRight01Icon size={14} strokeWidth={2.5} />
-                  </button>
-                </div>
-              </div>
-            ) : !connectStatus.onboardingComplete || !connectStatus.chargesEnabled ? (
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center flex-shrink-0">
-                  <AlertCircleIcon size={18} className="text-amber-500" strokeWidth={1.5} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-[15px] font-semibold text-neutral-900 mb-1">
-                    Complete Payment Setup
-                  </h3>
-                  <p className="text-[13px] text-neutral-400 mb-4 leading-relaxed">
-                    Your payment account needs additional information before you can receive payments.
-                  </p>
-                  <button
-                    onClick={handleOnboard}
-                    disabled={actionLoading}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-amber-500 text-white text-[13px] font-semibold rounded-xl hover:bg-amber-600 transition-all disabled:opacity-50"
-                  >
-                    {actionLoading ? 'Loading...' : 'Continue Setup'}
-                    <ArrowRight01Icon size={14} strokeWidth={2.5} />
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center flex-shrink-0">
-                  <CheckmarkCircle02Icon size={18} className="text-emerald-500" strokeWidth={1.5} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-[15px] font-semibold text-neutral-900 mb-1">
-                    Payments Active
-                  </h3>
-                  <p className="text-[13px] text-neutral-400 mb-4 leading-relaxed">
-                    You&apos;ll receive payments automatically when customers complete bookings.
-                  </p>
-                  <button
-                    onClick={handleOpenDashboard}
-                    disabled={actionLoading}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-neutral-100 text-neutral-700 text-[13px] font-semibold rounded-xl hover:bg-neutral-200 transition-all disabled:opacity-50"
-                  >
-                    {actionLoading ? 'Loading...' : 'View Dashboard'}
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                      <polyline points="15 3 21 3 21 9"/>
-                      <line x1="10" y1="14" x2="21" y2="3"/>
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            )}
+            {/* Save */}
+            <div className="flex gap-3">
+              <button
+                onClick={handleSave}
+                disabled={!hasUnsavedChanges}
+                className="px-5 py-2.5 bg-stone-900 text-white rounded-xl text-[13px] font-medium hover:bg-stone-800 transition-all disabled:opacity-30 disabled:cursor-not-allowed inline-flex items-center gap-2"
+                style={{ boxShadow: hasUnsavedChanges ? '0 2px 8px rgba(0,0,0,0.12)' : undefined }}
+              >
+                {hasUnsavedChanges ? 'Save Changes' : 'No Changes'}
+              </button>
+            </div>
           </div>
         )}
 
-        {/* ── Actions ── */}
-        <div className="border-t border-neutral-100 pt-6 pb-12">
-          <div className="flex gap-3">
-            <button
-              onClick={() => {
-                if (currentUser?.id) {
-                  router.push(`/profile/${currentUser.id}`);
-                } else {
-                  router.push('/');
-                }
-              }}
-              className="px-5 py-2.5 rounded-xl text-[13px] font-semibold text-neutral-500 bg-neutral-100 hover:bg-neutral-200 hover:text-neutral-700 transition-all duration-200"
-            >
-              Back to Profile
-            </button>
-
-            <button
-              onClick={handleSave}
-              disabled={!hasUnsavedChanges}
-              className="px-5 py-2.5 bg-neutral-900 text-white rounded-xl text-[13px] font-semibold hover:bg-neutral-800 transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed inline-flex items-center gap-2"
-            >
-              {hasUnsavedChanges ? (
-                <>
-                  Save Changes
-                  <ArrowRight01Icon size={14} strokeWidth={2.5} />
-                </>
+        {/* ===== PAYMENTS ===== */}
+        {activeTab === 'payments' && isEmployee && (
+          <div className="space-y-6">
+            <div className="rounded-2xl border border-stone-200/60 bg-white p-6">
+              {connectLoading ? (
+                <div className="animate-pulse space-y-3">
+                  <div className="h-4 bg-stone-100 rounded w-1/3"></div>
+                  <div className="h-3 bg-stone-100 rounded w-2/3"></div>
+                  <div className="h-10 bg-stone-100 rounded w-1/3"></div>
+                </div>
+              ) : !connectStatus?.hasAccount ? (
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center flex-shrink-0">
+                    <CreditCardIcon size={18} className="text-stone-500" strokeWidth={1.5} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-[15px] font-semibold text-stone-900 mb-1">Set Up Payments</h3>
+                    <p className="text-[13px] text-stone-400 mb-4 leading-relaxed">
+                      Connect your bank account to receive payments. ForMe takes a 10% platform fee on each transaction.
+                    </p>
+                    <button
+                      onClick={handleOnboard}
+                      disabled={actionLoading}
+                      className="inline-flex items-center gap-2 px-4 py-2.5 bg-stone-900 text-white text-[13px] font-medium rounded-xl hover:bg-stone-800 transition-all disabled:opacity-50"
+                      style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.12)' }}
+                    >
+                      {actionLoading ? 'Loading...' : 'Get Started'}
+                      <ArrowRight01Icon size={14} strokeWidth={2.5} />
+                    </button>
+                  </div>
+                </div>
+              ) : !connectStatus.onboardingComplete || !connectStatus.chargesEnabled ? (
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center flex-shrink-0">
+                    <AlertCircleIcon size={18} className="text-amber-500" strokeWidth={1.5} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-[15px] font-semibold text-stone-900 mb-1">Complete Payment Setup</h3>
+                    <p className="text-[13px] text-stone-400 mb-4 leading-relaxed">
+                      Your payment account needs additional information before you can receive payments.
+                    </p>
+                    <button
+                      onClick={handleOnboard}
+                      disabled={actionLoading}
+                      className="inline-flex items-center gap-2 px-4 py-2.5 bg-amber-500 text-white text-[13px] font-medium rounded-xl hover:bg-amber-600 transition-all disabled:opacity-50"
+                    >
+                      {actionLoading ? 'Loading...' : 'Continue Setup'}
+                      <ArrowRight01Icon size={14} strokeWidth={2.5} />
+                    </button>
+                  </div>
+                </div>
               ) : (
-                'No Changes'
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center flex-shrink-0">
+                    <CheckmarkCircle02Icon size={18} className="text-emerald-500" strokeWidth={1.5} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-[15px] font-semibold text-stone-900 mb-1">Payments Active</h3>
+                    <p className="text-[13px] text-stone-400 mb-4 leading-relaxed">
+                      You&apos;ll receive payments automatically when customers complete bookings.
+                    </p>
+                    <button
+                      onClick={handleOpenDashboard}
+                      disabled={actionLoading}
+                      className="inline-flex items-center gap-2 px-4 py-2.5 bg-stone-100 text-stone-700 text-[13px] font-medium rounded-xl hover:bg-stone-200 transition-all disabled:opacity-50"
+                    >
+                      {actionLoading ? 'Loading...' : 'View Dashboard'}
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                        <polyline points="15 3 21 3 21 9"/>
+                        <line x1="10" y1="14" x2="21" y2="3"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
               )}
-            </button>
+            </div>
           </div>
+        )}
         </div>
       </div>
     </Container>
