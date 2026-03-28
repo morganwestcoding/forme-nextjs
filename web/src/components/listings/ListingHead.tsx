@@ -644,34 +644,24 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   <button className="text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors">View all</button>
                 )}
               </div>
+
               {(galleryImages && galleryImages.length > 0) || posts.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 -mx-1 px-1 py-1">
-                  {galleryImages && galleryImages.map((image, idx) => (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {galleryImages && galleryImages.length > 0 && galleryImages.map((image, idx) => (
                     <div
-                      key={`image-${idx}`}
-                      className="relative rounded-xl overflow-hidden bg-gray-100 aspect-square group cursor-pointer"
-                      style={{
-                        opacity: 0,
-                        animation: `fadeInUp 520ms ease-out both`,
-                        animationDelay: `${Math.min(60 + idx * 30, 360)}ms`,
-                      }}
+                      key={`gallery-${idx}`}
+                      className="rounded-xl overflow-hidden bg-gray-100 group cursor-pointer"
                     >
                       <img
                         src={image}
                         alt={`${title} - Image ${idx + 1}`}
-                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        loading="lazy"
+                        className="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     </div>
                   ))}
-                  {posts.map((post, idx) => (
-                    <div
-                      key={post.id}
-                      style={{
-                        opacity: 0,
-                        animation: `fadeInUp 520ms ease-out both`,
-                        animationDelay: `${Math.min(60 + (galleryImages?.length || 0) + idx * 30, 360)}ms`,
-                      }}
-                    >
+                  {posts.map((post) => (
+                    <div key={post.id}>
                       <PostCard
                         post={post}
                         currentUser={currentUser}

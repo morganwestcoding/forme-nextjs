@@ -281,7 +281,7 @@ const PageSearch: React.FC<PageSearchProps> = ({
         <FloatingPortal>
           <div
             ref={refs.setFloating}
-            className="z-[9999] bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700/50 rounded-xl shadow-lg shadow-gray-900/10 dark:shadow-xl dark:shadow-black/20 p-1.5 w-[160px]"
+            className="z-[50] bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700/50 rounded-xl shadow-lg shadow-gray-900/10 dark:shadow-xl dark:shadow-black/20 p-1.5 w-[160px]"
             style={{
               ...floatingStyles,
               visibility: isPositioned ? 'visible' : 'hidden',

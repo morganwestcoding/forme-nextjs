@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { MapPin } from 'lucide-react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { MapPin, Check, ChevronDown, Loader2 } from 'lucide-react';
 import TypeformHeading from '@/components/registration/TypeformHeading';
 import { itemVariants } from '@/components/registration/TypeformStep';
 import { FieldErrors } from 'react-hook-form';
@@ -41,34 +41,141 @@ export default function LocationStep({
 }: LocationStepProps) {
   const [selectedState, setSelectedState] = useState(initialState);
   const [city, setCity] = useState(initialCity);
+  const [cityInput, setCityInput] = useState(initialCity);
   const [streetAddress, setStreetAddress] = useState(initialAddress);
   const [zip, setZip] = useState(initialZip);
 
-  const handleStateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newState = e.target.value;
-    setSelectedState(newState);
-    onFieldChange('location');
-    if (city && newState) {
-      onLocationChange(`${city}, ${newState}`);
+  const [isStateOpen, setIsStateOpen] = useState(false);
+  const [isCityOpen, setIsCityOpen] = useState(false);
+  const [isAddressOpen, setIsAddressOpen] = useState(false);
+  const [cities, setCities] = useState<string[]>([]);
+  const [isLoadingCities, setIsLoadingCities] = useState(false);
+  const [addressSuggestions, setAddressSuggestions] = useState<{ display: string; zip: string }[]>([]);
+  const [isLoadingAddresses, setIsLoadingAddresses] = useState(false);
+  const addressDebounceRef = useRef<NodeJS.Timeout | null>(null);
+
+  const stateDropdownRef = useRef<HTMLDivElement>(null);
+  const cityDropdownRef = useRef<HTMLDivElement>(null);
+  const addressDropdownRef = useRef<HTMLDivElement>(null);
+
+  const fetchCities = useCallback(async (state: string) => {
+    setIsLoadingCities(true);
+    setCities([]);
+    try {
+      const res = await fetch('https://countriesnow.space/api/v0.1/countries/state/cities', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ country: 'United States', state }),
+      });
+      const json = await res.json();
+      if (!json.error && Array.isArray(json.data)) {
+        setCities(json.data.sort((a: string, b: string) => a.localeCompare(b)));
+      }
+    } catch {
+      setCities([]);
+    } finally {
+      setIsLoadingCities(false);
     }
-    onAddressSelect({ address: streetAddress, zipCode: zip, city, state: newState });
+  }, []);
+
+  useEffect(() => {
+    if (selectedState) {
+      fetchCities(selectedState);
+    }
+  }, [selectedState, fetchCities]);
+
+  const fetchAddresses = useCallback(async (query: string, cityName: string, stateName: string) => {
+    if (query.length < 3) { setAddressSuggestions([]); return; }
+    setIsLoadingAddresses(true);
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?` +
+        `street=${encodeURIComponent(query)}&city=${encodeURIComponent(cityName)}&state=${encodeURIComponent(stateName)}&country=US` +
+        `&format=json&addressdetails=1&limit=6`,
+        { headers: { 'Accept-Language': 'en' } }
+      );
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        const results = data
+          .filter((r: any) => r.address?.road)
+          .map((r: any) => ({
+            display: [r.address.house_number, r.address.road].filter(Boolean).join(' '),
+            zip: r.address.postcode || '',
+          }));
+        // dedupe
+        const seen = new Set<string>();
+        setAddressSuggestions(results.filter((r: { display: string }) => {
+          if (seen.has(r.display)) return false;
+          seen.add(r.display);
+          return true;
+        }));
+      }
+    } catch {
+      setAddressSuggestions([]);
+    } finally {
+      setIsLoadingAddresses(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (stateDropdownRef.current && !stateDropdownRef.current.contains(e.target as Node)) {
+        setIsStateOpen(false);
+      }
+      if (cityDropdownRef.current && !cityDropdownRef.current.contains(e.target as Node)) {
+        setIsCityOpen(false);
+      }
+      if (addressDropdownRef.current && !addressDropdownRef.current.contains(e.target as Node)) {
+        setIsAddressOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleStateSelect = (state: string) => {
+    setSelectedState(state);
+    setCity('');
+    setCityInput('');
+    setIsStateOpen(false);
+    onFieldChange('location');
+    onAddressSelect({ address: streetAddress, zipCode: zip, city: '', state });
   };
 
-  const handleCityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newCity = e.target.value;
-    setCity(newCity);
+  const handleCitySelect = (selectedCity: string) => {
+    setCity(selectedCity);
+    setCityInput(selectedCity);
+    setIsCityOpen(false);
     onFieldChange('location');
-    if (newCity && selectedState) {
-      onLocationChange(`${newCity}, ${selectedState}`);
-    }
-    onAddressSelect({ address: streetAddress, zipCode: zip, city: newCity, state: selectedState });
+    onLocationChange(`${selectedCity}, ${selectedState}`);
+    onAddressSelect({ address: streetAddress, zipCode: zip, city: selectedCity, state: selectedState });
   };
 
   const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newAddress = e.target.value;
     setStreetAddress(newAddress);
+    setIsAddressOpen(true);
     onFieldChange('address');
     onAddressSelect({ address: newAddress, zipCode: zip, city, state: selectedState });
+
+    if (addressDebounceRef.current) clearTimeout(addressDebounceRef.current);
+    addressDebounceRef.current = setTimeout(() => {
+      fetchAddresses(newAddress, city, selectedState);
+    }, 300);
+  };
+
+  const handleAddressSelect = (address: string, suggestedZip: string) => {
+    setStreetAddress(address);
+    setIsAddressOpen(false);
+    setAddressSuggestions([]);
+    onFieldChange('address');
+    if (suggestedZip && !zip) {
+      setZip(suggestedZip);
+      onFieldChange('zipCode');
+      onAddressSelect({ address, zipCode: suggestedZip, city, state: selectedState });
+    } else {
+      onAddressSelect({ address, zipCode: zip, city, state: selectedState });
+    }
   };
 
   const handleZipChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -77,6 +184,10 @@ export default function LocationStep({
     onFieldChange('zipCode');
     onAddressSelect({ address: streetAddress, zipCode: newZip, city, state: selectedState });
   };
+
+  const filteredCities = cityInput
+    ? cities.filter((c) => c.toLowerCase().includes(cityInput.toLowerCase()))
+    : cities;
 
   return (
     <div>
@@ -88,43 +199,123 @@ export default function LocationStep({
       <div className="space-y-5">
         {/* State & City row */}
         <div className="flex gap-3">
-          <div className="flex-1">
-            <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-2">
+          {/* State dropdown */}
+          <div ref={stateDropdownRef} className="flex-1 relative">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               State
             </label>
-            <div className="relative">
-              <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
-              <select
-                id="state"
-                value={selectedState}
-                onChange={handleStateChange}
-                className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all appearance-none cursor-pointer"
-              >
-                <option value="">Select</option>
-                {US_STATES.map((state) => (
-                  <option key={state} value={state}>{state}</option>
-                ))}
-              </select>
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </div>
-            </div>
+            <button
+              type="button"
+              onClick={() => { setIsStateOpen(!isStateOpen); setIsCityOpen(false); }}
+              className={`w-full flex items-center gap-3 px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-left transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent ${
+                isStateOpen ? 'ring-2 ring-gray-900 border-transparent' : ''
+              }`}
+            >
+              <span className={selectedState ? 'text-gray-900' : 'text-gray-400'}>
+                {selectedState || 'Select'}
+              </span>
+              <ChevronDown
+                className={`ml-auto w-5 h-5 text-gray-400 transition-transform duration-200 ${isStateOpen ? 'rotate-180' : ''}`}
+              />
+            </button>
+
+            <AnimatePresence>
+              {isStateOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute z-50 mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden"
+                >
+                  <div className="max-h-[240px] overflow-y-auto overscroll-contain">
+                    {US_STATES.map((state) => (
+                      <button
+                        key={state}
+                        type="button"
+                        onClick={() => handleStateSelect(state)}
+                        className={`w-full flex items-center gap-3 px-4 py-3 text-sm transition-colors cursor-pointer ${
+                          selectedState === state
+                            ? 'bg-gray-50 text-gray-900 font-medium'
+                            : 'text-gray-700 hover:bg-gray-50'
+                        }`}
+                      >
+                        <span className="flex-1 text-left">{state}</span>
+                        {selectedState === state && (
+                          <Check className="w-4 h-4 text-gray-900" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
-          <div className="flex-1">
-            <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-2">
+
+          {/* City autocomplete */}
+          <div ref={cityDropdownRef} className="flex-1 relative">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               City
             </label>
-            <input
-              id="city"
-              type="text"
-              value={city}
-              onChange={handleCityChange}
-              disabled={!selectedState}
-              className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              placeholder="Enter city"
-            />
+            <div className="relative">
+              <input
+                type="text"
+                value={cityInput}
+                onChange={(e) => {
+                  setCityInput(e.target.value);
+                  setCity('');
+                  setIsCityOpen(true);
+                  setIsStateOpen(false);
+                  onFieldChange('location');
+                }}
+                onFocus={() => { if (selectedState) { setIsCityOpen(true); setIsStateOpen(false); } }}
+                disabled={!selectedState || isLoadingCities}
+                className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                placeholder={isLoadingCities ? 'Loading...' : selectedState ? 'Type to search...' : 'Select state first'}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && filteredCities.length > 0) {
+                    handleCitySelect(filteredCities[0]);
+                    e.preventDefault();
+                  }
+                  e.stopPropagation();
+                }}
+              />
+              {isLoadingCities && (
+                <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 animate-spin" />
+              )}
+            </div>
+
+            <AnimatePresence>
+              {isCityOpen && !isLoadingCities && filteredCities.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute z-50 mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden"
+                >
+                  <div className="max-h-[240px] overflow-y-auto overscroll-contain">
+                    {filteredCities.map((c) => (
+                      <button
+                        key={c}
+                        type="button"
+                        onClick={() => handleCitySelect(c)}
+                        className={`w-full flex items-center gap-3 px-4 py-3 text-sm transition-colors cursor-pointer ${
+                          city === c
+                            ? 'bg-gray-50 text-gray-900 font-medium'
+                            : 'text-gray-700 hover:bg-gray-50'
+                        }`}
+                      >
+                        <span className="flex-1 text-left">{c}</span>
+                        {city === c && (
+                          <Check className="w-4 h-4 text-gray-900" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
         {errors.location && (
@@ -137,19 +328,63 @@ export default function LocationStep({
             variants={itemVariants}
             className="flex gap-3"
           >
-            <div className="flex-[2]">
+            <div ref={addressDropdownRef} className="flex-[2] relative">
               <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-2">
                 Street address
               </label>
-              <input
-                id="address"
-                type="text"
-                value={streetAddress}
-                onChange={handleAddressChange}
-                autoFocus
-                className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
-                placeholder="123 Main Street"
-              />
+              <div className="relative">
+                <input
+                  id="address"
+                  type="text"
+                  value={streetAddress}
+                  onChange={handleAddressChange}
+                  onFocus={() => { if (addressSuggestions.length > 0) setIsAddressOpen(true); }}
+                  autoFocus
+                  className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
+                  placeholder="Start typing an address..."
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && addressSuggestions.length > 0) {
+                      handleAddressSelect(addressSuggestions[0].display, addressSuggestions[0].zip);
+                      e.preventDefault();
+                    }
+                    e.stopPropagation();
+                  }}
+                />
+                {isLoadingAddresses && (
+                  <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 animate-spin" />
+                )}
+              </div>
+
+              <AnimatePresence>
+                {isAddressOpen && !isLoadingAddresses && addressSuggestions.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute z-50 mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden"
+                  >
+                    <div className="max-h-[200px] overflow-y-auto overscroll-contain">
+                      {addressSuggestions.map((s, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          onClick={() => handleAddressSelect(s.display, s.zip)}
+                          className={`w-full flex items-center justify-between px-4 py-3 text-sm transition-colors cursor-pointer ${
+                            streetAddress === s.display
+                              ? 'bg-gray-50 text-gray-900 font-medium'
+                              : 'text-gray-700 hover:bg-gray-50'
+                          }`}
+                        >
+                          <span className="text-left">{s.display}</span>
+                          {s.zip && <span className="text-[11px] text-gray-400 ml-2 flex-shrink-0">{s.zip}</span>}
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
               {errors.address && (
                 <p className="mt-2 text-sm text-red-500">{errors.address.message as string}</p>
               )}

@@ -230,6 +230,10 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
 
     // Validation for ACCOUNT step
     if (step === STEPS.ACCOUNT) {
+      // Trigger react-hook-form validation to show inline errors
+      const valid = await methods.trigger(['firstName', 'lastName', 'email', 'password']);
+      if (!valid) return;
+
       const p = validatePassword(data.password || '');
       if (!Object.values(p).every(Boolean)) {
         toast.error('Password must be 6-18 chars, include upper/lowercase, number & special char.');

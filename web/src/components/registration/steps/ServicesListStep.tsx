@@ -56,12 +56,21 @@ export default function ServicesListStep({ services, onEditService, onAddService
           variants={itemVariants}
           whileHover={{ y: -2 }}
           whileTap={{ scale: 0.98 }}
-          className="flex flex-col items-center justify-center p-4 rounded-xl border-2 border-dashed border-gray-200 bg-gray-50/50 text-center hover:border-gray-900 hover:bg-gray-100 transition-all duration-200 min-h-[106px]"
+          className="group p-4 rounded-xl border-2 border-dashed border-gray-200 bg-gray-50/50 text-left hover:border-gray-900 hover:bg-gray-100 transition-all duration-200"
         >
-          <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center mb-2 shadow-sm">
-            <Plus className="w-5 h-5 text-gray-400" />
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm group-hover:border-gray-300 transition-all flex-shrink-0">
+              <Plus className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
+            </div>
+            <div>
+              <span className="text-sm font-semibold text-gray-500 group-hover:text-gray-700 transition-colors block">Add service</span>
+              <span className="text-xs text-gray-400 block mt-0.5">Name, category &amp; price</span>
+            </div>
           </div>
-          <span className="text-sm font-medium text-gray-600">Add service</span>
+          <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100/60">
+            <span className="text-base font-semibold text-gray-300">$0</span>
+            <Plus className="w-4 h-4 text-gray-300" />
+          </div>
         </motion.button>
       </div>
 

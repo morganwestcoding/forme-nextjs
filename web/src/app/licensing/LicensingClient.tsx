@@ -5,16 +5,12 @@ import {
   Clock01Icon,
   CheckmarkCircle02Icon,
   ArrowRight01Icon,
-  SchoolIcon,
   Link01Icon,
-  BookOpen02Icon,
   StarIcon,
   ShieldUserIcon,
-  TimeScheduleIcon,
   Certificate01Icon,
-  Mortarboard01Icon,
-  Upload01Icon
 } from "hugeicons-react";
+import { Plus } from "lucide-react";
 import { SafeUser } from "@/app/types";
 import Container from "@/components/Container";
 import PageHeader from "@/components/PageHeader";
@@ -23,7 +19,6 @@ interface LicensingClientProps {
   currentUser: SafeUser | null;
 }
 
-// Mock data for partner academies
 const partnerAcademies = [
   {
     id: '1',
@@ -33,7 +28,6 @@ const partnerAcademies = [
     duration: '6-12 months',
     price: 'From $3,500',
     rating: 4.8,
-    verified: true
   },
   {
     id: '2',
@@ -43,7 +37,6 @@ const partnerAcademies = [
     duration: '3-9 months',
     price: 'From $2,800',
     rating: 4.9,
-    verified: true
   },
   {
     id: '3',
@@ -53,7 +46,6 @@ const partnerAcademies = [
     duration: '2-6 months',
     price: 'From $1,200',
     rating: 4.7,
-    verified: true
   },
   {
     id: '4',
@@ -63,7 +55,6 @@ const partnerAcademies = [
     duration: '1-4 months',
     price: 'From $1,800',
     rating: 4.9,
-    verified: true
   }
 ];
 
@@ -76,73 +67,25 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
 
   const verificationStatus = currentUser?.verificationStatus || 'none';
   const [searchParams] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return new URLSearchParams(window.location.search);
-    }
+    if (typeof window !== 'undefined') return new URLSearchParams(window.location.search);
     return new URLSearchParams();
   });
   const isOnboarding = searchParams.get('onboarding') === 'true';
 
   const handleSave = async () => {
-    if (!licensingImage) {
-      alert('Please upload a document first');
-      return;
-    }
+    if (!licensingImage) return;
     setIsLoading(true);
-    // Simulate API call
     setTimeout(() => {
       setIsLoading(false);
       alert('Documents submitted for verification!');
-
-      // If onboarding, redirect to subscription page
-      if (isOnboarding) {
-        router.push('/subscription?onboarding=true');
-      }
+      if (isOnboarding) router.push('/subscription?onboarding=true');
     }, 1500);
   };
 
-  const handleBackToProfile = () => {
-    if (isOnboarding) {
-      // If onboarding, skip to subscription
-      router.push('/subscription?onboarding=true');
-    } else if (currentUser?.id) {
-      router.push(`/profile/${currentUser.id}`);
-    } else {
-      router.push('/');
-    }
-  };
-
-  const handleViewProgramDetails = () => {
-    // Open program details in new tab or modal
-    window.open('https://example.com/program-details', '_blank');
-  };
-
-  const getStatusBadge = () => {
-    switch (verificationStatus) {
-      case 'verified':
-        return (
-          <div className="inline-flex items-center gap-2 bg-green-50 text-green-700 px-4 py-2 rounded-full border border-green-200">
-            <CheckmarkCircle02Icon size={16} />
-            <span className="font-medium text-sm">Verified Professional</span>
-          </div>
-        );
-      case 'pending':
-        return (
-          <div className="inline-flex items-center gap-2 bg-yellow-50 text-yellow-700 px-4 py-2 rounded-full border border-yellow-200">
-            <Clock01Icon size={16} />
-            <span className="font-medium text-sm">Verification Pending</span>
-          </div>
-        );
-      case 'rejected':
-        return (
-          <div className="inline-flex items-center gap-2 bg-red-50 text-red-700 px-4 py-2 rounded-full border border-red-200">
-            <CheckmarkCircle02Icon size={16} />
-            <span className="font-medium text-sm">Verification Failed</span>
-          </div>
-        );
-      default:
-        return null;
-    }
+  const handleSkip = () => {
+    if (isOnboarding) router.push('/subscription?onboarding=true');
+    else if (currentUser?.id) router.push(`/profile/${currentUser.id}`);
+    else router.push('/');
   };
 
   return (
@@ -152,414 +95,258 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
       <div className="mt-8">
         {/* Header */}
         <div className="mb-8">
-          {isOnboarding && (
-            <p className="text-[12px] text-stone-400 mb-2">Step 1 of 2</p>
-          )}
-          <h1 className="text-2xl font-semibold text-stone-900 tracking-tight">Licensing</h1>
-          <p className="text-[14px] text-stone-400 mt-1">Build trust with clients by verifying your credentials</p>
-          {getStatusBadge() && <div className="mt-3">{getStatusBadge()}</div>}
+          {isOnboarding && <p className="text-[12px] text-stone-400 mb-2">Step 1 of 2</p>}
+          <div className="flex items-start justify-between">
+            <div>
+              <h1 className="text-2xl font-semibold text-stone-900 tracking-tight">Licensing &amp; Verification</h1>
+              <p className="text-[14px] text-stone-400 mt-1">Prove your expertise, win more clients</p>
+            </div>
+            {verificationStatus !== 'none' && (
+              <div className="flex-shrink-0">
+                {verificationStatus === 'verified' && (
+                  <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full">
+                    <CheckmarkCircle02Icon size={14} strokeWidth={1.5} /> Verified
+                  </span>
+                )}
+                {verificationStatus === 'pending' && (
+                  <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-amber-600 bg-amber-50 px-3 py-1.5 rounded-full">
+                    <Clock01Icon size={14} strokeWidth={1.5} /> Pending
+                  </span>
+                )}
+                {verificationStatus === 'rejected' && (
+                  <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-red-500 bg-red-50 px-3 py-1.5 rounded-full">
+                    <CheckmarkCircle02Icon size={14} strokeWidth={1.5} /> Failed
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Tabs */}
         <div className="flex items-center gap-2 mb-8">
           <button
             onClick={() => setActiveTab('upload')}
-            className={`px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap ${
+            className={`px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap border ${
               activeTab === 'upload'
-                ? 'bg-stone-900 text-white'
-                : 'bg-stone-50 text-stone-500 hover:bg-stone-100 border border-stone-200/60'
+                ? 'bg-stone-900 text-white border-stone-900'
+                : 'bg-stone-50 text-stone-500 hover:bg-stone-100 border-stone-200/60'
             }`}
           >
             I Have a License
           </button>
           <button
             onClick={() => setActiveTab('training')}
-            className={`px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap ${
+            className={`px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap border ${
               activeTab === 'training'
-                ? 'bg-stone-900 text-white'
-                : 'bg-stone-50 text-stone-500 hover:bg-stone-100 border border-stone-200/60'
+                ? 'bg-stone-900 text-white border-stone-900'
+                : 'bg-stone-50 text-stone-500 hover:bg-stone-100 border-stone-200/60'
             }`}
           >
             Need Training
           </button>
         </div>
 
-      {/* Upload Tab */}
-      {activeTab === 'upload' && (
-        <div>
-          {/* Status Messages */}
-          {verificationStatus === 'pending' && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 flex items-start gap-4 mb-8">
-              <Clock01Icon size={20} color="#a16207" className="mt-0.5 flex-shrink-0" />
-              <div>
-                <h3 className="font-semibold text-yellow-900 mb-1 text-sm">
-                  Your documents are being reviewed
-                </h3>
-                <p className="text-[13px] text-yellow-700">
-                  Our verification team is reviewing your credentials. You&apos;ll receive an email notification within 24-48 hours.
-                </p>
-              </div>
-            </div>
-          )}
-
-          {verificationStatus === 'verified' && (
-            <div className="bg-green-50 border border-green-200 rounded-xl p-6 flex items-start gap-4 mb-8">
-              <CheckmarkCircle02Icon size={20} color="#15803d" className="mt-0.5 flex-shrink-0" />
-              <div>
-                <h3 className="font-semibold text-green-900 mb-1 text-sm">
-                  You&apos;re verified!
-                </h3>
-                <p className="text-[13px] text-green-700">
-                  Your credentials have been verified. The verified badge now appears on your profile.
-                </p>
-              </div>
-            </div>
-          )}
-
-          {verificationStatus === 'rejected' && (
-            <div className="bg-red-50 border border-red-200 rounded-xl p-6 flex items-start gap-4 mb-8">
-              <CheckmarkCircle02Icon size={20} color="#b91c1c" className="mt-0.5 flex-shrink-0" />
-              <div>
-                <h3 className="font-semibold text-red-900 mb-1 text-sm">
-                  Verification was not approved
-                </h3>
-                <p className="text-[13px] text-red-700">
-                  Your submitted documents could not be verified. Please upload different credentials or contact support.
-                </p>
-              </div>
-            </div>
-          )}
-
-          {/* Benefits Grid - Matching subscription card style */}
-          <div className="grid md:grid-cols-3 gap-4 mb-8">
-            <div className="group relative rounded-2xl border border-stone-200/60 p-6 transition-all duration-300 bg-white hover:border-stone-300 hover:-translate-y-0.5 hover:shadow-lg">
-              <div className="mb-8">
-                <h3 className="text-[12px] text-stone-400 mb-3">
-                  Build Trust
-                </h3>
-                <div className="mb-4">
-                  <ShieldUserIcon size={26} color="#6b7280" strokeWidth={1.5} />
+        {/* ─── Upload Tab ─── */}
+        {activeTab === 'upload' && (
+          <div>
+            {/* Hero upload card — full width, two halves */}
+            <div className="rounded-2xl border border-stone-200/60 bg-white overflow-hidden mb-6">
+              <div className="flex flex-col md:flex-row">
+                {/* Left half — upload zone */}
+                <div className="md:w-[240px] flex-shrink-0 border-b md:border-b-0 md:border-r border-stone-100">
+                  <div className="h-[200px] p-5">
+                    {licensingImage ? (
+                      <div className="w-full h-full rounded-xl bg-stone-900 flex flex-col items-center justify-center text-center group cursor-pointer transition-all hover:bg-stone-800" onClick={() => setLicensingImage('')}>
+                        <div className="w-11 h-11 rounded-full bg-white/10 flex items-center justify-center mb-2">
+                          <Certificate01Icon size={22} color="#fff" strokeWidth={1.5} />
+                        </div>
+                        <p className="text-[13px] font-medium text-white">Ready</p>
+                        <p className="text-[11px] text-stone-500 group-hover:text-stone-400 transition-colors mt-0.5">Click to replace</p>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => setLicensingImage('mock-image-url')}
+                        className="group w-full h-full flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-200 bg-gray-50/30 text-center hover:border-gray-900 hover:bg-gray-100 transition-all duration-200"
+                      >
+                        <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center mb-2 shadow-sm group-hover:border-gray-300 transition-all">
+                          <Plus className="w-5 h-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+                        </div>
+                        <span className="text-[13px] font-medium text-gray-600">Add file</span>
+                        <span className="text-[11px] text-stone-400 mt-0.5">PNG, JPG, PDF</span>
+                      </button>
+                    )}
+                  </div>
                 </div>
-                <p className="text-[13px] text-gray-600">
-                  Verified badge increases booking rates by 3x
-                </p>
-              </div>
-            </div>
 
-            <div className="group relative rounded-2xl border border-stone-200/60 p-6 transition-all duration-300 bg-white hover:border-stone-300 hover:-translate-y-0.5 hover:shadow-lg">
-              <div className="mb-8">
-                <h3 className="text-[12px] text-stone-400 mb-3">
-                  Stand Out
-                </h3>
-                <div className="mb-4">
-                  <StarIcon size={26} color="#6b7280" strokeWidth={1.5} />
-                </div>
-                <p className="text-[13px] text-gray-600">
-                  Appear higher in search results and recommendations
-                </p>
-              </div>
-            </div>
-
-            <div className="group relative rounded-2xl border border-stone-200/60 p-6 transition-all duration-300 bg-white hover:border-stone-300 hover:-translate-y-0.5 hover:shadow-lg">
-              <div className="mb-8">
-                <h3 className="text-[12px] text-stone-400 mb-3">
-                  Fast Process
-                </h3>
-                <div className="mb-4">
-                  <TimeScheduleIcon size={26} color="#6b7280" strokeWidth={1.5} />
-                </div>
-                <p className="text-[13px] text-gray-600">
-                  Reviewed within 24-48 hours of submission
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Upload Section */}
-          <div className="bg-white rounded-xl border border-gray-200 p-8 mb-8">
-            <h2 className="text-xl font-semibold mb-2 text-gray-900 tracking-tight">
-              Upload Your Credentials
-            </h2>
-            <p className="text-[13px] text-gray-500 mb-8">
-              Upload professional licenses, certifications, diplomas, or any official document that verifies your expertise
-            </p>
-
-            {/* Image Upload Placeholder */}
-            <div className={`border-2 border-dashed rounded-xl p-12 text-center transition-all mb-8 ${
-              licensingImage
-                ? 'border-blue-400 bg-blue-50'
-                : 'border-gray-300 bg-white hover:border-blue-400 hover:bg-blue-50'
-            }`}>
-              {licensingImage ? (
-                <div className="space-y-4">
-                  <CheckmarkCircle02Icon size={48} color="#60A5FA" className="mx-auto" strokeWidth={2} />
-                  <p className="text-gray-900 font-semibold">Document uploaded successfully</p>
-                  <button
-                    onClick={() => setLicensingImage('')}
-                    className="text-[13px] text-gray-600 hover:text-gray-900 underline font-medium"
-                  >
-                    Upload different document
-                  </button>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  <Upload01Icon size={48} color="#9ca3af" className="mx-auto" strokeWidth={2} />
+                {/* Right half — context + actions */}
+                <div className="flex-1 p-6 flex flex-col justify-between">
                   <div>
-                    <p className="text-gray-900 font-semibold mb-1">Click to upload or drag and drop</p>
-                    <p className="text-[13px] text-gray-500">PNG, JPG, PDF up to 10MB</p>
-                  </div>
-                  <button
-                    onClick={() => setLicensingImage('mock-image-url')}
-                    className="px-6 py-3 bg-gray-900 text-white rounded-lg text-[13px] font-semibold tracking-tight hover:bg-black transition-all"
-                  >
-                    Select File
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* Info Grid */}
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="bg-gray-50 border border-gray-200 rounded-xl p-6">
-                <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2 text-sm tracking-tight">
-                  <BookOpen02Icon size={16} color="#60A5FA" strokeWidth={2} />
-                  Acceptable Documents
-                </h3>
-                <ul className="text-[13px] text-gray-600 space-y-2.5">
-                  <li className="flex items-start gap-2.5">
-                    <CheckmarkCircle02Icon size={14} color="#60A5FA" className="flex-shrink-0 mt-0.5" strokeWidth={2.5} />
-                    Professional licenses (state or national)
-                  </li>
-                  <li className="flex items-start gap-2.5">
-                    <CheckmarkCircle02Icon size={14} color="#60A5FA" className="flex-shrink-0 mt-0.5" strokeWidth={2.5} />
-                    Industry certifications
-                  </li>
-                  <li className="flex items-start gap-2.5">
-                    <CheckmarkCircle02Icon size={14} color="#60A5FA" className="flex-shrink-0 mt-0.5" strokeWidth={2.5} />
-                    Educational diplomas or degrees
-                  </li>
-                  <li className="flex items-start gap-2.5">
-                    <CheckmarkCircle02Icon size={14} color="#60A5FA" className="flex-shrink-0 mt-0.5" strokeWidth={2.5} />
-                    Liability insurance certificates
-                  </li>
-                </ul>
-              </div>
-
-              <div className="bg-gray-50 border border-gray-200 rounded-xl p-6">
-                <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2 text-sm tracking-tight">
-                  <Clock01Icon size={16} color="#60A5FA" strokeWidth={2} />
-                  Verification Timeline
-                </h3>
-                <div className="text-[13px] text-gray-600 space-y-3">
-                  <div className="flex items-start gap-3">
-                    <div className="w-5 h-5 bg-[#60A5FA] rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-bold text-white">1</div>
-                    <div>
-                      <p className="font-semibold text-gray-900">Upload documents</p>
-                      <p className="text-xs text-gray-500">Less than 1 minute</p>
+                    <h2 className="text-[15px] font-semibold text-stone-900 tracking-tight mb-1.5">Upload your credentials</h2>
+                    <p className="text-[13px] text-stone-400 leading-relaxed mb-4">
+                      We accept professional licenses, industry certifications, educational diplomas, and insurance certificates. All documents are encrypted.
+                    </p>
+                    <div className="flex flex-wrap gap-1.5 mb-5">
+                      {['State licenses', 'Certifications', 'Diplomas', 'Insurance'].map((tag) => (
+                        <span key={tag} className="text-[11px] text-stone-500 bg-stone-50 px-2.5 py-1 rounded-full border border-stone-100">
+                          {tag}
+                        </span>
+                      ))}
                     </div>
                   </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-5 h-5 bg-[#60A5FA] rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-bold text-white">2</div>
-                    <div>
-                      <p className="font-semibold text-gray-900">Team review</p>
-                      <p className="text-xs text-gray-500">24-48 hours</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-5 h-5 bg-[#60A5FA] rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-bold text-white">3</div>
-                    <div>
-                      <p className="font-semibold text-gray-900">Get verified!</p>
-                      <p className="text-xs text-gray-500">Email notification sent</p>
-                    </div>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={handleSave}
+                      disabled={isLoading || !licensingImage}
+                      className="py-2.5 px-5 bg-stone-900 text-white rounded-xl font-medium text-[13px] hover:bg-stone-800 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2"
+                      style={!isLoading && licensingImage ? { boxShadow: '0 2px 8px rgba(0,0,0,0.12)' } : undefined}
+                    >
+                      {isLoading ? 'Submitting...' : 'Submit for Verification'}
+                      {!isLoading && <ArrowRight01Icon size={14} strokeWidth={1.5} />}
+                    </button>
+                    <button
+                      onClick={handleSkip}
+                      className="py-2.5 px-4 text-[13px] text-stone-400 hover:text-stone-600 transition-colors"
+                    >
+                      {isOnboarding ? "Skip" : "Back"}
+                    </button>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Actions */}
-          <div className="flex flex-col sm:flex-row gap-4">
-            <button
-              onClick={handleBackToProfile}
-              disabled={isLoading}
-              className="flex-1 py-3 px-6 border border-gray-200 rounded-xl font-semibold text-[13px] tracking-tight text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 disabled:opacity-50"
-            >
-              {isOnboarding ? "I'll do this later" : "Back to Profile"}
-            </button>
-
-            <button
-              onClick={handleSave}
-              disabled={isLoading || !licensingImage}
-              className="flex-1 py-3 px-6 bg-gray-900 text-white rounded-xl font-semibold text-[13px] tracking-tight hover:bg-black transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            >
-              {isLoading ? (
-                "Uploading..."
-              ) : (
-                <>
-                  {verificationStatus === 'none' ? 'Submit for Verification' : 'Update Documents'}
-                  <ArrowRight01Icon size={14} strokeWidth={2.5} />
-                </>
-              )}
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Training Tab */}
-      {activeTab === 'training' && (
-        <div>
-          {/* Hero Section */}
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-8 mb-12">
-            <div className="flex items-start gap-6">
-              <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center flex-shrink-0 border border-blue-200">
-                <SchoolIcon size={20} color="#60A5FA" strokeWidth={1.5} />
-              </div>
-              <div className="flex-1">
-                <h2 className="text-xl font-semibold mb-2 tracking-tight text-gray-900">Get Verified Through Our Trusted Partners</h2>
-                <p className="text-gray-600 mb-4 text-[13px]">
-                  Don&apos;t have a license? No problem! Partner with accredited institutions to get certified and verified on our platform.
-                </p>
-                <div className="flex flex-wrap gap-2 text-[13px]">
-                  <div className="flex items-center gap-2 bg-white border border-blue-200 text-gray-700 px-3 py-1.5 rounded-full">
-                    <CheckmarkCircle02Icon size={14} color="#60A5FA" />
-                    <span>Accredited Programs</span>
+            {/* How it works — preserved */}
+            <div className="rounded-2xl border border-stone-200/60 bg-white p-6 mb-6">
+              <h3 className="text-[12px] text-stone-400 mb-4">How it works</h3>
+              <div className="flex items-start">
+                {[
+                  { num: '01', title: 'Upload', desc: 'Add your license or certification' },
+                  { num: '02', title: 'Review', desc: 'Our team verifies in 24-48h' },
+                  { num: '03', title: 'Verified', desc: 'Badge appears on your profile' },
+                ].map((step, idx) => (
+                  <div key={step.num} className="flex-1 flex items-start gap-3">
+                    {idx > 0 && <div className="w-px h-10 bg-stone-100 flex-shrink-0 -ml-px mr-3" />}
+                    <div>
+                      <p className="text-[18px] font-bold text-stone-200 leading-none mb-1.5">{step.num}</p>
+                      <p className="text-[13px] font-medium text-stone-900 mb-0.5">{step.title}</p>
+                      <p className="text-[11px] text-stone-400 leading-snug">{step.desc}</p>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2 bg-white border border-blue-200 text-gray-700 px-3 py-1.5 rounded-full">
-                    <StarIcon size={14} color="#60A5FA" />
-                    <span>Direct Verification</span>
-                  </div>
-                  <div className="flex items-center gap-2 bg-white border border-blue-200 text-gray-700 px-3 py-1.5 rounded-full">
-                    <CheckmarkCircle02Icon size={14} color="#60A5FA" />
-                    <span>Special Discounts</span>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
+
+            {/* Privacy footer */}
+            <div className="flex items-center gap-1.5 text-[11px] text-stone-400">
+              <ShieldUserIcon size={12} color="#a8a29e" strokeWidth={1.5} />
+              Documents are encrypted and never shared publicly.
+            </div>
           </div>
+        )}
 
-          {/* Partner Academies Grid - Matching subscription card style */}
-          <div className="grid md:grid-cols-2 gap-4 mb-12">
-            {partnerAcademies.map((academy) => {
-              const isSelected = selectedAcademy === academy.id;
+        {/* ─── Training Tab ─── */}
+        {activeTab === 'training' && (
+          <div>
+            {/* Intro */}
+            <div className="mb-8">
+              <h2 className="text-[18px] font-semibold text-stone-900 tracking-tight mb-2">Choose from our handpicked academies</h2>
+              <p className="text-[13px] text-stone-400 leading-relaxed max-w-xl">
+                Start training with an accredited partner while building your client base on ForMe as an apprentice. Complete your program, get verified instantly, and transition straight into a full professional account.
+              </p>
+            </div>
 
-              return (
-                <div
-                  key={academy.id}
-                  className={`group relative rounded-2xl border p-8 transition-all duration-300 cursor-pointer ${
-                    isSelected
-                      ? "bg-stone-900 border-stone-800 shadow-xl"
-                      : "bg-white border-stone-200/60 hover:border-stone-300 hover:-translate-y-0.5 hover:shadow-lg"
-                  }`}
-                  onClick={() => setSelectedAcademy(isSelected ? '' : academy.id)}
-                >
-                  {isSelected && (
-                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                      <span className="bg-gradient-to-r from-gray-700 to-gray-600 text-white px-4 py-1.5 rounded-full text-[10px] font-medium tracking-wide uppercase shadow-lg">
-                        Selected
-                      </span>
-                    </div>
-                  )}
-
-                  <div className="mb-8">
-                    <h3 className="text-[12px] text-stone-400 mb-3">
-                      {academy.name}
-                    </h3>
-                    <p className={`text-[13px] ${isSelected ? 'text-gray-300' : 'text-gray-600'}`}>{academy.description}</p>
-                  </div>
-
-                  <div className={`space-y-2 mb-4 text-[13px] ${isSelected ? 'text-gray-300' : 'text-gray-600'}`}>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Clock01Icon size={14} strokeWidth={2} />
-                        <span>{academy.duration}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <StarIcon size={14} color={isSelected ? '#d1d5db' : '#9ca3af'} />
-                        <span className={`font-semibold ${isSelected ? 'text-white' : 'text-gray-900'}`}>{academy.rating}</span>
-                      </div>
-                    </div>
-                    <div className={`font-semibold ${isSelected ? 'text-white' : 'text-gray-900'}`}>{academy.price}</div>
-                  </div>
-
-                  <ul className="space-y-3 mb-8">
-                    {academy.courses.map((course, idx) => (
-                      <li key={idx} className={`flex items-start text-[13px] ${isSelected ? 'text-gray-300' : 'text-gray-600'}`}>
-                        <CheckmarkCircle02Icon size={14} color={isSelected ? '#d1d5db' : '#9ca3af'} className="mr-2.5 flex-shrink-0 mt-0.5" strokeWidth={2} />
-                        {course}
-                      </li>
-                    ))}
-                  </ul>
-
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleViewProgramDetails();
-                    }}
-                    className={`w-full py-3 px-5 rounded-lg font-medium text-[13px] transition-all duration-200 flex items-center justify-center gap-2 ${
+            {/* Programs grid — 2 col */}
+            <div className="grid md:grid-cols-2 gap-5 pb-8">
+              {partnerAcademies.map((academy) => {
+                const isSelected = selectedAcademy === academy.id;
+                return (
+                  <div
+                    key={academy.id}
+                    onClick={() => setSelectedAcademy(isSelected ? '' : academy.id)}
+                    className={`group relative rounded-2xl border p-6 transition-all duration-300 cursor-pointer ${
                       isSelected
-                        ? "bg-white text-gray-900 hover:bg-gray-100"
-                        : "bg-gray-900 text-white hover:bg-gray-800"
+                        ? 'bg-stone-900 border-stone-800 shadow-xl'
+                        : 'bg-white border-stone-200/60 hover:border-stone-300 hover:-translate-y-0.5 hover:shadow-lg'
                     }`}
                   >
-                    View Program Details
-                    <Link01Icon size={14} strokeWidth={2} />
-                  </button>
-                </div>
-              );
-            })}
+                    {isSelected && (
+                      <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                        <span className="bg-stone-700 text-white px-4 py-1 rounded-full text-[10px] font-medium tracking-wide">Selected</span>
+                      </div>
+                    )}
+
+                    {/* Header */}
+                    <div className="mb-6">
+                      <h3 className="text-[12px] text-stone-400 mb-3">{academy.name}</h3>
+                      <div className="mb-1">
+                        <span className={`text-[32px] font-bold tracking-tight ${isSelected ? 'text-white' : 'text-stone-900'}`}>
+                          {academy.price}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-3 text-[12px] text-stone-400">
+                        <span className="flex items-center gap-1">
+                          <Clock01Icon size={12} strokeWidth={1.5} />
+                          {academy.duration}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <StarIcon size={12} strokeWidth={1.5} />
+                          {academy.rating}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Description */}
+                    <p className={`text-[13px] mb-5 ${isSelected ? 'text-stone-300' : 'text-stone-500'}`}>
+                      {academy.description}
+                    </p>
+
+                    {/* Courses */}
+                    <ul className="space-y-2.5 mb-6">
+                      {academy.courses.map((course, i) => (
+                        <li key={i} className={`flex items-start text-[13px] ${isSelected ? 'text-stone-300' : 'text-stone-500'}`}>
+                          <CheckmarkCircle02Icon size={14} color="#a8a29e" className="mr-2.5 flex-shrink-0 mt-0.5" strokeWidth={1.5} />
+                          {course}
+                        </li>
+                      ))}
+                    </ul>
+
+                    {/* CTA */}
+                    <button
+                      onClick={(e) => { e.stopPropagation(); window.open('https://example.com/program-details', '_blank'); }}
+                      className={`w-full py-3 px-5 rounded-xl font-medium text-[13px] transition-all duration-200 flex items-center justify-center gap-2 ${
+                        isSelected
+                          ? 'bg-white text-stone-900 hover:bg-stone-50'
+                          : 'bg-stone-900 text-white hover:bg-stone-800'
+                      }`}
+                      style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.12)' }}
+                    >
+                      View Program <ArrowRight01Icon size={14} strokeWidth={1.5} />
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Trust bar */}
+            <div className="pt-8 border-t border-stone-100">
+              <div className="flex items-center gap-6 text-[12px] text-stone-400">
+                <span className="flex items-center gap-1.5">
+                  <CheckmarkCircle02Icon size={13} color="#a8a29e" strokeWidth={1.5} />
+                  Accredited partners
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <CheckmarkCircle02Icon size={13} color="#a8a29e" strokeWidth={1.5} />
+                  Instant verification on completion
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <CheckmarkCircle02Icon size={13} color="#a8a29e" strokeWidth={1.5} />
+                  Member discounts available
+                </span>
+              </div>
+            </div>
           </div>
-
-          {/* Why Choose Section - Matching subscription card style */}
-          <div className="grid md:grid-cols-3 gap-4">
-            <div className="group relative rounded-2xl border border-stone-200/60 p-6 transition-all duration-300 bg-white hover:border-stone-300 hover:-translate-y-0.5 hover:shadow-lg">
-              <h3 className="text-[12px] text-stone-400 mb-3">
-                Instant Verification
-              </h3>
-              <div className="mb-4">
-                <CheckmarkCircle02Icon size={22} color="#6b7280" strokeWidth={1.5} />
-              </div>
-              <p className="text-[13px] text-gray-600">
-                Get verified immediately upon course completion
-              </p>
-            </div>
-
-            <div className="group relative rounded-2xl border border-stone-200/60 p-6 transition-all duration-300 bg-white hover:border-stone-300 hover:-translate-y-0.5 hover:shadow-lg">
-              <h3 className="text-[12px] text-stone-400 mb-3">
-                Special Pricing
-              </h3>
-              <div className="mb-4">
-                <StarIcon size={22} color="#6b7280" strokeWidth={1.5} />
-              </div>
-              <p className="text-[13px] text-gray-600">
-                Exclusive discounts for our community members
-              </p>
-            </div>
-
-            <div className="group relative rounded-2xl border border-stone-200/60 p-6 transition-all duration-300 bg-white hover:border-stone-300 hover:-translate-y-0.5 hover:shadow-lg">
-              <h3 className="text-[12px] text-stone-400 mb-3">
-                Flexible Learning
-              </h3>
-              <div className="mb-4">
-                <BookOpen02Icon size={22} color="#6b7280" strokeWidth={1.5} />
-              </div>
-              <p className="text-[13px] text-gray-600">
-                Online, in-person, and hybrid options available
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Privacy Notice */}
-      <div className="mt-12 mb-8 rounded-2xl border border-stone-200/60 p-6 text-center bg-white">
-        <div className="flex items-center justify-center gap-2 mb-2">
-          <ShieldUserIcon size={18} color="#78716c" strokeWidth={1.5} />
-          <h4 className="font-semibold text-stone-900 text-[14px] tracking-tight">Your Privacy is Protected</h4>
-        </div>
-        <p className="text-stone-400 text-[13px] max-w-2xl mx-auto">
-          All documents are encrypted and only reviewed by our verification team. They will never be publicly displayed or shared with third parties.
-        </p>
-      </div>
+        )}
       </div>
     </Container>
   );

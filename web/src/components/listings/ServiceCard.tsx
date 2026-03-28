@@ -224,6 +224,43 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
         )}
       </div>
 
+      {/* Heart + Share — top right, visible on hover (solid variant only) */}
+      {solidBackground && (
+        <div className="absolute top-3 right-[18px] z-40 flex flex-col items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200" onClick={(e) => e.stopPropagation()}>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              if (listing?.id && currentUser) {
+                router.push(`/reserve/${listing.id}?serviceId=${service.id}`);
+              }
+            }}
+            aria-label="Favorite"
+            className="transition-all duration-300"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M10.4107 19.9677C7.58942 17.858 2 13.0348 2 8.69444C2 5.82563 4.10526 3.5 7 3.5C8.5 3.5 10 4 12 6C14 4 15.5 3.5 17 3.5C19.8947 3.5 22 5.82563 22 8.69444C22 13.0348 16.4106 17.858 13.5893 19.9677C12.6399 20.6776 11.3601 20.6776 10.4107 19.9677Z" stroke="#d4d4d4" strokeWidth="1.5" />
+            </svg>
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              if (listing?.id && navigator.share) {
+                navigator.share({ title: service.serviceName, url: `${window.location.origin}/listings/${listing.id}` });
+              } else if (listing?.id) {
+                navigator.clipboard.writeText(`${window.location.origin}/listings/${listing.id}`);
+              }
+            }}
+            aria-label="Share"
+            className="transition-all duration-300 text-neutral-300 hover:text-neutral-900"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M10.0017 3C7.05534 3.03208 5.41096 3.21929 4.31838 4.31188C2.99988 5.63037 2.99988 7.75248 2.99988 11.9966C2.99988 16.2409 2.99988 18.363 4.31838 19.6815C5.63688 21 7.75899 21 12.0032 21C16.2474 21 18.3695 21 19.688 19.6815C20.7808 18.5887 20.9678 16.9438 20.9999 13.9963" />
+              <path d="M14 3H18C19.4142 3 20.1213 3 20.5607 3.43934C21 3.87868 21 4.58579 21 6V10M20 4L11 13" />
+            </svg>
+          </button>
+        </div>
+      )}
+
       <div className="relative z-10">
         <div className={compact ? 'relative h-[180px]' : 'relative h-[280px]'}>
           {solidBackground ? (

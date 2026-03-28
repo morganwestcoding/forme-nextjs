@@ -1,7 +1,7 @@
 'use client';
 
 import { CldUploadWidget, type CldUploadWidgetResults } from 'next-cloudinary';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import TypeformHeading from '@/components/registration/TypeformHeading';
@@ -19,6 +19,11 @@ export default function GalleryStep({
   onGalleryChange,
 }: GalleryStepProps) {
   const [uploading, setUploading] = useState(false);
+  const galleryRef = useRef(galleryImages);
+
+  useEffect(() => {
+    galleryRef.current = galleryImages;
+  }, [galleryImages]);
 
   const handleUpload = useCallback((result: CldUploadWidgetResults) => {
     const info = result?.info;
@@ -31,16 +36,23 @@ export default function GalleryStep({
         cloudName = urlMatch ? urlMatch[1] : null;
       }
 
+      let finalUrl: string;
       if (publicId && cloudName) {
         const transformations = `q_auto:good,f_auto,w_800,h_800,c_fill,g_auto`;
-        const finalUrl = `https://res.cloudinary.com/${cloudName}/image/upload/${transformations}/${publicId}`;
-        onGalleryChange([...galleryImages, finalUrl]);
+        finalUrl = `https://res.cloudinary.com/${cloudName}/image/upload/${transformations}/${publicId}`;
       } else {
-        onGalleryChange([...galleryImages, info.secure_url as string]);
+        finalUrl = info.secure_url as string;
       }
+
+      const updated = [...galleryRef.current, finalUrl];
+      galleryRef.current = updated;
+      onGalleryChange(updated);
     }
+  }, [onGalleryChange]);
+
+  const handleClose = useCallback(() => {
     setUploading(false);
-  }, [galleryImages, onGalleryChange]);
+  }, []);
 
   const removeImage = (index: number) => {
     onGalleryChange(galleryImages.filter((_, i) => i !== index));
@@ -83,10 +95,11 @@ export default function GalleryStep({
         <CldUploadWidget
           uploadPreset={UPLOAD_PRESET}
           onSuccess={handleUpload}
+          onClose={handleClose}
           onOpen={() => setUploading(true)}
           options={{
-            multiple: false,
-            maxFiles: 1,
+            multiple: true,
+            maxFiles: 20,
             sources: ['local', 'camera'],
             resourceType: 'image',
             clientAllowedFormats: ['png', 'jpg', 'jpeg', 'webp'],

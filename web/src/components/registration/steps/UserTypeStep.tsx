@@ -27,7 +27,7 @@ const options = [
     value: 'team' as const,
     icon: Users,
     title: 'Team member',
-    description: 'I work at a business or salon',
+    description: "I'm part of an existing business",
   },
 ];
 

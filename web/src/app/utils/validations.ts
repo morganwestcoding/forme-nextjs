@@ -16,7 +16,7 @@ export const registerSchema = z.object({
   imageSrc: z.string().optional(),
   backgroundImage: z.string().optional(),
   userType: z.enum(['customer', 'individual', 'team']).optional(),
-  selectedListing: z.string().optional(),
+  selectedListing: z.string().nullable().optional(),
   jobTitle: z.string().optional(),
   isOwnerManager: z.boolean().optional(),
   selectedServices: z.array(z.string()).optional(),

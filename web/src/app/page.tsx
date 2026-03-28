@@ -51,6 +51,7 @@ const Discover = async ({ searchParams }: PostProps) => {
   const safeListings: SafeListing[] = Array.isArray(listings) ? listings : [];
   const employees = safeListings.flatMap((listing: SafeListing) => listing.employees);
 
+
   return (
     <DiscoverClient 
       initialPosts={posts}

@@ -131,7 +131,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
   }, [initialPosts, shuffleSeed, currentCategories]);
 
   const shuffledListings = useMemo(() => {
-    let filtered = listings.filter(l => l.category !== 'Personal');
+    let filtered = [...listings];
     if (currentCategories.length > 0) {
       filtered = filtered.filter(l => currentCategories.includes(l.category));
     }
@@ -562,7 +562,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                       viewAllLabel="← Back to Discover"
                     />
                     <div className={`grid ${gridColsClass} gap-x-8 gap-y-1 transition-all duration-300`}>
-                      {listings.filter(l => l.category !== 'Personal').map((listing, idx) => (
+                      {listings.map((listing, idx) => (
                         <div
                           key={listing.id}
                           style={{

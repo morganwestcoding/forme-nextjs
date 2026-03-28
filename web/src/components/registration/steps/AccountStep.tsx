@@ -90,7 +90,7 @@ export default function AccountStep() {
                 message: 'First name can only contain letters and common punctuation'
               }
             })}
-            className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
+            className={`w-full px-4 py-3.5 bg-gray-50 border rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:border-transparent transition-all ${errors.firstName ? 'border-red-400 focus:ring-red-500' : 'border-gray-200 focus:ring-gray-900'}`}
             placeholder="John"
           />
           {errors.firstName && (
@@ -114,7 +114,7 @@ export default function AccountStep() {
                 message: 'Last name can only contain letters and common punctuation'
               }
             })}
-            className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
+            className={`w-full px-4 py-3.5 bg-gray-50 border rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:border-transparent transition-all ${errors.lastName ? 'border-red-400 focus:ring-red-500' : 'border-gray-200 focus:ring-gray-900'}`}
             placeholder="Doe"
           />
           {errors.lastName && (

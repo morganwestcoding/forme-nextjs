@@ -268,7 +268,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
         createPortal(
           <div
             ref={listRef}
-            className="fixed z-[9999] max-h-96 overflow-auto rounded-xl bg-white border border-gray-300 animate-in fade-in slide-in-from-top-2 duration-200"
+            className="fixed z-[50] max-h-96 overflow-auto rounded-xl bg-white border border-gray-300 animate-in fade-in slide-in-from-top-2 duration-200"
             style={{
               top: `${dropdownPosition.top}px`,
               left: `${dropdownPosition.left}px`,
