@@ -1,9 +1,12 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { motion } from 'framer-motion';
 import TypeformHeading from '../TypeformHeading';
 import { itemVariants } from '../TypeformStep';
+
+const BLOCKED_TITLES = /\b(owner|manager|ceo|founder|co-founder|president|director)\b/i;
 
 interface JobTitleStepProps {
   userType: string;
@@ -12,9 +15,21 @@ interface JobTitleStepProps {
 }
 
 export default function JobTitleStep({ userType, isOwnerManager, onOwnerManagerChange }: JobTitleStepProps) {
-  const { register, formState: { errors } } = useFormContext();
+  const { register, formState: { errors }, watch, setError, clearErrors } = useFormContext();
+  const jobTitleValue = watch('jobTitle');
 
   const isTeam = userType === 'team';
+
+  useEffect(() => {
+    if (jobTitleValue && BLOCKED_TITLES.test(jobTitleValue.trim())) {
+      const msg = isTeam
+        ? 'Use the checkbox above for owner/manager roles'
+        : 'Enter your service title instead (e.g., Hair Stylist)';
+      setError('jobTitle', { type: 'manual', message: msg });
+    } else {
+      if (errors.jobTitle?.type === 'manual') clearErrors('jobTitle');
+    }
+  }, [jobTitleValue, isTeam, setError, clearErrors, errors.jobTitle?.type]);
 
   return (
     <div>
