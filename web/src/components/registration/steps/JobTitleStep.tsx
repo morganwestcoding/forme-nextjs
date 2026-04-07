@@ -65,6 +65,16 @@ export default function JobTitleStep({ userType, isOwnerManager, onOwnerManagerC
               autoFocus={!isTeam}
               {...register('jobTitle', {
                 required: !isOwnerManager ? 'Job title is required' : false,
+                validate: (value: string) => {
+                  if (!value) return true;
+                  const blocked = /^(owner|manager|owner\/manager|ceo|founder|co-founder|president|director)$/i;
+                  if (blocked.test(value)) {
+                    return isTeam
+                      ? 'Use the checkbox above for owner/manager roles'
+                      : 'Enter your service title instead (e.g., Hair Stylist)';
+                  }
+                  return true;
+                },
               })}
               className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
               placeholder={isTeam ? "e.g., Senior Stylist, Barber" : "e.g., Hair Stylist, Makeup Artist"}
