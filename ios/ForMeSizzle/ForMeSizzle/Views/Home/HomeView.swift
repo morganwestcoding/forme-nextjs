@@ -18,9 +18,11 @@ struct HomeView: View {
     var body: some View {
         ZStack(alignment: .top) {
             ScrollView(showsIndicators: false) {
-                VStack(spacing: 20) {
-                    headerSection
-                    searchBarSection
+                VStack(spacing: 28) {
+                    VStack(spacing: 16) {
+                        headerSection
+                        searchBarSection
+                    }
                     categorySection
                     postsSection
                     listingsSection
@@ -206,33 +208,30 @@ private extension HomeView {
         let grouped = Dictionary(grouping: searchResults, by: \.type)
         let typeOrder = ["user", "listing", "shop", "product", "employee", "service", "post"]
 
-        return ScrollView(showsIndicators: false) {
-            VStack(alignment: .leading, spacing: 0) {
-                ForEach(typeOrder, id: \.self) { typeKey in
-                    if let items = grouped[typeKey], !items.isEmpty {
-                        // Section header
-                        Text(items[0].typeLabel)
-                            .font(.system(size: 11, weight: .semibold))
-                            .foregroundColor(ForMe.textTertiary)
-                            .textCase(.uppercase)
-                            .tracking(0.8)
-                            .padding(.horizontal, ForMe.space4)
-                            .padding(.top, ForMe.space3)
-                            .padding(.bottom, ForMe.space1)
+        return VStack(alignment: .leading, spacing: 0) {
+            ForEach(typeOrder, id: \.self) { typeKey in
+                if let items = grouped[typeKey], !items.isEmpty {
+                    Text(items[0].typeLabel)
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundColor(ForMe.textTertiary)
+                        .textCase(.uppercase)
+                        .tracking(0.8)
+                        .padding(.horizontal, ForMe.space4)
+                        .padding(.top, ForMe.space3)
+                        .padding(.bottom, ForMe.space1)
 
-                        ForEach(items) { item in
-                            SearchResultRow(item: item) {
-                                searchQuery = ""
-                                searchResults = []
-                                searchFieldFocused = false
-                            }
+                    ForEach(items) { item in
+                        SearchResultRow(item: item) {
+                            searchQuery = ""
+                            searchResults = []
+                            searchFieldFocused = false
                         }
                     }
                 }
             }
-            .padding(.vertical, ForMe.space1)
         }
-        .frame(maxHeight: 380)
+        .padding(.vertical, ForMe.space1)
+        .fixedSize(horizontal: false, vertical: true)
     }
 }
 
@@ -285,9 +284,12 @@ private extension HomeView {
     var postsSection: some View {
         Group {
             if !viewModel.posts.isEmpty {
-                VStack(alignment: .leading, spacing: 12) {
-                    SectionHeader(title: "Posts We Think You'll Love")
-                        .padding(.horizontal)
+                VStack(spacing: 14) {
+                    Text("Posts We Think You'll Love")
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundColor(ForMe.stone500)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .padding(.bottom, 4)
 
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 8) {
@@ -310,20 +312,22 @@ private extension HomeView {
     var listingsSection: some View {
         Group {
             if !filteredListings.isEmpty {
-                VStack(alignment: .leading, spacing: 12) {
-                    SectionHeader(title: "Local Businesses Worth Checking Out")
-                        .padding(.horizontal)
+                VStack(spacing: 14) {
+                    Text("Local Businesses Worth Checking Out")
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundColor(ForMe.stone500)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .padding(.bottom, 4)
 
-                    LazyVStack(spacing: 0) {
+                    VStack(spacing: 20) {
                         ForEach(Array(filteredListings.prefix(9).enumerated()), id: \.element.id) { index, listing in
                             NavigationLink(value: listing) {
-                                ListingRow(listing: listing)
+                                ListingFullWidthCard(listing: listing)
                             }
                             .buttonStyle(.plain)
                             .staggeredFadeIn(index: index)
                         }
                     }
-                    .padding(.horizontal)
                 }
             }
         }
@@ -341,26 +345,27 @@ private extension HomeView {
     var professionalsSection: some View {
         Group {
             if !viewModel.employees.isEmpty {
-                VStack(alignment: .leading, spacing: 12) {
-                    SectionHeader(title: "Trending Professionals")
-                        .padding(.horizontal)
+                VStack(spacing: 14) {
+                    Text("Trending Professionals")
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundColor(ForMe.stone500)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .padding(.bottom, 4)
 
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 8) {
-                            ForEach(Array(viewModel.employees.prefix(9).enumerated()), id: \.element.id) { index, provider in
-                                let providerListing = viewModel.listings.first { $0.user?.id == provider.id || $0.userId == provider.id }
-                                if let listing = providerListing {
-                                    NavigationLink(value: listing) {
-                                        ProviderCard(user: provider)
-                                    }
-                                    .buttonStyle(.plain)
-                                } else {
+                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 20) {
+                        ForEach(Array(viewModel.employees.prefix(9).enumerated()), id: \.element.id) { index, provider in
+                            let providerListing = viewModel.listings.first { $0.user?.id == provider.id || $0.userId == provider.id }
+                            if let listing = providerListing {
+                                NavigationLink(value: listing) {
                                     ProviderCard(user: provider)
                                 }
+                                .buttonStyle(.plain)
+                            } else {
+                                ProviderCard(user: provider)
                             }
                         }
-                        .padding(.horizontal)
                     }
+                    .padding(.horizontal)
                 }
             }
         }
@@ -462,6 +467,126 @@ struct ListingRow: View {
 }
 
 // MARK: - Provider Card (matches web WorkerCard)
+
+// MARK: - Listing Full Width Card (edge-to-edge image, info below)
+
+struct ListingFullWidthCard: View {
+    let listing: Listing
+
+    var body: some View {
+        VStack(spacing: 0) {
+            // Image — edge to edge, no radius
+            AsyncImage(url: URL(string: listing.imageSrc ?? "")) { phase in
+                switch phase {
+                case .success(let image):
+                    image.resizable().aspectRatio(contentMode: .fill)
+                default:
+                    Rectangle()
+                        .fill(ForMe.stone100)
+                        .overlay(
+                            Image(systemName: listing.categoryIcon)
+                                .font(.system(size: 28))
+                                .foregroundColor(ForMe.stone300)
+                        )
+                }
+            }
+            .frame(height: 200)
+            .frame(maxWidth: .infinity)
+            .clipped()
+
+            // Info below
+            VStack(alignment: .leading, spacing: 4) {
+                Text(listing.title)
+                    .font(.system(size: 18, weight: .bold))
+                    .foregroundColor(ForMe.textPrimary)
+                    .lineLimit(1)
+
+                HStack(spacing: 0) {
+                    if let location = listing.location {
+                        Text(location)
+                            .font(.system(size: 12))
+                            .foregroundColor(ForMe.textTertiary)
+                    }
+
+                    Circle()
+                        .fill(ForMe.stone300)
+                        .frame(width: 3, height: 3)
+                        .padding(.horizontal, 6)
+
+                    Image(systemName: "star.fill")
+                        .font(.system(size: 9))
+                        .foregroundColor(Color(hex: "FBBF24"))
+                    Text(" \(String(format: "%.1f", listing.rating ?? 0))")
+                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                        .foregroundColor(ForMe.textPrimary)
+
+                    Text(" (\(listing.ratingCount ?? 0))")
+                        .font(.system(size: 11))
+                        .foregroundColor(ForMe.textTertiary)
+                }
+            }
+            .padding(.top, 10)
+            .padding(.horizontal, ForMe.space4)
+        }
+    }
+}
+
+// MARK: - Listing Grid Card (2-col, image on top, info below)
+
+struct ListingGridCard: View {
+    let listing: Listing
+
+    var body: some View {
+        VStack(spacing: 10) {
+            // Listing image
+            AsyncImage(url: URL(string: listing.imageSrc ?? "")) { phase in
+                switch phase {
+                case .success(let image):
+                    image.resizable().aspectRatio(contentMode: .fill)
+                default:
+                    RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous)
+                        .fill(ForMe.stone100)
+                        .overlay(
+                            Image(systemName: listing.categoryIcon)
+                                .font(.system(size: 24))
+                                .foregroundColor(ForMe.stone300)
+                        )
+                }
+            }
+            .frame(width: 120, height: 120)
+            .clipShape(RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous))
+
+            VStack(spacing: 3) {
+                Text(listing.title)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(ForMe.textPrimary)
+                    .lineLimit(1)
+
+                if let location = listing.location {
+                    Text(location)
+                        .font(.system(size: 11))
+                        .foregroundColor(ForMe.textTertiary)
+                        .lineLimit(1)
+                }
+
+                HStack(spacing: 3) {
+                    Image(systemName: "star.fill")
+                        .font(.system(size: 9))
+                        .foregroundColor(Color(hex: "FBBF24"))
+                    Text(String(format: "%.1f", listing.rating ?? 0))
+                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                        .foregroundColor(ForMe.textPrimary)
+                    Circle()
+                        .fill(ForMe.stone300)
+                        .frame(width: 3, height: 3)
+                    Text("\(listing.ratingCount ?? 0) reviews")
+                        .font(.system(size: 11))
+                        .foregroundColor(ForMe.textTertiary)
+                }
+            }
+        }
+    }
+}
 
 struct ProviderCard: View {
     let name: String

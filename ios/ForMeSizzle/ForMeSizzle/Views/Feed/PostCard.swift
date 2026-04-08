@@ -2,121 +2,117 @@ import SwiftUI
 
 struct PostCard: View {
     let post: Post
+    var width: CGFloat = 180
 
-    private let cardWidth: CGFloat = 200
+    private var isTextPost: Bool { post.imageSrc == nil && post.mediaUrl == nil }
+    private var isVideo: Bool { post.mediaType == "video" }
+    private var likeCount: Int { post.likes?.count ?? 0 }
+    private var commentCount: Int { post.comments?.count ?? 0 }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            // Media container - 5:6 aspect ratio like web
-            ZStack(alignment: .topTrailing) {
-                mediaContent
-                    .frame(width: cardWidth, height: cardWidth * 6 / 5)
-                    .clipped()
+        ZStack {
+            // Media fills entire card
+            mediaContent
+                .frame(width: width, height: width * 6 / 5)
+                .clipped()
 
-                // Heart button overlay
+            // Bottom gradient for text readability
+            if !isTextPost {
+                LinearGradient(
+                    stops: [
+                        .init(color: .clear, location: 0.35),
+                        .init(color: .black.opacity(0.3), location: 0.6),
+                        .init(color: .black.opacity(0.65), location: 1.0),
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            }
+
+            // Heart + Share — top right, vertical (matches web)
+            VStack(spacing: 10) {
                 Button {
-                    // TODO: toggle favorite
+                    // TODO: toggle like
                 } label: {
                     Image(systemName: "heart")
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(.white)
-                        .frame(width: 32, height: 32)
-                        .background(.ultraThinMaterial.opacity(0.6))
-                        .clipShape(Circle())
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(.white.opacity(0.85))
+                        .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
                 }
-                .buttonStyle(.plain)
-                .padding(10)
+                Button {
+                    // TODO: share
+                } label: {
+                    Image(systemName: "arrow.up.right")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(.white.opacity(0.7))
+                        .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+            .padding(ForMe.space4)
 
-                // Video indicator
-                if post.mediaType == "video" {
-                    HStack(spacing: 3) {
-                        Image(systemName: "play.fill")
-                            .font(.system(size: 8))
-                            .foregroundColor(.white)
-                    }
+            // Video badge — top left
+            if isVideo {
+                Image(systemName: "play.fill")
+                    .font(.system(size: 8))
+                    .foregroundColor(.white)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 5)
                     .background(.black.opacity(0.5))
                     .clipShape(Capsule())
-                    .padding(10)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                }
+                    .padding(ForMe.space4)
+            }
 
-                // Profile pic - bottom left corner
+            // Bottom info — avatar + name + content + stats (matches web)
+            HStack(alignment: .bottom, spacing: 6) {
+                // Avatar — small circle with white ring
                 if let user = post.user {
-                    AsyncImage(url: URL(string: user.image ?? "")) { image in
-                        image.resizable().aspectRatio(contentMode: .fill)
+                    AsyncImage(url: URL(string: user.image ?? "")) { img in
+                        img.resizable().aspectRatio(contentMode: .fill)
                     } placeholder: {
-                        Circle()
-                            .fill(Color(hex: "E5E7EB"))
+                        Circle().fill(ForMe.stone400)
                             .overlay(
-                                Text(user.name?.prefix(1).uppercased() ?? "?")
-                                    .font(.system(size: 11, weight: .bold))
-                                    .foregroundColor(ForMe.textTertiary)
+                                Text(user.name?.prefix(1).uppercased() ?? "")
+                                    .font(.system(size: 8, weight: .bold))
+                                    .foregroundColor(.white)
                             )
                     }
-                    .frame(width: 28, height: 28)
+                    .frame(width: 22, height: 22)
                     .clipShape(Circle())
-                    .overlay(
-                        Circle()
-                            .stroke(Color.white, lineWidth: 2)
-                    )
-                    .shadow(color: .black.opacity(0.15), radius: 3, x: 0, y: 1)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
-                    .padding(10)
+                    .overlay(Circle().stroke(.white.opacity(0.8), lineWidth: 1.5))
+                }
+
+                VStack(alignment: .leading, spacing: 2) {
+                    if let user = post.user {
+                        Text(user.name ?? "")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundColor(.white)
+                            .lineLimit(1)
+                            .shadow(color: .black.opacity(0.3), radius: 1, x: 0, y: 1)
+                    }
+
+                    if let content = post.content, !content.isEmpty, !isTextPost {
+                        Text(content)
+                            .font(.system(size: 10))
+                            .foregroundColor(.white.opacity(0.7))
+                            .lineLimit(1)
+                    }
                 }
             }
-            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-            .shadow(color: .black.opacity(0.11), radius: 5, x: 0, y: 4)
-
-            // Info section below image
-            VStack(alignment: .leading, spacing: 6) {
-                // User name
-                if let user = post.user {
-                    Text(user.name ?? "")
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundColor(ForMe.textPrimary)
-                        .lineLimit(1)
-                }
-
-                // Content/description
-                Text(post.content?.isEmpty == false ? post.content! : "This is a description.")
-                    .font(.system(size: 13))
-                    .foregroundColor(ForMe.textSecondary)
-                    .lineLimit(1)
-
-                // Stats row
-                HStack(spacing: 0) {
-                    Text(formatDate(post.createdAt))
-                        .foregroundColor(ForMe.textTertiary)
-
-                    dividerDot
-
-                    Text("\(post.likeCount) \(post.likeCount == 1 ? "like" : "likes")")
-                        .foregroundColor(ForMe.textTertiary)
-
-                    dividerDot
-
-                    Text("\(post.commentCount) \(post.commentCount == 1 ? "comment" : "comments")")
-                        .foregroundColor(ForMe.textTertiary)
-                }
-                .font(.system(size: 11))
-                .padding(.top, 6)
-            }
-            .padding(.top, 14)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
+            .padding(ForMe.space4)
         }
-        .frame(width: cardWidth)
+        .frame(width: width, height: width * 6 / 5)
+        .clipShape(RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous))
     }
 
     // MARK: - Media Content
 
     @ViewBuilder
     private var mediaContent: some View {
-        let isTextPost = post.imageSrc == nil && post.mediaUrl == nil
-        let isVideo = post.mediaType == "video"
-
         if isTextPost {
-            // Text post - dark gradient with quote
+            // Text post — dark background with quote
             ZStack {
                 LinearGradient(
                     colors: [Color(hex: "1a1a1a"), Color(hex: "262626"), Color(hex: "1a1a1a")],
@@ -125,52 +121,32 @@ struct PostCard: View {
                 )
 
                 Text("\u{201C}")
-                    .font(.system(size: 40, design: .serif))
-                    .foregroundColor(.white.opacity(0.2))
+                    .font(.system(size: 36, design: .serif))
+                    .foregroundColor(.white.opacity(0.15))
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                    .padding(.leading, 16)
-                    .padding(.top, 12)
+                    .padding(.leading, 14)
+                    .padding(.top, 10)
 
                 Text(post.content ?? "")
-                    .font(.system(size: 14, weight: .medium))
+                    .font(.system(size: 13, weight: .medium))
                     .foregroundColor(.white.opacity(0.9))
                     .multilineTextAlignment(.center)
-                    .lineLimit(8)
-                    .padding(24)
+                    .lineLimit(7)
+                    .padding(20)
             }
-        } else if isVideo, let thumbnailUrl = post.imageSrc ?? post.mediaUrl {
-            // Video post - show thumbnail
-            AsyncImage(url: URL(string: thumbnailUrl)) { image in
-                image.resizable().aspectRatio(contentMode: .fill)
-            } placeholder: {
-                mediaSkeleton
-            }
-        } else if let imageUrl = post.mediaUrl ?? post.imageSrc {
-            // Image post
-            AsyncImage(url: URL(string: imageUrl)) { image in
-                image.resizable().aspectRatio(contentMode: .fill)
-            } placeholder: {
-                mediaSkeleton
+        } else if let imageUrl = post.imageSrc ?? post.mediaUrl ?? post.thumbnailUrl {
+            AsyncImage(url: URL(string: imageUrl)) { phase in
+                switch phase {
+                case .success(let image):
+                    image.resizable().aspectRatio(contentMode: .fill)
+                default:
+                    Rectangle().fill(ForMe.stone100)
+                        .overlay(ProgressView().tint(ForMe.textTertiary))
+                }
             }
         } else {
-            mediaSkeleton
+            Rectangle().fill(ForMe.stone100)
         }
-    }
-
-    private var mediaSkeleton: some View {
-        Rectangle()
-            .fill(Color(hex: "F3F4F6"))
-            .overlay(
-                ProgressView()
-                    .tint(ForMe.textTertiary)
-            )
-    }
-
-    private var dividerDot: some View {
-        RoundedRectangle(cornerRadius: 0.5)
-            .fill(ForMe.border)
-            .frame(width: 1, height: 10)
-            .padding(.horizontal, 5)
     }
 
     // MARK: - Date Formatting
@@ -180,17 +156,67 @@ struct PostCard: View {
         let iso = ISO8601DateFormatter()
         iso.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         guard let date = iso.date(from: dateStr) else { return "" }
-        let now = Date()
-        let diff = Calendar.current.dateComponents([.day], from: date, to: now)
-        let days = diff.day ?? 0
+        let days = Calendar.current.dateComponents([.day], from: date, to: Date()).day ?? 0
 
         if days == 0 { return "Today" }
-        if days == 1 { return "1d ago" }
-        if days < 7 { return "\(days)d ago" }
-        if days < 30 { return "\(days / 7)w ago" }
+        if days == 1 { return "1d" }
+        if days < 7 { return "\(days)d" }
+        if days < 30 { return "\(days / 7)w" }
 
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM d"
-        return formatter.string(from: date)
+        let f = DateFormatter()
+        f.dateFormat = "MMM d"
+        return f.string(from: date)
     }
+}
+
+// MARK: - Previews
+
+#Preview("Post Cards") {
+    ScrollView(.horizontal, showsIndicators: false) {
+        HStack(spacing: 2) {
+            // Image post
+            PostCard(post: Post(
+                id: "1",
+                content: "Fresh cut for the weekend",
+                imageSrc: "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400",
+                likes: ["a", "b", "c"],
+                comments: [Comment(id: "c1", content: "Fire")],
+                user: CompactUser(id: "u1", name: "Marcus J.")
+            ))
+
+            // Text post
+            PostCard(post: Post(
+                id: "2",
+                content: "Every artist was first an amateur. Keep pushing, keep growing, keep creating.",
+                likes: ["a"],
+                user: CompactUser(id: "u2", name: "Sarah C.")
+            ))
+
+            // Video post
+            PostCard(post: Post(
+                id: "3",
+                content: "Tutorial dropping soon",
+                imageSrc: "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400",
+                mediaType: "video",
+                likes: ["a", "b"],
+                comments: [Comment(id: "c2", content: "Nice"), Comment(id: "c3", content: "Wow")],
+                user: CompactUser(id: "u3", name: "Angela W.")
+            ))
+        }
+        .padding()
+    }
+    .background(ForMe.background)
+}
+
+#Preview("Text Post") {
+    PostCard(
+        post: Post(
+            id: "4",
+            content: "The best investment you can make is in yourself. Your skills, your knowledge, your craft.",
+            user: CompactUser(id: "u4", name: "Tim D.")
+        ),
+        width: 200
+    )
+    .padding()
+    .background(ForMe.background)
 }

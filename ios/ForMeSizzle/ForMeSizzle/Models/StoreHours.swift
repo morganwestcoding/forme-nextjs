@@ -7,6 +7,14 @@ struct StoreHours: Codable, Identifiable {
     var closeTime: String?
     var isClosed: Bool
 
+    init(id: String, dayOfWeek: String, openTime: String? = nil, closeTime: String? = nil, isClosed: Bool = false) {
+        self.id = id
+        self.dayOfWeek = dayOfWeek
+        self.openTime = openTime
+        self.closeTime = closeTime
+        self.isClosed = isClosed
+    }
+
     enum CodingKeys: String, CodingKey {
         case id, dayOfWeek, openTime, closeTime, isClosed
     }
