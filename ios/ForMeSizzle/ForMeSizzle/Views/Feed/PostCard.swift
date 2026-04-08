@@ -35,7 +35,7 @@ struct PostCard: View {
                     // TODO: toggle like
                 } label: {
                     Image(systemName: "heart")
-                        .font(.system(size: 16, weight: .medium))
+                        .font(.system(size: 20, weight: .medium))
                         .foregroundColor(.white.opacity(0.85))
                         .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
                 }
@@ -43,7 +43,7 @@ struct PostCard: View {
                     // TODO: share
                 } label: {
                     Image(systemName: "arrow.up.right")
-                        .font(.system(size: 14, weight: .medium))
+                        .font(.system(size: 18, weight: .medium))
                         .foregroundColor(.white.opacity(0.7))
                         .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
                 }

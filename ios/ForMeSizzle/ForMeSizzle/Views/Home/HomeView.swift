@@ -319,7 +319,7 @@ private extension HomeView {
                         .frame(maxWidth: .infinity, alignment: .center)
                         .padding(.bottom, 4)
 
-                    VStack(spacing: 14) {
+                    VStack(spacing: 0) {
                         ForEach(Array(filteredListings.prefix(9).enumerated()), id: \.element.id) { index, listing in
                             NavigationLink(value: listing) {
                                 ListingFullWidthCard(listing: listing)
@@ -476,79 +476,81 @@ struct ListingFullWidthCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // Image — edge to edge, no radius
-            AsyncImage(url: URL(string: listing.imageSrc ?? "")) { phase in
-                switch phase {
-                case .success(let image):
-                    image.resizable().aspectRatio(contentMode: .fill)
-                default:
-                    Rectangle()
-                        .fill(ForMe.stone100)
-                        .overlay(
-                            Image(systemName: listing.categoryIcon)
-                                .font(.system(size: 28))
-                                .foregroundColor(ForMe.stone300)
-                        )
-                }
-            }
-            .frame(height: 200)
-            .frame(maxWidth: .infinity)
-            .clipShape(RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous))
-
-            // Info below
-            HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(listing.title)
-                        .font(.system(size: 18, weight: .bold))
-                        .foregroundColor(ForMe.textPrimary)
-                        .lineLimit(1)
-
-                    HStack(spacing: 0) {
-                        if let location = listing.location {
-                            Text(location)
-                                .font(.system(size: 12))
-                                .foregroundColor(ForMe.textTertiary)
-                        }
-
-                        Circle()
-                            .fill(ForMe.stone300)
-                            .frame(width: 3, height: 3)
-                            .padding(.horizontal, 6)
-
-                        Image(systemName: "star.fill")
-                            .font(.system(size: 9))
-                            .foregroundColor(Color(hex: "FBBF24"))
-                        Text(" \(String(format: "%.1f", listing.rating ?? 0))")
-                            .font(.system(size: 12, weight: .bold, design: .rounded))
-                            .foregroundColor(ForMe.textPrimary)
-
-                        Text(" (\(listing.ratingCount ?? 0))")
-                            .font(.system(size: 11))
-                            .foregroundColor(ForMe.textTertiary)
+            // Image with icons overlay
+            ZStack(alignment: .topTrailing) {
+                AsyncImage(url: URL(string: listing.imageSrc ?? "")) { phase in
+                    switch phase {
+                    case .success(let image):
+                        image.resizable().aspectRatio(contentMode: .fill)
+                    default:
+                        Rectangle()
+                            .fill(ForMe.stone100)
+                            .overlay(
+                                Image(systemName: listing.categoryIcon)
+                                    .font(.system(size: 28))
+                                    .foregroundColor(ForMe.stone300)
+                            )
                     }
                 }
+                .frame(height: 200)
+                .frame(maxWidth: .infinity)
+                .clipped()
 
-                Spacer()
-
-                VStack(spacing: 12) {
+                // Heart + Share on image
+                VStack(spacing: 10) {
                     Button {
                         // TODO: toggle favorite
                     } label: {
                         Image(systemName: "heart")
-                            .font(.system(size: 18, weight: .medium))
-                            .foregroundColor(ForMe.stone400)
+                            .font(.system(size: 20, weight: .medium))
+                            .foregroundColor(.white)
+                            .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
                     }
                     Button {
                         // TODO: share
                     } label: {
                         Image(systemName: "arrow.up.right")
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(ForMe.stone400)
+                            .font(.system(size: 18, weight: .medium))
+                            .foregroundColor(.white.opacity(0.85))
+                            .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
                     }
+                }
+                .padding(ForMe.space4)
+            }
+            .clipShape(RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous))
+
+            // Info below
+            VStack(alignment: .leading, spacing: 4) {
+                Text(listing.title)
+                    .font(.system(size: 18, weight: .bold))
+                    .foregroundColor(ForMe.textPrimary)
+                    .lineLimit(1)
+
+                HStack(spacing: 0) {
+                    if let location = listing.location {
+                        Text(location)
+                            .font(.system(size: 12))
+                            .foregroundColor(ForMe.textTertiary)
+                    }
+
+                    Circle()
+                        .fill(ForMe.stone300)
+                        .frame(width: 3, height: 3)
+                        .padding(.horizontal, 6)
+
+                    Image(systemName: "star.fill")
+                        .font(.system(size: 9))
+                        .foregroundColor(Color(hex: "FBBF24"))
+                    Text(" \(String(format: "%.1f", listing.rating ?? 0))")
+                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                        .foregroundColor(ForMe.textPrimary)
+
+                    Text(" (\(listing.ratingCount ?? 0))")
+                        .font(.system(size: 11))
+                        .foregroundColor(ForMe.textTertiary)
                 }
             }
             .padding(.top, 10)
-            .padding(.bottom, 6)
         }
     }
 }
