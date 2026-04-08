@@ -319,7 +319,7 @@ private extension HomeView {
                         .frame(maxWidth: .infinity, alignment: .center)
                         .padding(.bottom, 4)
 
-                    VStack(spacing: 20) {
+                    VStack(spacing: 14) {
                         ForEach(Array(filteredListings.prefix(9).enumerated()), id: \.element.id) { index, listing in
                             NavigationLink(value: listing) {
                                 ListingFullWidthCard(listing: listing)
@@ -328,6 +328,7 @@ private extension HomeView {
                             .staggeredFadeIn(index: index)
                         }
                     }
+                    .padding(.horizontal)
                 }
             }
         }
@@ -474,7 +475,7 @@ struct ListingFullWidthCard: View {
     let listing: Listing
 
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(alignment: .leading, spacing: 0) {
             // Image — edge to edge, no radius
             AsyncImage(url: URL(string: listing.imageSrc ?? "")) { phase in
                 switch phase {
@@ -492,41 +493,62 @@ struct ListingFullWidthCard: View {
             }
             .frame(height: 200)
             .frame(maxWidth: .infinity)
-            .clipped()
+            .clipShape(RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous))
 
             // Info below
-            VStack(alignment: .leading, spacing: 4) {
-                Text(listing.title)
-                    .font(.system(size: 18, weight: .bold))
-                    .foregroundColor(ForMe.textPrimary)
-                    .lineLimit(1)
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(listing.title)
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundColor(ForMe.textPrimary)
+                        .lineLimit(1)
 
-                HStack(spacing: 0) {
-                    if let location = listing.location {
-                        Text(location)
-                            .font(.system(size: 12))
+                    HStack(spacing: 0) {
+                        if let location = listing.location {
+                            Text(location)
+                                .font(.system(size: 12))
+                                .foregroundColor(ForMe.textTertiary)
+                        }
+
+                        Circle()
+                            .fill(ForMe.stone300)
+                            .frame(width: 3, height: 3)
+                            .padding(.horizontal, 6)
+
+                        Image(systemName: "star.fill")
+                            .font(.system(size: 9))
+                            .foregroundColor(Color(hex: "FBBF24"))
+                        Text(" \(String(format: "%.1f", listing.rating ?? 0))")
+                            .font(.system(size: 12, weight: .bold, design: .rounded))
+                            .foregroundColor(ForMe.textPrimary)
+
+                        Text(" (\(listing.ratingCount ?? 0))")
+                            .font(.system(size: 11))
                             .foregroundColor(ForMe.textTertiary)
                     }
+                }
 
-                    Circle()
-                        .fill(ForMe.stone300)
-                        .frame(width: 3, height: 3)
-                        .padding(.horizontal, 6)
+                Spacer()
 
-                    Image(systemName: "star.fill")
-                        .font(.system(size: 9))
-                        .foregroundColor(Color(hex: "FBBF24"))
-                    Text(" \(String(format: "%.1f", listing.rating ?? 0))")
-                        .font(.system(size: 12, weight: .bold, design: .rounded))
-                        .foregroundColor(ForMe.textPrimary)
-
-                    Text(" (\(listing.ratingCount ?? 0))")
-                        .font(.system(size: 11))
-                        .foregroundColor(ForMe.textTertiary)
+                VStack(spacing: 12) {
+                    Button {
+                        // TODO: toggle favorite
+                    } label: {
+                        Image(systemName: "heart")
+                            .font(.system(size: 18, weight: .medium))
+                            .foregroundColor(ForMe.stone400)
+                    }
+                    Button {
+                        // TODO: share
+                    } label: {
+                        Image(systemName: "arrow.up.right")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(ForMe.stone400)
+                    }
                 }
             }
             .padding(.top, 10)
-            .padding(.horizontal, ForMe.space4)
+            .padding(.bottom, 6)
         }
     }
 }
