@@ -1,10 +1,51 @@
 import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
+import { getUserFromRequest } from "@/app/utils/mobileAuth";
+
+export async function GET(request: Request) {
+  try {
+    const currentUser = await getUserFromRequest(request) || await getCurrentUser();
+
+    if (!currentUser) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    const reservations = await prisma.reservation.findMany({
+      where: { userId: currentUser.id },
+      include: {
+        listing: {
+          select: {
+            id: true,
+            title: true,
+            description: true,
+            imageSrc: true,
+            category: true,
+            location: true,
+            userId: true,
+          }
+        },
+        employee: {
+          select: {
+            id: true,
+            fullName: true,
+            jobTitle: true,
+          }
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return NextResponse.json(reservations);
+  } catch (error) {
+    console.error('[RESERVATIONS_GET]', error);
+    return new NextResponse("Internal error", { status: 500 });
+  }
+}
 
 export async function POST(request: Request) {
   try {
-    const currentUser = await getCurrentUser();
+    const currentUser = await getUserFromRequest(request) || await getCurrentUser();
 
     if (!currentUser) {
       return new NextResponse("Unauthorized", { status: 401 });

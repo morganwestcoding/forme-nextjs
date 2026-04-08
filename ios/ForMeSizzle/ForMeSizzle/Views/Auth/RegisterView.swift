@@ -153,10 +153,11 @@ struct RegisterView: View {
                 .cornerRadius(12)
                 .disabled(!isFormValid || authViewModel.isLoading)
 
-                Text("By creating an account, you agree to our Terms of Service and Privacy Policy")
+                Text("By creating an account, you agree to our [Terms of Service](https://forme.app/terms) and [Privacy Policy](https://forme.app/privacy).")
                     .font(.caption)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
+                    .tint(ForMe.accent)
             }
             .padding(.horizontal, 24)
             .padding(.bottom, 24)

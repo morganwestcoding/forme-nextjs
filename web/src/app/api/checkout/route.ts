@@ -12,9 +12,33 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 const PLATFORM_FEE_PERCENT = 10; // 10% platform fee
 
 export async function POST(request: Request) {
-  const session = await getServerSession(authOptions);
+  // Support both mobile Bearer token and web session auth
+  const { getUserFromRequest } = await import("@/app/utils/mobileAuth");
+  let currentUser = await getUserFromRequest(request);
 
-  if (!session?.user?.email) {
+  if (!currentUser) {
+    const session = await getServerSession(authOptions);
+    if (session?.user?.email) {
+      const dbUser = await prisma.user.findUnique({
+        where: { email: session.user.email as string },
+      });
+      if (dbUser) {
+        currentUser = {
+          ...dbUser,
+          createdAt: dbUser.createdAt.toISOString(),
+          updatedAt: dbUser.updatedAt.toISOString(),
+          emailVerified: dbUser.emailVerified?.toISOString() || null,
+          bio: dbUser.bio || '',
+          isSubscribed: dbUser.isSubscribed,
+          following: dbUser.following || [],
+          followers: dbUser.followers || [],
+          role: dbUser.role || 'user',
+        };
+      }
+    }
+  }
+
+  if (!currentUser) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
@@ -36,17 +60,6 @@ export async function POST(request: Request) {
     // Validate the required fields
     if (!totalPrice || !date || !time || !listingId || !serviceId || !employeeId) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
-    }
-
-    // Get the current user
-    const currentUser = await prisma.user.findUnique({
-      where: {
-        email: session.user.email as string,
-      },
-    });
-
-    if (!currentUser) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     // Get the employee and the listing owner's Stripe Connect account
@@ -99,8 +112,12 @@ export async function POST(request: Request) {
         },
       ],
       mode: 'payment',
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/bookings/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/listings/${listingId}`,
+      success_url: body.platform === 'ios'
+        ? `formesizzle://booking-success?session_id={CHECKOUT_SESSION_ID}`
+        : `${process.env.NEXT_PUBLIC_APP_URL}/bookings/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: body.platform === 'ios'
+        ? `formesizzle://booking-cancelled`
+        : `${process.env.NEXT_PUBLIC_APP_URL}/listings/${listingId}`,
       metadata: {
         userId: currentUser.id,
         listingId,
@@ -130,7 +147,7 @@ export async function POST(request: Request) {
 
     const checkoutSession = await stripe.checkout.sessions.create(sessionConfig);
 
-    return NextResponse.json({ sessionId: checkoutSession.id });
+    return NextResponse.json({ sessionId: checkoutSession.id, url: checkoutSession.url });
   } catch (error: any) {
     console.error("Stripe checkout error:", error);
     return NextResponse.json(

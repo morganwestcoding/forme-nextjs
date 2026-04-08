@@ -131,11 +131,12 @@ const SettingsClient = ({ currentUser, isEmployee }: SettingsClientProps) => {
     setPendingColor(color);
   };
 
-  const [activeTab, setActiveTab] = useState<'appearance' | 'payments'>('appearance');
+  const [activeTab, setActiveTab] = useState<'appearance' | 'payments' | 'legal'>('appearance');
 
   const tabs = [
     { key: 'appearance' as const, label: 'Appearance' },
     ...(isEmployee ? [{ key: 'payments' as const, label: 'Payments' }] : []),
+    { key: 'legal' as const, label: 'Legal' },
   ];
 
   return (
@@ -278,6 +279,33 @@ const SettingsClient = ({ currentUser, isEmployee }: SettingsClientProps) => {
           </div>
         )}
 
+        {/* ===== LEGAL ===== */}
+        {activeTab === 'legal' && (
+          <div className="space-y-6">
+            <div className="rounded-2xl border border-stone-200/60 bg-white p-5">
+              <h3 className="text-[14px] font-semibold text-stone-900 mb-4">Legal</h3>
+              <div className="space-y-3">
+                <a
+                  href="/terms"
+                  target="_blank"
+                  className="flex items-center justify-between py-2.5 px-1 border-b border-stone-100 text-[13px] text-stone-600 hover:text-stone-900 transition-colors"
+                >
+                  Terms of Service
+                  <ArrowRight01Icon size={14} className="text-stone-400" strokeWidth={1.5} />
+                </a>
+                <a
+                  href="/privacy"
+                  target="_blank"
+                  className="flex items-center justify-between py-2.5 px-1 text-[13px] text-stone-600 hover:text-stone-900 transition-colors"
+                >
+                  Privacy Policy
+                  <ArrowRight01Icon size={14} className="text-stone-400" strokeWidth={1.5} />
+                </a>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* ===== PAYMENTS ===== */}
         {activeTab === 'payments' && isEmployee && (
           <div className="space-y-6">
@@ -297,6 +325,8 @@ const SettingsClient = ({ currentUser, isEmployee }: SettingsClientProps) => {
                     <h3 className="text-[15px] font-semibold text-stone-900 mb-1">Set Up Payments</h3>
                     <p className="text-[13px] text-stone-400 mb-4 leading-relaxed">
                       Connect your bank account to receive payments. ForMe takes a 10% platform fee on each transaction.
+                      By connecting, you agree to the{' '}
+                      <a href="/terms" target="_blank" className="underline hover:text-stone-600">Terms of Service</a>.
                     </p>
                     <button
                       onClick={handleOnboard}

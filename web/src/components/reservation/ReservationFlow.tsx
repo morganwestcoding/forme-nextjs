@@ -398,6 +398,7 @@ export default function ReservationFlow({
         onNext={isLastStep ? onSubmit : handleNext}
         onBack={handleBack}
         submitLabel="Reserve & Pay"
+        termsNotice
       />
     </div>
   );

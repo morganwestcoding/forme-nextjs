@@ -370,6 +370,7 @@ export default function ShopFlow({ mode = 'create', shopId, initialData }: ShopF
             onNext={isLastStep ? handleSubmit(onSubmit) : handleNext}
             onBack={handleBack}
             submitLabel={isEditMode ? 'Save changes' : 'Create shop'}
+            termsNotice={!isEditMode}
           />
         )}
       </div>

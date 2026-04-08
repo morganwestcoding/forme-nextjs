@@ -184,9 +184,13 @@ private extension ListingDetailView {
     var ratingView: some View {
         HStack(spacing: 3) {
             ForEach(0..<5, id: \.self) { i in
-                Image(systemName: i < Int((listing.rating ?? 0).rounded()) ? "star.fill" : "star")
-                    .font(.system(size: 13))
-                    .foregroundColor(i < Int((listing.rating ?? 0).rounded()) ? Color(hex: "FBBF24") : ForMe.stone200)
+                if i < Int((listing.rating ?? 0).rounded()) {
+                    GoldStar(size: 13)
+                } else {
+                    Image(systemName: "star")
+                        .font(.system(size: 13))
+                        .foregroundColor(ForMe.stone200)
+                }
             }
             Text("\(listing.ratingCount ?? 0)")
                 .font(.system(size: 12))

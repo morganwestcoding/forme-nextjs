@@ -209,6 +209,14 @@ class APIService {
         return try await perform(request)
     }
 
+    // MARK: - Checkout
+
+    func createCheckoutSession(_ checkout: CheckoutRequest) async throws -> CheckoutResponse {
+        let body = try encoder.encode(checkout)
+        let request = try buildRequest(endpoint: "/checkout", method: "POST", body: body)
+        return try await perform(request)
+    }
+
     func cancelReservation(id: String) async throws {
         let request = try buildRequest(endpoint: "/reservations/\(id)", method: "DELETE")
         let _: EmptyResponse = try await perform(request)
@@ -295,12 +303,33 @@ class APIService {
 
 struct EmptyResponse: Codable {}
 
+struct CheckoutRequest: Codable {
+    let totalPrice: Double
+    let date: String
+    let time: String
+    let listingId: String
+    let serviceId: String
+    let serviceName: String
+    let employeeId: String
+    let employeeName: String?
+    let note: String?
+    let businessName: String?
+    let platform: String // "ios"
+}
+
+struct CheckoutResponse: Codable {
+    let sessionId: String
+    let url: String?
+}
+
 struct CreateReservationRequest: Codable {
     let listingId: String
     let serviceId: String
-    let employeeId: String?
+    let serviceName: String
+    let employeeId: String
     let date: String
     let time: String
+    let totalPrice: Double
     let note: String?
 }
 

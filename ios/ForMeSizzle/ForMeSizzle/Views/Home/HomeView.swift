@@ -286,9 +286,10 @@ private extension HomeView {
             if !viewModel.posts.isEmpty {
                 VStack(spacing: 14) {
                     Text("Posts We Think You'll Love")
-                        .font(.system(size: 15, weight: .semibold))
-                        .foregroundColor(ForMe.stone500)
-                        .frame(maxWidth: .infinity, alignment: .center)
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundColor(ForMe.textPrimary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal)
                         .padding(.bottom, 4)
 
                     ScrollView(.horizontal, showsIndicators: false) {
@@ -314,12 +315,13 @@ private extension HomeView {
             if !filteredListings.isEmpty {
                 VStack(spacing: 14) {
                     Text("Local Businesses Worth Checking Out")
-                        .font(.system(size: 15, weight: .semibold))
-                        .foregroundColor(ForMe.stone500)
-                        .frame(maxWidth: .infinity, alignment: .center)
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundColor(ForMe.textPrimary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal)
                         .padding(.bottom, 4)
 
-                    VStack(spacing: 0) {
+                    VStack(spacing: 30) {
                         ForEach(Array(filteredListings.prefix(9).enumerated()), id: \.element.id) { index, listing in
                             NavigationLink(value: listing) {
                                 ListingFullWidthCard(listing: listing)
@@ -348,9 +350,10 @@ private extension HomeView {
             if !viewModel.employees.isEmpty {
                 VStack(spacing: 14) {
                     Text("Trending Professionals")
-                        .font(.system(size: 15, weight: .semibold))
-                        .foregroundColor(ForMe.stone500)
-                        .frame(maxWidth: .infinity, alignment: .center)
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundColor(ForMe.textPrimary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal)
                         .padding(.bottom, 4)
 
                     LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 20) {
@@ -435,9 +438,7 @@ struct ListingRow: View {
 
                 // Rating
                 HStack(spacing: 4) {
-                    Image(systemName: "star.fill")
-                        .font(.system(size: 10))
-                        .foregroundColor(Color(hex: "FBBF24"))
+                    GoldStar(size: 10)
                     Text(String(format: "%.1f", listing.rating ?? 0))
                         .font(.system(size: 13, weight: .bold, design: .rounded))
                         .foregroundColor(ForMe.textPrimary)
@@ -538,9 +539,7 @@ struct ListingFullWidthCard: View {
                         .frame(width: 3, height: 3)
                         .padding(.horizontal, 6)
 
-                    Image(systemName: "star.fill")
-                        .font(.system(size: 9))
-                        .foregroundColor(Color(hex: "FBBF24"))
+                    GoldStar(size: 9)
                     Text(" \(String(format: "%.1f", listing.rating ?? 0))")
                         .font(.system(size: 12, weight: .bold, design: .rounded))
                         .foregroundColor(ForMe.textPrimary)
@@ -550,7 +549,7 @@ struct ListingFullWidthCard: View {
                         .foregroundColor(ForMe.textTertiary)
                 }
             }
-            .padding(.top, 10)
+            .padding(.top, 16)
         }
     }
 }
@@ -594,9 +593,7 @@ struct ListingGridCard: View {
                 }
 
                 HStack(spacing: 3) {
-                    Image(systemName: "star.fill")
-                        .font(.system(size: 9))
-                        .foregroundColor(Color(hex: "FBBF24"))
+                    GoldStar(size: 9)
                     Text(String(format: "%.1f", listing.rating ?? 0))
                         .font(.system(size: 12, weight: .bold, design: .rounded))
                         .foregroundColor(ForMe.textPrimary)
@@ -628,7 +625,7 @@ struct ProviderCard: View {
 
     var body: some View {
         VStack(spacing: 10) {
-            DynamicAvatar(name: name, imageUrl: image, size: .large)
+            DynamicAvatar(name: name, imageUrl: image, size: .extraLarge)
 
             Text(name)
                 .font(.system(size: 14, weight: .semibold))

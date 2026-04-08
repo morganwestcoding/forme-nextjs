@@ -331,6 +331,53 @@ struct CategoryPill: View {
     }
 }
 
+// MARK: - Typeform Heading (matches web TypeformHeading.tsx)
+
+struct TypeformHeading: View {
+    let question: String
+    var subtitle: String? = nil
+    var stepNumber: Int? = nil
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: ForMe.space3) {
+            HStack(spacing: 0) {
+                if let num = stepNumber {
+                    Text("\(num) →  ")
+                        .foregroundColor(ForMe.stone400)
+                }
+                Text(question)
+            }
+            .font(.system(size: 26, weight: .semibold))
+            .foregroundColor(ForMe.textPrimary)
+            .lineSpacing(2)
+
+            if let subtitle = subtitle {
+                Text(subtitle)
+                    .font(.system(size: 16))
+                    .foregroundColor(ForMe.stone500)
+            }
+        }
+    }
+}
+
+// MARK: - Gold Star (matches web's listingStarGold SVG)
+
+struct GoldStar: View {
+    var size: CGFloat = 11
+
+    var body: some View {
+        Image(systemName: "star.fill")
+            .font(.system(size: size))
+            .foregroundStyle(
+                LinearGradient(
+                    colors: [Color(hex: "f5c842"), Color(hex: "d4a017")],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
+    }
+}
+
 // MARK: - Staggered Fade-In Animation
 
 struct StaggeredFadeIn: ViewModifier {

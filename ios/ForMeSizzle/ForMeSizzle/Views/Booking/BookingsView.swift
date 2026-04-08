@@ -12,27 +12,19 @@ struct BookingsView: View {
             VStack(spacing: 24) {
                 // Header
                 HStack(alignment: .center) {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Bookings")
-                            .font(.largeTitle.bold())
-                            .foregroundColor(ForMe.textPrimary)
-
-                        Text("Your upcoming appointments")
-                            .font(.subheadline)
-                            .foregroundColor(ForMe.textSecondary)
-                    }
+                    Text("Bookings")
+                        .font(.system(size: 24, weight: .bold))
+                        .foregroundColor(ForMe.textPrimary)
 
                     Spacer()
 
                     HStack(spacing: 12) {
                         HeaderIconButton(icon: "AlertBell") {
-                            // TODO: alerts
+                            appState.showingNotifications = true
                         }
-
                         HeaderIconButton(icon: "HeaderChat") {
                             showMessages = true
                         }
-
                         Button {
                             appState.showingProfile = true
                         } label: {
@@ -184,7 +176,7 @@ struct BookingCard: View {
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 10)
                         .overlay(
-                            RoundedRectangle(cornerRadius: 8)
+                            RoundedRectangle(cornerRadius: ForMe.radiusXL)
                                 .stroke(ForMe.statusCancelled.opacity(0.3), lineWidth: 1)
                         )
                         .cornerRadius(8)
@@ -250,7 +242,7 @@ private struct SlidingToggle: View {
                         .padding(.vertical, 13)
                         .background {
                             if selectedTab == index {
-                                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous)
                                     .fill(ForMe.textPrimary)
                                     .matchedGeometryEffect(id: "toggle", in: toggleNamespace)
                             }
@@ -261,10 +253,10 @@ private struct SlidingToggle: View {
         .padding(4)
         .background(Color(hex: "F7F7F6"))
         .overlay(
-            RoundedRectangle(cornerRadius: 16)
+            RoundedRectangle(cornerRadius: ForMe.radius2XL)
                 .stroke(ForMe.border, lineWidth: 1)
         )
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .clipShape(RoundedRectangle(cornerRadius: ForMe.radius2XL))
         .shadow(color: .black.opacity(0.04), radius: 1, x: 0, y: 1)
     }
 }

@@ -530,6 +530,7 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
             onNext={isLastStep ? handleSubmit(onSubmit) : handleNext}
             onBack={handleBack}
             submitLabel={isEditMode ? 'Save changes' : 'Create account'}
+            termsNotice={!isEditMode}
           />
         )}
       </motion.div>

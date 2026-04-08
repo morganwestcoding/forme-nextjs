@@ -13,6 +13,7 @@ interface TypeformNavigationProps {
   onBack: () => void;
   submitLabel?: string;
   onExit?: () => void;
+  termsNotice?: boolean;
 }
 
 export default function TypeformNavigation({
@@ -24,6 +25,7 @@ export default function TypeformNavigation({
   onBack,
   submitLabel = 'Create account',
   onExit,
+  termsNotice,
 }: TypeformNavigationProps) {
   const router = useRouter();
 
@@ -47,6 +49,14 @@ export default function TypeformNavigation({
       </button>
 
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-6 py-4">
+        {termsNotice && isLastStep && (
+          <p className="text-center text-[11px] text-stone-400 mb-2 max-w-xl mx-auto">
+            By continuing, you agree to the ForMe{' '}
+            <a href="/terms" target="_blank" className="underline hover:text-stone-600">Terms of Service</a>
+            {' '}and{' '}
+            <a href="/privacy" target="_blank" className="underline hover:text-stone-600">Privacy Policy</a>.
+          </p>
+        )}
         <div className="max-w-xl mx-auto flex items-center justify-between">
           {/* Back button */}
           <div>
