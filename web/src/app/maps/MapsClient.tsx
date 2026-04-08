@@ -371,7 +371,7 @@ const MapsClient: React.FC<MapsClientProps> = ({ listings, currentUser }) => {
             placeholder="Search..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-stone-50 border border-stone-200 rounded-lg px-3.5 py-2.5 text-[13px] text-stone-900 placeholder-stone-400 focus:outline-none focus:border-stone-400 transition-colors"
+            className="w-full bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2.5 text-[13px] text-stone-900 placeholder-stone-400 focus:outline-none focus:border-stone-400 transition-colors"
           />
           <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
             <circle cx="11" cy="11" r="8"/>
@@ -539,7 +539,7 @@ const MapsClient: React.FC<MapsClientProps> = ({ listings, currentUser }) => {
                 </button>
               </div>
               <div className="px-3.5 pb-3.5">
-                <button className="w-full py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-[13px] font-medium text-zinc-200 transition-colors">
+                <button className="w-full py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-[13px] font-medium text-zinc-200 transition-colors">
                   More Details
                 </button>
               </div>

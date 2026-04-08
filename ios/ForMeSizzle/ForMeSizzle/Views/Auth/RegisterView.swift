@@ -129,7 +129,6 @@ struct RegisterView: View {
                             jobTitle: nil,
                             isOwnerManager: nil,
                             selectedListing: nil,
-                            selectedServices: nil,
                             listingCategory: nil,
                             listingTitle: nil,
                             listingDescription: nil

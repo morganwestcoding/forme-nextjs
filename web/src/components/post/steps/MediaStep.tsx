@@ -136,13 +136,13 @@ const MediaStep: React.FC<MediaStepProps> = ({
             )}
             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100">
               <div className="flex gap-2">
-                <span className="px-2 py-1 bg-white rounded-md text-xs font-medium text-gray-900">
+                <span className="px-2 py-1 bg-white rounded-full text-xs font-medium text-gray-900">
                   Replace
                 </span>
                 <button
                   type="button"
                   onClick={(e) => { e.stopPropagation(); onRemove(); }}
-                  className="px-2 py-1 bg-white/90 rounded-md text-xs font-medium text-red-600 hover:bg-white"
+                  className="px-2 py-1 bg-white/90 rounded-full text-xs font-medium text-red-600 hover:bg-white"
                 >
                   Remove
                 </button>

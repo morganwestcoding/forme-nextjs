@@ -140,8 +140,8 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, isH
           />
           <div className="absolute bottom-12 left-0 right-0 flex justify-center pointer-events-none z-20">
             <div className="relative w-[52px] h-[26px]">
-              <span className={`absolute inset-0 flex items-center justify-center rounded-md text-[11px] font-medium bg-white/95 text-neutral-900 backdrop-blur-md transition-all duration-500 ease-out ${showBefore ? 'opacity-100 blur-0' : 'opacity-0 blur-sm'}`}>Before</span>
-              <span className={`absolute inset-0 flex items-center justify-center rounded-md text-[11px] font-medium bg-white/95 text-neutral-900 backdrop-blur-md transition-all duration-500 ease-out ${showBefore ? 'opacity-0 blur-sm' : 'opacity-100 blur-0'}`}>After</span>
+              <span className={`absolute inset-0 flex items-center justify-center rounded-full text-[11px] font-medium bg-white/95 text-neutral-900 backdrop-blur-md transition-all duration-500 ease-out ${showBefore ? 'opacity-100 blur-0' : 'opacity-0 blur-sm'}`}>Before</span>
+              <span className={`absolute inset-0 flex items-center justify-center rounded-full text-[11px] font-medium bg-white/95 text-neutral-900 backdrop-blur-md transition-all duration-500 ease-out ${showBefore ? 'opacity-0 blur-sm' : 'opacity-100 blur-0'}`}>After</span>
             </div>
           </div>
         </>
@@ -278,7 +278,7 @@ export const PostCardPreview: React.FC = () => {
             {/* Before/After indicator - only if applicable */}
             {post.hasBeforeAfter && (
               <div className="absolute bottom-3 left-0 right-0 flex justify-center">
-                <span className="w-[52px] h-[26px] flex items-center justify-center rounded-md text-[11px] font-medium backdrop-blur-md bg-white/95 text-neutral-900">
+                <span className="w-[52px] h-[26px] flex items-center justify-center rounded-full text-[11px] font-medium backdrop-blur-md bg-white/95 text-neutral-900">
                   After
                 </span>
               </div>
@@ -290,7 +290,7 @@ export const PostCardPreview: React.FC = () => {
       {/* Expanded state preview */}
       <div className="mt-12">
         <h3 className="text-lg font-semibold mb-4 text-neutral-900 dark:text-white">Expanded View (on tap)</h3>
-        <div className="max-w-[400px] bg-white dark:bg-neutral-900 rounded-3xl overflow-hidden shadow-2xl">
+        <div className="max-w-[400px] bg-white dark:bg-neutral-900 rounded-2xl overflow-hidden shadow-2xl">
           {/* Image */}
           <div className="relative aspect-square">
             <img

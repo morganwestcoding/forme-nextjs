@@ -68,7 +68,7 @@ struct DynamicAvatar: View {
     private var initialsView: some View {
         ZStack {
             Circle()
-                .fill(colorFromName)
+                .fill(gradientFromName)
 
             Text(initials)
                 .font(.system(size: size.fontSize, weight: .semibold, design: .rounded))
@@ -86,27 +86,37 @@ struct DynamicAvatar: View {
         return "?"
     }
 
-    // Deterministic color from name hash (matching web implementation)
+    // Deterministic gradient from name hash (matches web placeholderDataUri)
     private var colorFromName: Color {
-        let avatarColors: [Color] = [
-            Color(hex: "60A5FA"), // blue
-            Color(hex: "34D399"), // emerald
-            Color(hex: "F472B6"), // pink
-            Color(hex: "A78BFA"), // violet
-            Color(hex: "FB923C"), // orange
-            Color(hex: "FBBF24"), // amber
-            Color(hex: "2DD4BF"), // teal
-            Color(hex: "F87171"), // red
-            Color(hex: "818CF8"), // indigo
-            Color(hex: "38BDF8"), // sky
+        let pair = Self.colorPair(for: name)
+        return pair.1 // use the darker color for solid fill
+    }
+
+    private var gradientFromName: LinearGradient {
+        let pair = Self.colorPair(for: name)
+        return LinearGradient(colors: [pair.0, pair.1], startPoint: .topLeading, endPoint: .bottomTrailing)
+    }
+
+    static func colorPair(for name: String) -> (Color, Color) {
+        let pairs: [(Color, Color)] = [
+            (Color(hex: "f0abfc"), Color(hex: "a855f7")), // pink → purple
+            (Color(hex: "93c5fd"), Color(hex: "3b82f6")), // light blue → blue
+            (Color(hex: "6ee7b7"), Color(hex: "10b981")), // mint → emerald
+            (Color(hex: "fcd34d"), Color(hex: "f59e0b")), // yellow → amber
+            (Color(hex: "fca5a5"), Color(hex: "ef4444")), // rose → red
+            (Color(hex: "a5b4fc"), Color(hex: "6366f1")), // lavender → indigo
+            (Color(hex: "67e8f9"), Color(hex: "06b6d4")), // cyan → cyan
+            (Color(hex: "fdba74"), Color(hex: "f97316")), // peach → orange
+            (Color(hex: "86efac"), Color(hex: "22c55e")), // green light → green
+            (Color(hex: "c4b5fd"), Color(hex: "8b5cf6")), // violet light → violet
         ]
 
-        var hash: UInt = 5381
+        var hash = 0
         for char in name.utf8 {
-            hash = ((hash << 5) &+ hash) &+ UInt(char)
+            hash = Int(char) &+ ((hash << 5) &- hash)
         }
-        let index = Int(hash % UInt(avatarColors.count))
-        return avatarColors[index]
+        let index = abs(hash) % pairs.count
+        return pairs[index]
     }
 }
 

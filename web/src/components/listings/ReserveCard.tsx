@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { format } from 'date-fns';
 import { SafeReservation, SafeUser } from '@/app/types';
+import { placeholderDataUri } from '@/lib/placeholders';
 
 interface ReserveCardListing {
   id: string;
@@ -74,7 +75,7 @@ const ReserveCard: React.FC<ReserveCardProps> = ({
   const [localStatus, setLocalStatus] = useState<UiStatus>(uiStatus);
 
   const employeeName = listing.employees?.find(emp => emp.id === reservation.employeeId)?.fullName;
-  const cardImage = listing.imageSrc || listing.galleryImages?.[0] || '/placeholder.jpg';
+  const cardImage = listing.imageSrc || listing.galleryImages?.[0] || placeholderDataUri(listing.title || 'Listing');
 
   const formatTime = (time: string) => {
     const [hours, minutes] = time.split(':');
@@ -118,7 +119,7 @@ const ReserveCard: React.FC<ReserveCardProps> = ({
     >
       <div className="flex flex-row gap-4 items-center w-full relative">
         {/* Image card */}
-        <div className="relative overflow-hidden rounded-lg bg-neutral-900 flex-shrink-0 w-[120px] h-[120px] transition-[transform,filter] duration-500 ease-out group-hover:scale-[1.02]">
+        <div className="relative overflow-hidden rounded-xl bg-neutral-900 flex-shrink-0 w-[120px] h-[120px] transition-[transform,filter] duration-500 ease-out group-hover:scale-[1.02]">
           <Image
             src={cardImage}
             alt={listing.title}
@@ -130,7 +131,7 @@ const ReserveCard: React.FC<ReserveCardProps> = ({
           {/* Status indicator */}
           <div className="absolute bottom-2 left-2 z-20">
             <span
-              className={`inline-flex items-center justify-center text-[10px] font-semibold px-2.5 h-[22px] rounded-md backdrop-blur-md border ${status.bg}`}
+              className={`inline-flex items-center justify-center text-[10px] font-semibold px-2.5 h-[22px] rounded-full backdrop-blur-md border ${status.bg}`}
               style={{ lineHeight: '22px' }}
             >
               {status.label}

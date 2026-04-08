@@ -241,7 +241,15 @@ class APIService {
     func search(query: String) async throws -> SearchResponse {
         let queryItems = [URLQueryItem(name: "q", value: query)]
         let request = try buildRequest(endpoint: "/search", queryItems: queryItems)
-        return try await perform(request)
+        let (data, response) = try await URLSession.shared.data(for: request)
+        let http = response as? HTTPURLResponse
+        let statusCode = http?.statusCode ?? -1
+        let raw = String(data: data, encoding: .utf8) ?? "nil"
+        print("[API Search] status=\(statusCode) raw=\(raw.prefix(500))")
+        guard (200...299).contains(statusCode) else {
+            throw APIError.serverError("Search failed with status \(statusCode): \(raw.prefix(200))")
+        }
+        return try decoder.decode(SearchResponse.self, from: data)
     }
 
     // MARK: - Favorites
@@ -297,14 +305,39 @@ struct CreateReservationRequest: Codable {
 }
 
 struct SearchResponse: Codable {
-    let users: [User]?
-    let listings: [Listing]?
-    let services: [Service]?
+    let results: [SearchResultItem]?
 }
 
-struct ProfileUpdateRequest: Codable {
-    var name: String?
-    var bio: String?
-    var location: String?
-    var image: String?
+struct SearchResultItem: Codable, Identifiable, Hashable {
+    let id: String
+    let type: String
+    let title: String?
+    let subtitle: String?
+    let image: String?
+    let href: String?
+
+    var displayTitle: String { title ?? "" }
+
+    static func == (lhs: SearchResultItem, rhs: SearchResultItem) -> Bool {
+        lhs.id == rhs.id && lhs.type == rhs.type
+    }
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+        hasher.combine(type)
+    }
+
+    var typeLabel: String {
+        switch type {
+        case "user": return "Users"
+        case "listing": return "Businesses"
+        case "post": return "Posts"
+        case "shop": return "Shops"
+        case "product": return "Products"
+        case "employee": return "Professionals"
+        case "service": return "Services"
+        default: return type.capitalized
+        }
+    }
 }
+
+

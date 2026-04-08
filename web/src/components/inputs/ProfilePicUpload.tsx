@@ -55,7 +55,7 @@ const ProfilePicUpload: React.FC<ProfilePicUploadProps> = ({
             justify-center
             items-center
             text-neutral-600
-            rounded-lg
+            rounded-xl
             "
           >
             <TbPhotoPlus

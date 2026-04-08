@@ -223,7 +223,7 @@ const Input: React.FC<InputProps> = ({
               e.stopPropagation();
               setShowPassword(!showPassword);
             }}
-            className="absolute right-4 top-[20px] p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-all duration-200 z-10"
+            className="absolute right-4 top-[20px] p-1 rounded-xl text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-all duration-200 z-10"
             tabIndex={-1}
             aria-label={showPassword ? "Hide password" : "Show password"}
           >
@@ -240,7 +240,7 @@ const Input: React.FC<InputProps> = ({
               e.stopPropagation();
               setShowPasswordHelp(!showPasswordHelp);
             }}
-            className="absolute right-12 top-[20px] p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-all duration-200 z-10"
+            className="absolute right-12 top-[20px] p-1 rounded-xl text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-all duration-200 z-10"
             tabIndex={-1}
             aria-label="Password requirements"
             title="Show password requirements"

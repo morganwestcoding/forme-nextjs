@@ -59,7 +59,7 @@ export default async function getShopById(params: IParams) {
         compareAtPrice: p.compareAtPrice ?? null,
         sku: p.sku ?? null,
         barcode: p.barcode ?? null,
-        mainImage: p.mainImage ?? "/images/placeholder.jpg",
+        mainImage: p.mainImage ?? "",
         galleryImages: p.galleryImages ?? [],
         favoritedBy: p.favoritedBy ?? [],
         options: p.options ?? null,

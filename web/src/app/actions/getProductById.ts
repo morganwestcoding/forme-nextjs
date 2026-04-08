@@ -33,7 +33,7 @@ export default async function getProductById(productId: string) {
       compareAtPrice: product.compareAtPrice ?? null,
       sku: product.sku ?? null,
       barcode: product.barcode ?? null,
-      mainImage: product.mainImage ?? "/placeholder.jpg",
+      mainImage: product.mainImage ?? "",
       galleryImages: product.galleryImages ?? [],
       favoritedBy: product.favoritedBy ?? [],
       options: product.options ?? null,

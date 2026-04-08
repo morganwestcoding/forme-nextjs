@@ -111,10 +111,10 @@ export default function BusinessSelectStep({ selectedListing, onListingChange, o
                   <img
                     src={listing.imageSrc}
                     alt={listing.title}
-                    className="w-12 h-12 rounded-lg object-cover"
+                    className="w-12 h-12 rounded-xl object-cover"
                   />
                 ) : (
-                  <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center">
                     <Building2 className="w-5 h-5 text-gray-400" />
                   </div>
                 )}

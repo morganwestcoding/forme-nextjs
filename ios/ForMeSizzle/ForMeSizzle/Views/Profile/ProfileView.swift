@@ -8,7 +8,10 @@ struct ProfileView: View {
     private var user: User? { authViewModel.currentUser }
 
     private var memberSince: String? {
-        guard let date = user?.createdAt else { return nil }
+        guard let dateStr = user?.createdAt else { return nil }
+        let iso = ISO8601DateFormatter()
+        iso.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        guard let date = iso.date(from: dateStr) else { return nil }
         let formatter = DateFormatter()
         formatter.dateFormat = "MMM yyyy"
         return formatter.string(from: date)
@@ -156,12 +159,12 @@ struct ProfileView: View {
                 // MARK: - Stats
                 HStack(spacing: 0) {
                     ProfileStat(
-                        value: "\(user?.followingIds?.count ?? 0)",
+                        value: "\(user?.following?.count ?? 0)",
                         label: "Following"
                     )
 
                     ProfileStat(
-                        value: "\(user?.followerIds?.count ?? 0)",
+                        value: "\(user?.followers?.count ?? 0)",
                         label: "Followers"
                     )
 
@@ -318,38 +321,35 @@ struct ProfileMenuRow: View {
 
 #Preview("Full Profile") {
     let vm = AuthViewModel()
-    vm.currentUser = User(
-        id: "1",
-        name: "Marcus Johnson",
-        bio: "Barber & stylist based in Long Beach. 10+ years crafting fresh cuts and clean fades.",
-        location: "Long Beach, CA",
-        role: "Barber",
-        isVerified: true
-    )
+    var user = User(id: "1")
+    user.name = "Marcus Johnson"
+    user.bio = "Barber & stylist based in Long Beach. 10+ years crafting fresh cuts and clean fades."
+    user.location = "Long Beach, CA"
+    user.verificationStatus = .verified
+    user.role = "Barber"
+    vm.currentUser = user
     return ProfileView()
         .environmentObject(vm)
 }
 
 #Preview("No Photo") {
     let vm = AuthViewModel()
-    vm.currentUser = User(
-        id: "2",
-        name: "Sarah Chen",
-        bio: "Barber & stylist based in Long Beach. 10+ years crafting fresh cuts and clean fades.",
-        location: "Los Angeles, CA",
-        role: "Stylist"
-    )
+    var user2 = User(id: "2")
+    user2.name = "Sarah Chen"
+    user2.bio = "Barber & stylist based in Long Beach. 10+ years crafting fresh cuts and clean fades."
+    user2.location = "Los Angeles, CA"
+    user2.role = "Stylist"
+    vm.currentUser = user2
     return ProfileView()
         .environmentObject(vm)
 }
 
 #Preview("Minimal") {
     let vm = AuthViewModel()
-    vm.currentUser = User(
-        id: "3",
-        name: "New User",
-        bio: "Barber & stylist based in Long Beach. 10+ years crafting fresh cuts and clean fades."
-    )
+    var user3 = User(id: "3")
+    user3.name = "New User"
+    user3.bio = "Barber & stylist based in Long Beach. 10+ years crafting fresh cuts and clean fades."
+    vm.currentUser = user3
     return ProfileView()
         .environmentObject(vm)
 }

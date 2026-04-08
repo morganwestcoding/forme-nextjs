@@ -1,50 +1,40 @@
 import Foundation
 
+// MARK: - Conversation (matches web SafeConversation)
+
 struct Conversation: Codable, Identifiable, Hashable {
+    static func == (lhs: Conversation, rhs: Conversation) -> Bool { lhs.id == rhs.id }
+    func hash(into hasher: inout Hasher) { hasher.combine(id) }
+
     let id: String
-    var userIds: [String]
+    var userIds: [String]?
     var users: [User]?
     var messages: [Message]?
-    var lastMessageAt: Date?
+    var lastMessageAt: String?
+    var otherUser: CompactUser?
+    var lastMessage: LastMessage?
 
-    var lastMessage: Message? {
-        return messages?.last
-    }
-
-    var otherUser: User? {
-        return users?.first
-    }
-
-    func otherUser(currentUserId: String) -> User? {
-        return users?.first { $0.id != currentUserId }
-    }
-
-    static func == (lhs: Conversation, rhs: Conversation) -> Bool {
-        lhs.id == rhs.id
-    }
-
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
+    struct LastMessage: Codable, Hashable {
+        var content: String
+        var createdAt: String
+        var isRead: Bool
     }
 }
 
-struct Message: Codable, Identifiable {
+// MARK: - Message (matches web SafeMessage)
+
+struct Message: Codable, Identifiable, Hashable {
     let id: String
     var content: String
     var senderId: String
-    var conversationId: String
+    var conversationId: String?
     var isRead: Bool?
-    var createdAt: Date?
-
-    var sender: User?
-
-    enum CodingKeys: String, CodingKey {
-        case id, content, senderId, conversationId, isRead, createdAt, sender
-    }
+    var createdAt: String?
+    var sender: CompactUser?
 }
 
 struct SendMessageRequest: Codable {
-    let conversationId: String?
-    let recipientId: String?
+    var conversationId: String?
+    var recipientId: String?
     let content: String
 }

@@ -8,6 +8,7 @@ import { format } from 'date-fns';
 import axios from 'axios';
 import { signOut } from 'next-auth/react';
 import { PlusSignIcon, Notification03Icon, MessageMultiple01Icon } from 'hugeicons-react';
+import { placeholderDataUri } from '@/lib/placeholders';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -300,7 +301,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                 <button
                   key={item.label}
                   onClick={() => handleNavAway(item.href)}
-                  className="h-9 px-4 rounded-lg flex items-center justify-center text-[14px] text-stone-500 dark:text-zinc-400 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-zinc-800 transition-all duration-200"
+                  className="h-9 px-4 rounded-xl flex items-center justify-center text-[14px] text-stone-500 dark:text-zinc-400 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-zinc-800 transition-all duration-200"
                   style={{
                     opacity: (isSettled && !isLeaving) ? 1 : 0,
                     transition: 'opacity 0.4s ease-out',
@@ -469,7 +470,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                           className="relative w-12 h-12 rounded-full overflow-hidden hover:scale-105 transition-transform shrink-0"
                           style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.08)' }}
                         >
-                          <Image src={post.user.image || '/images/placeholder.jpg'} alt="" fill className="object-cover" />
+                          <Image src={post.user.image || placeholderDataUri(post.user.name || 'User')} alt="" fill className="object-cover" />
                         </button>
                         <div className="flex-1 min-w-0">
                           <button
@@ -536,7 +537,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                             <path d="M14 3H18C19.4142 3 20.1213 3 20.5607 3.43934C21 3.87868 21 4.58579 21 6V10M20 4L11 13" />
                           </svg>
                           {showShareSuccess && isCurrent && (
-                            <div className="absolute -top-9 left-1/2 -translate-x-1/2 bg-stone-800 dark:bg-zinc-700 text-white text-[11px] px-3 py-1.5 rounded-lg whitespace-nowrap shadow-lg">
+                            <div className="absolute -top-9 left-1/2 -translate-x-1/2 bg-stone-800 dark:bg-zinc-700 text-white text-[11px] px-3 py-1.5 rounded-xl whitespace-nowrap shadow-lg">
                               Copied
                             </div>
                           )}
@@ -566,7 +567,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                             ) : comments.map((c) => (
                               <div key={c.id} className="flex gap-2.5">
                                 <div className="w-7 h-7 rounded-full overflow-hidden shrink-0 relative ring-1 ring-stone-100 dark:ring-zinc-800">
-                                  <Image src={c.user.image || '/images/placeholder.jpg'} alt="" fill className="object-cover" />
+                                  <Image src={c.user.image || placeholderDataUri(c.user.name || 'User')} alt="" fill className="object-cover" />
                                 </div>
                                 <div className="min-w-0 flex-1">
                                   <div className="flex items-baseline gap-2">
@@ -600,7 +601,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                             <button
                               onClick={handleCommentSubmit}
                               disabled={isSubmitting || !comment.trim()}
-                              className="absolute right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg flex items-center justify-center text-stone-400 hover:text-stone-600 dark:hover:text-white disabled:opacity-20 transition-all"
+                              className="absolute right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-xl flex items-center justify-center text-stone-400 hover:text-stone-600 dark:hover:text-white disabled:opacity-20 transition-all"
                             >
                               {isSubmitting ? (
                                 <div className="w-3.5 h-3.5 border-[1.5px] border-stone-300 border-t-stone-600 dark:border-zinc-600 dark:border-t-white rounded-full animate-spin" />

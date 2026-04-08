@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { SafeProduct, SafeUser } from '@/app/types';
 import HeartButton from '../HeartButton';
+import { placeholderDataUri } from '@/lib/placeholders';
 
 interface ProductCardProps {
   data: SafeProduct;
@@ -18,7 +19,7 @@ const formatPrice = (n: number) =>
 const ProductCard: React.FC<ProductCardProps> = ({ data, currentUser, disabled = false }) => {
   const router = useRouter();
 
-  const productImage = data.mainImage || '/placeholder.jpg';
+  const productImage = data.mainImage || placeholderDataUri(data.name || 'Product');
   const priceLabel = formatPrice(data.price);
   const shopName = data.shop?.name || '';
   const categoryName = data.category?.name || '';

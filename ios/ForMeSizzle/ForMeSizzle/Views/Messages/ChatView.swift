@@ -92,8 +92,8 @@ struct MessageBubble: View {
                     .foregroundColor(isCurrentUser ? .white : ForMe.textPrimary)
                     .clipShape(ChatBubbleShape(isCurrentUser: isCurrentUser))
 
-                if let date = message.createdAt {
-                    Text(date, style: .time)
+                if let dateStr = message.createdAt {
+                    Text(dateStr)
                         .font(.caption2)
                         .foregroundColor(ForMe.textTertiary)
                 }
@@ -132,9 +132,6 @@ struct ChatBubbleShape: Shape {
 
 #Preview {
     NavigationStack {
-        ChatView(conversation: Conversation(
-            id: "1",
-            userIds: ["1", "2"]
-        ))
+        ChatView(conversation: Conversation(id: "1"))
     }
 }

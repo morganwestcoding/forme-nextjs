@@ -1,60 +1,131 @@
 import SwiftUI
 
-// MARK: - ForMe Color System (matching web Tailwind palette)
+// MARK: - ForMe Design System
+// 3 border radius values: .xl (12pt), .xxl (16pt), .full (capsule)
+// Stone palette matching web Tailwind config
 
 enum ForMe {
 
-    // MARK: Accent
+    // MARK: - Radius System (matches web: rounded-xl, rounded-2xl, rounded-full)
+    static let radiusXL: CGFloat = 12    // buttons, inputs, small containers
+    static let radius2XL: CGFloat = 16   // cards, modals, large containers
+    // rounded-full = Capsule() or .clipShape(Circle())
+
+    // MARK: - Spacing Scale (8pt base)
+    static let space1: CGFloat = 4
+    static let space2: CGFloat = 8
+    static let space3: CGFloat = 12
+    static let space4: CGFloat = 16
+    static let space5: CGFloat = 20
+    static let space6: CGFloat = 24
+    static let space8: CGFloat = 32
+    static let space10: CGFloat = 40
+
+    // MARK: - Accent
     static let accent = Color(hex: "60A5FA")         // sky-400
     static let accentHover = Color(hex: "3B82F6")    // blue-500
     static let accentLight = Color(hex: "60A5FA", opacity: 0.1)
     static let accentShadow = Color(hex: "60A5FA", opacity: 0.25)
 
-    // MARK: Backgrounds
+    // MARK: - Backgrounds
     static let background = Color(hex: "FAFAF9")     // stone-50
     static let cardTop = Color(hex: "FAFAF9")
     static let cardBottom = Color(hex: "F7F7F6")
     static let surface = Color.white
     static let inputBg = Color(hex: "F9FAFB")        // gray-50
 
-    // MARK: Borders
+    // MARK: - Stone Scale (matching web)
+    static let stone50 = Color(hex: "FAFAF9")
+    static let stone100 = Color(hex: "F5F5F4")
+    static let stone200 = Color(hex: "E7E5E4")
+    static let stone300 = Color(hex: "D6D3D1")
+    static let stone400 = Color(hex: "A8A29E")
+    static let stone500 = Color(hex: "78716C")
+    static let stone600 = Color(hex: "57534E")
+    static let stone700 = Color(hex: "44403C")
+    static let stone800 = Color(hex: "292524")
+    static let stone900 = Color(hex: "1C1917")
+
+    // MARK: - Borders
     static let border = Color(hex: "D6D3D1", opacity: 0.9) // stone-300/90
-    static let borderLight = Color(hex: "E5E7EB")    // gray-200
+    static let borderLight = Color(hex: "E7E5E4")    // stone-200
     static let borderHover = Color(hex: "A8A29E")    // stone-400
 
-    // MARK: Text
+    // MARK: - Text
     static let textPrimary = Color(hex: "171717")    // neutral-900
-    static let textSecondary = Color(hex: "6B7280")  // gray-500
-    static let textTertiary = Color(hex: "9CA3AF")   // gray-400
+    static let textSecondary = Color(hex: "78716C")  // stone-500
+    static let textTertiary = Color(hex: "A8A29E")   // stone-400
     static let textOnDark = Color.white
 
-    // MARK: Status Colors
+    // MARK: - Status Colors
     static let statusConfirmed = Color(hex: "34D399")  // emerald-400
     static let statusPending = Color(hex: "FBBF24")    // amber-400
     static let statusCancelled = Color(hex: "FB7185")  // rose-400
     static let statusCompleted = Color(hex: "60A5FA")  // sky-400
     static let statusClosed = Color(hex: "A3A3A3")     // neutral-400
 
-    // MARK: Chat
+    // MARK: - Chat
     static let chatSent = Color(hex: "3B82F6")       // blue-500
     static let chatReceived = Color(hex: "F3F4F6")    // gray-100
 
-    // MARK: Category Colors (from web Categories.tsx)
-    static func categoryColor(_ category: String) -> Color {
-        switch category.lowercased() {
-        case "massage": return Color(hex: "D4B185")
-        case "wellness": return Color(hex: "C4D4A9")
-        case "fitness": return Color(hex: "86A4BB")
-        case "nails": return Color(hex: "E5B9AD")
-        case "spa": return Color(hex: "D8C3CE")
-        case "barber": return Color(hex: "D6C3B6")
-        case "beauty": return Color(hex: "E6C9B3")
-        case "salon": return Color(hex: "B3C5D1")
-        case "hair": return Color(hex: "D4B185")
-        case "skin": return Color(hex: "E5B9AD")
-        case "makeup": return Color(hex: "D8C3CE")
-        default: return Color(hex: "D6D3D1")
+    // MARK: - Category System (matches web Categories.tsx exactly)
+    enum Category: String, CaseIterable, Codable {
+        case wellness = "Wellness"
+        case training = "Training"
+        case barber = "Barber"
+        case salon = "Salon"
+        case nails = "Nails"
+        case skincare = "Skincare"
+        case lashes = "Lashes"
+        case brows = "Brows"
+        case ink = "Ink"
+
+        var color: Color {
+            switch self {
+            case .wellness: return Color(hex: "C4D4A9")
+            case .training: return Color(hex: "86A4BB")
+            case .barber:   return Color(hex: "D6C3B6")
+            case .salon:    return Color(hex: "B3C5D1")
+            case .nails:    return Color(hex: "E8B4B8")
+            case .skincare: return Color(hex: "F5E6D3")
+            case .lashes:   return Color(hex: "D4B5A0")
+            case .brows:    return Color(hex: "C4A882")
+            case .ink:      return Color(hex: "A3A3A3")
+            }
         }
+
+        var gradientColors: [Color] {
+            switch self {
+            case .wellness: return [Color(hex: "dac6be"), Color(hex: "c1a093")]
+            case .training: return [Color(hex: "dac6be"), Color(hex: "c1a093")]
+            case .barber:   return [Color(hex: "cdb3a8"), Color(hex: "907d76")]
+            case .salon:    return [Color(hex: "dac6be"), Color(hex: "c1a093")]
+            case .nails:    return [Color(hex: "e8b4b8"), Color(hex: "c4868b")]
+            case .skincare: return [Color(hex: "f5e6d3"), Color(hex: "d4c4b0")]
+            case .lashes:   return [Color(hex: "d4b5a0"), Color(hex: "b8967e")]
+            case .brows:    return [Color(hex: "c4a882"), Color(hex: "a08660")]
+            case .ink:      return [Color(hex: "71717a"), Color(hex: "3f3f46")]
+            }
+        }
+
+        var description: String {
+            switch self {
+            case .wellness: return "Wellness services"
+            case .training: return "Training services"
+            case .barber:   return "Barber services"
+            case .salon:    return "Salon services"
+            case .nails:    return "Nail services"
+            case .skincare: return "Skincare services"
+            case .lashes:   return "Lash services"
+            case .brows:    return "Brow services"
+            case .ink:      return "Tattoo services"
+            }
+        }
+    }
+
+    /// Lookup category color by string label (for API data)
+    static func categoryColor(_ label: String) -> Color {
+        Category(rawValue: label)?.color ?? stone300
     }
 }
 
@@ -82,10 +153,10 @@ extension Color {
     }
 }
 
-// MARK: - Card Style Modifier
+// MARK: - Card Style (rounded-2xl)
 
 struct ForMeCardStyle: ViewModifier {
-    var padding: CGFloat = 16
+    var padding: CGFloat = ForMe.space4
 
     func body(content: Content) -> some View {
         content
@@ -97,17 +168,17 @@ struct ForMeCardStyle: ViewModifier {
                     endPoint: .bottom
                 )
             )
+            .clipShape(RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous))
             .overlay(
-                RoundedRectangle(cornerRadius: 12)
+                RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous)
                     .stroke(ForMe.border, lineWidth: 1)
             )
-            .cornerRadius(12)
             .shadow(color: .black.opacity(0.04), radius: 1, x: 0, y: 1)
     }
 }
 
 extension View {
-    func forMeCard(padding: CGFloat = 16) -> some View {
+    func forMeCard(padding: CGFloat = ForMe.space4) -> some View {
         modifier(ForMeCardStyle(padding: padding))
     }
 }
@@ -119,13 +190,13 @@ struct ForMeAccentButtonStyle: ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.body.weight(.semibold))
+            .font(.system(size: 15, weight: .semibold))
             .foregroundColor(.white)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 14)
-            .background(isEnabled ? ForMe.textPrimary : ForMe.textTertiary)
-            .cornerRadius(12)
-            .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
+            .background(isEnabled ? ForMe.stone900 : ForMe.textTertiary)
+            .clipShape(RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous))
+            .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
             .animation(.easeInOut(duration: 0.15), value: configuration.isPressed)
     }
 }
@@ -133,33 +204,33 @@ struct ForMeAccentButtonStyle: ButtonStyle {
 struct ForMeSecondaryButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.body.weight(.semibold))
+            .font(.system(size: 15, weight: .semibold))
             .foregroundColor(ForMe.textPrimary)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 14)
             .background(Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous))
             .overlay(
-                RoundedRectangle(cornerRadius: 12)
+                RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous)
                     .stroke(ForMe.borderLight, lineWidth: 1)
             )
-            .cornerRadius(12)
-            .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
+            .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
             .animation(.easeInOut(duration: 0.15), value: configuration.isPressed)
     }
 }
 
-// MARK: - Input Field Style
+// MARK: - Input Field Style (rounded-xl)
 
 struct ForMeInputStyle: ViewModifier {
     func body(content: Content) -> some View {
         content
             .padding()
             .background(ForMe.inputBg)
+            .clipShape(RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous))
             .overlay(
-                RoundedRectangle(cornerRadius: 12)
+                RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous)
                     .stroke(ForMe.borderLight, lineWidth: 1)
             )
-            .cornerRadius(12)
     }
 }
 
@@ -169,7 +240,7 @@ extension View {
     }
 }
 
-// MARK: - Search Bar (matching web PageSearch / ContextualSearch)
+// MARK: - Search Bar (rounded-xl, matches web)
 
 struct ForMeSearchBar: View {
     @Binding var text: String
@@ -181,7 +252,7 @@ struct ForMeSearchBar: View {
             Image(systemName: "magnifyingglass")
                 .font(.system(size: 15, weight: .regular))
                 .foregroundColor(ForMe.textTertiary)
-                .padding(.leading, 16)
+                .padding(.leading, ForMe.space4)
 
             TextField(placeholder, text: $text)
                 .font(.system(size: 15))
@@ -197,22 +268,22 @@ struct ForMeSearchBar: View {
                 } label: {
                     Image(systemName: "xmark.circle.fill")
                         .font(.system(size: 14))
-                        .foregroundColor(Color(hex: "A8A29E"))
+                        .foregroundColor(ForMe.stone400)
                 }
                 .padding(.trailing, 14)
             }
         }
-        .background(Color(hex: "F7F7F6"))
+        .background(ForMe.stone100)
+        .clipShape(RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: 16)
+            RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous)
                 .stroke(isFocused ? ForMe.borderHover : ForMe.border, lineWidth: 1)
         )
-        .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(color: .black.opacity(0.04), radius: 1, x: 0, y: 1)
     }
 }
 
-// MARK: - Header Icon Button
+// MARK: - Header Icon Button (rounded-full)
 
 struct HeaderIconButton: View {
     let icon: String
@@ -226,11 +297,37 @@ struct HeaderIconButton: View {
                 .frame(width: 18, height: 18)
                 .foregroundColor(ForMe.textSecondary)
                 .frame(width: 38, height: 38)
-                .background(Color(hex: "F7F7F6"))
+                .background(ForMe.stone100)
                 .clipShape(Circle())
                 .overlay(Circle().stroke(ForMe.border, lineWidth: 1))
                 .shadow(color: .black.opacity(0.04), radius: 1, x: 0, y: 1)
         }
+    }
+}
+
+// MARK: - Category Pill (rounded-xl, matches web CategoryNav)
+
+struct CategoryPill: View {
+    let category: ForMe.Category
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text(category.rawValue)
+                .font(.system(size: 13, weight: .medium))
+                .foregroundColor(isSelected ? .white : ForMe.textSecondary)
+                .padding(.horizontal, ForMe.space4)
+                .frame(height: 36)
+                .background(isSelected ? ForMe.stone900 : .clear)
+                .clipShape(RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous)
+                        .stroke(isSelected ? ForMe.stone900 : ForMe.stone200, lineWidth: 1)
+                )
+        }
+        .buttonStyle(.plain)
+        .scaleEffect(1.0) // prevents inherited scale
     }
 }
 
@@ -256,4 +353,60 @@ extension View {
     func staggeredFadeIn(index: Int) -> some View {
         modifier(StaggeredFadeIn(index: index))
     }
+}
+
+// MARK: - Previews
+
+#Preview("Buttons & Card") {
+    VStack(alignment: .leading, spacing: 16) {
+        Button("Primary Button") {}
+            .buttonStyle(ForMeAccentButtonStyle())
+        Button("Secondary Button") {}
+            .buttonStyle(ForMeSecondaryButtonStyle())
+        Text("Card content goes here")
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .forMeCard()
+        TextField("Email", text: .constant(""))
+            .forMeInput()
+        ForMeSearchBar(text: .constant(""))
+    }
+    .padding()
+    .background(ForMe.background)
+}
+
+#Preview("Categories") {
+    ScrollView(.horizontal, showsIndicators: false) {
+        HStack(spacing: 8) {
+            ForEach(ForMe.Category.allCases, id: \.self) { cat in
+                CategoryPill(category: cat, isSelected: cat == .salon, action: {})
+            }
+        }
+        .padding()
+    }
+    .background(ForMe.background)
+}
+
+#Preview("Border Radius") {
+    HStack(spacing: 12) {
+        VStack {
+            RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous)
+                .fill(ForMe.stone200)
+                .frame(width: 80, height: 50)
+            Text("XL (12)").font(.caption2)
+        }
+        VStack {
+            RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous)
+                .fill(ForMe.stone200)
+                .frame(width: 80, height: 50)
+            Text("2XL (16)").font(.caption2)
+        }
+        VStack {
+            Capsule()
+                .fill(ForMe.stone200)
+                .frame(width: 80, height: 50)
+            Text("Full").font(.caption2)
+        }
+    }
+    .padding()
+    .background(ForMe.background)
 }

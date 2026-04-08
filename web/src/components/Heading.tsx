@@ -22,7 +22,7 @@ const Heading: React.FC<HeadingProps> = ({
       <div className="text-xl font-semibold tracking-tight flex items-center justify-start text-gray-900 dark:text-white">
         {title}
         {label && category && (
-          <div className={`rounded-lg px-3 py-1.5 ml-3 text-xs font-medium shadow-sm ${category ? category.color : defaultBgColor} text-white inline-flex items-center`}>
+          <div className={`rounded-full px-3 py-1.5 ml-3 text-xs font-medium shadow-sm ${category ? category.color : defaultBgColor} text-white inline-flex items-center`}>
             {label}
           </div>
         )}

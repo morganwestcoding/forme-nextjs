@@ -98,8 +98,8 @@ struct ConversationRow: View {
 
                     Spacer()
 
-                    if let date = conversation.lastMessageAt {
-                        Text(date, style: .relative)
+                    if let dateStr = conversation.lastMessageAt {
+                        Text(dateStr)
                             .font(.caption)
                             .foregroundColor(ForMe.textTertiary)
                     }

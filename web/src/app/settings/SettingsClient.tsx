@@ -233,7 +233,7 @@ const SettingsClient = ({ currentUser, isEmployee }: SettingsClientProps) => {
                       if (value.length === 7) setPendingColor(value);
                     }
                   }}
-                  className="w-24 px-3 py-1.5 text-[12px] font-mono bg-stone-50 rounded-lg border border-stone-200 text-stone-900"
+                  className="w-24 px-3 py-1.5 text-[12px] font-mono bg-stone-50 rounded-xl border border-stone-200 text-stone-900"
                   placeholder="#60A5FA"
                 />
               </div>

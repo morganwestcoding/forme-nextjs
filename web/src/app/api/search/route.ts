@@ -39,7 +39,11 @@ function hrefFor(r: Result & { parentId?: string }): string {
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const q = (searchParams.get("q") || "").trim();
+  const rawQ = (searchParams.get("q") || "").trim();
+  // Normalize smart quotes from iOS keyboards
+  const q = rawQ
+    .replace(/[\u2018\u2019]/g, "'")
+    .replace(/[\u201C\u201D]/g, '"');
 
   if (!q || q.length < 2) {
     return NextResponse.json({ results: [] });
@@ -58,85 +62,41 @@ export async function GET(req: Request) {
       services,
     ] = await Promise.all([
       prisma.user.findMany({
-        where: {
-          OR: [
-            { name: { contains: q, mode: "insensitive" } },
-            { email: { contains: q, mode: "insensitive" } },
-            { location: { contains: q, mode: "insensitive" } },
-          ],
-        },
+        where: { name: { contains: q, mode: "insensitive" } },
         select: { id: true, name: true, email: true, image: true, imageSrc: true, location: true },
         take: LIMIT,
         orderBy: { createdAt: "desc" },
       }),
       prisma.listing.findMany({
-        where: {
-          OR: [
-            { title: { contains: q, mode: "insensitive" } },
-            { description: { contains: q, mode: "insensitive" } },
-            { category: { contains: q, mode: "insensitive" } },
-            { location: { contains: q, mode: "insensitive" } },
-            { address: { contains: q, mode: "insensitive" } },
-            { zipCode: { contains: q, mode: "insensitive" } },
-          ],
-        },
+        where: { title: { contains: q, mode: "insensitive" } },
         select: { id: true, title: true, category: true, location: true, imageSrc: true },
         take: LIMIT,
         orderBy: { createdAt: "desc" },
       }),
       prisma.post.findMany({
-        where: {
-          OR: [
-            { content: { contains: q, mode: "insensitive" } },
-            { category: { contains: q, mode: "insensitive" } },
-            { tag: { contains: q, mode: "insensitive" } },
-            { location: { contains: q, mode: "insensitive" } },
-          ],
-        },
+        where: { content: { contains: q, mode: "insensitive" } },
         select: { id: true, content: true, category: true, mediaUrl: true, mediaType: true },
         take: LIMIT,
         orderBy: { createdAt: "desc" },
       }),
       prisma.shop.findMany({
-        where: {
-          OR: [
-            { name: { contains: q, mode: "insensitive" } },
-            { description: { contains: q, mode: "insensitive" } },
-            { category: { contains: q, mode: "insensitive" } },
-            { location: { contains: q, mode: "insensitive" } },
-            { address: { contains: q, mode: "insensitive" } },
-            { zipCode: { contains: q, mode: "insensitive" } },
-          ],
-        },
+        where: { name: { contains: q, mode: "insensitive" } },
         select: { id: true, name: true, category: true, logo: true, location: true },
         take: LIMIT,
         orderBy: { createdAt: "desc" },
       }),
       prisma.product.findMany({
-        where: {
-          OR: [
-            { name: { contains: q, mode: "insensitive" } },
-            { description: { contains: q, mode: "insensitive" } },
-            // Simple tag match; for full-text use Atlas Search later
-            { tags: { hasSome: [q] } },
-          ],
-        },
+        where: { name: { contains: q, mode: "insensitive" } },
         select: { id: true, name: true, mainImage: true, price: true, shopId: true },
         take: LIMIT,
         orderBy: { createdAt: "desc" },
       }),
       prisma.employee.findMany({
-        where: {
-          OR: [
-            { fullName: { contains: q, mode: "insensitive" } },
-            { jobTitle: { contains: q, mode: "insensitive" } },
-          ],
-        },
+        where: { fullName: { contains: q, mode: "insensitive" } },
         select: {
           id: true,
           fullName: true,
           jobTitle: true,
-          // profileImage removed - use user.imageSrc instead
           listingId: true,
           listing: { select: { title: true } },
           user: {
@@ -145,7 +105,7 @@ export async function GET(req: Request) {
               image: true,
               backgroundImage: true,
             }
-          }, // Include user for profile image
+          },
         },
         take: LIMIT,
       }),
@@ -153,8 +113,6 @@ export async function GET(req: Request) {
         where: {
           OR: [
             { serviceName: { contains: q, mode: "insensitive" } },
-            { category: { contains: q, mode: "insensitive" } },
-            // also allow matching the parent listing title
             { listing: { is: { title: { contains: q, mode: "insensitive" } } } },
           ],
         },
@@ -235,8 +193,9 @@ export async function GET(req: Request) {
     ].map((r) => ({ ...r, href: hrefFor(r) }));
 
     return NextResponse.json({ results });
-  } catch (e) {
-    console.error("[SEARCH_API_ERROR]", e);
-    return NextResponse.json({ results: [] }, { status: 500 });
+  } catch (e: any) {
+    console.error("[SEARCH_API_ERROR]", e?.message || e);
+    // Return 200 with empty results so clients don't break
+    return NextResponse.json({ results: [], error: e?.message || "Search failed" });
   }
 }

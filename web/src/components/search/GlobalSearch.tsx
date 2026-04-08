@@ -253,7 +253,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
       {/* Keyboard shortcut hint */}
       {showShortcut && !q && (
         <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-          <kbd className={`hidden sm:inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-md border transition-all duration-200 ${
+          <kbd className={`hidden sm:inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-xl border transition-all duration-200 ${
             isHeroMode
               ? "bg-white/10 border-white/20 text-white/60"
               : "bg-transparent border-gray-300 text-gray-400 group-focus-within:border-[#60A5FA] group-focus-within:text-[#60A5FA]"
@@ -327,7 +327,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
                               }}
                             >
                               {/* Thumbnail */}
-                              <div className={`w-9 h-9 rounded-lg overflow-hidden shrink-0 transition-all duration-200 ${
+                              <div className={`w-9 h-9 rounded-xl overflow-hidden shrink-0 transition-all duration-200 ${
                                 active ? "ring-2 ring-[#60A5FA]/40" : "bg-gray-100"
                               }`}>
                                 {item.image ? (
@@ -356,7 +356,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
                                   </div>
                                 )}
                               </div>
-                              <div className={`text-[10px] uppercase tracking-wider font-medium px-2 py-0.5 rounded-md transition-all duration-200 ${
+                              <div className={`text-[10px] uppercase tracking-wider font-medium px-2 py-0.5 rounded-xl transition-all duration-200 ${
                                 active ? "text-[#60A5FA] bg-[#60A5FA]/10" : "text-gray-400 bg-gray-50"
                               }`}>
                                 {typeKey}

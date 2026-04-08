@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { SafeListing, SafeUser } from '@/app/types';
 import HeartButton from '../HeartButton';
 import useFavorite from '@/app/hooks/useFavorite';
+import { placeholderDataUri } from '@/lib/placeholders';
 
 interface ListingCardProps {
   data: SafeListing;
@@ -85,7 +86,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
 
   const { hasFavorited, toggleFavorite } = useFavorite({ listingId: data.id, currentUser });
   const [city, state] = data.location?.split(',').map((s) => s.trim()) || [];
-  const cardImage = data.imageSrc || data.galleryImages?.[0] || '/placeholder.jpg';
+  const cardImage = data.imageSrc || data.galleryImages?.[0] || placeholderDataUri(data.title || 'Listing');
 
   // Get price range from services
   const prices = data.services?.map(s => s.price).filter(p => p > 0) || [];
@@ -293,7 +294,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
       className="group cursor-pointer rounded-2xl p-3 -mx-3 flex flex-row gap-4 relative transition-colors duration-200 hover:bg-stone-50/80 dark:hover:bg-zinc-900/40"
     >
       {/* Image */}
-      <div className="relative overflow-hidden rounded-[14px] flex-shrink-0 w-[120px] h-[120px]">
+      <div className="relative overflow-hidden rounded-xl flex-shrink-0 w-[120px] h-[120px]">
         <Image
           src={cardImage}
           alt={data.title}

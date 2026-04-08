@@ -279,7 +279,7 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
               role="option"
               aria-selected={activeIndex === index}
               key={`${sugg.place_name}-${index}`}
-              className={`p-3 cursor-pointer text-sm rounded-lg transition-all duration-200
+              className={`p-3 cursor-pointer text-sm rounded-xl transition-all duration-200
                 ${activeIndex === index ? 'bg-[#60A5FA]/10 text-[#60A5FA] font-medium' : 'text-gray-700 hover:bg-gray-50'}
               `}
               onMouseEnter={() => setActiveIndex(index)}

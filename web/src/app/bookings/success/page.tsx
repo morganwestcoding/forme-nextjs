@@ -79,10 +79,10 @@ export default function SuccessPage() {
           <h1 className="text-2xl font-bold mb-2">Payment Verification Failed</h1>
           <p className="text-gray-600 mb-6">We couldn&apos;t verify your payment. Please try again or contact support.</p>
           <div className="flex gap-4">
-            <Link href="/" className="px-6 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors">
+            <Link href="/" className="px-6 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors">
               Go Home
             </Link>
-            <Link href="/bookings/trips" className="px-6 py-3 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors">
+            <Link href="/bookings/trips" className="px-6 py-3 bg-gray-200 text-gray-800 rounded-xl hover:bg-gray-300 transition-colors">
               My Reservations
             </Link>
           </div>
@@ -107,10 +107,10 @@ export default function SuccessPage() {
           </p>
 
           {reservation && (
-            <div className="bg-gray-50 rounded-lg p-6 text-left mb-8">
+            <div className="bg-gray-50 rounded-xl p-6 text-left mb-8">
               <div className="flex items-center gap-4 mb-4">
                 {reservation.listing?.imageSrc && (
-                  <div className="h-16 w-16 relative rounded-md overflow-hidden">
+                  <div className="h-16 w-16 relative rounded-xl overflow-hidden">
                     <Image 
                       src={reservation.listing.imageSrc} 
                       alt={reservation.listing.title || "Listing"} 
@@ -158,13 +158,13 @@ export default function SuccessPage() {
           <div className="flex gap-4 justify-center">
             <Link 
               href="/" 
-              className="px-6 py-3 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
+              className="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors"
             >
               Go Home
             </Link>
             <Link 
               href="/bookings/trips" 
-              className="px-6 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+              className="px-6 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors"
             >
               View My Reservations
             </Link>

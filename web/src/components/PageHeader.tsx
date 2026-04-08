@@ -74,7 +74,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
                   <button
                     type="button"
                     onClick={() => locationModal.onOpen()}
-                    className="flex items-center gap-2 px-6 py-1.5 rounded-lg text-stone-500 dark:text-zinc-400 hover:text-stone-700 dark:hover:text-zinc-200 hover:bg-stone-100 dark:hover:bg-zinc-800 transition-colors text-[13px] whitespace-nowrap"
+                    className="flex items-center gap-2 px-6 py-1.5 rounded-xl text-stone-500 dark:text-zinc-400 hover:text-stone-700 dark:hover:text-zinc-200 hover:bg-stone-100 dark:hover:bg-zinc-800 transition-colors text-[13px] whitespace-nowrap"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5" color="currentColor" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
                       <path d="M10.0808 2C5.47023 2.9359 2 7.01218 2 11.899C2 17.4776 6.52238 22 12.101 22C16.9878 22 21.0641 18.5298 22 13.9192" />

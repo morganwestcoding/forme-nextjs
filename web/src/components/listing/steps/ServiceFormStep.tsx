@@ -46,7 +46,7 @@ export default function ServiceFormStep({
         <button
           type="button"
           onClick={onBack}
-          className="w-full px-6 py-2.5 rounded-lg font-medium text-sm bg-gray-900 text-white hover:bg-gray-800 active:scale-[0.98] transition-all duration-200"
+          className="w-full px-6 py-2.5 rounded-xl font-medium text-sm bg-gray-900 text-white hover:bg-gray-800 active:scale-[0.98] transition-all duration-200"
         >
           Save service
         </button>

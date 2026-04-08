@@ -64,7 +64,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onMar
   return (
     <div className="relative mb-2">
       <div
-        className={`group relative flex items-center gap-3.5 px-5 py-4 rounded-lg
+        className={`group relative flex items-center gap-3.5 px-5 py-4 rounded-xl
                     transition-all duration-200 cursor-pointer
                     ${!notification.isRead
                       ? 'bg-white hover:bg-neutral-50/60'

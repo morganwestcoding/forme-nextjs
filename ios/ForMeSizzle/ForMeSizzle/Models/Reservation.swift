@@ -1,43 +1,35 @@
 import Foundation
 
+// MARK: - Reservation (matches web SafeReservation)
+
 struct Reservation: Codable, Identifiable {
     let id: String
-    var date: Date?
+    var date: String?
     var time: String?
     var note: String?
-
     var totalPrice: Double?
     var paymentIntentId: String?
-    var paymentStatus: PaymentStatus?
+    var paymentStatus: String?
     var status: ReservationStatus
-
-    var userId: String
-    var listingId: String
+    var userId: String?
+    var listingId: String?
     var employeeId: String?
     var serviceId: String?
     var serviceName: String?
-
-    var user: User?
+    var user: CompactUser?
     var listing: Listing?
     var employee: Employee?
     var service: Service?
-
-    var createdAt: Date?
-
-    enum CodingKeys: String, CodingKey {
-        case id, date, time, note
-        case totalPrice, paymentIntentId, paymentStatus, status
-        case userId, listingId, employeeId, serviceId, serviceName
-        case user, listing, employee, service, createdAt
-    }
+    var createdAt: String?
 }
 
-enum PaymentStatus: String, Codable {
-    case pending, succeeded, failed, refunded
-}
+// MARK: - Status Enums
 
 enum ReservationStatus: String, Codable {
-    case pending, confirmed, cancelled, completed
+    case pending
+    case confirmed
+    case cancelled
+    case completed
 
     var displayName: String {
         switch self {
@@ -50,20 +42,20 @@ enum ReservationStatus: String, Codable {
 
     var color: String {
         switch self {
-        case .pending: return "orange"
-        case .confirmed: return "green"
-        case .cancelled: return "red"
-        case .completed: return "blue"
+        case .pending: return "FBBF24"     // amber
+        case .confirmed: return "34D399"   // emerald
+        case .cancelled: return "FB7185"   // rose
+        case .completed: return "60A5FA"   // sky
         }
     }
 }
 
 struct ReservationRequest: Codable {
     let listingId: String
-    let employeeId: String?
+    var employeeId: String?
     let serviceId: String
     let date: String
     let time: String
-    let note: String?
+    var note: String?
     let totalPrice: Double
 }

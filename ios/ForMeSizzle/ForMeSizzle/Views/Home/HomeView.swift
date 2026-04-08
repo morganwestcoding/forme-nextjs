@@ -5,216 +5,37 @@ struct HomeView: View {
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var authViewModel: AuthViewModel
     @State private var showMessages = false
+    @State private var searchQuery = ""
+    @State private var searchResults: [SearchResultItem] = []
+    @State private var isSearching = false
+    @FocusState private var searchFieldFocused: Bool
+    @State private var searchTask: Task<Void, Never>?
+
+    private var showDropdown: Bool {
+        searchFieldFocused && !searchQuery.isEmpty
+    }
+
     var body: some View {
-        ScrollView {
-            VStack(spacing: 24) {
-                // Header
-                HStack(alignment: .center) {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Discover")
-                            .font(.largeTitle.bold())
-                            .foregroundColor(ForMe.textPrimary)
-
-                        Text("Find what you're looking for")
-                            .font(.subheadline)
-                            .foregroundColor(ForMe.textSecondary)
-                    }
-
-                    Spacer()
-
-                    HStack(spacing: 12) {
-                        HeaderIconButton(icon: "AlertBell") {
-                            // TODO: alerts
-                        }
-
-                        HeaderIconButton(icon: "HeaderChat") {
-                            showMessages = true
-                        }
-
-                        Button {
-                            appState.selectedTab = .profile
-                        } label: {
-                            DynamicAvatar(
-                                name: authViewModel.currentUser?.name ?? "User",
-                                imageUrl: authViewModel.currentUser?.image,
-                                size: .smallMedium
-                            )
-                        }
-                    }
+        ZStack(alignment: .top) {
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: 20) {
+                    headerSection
+                    searchBarSection
+                    categorySection
+                    postsSection
+                    listingsSection
+                    professionalsSection
                 }
-                .padding(.horizontal)
-                .staggeredFadeIn(index: 0)
-
-                // Search Bar
-                Button {
-                    appState.selectedTab = .search
-                } label: {
-                    HStack(spacing: 0) {
-                        Image(systemName: "magnifyingglass")
-                            .font(.system(size: 15, weight: .regular))
-                            .foregroundColor(ForMe.textTertiary)
-                            .padding(.leading, 16)
-
-                        Text("Looking for something?")
-                            .font(.system(size: 15))
-                            .foregroundColor(Color(UIColor.placeholderText))
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 15)
-
-                        Spacer()
-                    }
-                    .background(Color(hex: "F7F7F6"))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 16)
-                            .stroke(ForMe.border, lineWidth: 1)
-                    )
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
-                    .shadow(color: .black.opacity(0.04), radius: 1, x: 0, y: 1)
-                }
-                .padding(.horizontal)
-
-                // Categories
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        ForEach(ServiceCategory.allCases, id: \.self) { category in
-                            FilterChip(
-                                title: category.rawValue,
-                                isSelected: false
-                            ) {
-                                viewModel.selectedCategory = category
-                                appState.selectedTab = .search
-                            }
-                        }
-                    }
-                    .padding(.horizontal)
-                }
-
-                // Posts We Think You'll Love
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack {
-                        Text("Posts We Think You'll Love")
-                            .font(.headline)
-                            .foregroundColor(ForMe.textPrimary)
-
-                        Spacer()
-
-                        Button("See All") {
-                            appState.selectedTab = .search
-                        }
-                        .font(.subheadline)
-                        .foregroundColor(ForMe.textSecondary)
-                    }
-                    .padding(.horizontal)
-
-                    if viewModel.isLoading {
-                        ProgressView()
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 40)
-                    } else if viewModel.posts.isEmpty {
-                        VStack(spacing: 8) {
-                            Image(systemName: "square.stack")
-                                .font(.title)
-                                .foregroundColor(ForMe.textTertiary)
-                            Text("No posts yet")
-                                .foregroundColor(ForMe.textSecondary)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 40)
-                    } else {
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 12) {
-                                ForEach(Array(viewModel.posts.prefix(10).enumerated()), id: \.element.id) { index, post in
-                                    PostCard(post: post)
-                                        .staggeredFadeIn(index: index + 2)
-                                }
-                            }
-                            .padding(.horizontal)
-                        }
-                    }
-                }
-
-                // Top Providers
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack {
-                        Text("Top Providers")
-                            .font(.headline)
-                            .foregroundColor(ForMe.textPrimary)
-
-                        Spacer()
-
-                        Button("See All") {
-                            appState.selectedTab = .search
-                        }
-                        .font(.subheadline)
-                        .foregroundColor(ForMe.textSecondary)
-                    }
-                    .padding(.horizontal)
-
-                    if !viewModel.topProviders.isEmpty {
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 8) {
-                                ForEach(Array(viewModel.topProviders.enumerated()), id: \.element.id) { index, provider in
-                                    if let providerListing = viewModel.featuredListings.first(where: { $0.user?.id == provider.id || $0.userId == provider.id }) {
-                                        NavigationLink(value: providerListing) {
-                                            ProviderCard(user: provider)
-                                        }
-                                        .buttonStyle(.plain)
-                                    } else {
-                                        ProviderCard(user: provider)
-                                    }
-                                }
-                            }
-                            .padding(.horizontal)
-                        }
-                    }
-                }
-
-                // Browse Services
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack {
-                        Text("Browse Services")
-                            .font(.headline)
-                            .foregroundColor(ForMe.textPrimary)
-
-                        Spacer()
-
-                        Button("See All") {
-                            appState.selectedTab = .search
-                        }
-                        .font(.subheadline)
-                        .foregroundColor(ForMe.textSecondary)
-                    }
-                    .padding(.horizontal)
-
-                    LazyVStack(spacing: 0) {
-                        ForEach(Array(viewModel.recentListings.enumerated()), id: \.element.id) { index, listing in
-                            NavigationLink(value: listing) {
-                                ListingRow(listing: listing)
-                            }
-                            .buttonStyle(.plain)
-                            .staggeredFadeIn(index: index + 5)
-
-                            // Interleave a worker row after every 2 listings
-                            if (index + 1) % 2 == 0,
-                               index / 2 < viewModel.topProviders.count {
-                                let worker = viewModel.topProviders[index / 2]
-                                let workerListing = viewModel.featuredListings.first { $0.user?.id == worker.id }
-                                if let targetListing = workerListing {
-                                    NavigationLink(value: targetListing) {
-                                        WorkerRow(user: worker, listing: targetListing)
-                                    }
-                                    .buttonStyle(.plain)
-                                    .staggeredFadeIn(index: index + 6)
-                                }
-                            }
-                        }
-                    }
-                    .padding(.horizontal)
-                }
+                .padding(.vertical)
+                .padding(.bottom, 80)
             }
-            .padding(.vertical)
+            .background(ForMe.background)
+
+            // Search dropdown overlay
+            if showDropdown {
+                searchDropdown
+            }
         }
-        .background(ForMe.background)
         .navigationBarHidden(true)
         .navigationDestination(for: Listing.self) { listing in
             ListingDetailView(listing: listing)
@@ -230,398 +51,367 @@ struct HomeView: View {
                 MessagesListView()
             }
         }
-    }
-}
-
-// MARK: - Category Card
-
-struct CategoryCard: View {
-    let category: ServiceCategory
-    let action: () -> Void
-    @State private var isPressed = false
-
-    var body: some View {
-        Button(action: action) {
-            VStack(spacing: 6) {
-                Image(systemName: category.icon)
-                    .font(.system(size: 20, weight: .medium))
-                    .foregroundColor(isPressed ? ForMe.textPrimary : ForMe.textSecondary)
-                    .frame(width: 52, height: 52)
-                    .background(
-                        RoundedRectangle(cornerRadius: 14, style: .continuous)
-                            .fill(isPressed ? ForMe.textPrimary.opacity(0.08) : ForMe.surface)
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 14, style: .continuous)
-                            .stroke(isPressed ? ForMe.borderHover : Color.clear, lineWidth: 1)
-                    )
-                    .shadow(color: .black.opacity(0.04), radius: 4, x: 0, y: 2)
-
-                Text(category.rawValue)
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundColor(isPressed ? ForMe.textPrimary : ForMe.textSecondary)
+        .onChange(of: searchQuery) { _, newValue in
+            searchTask?.cancel()
+            let trimmed = newValue
+                .trimmingCharacters(in: .whitespaces)
+                .replacingOccurrences(of: "\u{2018}", with: "'") // left smart quote
+                .replacingOccurrences(of: "\u{2019}", with: "'") // right smart quote
+                .replacingOccurrences(of: "\u{201C}", with: "\"") // left double smart quote
+                .replacingOccurrences(of: "\u{201D}", with: "\"") // right double smart quote
+            guard trimmed.count >= 2 else {
+                searchResults = []
+                isSearching = false
+                return
+            }
+            isSearching = true
+            searchTask = Task {
+                // No debounce — fire immediately
+                guard !Task.isCancelled else { return }
+                do {
+                    let response = try await APIService.shared.search(query: trimmed)
+                    guard !Task.isCancelled else { return }
+                    let results = response.results ?? []
+                    print("[Search] query='\(trimmed)' → \(results.count) results")
+                    searchResults = results
+                } catch {
+                    print("[Search] query='\(trimmed)' → error: \(error)")
+                    if !Task.isCancelled { searchResults = [] }
+                }
+                isSearching = false
             }
         }
-        .buttonStyle(CategoryButtonStyle(isPressed: $isPressed))
     }
 }
 
-struct CategoryButtonStyle: ButtonStyle {
-    @Binding var isPressed: Bool
+// MARK: - Header
 
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
-            .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
-            .onChange(of: configuration.isPressed) { _, newValue in
-                isPressed = newValue
-            }
-    }
-}
+private extension HomeView {
+    var headerSection: some View {
+        HStack(alignment: .center) {
+            Image("Logo")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(height: 36)
+                .opacity(0.9)
 
-// MARK: - Featured Listing Card (Cinematic Movie Poster Style)
+            Spacer()
 
-struct FeaturedListingCard: View {
-    let listing: Listing
-
-    private let cardWidth: CGFloat = 240
-    private let cardHeight: CGFloat = 360
-
-    var body: some View {
-        ZStack {
-            // Background image with scale effect for cinematic feel
-            AsyncImage(url: URL(string: listing.imageSrc ?? "")) { phase in
-                switch phase {
-                case .success(let image):
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .scaleEffect(1.05) // Slight zoom for cinematic crop
-                case .failure(_):
-                    cinematicPlaceholder
-                case .empty:
-                    cinematicPlaceholder
-                @unknown default:
-                    cinematicPlaceholder
+            HStack(spacing: 12) {
+                HeaderIconButton(icon: "AlertBell") {
+                    appState.showingNotifications = true
+                }
+                HeaderIconButton(icon: "HeaderChat") {
+                    showMessages = true
+                }
+                Button {
+                    appState.showingProfile = true
+                } label: {
+                    DynamicAvatar(
+                        name: authViewModel.currentUser?.name ?? "User",
+                        imageUrl: authViewModel.currentUser?.image,
+                        size: .smallMedium
+                    )
                 }
             }
-            .frame(width: cardWidth, height: cardHeight)
-            .clipped()
+        }
+        .padding(.horizontal)
+    }
+}
 
-            // Subtle warm lift
-            Color(hex: "FDF6E3").opacity(0.03)
-                .blendMode(.plusLighter)
+// MARK: - Search Bar (inline, matches web GlobalSearch)
 
-            // Edge vignette - soft, natural falloff
-            RadialGradient(
-                gradient: Gradient(stops: [
-                    .init(color: .clear, location: 0.3),
-                    .init(color: .black.opacity(0.4), location: 0.85),
-                    .init(color: .black.opacity(0.6), location: 1.0)
-                ]),
-                center: .init(x: 0.5, y: 0.5),
-                startRadius: 0,
-                endRadius: cardWidth * 0.95
-            )
+private extension HomeView {
+    var searchBarSection: some View {
+        HStack(spacing: 0) {
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 15))
+                .foregroundColor(ForMe.textTertiary)
+                .padding(.leading, ForMe.space4)
 
-            // Bottom fade - smooth and deep
-            LinearGradient(
-                stops: [
-                    .init(color: .clear, location: 0.35),
-                    .init(color: .black.opacity(0.4), location: 0.55),
-                    .init(color: .black.opacity(0.85), location: 0.75),
-                    .init(color: .black.opacity(0.98), location: 1.0)
-                ],
-                startPoint: .top,
-                endPoint: .bottom
-            )
+            TextField("Search posts, users, listings, shops…", text: $searchQuery)
+                .font(.system(size: 15))
+                .foregroundColor(ForMe.textPrimary)
+                .tint(ForMe.accent)
+                .focused($searchFieldFocused)
+                .padding(.horizontal, 10)
+                .submitLabel(.search)
 
-            // Content overlay
+            if !searchQuery.isEmpty {
+                Button {
+                    searchQuery = ""
+                    searchResults = []
+                    searchFieldFocused = false
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 14))
+                        .foregroundColor(ForMe.stone400)
+                }
+                .padding(.trailing, 14)
+            }
+        }
+        .frame(height: 46)
+        .background(ForMe.stone100)
+        .clipShape(RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous)
+                .stroke(searchFieldFocused ? ForMe.borderHover : ForMe.border, lineWidth: 1)
+        )
+        .shadow(color: .black.opacity(0.04), radius: 1, x: 0, y: 1)
+        .padding(.horizontal)
+    }
+
+    // MARK: - Search Dropdown (matches web GlobalSearch dropdown)
+
+    var searchDropdown: some View {
+        VStack(spacing: 0) {
+            // Spacer for header + search bar height
+            Color.clear.frame(height: 130)
+
             VStack(spacing: 0) {
-                // Top section
-                HStack(alignment: .top) {
-                    // Price tag
-                    if let priceRange = listing.priceRange {
-                        Text(priceRange)
-                            .font(.system(size: 15, weight: .semibold))
-                            .foregroundColor(.white)
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 8)
+                if isSearching {
+                    HStack(spacing: 8) {
+                        ProgressView()
+                            .scaleEffect(0.8)
+                        Text("Searching…")
+                            .font(.system(size: 14))
+                            .foregroundColor(ForMe.textTertiary)
                     }
-
-                    Spacer()
-
-                    // Quick book button
-                    Button {
-                        // TODO: Quick book action
-                    } label: {
-                        Image(systemName: "bolt.fill")
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(.white)
-                            .frame(width: 38, height: 38)
-                    }
-                    .buttonStyle(.plain)
-
-                    // Favorite button
-                    Button {
-                        // TODO: Toggle favorite
-                    } label: {
-                        Image(systemName: "heart.fill")
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(.white)
-                            .frame(width: 38, height: 38)
-                    }
-                    .buttonStyle(.plain)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, ForMe.space4)
+                } else if searchQuery.count >= 2 && searchResults.isEmpty {
+                    Text("No results found for \"\(searchQuery)\"")
+                        .font(.system(size: 14))
+                        .foregroundColor(ForMe.textTertiary)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, ForMe.space4)
+                } else {
+                    searchResultsList
                 }
-                .padding(14)
+            }
+            .background(ForMe.surface)
+            .clipShape(RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous)
+                    .stroke(ForMe.borderLight, lineWidth: 1)
+            )
+            .shadow(color: .black.opacity(0.12), radius: 12, x: 0, y: 4)
+            .padding(.horizontal)
 
-                Spacer()
+            Spacer()
+        }
+    }
 
-                // Center content section
-                VStack(alignment: .center, spacing: 4) {
-                    // Category label
-                    Text(listing.category.rawValue)
-                        .font(.system(size: 13, weight: .medium))
-                        .foregroundColor(.white.opacity(0.6))
+    var searchResultsList: some View {
+        let grouped = Dictionary(grouping: searchResults, by: \.type)
+        let typeOrder = ["user", "listing", "shop", "product", "employee", "service", "post"]
 
-                    // Title
-                    Text(listing.title)
-                        .font(.system(size: 21, weight: .semibold))
-                        .foregroundColor(.white)
-                        .lineLimit(2)
-                        .multilineTextAlignment(.center)
+        return ScrollView(showsIndicators: false) {
+            VStack(alignment: .leading, spacing: 0) {
+                ForEach(typeOrder, id: \.self) { typeKey in
+                    if let items = grouped[typeKey], !items.isEmpty {
+                        // Section header
+                        Text(items[0].typeLabel)
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundColor(ForMe.textTertiary)
+                            .textCase(.uppercase)
+                            .tracking(0.8)
+                            .padding(.horizontal, ForMe.space4)
+                            .padding(.top, ForMe.space3)
+                            .padding(.bottom, ForMe.space1)
 
-                    // Location
-                    if let location = listing.location {
-                        Text(location)
-                            .font(.system(size: 13, weight: .medium))
-                            .foregroundColor(.white.opacity(0.6))
-                            .lineLimit(1)
-                    }
-                }
-                .shadow(color: .black.opacity(0.5), radius: 6, x: 0, y: 2)
-                .padding(.horizontal, 18)
-
-                Spacer()
-
-                // Bottom rating section
-                HStack(spacing: 0) {
-                    if let rating = listing.rating {
-                        HStack(spacing: 5) {
-                            Image(systemName: "star.fill")
-                                .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(Color(hex: "FBBF24"))
-
-                            Text(String(format: "%.1f", rating))
-                                .font(.system(size: 26, weight: .bold, design: .rounded))
-                                .foregroundColor(.white)
-                        }
-
-                        Spacer()
-
-                        // Review count
-                        if let count = listing.ratingCount, count > 0 {
-                            VStack(alignment: .trailing, spacing: 0) {
-                                Text(formatRatingCount(count))
-                                    .font(.system(size: 14, weight: .semibold))
-                                    .foregroundColor(.white.opacity(0.9))
-                                Text("Reviews")
-                                    .font(.system(size: 11, weight: .medium))
-                                    .foregroundColor(.white.opacity(0.5))
+                        ForEach(items) { item in
+                            SearchResultRow(item: item) {
+                                searchQuery = ""
+                                searchResults = []
+                                searchFieldFocused = false
                             }
                         }
-                    } else {
-                        HStack(spacing: 5) {
-                            Image(systemName: "star.fill")
-                                .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(.white.opacity(0.2))
-
-                            Text("0.0")
-                                .font(.system(size: 26, weight: .bold, design: .rounded))
-                                .foregroundColor(.white)
-                        }
-
-                        Spacer()
-
-                        VStack(alignment: .trailing, spacing: 0) {
-                            Text("0")
-                                .font(.system(size: 14, weight: .semibold))
-                                .foregroundColor(.white.opacity(0.9))
-                            Text("Reviews")
-                                .font(.system(size: 11, weight: .medium))
-                                .foregroundColor(.white.opacity(0.5))
-                        }
                     }
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 12)
-                .padding(.horizontal, 12)
-                .padding(.bottom, 16)
             }
+            .padding(.vertical, ForMe.space1)
         }
-        .frame(width: cardWidth, height: cardHeight)
-        .clipShape(RoundedRectangle(cornerRadius: 20))
-        .shadow(color: .black.opacity(0.15), radius: 12, x: 0, y: 6)
+        .frame(maxHeight: 380)
     }
+}
 
-    // Format rating count (1500 → 1.5k)
-    private func formatRatingCount(_ count: Int) -> String {
-        if count >= 1000 {
-            let k = Double(count) / 1000.0
-            return String(format: "%.1fk", k).replacingOccurrences(of: ".0k", with: "k")
+// MARK: - Categories (matches web "Shop By Category" with circles)
+
+private extension HomeView {
+    var categorySection: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 16) {
+                ForEach(ForMe.Category.allCases, id: \.self) { cat in
+                    let isSelected = viewModel.selectedCategory == cat.rawValue
+                    Button {
+                        if isSelected {
+                            viewModel.selectedCategory = nil
+                        } else {
+                            viewModel.selectedCategory = cat.rawValue
+                        }
+                    } label: {
+                        VStack(spacing: 8) {
+                            Image("Category\(cat.rawValue)")
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 72, height: 72)
+                                .clipShape(Circle())
+                                .overlay(
+                                    Circle()
+                                        .stroke(
+                                            isSelected ? ForMe.stone900 : ForMe.stone200,
+                                            lineWidth: isSelected ? 2.5 : 1.5
+                                        )
+                                )
+                                .shadow(color: isSelected ? ForMe.stone900.opacity(0.15) : .clear, radius: 6, x: 0, y: 3)
+
+                            Text(cat.rawValue)
+                                .font(.system(size: 12, weight: isSelected ? .semibold : .regular))
+                                .foregroundColor(isSelected ? ForMe.textPrimary : ForMe.textSecondary)
+                        }
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(.horizontal)
         }
-        return "\(count)"
     }
+}
 
-    // Cinematic placeholder view
-    private var cinematicPlaceholder: some View {
-        ZStack {
-            LinearGradient(
-                colors: [
-                    Color(hex: "1a1a2e"),
-                    Color(hex: "16213e"),
-                    Color(hex: "0f0f23")
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
+// MARK: - Posts Section
 
-            VStack(spacing: 12) {
-                Image(systemName: listing.category.icon)
-                    .font(.system(size: 44, weight: .light))
-                    .foregroundColor(.white.opacity(0.3))
+private extension HomeView {
+    var postsSection: some View {
+        Group {
+            if !viewModel.posts.isEmpty {
+                VStack(alignment: .leading, spacing: 12) {
+                    SectionHeader(title: "Posts We Think You'll Love")
+                        .padding(.horizontal)
 
-                Text(listing.category.rawValue)
-                    .font(.system(size: 12, weight: .medium))
-                    .tracking(2)
-                    .foregroundColor(.white.opacity(0.2))
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(Array(viewModel.posts.prefix(14).enumerated()), id: \.element.id) { index, post in
+                                PostCard(post: post)
+                                    .staggeredFadeIn(index: index)
+                            }
+                        }
+                        .padding(.horizontal)
+                    }
+                }
             }
         }
     }
 }
 
-// MARK: - Provider Card
+// MARK: - Listings Section
 
-struct ProviderCard: View {
-    let user: User
+private extension HomeView {
+    var listingsSection: some View {
+        Group {
+            if !filteredListings.isEmpty {
+                VStack(alignment: .leading, spacing: 12) {
+                    SectionHeader(title: "Local Businesses Worth Checking Out")
+                        .padding(.horizontal)
+
+                    LazyVStack(spacing: 0) {
+                        ForEach(Array(filteredListings.prefix(9).enumerated()), id: \.element.id) { index, listing in
+                            NavigationLink(value: listing) {
+                                ListingRow(listing: listing)
+                            }
+                            .buttonStyle(.plain)
+                            .staggeredFadeIn(index: index)
+                        }
+                    }
+                    .padding(.horizontal)
+                }
+            }
+        }
+    }
+
+    var filteredListings: [Listing] {
+        guard let cat = viewModel.selectedCategory else { return viewModel.listings }
+        return viewModel.listings.filter { $0.category.lowercased() == cat.lowercased() }
+    }
+}
+
+// MARK: - Professionals Section
+
+private extension HomeView {
+    var professionalsSection: some View {
+        Group {
+            if !viewModel.employees.isEmpty {
+                VStack(alignment: .leading, spacing: 12) {
+                    SectionHeader(title: "Trending Professionals")
+                        .padding(.horizontal)
+
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(Array(viewModel.employees.prefix(9).enumerated()), id: \.element.id) { index, provider in
+                                let providerListing = viewModel.listings.first { $0.user?.id == provider.id || $0.userId == provider.id }
+                                if let listing = providerListing {
+                                    NavigationLink(value: listing) {
+                                        ProviderCard(user: provider)
+                                    }
+                                    .buttonStyle(.plain)
+                                } else {
+                                    ProviderCard(user: provider)
+                                }
+                            }
+                        }
+                        .padding(.horizontal)
+                    }
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Section Header (matches web SectionHeader)
+
+struct SectionHeader: View {
+    let title: String
+    var onSeeAll: (() -> Void)? = nil
 
     var body: some View {
-        VStack(spacing: 0) {
-            // Avatar
-            ZStack(alignment: .bottomTrailing) {
-                AsyncImage(url: URL(string: user.image ?? "")) { image in
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                } placeholder: {
-                    Circle()
-                        .fill(
-                            LinearGradient(
-                                colors: [Color(hex: "F3F4F6"), Color(hex: "E5E7EB")],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .overlay(
-                            Text(user.name?.prefix(1).uppercased() ?? "?")
-                                .font(.system(size: 28, weight: .bold, design: .rounded))
-                                .foregroundColor(ForMe.textTertiary)
-                        )
-                }
-                .frame(width: 88, height: 88)
-                .clipShape(Circle())
-                .shadow(color: .black.opacity(0.04), radius: 2, x: 0, y: 1)
+        HStack {
+            Text(title)
+                .font(.system(size: 17, weight: .semibold))
+                .foregroundColor(ForMe.textPrimary)
 
-                if user.isVerified {
-                    Image(systemName: "checkmark.seal.fill")
-                        .font(.system(size: 16))
-                        .foregroundColor(ForMe.textPrimary)
-                        .background(
-                            Circle()
-                                .fill(ForMe.background)
-                                .frame(width: 20, height: 20)
-                        )
-                        .offset(x: 2, y: 2)
-                }
-            }
-            .padding(.top, 20)
+            Spacer()
 
-            // Info section
-            VStack(spacing: 8) {
-                Text(user.name ?? "Provider")
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(ForMe.textPrimary)
-                    .lineLimit(1)
-
-                Text(user.role ?? "Service Provider")
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(ForMe.textSecondary)
-                    .lineLimit(1)
-
-                Text(user.location ?? "Location not set")
-                    .font(.system(size: 11, weight: .medium))
+            if let action = onSeeAll {
+                Button("See All", action: action)
+                    .font(.system(size: 13, weight: .medium))
                     .foregroundColor(ForMe.textTertiary)
-                    .lineLimit(1)
-
-                // Stats row
-                HStack(spacing: 16) {
-                    HStack(spacing: 4) {
-                        Image(systemName: "star.fill")
-                            .font(.system(size: 10))
-                            .foregroundColor(Color(hex: "FBBF24"))
-                        Text("5.0")
-                            .font(.system(size: 13, weight: .bold, design: .rounded))
-                            .foregroundColor(ForMe.textPrimary)
-                    }
-
-                    RoundedRectangle(cornerRadius: 1)
-                        .fill(ForMe.border)
-                        .frame(width: 1, height: 14)
-
-                    Text("0 reviews")
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(ForMe.textTertiary)
-                }
             }
-            .padding(.top, 10)
-            .padding(.horizontal, 16)
-
-            Spacer(minLength: 16)
         }
-        .frame(width: 180)
-        .background(ForMe.background)
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
 }
 
-// MARK: - Listing Row
+// MARK: - Listing Row (matches web ListingCard horizontal variant)
 
 struct ListingRow: View {
     let listing: Listing
 
     var body: some View {
         HStack(spacing: 14) {
-            // Image with phase handling
+            // Image
             AsyncImage(url: URL(string: listing.imageSrc ?? "")) { phase in
                 switch phase {
                 case .success(let image):
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
+                    image.resizable().aspectRatio(contentMode: .fill)
                 case .failure:
                     listingPlaceholder
                 case .empty:
                     listingPlaceholder
-                        .overlay(
-                            ProgressView()
-                                .tint(ForMe.textTertiary)
-                        )
                 @unknown default:
                     listingPlaceholder
                 }
             }
             .frame(width: 96, height: 96)
-            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous))
 
             // Content
             VStack(alignment: .leading, spacing: 6) {
@@ -629,8 +419,6 @@ struct ListingRow: View {
                     .font(.system(size: 15, weight: .semibold))
                     .foregroundColor(ForMe.textPrimary)
                     .lineLimit(2)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .frame(maxWidth: 200, alignment: .leading)
 
                 if let location = listing.location {
                     Text(location)
@@ -639,180 +427,165 @@ struct ListingRow: View {
                         .lineLimit(1)
                 }
 
-                // Rating + Reviews
-                HStack(spacing: 16) {
-                    HStack(spacing: 4) {
-                        Image(systemName: "star.fill")
-                            .font(.system(size: 10))
-                            .foregroundColor(Color(hex: "FBBF24"))
-                        Text(String(format: "%.1f", listing.rating ?? 0))
-                            .font(.system(size: 13, weight: .bold, design: .rounded))
-                            .foregroundColor(ForMe.textPrimary)
-                    }
+                // Rating
+                HStack(spacing: 4) {
+                    Image(systemName: "star.fill")
+                        .font(.system(size: 10))
+                        .foregroundColor(Color(hex: "FBBF24"))
+                    Text(String(format: "%.1f", listing.rating ?? 0))
+                        .font(.system(size: 13, weight: .bold, design: .rounded))
+                        .foregroundColor(ForMe.textPrimary)
 
-                    RoundedRectangle(cornerRadius: 1)
-                        .fill(ForMe.border)
-                        .frame(width: 1, height: 14)
+                    dotSeparator
 
                     Text("\(listing.ratingCount ?? 0) reviews")
                         .font(.system(size: 12, weight: .medium))
                         .foregroundColor(ForMe.textTertiary)
                 }
-
             }
 
             Spacer()
-
-            Image(systemName: "ellipsis")
-                .font(.system(size: 14, weight: .medium))
-                .foregroundColor(ForMe.textTertiary)
         }
-        .padding(12)
+        .padding(ForMe.space3)
     }
 
     private var listingPlaceholder: some View {
-        Rectangle()
-            .fill(
-                LinearGradient(
-                    colors: [Color(hex: "F3F4F6"), Color(hex: "E9EAEC")],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
+        RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous)
+            .fill(LinearGradient(colors: [ForMe.stone100, ForMe.stone200], startPoint: .topLeading, endPoint: .bottomTrailing))
+    }
+
+    private var dotSeparator: some View {
+        Circle()
+            .fill(ForMe.stone300)
+            .frame(width: 3, height: 3)
     }
 }
 
-// MARK: - Worker Row (matches ListingRow but with circular avatar)
+// MARK: - Provider Card (matches web WorkerCard)
 
-struct WorkerRow: View {
-    let user: User
-    let listing: Listing?
+struct ProviderCard: View {
+    let name: String
+    let image: String?
+
+    init(user: User) {
+        self.name = user.name ?? "Provider"
+        self.image = user.image
+    }
+
+    init(user: CompactUser) {
+        self.name = user.name ?? "Provider"
+        self.image = user.image
+    }
 
     var body: some View {
-        HStack(spacing: 14) {
-            // Circular profile pic
-            AsyncImage(url: URL(string: user.image ?? "")) { image in
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-            } placeholder: {
-                Circle()
-                    .fill(
-                        LinearGradient(
-                            colors: [Color(hex: "F3F4F6"), Color(hex: "E9EAEC")],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .overlay(
-                        Text(user.name?.prefix(1).uppercased() ?? "?")
-                            .font(.system(size: 24, weight: .bold, design: .rounded))
-                            .foregroundColor(ForMe.textTertiary)
-                    )
-            }
-            .frame(width: 88, height: 88)
-            .clipShape(Circle())
-            .frame(width: 96, height: 96)
+        VStack(spacing: 10) {
+            DynamicAvatar(name: name, imageUrl: image, size: .large)
 
-            // Content — same layout as ListingRow
-            VStack(alignment: .leading, spacing: 6) {
-                Text(user.name ?? "Provider")
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundColor(ForMe.textPrimary)
-                    .lineLimit(2)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .frame(maxWidth: 200, alignment: .leading)
+            Text(name)
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundColor(ForMe.textPrimary)
+                .lineLimit(1)
 
-                if let role = user.role {
-                    Text(role)
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(ForMe.textSecondary)
-                        .lineLimit(1)
-                }
-
-                if let location = user.location ?? listing?.location {
-                    Text(location)
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(ForMe.textTertiary)
-                        .lineLimit(1)
-                }
-
-                // Rating row — mirrors ListingRow
-                if let listing = listing {
-                    HStack(spacing: 16) {
-                        HStack(spacing: 4) {
-                            Image(systemName: "star.fill")
-                                .font(.system(size: 10))
-                                .foregroundColor(Color(hex: "FBBF24"))
-                            Text(String(format: "%.1f", listing.rating ?? 0))
-                                .font(.system(size: 13, weight: .bold, design: .rounded))
-                                .foregroundColor(ForMe.textPrimary)
-                        }
-
-                        RoundedRectangle(cornerRadius: 1)
-                            .fill(ForMe.border)
-                            .frame(width: 1, height: 14)
-
-                        Text("\(listing.ratingCount ?? 0) reviews")
-                            .font(.system(size: 12, weight: .medium))
-                            .foregroundColor(ForMe.textTertiary)
-                    }
-                }
-            }
-
-            Spacer()
-
-            Image(systemName: "ellipsis")
-                .font(.system(size: 14, weight: .medium))
+            Text("Service Provider")
+                .font(.system(size: 11, weight: .medium))
                 .foregroundColor(ForMe.textTertiary)
         }
-        .padding(12)
+        .frame(width: 100)
     }
 }
+
+// MARK: - Search Result Row (matches web GlobalSearch dropdown items)
+
+struct SearchResultRow: View {
+    let item: SearchResultItem
+    let onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: 12) {
+                // Thumbnail
+                if let imageUrl = item.image, !imageUrl.isEmpty {
+                    AsyncImage(url: URL(string: imageUrl)) { img in
+                        img.resizable().aspectRatio(contentMode: .fill)
+                    } placeholder: {
+                        RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous)
+                            .fill(ForMe.stone100)
+                    }
+                    .frame(width: 36, height: 36)
+                    .clipShape(RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous))
+                } else {
+                    RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous)
+                        .fill(ForMe.stone100)
+                        .frame(width: 36, height: 36)
+                        .overlay(
+                            Text(item.type.prefix(2).uppercased())
+                                .font(.system(size: 10, weight: .medium))
+                                .foregroundColor(ForMe.textTertiary)
+                        )
+                }
+
+                // Text
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(item.displayTitle)
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(ForMe.textPrimary)
+                        .lineLimit(1)
+                    if let subtitle = item.subtitle {
+                        Text(subtitle)
+                            .font(.system(size: 12))
+                            .foregroundColor(ForMe.textTertiary)
+                            .lineLimit(1)
+                    }
+                }
+
+                Spacer()
+
+                // Type badge
+                Text(item.type)
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundColor(ForMe.textTertiary)
+                    .textCase(.uppercase)
+                    .tracking(0.5)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .background(ForMe.stone50)
+                    .clipShape(RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous))
+            }
+            .padding(.horizontal, ForMe.space4)
+            .padding(.vertical, 10)
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+// MARK: - Previews
 
 #Preview("Home") {
     HomeView()
         .environmentObject(AppState())
-}
-
-#Preview("Featured Card") {
-    FeaturedListingCard(listing: Listing(
-        id: "preview",
-        title: "Pretty Ricky's Hair and Braid",
-        description: "Premium hair styling",
-        imageSrc: "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400",
-        category: .barber,
-        location: "Long Beach, California",
-        services: [Service(id: "1", serviceName: "Cut", price: 75, category: nil, imageSrc: nil, description: nil, duration: 60, listingId: nil)],
-        rating: 4.8,
-        ratingCount: 124,
-        userId: "1"
-    ))
-    .padding(40)
-    .background(Color.black)
+        .environmentObject(AuthViewModel())
 }
 
 #Preview("Listing Row") {
     ListingRow(listing: Listing(
-        id: "preview",
+        id: "1",
         title: "Pretty Ricky's Hair and Braid",
-        description: "Premium hair styling",
-        imageSrc: "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400",
-        category: .barber,
-        location: "Long Beach, California",
-        services: [Service(id: "1", serviceName: "Cut", price: 75, category: nil, imageSrc: nil, description: nil, duration: 60, listingId: nil)],
+        description: "Premium styling",
+        imageSrc: nil,
+        category: "Barber",
+        location: "Long Beach, CA",
         rating: 4.8,
         ratingCount: 124,
         userId: "1"
     ))
-    .padding(20)
+    .padding()
 }
 
 #Preview("Provider Card") {
-    HStack(spacing: 8) {
-        ProviderCard(user: User(id: "1", name: "Marcus Johnson", role: "Barber"))
-        ProviderCard(user: User(id: "2", name: "Sarah Chen", role: "Stylist", isVerified: true))
+    HStack(spacing: 16) {
+        ProviderCard(user: User(id: "1", name: "Marcus J."))
+        ProviderCard(user: User(id: "2", name: "Sarah C."))
     }
-    .padding(20)
+    .padding()
     .background(ForMe.background)
 }

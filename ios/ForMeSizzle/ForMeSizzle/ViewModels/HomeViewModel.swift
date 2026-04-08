@@ -3,13 +3,14 @@ import Combine
 
 @MainActor
 class HomeViewModel: ObservableObject {
-    @Published var featuredListings: [Listing] = []
-    @Published var recentListings: [Listing] = []
-    @Published var topProviders: [User] = []
+    // Sections matching web DiscoverClient
     @Published var posts: [Post] = []
+    @Published var listings: [Listing] = []
+    @Published var employees: [CompactUser] = []
+    @Published var shops: [Shop] = []
+    @Published var selectedCategory: String?
     @Published var isLoading = false
     @Published var error: String?
-    @Published var selectedCategory: ServiceCategory?
 
     private let api = APIService.shared
 
@@ -17,43 +18,32 @@ class HomeViewModel: ObservableObject {
         isLoading = true
         error = nil
 
-        async let featured: () = loadFeatured()
-        async let recent: () = loadRecent()
-        async let feed: () = loadPosts()
+        async let postsTask: () = loadPosts()
+        async let listingsTask: () = loadListings()
 
-        await featured
-        await recent
-        await feed
+        await postsTask
+        await listingsTask
 
         isLoading = false
-    }
-
-    private func loadFeatured() async {
-        do {
-            let response = try await api.getListings(limit: 10)
-            featuredListings = response.listings
-            // Extract providers from listing owners
-            var seen = Set<String>()
-            topProviders = response.listings.compactMap { $0.user }.filter { seen.insert($0.id).inserted }
-        } catch {
-            self.error = error.localizedDescription
-        }
-    }
-
-    private func loadRecent() async {
-        do {
-            let response = try await api.getListings(limit: 5)
-            recentListings = response.listings
-        } catch {
-            // Featured already sets error if needed
-        }
     }
 
     private func loadPosts() async {
         do {
             posts = try await api.getFeed()
         } catch {
-            // Non-critical — listings still show
+            // Non-critical
+        }
+    }
+
+    private func loadListings() async {
+        do {
+            let response = try await api.getListings(limit: 20)
+            listings = response.listings
+            // Extract unique providers from listing owners
+            var seen = Set<String>()
+            employees = response.listings.compactMap { $0.user }.filter { seen.insert($0.id).inserted }
+        } catch {
+            self.error = error.localizedDescription
         }
     }
 }

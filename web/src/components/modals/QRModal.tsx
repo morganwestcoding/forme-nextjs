@@ -46,7 +46,7 @@ const QRModal: React.FC<QRModalProps> = ({
 
       {/* QR Code Container */}
       <div className="bg-white p-6 rounded-2xl border-2 border-gray-100 shadow-sm">
-        <div className="w-48 h-48 mx-auto bg-white rounded-lg flex items-center justify-center">
+        <div className="w-48 h-48 mx-auto bg-white rounded-xl flex items-center justify-center">
           {listingUrl ? (
             <img
               src={qrCodeUrl}
@@ -82,7 +82,7 @@ const QRModal: React.FC<QRModalProps> = ({
 
       {/* URL Display */}
       <div className="w-full">
-        <div className="bg-gray-50 rounded-lg p-3 border">
+        <div className="bg-gray-50 rounded-xl p-3 border">
           <p className="text-xs text-gray-600 mb-1">Listing URL:</p>
           <p className="text-sm font-mono text-gray-800 break-all">
             {listingUrl}
@@ -94,7 +94,7 @@ const QRModal: React.FC<QRModalProps> = ({
       <div className="flex gap-3 w-full">
         <button
           onClick={handleCopyLink}
-          className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2.5 px-4 rounded-lg transition-colors text-sm font-medium flex items-center justify-center gap-2"
+          className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2.5 px-4 rounded-xl transition-colors text-sm font-medium flex items-center justify-center gap-2"
           type="button"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -106,7 +106,7 @@ const QRModal: React.FC<QRModalProps> = ({
         
         <button
           onClick={onClose}
-          className="flex-1 bg-[#60A5FA] hover:bg-[#4F94E5] text-white py-2.5 px-4 rounded-lg transition-colors text-sm font-medium"
+          className="flex-1 bg-[#60A5FA] hover:bg-[#4F94E5] text-white py-2.5 px-4 rounded-xl transition-colors text-sm font-medium"
           type="button"
         >
           Done

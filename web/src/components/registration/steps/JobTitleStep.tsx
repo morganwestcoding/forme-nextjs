@@ -53,7 +53,7 @@ export default function JobTitleStep({ userType, isOwnerManager, onOwnerManagerC
             `}
           >
             <div className={`
-              w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all
+              w-6 h-6 rounded-xl border-2 flex items-center justify-center transition-all
               ${isOwnerManager ? 'border-gray-900 bg-gray-900' : 'border-gray-300'}
             `}>
               {isOwnerManager && (

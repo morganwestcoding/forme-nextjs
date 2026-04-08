@@ -22,7 +22,7 @@ function toSafeShop(shop: any): SafeShop {
     id: shop.id,
     name: shop.name ?? "",
     description: shop.description ?? "", // SafeShop requires string
-    logo: shop.logo ?? "/images/placeholder.jpg", // SafeShop requires string
+    logo: shop.logo ?? "", // SafeShop requires string
     coverImage: shop.coverImage ?? null,
     location: shop.location ?? null,
     address: shop.address ?? null,
@@ -55,7 +55,7 @@ function toSafeShop(shop: any): SafeShop {
     // Optional summary props for UI cards; SafeShop marks `products?`
     products: (shop.products ?? []).map((p: any) => ({
       name: p.name,
-      image: p.mainImage ?? "/images/placeholder.jpg",
+      image: p.mainImage ?? "",
       price: p.price,
     })),
     productCount: (shop.products ?? []).length,
@@ -69,7 +69,7 @@ function toSafeShop(shop: any): SafeShop {
         id: p.id,
         name: p.name,
         price: p.price,
-        image: p.mainImage ?? "/images/placeholder.jpg",
+        image: p.mainImage ?? "",
       })),
   };
 }

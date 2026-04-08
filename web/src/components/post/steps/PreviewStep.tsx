@@ -95,7 +95,7 @@ const PreviewStep: React.FC<PreviewStepProps> = ({
                   onClick={() => setShowBefore(!showBefore)}
                   className="absolute bottom-3 left-0 right-0 flex justify-center"
                 >
-                  <span className="w-[52px] h-[26px] flex items-center justify-center rounded-md text-[11px] font-medium backdrop-blur-md bg-white/95 text-neutral-900">
+                  <span className="w-[52px] h-[26px] flex items-center justify-center rounded-full text-[11px] font-medium backdrop-blur-md bg-white/95 text-neutral-900">
                     {showBefore ? 'Before' : 'After'}
                   </span>
                 </button>

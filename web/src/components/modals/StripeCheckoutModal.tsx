@@ -92,7 +92,7 @@ const StripeCheckoutModal = () => {
       
       {reservationData && (
         <div className="space-y-6">
-          <div className="p-5 bg-gray-50 rounded-lg">
+          <div className="p-5 bg-gray-50 rounded-xl">
             <div className="mb-4">
               <h3 className="text-lg font-semibold mb-3">{reservationData.businessName}</h3>
               <div className="h-px w-full bg-gray-200 my-2"></div>
@@ -136,7 +136,7 @@ const StripeCheckoutModal = () => {
           </div>
           
           <div className="space-y-4">
-            <div className="bg-blue-50 border border-blue-100 rounded-lg p-4">
+            <div className="bg-blue-50 border border-blue-100 rounded-xl p-4">
               <div className="flex items-start">
                 <div className="flex-shrink-0 mt-0.5">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">

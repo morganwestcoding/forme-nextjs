@@ -34,7 +34,7 @@ struct BookingsView: View {
                         }
 
                         Button {
-                            appState.selectedTab = .profile
+                            appState.showingProfile = true
                         } label: {
                             DynamicAvatar(
                                 name: authViewModel.currentUser?.name ?? "User",
@@ -104,14 +104,16 @@ struct BookingsView: View {
 
     var currentBookings: [Reservation] {
         let now = Date()
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         if selectedTab == 0 {
             return viewModel.reservations.filter { reservation in
-                guard let date = reservation.date else { return true }
+                guard let dateStr = reservation.date, let date = formatter.date(from: dateStr) else { return true }
                 return date >= now
             }
         } else {
             return viewModel.reservations.filter { reservation in
-                guard let date = reservation.date else { return false }
+                guard let dateStr = reservation.date, let date = formatter.date(from: dateStr) else { return false }
                 return date < now
             }
         }
@@ -148,10 +150,10 @@ struct BookingCard: View {
                 .foregroundColor(ForMe.border)
 
             HStack(spacing: 16) {
-                if let date = reservation.date {
+                if let dateStr = reservation.date {
                     HStack(spacing: 4) {
                         Image(systemName: "calendar")
-                        Text(date, style: .date)
+                        Text(dateStr)
                     }
                     .font(.caption)
                 }

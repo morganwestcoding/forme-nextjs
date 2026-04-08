@@ -8,6 +8,7 @@ import { SafeProduct, SafeUser } from '@/app/types';
 import Container from '@/components/Container';
 import HeartButton from '@/components/HeartButton';
 import ProductCard from '@/components/shop/ProductCard';
+import { placeholderDataUri } from '@/lib/placeholders';
 
 interface ProductClientProps {
   product: SafeProduct & {
@@ -61,7 +62,7 @@ const ProductClient: React.FC<ProductClientProps> = ({
   const [dominantColor, setDominantColor] = useState<string | null>(null);
   useEffect(() => {
     const src = product.mainImage;
-    if (!src || src === '/placeholder.jpg') return;
+    if (!src || src.startsWith('data:')) return;
     const img = new window.Image();
     img.crossOrigin = 'anonymous';
     img.onload = () => {
@@ -161,7 +162,7 @@ const ProductClient: React.FC<ProductClientProps> = ({
 
               {/* Product Image — bigger than profile/listing avatars */}
               <div className="w-40 h-40 rounded-2xl mx-auto overflow-hidden border-[3px] border-white" style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.06)' }}>
-                <img src={allImages[selectedImageIndex] || '/placeholder.jpg'} alt={product.name} className="w-full h-full object-cover" />
+                <img src={allImages[selectedImageIndex] || placeholderDataUri(product.name || 'Product')} alt={product.name} className="w-full h-full object-cover" />
               </div>
 
               <div className="mt-3">
@@ -287,7 +288,7 @@ const ProductClient: React.FC<ProductClientProps> = ({
             <div className="flex items-center gap-4">
               <div className="w-16 h-16 rounded-xl bg-gray-100 border-2 border-white shadow-lg overflow-hidden flex-shrink-0">
                 <Image
-                  src={product.mainImage || '/placeholder.jpg'}
+                  src={product.mainImage || placeholderDataUri(product.name || 'Product')}
                   alt={product.name}
                   width={64}
                   height={64}

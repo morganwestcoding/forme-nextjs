@@ -152,7 +152,7 @@ const SettingsModal: React.FC = () => {
                 }
               }
             }}
-            className="w-24 px-3 py-2 text-xs font-mono bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white"
+            className="w-24 px-3 py-2 text-xs font-mono bg-gray-100 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white"
             placeholder="#60A5FA"
           />
         </div>

@@ -19,6 +19,7 @@ import SectionHeader from '@/app/market/SectionHeader';
 import { PlusSignIcon, Notification03Icon, MessageMultiple01Icon } from 'hugeicons-react';
 import Image from 'next/image';
 import useLoginModal from '@/app/hooks/useLoginModal';
+import { placeholderDataUri } from '@/lib/placeholders';
 import useInboxModal from '@/app/hooks/useInboxModal';
 import useNotificationsModal from '@/app/hooks/useNotificationsModal';
 import PageHeader from '@/components/PageHeader';
@@ -470,7 +471,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                   Salon: '/assets/people/salon.png',
                   Nails: '/assets/people/nails.png',
                   Skincare: '/assets/people/skincare.png',
-                  Lash: '/assets/people/lashes.png',
+                  Lashes: '/assets/people/lashes.png',
                   Brows: '/assets/people/brows.png',
                   Ink: '/assets/people/ink.png',
                 };
@@ -592,7 +593,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                       {employees.map((employee, idx) => {
                         const listing = listings.find(l => l.id === employee.listingId) || listings[0];
                         const li: any = listing as any;
-                        const imageSrc = li?.imageSrc || (Array.isArray(li?.galleryImages) ? li.galleryImages[0] : undefined) || '/placeholder.jpg';
+                        const imageSrc = li?.imageSrc || (Array.isArray(li?.galleryImages) ? li.galleryImages[0] : undefined) || placeholderDataUri(li?.title || 'Listing');
 
                         return (
                           <div
@@ -728,7 +729,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                             {currentEmployees.slice(0, 9).map((employee, idx) => {
                               const listing = listings.find(l => l.id === employee.listingId) || listings[0];
                               const li: any = listing as any;
-                              const imageSrc = li?.imageSrc || (Array.isArray(li?.galleryImages) ? li.galleryImages[0] : undefined) || '/placeholder.jpg';
+                              const imageSrc = li?.imageSrc || (Array.isArray(li?.galleryImages) ? li.galleryImages[0] : undefined) || placeholderDataUri(li?.title || 'Listing');
 
                               return (
                                 <div

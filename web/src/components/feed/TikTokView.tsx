@@ -34,6 +34,7 @@ import { format } from 'date-fns';
 import { SafePost, SafeUser, SafeListing, SafeEmployee, SafeShop } from '@/app/types';
 import { useRouter } from 'next/navigation';
 import { X } from 'lucide-react';
+import { placeholderDataUri } from '@/lib/placeholders';
 
 type ContentItem = {
   type: 'post' | 'listing' | 'employee' | 'shop';
@@ -601,7 +602,7 @@ const TikTokView: React.FC<TikTokViewProps> = ({ items, currentUser, onClose }) 
                             className="relative w-10 h-10 hover:scale-110 transition-transform duration-200 cursor-pointer flex-shrink-0"
                           >
                             <Image
-                              src={item.data.user.image || '/images/placeholder.jpg'}
+                              src={item.data.user.image || placeholderDataUri(item.data.user.name || 'User')}
                               alt={item.data.user.name || 'User'}
                               fill
                               className="rounded-full object-cover border-2 border-white/20"
@@ -642,7 +643,7 @@ const TikTokView: React.FC<TikTokViewProps> = ({ items, currentUser, onClose }) 
                           className="relative w-10 h-10 hover:scale-110 transition-transform duration-200 cursor-pointer flex-shrink-0"
                         >
                           <Image
-                            src={item.data.user.image || '/images/placeholder.jpg'}
+                            src={item.data.user.image || placeholderDataUri(item.data.user.name || 'User')}
                             alt={item.data.user.name || 'User'}
                             fill
                             className="rounded-full object-cover border-2 border-white/20"
@@ -821,7 +822,7 @@ const TikTokView: React.FC<TikTokViewProps> = ({ items, currentUser, onClose }) 
             >
               <div className="w-12 h-12 relative">
                 <Image
-                  src={currentItem.data.user.image || '/images/placeholder.jpg'}
+                  src={currentItem.data.user.image || placeholderDataUri(currentItem.data.user.name || 'User')}
                   alt={currentItem.data.user.name || 'User'}
                   fill
                   className="rounded-full object-cover"

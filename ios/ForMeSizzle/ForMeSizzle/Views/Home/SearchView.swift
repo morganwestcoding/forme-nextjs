@@ -38,7 +38,7 @@ struct SearchView: View {
                         }
 
                         Button {
-                            appState.selectedTab = .profile
+                            appState.showingProfile = true
                         } label: {
                             DynamicAvatar(
                                 name: authViewModel.currentUser?.name ?? "User",
@@ -186,6 +186,38 @@ struct FilterChip: View {
                 )
                 .cornerRadius(8)
         }
+    }
+}
+
+// MARK: - Worker Row (temporary, will be rebuilt in Phase 2)
+
+struct WorkerRow: View {
+    let name: String
+    let image: String?
+    let listing: Listing?
+
+    init(user: User, listing: Listing?) {
+        self.name = user.name ?? "Provider"
+        self.image = user.image
+        self.listing = listing
+    }
+
+    var body: some View {
+        HStack(spacing: 14) {
+            DynamicAvatar(name: name, imageUrl: image, size: .medium)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(name)
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundColor(ForMe.textPrimary)
+                if let location = listing?.location {
+                    Text(location)
+                        .font(.system(size: 12))
+                        .foregroundColor(ForMe.textTertiary)
+                }
+            }
+            Spacer()
+        }
+        .padding(ForMe.space3)
     }
 }
 

@@ -33,7 +33,7 @@ struct BrandsView: View {
                         }
 
                         Button {
-                            appState.selectedTab = .profile
+                            appState.showingProfile = true
                         } label: {
                             DynamicAvatar(
                                 name: authViewModel.currentUser?.name ?? "User",

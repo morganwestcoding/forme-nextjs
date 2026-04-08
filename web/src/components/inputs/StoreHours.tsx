@@ -128,7 +128,7 @@ const StoreHours: React.FC<StoreHoursProps> = ({ onChange, id }) => {
               <div
                 id={`day-label-${index}`}
                 className={[
-                  'px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors',
+                  'px-3 py-1.5 rounded-xl text-sm font-semibold transition-colors',
                   row.isClosed
                     ? 'bg-neutral-100 text-neutral-500'
                     : 'bg-[#60A5FA]/10 text-[#60A5FA]',
@@ -151,7 +151,7 @@ const StoreHours: React.FC<StoreHoursProps> = ({ onChange, id }) => {
               onClick={() => handleClosedToggle(index)}
               disabled={sameEveryDay && index !== 0}
               className={[
-                'px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200',
+                'px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200',
                 'disabled:opacity-40 disabled:cursor-not-allowed',
                 'focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1',
                 row.isClosed
@@ -252,7 +252,7 @@ const StoreHours: React.FC<StoreHoursProps> = ({ onChange, id }) => {
         // Show only Monday when same hours every day
         <div id="hours-grid" className="flex flex-col gap-3">
           {renderHourRow(hours[0], 0)}
-          <div className="text-center py-2 px-4 rounded-lg bg-[#60A5FA]/5 border border-[#60A5FA]/20">
+          <div className="text-center py-2 px-4 rounded-xl bg-[#60A5FA]/5 border border-[#60A5FA]/20">
             <p className="text-xs font-medium text-[#60A5FA]">
               These hours apply to all days of the week
             </p>

@@ -348,7 +348,7 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
                               <li
                                 key={`${item.type}-${item.id}`}
                                 data-idx={idx}
-                                className={`mx-1.5 px-3 py-2.5 cursor-pointer flex items-center gap-3 rounded-lg transition-colors duration-150 ${
+                                className={`mx-1.5 px-3 py-2.5 cursor-pointer flex items-center gap-3 rounded-xl transition-colors duration-150 ${
                                   active
                                     ? "bg-gray-50 dark:bg-zinc-700"
                                     : "hover:bg-gray-50 dark:hover:bg-zinc-700"
@@ -391,7 +391,7 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
                                   )}
                                 </div>
                                 {/* Type badge */}
-                                <div className={`text-[10px] uppercase tracking-wider font-medium px-2 py-0.5 rounded-lg transition-all duration-150 ${
+                                <div className={`text-[10px] uppercase tracking-wider font-medium px-2 py-0.5 rounded-xl transition-all duration-150 ${
                                   active ? "text-gray-600 dark:text-zinc-300 bg-gray-200 dark:bg-zinc-600" : "text-gray-400 dark:text-zinc-500 bg-gray-100 dark:bg-zinc-700"
                                 }`}>
                                   {typeKey}

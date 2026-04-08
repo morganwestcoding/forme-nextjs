@@ -372,13 +372,13 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
           <div className="flex gap-1.5 ml-2">
             <button
               onClick={() => handleBookingAction(booking.id, 'accept')}
-              className="px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-600 text-[11px] font-medium hover:bg-emerald-100 transition-colors"
+              className="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-600 text-[11px] font-medium hover:bg-emerald-100 transition-colors"
             >
               Accept
             </button>
             <button
               onClick={() => handleBookingAction(booking.id, 'decline')}
-              className="px-3 py-1.5 rounded-lg bg-red-50 text-red-600 text-[11px] font-medium hover:bg-red-100 transition-colors"
+              className="px-3 py-1.5 rounded-xl bg-red-50 text-red-600 text-[11px] font-medium hover:bg-red-100 transition-colors"
             >
               Decline
             </button>
@@ -552,13 +552,13 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
                       <div className="flex gap-1.5">
                         <button
                           onClick={() => handleTimeOffAction(req.id, 'approved')}
-                          className="px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-600 text-[11px] font-medium hover:bg-emerald-100 transition-colors"
+                          className="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-600 text-[11px] font-medium hover:bg-emerald-100 transition-colors"
                         >
                           Approve
                         </button>
                         <button
                           onClick={() => handleTimeOffAction(req.id, 'denied')}
-                          className="px-3 py-1.5 rounded-lg bg-red-50 text-red-600 text-[11px] font-medium hover:bg-red-100 transition-colors"
+                          className="px-3 py-1.5 rounded-xl bg-red-50 text-red-600 text-[11px] font-medium hover:bg-red-100 transition-colors"
                         >
                           Deny
                         </button>
@@ -621,7 +621,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
                         const isOff = shift === 'Off';
                         return (
                           <div key={day} className="p-4 flex items-center justify-center">
-                            <span className={`text-[12px] px-2.5 py-1 rounded-lg ${
+                            <span className={`text-[12px] px-2.5 py-1 rounded-xl ${
                               isOff
                                 ? 'text-stone-300 bg-stone-50'
                                 : 'text-stone-600 bg-stone-100 font-medium'
@@ -661,7 +661,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
                                       ...prev,
                                       [day]: { ...prev[day], startTime: e.target.value },
                                     }))}
-                                    className="w-full text-[11px] px-2 py-1 rounded-lg border border-stone-200 bg-white"
+                                    className="w-full text-[11px] px-2 py-1 rounded-xl border border-stone-200 bg-white"
                                   />
                                   <input
                                     type="time"
@@ -670,7 +670,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
                                       ...prev,
                                       [day]: { ...prev[day], endTime: e.target.value },
                                     }))}
-                                    className="w-full text-[11px] px-2 py-1 rounded-lg border border-stone-200 bg-white"
+                                    className="w-full text-[11px] px-2 py-1 rounded-xl border border-stone-200 bg-white"
                                   />
                                 </div>
                               )}
@@ -718,13 +718,13 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
                           <div className="flex gap-1.5">
                             <button
                               onClick={() => handleTimeOffAction(req.id, 'approved')}
-                              className="px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-600 text-[11px] font-medium hover:bg-emerald-100 transition-colors"
+                              className="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-600 text-[11px] font-medium hover:bg-emerald-100 transition-colors"
                             >
                               Approve
                             </button>
                             <button
                               onClick={() => handleTimeOffAction(req.id, 'denied')}
-                              className="px-3 py-1.5 rounded-lg bg-red-50 text-red-600 text-[11px] font-medium hover:bg-red-100 transition-colors"
+                              className="px-3 py-1.5 rounded-xl bg-red-50 text-red-600 text-[11px] font-medium hover:bg-red-100 transition-colors"
                             >
                               Deny
                             </button>
@@ -892,7 +892,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
                         value={clientNotes[client.userId] ?? client.notes ?? ''}
                         onChange={(e) => setClientNotes((prev) => ({ ...prev, [client.userId]: e.target.value }))}
                         onBlur={() => saveClientNote(client.userId)}
-                        className="flex-1 text-[12px] px-3 py-1.5 rounded-lg border border-stone-150 bg-stone-50 focus:outline-none focus:ring-1 focus:ring-stone-300 placeholder:text-stone-300"
+                        className="flex-1 text-[12px] px-3 py-1.5 rounded-xl border border-stone-150 bg-stone-50 focus:outline-none focus:ring-1 focus:ring-stone-300 placeholder:text-stone-300"
                       />
                     </div>
                   </div>
@@ -949,7 +949,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
                           value={payoutAmount}
                           onChange={(e) => setPayoutAmount(e.target.value)}
                           placeholder={`Up to $${balances[myEmployee.id].availableBalance.toFixed(2)}`}
-                          className="w-48 text-[13px] px-3 py-2 rounded-lg border border-stone-200 bg-white"
+                          className="w-48 text-[13px] px-3 py-2 rounded-xl border border-stone-200 bg-white"
                         />
                       </div>
                       <button
@@ -1066,7 +1066,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
                             setEditingAgreement(member.id);
                           }
                         }}
-                        className="text-[12px] text-stone-400 hover:text-stone-600 transition-colors px-3 py-1.5 rounded-lg hover:bg-stone-50"
+                        className="text-[12px] text-stone-400 hover:text-stone-600 transition-colors px-3 py-1.5 rounded-xl hover:bg-stone-50"
                       >
                         {isEditing ? 'Cancel' : member.payAgreement ? 'Edit Agreement' : 'Set Up Pay'}
                       </button>
@@ -1097,7 +1097,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
                                 type="number"
                                 value={agreementForm.rentalAmount}
                                 onChange={(e) => setAgreementForm((prev) => ({ ...prev, rentalAmount: Number(e.target.value) }))}
-                                className="w-32 text-[13px] px-3 py-2 rounded-lg border border-stone-200 bg-white"
+                                className="w-32 text-[13px] px-3 py-2 rounded-xl border border-stone-200 bg-white"
                               />
                             </div>
                             <div>
@@ -1105,7 +1105,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
                               <select
                                 value={agreementForm.rentalFrequency}
                                 onChange={(e) => setAgreementForm((prev) => ({ ...prev, rentalFrequency: e.target.value }))}
-                                className="text-[13px] px-3 py-2 rounded-lg border border-stone-200 bg-white"
+                                className="text-[13px] px-3 py-2 rounded-xl border border-stone-200 bg-white"
                               >
                                 <option value="daily">Daily</option>
                                 <option value="weekly">Weekly</option>
@@ -1122,7 +1122,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
                               max={100}
                               value={agreementForm.splitPercent}
                               onChange={(e) => setAgreementForm((prev) => ({ ...prev, splitPercent: Number(e.target.value) }))}
-                              className="w-32 text-[13px] px-3 py-2 rounded-lg border border-stone-200 bg-white"
+                              className="w-32 text-[13px] px-3 py-2 rounded-xl border border-stone-200 bg-white"
                             />
                             <p className="text-[11px] text-stone-400 mt-1">Business keeps {100 - agreementForm.splitPercent}%</p>
                           </div>
@@ -1173,7 +1173,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
                           <h4 className="text-[13px] font-semibold text-stone-900">Rental Fees</h4>
                           <button
                             onClick={() => generatePeriod(member.id)}
-                            className="text-[11px] text-stone-400 hover:text-stone-600 px-2 py-1 rounded-lg hover:bg-stone-50 transition-colors"
+                            className="text-[11px] text-stone-400 hover:text-stone-600 px-2 py-1 rounded-xl hover:bg-stone-50 transition-colors"
                           >
                             + Generate Period
                           </button>
@@ -1221,13 +1221,13 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
                                 <div className="flex gap-1.5">
                                   <button
                                     onClick={() => handlePayoutAction(payout.id, 'approve')}
-                                    className="px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-600 text-[11px] font-medium hover:bg-emerald-100 transition-colors"
+                                    className="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-600 text-[11px] font-medium hover:bg-emerald-100 transition-colors"
                                   >
                                     Approve
                                   </button>
                                   <button
                                     onClick={() => handlePayoutAction(payout.id, 'deny')}
-                                    className="px-3 py-1.5 rounded-lg bg-red-50 text-red-600 text-[11px] font-medium hover:bg-red-100 transition-colors"
+                                    className="px-3 py-1.5 rounded-xl bg-red-50 text-red-600 text-[11px] font-medium hover:bg-red-100 transition-colors"
                                   >
                                     Deny
                                   </button>

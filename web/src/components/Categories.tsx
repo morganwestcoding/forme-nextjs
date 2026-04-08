@@ -42,7 +42,7 @@ export const categories = [
     gradient: 'bg-gradient-to-b from-[#f5e6d3] to-[#d4c4b0]'
   },
   {
-    label: 'Lash',
+    label: 'Lashes',
     color: 'bg-[#D4B5A0]',
     description: 'Lash services',
     gradient: 'bg-gradient-to-b from-[#d4b5a0] to-[#b8967e]'

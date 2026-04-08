@@ -5,6 +5,7 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import Modal from './Modal';
 import useReviewModal from '@/app/hooks/useReviewModal';
+import { placeholderDataUri } from '@/lib/placeholders';
 
 const ReviewModal: React.FC = () => {
   const reviewModal = useReviewModal();
@@ -20,8 +21,8 @@ const ReviewModal: React.FC = () => {
     : targetListing?.title || 'this listing';
 
   const targetImage = targetType === 'user'
-    ? targetUser?.image || targetUser?.imageSrc || '/placeholder.jpg'
-    : targetListing?.imageSrc || '/placeholder.jpg';
+    ? targetUser?.image || targetUser?.imageSrc || placeholderDataUri(targetName)
+    : targetListing?.imageSrc || placeholderDataUri(targetName);
 
   const handleClose = useCallback(() => {
     setRating(0);

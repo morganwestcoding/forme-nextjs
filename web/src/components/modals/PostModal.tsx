@@ -53,6 +53,7 @@ import ListingCard from '@/components/listings/ListingCard';
 import ShopCard from '@/components/shop/ShopCard';
 import { SafeListing, SafeShop, SafeComment, SafePost, MediaOverlay } from '@/app/types';
 import { usePostStore } from '@/app/hooks/usePostStore';
+import { placeholderDataUri } from '@/lib/placeholders';
 
 const PostModal = () => {
   const router = useRouter();
@@ -1162,7 +1163,7 @@ useEffect(() => {
                                     className="relative w-10 h-10 hover:scale-110 transition-transform duration-200 cursor-pointer flex-shrink-0"
                                   >
                                     <Image
-                                      src={postData.user.image || '/images/placeholder.jpg'}
+                                      src={postData.user.image || placeholderDataUri(postData.user.name || 'User')}
                                       alt={postData.user.name || 'User'}
                                       fill
                                       className="rounded-full object-cover border-2 border-white/20"
@@ -1203,7 +1204,7 @@ useEffect(() => {
                                   className="relative w-10 h-10 hover:scale-110 transition-transform duration-200 cursor-pointer flex-shrink-0"
                                 >
                                   <Image
-                                    src={postData.user.image || '/images/placeholder.jpg'}
+                                    src={postData.user.image || placeholderDataUri(postData.user.name || 'User')}
                                     alt={postData.user.name || 'User'}
                                     fill
                                     className="rounded-full object-cover border-2 border-gray-200"
@@ -1500,7 +1501,7 @@ useEffect(() => {
                 <h3 className="text-xl font-semibold text-gray-900">Tag Post</h3>
                 <button
                   onClick={() => setShowTagModal(false)}
-                  className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all"
+                  className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-all"
                 >
                   <X size={18} />
                 </button>
@@ -1569,7 +1570,7 @@ useEffect(() => {
                         </div>
                         <button
                           onClick={() => handleTagRemove(tag.id, tag.type)}
-                          className="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                          className="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
                         >
                           <X size={14} />
                         </button>

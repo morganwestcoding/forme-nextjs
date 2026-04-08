@@ -25,7 +25,6 @@ import SettingsModal from '@/components/modals/SettingsModal';
 import ReviewModal from '@/components/modals/ReviewModal';
 import ComingSoonGate from '@/ComingSoonGate';
 import LayoutContent from '@/LayoutContent';
-import Sidebar from '@/components/sidebar/Sidebar';
 import UserMenuModal from '@/components/modals/UserMenuModal';
 import CreateModal from '@/components/modals/CreateModal';
 import LocationModal from '@/components/modals/LocationModal';

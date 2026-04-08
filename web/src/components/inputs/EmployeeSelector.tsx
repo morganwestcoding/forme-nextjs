@@ -116,7 +116,7 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
         <button
           type="button"
           onClick={() => setShowSearch(!showSearch)}
-          className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-xl hover:bg-gray-800 transition-colors"
         >
           <Plus size={16} />
           Add Employee
@@ -133,13 +133,13 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
               placeholder="Search users by name or email..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-neutral-50 border border-neutral-300 rounded-lg outline-none transition focus:border-black text-black"
+              className="w-full pl-10 pr-4 py-3 bg-neutral-50 border border-neutral-300 rounded-xl outline-none transition focus:border-black text-black"
             />
           </div>
 
           {/* Search Results */}
           {searchQuery.length >= 2 && (
-            <div className="absolute z-10 w-full mt-1 bg-white border border-neutral-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+            <div className="absolute z-10 w-full mt-1 bg-white border border-neutral-300 rounded-xl shadow-lg max-h-60 overflow-y-auto">
               {isSearching ? (
                 <div className="p-4 text-center text-gray-500">Searching...</div>
               ) : searchResults.length > 0 ? (
@@ -178,7 +178,7 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
       {/* Current Employees */}
       <div className="space-y-4">
         {employees.map((employee, index) => (
-          <div key={employee.userId} className="p-4 border border-neutral-300 rounded-lg bg-neutral-50">
+          <div key={employee.userId} className="p-4 border border-neutral-300 rounded-xl bg-neutral-50">
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-neutral-200 overflow-hidden flex items-center justify-center">
@@ -215,7 +215,7 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
                   value={employee.jobTitle || ''}
                   onChange={(e) => updateEmployee(employee.userId, { jobTitle: e.target.value })}
                   placeholder=" "
-                  className="peer w-full p-3 pt-6 bg-white border border-neutral-300 rounded-lg outline-none transition text-black focus:border-black"
+                  className="peer w-full p-3 pt-6 bg-white border border-neutral-300 rounded-xl outline-none transition text-black focus:border-black"
                 />
                 <label
                   htmlFor={`employee-job-title-${index}`}
@@ -255,7 +255,7 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
       </div>
 
       {employees.length === 0 && (
-        <div className="text-center py-8 text-gray-500 bg-neutral-50 rounded-lg border border-neutral-300">
+        <div className="text-center py-8 text-gray-500 bg-neutral-50 rounded-xl border border-neutral-300">
           No employees added yet. Click &ldquo;Add Employee&ldquo; to get started.
         </div>
       )}

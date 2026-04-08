@@ -233,7 +233,6 @@ class OnboardingViewModel: ObservableObject {
             jobTitle: (userType == .individual || userType == .team) && !jobTitle.isEmpty ? jobTitle : nil,
             isOwnerManager: userType == .team ? isOwnerManager : nil,
             selectedListing: nil,
-            selectedServices: nil,
             listingCategory: userType == .individual ? listingCategory?.rawValue : nil,
             listingTitle: userType == .individual && !listingTitle.isEmpty ? listingTitle : nil,
             listingDescription: userType == .individual && !listingDescription.isEmpty ? listingDescription : nil

@@ -41,7 +41,7 @@ const CreateChatButton: React.FC<CreateChatButtonProps> = ({
     return (
       <button
         onClick={onCreateChat}
-        className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl hover:bg-neutral-200 text-neutral-600 hover:text-neutral-900 transition-all duration-200"
+        className="p-1.5 sm:p-2 rounded-xl sm:rounded-xl hover:bg-neutral-200 text-neutral-600 hover:text-neutral-900 transition-all duration-200"
         type="button"
         aria-label="Send Message"
         title="Message"
@@ -74,7 +74,7 @@ const CreateChatButton: React.FC<CreateChatButtonProps> = ({
   return (
     <button
       onClick={onCreateChat}
-      className="bg-white/15 backdrop-blur-sm hover:bg-blue-400/10 border border-white/40 hover:border-blue-400/60 text-white hover:text-[#60A5FA] py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center hover:shadow-sm"
+      className="bg-white/15 backdrop-blur-sm hover:bg-blue-400/10 border border-white/40 hover:border-blue-400/60 text-white hover:text-[#60A5FA] py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center hover:shadow-sm"
       type="button"
       aria-label="Send Message"
     >

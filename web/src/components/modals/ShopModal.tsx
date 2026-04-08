@@ -351,7 +351,7 @@ const ShopModal = () => {
               (product.images && product.images.length > 0 ? product.images[0] : product.image) ||
               '/images/placeholder-300x300.png';
             return (
-              <div key={`${product.name}-${index}`} className="relative h-40 rounded-lg overflow-hidden border border-neutral-200 group">
+              <div key={`${product.name}-${index}`} className="relative h-40 rounded-xl overflow-hidden border border-neutral-200 group">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={src}
@@ -382,7 +382,7 @@ const ShopModal = () => {
             type="button"
             onClick={() => setShowProductModal(true)}
             className="
-              h-40 rounded-lg shadow flex flex-col items-center justify-center cursor-pointer
+              h-40 rounded-xl shadow flex flex-col items-center justify-center cursor-pointer
               bg-neutral-100 hover:bg-neutral-200 transition-colors
             "
           >
@@ -413,7 +413,7 @@ const ShopModal = () => {
           />
 
           {isEditMode && shop?.listingId && (
-            <div className="p-4 bg-blue-50 rounded-lg">
+            <div className="p-4 bg-blue-50 rounded-xl">
               <p className="text-sm text-blue-700">
                 This shop is connected to a business listing. Changes here may affect your business profile.
               </p>

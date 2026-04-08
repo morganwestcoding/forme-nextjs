@@ -175,8 +175,11 @@ struct PostCard: View {
 
     // MARK: - Date Formatting
 
-    private func formatDate(_ date: Date?) -> String {
-        guard let date = date else { return "" }
+    private func formatDate(_ dateStr: String?) -> String {
+        guard let dateStr = dateStr else { return "" }
+        let iso = ISO8601DateFormatter()
+        iso.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        guard let date = iso.date(from: dateStr) else { return "" }
         let now = Date()
         let diff = Calendar.current.dateComponents([.day], from: date, to: now)
         let days = diff.day ?? 0

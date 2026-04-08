@@ -37,7 +37,7 @@ const Calendar: React.FC<CalendarProps> = ({
       return (
         <div
           key={index}
-          className={`flex justify-center items-center p-2 rounded-lg transition-all duration-200 ${
+          className={`flex justify-center items-center p-2 rounded-xl transition-all duration-200 ${
             isSelected 
               ? 'bg-blue-500 text-white shadow-md' 
               : isClickDisabled
@@ -77,7 +77,7 @@ const Calendar: React.FC<CalendarProps> = ({
         <button 
           onClick={goToPreviousMonth} 
           disabled={!canGoToPreviousMonth()}
-          className={`p-2 rounded-lg transition-all duration-200 ${
+          className={`p-2 rounded-xl transition-all duration-200 ${
             canGoToPreviousMonth() 
               ? 'hover:bg-gray-200 text-gray-700 cursor-pointer' 
               : 'text-gray-300 cursor-not-allowed'
@@ -92,7 +92,7 @@ const Calendar: React.FC<CalendarProps> = ({
         </div>
         <button 
           onClick={goToNextMonth} 
-          className="p-2 rounded-lg hover:bg-gray-200 text-gray-700 transition-all duration-200"
+          className="p-2 rounded-xl hover:bg-gray-200 text-gray-700 transition-all duration-200"
         >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M6 12L10 8L6 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>

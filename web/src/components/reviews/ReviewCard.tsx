@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { SafeReview, SafeUser } from '@/app/types';
+import { placeholderDataUri } from '@/lib/placeholders';
 
 interface ReviewCardProps {
   review: SafeReview;
@@ -80,7 +81,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, currentUser }) => {
           className="relative flex-shrink-0 w-8 h-8 rounded-full overflow-hidden bg-gray-100 hover:ring-2 hover:ring-gray-200 transition-all"
         >
           <img
-            src={review.user.image || review.user.imageSrc || '/placeholder.jpg'}
+            src={review.user.image || review.user.imageSrc || placeholderDataUri(review.user.name || 'User')}
             alt={review.user.name || 'User'}
             className="w-full h-full object-cover"
           />

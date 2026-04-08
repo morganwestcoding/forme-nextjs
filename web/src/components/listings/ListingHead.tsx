@@ -10,6 +10,7 @@ import PostCard from '../feed/PostCard';
 import QRModal from '../modals/QRModal';
 import { SafePost, SafeUser, SafeListing, SafeReview } from '@/app/types';
 import useReviewModal from '@/app/hooks/useReviewModal';
+import { placeholderDataUri } from '@/lib/placeholders';
 import useFavorite from '@/app/hooks/useFavorite';
 import ReviewCard from '@/components/reviews/ReviewCard';
 import VerificationBadge from '@/components/VerificationBadge';
@@ -86,12 +87,12 @@ const ListingHead: React.FC<ListingHeadProps> = ({
     currentUser
   });
 
-  const mainImage = imageSrc || galleryImages?.[0] || '/placeholder.jpg';
+  const mainImage = imageSrc || galleryImages?.[0] || placeholderDataUri(listing.title || 'Listing');
 
   // Extract dominant color from listing image
   const [dominantColor, setDominantColor] = useState<string | null>(null);
   useEffect(() => {
-    if (!mainImage || mainImage === '/placeholder.jpg') return;
+    if (!mainImage || mainImage.startsWith('data:')) return;
     const img = new window.Image();
     img.crossOrigin = 'anonymous';
     img.onload = () => {

@@ -225,7 +225,7 @@ struct EmployeeCard: View {
 
 #Preview {
     BookingView(
-        listing: Listing(id: "1", title: "Sample", category: .hair, userId: "1"),
+        listing: Listing(id: "1", title: "Sample", category: "Hair", userId: "1"),
         service: Service(id: "1", serviceName: "Haircut", price: 50, listingId: "1")
     )
 }

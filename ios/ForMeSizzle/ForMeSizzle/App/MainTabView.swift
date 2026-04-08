@@ -2,31 +2,51 @@ import SwiftUI
 
 struct MainTabView: View {
     @EnvironmentObject var appState: AppState
+    @EnvironmentObject var authViewModel: AuthViewModel
+
     var body: some View {
         ZStack(alignment: .bottom) {
             Group {
                 switch appState.selectedTab {
                 case .home:
-                    NavigationStack { HomeView() }
+                    NavigationStack(path: $appState.navigationPath) {
+                        HomeView()
+                    }
                 case .search:
-                    NavigationStack { SearchView() }
+                    NavigationStack {
+                        SearchView()
+                    }
                 case .maps:
-                    NavigationStack { MapsView() }
+                    NavigationStack {
+                        MapsView()
+                    }
                 case .bookings:
-                    NavigationStack { BookingsView() }
-                case .messages:
-                    NavigationStack { BrandsView() }
-                case .profile:
-                    NavigationStack { ProfileView() }
+                    NavigationStack {
+                        BookingsView()
+                    }
+                case .shops:
+                    NavigationStack {
+                        BrandsView()
+                    }
                 }
             }
+
             ForMeTabBar(selectedTab: $appState.selectedTab)
         }
         .ignoresSafeArea(.keyboard)
+        .sheet(isPresented: $appState.showingInbox) {
+            Text("Inbox") // TODO: InboxView
+        }
+        .sheet(isPresented: $appState.showingNotifications) {
+            Text("Notifications") // TODO: NotificationsView
+        }
+        .sheet(isPresented: $appState.showingProfile) {
+            ProfileView()
+        }
     }
 }
 
-// MARK: - Custom Tab Bar
+// MARK: - Custom Tab Bar (matches web sidebar tabs)
 
 private struct ForMeTabBar: View {
     @Binding var selectedTab: AppState.Tab
@@ -49,7 +69,7 @@ private struct ForMeTabBar: View {
         TabItem(.search, "Search", "TabSearch", "TabSearch", isCustom: true),
         TabItem(.maps, "Maps", "TabMaps", "TabMaps", isCustom: true),
         TabItem(.bookings, "Bookings", "TabBooking", "TabBooking", isCustom: true),
-        TabItem(.messages, "Brands", "TabVendors", "TabVendors", isCustom: true),
+        TabItem(.shops, "Shops", "TabVendors", "TabVendors", isCustom: true),
     ]
 
     var body: some View {
@@ -65,7 +85,7 @@ private struct ForMeTabBar: View {
                     VStack(spacing: 4) {
                         Group {
                             if item.isCustom {
-                                Image(isActive ? item.activeIcon : item.icon)
+                                Image(item.icon)
                                     .renderingMode(.template)
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
@@ -82,9 +102,9 @@ private struct ForMeTabBar: View {
                             .foregroundColor(isActive ? ForMe.textPrimary : ForMe.textTertiary)
                     }
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 8)
+                    .padding(.vertical, ForMe.space2)
                     .background(
-                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous)
                             .fill(isActive ? ForMe.textPrimary.opacity(0.08) : Color.clear)
                     )
                     .contentShape(Rectangle())
@@ -95,13 +115,13 @@ private struct ForMeTabBar: View {
         .padding(.horizontal, 6)
         .padding(.vertical, 6)
         .background(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
+            RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous)
                 .fill(.ultraThinMaterial)
                 .shadow(color: .black.opacity(0.1), radius: 16, x: 0, y: 4)
         )
         .fixedSize(horizontal: false, vertical: true)
-        .padding(.horizontal, 16)
-        .padding(.bottom, 8)
+        .padding(.horizontal, ForMe.space4)
+        .padding(.bottom, ForMe.space2)
     }
 }
 

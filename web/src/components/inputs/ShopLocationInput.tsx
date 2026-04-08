@@ -123,7 +123,7 @@ const ShopLocationInput: React.FC<ShopLocationInputProps> = ({
     singleValue: () => '!text-black',
     input: () => '!text-neutral-500 !font-normal!',
     placeholder: () => '!text-neutral-500 !text-sm !font-normal', 
-    menu: () => '!bg-neutral-50 !rounded-sm !shadow-md !mt-1 !z-[9999]',
+    menu: () => '!bg-neutral-50 !rounded-xl !shadow-md !mt-1 !z-[9999]',
     menuList: () => '!p-0',
     valueContainer: () => '!p-0.5',
     container: () => '!relative !w-full'
@@ -132,7 +132,7 @@ const ShopLocationInput: React.FC<ShopLocationInputProps> = ({
   return (
     <div id={id} className="flex flex-col gap-4 text-sm -mt-4">
       {/* Online Shop Toggle */}
-      <div className="flex items-center py-5 px-4 bg-neutral-50 rounded-lg border border-neutral-300">
+      <div className="flex items-center py-5 px-4 bg-neutral-50 rounded-xl border border-neutral-300">
         <div className="flex items-center">
           <input
             type="checkbox"
@@ -177,7 +177,7 @@ const ShopLocationInput: React.FC<ShopLocationInputProps> = ({
                   control: (state: any) => `
                     !w-full !pl-3 !pb-1 !pt-3
                     !bg-neutral-50 !border !border-neutral-300
-                    !rounded-lg !outline-none !transition
+                    !rounded-xl !outline-none !transition
                     !ring-0 !outline-0 !box-shadow-none
                     ${state.isFocused ? '!border-black' : '!border-neutral-300'}
                     ${errors['state'] ? '!border-rose-500' : ''}
@@ -214,7 +214,7 @@ const ShopLocationInput: React.FC<ShopLocationInputProps> = ({
                   control: (state: any) => `
                     !w-full !pl-3 !pb-1 !pt-3
                     !bg-neutral-50 !border !border-neutral-300
-                    !rounded-lg !outline-none !transition
+                    !rounded-xl !outline-none !transition
                     !ring-0 !outline-0 !box-shadow-none
                     ${state.isFocused ? '!border-black' : '!border-neutral-300'}
                     ${errors['city'] ? '!border-rose-500' : ''}

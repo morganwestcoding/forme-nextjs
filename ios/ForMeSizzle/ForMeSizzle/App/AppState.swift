@@ -8,22 +8,27 @@ class AppState: ObservableObject {
         case search
         case maps
         case bookings
-        case messages
-        case profile
+        case shops
     }
 
     @Published var selectedTab: Tab = .home
-    @Published var showingListingDetail: Listing?
-    @Published var showingUserProfile: User?
     @Published var navigationPath = NavigationPath()
+
+    // Modal presentation state
+    @Published var showingInbox = false
+    @Published var showingNotifications = false
+    @Published var showingCreateMenu = false
+    @Published var showingSettings = false
+    @Published var showingProfile = false
 
     func resetNavigation() {
         navigationPath = NavigationPath()
-        showingListingDetail = nil
-        showingUserProfile = nil
     }
 
     func switchToTab(_ tab: Tab) {
+        if selectedTab == tab {
+            resetNavigation()
+        }
         selectedTab = tab
     }
 }

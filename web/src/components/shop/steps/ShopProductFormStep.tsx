@@ -259,7 +259,7 @@ export default function ShopProductFormStep({
             <button
               type="button"
               onClick={handleAddSize}
-              className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-lg bg-gray-200 hover:bg-gray-300 transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-xl bg-gray-200 hover:bg-gray-300 transition-colors"
             >
               <Plus className="w-4 h-4 text-gray-600" />
             </button>
@@ -304,7 +304,7 @@ export default function ShopProductFormStep({
             type="button"
             onClick={handleSave}
             disabled={!canSave}
-            className={`px-6 py-2.5 rounded-lg font-medium text-sm transition-transform duration-200 ${
+            className={`px-6 py-2.5 rounded-xl font-medium text-sm transition-transform duration-200 ${
               canSave
                 ? 'bg-gray-900 text-white hover:bg-gray-800 active:scale-[0.98]'
                 : 'bg-gray-100 text-gray-400 cursor-not-allowed'

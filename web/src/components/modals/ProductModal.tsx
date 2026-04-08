@@ -260,7 +260,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
             {...register('category', { required: true })}
             className={`
               w-full 
-              rounded-lg
+              rounded-xl
               px-4
               text-neutral-600
               py-4
@@ -374,7 +374,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
               placeholder="Add Size (e.g., S, M, L)"
               className={`
                 w-full
-                rounded-md 
+                rounded-xl 
                 pl-6 
                 pr-12
                 py-4
@@ -396,7 +396,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
                 top-1/2
                 -translate-y-1/2
                 p-2
-                rounded-md
+                rounded-xl
                 shadow
                 bg-neutral-100
                 text-neutral-600

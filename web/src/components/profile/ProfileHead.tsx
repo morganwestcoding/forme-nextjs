@@ -8,6 +8,7 @@ import { SafeListing, SafePost, SafeUser, SafeReview } from '@/app/types';
 import PostCard from '@/components/feed/PostCard';
 import ListingCard from '@/components/listings/ListingCard';
 import { categories } from '@/components/Categories';
+import { placeholderDataUri } from '@/lib/placeholders';
 import useReviewModal from '@/app/hooks/useReviewModal';
 import useMessageModal from '@/app/hooks/useMessageModal';
 import ReviewCard from '@/components/reviews/ReviewCard';
@@ -53,10 +54,10 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
   const [showDropdown, setShowDropdown] = useState(false);
 
   // Extract dominant color from profile image
-  const profileImage = image || imageSrc || '/placeholder.jpg';
+  const profileImage = image || imageSrc || placeholderDataUri(name || 'User');
   const [dominantColor, setDominantColor] = useState<string | null>(null);
   useEffect(() => {
-    if (profileImage === '/placeholder.jpg') return;
+    if (profileImage.startsWith('data:')) return;
     const img = new window.Image();
     img.crossOrigin = 'anonymous';
     img.onload = () => {
@@ -443,7 +444,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
             <div className="flex items-center gap-4">
               <div className="w-16 h-16 rounded-xl bg-gray-100 border-2 border-white shadow-lg overflow-hidden flex-shrink-0">
                 <img
-                  src={image || imageSrc || '/placeholder.jpg'}
+                  src={image || imageSrc || placeholderDataUri(name || 'User')}
                   alt={name ?? 'User'}
                   className="w-full h-full object-cover"
                 />

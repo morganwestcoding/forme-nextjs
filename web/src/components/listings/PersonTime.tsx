@@ -34,7 +34,7 @@ const PersonTime: React.FC<PersonTimeProps> = ({ onTimeChange }) => {
       borderColor: '#e3e8ef',
       boxShadow: 'none',
       padding: '10px',
-      borderRadius: '0.5rem', // rounded-lg
+      borderRadius: '0.75rem', // rounded-xl
       '&:hover': {
         borderColor: '#e3e8ef',
       },

@@ -302,7 +302,7 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
             <img
               src="/logos/fm-logo-white.png"
               alt="ForMe Logo"
-              className="loader-logo h-32 w-auto mx-auto mb-12"
+              className="loader-logo h-20 w-auto mx-auto mb-12"
               style={{ opacity: 0 }}
             />
             <div className="loader-dots-container flex justify-center items-center">
@@ -393,7 +393,7 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
                       onKeyDown={(e) => e.key === 'Enter' && !emailLoading && handleEmailSubmit()}
                       placeholder="you@company.com"
                       disabled={emailLoading || emailSubmitted}
-                      className={`flex-1 bg-transparent border rounded-lg px-4 py-3 text-sm text-white placeholder-neutral-600 focus:outline-none transition-colors disabled:opacity-50 ${
+                      className={`flex-1 bg-transparent border rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-600 focus:outline-none transition-colors disabled:opacity-50 ${
                         emailError
                           ? 'border-red-500/50 focus:border-red-500/70'
                           : 'border-neutral-800 focus:border-neutral-600 hover:border-neutral-700'
@@ -402,7 +402,7 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
                     <button
                       onClick={handleEmailSubmit}
                       disabled={emailLoading || emailSubmitted}
-                      className="bg-white text-black font-medium px-5 py-3 rounded-lg hover:bg-neutral-200 transition-colors disabled:opacity-50 flex items-center justify-center min-w-[100px] text-sm"
+                      className="bg-white text-black font-medium px-5 py-3 rounded-xl hover:bg-neutral-200 transition-colors disabled:opacity-50 flex items-center justify-center min-w-[100px] text-sm"
                     >
                       {emailLoading ? (
                         <div className="w-4 h-4 border border-neutral-400 border-t-neutral-700 rounded-full animate-spin" />
@@ -454,7 +454,7 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
                     }}
                     placeholder="Your name"
                     disabled={demoLoading || demoSubmitted}
-                    className={`w-full bg-transparent border rounded-lg px-4 py-3 text-sm text-white placeholder-neutral-600 focus:outline-none transition-colors disabled:opacity-50 ${
+                    className={`w-full bg-transparent border rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-600 focus:outline-none transition-colors disabled:opacity-50 ${
                       demoError
                         ? 'border-red-500/50 focus:border-red-500/70'
                         : 'border-neutral-800 focus:border-neutral-600 hover:border-neutral-700'
@@ -471,7 +471,7 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
                       onKeyDown={(e) => e.key === 'Enter' && !demoLoading && handleDemoSubmit()}
                       placeholder="Work email"
                       disabled={demoLoading || demoSubmitted}
-                      className={`flex-1 bg-transparent border rounded-lg px-4 py-3 text-sm text-white placeholder-neutral-600 focus:outline-none transition-colors disabled:opacity-50 ${
+                      className={`flex-1 bg-transparent border rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-600 focus:outline-none transition-colors disabled:opacity-50 ${
                         demoError
                           ? 'border-red-500/50 focus:border-red-500/70'
                           : 'border-neutral-800 focus:border-neutral-600 hover:border-neutral-700'
@@ -480,7 +480,7 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
                     <button
                       onClick={handleDemoSubmit}
                       disabled={demoLoading || demoSubmitted}
-                      className="bg-white text-black font-medium px-5 py-3 rounded-lg hover:bg-neutral-200 transition-colors disabled:opacity-50 flex items-center justify-center min-w-[100px] text-sm"
+                      className="bg-white text-black font-medium px-5 py-3 rounded-xl hover:bg-neutral-200 transition-colors disabled:opacity-50 flex items-center justify-center min-w-[100px] text-sm"
                     >
                       {demoLoading ? (
                         <div className="w-4 h-4 border border-neutral-400 border-t-neutral-700 rounded-full animate-spin" />
@@ -593,12 +593,12 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
                     onChange={(e) => setPassword(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handlePasswordSubmit()}
                     placeholder="Access code"
-                    className="flex-1 bg-neutral-900/50 border border-neutral-800 rounded-lg px-4 py-2.5 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-neutral-700 focus:bg-neutral-900 transition-all"
+                    className="flex-1 bg-neutral-900/50 border border-neutral-800 rounded-xl px-4 py-2.5 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-neutral-700 focus:bg-neutral-900 transition-all"
                     autoFocus
                   />
                   <button
                     onClick={handlePasswordSubmit}
-                    className="bg-white text-black font-medium px-4 py-2.5 rounded-lg hover:bg-neutral-100 transition-colors"
+                    className="bg-white text-black font-medium px-4 py-2.5 rounded-xl hover:bg-neutral-100 transition-colors"
                   >
                     <ArrowRight className="w-4 h-4" />
                   </button>

@@ -76,7 +76,7 @@ const SubscribeModal = () => {
                 flex-col 
                 items-center 
                 border 
-                rounded-lg 
+                rounded-xl 
                 cursor-pointer
                 ${selectedPayment === 'credit' ? 'border-rose-500' : 'border-neutral-200'}
               `}
@@ -97,7 +97,7 @@ const SubscribeModal = () => {
                 flex-col 
                 items-center 
                 border 
-                rounded-lg 
+                rounded-xl 
                 cursor-pointer
                 ${selectedPayment === 'bank' ? 'border-rose-500' : 'border-neutral-200'}
               `}

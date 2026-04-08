@@ -199,7 +199,7 @@ const MessageModal: React.FC = () => {
     return (
       <div className="relative flex items-center my-5">
         <div className="flex-grow border-t border-gray-100" />
-        <span className="mx-3 text-gray-400 font-medium text-[10px] px-2.5 py-0.5 rounded-md bg-gray-50">
+        <span className="mx-3 text-gray-400 font-medium text-[10px] px-2.5 py-0.5 rounded-full bg-gray-50">
           {formatted}
         </span>
         <div className="flex-grow border-t border-gray-100" />
@@ -214,7 +214,7 @@ const MessageModal: React.FC = () => {
       {/* Back button */}
       <button
         onClick={handleBackToInbox}
-        className="absolute left-4 top-5 p-1.5 rounded-lg hover:bg-gray-100 transition-colors z-20"
+        className="absolute left-4 top-5 p-1.5 rounded-xl hover:bg-gray-100 transition-colors z-20"
         aria-label="Back to Inbox"
       >
         <ArrowLeft className="w-4 h-4 text-gray-600" />
@@ -345,13 +345,13 @@ const MessageModal: React.FC = () => {
                   onKeyPress={handleKeyPress}
                   placeholder="Type a message..."
                   className="w-full px-4 py-2.5 pr-11 text-sm text-gray-700 placeholder-gray-400 bg-gray-50
-                           border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500
+                           border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500
                            focus:border-transparent focus:bg-white transition-all duration-200"
                 />
                 <button
                   onClick={sendMessage}
                   disabled={!newMessage.trim()}
-                  className={`absolute right-1.5 top-1/2 transform -translate-y-1/2 w-7 h-7 rounded-lg
+                  className={`absolute right-1.5 top-1/2 transform -translate-y-1/2 w-7 h-7 rounded-xl
                             flex items-center justify-center transition-all duration-200 ${
                             newMessage.trim()
                               ? 'bg-blue-500 hover:bg-blue-600 text-white'

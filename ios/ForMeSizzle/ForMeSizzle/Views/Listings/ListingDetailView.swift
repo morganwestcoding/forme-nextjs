@@ -18,15 +18,15 @@ struct ListingDetailView: View {
                         Rectangle()
                             .fill(
                                 LinearGradient(
-                                    colors: [ForMe.categoryColor(listing.category.rawValue).opacity(0.3), ForMe.cardBottom],
+                                    colors: [ForMe.categoryColor(listing.category).opacity(0.3), ForMe.cardBottom],
                                     startPoint: .topLeading,
                                     endPoint: .bottomTrailing
                                 )
                             )
                             .overlay(
-                                Image(systemName: listing.category.icon)
+                                Image(systemName: listing.categoryIcon)
                                     .font(.system(size: 48))
-                                    .foregroundColor(ForMe.categoryColor(listing.category.rawValue).opacity(0.5))
+                                    .foregroundColor(ForMe.categoryColor(listing.category).opacity(0.5))
                             )
                     }
                     .frame(height: 300)
@@ -50,7 +50,7 @@ struct ListingDetailView: View {
                                 .font(.title2.bold())
                                 .foregroundColor(ForMe.textPrimary)
 
-                            if listing.user?.verificationStatus == .verified {
+                            if listing.user?.verificationStatus == "verified" {
                                 Image(systemName: "checkmark.seal.fill")
                                     .foregroundColor(ForMe.accent)
                                     .font(.body)
@@ -59,12 +59,12 @@ struct ListingDetailView: View {
 
                         HStack(spacing: 12) {
                             // Category badge
-                            Text(listing.category.rawValue)
+                            Text(listing.category)
                                 .font(.caption.weight(.medium))
-                                .foregroundColor(ForMe.categoryColor(listing.category.rawValue))
+                                .foregroundColor(ForMe.categoryColor(listing.category))
                                 .padding(.horizontal, 10)
                                 .padding(.vertical, 4)
-                                .background(ForMe.categoryColor(listing.category.rawValue).opacity(0.1))
+                                .background(ForMe.categoryColor(listing.category).opacity(0.1))
                                 .cornerRadius(8)
 
                             if let location = listing.location {
@@ -329,7 +329,7 @@ struct ServiceRow: View {
             id: "1",
             title: "Sample Salon",
             description: "A great salon",
-            category: .hair,
+            category: "Hair",
             userId: "1"
         ))
     }

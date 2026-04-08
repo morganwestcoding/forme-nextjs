@@ -10,6 +10,7 @@ import PostCard from '../feed/PostCard';
 import { SafePost, SafeUser, SafeShop, SafeProduct } from '@/app/types';
 import useFavorite from '@/app/hooks/useFavorite';
 import VerificationBadge from '@/components/VerificationBadge';
+import { placeholderDataUri } from '@/lib/placeholders';
 
 interface ShopHeadProps {
   shop: SafeShop & {
@@ -87,12 +88,12 @@ const ShopHead: React.FC<ShopHeadProps> = ({
     currentUser
   });
 
-  const mainImage = coverImage || logo || galleryImages?.[0] || '/placeholder.jpg';
+  const mainImage = coverImage || logo || galleryImages?.[0] || placeholderDataUri(shop.name || 'Shop');
 
   // Extract dominant color from shop image
   const [dominantColor, setDominantColor] = useState<string | null>(null);
   useEffect(() => {
-    if (!mainImage || mainImage === '/placeholder.jpg') return;
+    if (!mainImage || mainImage.startsWith('data:')) return;
     const img = new window.Image();
     img.crossOrigin = 'anonymous';
     img.onload = () => {

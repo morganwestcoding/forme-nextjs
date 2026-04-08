@@ -72,7 +72,7 @@ export default function TypeformNavigation({
               onClick={onNext}
               disabled={!canProceed || isLoading}
               className={`
-                px-6 py-2.5 rounded-lg font-medium text-sm transition-transform duration-200
+                px-6 py-2.5 rounded-xl font-medium text-sm transition-transform duration-200
                 ${canProceed && !isLoading
                   ? 'bg-gray-900 text-white hover:bg-gray-800 active:scale-[0.98]'
                   : 'bg-gray-100 text-gray-400 cursor-not-allowed'

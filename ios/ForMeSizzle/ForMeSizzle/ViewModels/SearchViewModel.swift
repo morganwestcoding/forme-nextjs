@@ -18,15 +18,11 @@ class SearchViewModel: ObservableObject {
 
         do {
             if !query.trimmingCharacters(in: .whitespaces).isEmpty {
-                // Use full search endpoint — returns users, listings, services
-                let response = try await api.search(query: query)
-                listings = response.listings ?? []
-                workers = response.users ?? []
-
-                // Apply local category filter if selected
-                if let category = selectedCategory {
-                    listings = listings.filter { $0.category == category }
-                }
+                // Search uses the global search endpoint now
+                // For the dedicated search tab, just load listings by category
+                let response = try await api.getListings(limit: 50)
+                listings = response.listings
+                workers = []
             } else {
                 // Category-only browse
                 let response = try await api.getListings(
@@ -34,10 +30,7 @@ class SearchViewModel: ObservableObject {
                     limit: 50
                 )
                 listings = response.listings
-
-                // Extract unique workers from listing owners
-                var seen = Set<String>()
-                workers = response.listings.compactMap { $0.user }.filter { seen.insert($0.id).inserted }
+                workers = []
             }
         } catch {
             self.error = error.localizedDescription

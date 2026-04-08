@@ -176,7 +176,7 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
         <button
           type="button"
           onClick={addService}
-          className="mt-6 inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-neutral-700 hover:text-neutral-900 hover:bg-neutral-100 transition"
+          className="mt-6 inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-neutral-700 hover:text-neutral-900 hover:bg-neutral-100 transition"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

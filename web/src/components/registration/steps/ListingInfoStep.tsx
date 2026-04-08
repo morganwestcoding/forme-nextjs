@@ -82,7 +82,7 @@ export default function ListingInfoStep() {
                       className="w-full h-full object-cover transition-[transform,filter] duration-500 ease-out group-hover:scale-105 group-hover:brightness-105"
                     />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
-                      <span className="text-white text-xs font-medium px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-lg">Change</span>
+                      <span className="text-white text-xs font-medium px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-xl">Change</span>
                     </div>
                   </>
                 ) : (

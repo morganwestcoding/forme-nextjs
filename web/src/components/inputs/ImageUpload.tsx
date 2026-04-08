@@ -57,7 +57,7 @@ export default function ImageUpload({
       : rounded === '2xl'
       ? 'rounded-2xl'
       : rounded === 'lg'
-      ? 'rounded-lg'
+      ? 'rounded-xl'
       : 'rounded-xl';
 
   const hasExplicitSize = !!className && /\b(h-|min-h-|max-h-|aspect-)/.test(className);
@@ -327,7 +327,7 @@ export default function ImageUpload({
                       (document.activeElement as HTMLElement)?.blur();
                       open?.();
                     }}
-                    className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium
+                    className="inline-flex items-center gap-1.5 rounded-xl px-2 py-1 text-xs font-medium
                                bg-white/90 text-neutral-900 ring-1 ring-neutral-200 hover:bg-white"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -343,7 +343,7 @@ export default function ImageUpload({
                         e.stopPropagation();
                         onRemove();
                       }}
-                      className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium
+                      className="inline-flex items-center gap-1.5 rounded-xl px-2 py-1 text-xs font-medium
                                  bg-white/90 text-neutral-900 ring-1 ring-neutral-200 hover:bg-white"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
