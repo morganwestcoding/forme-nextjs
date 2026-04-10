@@ -66,11 +66,21 @@ struct BookingsView: View {
                 } else {
                     LazyVStack(spacing: 12) {
                         ForEach(Array(currentBookings.enumerated()), id: \.element.id) { index, reservation in
-                            BookingCard(reservation: reservation) {
-                                Task {
-                                    await viewModel.cancelReservation(id: reservation.id)
+                            let isIncoming = reservation.listing?.userId == authViewModel.currentUser?.id
+                                && reservation.userId != authViewModel.currentUser?.id
+                            BookingCard(
+                                reservation: reservation,
+                                isIncoming: isIncoming,
+                                onCancel: {
+                                    Task { await viewModel.cancelReservation(id: reservation.id) }
+                                },
+                                onAccept: {
+                                    Task { await viewModel.updateReservationStatus(id: reservation.id, status: "confirmed") }
+                                },
+                                onReject: {
+                                    Task { await viewModel.updateReservationStatus(id: reservation.id, status: "cancelled") }
                                 }
-                            }
+                            )
                             .staggeredFadeIn(index: index)
                         }
                     }
@@ -114,9 +124,13 @@ struct BookingsView: View {
 
 struct BookingCard: View {
     let reservation: Reservation
+    let isIncoming: Bool
     let onCancel: () -> Void
+    var onAccept: (() -> Void)? = nil
+    var onReject: (() -> Void)? = nil
 
     @State private var showCancelConfirm = false
+    @State private var showRejectConfirm = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -126,7 +140,11 @@ struct BookingCard: View {
                         .font(.subheadline.weight(.semibold))
                         .foregroundColor(ForMe.textPrimary)
 
-                    if let listing = reservation.listing {
+                    if isIncoming, let user = reservation.user {
+                        Text("from \(user.name ?? "Customer")")
+                            .font(.caption)
+                            .foregroundColor(ForMe.accent)
+                    } else if let listing = reservation.listing {
                         Text(listing.title)
                             .font(.caption)
                             .foregroundColor(ForMe.textSecondary)
@@ -145,7 +163,7 @@ struct BookingCard: View {
                 if let dateStr = reservation.date {
                     HStack(spacing: 4) {
                         Image(systemName: "calendar")
-                        Text(dateStr)
+                        Text(formatDate(dateStr))
                     }
                     .font(.caption)
                 }
@@ -166,7 +184,39 @@ struct BookingCard: View {
                     .foregroundColor(ForMe.textPrimary)
             }
 
-            if reservation.status == .pending || reservation.status == .confirmed {
+            // Incoming: accept/reject for pending
+            if isIncoming && reservation.status == .pending {
+                HStack(spacing: 10) {
+                    Button {
+                        onAccept?()
+                    } label: {
+                        Text("Accept")
+                            .font(.caption.weight(.semibold))
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 10)
+                            .background(ForMe.statusConfirmed)
+                            .clipShape(RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous))
+                    }
+
+                    Button {
+                        showRejectConfirm = true
+                    } label: {
+                        Text("Reject")
+                            .font(.caption.weight(.semibold))
+                            .foregroundColor(ForMe.statusCancelled)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 10)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous)
+                                    .stroke(ForMe.statusCancelled.opacity(0.3), lineWidth: 1)
+                            )
+                    }
+                }
+            }
+
+            // Outgoing: cancel for pending/confirmed
+            if !isIncoming && (reservation.status == .pending || reservation.status == .confirmed) {
                 Button(role: .destructive) {
                     showCancelConfirm = true
                 } label: {
@@ -176,10 +226,9 @@ struct BookingCard: View {
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 10)
                         .overlay(
-                            RoundedRectangle(cornerRadius: ForMe.radiusXL)
+                            RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous)
                                 .stroke(ForMe.statusCancelled.opacity(0.3), lineWidth: 1)
                         )
-                        .cornerRadius(8)
                 }
             }
         }
@@ -188,6 +237,29 @@ struct BookingCard: View {
             Button("Cancel Booking", role: .destructive, action: onCancel)
             Button("Keep Booking", role: .cancel) {}
         }
+        .confirmationDialog("Reject this booking?", isPresented: $showRejectConfirm) {
+            Button("Reject", role: .destructive) { onReject?() }
+            Button("Keep", role: .cancel) {}
+        }
+    }
+
+    private func formatDate(_ dateStr: String) -> String {
+        let iso = ISO8601DateFormatter()
+        iso.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        if let date = iso.date(from: dateStr) {
+            let f = DateFormatter()
+            f.dateFormat = "EEE, MMM d, yyyy"
+            return f.string(from: date)
+        }
+        // Fallback for yyyy-MM-dd format
+        let simple = DateFormatter()
+        simple.dateFormat = "yyyy-MM-dd"
+        if let date = simple.date(from: dateStr) {
+            let f = DateFormatter()
+            f.dateFormat = "EEE, MMM d, yyyy"
+            return f.string(from: date)
+        }
+        return dateStr
     }
 }
 

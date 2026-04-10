@@ -217,6 +217,12 @@ class APIService {
         return try await perform(request)
     }
 
+    func updateReservationStatus(id: String, status: String) async throws {
+        let body = try encoder.encode(["status": status])
+        let request = try buildRequest(endpoint: "/reservations/\(id)", method: "POST", body: body)
+        let _: EmptyResponse = try await perform(request)
+    }
+
     func cancelReservation(id: String) async throws {
         let request = try buildRequest(endpoint: "/reservations/\(id)", method: "DELETE")
         let _: EmptyResponse = try await perform(request)

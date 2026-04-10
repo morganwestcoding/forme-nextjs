@@ -2,16 +2,70 @@ import { NextResponse } from "next/server";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/app/libs/prismadb";
 import { canModifyResource, isMasterUser } from "@/app/libs/authorization";
+import { getUserFromRequest } from "@/app/utils/mobileAuth";
 
 interface IParams {
  reservationId?: string;
+}
+
+// POST — mobile status update (accepts { status: "confirmed" | "cancelled" })
+export async function POST(
+ request: Request,
+ { params }: { params: IParams }
+) {
+ const currentUser = await getUserFromRequest(request) || await getCurrentUser();
+ if (!currentUser) {
+   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+ }
+
+ const { reservationId } = params;
+ if (!reservationId) {
+   return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+ }
+
+ try {
+   const body = await request.json();
+   const { status } = body;
+
+   const reservation = await prisma.reservation.findUnique({
+     where: { id: reservationId },
+     include: { listing: { select: { title: true, userId: true } } },
+   });
+
+   if (!reservation) {
+     return NextResponse.json({ error: "Not found" }, { status: 404 });
+   }
+
+   const updated = await prisma.reservation.update({
+     where: { id: reservationId },
+     data: { status },
+   });
+
+   // Notify the customer
+   const notifContent = status === 'confirmed'
+     ? `Your reservation at ${reservation.listing.title} has been accepted`
+     : `Your reservation at ${reservation.listing.title} has been declined`;
+
+   await prisma.notification.create({
+     data: {
+       type: status === 'confirmed' ? 'RESERVATION_ACCEPTED' : 'RESERVATION_DECLINED',
+       content: notifContent,
+       userId: reservation.userId,
+     },
+   });
+
+   return NextResponse.json(updated);
+ } catch (error) {
+   console.error("[RESERVATION_STATUS_UPDATE]", error);
+   return NextResponse.json({ error: "Failed to update" }, { status: 500 });
+ }
 }
 
 export async function PATCH(
  request: Request,
  { params }: { params: IParams }
 ) {
- const currentUser = await getCurrentUser();
+ const currentUser = await getUserFromRequest(request) || await getCurrentUser();
  if (!currentUser) {
    return NextResponse.error();
  }
@@ -99,10 +153,10 @@ export async function PATCH(
 }
 
 export async function DELETE(
- request: Request, 
+ request: Request,
  { params }: { params: IParams }
 ) {
- const currentUser = await getCurrentUser();
+ const currentUser = await getUserFromRequest(request) || await getCurrentUser();
 
  if (!currentUser) {
    return NextResponse.error();

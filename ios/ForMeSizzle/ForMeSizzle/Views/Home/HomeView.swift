@@ -10,6 +10,8 @@ struct HomeView: View {
     @State private var isSearching = false
     @FocusState private var searchFieldFocused: Bool
     @State private var searchTask: Task<Void, Never>?
+    @State private var showFeed = false
+    @State private var feedStartIndex = 0
 
     private var showDropdown: Bool {
         searchFieldFocused && !searchQuery.isEmpty
@@ -52,6 +54,9 @@ struct HomeView: View {
             NavigationStack {
                 MessagesListView()
             }
+        }
+        .fullScreenCover(isPresented: $showFeed) {
+            FeedView(posts: viewModel.posts, startIndex: feedStartIndex)
         }
         .onChange(of: searchQuery) { _, newValue in
             searchTask?.cancel()
@@ -100,6 +105,20 @@ private extension HomeView {
             Spacer()
 
             HStack(spacing: 12) {
+                // Plus / Create button
+                Button {
+                    appState.showingCreateMenu = true
+                } label: {
+                    Image(systemName: "plus")
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(ForMe.textSecondary)
+                        .frame(width: 38, height: 38)
+                        .background(ForMe.stone100)
+                        .clipShape(Circle())
+                        .overlay(Circle().stroke(ForMe.border, lineWidth: 1))
+                        .shadow(color: .black.opacity(0.04), radius: 1, x: 0, y: 1)
+                }
+
                 HeaderIconButton(icon: "AlertBell") {
                     appState.showingNotifications = true
                 }
@@ -295,8 +314,14 @@ private extension HomeView {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 8) {
                             ForEach(Array(viewModel.posts.prefix(14).enumerated()), id: \.element.id) { index, post in
-                                PostCard(post: post)
-                                    .staggeredFadeIn(index: index)
+                                Button {
+                                    feedStartIndex = index
+                                    showFeed = true
+                                } label: {
+                                    PostCard(post: post)
+                                }
+                                .buttonStyle(.plain)
+                                .staggeredFadeIn(index: index)
                             }
                         }
                         .padding(.horizontal)

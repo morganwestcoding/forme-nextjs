@@ -11,8 +11,21 @@ export async function GET(request: Request) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const reservations = await prisma.reservation.findMany({
+    // Get user's own listings to find incoming reservations
+    const userListings = await prisma.listing.findMany({
       where: { userId: currentUser.id },
+      select: { id: true },
+    });
+    const userListingIds = userListings.map(l => l.id);
+
+    // Fetch both outgoing (as customer) and incoming (as business owner)
+    const reservations = await prisma.reservation.findMany({
+      where: {
+        OR: [
+          { userId: currentUser.id },
+          { listingId: { in: userListingIds } },
+        ],
+      },
       include: {
         listing: {
           select: {
@@ -30,6 +43,13 @@ export async function GET(request: Request) {
             id: true,
             fullName: true,
             jobTitle: true,
+          }
+        },
+        user: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
           }
         },
       },

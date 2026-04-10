@@ -63,32 +63,54 @@ export async function POST(request: Request) {
     }
 
     // Get the employee and the listing owner's Stripe Connect account
-    const employee = await prisma.employee.findUnique({
-      where: { id: employeeId },
-      include: {
-        listing: {
-          include: {
-            user: {
-              select: {
-                id: true,
-                stripeConnectAccountId: true,
-                stripeConnectChargesEnabled: true,
-                name: true,
+    let employee: any = null;
+    let businessOwner: any = null;
+
+    if (employeeId && employeeId !== "any") {
+      employee = await prisma.employee.findUnique({
+        where: { id: employeeId },
+        include: {
+          listing: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  stripeConnectAccountId: true,
+                  stripeConnectChargesEnabled: true,
+                  name: true,
+                },
               },
             },
           },
         },
-      },
-    });
-
-    if (!employee) {
-      return NextResponse.json({ error: "Employee not found" }, { status: 404 });
+      });
+      if (employee) {
+        businessOwner = employee.listing.user;
+      }
     }
 
-    // Payment goes to the business owner's Stripe Connect account
-    const businessOwner = employee.listing.user;
-    const businessStripeAccountId = businessOwner.stripeConnectAccountId;
-    const businessChargesEnabled = businessOwner.stripeConnectChargesEnabled;
+    // Fallback: get business owner from listing directly
+    if (!businessOwner && listingId) {
+      const listing = await prisma.listing.findUnique({
+        where: { id: listingId },
+        include: {
+          user: {
+            select: {
+              id: true,
+              stripeConnectAccountId: true,
+              stripeConnectChargesEnabled: true,
+              name: true,
+            },
+          },
+        },
+      });
+      if (listing) {
+        businessOwner = listing.user;
+      }
+    }
+
+    const businessStripeAccountId = businessOwner?.stripeConnectAccountId;
+    const businessChargesEnabled = businessOwner?.stripeConnectChargesEnabled;
     const hasStripeConnect = businessStripeAccountId && businessChargesEnabled;
 
     // Calculate amounts
@@ -104,7 +126,7 @@ export async function POST(request: Request) {
             currency: 'usd',
             product_data: {
               name: serviceName || 'Service booking',
-              description: `Booking with ${employee.fullName} at ${businessName || employee.listing.title} on ${new Date(date).toLocaleDateString()} at ${time}`,
+              description: `Booking with ${employee?.fullName || employeeName || 'Any Available'} at ${businessName || 'Business'} on ${new Date(date).toLocaleDateString()} at ${time}`,
             },
             unit_amount: totalAmountCents,
           },
@@ -124,7 +146,7 @@ export async function POST(request: Request) {
         serviceId,
         serviceName: serviceName || '',
         employeeId,
-        employeeName: employeeName || employee.fullName,
+        employeeName: employeeName || employee?.fullName || 'Any Available',
         date: new Date(date).toISOString(),
         time,
         note: note || '',

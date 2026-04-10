@@ -27,4 +27,15 @@ class BookingsListViewModel: ObservableObject {
             self.error = error.localizedDescription
         }
     }
+
+    func updateReservationStatus(id: String, status: String) async {
+        do {
+            try await api.updateReservationStatus(id: id, status: status)
+            if let index = reservations.firstIndex(where: { $0.id == id }) {
+                reservations[index].status = ReservationStatus(rawValue: status) ?? .pending
+            }
+        } catch {
+            self.error = error.localizedDescription
+        }
+    }
 }

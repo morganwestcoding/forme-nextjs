@@ -40,6 +40,9 @@ struct MainTabView: View {
         .sheet(isPresented: $appState.showingNotifications) {
             Text("Notifications") // TODO: NotificationsView
         }
+        .sheet(isPresented: $appState.showingCreateMenu) {
+            CreateMenuView()
+        }
         .sheet(isPresented: $appState.showingProfile) {
             ProfileView()
         }
