@@ -201,6 +201,12 @@ class APIService {
         let _: EmptyResponse = try await perform(request)
     }
 
+    func createListing(_ listing: CreateListingRequest) async throws -> Listing {
+        let body = try encoder.encode(listing)
+        let request = try buildRequest(endpoint: "/listings", method: "POST", body: body)
+        return try await perform(request)
+    }
+
     // MARK: - Reservations
 
     func getReservations() async throws -> [Reservation] {
@@ -387,6 +393,16 @@ struct FavoritesResponse: Codable {
 // MARK: - Request/Response Types
 
 struct EmptyResponse: Codable {}
+
+struct CreateListingRequest: Codable {
+    var title: String
+    var description: String
+    var category: String
+    var location: String
+    var address: String
+    var zipCode: String
+    var imageSrc: String?
+}
 
 struct CreatePostRequest: Codable {
     var content: String?

@@ -97,6 +97,9 @@ struct PropertiesView: View {
                 listingToDelete = nil
             }
         }
+        .sheet(isPresented: $showCreateListing) {
+            ListingFlow()
+        }
         .task {
             await viewModel.loadListings()
         }

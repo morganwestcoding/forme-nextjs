@@ -21,6 +21,51 @@ struct TeamView: View {
                 .padding(.horizontal)
                 .padding(.top, ForMe.space3)
 
+                // Listing selector (if multiple)
+                if viewModel.listings.count > 1 {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(viewModel.listings) { listing in
+                                Button {
+                                    withAnimation { viewModel.selectedListingId = listing.id }
+                                } label: {
+                                    Text(listing.title)
+                                        .font(.system(size: 13, weight: .semibold))
+                                        .foregroundColor(viewModel.selectedListingId == listing.id ? .white : ForMe.textPrimary)
+                                        .padding(.horizontal, ForMe.space4)
+                                        .padding(.vertical, 10)
+                                        .background(viewModel.selectedListingId == listing.id ? ForMe.stone900 : ForMe.surface)
+                                        .clipShape(Capsule())
+                                        .overlay(
+                                            Capsule().stroke(viewModel.selectedListingId == listing.id ? .clear : ForMe.stone200, lineWidth: 1)
+                                        )
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+                        .padding(.horizontal)
+                    }
+                } else if let listing = viewModel.selectedListing {
+                    HStack(spacing: 10) {
+                        AsyncImage(url: URL(string: listing.imageSrc ?? "")) { phase in
+                            switch phase {
+                            case .success(let image):
+                                image.resizable().aspectRatio(contentMode: .fill)
+                            default:
+                                Rectangle().fill(ForMe.stone100)
+                            }
+                        }
+                        .frame(width: 36, height: 36)
+                        .clipShape(RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous))
+
+                        Text(listing.title)
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundColor(ForMe.textPrimary)
+                        Spacer()
+                    }
+                    .padding(.horizontal)
+                }
+
                 // Stat cards
                 LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)], spacing: 12) {
                     StatCard(label: "Team Members", value: "\(viewModel.employees.count)", trend: nil)

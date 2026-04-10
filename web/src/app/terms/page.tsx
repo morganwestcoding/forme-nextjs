@@ -43,7 +43,7 @@ export default function TermsPage() {
           </p>
           <p>
             These Terms also include all referenced policies and agreements, including but not limited to
-            the Privacy Policy.
+            the <Link href="/privacy" className="underline hover:text-stone-800">Privacy Policy</Link>.
           </p>
 
           <h2>Please Read These Terms Carefully</h2>
@@ -243,8 +243,9 @@ export default function TermsPage() {
 
           <h2>IX. Privacy</h2>
           <p>
-            Your use of the Services is also governed by the ForMe Privacy Policy, which explains how we
-            collect, use, and protect personal information.
+            Your use of the Services is also governed by the{' '}
+            <Link href="/privacy" className="underline hover:text-stone-800">ForMe Privacy Policy</Link>,
+            which explains how we collect, use, and protect personal information.
           </p>
 
           <h2>X. Governing Law</h2>

@@ -14,49 +14,11 @@ import { Plus } from "lucide-react";
 import { SafeUser } from "@/app/types";
 import Container from "@/components/Container";
 import PageHeader from "@/components/PageHeader";
+import { useAcademies } from "@/app/hooks/useAcademies";
 
 interface LicensingClientProps {
   currentUser: SafeUser | null;
 }
-
-const partnerAcademies = [
-  {
-    id: '1',
-    name: 'Beauty Pro Academy',
-    description: 'Licensed cosmetology and esthetician programs',
-    courses: ['Cosmetology License', 'Esthetician Certification', 'Nail Technician'],
-    duration: '6-12 months',
-    price: 'From $3,500',
-    rating: 4.8,
-  },
-  {
-    id: '2',
-    name: 'Wellness Institute',
-    description: 'Massage therapy and holistic wellness certifications',
-    courses: ['Licensed Massage Therapist', 'Reiki Master', 'Aromatherapy'],
-    duration: '3-9 months',
-    price: 'From $2,800',
-    rating: 4.9,
-  },
-  {
-    id: '3',
-    name: 'Fitness Certification Hub',
-    description: 'Personal training and fitness specialist programs',
-    courses: ['CPT Certification', 'Nutrition Coach', 'Yoga Instructor'],
-    duration: '2-6 months',
-    price: 'From $1,200',
-    rating: 4.7,
-  },
-  {
-    id: '4',
-    name: 'Medical Aesthetics School',
-    description: 'Advanced aesthetic and medical spa training',
-    courses: ['Laser Technician', 'Microblading', 'Botox Certification'],
-    duration: '1-4 months',
-    price: 'From $1,800',
-    rating: 4.9,
-  }
-];
 
 const LicensingClient = ({ currentUser }: LicensingClientProps) => {
   const router = useRouter();
@@ -64,6 +26,7 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
   const [licensingImage, setLicensingImage] = useState(currentUser?.licensingImage || '');
   const [isLoading, setIsLoading] = useState(false);
   const [selectedAcademy, setSelectedAcademy] = useState<string>('');
+  const { academies: partnerAcademies, isLoading: academiesLoading, error: academiesError } = useAcademies();
 
   const verificationStatus = currentUser?.verificationStatus || 'none';
   const [searchParams] = useState(() => {
@@ -257,6 +220,13 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
             </div>
 
             {/* Programs grid — 2 col */}
+            {academiesLoading ? (
+              <div className="text-[13px] text-stone-400 py-8">Loading academies…</div>
+            ) : academiesError ? (
+              <div className="text-[13px] text-red-500 py-8">Could not load academies. {academiesError}</div>
+            ) : partnerAcademies.length === 0 ? (
+              <div className="text-[13px] text-stone-400 py-8">No partner academies available yet.</div>
+            ) : (
             <div className="grid md:grid-cols-2 gap-5 pb-8">
               {partnerAcademies.map((academy) => {
                 const isSelected = selectedAcademy === academy.id;
@@ -279,27 +249,35 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
                     {/* Header */}
                     <div className="mb-6">
                       <h3 className="text-[12px] text-stone-400 mb-3">{academy.name}</h3>
-                      <div className="mb-1">
-                        <span className={`text-[32px] font-bold tracking-tight ${isSelected ? 'text-white' : 'text-stone-900'}`}>
-                          {academy.price}
-                        </span>
-                      </div>
+                      {academy.priceLabel && (
+                        <div className="mb-1">
+                          <span className={`text-[32px] font-bold tracking-tight ${isSelected ? 'text-white' : 'text-stone-900'}`}>
+                            {academy.priceLabel}
+                          </span>
+                        </div>
+                      )}
                       <div className="flex items-center gap-3 text-[12px] text-stone-400">
-                        <span className="flex items-center gap-1">
-                          <Clock01Icon size={12} strokeWidth={1.5} />
-                          {academy.duration}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <StarIcon size={12} strokeWidth={1.5} />
-                          {academy.rating}
-                        </span>
+                        {academy.duration && (
+                          <span className="flex items-center gap-1">
+                            <Clock01Icon size={12} strokeWidth={1.5} />
+                            {academy.duration}
+                          </span>
+                        )}
+                        {academy.rating != null && (
+                          <span className="flex items-center gap-1">
+                            <StarIcon size={12} strokeWidth={1.5} />
+                            {academy.rating}
+                          </span>
+                        )}
                       </div>
                     </div>
 
                     {/* Description */}
-                    <p className={`text-[13px] mb-5 ${isSelected ? 'text-stone-300' : 'text-stone-500'}`}>
-                      {academy.description}
-                    </p>
+                    {academy.description && (
+                      <p className={`text-[13px] mb-5 ${isSelected ? 'text-stone-300' : 'text-stone-500'}`}>
+                        {academy.description}
+                      </p>
+                    )}
 
                     {/* Courses */}
                     <ul className="space-y-2.5 mb-6">
@@ -313,7 +291,7 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
 
                     {/* CTA */}
                     <button
-                      onClick={(e) => { e.stopPropagation(); window.open('https://example.com/program-details', '_blank'); }}
+                      onClick={(e) => { e.stopPropagation(); if (academy.website) window.open(academy.website, '_blank'); }}
                       className={`w-full py-3 px-5 rounded-xl font-medium text-[13px] transition-all duration-200 flex items-center justify-center gap-2 ${
                         isSelected
                           ? 'bg-white text-stone-900 hover:bg-stone-50'
@@ -327,6 +305,7 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
                 );
               })}
             </div>
+            )}
 
             {/* Trust bar */}
             <div className="pt-8 border-t border-stone-100">

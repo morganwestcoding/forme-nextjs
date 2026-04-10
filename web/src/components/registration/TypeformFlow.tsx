@@ -24,10 +24,11 @@ import ListingCategoryStep from './steps/ListingCategoryStep';
 import ListingInfoStep from './steps/ListingInfoStep';
 import LocationStep from './steps/LocationStep';
 import ImagesStep from './steps/ImagesStep';
+import StudentAcademyStep from './steps/StudentAcademyStep';
 
 import { Service } from '@/components/inputs/ServiceSelector';
 
-type UserType = 'customer' | 'individual' | 'team';
+type UserType = 'customer' | 'individual' | 'team' | 'student';
 
 interface ProfileData {
   id: string;
@@ -59,6 +60,7 @@ enum STEPS {
   LISTING_INFO = 9,
   LOCATION = 10,
   IMAGES = 11,
+  STUDENT_ACADEMY = 12,
 }
 
 function safeToastError(err: any, fallback = "Something went wrong!") {
@@ -114,6 +116,7 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
       listingTitle: '',
       listingDescription: '',
       listingImage: '',
+      academyId: '',
     },
   });
 
@@ -130,6 +133,7 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
   const listingTitle = watch('listingTitle');
   const listingDescription = watch('listingDescription');
   const locationVal = watch('location');
+  const academyId = watch('academyId');
 
   const setCustomValue = useCallback((id: string, value: any) => {
     setValue(id, value ?? '', {
@@ -173,6 +177,18 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
       return teamPath;
     }
 
+    if (userType === 'student') {
+      // Students pick their academy + their role/title, then location + photo/bio.
+      // Licensing + subscription steps are skipped entirely (handled in onSubmit).
+      return [
+        ...basePath,
+        STEPS.STUDENT_ACADEMY,
+        STEPS.JOB_TITLE,
+        STEPS.LOCATION,
+        STEPS.IMAGES,
+      ];
+    }
+
     return basePath;
   }, [userType, selectedListing, isEditMode]);
 
@@ -206,6 +222,8 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
           return Boolean(data.isOwnerManager || data.jobTitle?.trim());
         }
         return Boolean(data.jobTitle?.trim());
+      case STEPS.STUDENT_ACADEMY:
+        return Boolean(data.academyId?.trim());
       case STEPS.BUSINESS_SELECT:
         return true; // Can skip
       case STEPS.SERVICE_SELECT:
@@ -346,6 +364,7 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
         listingTitle: data.userType === 'individual' ? data.listingTitle : undefined,
         listingDescription: data.userType === 'individual' ? data.listingDescription : undefined,
         listingImage: data.userType === 'individual' ? data.listingImage : undefined,
+        academyId: data.userType === 'student' ? data.academyId : undefined,
       });
 
       const signInRes = await signIn('credentials', {
@@ -358,11 +377,19 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
         await update();
         router.refresh();
 
-        // Smooth fade-out before navigating
+        // Smooth fade-out before navigating.
+        // Students skip licensing AND subscription — they go straight to their profile.
+        // Individual/team go through licensing → subscription.
+        // Customers go straight to subscription.
         setIsExiting(true);
-        const destination = (data.userType === 'individual' || data.userType === 'team')
-          ? '/licensing?onboarding=true'
-          : '/subscription?onboarding=true';
+        let destination: string;
+        if (data.userType === 'student') {
+          destination = '/';
+        } else if (data.userType === 'individual' || data.userType === 'team') {
+          destination = '/licensing?onboarding=true';
+        } else {
+          destination = '/subscription?onboarding=true';
+        }
         setTimeout(() => router.push(destination), 600);
         return;
       }
@@ -487,6 +514,13 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
         );
       case STEPS.IMAGES:
         return <ImagesStep />;
+      case STEPS.STUDENT_ACADEMY:
+        return (
+          <StudentAcademyStep
+            academyId={academyId}
+            onAcademyChange={(id) => setCustomValue('academyId', id)}
+          />
+        );
       default:
         return null;
     }

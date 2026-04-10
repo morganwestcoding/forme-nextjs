@@ -62,9 +62,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    // Get the employee and the listing owner's Stripe Connect account
+    // Get the employee and the listing owner's Stripe Connect account.
+    // If the listing belongs to an Academy, the academy is the destination
+    // (the academy holds the Connect account on behalf of its students).
     let employee: any = null;
     let businessOwner: any = null;
+    let listingAcademy: { id: string; stripeConnectAccountId: string | null; stripeConnectChargesEnabled: boolean; name: string } | null = null;
 
     if (employeeId && employeeId !== "any") {
       employee = await prisma.employee.findUnique({
@@ -80,12 +83,21 @@ export async function POST(request: Request) {
                   name: true,
                 },
               },
+              academy: {
+                select: {
+                  id: true,
+                  name: true,
+                  stripeConnectAccountId: true,
+                  stripeConnectChargesEnabled: true,
+                },
+              },
             },
           },
         },
       });
       if (employee) {
         businessOwner = employee.listing.user;
+        listingAcademy = employee.listing.academy;
       }
     }
 
@@ -102,16 +114,32 @@ export async function POST(request: Request) {
               name: true,
             },
           },
+          academy: {
+            select: {
+              id: true,
+              name: true,
+              stripeConnectAccountId: true,
+              stripeConnectChargesEnabled: true,
+            },
+          },
         },
       });
       if (listing) {
         businessOwner = listing.user;
+        listingAcademy = listing.academy;
       }
     }
 
-    const businessStripeAccountId = businessOwner?.stripeConnectAccountId;
-    const businessChargesEnabled = businessOwner?.stripeConnectChargesEnabled;
-    const hasStripeConnect = businessStripeAccountId && businessChargesEnabled;
+    // Academy-owned listings route payment to the academy's Connect account
+    // instead of the listing owner. Students don't have their own Connect
+    // account — the academy receives the funds and disburses (or keeps) them
+    // according to the student's PayAgreement.
+    const destinationStripeAccountId = listingAcademy?.stripeConnectAccountId
+      ?? businessOwner?.stripeConnectAccountId;
+    const destinationChargesEnabled = listingAcademy
+      ? listingAcademy.stripeConnectChargesEnabled
+      : businessOwner?.stripeConnectChargesEnabled;
+    const hasStripeConnect = destinationStripeAccountId && destinationChargesEnabled;
 
     // Calculate amounts
     const totalAmountCents = totalPrice * 100;
@@ -154,15 +182,19 @@ export async function POST(request: Request) {
         businessOwnerId: businessOwner.id,
         employeeUserId: employee.userId,
         platformFeePercent: String(PLATFORM_FEE_PERCENT),
+        // When set, the booking is for an academy-owned listing (e.g. a student).
+        // Funds were routed to the academy's Connect account, not the listing owner.
+        academyId: listingAcademy?.id ?? '',
       },
     };
 
-    // Payment goes to the business owner (not the employee directly)
+    // Payment goes to the destination Connect account — academy if the listing
+    // belongs to one, otherwise the business owner.
     if (hasStripeConnect) {
       sessionConfig.payment_intent_data = {
         application_fee_amount: applicationFeeCents,
         transfer_data: {
-          destination: businessStripeAccountId,
+          destination: destinationStripeAccountId,
         },
       };
     }

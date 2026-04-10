@@ -1,13 +1,13 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { User, Briefcase, Users } from 'lucide-react';
+import { User, Briefcase, Users, GraduationCap } from 'lucide-react';
 import TypeformHeading from '../TypeformHeading';
 import { itemVariants } from '../TypeformStep';
 
 interface UserTypeStepProps {
   userType: string;
-  onUserTypeChange: (type: 'customer' | 'individual' | 'team') => void;
+  onUserTypeChange: (type: 'customer' | 'individual' | 'team' | 'student') => void;
 }
 
 const options = [
@@ -28,6 +28,12 @@ const options = [
     icon: Users,
     title: 'Team member',
     description: "I'm part of an existing business",
+  },
+  {
+    value: 'student' as const,
+    icon: GraduationCap,
+    title: 'Student',
+    description: "I'm enrolled at a partner academy",
   },
 ];
 
@@ -76,8 +82,9 @@ export default function UserTypeStep({ userType, onUserTypeChange }: UserTypeSte
 
       <motion.p variants={itemVariants} className="text-sm text-gray-400 text-center mt-6">
         Press <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs font-mono">1</kbd>,{' '}
-        <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs font-mono">2</kbd>, or{' '}
-        <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs font-mono">3</kbd> to select
+        <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs font-mono">2</kbd>,{' '}
+        <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs font-mono">3</kbd>, or{' '}
+        <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs font-mono">4</kbd> to select
       </motion.p>
     </div>
   );

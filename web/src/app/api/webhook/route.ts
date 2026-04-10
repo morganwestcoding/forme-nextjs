@@ -233,7 +233,8 @@ export async function POST(req: Request) {
 
       console.log(`Processing account.updated for: ${account.id}`);
 
-      // Find user by Connect account ID
+      // A Connect account ID may belong to either a User (worker) or an
+      // Academy (Phase 5b). Try the user first, then fall back to academy.
       const user = await prisma.user.findFirst({
         where: { stripeConnectAccountId: account.id },
       });
@@ -265,6 +266,31 @@ export async function POST(req: Request) {
               userId: user.id,
             },
           });
+        }
+      } else {
+        const academy = await prisma.academy.findFirst({
+          where: { stripeConnectAccountId: account.id },
+        });
+
+        if (academy) {
+          const wasNotComplete = !academy.stripeConnectOnboardingComplete;
+
+          await prisma.academy.update({
+            where: { id: academy.id },
+            data: {
+              stripeConnectDetailsSubmitted: account.details_submitted,
+              stripeConnectOnboardingComplete: account.details_submitted,
+              stripeConnectChargesEnabled: account.charges_enabled,
+              stripeConnectPayoutsEnabled: account.payouts_enabled,
+              ...(account.details_submitted && wasNotComplete
+                ? { stripeConnectOnboardedAt: new Date() }
+                : {}),
+            },
+          });
+
+          console.log(`Updated Connect status for academy ${academy.id}`);
+        } else {
+          console.log(`No user or academy found for Connect account ${account.id}`);
         }
       }
 

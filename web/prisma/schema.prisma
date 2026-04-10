@@ -77,6 +77,13 @@ model User {
 
   // Role field for access control
   role            String        @default("user") // "user" | "admin" | "master"
+
+  // User type (how the user signed up / uses ForMe)
+  userType        String?       // "customer" | "individual" | "team" | "student"
+
+  // Student fields — populated when userType == "student"
+  academyId       String?       @db.ObjectId
+  academy         Academy?      @relation(fields: [academyId], references: [id])
 }
 
 
@@ -127,6 +134,47 @@ model Listing {
   ratingCount   Int           @default(0)
   lat           Float?
   lng           Float?
+
+  // Academy ownership — set when this listing belongs to an Academy (students get assigned to it)
+  academyId     String?       @db.ObjectId
+  academy       Academy?      @relation(fields: [academyId], references: [id])
+}
+
+model Academy {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  name            String
+  description     String?
+  location        String?
+  logoUrl         String?
+  contactEmail    String?
+  website         String?
+
+  // Display fields for the licensing "Need Training" page + student academy picker
+  courses         String[]
+  duration        String?
+  priceLabel      String?
+  rating          Float?
+
+  // Student earnings split — academy-level default that new students inherit.
+  // Mirrors PayAgreement shape so the toggle UI is identical.
+  defaultPayType        String?  // "commission" | "chair_rental"
+  defaultSplitPercent   Float?   // student's cut when type == "commission"
+  defaultRentalAmount   Float?   // dollar amount when type == "chair_rental"
+  defaultRentalFrequency String? // "daily" | "weekly" | "monthly"
+
+  // Stripe Connect — academy receives bookings on behalf of its students
+  stripeConnectAccountId          String?
+  stripeConnectOnboardingComplete Boolean   @default(false)
+  stripeConnectDetailsSubmitted   Boolean   @default(false)
+  stripeConnectChargesEnabled     Boolean   @default(false)
+  stripeConnectPayoutsEnabled     Boolean   @default(false)
+  stripeConnectOnboardedAt        DateTime?
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  students        User[]
+  listings        Listing[]
 }
 
 model Reservation {

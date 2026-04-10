@@ -23,7 +23,7 @@ export type SafeService = {
   category: string;
 };
 
-export type SafeListing = Omit<Listing, "createdAt" | "rating" | "ratingCount"> & {
+export type SafeListing = Omit<Listing, "createdAt" | "rating" | "ratingCount" | "academyId"> & {
   createdAt: string;
   services: SafeService[];
   galleryImages: string[]; 
@@ -43,6 +43,7 @@ export type SafeListing = Omit<Listing, "createdAt" | "rating" | "ratingCount"> 
   isTrending?: boolean;
   lat?: number | null;
   lng?: number | null;
+  academyId?: string | null;
 };
 
 export type SafeReservation = Omit<
@@ -76,7 +77,7 @@ export type SafeReservation = Omit<
 
 export type SafeUser = Omit<
   User,
-  'favoriteIds'|'hashedPassword'|"createdAt" | "updatedAt" | "emailVerified"
+  'favoriteIds'|'hashedPassword'|"createdAt" | "updatedAt" | "emailVerified" | "userType" | "academyId"
 > & {
   id: string; 
   createdAt: string;
@@ -137,6 +138,10 @@ export type SafeUser = Omit<
 
   // Role for access control
   role?: string | null; // "user" | "admin" | "master"
+
+  // User type + student fields
+  userType?: string | null; // "customer" | "individual" | "team" | "student"
+  academyId?: string | null;
 };
 
 

@@ -6,7 +6,7 @@ import { registerSchema, validateBody } from "@/app/utils/validations";
 import { signMobileToken } from "@/app/utils/mobileAuth";
 
 type CanonicalTier = 'bronze' | 'professional' | 'enterprise';
-type UserType = 'customer' | 'individual' | 'team';
+type UserType = 'customer' | 'individual' | 'team' | 'student';
 
 function normalizeSubscription(input: unknown): 'bronze' | 'professional' | 'enterprise' {
   const raw = String(input || '').toLowerCase();
@@ -52,11 +52,37 @@ export async function POST(request: Request) {
       listingTitle,
       listingDescription,
       listingImage,
+      // Student fields
+      academyId,
     } = validation.data;
 
     const existing = await prisma.user.findUnique({ where: { email } });
     if (existing) {
       return apiErrorCode('EMAIL_EXISTS');
+    }
+
+    // Validate student data
+    let studentAcademy: Awaited<ReturnType<typeof prisma.academy.findUnique>> = null;
+    let studentAcademyListing: Awaited<ReturnType<typeof prisma.listing.findFirst>> = null;
+    if (userType === 'student') {
+      if (!academyId?.trim()) {
+        return apiError('Academy is required for students', 400);
+      }
+      studentAcademy = await prisma.academy.findUnique({ where: { id: academyId } });
+      if (!studentAcademy) {
+        return apiError('Selected academy not found', 404);
+      }
+      // Each academy must have a Listing for students to be Employees of.
+      // The seed creates this, but guard for missing data anyway.
+      studentAcademyListing = await prisma.listing.findFirst({
+        where: { academyId: studentAcademy.id },
+      });
+      if (!studentAcademyListing) {
+        return apiError(
+          'This academy is not yet set up to accept students. Please contact support.',
+          400
+        );
+      }
     }
 
     // Validate team member data
@@ -99,6 +125,7 @@ export async function POST(request: Request) {
     const thirtyDaysFromNow = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
 
     // Create the user first
+    const isStudent = userType === 'student';
     const user = await prisma.user.create({
       data: {
         email,
@@ -109,10 +136,18 @@ export async function POST(request: Request) {
         image: image ?? '',
         imageSrc: imageSrc ?? '',
         backgroundImage: backgroundImage ?? '',
-        subscriptionTier: subscription ?? 'bronze (customer)',
-        isSubscribed,
+        // Students get a sponsored "student" tier (free, not Stripe-backed)
+        // and skip the subscription page entirely.
+        subscriptionTier: isStudent ? 'student' : (subscription ?? 'bronze (customer)'),
+        isSubscribed: isStudent ? false : isSubscribed,
         managedListings: [], // Initialize as empty array
-        ...(isSubscribed && {
+        // Student fields
+        userType: userType ?? null,
+        academyId: isStudent ? studentAcademy!.id : null,
+        // Auto-verify students — academy enrollment IS their training.
+        verificationStatus: isStudent ? 'verified' : 'none',
+        verifiedAt: isStudent ? now : null,
+        ...(isSubscribed && !isStudent && {
           subscriptionStartDate: now,
           subscriptionEndDate: thirtyDaysFromNow
         })
@@ -164,6 +199,64 @@ export async function POST(request: Request) {
         console.error('Error creating employee record:', employeeError);
         await prisma.user.delete({ where: { id: user.id } });
         return apiError('Failed to create employee record', 500);
+      }
+    }
+
+    // For students — link to the academy's listing as an Employee, and create
+    // a PayAgreement that mirrors the academy's default split. This makes the
+    // student a billable worker under the academy without giving them their
+    // own Stripe Connect account (the academy holds the Connect account).
+    if (isStudent && studentAcademy && studentAcademyListing) {
+      try {
+        const employee = await prisma.employee.create({
+          data: {
+            fullName: name,
+            jobTitle: jobTitle || 'Student',
+            listingId: studentAcademyListing.id,
+            userId: user.id,
+            serviceIds: [],
+            isActive: true,
+            isIndependent: false,
+            teamRole: 'staff',
+          },
+        });
+
+        // Inherit the academy's default pay arrangement.
+        // If the academy hasn't configured one, fall back to commission/0%
+        // (academy keeps everything until they set a per-student override).
+        const payType = studentAcademy.defaultPayType ?? 'commission';
+        await prisma.payAgreement.create({
+          data: {
+            employeeId: employee.id,
+            type: payType,
+            splitPercent:
+              payType === 'commission'
+                ? studentAcademy.defaultSplitPercent ?? 0
+                : null,
+            rentalAmount:
+              payType === 'chair_rental'
+                ? studentAcademy.defaultRentalAmount ?? 0
+                : null,
+            rentalFrequency:
+              payType === 'chair_rental'
+                ? studentAcademy.defaultRentalFrequency ?? 'monthly'
+                : null,
+          },
+        });
+
+        console.log(
+          'Student linked:',
+          user.id,
+          '→ academy',
+          studentAcademy.id,
+          '→ employee',
+          employee.id
+        );
+      } catch (studentErr) {
+        console.error('Error linking student to academy:', studentErr);
+        // Roll back the user to keep state consistent.
+        await prisma.user.delete({ where: { id: user.id } });
+        return apiError('Failed to link student to academy', 500);
       }
     }
 
