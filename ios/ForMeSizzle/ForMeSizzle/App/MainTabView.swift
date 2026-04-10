@@ -14,6 +14,13 @@ struct MainTabView: View {
                             .navigationDestination(for: ProfileRoute.self) { route in
                                 ProfileView(userId: route.userId)
                             }
+                            .navigationDestination(for: BusinessRoute.self) { route in
+                                switch route {
+                                case .properties: PropertiesView()
+                                case .analytics: AnalyticsView()
+                                case .team: TeamView()
+                                }
+                            }
                     }
                 case .search:
                     NavigationStack {

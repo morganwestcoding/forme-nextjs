@@ -149,17 +149,30 @@ struct UserMenuView: View {
         guard let userId = user?.id else { return }
         dismiss()
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            if appState.selectedTab != .home { appState.selectedTab = .home }
+
             switch action {
             case .profile:
                 appState.navigationPath.append(ProfileRoute(userId: userId))
             case .favorites:
                 appState.showingFavorites = true
-            case .listings, .analytics, .team, .subscription:
-                // TODO: navigate to these
-                break
+            case .listings:
+                appState.navigationPath.append(BusinessRoute.properties)
+            case .analytics:
+                appState.navigationPath.append(BusinessRoute.analytics)
+            case .team:
+                appState.navigationPath.append(BusinessRoute.team)
+            case .subscription:
+                break // TODO
             }
         }
     }
+}
+
+// MARK: - Business Routes
+
+enum BusinessRoute: Hashable {
+    case properties, analytics, team
 }
 
 // MARK: - Profile Route (for navigation stack)

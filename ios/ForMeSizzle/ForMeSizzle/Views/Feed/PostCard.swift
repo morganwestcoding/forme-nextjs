@@ -35,7 +35,15 @@ struct PostCard: View {
                 Button {
                     isLiked.toggle()
                     Task {
-                        _ = try? await APIService.shared.likePost(postId: post.id)
+                        do {
+                            if isLiked {
+                                try await APIService.shared.addFavorite(listingId: post.id)
+                            } else {
+                                try await APIService.shared.removeFavorite(listingId: post.id)
+                            }
+                        } catch {
+                            isLiked.toggle()
+                        }
                     }
                 } label: {
                     Image(systemName: isLiked ? "heart.fill" : "heart")

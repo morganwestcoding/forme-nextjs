@@ -196,6 +196,11 @@ class APIService {
         return try await perform(request)
     }
 
+    func deleteListing(id: String) async throws {
+        let request = try buildRequest(endpoint: "/listings/\(id)", method: "DELETE")
+        let _: EmptyResponse = try await perform(request)
+    }
+
     // MARK: - Reservations
 
     func getReservations() async throws -> [Reservation] {
@@ -274,7 +279,7 @@ class APIService {
 
     // MARK: - Favorites
 
-    func getFavorites() async throws -> [Listing] {
+    func getFavorites() async throws -> FavoritesResponse {
         let request = try buildRequest(endpoint: "/favorites")
         return try await perform(request)
     }
@@ -372,6 +377,11 @@ class APIService {
 
 struct LikeResponse: Codable {
     let likes: [String]?
+}
+
+struct FavoritesResponse: Codable {
+    let listings: [Listing]
+    let posts: [Post]
 }
 
 // MARK: - Request/Response Types

@@ -14,7 +14,9 @@ class FavoritesViewModel: ObservableObject {
     func loadFavorites() async {
         isLoading = true
         do {
-            listings = try await api.getFavorites()
+            let response = try await api.getFavorites()
+            listings = response.listings
+            posts = response.posts
         } catch {
             // silent
         }

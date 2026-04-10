@@ -141,7 +141,13 @@ struct FeedView: View {
             likeCounts[id] = current + 1
         }
         Task {
-            _ = try? await APIService.shared.likePost(postId: id)
+            do {
+                if likedPosts.contains(id) {
+                    try await APIService.shared.addFavorite(listingId: id)
+                } else {
+                    try await APIService.shared.removeFavorite(listingId: id)
+                }
+            } catch {}
         }
     }
 
