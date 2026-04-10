@@ -22,8 +22,9 @@ struct FeedView: View {
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .frame(width: geo.size.height, height: geo.size.width)
-                .rotationEffect(.degrees(90))
+                .rotationEffect(.degrees(90), anchor: .center)
                 .frame(width: geo.size.width, height: geo.size.height)
+                .clipped()
                 .ignoresSafeArea()
 
                 // Side action buttons — right side
