@@ -89,8 +89,15 @@ struct BookingView: View {
                     }
                 }
             }
-            .onChange(of: viewModel.bookingComplete) { _, complete in
-                if complete { dismiss() }
+            .fullScreenCover(isPresented: $viewModel.bookingComplete) {
+                BookingSuccessView(
+                    listing: listing,
+                    service: service,
+                    date: viewModel.selectedDate,
+                    time: viewModel.selectedTime ?? "",
+                    employee: viewModel.selectedEmployee,
+                    onDismiss: { dismiss() }
+                )
             }
         }
     }
