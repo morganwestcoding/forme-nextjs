@@ -6,58 +6,53 @@ struct FeedView: View {
     let posts: [Post]
     var startIndex: Int = 0
     @Environment(\.dismiss) private var dismiss
-    @State private var currentIndex: Int = 0
+    @State private var currentIndex: Int? = 0
+
+    private let screen = UIScreen.main.bounds
 
     var body: some View {
-        GeometryReader { geo in
-            ZStack {
-                // Paging scroll
-                TabView(selection: $currentIndex) {
+        ZStack(alignment: .bottom) {
+            ScrollView(.vertical, showsIndicators: false) {
+                LazyVStack(spacing: 0) {
                     ForEach(Array(posts.enumerated()), id: \.element.id) { index, post in
-                        FeedCard(post: post, screenSize: geo.size)
-                            .rotationEffect(.degrees(-90))
-                            .frame(width: geo.size.height, height: geo.size.width)
-                            .tag(index)
-                    }
-                }
-                .tabViewStyle(.page(indexDisplayMode: .never))
-                .frame(width: geo.size.height, height: geo.size.width)
-                .rotationEffect(.degrees(90), anchor: .center)
-                .frame(width: geo.size.width, height: geo.size.height)
-                .clipped()
-                .ignoresSafeArea()
+                        ZStack {
+                            FeedCard(post: post, screenSize: screen.size)
 
-                // Side action buttons — right side
-                // Top bar — X left, actions right
-                VStack {
-                    HStack(alignment: .top) {
-                        Button {
-                            dismiss()
-                        } label: {
-                            Image(systemName: "xmark")
-                                .font(.system(size: 18, weight: .medium))
-                                .foregroundColor(.white)
-                                .shadow(color: .black.opacity(0.5), radius: 3, x: 0, y: 1)
-                                .frame(width: 40, height: 40)
-                        }
-
-                        Spacer()
-
-                        if let post = currentPost {
-                            VStack(spacing: 22) {
-                                ActionButton(icon: .heart, label: "\(post.likeCount)") {}
-                                ActionButton(icon: .comment, label: "\(post.commentCount)") {}
-                                ActionButton(icon: .bookmark, label: "\(post.bookmarkCount)") {}
-                                ActionButton(icon: .share, label: "Share") {}
+                            // Overlay UI per card
+                            VStack {
+                                HStack(alignment: .top) {
+                                    Button { dismiss() } label: {
+                                        Image(systemName: "xmark")
+                                            .font(.system(size: 18, weight: .medium))
+                                            .foregroundColor(.white)
+                                            .shadow(color: .black.opacity(0.5), radius: 3, x: 0, y: 1)
+                                            .frame(width: 40, height: 40)
+                                    }
+                                    Spacer()
+                                    VStack(spacing: 22) {
+                                        ActionButton(icon: .heart, label: "\(post.likeCount)") {}
+                                        ActionButton(icon: .comment, label: "\(post.commentCount)") {}
+                                        ActionButton(icon: .bookmark, label: "\(post.bookmarkCount)") {}
+                                        ActionButton(icon: .share, label: "Share") {}
+                                    }
+                                }
+                                .padding(.horizontal, ForMe.space5)
+                                .padding(.top, 60)
+                                Spacer()
                             }
                         }
+                        .frame(width: screen.width, height: screen.height)
+                        .id(index)
                     }
-                    .padding(.horizontal, ForMe.space5)
-                    .padding(.top, 54)
-
-                    Spacer()
                 }
+                .scrollTargetLayout()
             }
+            .scrollTargetBehavior(.paging)
+            .scrollPosition(id: $currentIndex)
+            .ignoresSafeArea()
+
+            // Tab bar at bottom
+            FeedTabBar(onClose: { dismiss() })
         }
         .background(.black)
         .onAppear {
@@ -65,10 +60,51 @@ struct FeedView: View {
         }
         .statusBarHidden()
     }
+}
 
-    private var currentPost: Post? {
-        guard currentIndex >= 0 && currentIndex < posts.count else { return nil }
-        return posts[currentIndex]
+// MARK: - Feed Tab Bar (dark style for full-screen feed)
+
+private struct FeedTabBar: View {
+    let onClose: () -> Void
+
+    private let tabs = [
+        ("TabDiscover", "Discover"),
+        ("TabSearch", "Search"),
+        ("TabMaps", "Maps"),
+        ("TabBooking", "Bookings"),
+        ("TabVendors", "Shops"),
+    ]
+
+    var body: some View {
+        HStack(spacing: 0) {
+            ForEach(tabs, id: \.1) { icon, label in
+                Button {
+                    onClose()
+                } label: {
+                    VStack(spacing: 4) {
+                        Image(icon)
+                            .renderingMode(.template)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 22, height: 22)
+                        Text(label)
+                            .font(.system(size: 10, weight: .medium))
+                    }
+                    .foregroundColor(.white.opacity(0.6))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
+                }
+            }
+        }
+        .padding(.horizontal, 6)
+        .padding(.vertical, 6)
+        .background(
+            RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous)
+                .fill(.ultraThinMaterial.opacity(0.3))
+                .shadow(color: .black.opacity(0.3), radius: 16, x: 0, y: 4)
+        )
+        .padding(.horizontal, ForMe.space4)
+        .padding(.bottom, ForMe.space2)
     }
 }
 
@@ -244,8 +280,10 @@ struct FeedCard: View {
     var body: some View {
         ZStack(alignment: .bottom) {
             // Media fills screen
+            Color.black
             mediaContent
                 .frame(width: screenSize.width, height: screenSize.height)
+                .contentShape(Rectangle())
                 .clipped()
 
             // Bottom gradient
@@ -296,10 +334,11 @@ struct FeedCard: View {
                 }
             }
             .padding(.horizontal, ForMe.space4)
-            .padding(.bottom, 60)
+            .padding(.bottom, 100)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .frame(width: screenSize.width, height: screenSize.height)
+        .clipped()
     }
 
     @ViewBuilder
