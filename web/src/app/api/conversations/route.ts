@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from '@/app/actions/getCurrentUser';
+import { getUserFromRequest } from '@/app/utils/mobileAuth';
 
 export async function GET(request: Request) {
   try {
-    const currentUser = await getCurrentUser();
+    const currentUser = await getUserFromRequest(request) || await getCurrentUser();
     console.log('Current user:', currentUser); // Debug log
     
     if (!currentUser?.id) {
@@ -76,7 +77,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const currentUser = await getCurrentUser();
+    const currentUser = await getUserFromRequest(request) || await getCurrentUser();
     const body = await request.json();
     console.log('POST request body:', body); // Debug log
     console.log('Current user:', currentUser); // Debug log

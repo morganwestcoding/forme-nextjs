@@ -3,13 +3,14 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/app/libs/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
+import { getUserFromRequest } from '@/app/utils/mobileAuth';
 
 interface IParams {
   postId?: string;
 }
 
 export async function POST(request: Request, { params }: { params: IParams }) {
-  const currentUser = await getCurrentUser();
+  const currentUser = await getUserFromRequest(request) || await getCurrentUser();
 
   if (!currentUser || !currentUser.id) {
     return NextResponse.error();

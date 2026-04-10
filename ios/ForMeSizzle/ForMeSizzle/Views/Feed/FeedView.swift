@@ -6,9 +6,19 @@ import AVKit
 struct FeedView: View {
     let posts: [Post]
     var startIndex: Int = 0
+    @EnvironmentObject var authViewModel: AuthViewModel
     @Environment(\.dismiss) private var dismiss
     @State private var currentIndex: Int? = 0
     @State private var selectedTab = 0
+    @State private var likedPosts: Set<String> = []
+    @State private var bookmarkedPosts: Set<String> = []
+    @State private var showComments = false
+    @State private var commentText = ""
+    @State private var activeComments: [Comment] = []
+    @State private var activePostId: String?
+    @State private var likeCounts: [String: Int] = [:]
+    @State private var commentCounts: [String: Int] = [:]
+    @State private var bookmarkCounts: [String: Int] = [:]
 
     private let screen = UIScreen.main.bounds
 
@@ -27,10 +37,28 @@ struct FeedView: View {
                                 HStack {
                                     Spacer()
                                     VStack(spacing: 22) {
-                                        ActionButton(icon: .heart, label: "\(post.likeCount)") {}
-                                        ActionButton(icon: .comment, label: "\(post.commentCount)") {}
-                                        ActionButton(icon: .bookmark, label: "\(post.bookmarkCount)") {}
-                                        ActionButton(icon: .share, label: "Share") {}
+                                        ActionButton(
+                                            icon: .heart,
+                                            label: "\(likeCounts[post.id] ?? post.likeCount)",
+                                            isActive: likedPosts.contains(post.id)
+                                        ) {
+                                            toggleLike(post)
+                                        }
+                                        ActionButton(icon: .comment, label: "\(commentCounts[post.id] ?? post.commentCount)") {
+                                            activePostId = post.id
+                                            activeComments = post.comments ?? []
+                                            showComments = true
+                                        }
+                                        ActionButton(
+                                            icon: .bookmark,
+                                            label: "\(bookmarkCounts[post.id] ?? post.bookmarkCount)",
+                                            isActive: bookmarkedPosts.contains(post.id)
+                                        ) {
+                                            toggleBookmark(post)
+                                        }
+                                        ActionButton(icon: .share, label: "Share") {
+                                            sharePost(post)
+                                        }
                                     }
                                 }
                                 .padding(.horizontal, ForMe.space5)
@@ -74,8 +102,172 @@ struct FeedView: View {
         .background(.black)
         .onAppear {
             currentIndex = startIndex
+            // Initialize liked/bookmarked state from current user
+            let userId = authViewModel.currentUser?.id ?? ""
+            for post in posts {
+                if post.likes?.contains(userId) == true { likedPosts.insert(post.id) }
+                if post.bookmarks?.contains(userId) == true { bookmarkedPosts.insert(post.id) }
+            }
         }
         .statusBarHidden()
+        .sheet(isPresented: $showComments) {
+            CommentsSheet(
+                postId: activePostId ?? "",
+                currentUser: authViewModel.currentUser,
+                onCommentAdded: {
+                    if let id = activePostId {
+                        let current = commentCounts[id] ?? (posts.first { $0.id == id }?.commentCount ?? 0)
+                        commentCounts[id] = current + 1
+                    }
+                },
+                comments: $activeComments,
+                commentText: $commentText
+            )
+            .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.visible)
+        }
+    }
+
+    // MARK: - Actions
+
+    private func toggleLike(_ post: Post) {
+        let id = post.id
+        let current = likeCounts[id] ?? post.likeCount
+        if likedPosts.contains(id) {
+            likedPosts.remove(id)
+            likeCounts[id] = max(0, current - 1)
+        } else {
+            likedPosts.insert(id)
+            likeCounts[id] = current + 1
+        }
+        Task {
+            _ = try? await APIService.shared.likePost(postId: id)
+        }
+    }
+
+    private func toggleBookmark(_ post: Post) {
+        let id = post.id
+        let current = bookmarkCounts[id] ?? post.bookmarkCount
+        if bookmarkedPosts.contains(id) {
+            bookmarkedPosts.remove(id)
+            bookmarkCounts[id] = max(0, current - 1)
+        } else {
+            bookmarkedPosts.insert(id)
+            bookmarkCounts[id] = current + 1
+        }
+        Task {
+            try? await APIService.shared.bookmarkPost(postId: id)
+        }
+    }
+
+    private func sharePost(_ post: Post) {
+        let text = post.content ?? ""
+        let activityVC = UIActivityViewController(activityItems: [text], applicationActivities: nil)
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let root = windowScene.windows.first?.rootViewController {
+            root.present(activityVC, animated: true)
+        }
+    }
+}
+
+// MARK: - Comments Sheet
+
+struct CommentsSheet: View {
+    let postId: String
+    let currentUser: User?
+    var onCommentAdded: (() -> Void)? = nil
+    @Binding var comments: [Comment]
+    @Binding var commentText: String
+    @FocusState private var isFocused: Bool
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 0) {
+                // Comments list
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: ForMe.space4) {
+                        if comments.isEmpty {
+                            Text("No comments yet")
+                                .font(.system(size: 14))
+                                .foregroundColor(ForMe.textTertiary)
+                                .frame(maxWidth: .infinity)
+                                .padding(.top, 40)
+                        } else {
+                            ForEach(comments) { comment in
+                                HStack(alignment: .top, spacing: 10) {
+                                    DynamicAvatar(
+                                        name: comment.user?.name ?? "User",
+                                        imageUrl: comment.user?.image,
+                                        size: .small
+                                    )
+                                    VStack(alignment: .leading, spacing: 3) {
+                                        Text(comment.user?.name ?? "User")
+                                            .font(.system(size: 13, weight: .semibold))
+                                            .foregroundColor(ForMe.textPrimary)
+                                        Text(comment.content)
+                                            .font(.system(size: 14))
+                                            .foregroundColor(ForMe.textSecondary)
+                                            .lineSpacing(2)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    .padding()
+                }
+
+                // Input bar
+                Divider()
+                HStack(spacing: 10) {
+                    TextField("Add a comment...", text: $commentText)
+                        .font(.system(size: 14))
+                        .focused($isFocused)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 10)
+                        .background(ForMe.stone100)
+                        .clipShape(Capsule())
+
+                    Button {
+                        submitComment()
+                    } label: {
+                        Image(systemName: "arrow.up.circle.fill")
+                            .font(.system(size: 30))
+                            .foregroundColor(commentText.isEmpty ? ForMe.stone300 : ForMe.stone900)
+                    }
+                    .disabled(commentText.isEmpty)
+                }
+                .padding(.horizontal)
+                .padding(.vertical, 10)
+            }
+            .navigationTitle("Comments")
+            .navigationBarTitleDisplayMode(.inline)
+        }
+    }
+
+    private func submitComment() {
+        let text = commentText.trimmingCharacters(in: .whitespaces)
+        guard !text.isEmpty else { return }
+        commentText = ""
+
+        // Optimistic: add comment locally with current user info
+        let localComment = Comment(
+            id: UUID().uuidString,
+            content: text,
+            createdAt: nil,
+            userId: currentUser?.id,
+            postId: postId,
+            user: CompactUser(
+                id: currentUser?.id ?? "",
+                name: currentUser?.name,
+                image: currentUser?.image
+            )
+        )
+        comments.append(localComment)
+        onCommentAdded?()
+
+        Task {
+            _ = try? await APIService.shared.commentOnPost(postId: postId, content: text)
+        }
     }
 }
 
@@ -170,6 +362,7 @@ private struct FeedTabBar: View {
 private struct ActionButton: View {
     let icon: FeedIcon
     let label: String
+    var isActive: Bool = false
     let action: () -> Void
 
     enum FeedIcon {
@@ -195,14 +388,26 @@ private struct ActionButton: View {
     private var iconView: some View {
         switch icon {
         case .heart:
-            WebIcon(paths: ["M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z"])
+            if isActive {
+                Image(systemName: "heart.fill")
+                    .font(.system(size: 24))
+                    .foregroundColor(.red)
+            } else {
+                WebIcon(paths: ["M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z"])
+            }
         case .comment:
             WebIcon(paths: [
                 "M8 13.5H16M8 8.5H12",
                 "M6.5 17.5C6.29454 18.5019 5.37769 20.6665 6.31569 21.3651C6.806 21.7218 7.58729 21.3408 9.14987 20.5789C10.2465 20.0441 11.3562 19.4309 12.5546 19.155C12.9931 19.0551 13.4395 19.0125 14 19C17.7712 19 19.6569 19 20.8284 17.8284C22 16.6569 22 14.7712 22 11V10.5C22 6.72876 22 4.84315 20.8284 3.67157C19.6569 2.5 17.7712 2.5 14 2.5H10C6.22876 2.5 4.34315 2.5 3.17157 3.67157C2 4.84315 2 6.72876 2 10.5V11C2 14.7712 2 16.6569 3.17157 17.8284C3.82475 18.4816 4.7987 18.8721 6.09881 19"
             ])
         case .bookmark:
-            WebIcon(paths: ["M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z"])
+            if isActive {
+                Image(systemName: "bookmark.fill")
+                    .font(.system(size: 22))
+                    .foregroundColor(.white)
+            } else {
+                WebIcon(paths: ["M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z"])
+            }
         case .share:
             WebIcon(paths: [
                 "M10.0017 3C7.05534 3.03208 5.41096 3.21929 4.31838 4.31188C2.99988 5.63037 2.99988 7.75248 2.99988 11.9966C2.99988 16.2409 2.99988 18.363 4.31838 19.6815C5.63688 21 7.75899 21 12.0032 21C16.2474 21 18.3695 21 19.688 19.6815C20.7808 18.5887 20.9678 16.9438 20.9999 13.9963",
@@ -465,4 +670,5 @@ struct FeedVideoPlayer: UIViewControllerRepresentable {
         Post(id: "2", content: "Every artist was first an amateur. Keep pushing, keep growing, keep creating.", likes: ["a"], user: CompactUser(id: "u2", name: "Sarah C.")),
         Post(id: "3", content: "New setup at the studio", imageSrc: "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800", likes: ["a", "b"], comments: [Comment(id: "c2", content: "Nice"), Comment(id: "c3", content: "Wow")], user: CompactUser(id: "u3", name: "Angela W.")),
     ])
+    .environmentObject(AuthViewModel())
 }

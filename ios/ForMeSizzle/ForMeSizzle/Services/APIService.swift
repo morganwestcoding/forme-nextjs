@@ -230,8 +230,14 @@ class APIService {
 
     // MARK: - Messages
 
+    func startConversation(userId: String) async throws -> Conversation {
+        let body = try encoder.encode(["userId": userId])
+        let request = try buildRequest(endpoint: "/conversations", method: "POST", body: body)
+        return try await perform(request)
+    }
+
     func getConversations() async throws -> [Conversation] {
-        let request = try buildRequest(endpoint: "/messages")
+        let request = try buildRequest(endpoint: "/conversations")
         return try await perform(request)
     }
 
@@ -299,10 +305,25 @@ class APIService {
         return try await perform(request)
     }
 
-    func likePost(postId: String) async throws {
-        let request = try buildRequest(endpoint: "/postActions/like/\(postId)", method: "POST")
+    func likePost(postId: String) async throws -> LikeResponse {
+        let request = try buildRequest(endpoint: "/postActions/\(postId)/like", method: "POST")
+        return try await perform(request)
+    }
+
+    func bookmarkPost(postId: String) async throws {
+        let request = try buildRequest(endpoint: "/postActions/\(postId)/bookmark", method: "POST")
         let _: EmptyResponse = try await perform(request)
     }
+
+    func commentOnPost(postId: String, content: String) async throws -> Comment {
+        let body = try encoder.encode(["content": content])
+        let request = try buildRequest(endpoint: "/postActions/\(postId)/comment", method: "POST", body: body)
+        return try await perform(request)
+    }
+}
+
+struct LikeResponse: Codable {
+    let likes: [String]?
 }
 
 // MARK: - Request/Response Types
