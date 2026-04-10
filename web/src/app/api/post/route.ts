@@ -3,9 +3,10 @@ import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import { MediaType } from "@/app/types";
+import { getUserFromRequest } from "@/app/utils/mobileAuth";
 
 export async function POST(request: Request) {
-    const currentUser = await getCurrentUser();
+    const currentUser = await getUserFromRequest(request) || await getCurrentUser();
     if (!currentUser) {
         return new Response("Unauthorized", { status: 401 });
     }

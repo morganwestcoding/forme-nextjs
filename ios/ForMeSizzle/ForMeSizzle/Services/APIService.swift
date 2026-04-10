@@ -297,11 +297,34 @@ class APIService {
         return try await perform(request)
     }
 
+    // MARK: - Notifications
+
+    func getNotifications() async throws -> [AppNotification] {
+        let request = try buildRequest(endpoint: "/notifications")
+        return try await perform(request)
+    }
+
+    func markNotificationRead(id: String) async throws {
+        let request = try buildRequest(endpoint: "/notifications/\(id)/read", method: "PATCH")
+        let _: EmptyResponse = try await perform(request)
+    }
+
+    func markAllNotificationsRead() async throws {
+        let request = try buildRequest(endpoint: "/notifications/read-all", method: "PATCH")
+        let _: EmptyResponse = try await perform(request)
+    }
+
     // MARK: - Feed
 
     func getFeed(page: Int = 1) async throws -> [Post] {
         let queryItems = [URLQueryItem(name: "page", value: "\(page)")]
         let request = try buildRequest(endpoint: "/post", queryItems: queryItems)
+        return try await perform(request)
+    }
+
+    func createPost(_ post: CreatePostRequest) async throws -> Post {
+        let body = try encoder.encode(post)
+        let request = try buildRequest(endpoint: "/post", method: "POST", body: body)
         return try await perform(request)
     }
 
@@ -329,6 +352,17 @@ struct LikeResponse: Codable {
 // MARK: - Request/Response Types
 
 struct EmptyResponse: Codable {}
+
+struct CreatePostRequest: Codable {
+    var content: String?
+    var imageSrc: String?
+    var mediaUrl: String?
+    var mediaType: String?
+    var beforeImageSrc: String?
+    var category: String?
+    var location: String?
+    var postType: String? // "text" | "ad" | "reel"
+}
 
 struct CheckoutRequest: Codable {
     let totalPrice: Double

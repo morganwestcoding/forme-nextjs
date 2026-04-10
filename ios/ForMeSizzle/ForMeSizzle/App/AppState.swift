@@ -18,6 +18,7 @@ class AppState: ObservableObject {
     @Published var showingInbox = false
     @Published var showingNotifications = false
     @Published var showingCreateMenu = false
+    @Published var showingPostFlow = false
     @Published var showingSettings = false
     @Published var showingProfile = false
 

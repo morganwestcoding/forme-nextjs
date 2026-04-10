@@ -38,10 +38,13 @@ struct MainTabView: View {
             Text("Inbox") // TODO: InboxView
         }
         .sheet(isPresented: $appState.showingNotifications) {
-            Text("Notifications") // TODO: NotificationsView
+            NotificationsView()
         }
         .sheet(isPresented: $appState.showingCreateMenu) {
             CreateMenuView()
+        }
+        .sheet(isPresented: $appState.showingPostFlow) {
+            PostFlow()
         }
         .sheet(isPresented: $appState.showingProfile) {
             ProfileView()

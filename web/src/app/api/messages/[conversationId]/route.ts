@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
+import { getUserFromRequest } from "@/app/utils/mobileAuth";
 
 export async function GET(
   request: Request,
   { params }: { params: { conversationId: string } }
 ) {
   try {
-    const currentUser = await getCurrentUser();
+    const currentUser = await getUserFromRequest(request) || await getCurrentUser();
     if (!currentUser) {
       return new NextResponse("Unauthorized", { status: 401 });
     }

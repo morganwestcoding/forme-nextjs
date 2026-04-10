@@ -2,6 +2,7 @@
 import { NextResponse } from 'next/server';
 import  getCurrentUser from '@/app/actions/getCurrentUser';
 import prisma from '@/app/libs/prismadb';
+import { getUserFromRequest } from '@/app/utils/mobileAuth';
 
 interface IParams {
   notificationId?: string;
@@ -12,7 +13,7 @@ export async function PATCH(
   { params }: { params: IParams }
 ) {
   try {
-    const currentUser = await getCurrentUser();
+    const currentUser = await getUserFromRequest(request) || await getCurrentUser();
 
     if (!currentUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

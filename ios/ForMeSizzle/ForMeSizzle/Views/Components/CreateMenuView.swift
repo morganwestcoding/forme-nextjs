@@ -94,13 +94,16 @@ struct CreateMenuView: View {
     }
 
     private func handleNavigation(_ destination: CreateDestination) {
-        // TODO: Navigate to respective typeflow
         switch destination {
-        case .post: break    // PostFlow
-        case .listing: break // ListingFlow
-        case .shop: break    // ShopFlow
-        case .product: break // ProductFlow
-        case .worker: break  // WorkerFlow
+        case .post:
+            // Slight delay so the create menu closes first
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                appState.showingPostFlow = true
+            }
+        case .listing: break // TODO: ListingFlow
+        case .shop: break    // TODO: ShopFlow
+        case .product: break // TODO: ProductFlow
+        case .worker: break  // TODO: WorkerFlow
         }
     }
 }

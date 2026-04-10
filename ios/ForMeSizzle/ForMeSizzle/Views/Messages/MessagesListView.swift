@@ -199,10 +199,17 @@ struct MessagesListView: View {
     private func startConversation(with user: SearchResultItem) {
         Task {
             do {
-                let conversation = try await APIService.shared.startConversation(userId: user.id)
+                var conversation = try await APIService.shared.startConversation(userId: user.id)
+                // Populate otherUser locally so it shows instantly in the chat header
+                if conversation.otherUser == nil {
+                    conversation.otherUser = CompactUser(
+                        id: user.id,
+                        name: user.displayTitle,
+                        image: user.image
+                    )
+                }
                 searchText = ""
                 userResults = []
-                // Reload list and navigate
                 await viewModel.loadConversations()
                 navigateTo = conversation
             } catch {
