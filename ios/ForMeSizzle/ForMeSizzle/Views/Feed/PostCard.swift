@@ -3,6 +3,7 @@ import SwiftUI
 struct PostCard: View {
     let post: Post
     var width: CGFloat = 180
+    @State private var isLiked = false
 
     private var isTextPost: Bool { post.imageSrc == nil && post.mediaUrl == nil }
     private var isVideo: Bool { post.mediaType == "video" }
@@ -32,15 +33,23 @@ struct PostCard: View {
             // Heart + Share — top right, vertical (matches web)
             VStack(spacing: 10) {
                 Button {
-                    // TODO: toggle like
+                    isLiked.toggle()
+                    Task {
+                        _ = try? await APIService.shared.likePost(postId: post.id)
+                    }
                 } label: {
-                    Image(systemName: "heart")
+                    Image(systemName: isLiked ? "heart.fill" : "heart")
                         .font(.system(size: 20, weight: .medium))
-                        .foregroundColor(.white.opacity(0.85))
+                        .foregroundColor(isLiked ? .red : .white.opacity(0.85))
                         .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
                 }
                 Button {
-                    // TODO: share
+                    let text = post.content ?? ""
+                    let activityVC = UIActivityViewController(activityItems: [text], applicationActivities: nil)
+                    if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                       let root = scene.windows.first?.rootViewController {
+                        root.present(activityVC, animated: true)
+                    }
                 } label: {
                     Image(systemName: "arrow.up.right")
                         .font(.system(size: 18, weight: .medium))

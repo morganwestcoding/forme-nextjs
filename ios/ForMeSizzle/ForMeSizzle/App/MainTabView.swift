@@ -11,6 +11,9 @@ struct MainTabView: View {
                 case .home:
                     NavigationStack(path: $appState.navigationPath) {
                         HomeView()
+                            .navigationDestination(for: ProfileRoute.self) { route in
+                                ProfileView(userId: route.userId)
+                            }
                     }
                 case .search:
                     NavigationStack {
@@ -46,8 +49,14 @@ struct MainTabView: View {
         .sheet(isPresented: $appState.showingPostFlow) {
             PostFlow()
         }
+        .sheet(isPresented: $appState.showingFavorites) {
+            FavoritesView()
+        }
+        .sheet(isPresented: $appState.showingSettings) {
+            SettingsView()
+        }
         .sheet(isPresented: $appState.showingProfile) {
-            ProfileView()
+            UserMenuView()
         }
     }
 }

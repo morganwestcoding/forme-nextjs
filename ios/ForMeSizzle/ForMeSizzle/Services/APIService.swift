@@ -297,6 +297,18 @@ class APIService {
         return try await perform(request)
     }
 
+    // MARK: - Users
+
+    func getUser(id: String) async throws -> User {
+        let request = try buildRequest(endpoint: "/users/\(id)")
+        return try await perform(request)
+    }
+
+    func toggleFollow(userId: String) async throws {
+        let request = try buildRequest(endpoint: "/follow/\(userId)", method: "POST")
+        let _: EmptyResponse = try await perform(request)
+    }
+
     // MARK: - Notifications
 
     func getNotifications() async throws -> [AppNotification] {
@@ -320,6 +332,19 @@ class APIService {
         let queryItems = [URLQueryItem(name: "page", value: "\(page)")]
         let request = try buildRequest(endpoint: "/post", queryItems: queryItems)
         return try await perform(request)
+    }
+
+    func getUserPosts(userId: String) async throws -> [Post] {
+        let queryItems = [URLQueryItem(name: "userId", value: userId)]
+        let request = try buildRequest(endpoint: "/post", queryItems: queryItems)
+        return try await perform(request)
+    }
+
+    func getUserListings(userId: String) async throws -> [Listing] {
+        let queryItems = [URLQueryItem(name: "userId", value: userId)]
+        let request = try buildRequest(endpoint: "/listings", queryItems: queryItems)
+        let response: ListingsResponse = try await perform(request)
+        return response.listings
     }
 
     func createPost(_ post: CreatePostRequest) async throws -> Post {

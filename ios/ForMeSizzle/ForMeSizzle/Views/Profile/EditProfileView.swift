@@ -1,105 +1,149 @@
 import SwiftUI
+import PhotosUI
 
 struct EditProfileView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
-    @Environment(\.dismiss) var dismiss
+    @Environment(\.dismiss) private var dismiss
 
-    @State private var name: String = ""
-    @State private var bio: String = ""
-    @State private var location: String = ""
+    @State private var name = ""
+    @State private var bio = ""
+    @State private var location = ""
+    @State private var imagePickerItem: PhotosPickerItem?
+    @State private var imageData: Data?
     @State private var isSaving = false
+    @State private var error: String?
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 24) {
-                    // Avatar
-                    VStack(spacing: 12) {
-                        DynamicAvatar(
-                            name: authViewModel.currentUser?.name ?? "User",
-                            imageUrl: authViewModel.currentUser?.image,
-                            size: .large
-                        )
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: ForMe.space5) {
+                    PhotosPicker(selection: $imagePickerItem, matching: .images) {
+                        ZStack(alignment: .bottomTrailing) {
+                            if let data = imageData, let uiImage = UIImage(data: data) {
+                                Image(uiImage: uiImage)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(width: 110, height: 110)
+                                    .clipShape(Circle())
+                            } else {
+                                DynamicAvatar(
+                                    name: authViewModel.currentUser?.name ?? "User",
+                                    imageUrl: authViewModel.currentUser?.image,
+                                    size: .extraLarge
+                                )
+                            }
 
-                        Button("Change Photo") {
-                            // TODO: Implement photo picker
-                        }
-                        .font(.subheadline.weight(.medium))
-                        .foregroundColor(ForMe.accent)
-                    }
-                    .padding(.top, 8)
-
-                    // Fields
-                    VStack(spacing: 16) {
-                        VStack(alignment: .leading, spacing: 6) {
-                            Text("Name")
-                                .font(.subheadline.weight(.medium))
-                                .foregroundColor(ForMe.textPrimary)
-                            TextField("Your name", text: $name)
-                                .forMeInput()
-                        }
-
-                        VStack(alignment: .leading, spacing: 6) {
-                            Text("Bio")
-                                .font(.subheadline.weight(.medium))
-                                .foregroundColor(ForMe.textPrimary)
-                            TextField("Tell us about yourself", text: $bio, axis: .vertical)
-                                .lineLimit(3...6)
-                                .forMeInput()
-                        }
-
-                        VStack(alignment: .leading, spacing: 6) {
-                            Text("Location")
-                                .font(.subheadline.weight(.medium))
-                                .foregroundColor(ForMe.textPrimary)
-                            TextField("City, State", text: $location)
-                                .forMeInput()
+                            Image(systemName: "camera.fill")
+                                .font(.system(size: 12, weight: .semibold))
+                                .foregroundColor(.white)
+                                .frame(width: 32, height: 32)
+                                .background(ForMe.stone900)
+                                .clipShape(Circle())
+                                .overlay(Circle().stroke(.white, lineWidth: 2))
                         }
                     }
+                    .padding(.top, ForMe.space5)
+                    .onChange(of: imagePickerItem) { _, newValue in
+                        Task {
+                            if let data = try? await newValue?.loadTransferable(type: Data.self) {
+                                imageData = data
+                            }
+                        }
+                    }
+
+                    VStack(spacing: ForMe.space3) {
+                        formField(label: "Name", text: $name)
+                        formField(label: "Bio", text: $bio, isMultiline: true)
+                        formField(label: "Location", text: $location)
+                    }
+                    .padding(.horizontal)
                 }
-                .padding(.horizontal, 24)
+                .padding(.bottom, 80)
             }
             .background(ForMe.background)
             .navigationTitle("Edit Profile")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                    .foregroundColor(ForMe.textSecondary)
+                    Button("Cancel") { dismiss() }
+                        .foregroundColor(ForMe.textSecondary)
                 }
-
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
-                        Task {
-                            isSaving = true
-                            if await authViewModel.updateProfile(
-                                name: name.isEmpty ? nil : name,
-                                bio: bio.isEmpty ? nil : bio,
-                                location: location.isEmpty ? nil : location
-                            ) {
-                                dismiss()
-                            }
-                            isSaving = false
-                        }
+                        Task { await save() }
                     } label: {
                         if isSaving {
-                            ForMeLoader(size: .small, color: ForMe.accent)
+                            ProgressView().tint(ForMe.textPrimary)
                         } else {
                             Text("Save")
-                                .bold()
-                                .foregroundColor(ForMe.accent)
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundColor(ForMe.textPrimary)
                         }
                     }
                     .disabled(isSaving)
                 }
+            }
+            .alert("Error", isPresented: .constant(error != nil)) {
+                Button("OK") { error = nil }
+            } message: {
+                Text(error ?? "")
             }
             .onAppear {
                 name = authViewModel.currentUser?.name ?? ""
                 bio = authViewModel.currentUser?.bio ?? ""
                 location = authViewModel.currentUser?.location ?? ""
             }
+        }
+    }
+
+    private func formField(label: String, text: Binding<String>, isMultiline: Bool = false) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(label)
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundColor(ForMe.stone500)
+
+            if isMultiline {
+                TextEditor(text: text)
+                    .font(.system(size: 15))
+                    .scrollContentBackground(.hidden)
+                    .frame(minHeight: 100)
+                    .padding(ForMe.space3)
+                    .background(ForMe.surface)
+                    .clipShape(RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous)
+                            .stroke(ForMe.borderLight, lineWidth: 1)
+                    )
+            } else {
+                TextField("", text: text)
+                    .font(.system(size: 15))
+                    .padding(.horizontal, ForMe.space4)
+                    .padding(.vertical, 14)
+                    .background(ForMe.surface)
+                    .clipShape(RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous)
+                            .stroke(ForMe.borderLight, lineWidth: 1)
+                    )
+            }
+        }
+    }
+
+    private func save() async {
+        isSaving = true
+        var update = ProfileUpdateRequest()
+        update.name = name
+        update.bio = bio
+        update.location = location
+
+        do {
+            let updated = try await APIService.shared.updateProfile(update)
+            authViewModel.currentUser = updated
+            isSaving = false
+            dismiss()
+        } catch {
+            self.error = error.localizedDescription
+            isSaving = false
         }
     }
 }

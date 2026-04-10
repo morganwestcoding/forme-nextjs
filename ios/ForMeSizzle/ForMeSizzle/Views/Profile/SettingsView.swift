@@ -1,89 +1,210 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @Environment(\.dismiss) var dismiss
-    @AppStorage("notificationsEnabled") private var notificationsEnabled = true
-    @AppStorage("darkMode") private var darkMode = false
+    @EnvironmentObject var authViewModel: AuthViewModel
+    @Environment(\.dismiss) private var dismiss
+    @AppStorage("isDarkMode") private var isDarkMode = false
+    @AppStorage("accentColorHex") private var accentColorHex = "60A5FA"
+    @State private var showLogoutConfirm = false
+
+    private let presetColors: [(String, String)] = [
+        ("60A5FA", "Blue"),
+        ("34D399", "Green"),
+        ("F472B6", "Pink"),
+        ("FBBF24", "Yellow"),
+        ("A78BFA", "Purple"),
+        ("FB7185", "Red"),
+        ("2DD4BF", "Teal"),
+        ("FB923C", "Orange"),
+    ]
 
     var body: some View {
         NavigationStack {
-            Form {
-                Section("Preferences") {
-                    Toggle("Push Notifications", isOn: $notificationsEnabled)
-                        .tint(ForMe.accent)
-                    Toggle("Dark Mode", isOn: $darkMode)
-                        .tint(ForMe.accent)
-                }
+            ScrollView(showsIndicators: false) {
+                VStack(alignment: .leading, spacing: ForMe.space5) {
+                    // Header
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Settings")
+                            .font(.system(size: 22, weight: .bold))
+                            .foregroundColor(ForMe.textPrimary)
+                        Text("Customize your app appearance")
+                            .font(.system(size: 13))
+                            .foregroundColor(ForMe.stone400)
+                    }
+                    .padding(.horizontal)
+                    .padding(.top, ForMe.space3)
 
-                Section("Account") {
-                    NavigationLink("Change Password") {
-                        ChangePasswordView()
+                    // Dark Mode toggle
+                    settingRow(
+                        title: "Dark Mode",
+                        subtitle: "Switch between light and dark themes"
+                    ) {
+                        Toggle("", isOn: $isDarkMode)
+                            .labelsHidden()
+                            .tint(ForMe.stone900)
                     }
 
-                    NavigationLink("Privacy Settings") {
-                        Text("Privacy Settings")
-                    }
-                }
+                    // Accent color picker
+                    VStack(alignment: .leading, spacing: ForMe.space3) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Accent Color")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundColor(ForMe.textPrimary)
+                            Text("Pick your favorite accent")
+                                .font(.system(size: 12))
+                                .foregroundColor(ForMe.stone400)
+                        }
 
-                Section("About") {
-                    HStack {
-                        Text("Version")
-                        Spacer()
-                        Text("1.0.0")
-                            .foregroundColor(ForMe.textTertiary)
+                        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 4), spacing: 12) {
+                            ForEach(presetColors, id: \.0) { hex, name in
+                                Button {
+                                    accentColorHex = hex
+                                } label: {
+                                    VStack(spacing: 6) {
+                                        Circle()
+                                            .fill(Color(hex: hex))
+                                            .frame(width: 44, height: 44)
+                                            .overlay(
+                                                Circle()
+                                                    .stroke(accentColorHex == hex ? ForMe.stone900 : .clear, lineWidth: 2.5)
+                                                    .padding(-3)
+                                            )
+                                        Text(name)
+                                            .font(.system(size: 11))
+                                            .foregroundColor(ForMe.stone500)
+                                    }
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
                     }
+                    .padding(ForMe.space4)
+                    .background(ForMe.surface)
+                    .clipShape(RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous)
+                            .stroke(ForMe.borderLight, lineWidth: 1)
+                    )
+                    .padding(.horizontal)
 
-                    Link("Terms of Service", destination: URL(string: "https://forme.app/terms")!)
-                        .foregroundColor(ForMe.accent)
-                    Link("Privacy Policy", destination: URL(string: "https://forme.app/privacy")!)
-                        .foregroundColor(ForMe.accent)
-                }
+                    // Account section
+                    VStack(alignment: .leading, spacing: 0) {
+                        Text("Account")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundColor(ForMe.stone400)
+                            .padding(.horizontal, ForMe.space4)
+                            .padding(.bottom, 8)
 
-                Section {
-                    Button("Delete Account", role: .destructive) {
-                        // TODO: Implement account deletion
+                        accountRow(icon: "person.crop.circle", label: "Edit Profile") {}
+                        accountRow(icon: "bell", label: "Notifications") {}
+                        accountRow(icon: "lock", label: "Privacy") {}
+                        accountRow(icon: "questionmark.circle", label: "Help & Support") {}
                     }
-                    .foregroundColor(ForMe.statusCancelled)
+                    .padding(.horizontal)
+
+                    // Sign out
+                    Button {
+                        showLogoutConfirm = true
+                    } label: {
+                        Text("Sign Out")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundColor(ForMe.statusCancelled)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 14)
+                            .background(ForMe.surface)
+                            .clipShape(RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous)
+                                    .stroke(ForMe.statusCancelled.opacity(0.3), lineWidth: 1)
+                            )
+                    }
+                    .padding(.horizontal)
+                    .padding(.top, ForMe.space3)
                 }
+                .padding(.bottom, 80)
             }
-            .navigationTitle("Settings")
+            .background(ForMe.background)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button { dismiss() } label: {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundColor(ForMe.textPrimary)
+                    }
+                }
+            }
+            .confirmationDialog("Sign out?", isPresented: $showLogoutConfirm) {
+                Button("Sign Out", role: .destructive) {
+                    Task {
+                        await authViewModel.logout()
                         dismiss()
                     }
-                    .foregroundColor(ForMe.accent)
                 }
+                Button("Cancel", role: .cancel) {}
             }
         }
+        .preferredColorScheme(isDarkMode ? .dark : .light)
     }
-}
 
-struct ChangePasswordView: View {
-    @State private var currentPassword = ""
-    @State private var newPassword = ""
-    @State private var confirmPassword = ""
-
-    var body: some View {
-        Form {
-            Section {
-                SecureField("Current Password", text: $currentPassword)
-                SecureField("New Password", text: $newPassword)
-                SecureField("Confirm New Password", text: $confirmPassword)
+    private func settingRow<Content: View>(
+        title: String,
+        subtitle: String,
+        @ViewBuilder trailing: () -> Content
+    ) -> some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(ForMe.textPrimary)
+                Text(subtitle)
+                    .font(.system(size: 12))
+                    .foregroundColor(ForMe.stone400)
             }
-
-            Section {
-                Button("Update Password") {
-                    // TODO: Implement password change
-                }
-                .disabled(newPassword.isEmpty || newPassword != confirmPassword)
-            }
+            Spacer()
+            trailing()
         }
-        .navigationTitle("Change Password")
+        .padding(ForMe.space4)
+        .background(ForMe.surface)
+        .clipShape(RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous)
+                .stroke(ForMe.borderLight, lineWidth: 1)
+        )
+        .padding(.horizontal)
+    }
+
+    private func accountRow(icon: String, label: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 14) {
+                Image(systemName: icon)
+                    .font(.system(size: 16))
+                    .foregroundColor(ForMe.stone600)
+                    .frame(width: 24)
+                Text(label)
+                    .font(.system(size: 14))
+                    .foregroundColor(ForMe.textPrimary)
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(ForMe.stone300)
+            }
+            .padding(.horizontal, ForMe.space4)
+            .padding(.vertical, 14)
+            .background(ForMe.surface)
+        }
+        .buttonStyle(.plain)
+        .overlay(
+            Rectangle()
+                .frame(height: 1)
+                .foregroundColor(ForMe.stone100)
+                .padding(.leading, 50),
+            alignment: .bottom
+        )
     }
 }
 
 #Preview {
     SettingsView()
+        .environmentObject(AuthViewModel())
 }

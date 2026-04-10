@@ -499,6 +499,7 @@ struct ListingRow: View {
 
 struct ListingFullWidthCard: View {
     let listing: Listing
+    @State private var isFavorited = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -525,15 +526,15 @@ struct ListingFullWidthCard: View {
                 // Heart + Share on image
                 VStack(spacing: 10) {
                     Button {
-                        // TODO: toggle favorite
+                        toggleFavorite()
                     } label: {
-                        Image(systemName: "heart")
+                        Image(systemName: isFavorited ? "heart.fill" : "heart")
                             .font(.system(size: 20, weight: .medium))
-                            .foregroundColor(.white)
+                            .foregroundColor(isFavorited ? .red : .white)
                             .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
                     }
                     Button {
-                        // TODO: share
+                        shareListing()
                     } label: {
                         Image(systemName: "arrow.up.right")
                             .font(.system(size: 18, weight: .medium))
@@ -575,6 +576,34 @@ struct ListingFullWidthCard: View {
                 }
             }
             .padding(.top, 16)
+        }
+        .onAppear {
+            // Could check from local cache if listing is favorited
+        }
+    }
+
+    private func toggleFavorite() {
+        isFavorited.toggle()
+        Task {
+            do {
+                if isFavorited {
+                    try await APIService.shared.addFavorite(listingId: listing.id)
+                } else {
+                    try await APIService.shared.removeFavorite(listingId: listing.id)
+                }
+            } catch {
+                // Revert on error
+                isFavorited.toggle()
+            }
+        }
+    }
+
+    private func shareListing() {
+        let text = listing.title
+        let activityVC = UIActivityViewController(activityItems: [text], applicationActivities: nil)
+        if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let root = scene.windows.first?.rootViewController {
+            root.present(activityVC, animated: true)
         }
     }
 }

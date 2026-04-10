@@ -13,6 +13,9 @@ struct PostFlow: View {
     @State private var imageData: Data?
     @State private var isSubmitting = false
     @State private var error: String?
+    @State private var showSourcePicker = false
+    @State private var showCamera = false
+    @State private var showPhotoLibrary = false
 
     enum PostStep: Int, CaseIterable {
         case type = 0, content, caption, preview
@@ -153,13 +156,18 @@ struct PostFlow: View {
                 .padding(.horizontal)
                 .padding(.top, ForMe.space4)
 
-                PhotosPicker(selection: $selectedImage, matching: .any(of: [.images, .videos])) {
+                Button {
+                    showSourcePicker = true
+                } label: {
                     if let imageData = imageData, let uiImage = UIImage(data: imageData) {
-                        Image(uiImage: uiImage)
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
+                        Color.clear
                             .frame(height: 360)
                             .frame(maxWidth: .infinity)
+                            .overlay(
+                                Image(uiImage: uiImage)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                            )
                             .clipShape(RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous))
                     } else {
                         VStack(spacing: 12) {
@@ -180,7 +188,17 @@ struct PostFlow: View {
                         )
                     }
                 }
+                .buttonStyle(.plain)
                 .padding(.horizontal)
+                .confirmationDialog("Choose source", isPresented: $showSourcePicker, titleVisibility: .visible) {
+                    Button("Take Photo") { showCamera = true }
+                    Button("Choose from Library") { showPhotoLibrary = true }
+                    Button("Cancel", role: .cancel) {}
+                }
+                .sheet(isPresented: $showCamera) {
+                    CameraPicker(imageData: $imageData)
+                }
+                .photosPicker(isPresented: $showPhotoLibrary, selection: $selectedImage, matching: .any(of: [.images, .videos]))
                 .onChange(of: selectedImage) { _, newValue in
                     Task {
                         if let data = try? await newValue?.loadTransferable(type: Data.self) {
@@ -278,11 +296,14 @@ struct PostFlow: View {
                         .frame(height: 280)
                         .clipShape(RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous))
                     } else if let imageData = imageData, let uiImage = UIImage(data: imageData) {
-                        Image(uiImage: uiImage)
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
+                        Color.clear
                             .frame(height: 360)
                             .frame(maxWidth: .infinity)
+                            .overlay(
+                                Image(uiImage: uiImage)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                            )
                             .clipShape(RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous))
 
                         if !caption.isEmpty {
@@ -303,30 +324,27 @@ struct PostFlow: View {
     private var bottomBar: some View {
         VStack(spacing: 0) {
             Divider()
-            HStack {
-                Spacer()
-                Button {
-                    if step == .preview {
-                        Task { await submit() }
-                    } else {
-                        goNext()
-                    }
-                } label: {
-                    if isSubmitting {
-                        ForMeLoader(size: .small, color: .white)
-                            .frame(width: 140)
-                    } else {
-                        Text(step == .preview ? "Share Post" : "Continue")
-                            .font(.system(size: 15, weight: .semibold))
-                            .frame(width: 140)
-                    }
+            Button {
+                if step == .preview {
+                    Task { await submit() }
+                } else {
+                    goNext()
                 }
-                .foregroundColor(.white)
-                .padding(.vertical, 14)
-                .background(canProceed ? ForMe.stone900 : ForMe.stone300)
-                .clipShape(RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous))
-                .disabled(!canProceed || isSubmitting)
+            } label: {
+                if isSubmitting {
+                    ForMeLoader(size: .small, color: .white)
+                        .frame(maxWidth: .infinity)
+                } else {
+                    Text(step == .preview ? "Share Post" : "Continue")
+                        .font(.system(size: 15, weight: .semibold))
+                        .frame(maxWidth: .infinity)
+                }
             }
+            .foregroundColor(.white)
+            .padding(.vertical, 14)
+            .background(canProceed ? ForMe.stone900 : ForMe.stone300)
+            .clipShape(RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous))
+            .disabled(!canProceed || isSubmitting)
             .padding()
         }
         .background(ForMe.background)

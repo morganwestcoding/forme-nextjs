@@ -21,6 +21,7 @@ class AppState: ObservableObject {
     @Published var showingPostFlow = false
     @Published var showingSettings = false
     @Published var showingProfile = false
+    @Published var showingFavorites = false
 
     func resetNavigation() {
         navigationPath = NavigationPath()

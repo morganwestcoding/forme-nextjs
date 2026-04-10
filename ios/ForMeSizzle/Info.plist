@@ -7,5 +7,11 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>ForMe needs access to your camera to take photos for your posts.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>ForMe needs access to your photo library to select images for your posts.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>ForMe needs access to your microphone to record videos for your posts.</string>
 </dict>
 </plist>

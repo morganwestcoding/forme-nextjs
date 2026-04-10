@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/app/libs/prismadb";
+import { getUserFromRequest } from "@/app/utils/mobileAuth";
 
 type FollowType = "user" | "listing" | "shop"; // ✅ add 'shop'
 
@@ -9,7 +10,7 @@ export async function POST(
   request: Request,
   { params }: { params: { userId: string } }
 ) {
-  const currentUser = await getCurrentUser();
+  const currentUser = await getUserFromRequest(request) || await getCurrentUser();
   if (!currentUser) return NextResponse.error();
 
   const { userId } = params;

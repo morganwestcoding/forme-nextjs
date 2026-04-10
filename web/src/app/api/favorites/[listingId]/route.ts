@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/app/libs/prismadb";
+import { getUserFromRequest } from "@/app/utils/mobileAuth";
 
 interface IParams {
   listingId?: string;
@@ -10,7 +11,7 @@ export async function POST(
   request: Request, 
   { params }: { params: IParams }
 ) {
-  const currentUser = await getCurrentUser();
+  const currentUser = await getUserFromRequest(request) || await getCurrentUser();
 
   if (!currentUser) {
     return NextResponse.error();
@@ -44,7 +45,7 @@ export async function DELETE(
   request: Request, 
   { params }: { params: IParams }
 ) {
-  const currentUser = await getCurrentUser();
+  const currentUser = await getUserFromRequest(request) || await getCurrentUser();
 
   if (!currentUser) {
     return NextResponse.error();

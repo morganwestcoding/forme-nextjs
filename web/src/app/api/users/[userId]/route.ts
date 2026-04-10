@@ -3,6 +3,28 @@ import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import { canModifyResource } from "@/app/libs/authorization";
+import { getUserFromRequest } from "@/app/utils/mobileAuth";
+
+export async function GET(
+  request: Request,
+  { params }: { params: { userId: string } }
+) {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: params.userId },
+    });
+    if (!user) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    return NextResponse.json({
+      ...user,
+      hashedPassword: undefined,
+      createdAt: user.createdAt.toISOString(),
+      updatedAt: user.updatedAt.toISOString(),
+      emailVerified: user.emailVerified?.toISOString() || null,
+    });
+  } catch (e) {
+    return NextResponse.json({ error: "Internal error" }, { status: 500 });
+  }
+}
 
 export async function PUT(
   request: Request,
