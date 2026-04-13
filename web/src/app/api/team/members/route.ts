@@ -80,7 +80,6 @@ export async function GET() {
 
     return NextResponse.json({ members, listings });
   } catch (error) {
-    console.error("[TEAM_MEMBERS_GET]", error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }
@@ -121,7 +120,6 @@ export async function PATCH(request: Request) {
 
     return NextResponse.json(updated);
   } catch (error) {
-    console.error("[TEAM_MEMBERS_PATCH]", error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }

@@ -60,7 +60,6 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
         const data = await response.json();
         setSearchResults(data.users || []);
       } catch (error) {
-        console.error('Error searching users:', error);
         setSearchResults([]);
       } finally {
         setIsSearching(false);

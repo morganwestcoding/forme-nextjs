@@ -72,10 +72,8 @@ export default async function getFavoriteListings() {
       ratingCount: favorite.ratingCount ?? 0,
     }));
 
-    console.log('Safe favorites:', safeFavorites);
     return safeFavorites;
   } catch (error: any) {
-    console.error("Error fetching favorite listings:", error.message);
     throw new Error("Failed to fetch favorite listings");
   }
 }

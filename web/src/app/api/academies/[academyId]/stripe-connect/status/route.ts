@@ -88,7 +88,6 @@ export async function GET(
       requirements: account.requirements,
     });
   } catch (error: any) {
-    console.error("Academy Stripe Connect status error:", error);
     return apiError(error.message || "Failed to get account status", 500);
   }
 }

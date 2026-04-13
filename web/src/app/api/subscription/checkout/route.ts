@@ -147,7 +147,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ sessionId: checkoutSession.id });
   } catch (error: any) {
-    console.error("Subscription checkout error:", error);
     return apiError(error.message || "Something went wrong", 500);
   }
 }

@@ -227,7 +227,6 @@ export async function PUT(request: Request, { params }: { params: IParams }) {
 
     return NextResponse.json(fresh);
   } catch (error) {
-    console.error("[LISTING_UPDATE]", error);
     if (error instanceof Error && error.message.includes("Users not found")) {
       return new NextResponse(error.message, { status: 400 });
     }

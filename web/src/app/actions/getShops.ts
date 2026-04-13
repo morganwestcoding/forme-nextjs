@@ -126,7 +126,6 @@ export default async function getShops(params: IShopsParams): Promise<SafeShop[]
 
     return filtered.map(toSafeShop);
   } catch (error: any) {
-    console.error("Error in getShops:", error);
     throw new Error(`Failed to fetch shops: ${error.message}`);
   }
 }

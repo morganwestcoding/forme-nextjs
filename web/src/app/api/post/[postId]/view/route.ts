@@ -41,7 +41,6 @@ export async function POST(
 
     return NextResponse.json({ viewed: true });
   } catch (error) {
-    console.error("Error recording post view:", error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }

@@ -28,7 +28,7 @@ const QRModal: React.FC<QRModalProps> = ({
       await navigator.clipboard.writeText(listingUrl);
       // You could add a toast notification here if you have one
     } catch (err) {
-      console.error('Failed to copy link:', err);
+      // silently handled
     }
   };
 

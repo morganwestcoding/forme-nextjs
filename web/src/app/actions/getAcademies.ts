@@ -33,7 +33,6 @@ export default async function getAcademies() {
       createdAt: a.createdAt.toISOString(),
     }));
   } catch (error) {
-    console.error("getAcademies error:", error);
     return [];
   }
 }
@@ -103,7 +102,6 @@ export async function getAcademyById(id: string) {
       createdAt: academy.createdAt.toISOString(),
     };
   } catch (error) {
-    console.error("getAcademyById error:", error);
     return null;
   }
 }

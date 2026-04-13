@@ -39,7 +39,6 @@ export async function GET(request: Request) {
       })),
     });
   } catch (error) {
-    console.error("[PAYOUT_GET]", error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }
@@ -124,7 +123,6 @@ export async function POST(request: Request) {
           });
         }
       } catch (stripeError) {
-        console.error("[PAYOUT_AUTO_TRANSFER]", stripeError);
         // Revert to pending if transfer fails
         await prisma.payout.update({
           where: { id: payout.id },
@@ -148,7 +146,6 @@ export async function POST(request: Request) {
       amount: payout.amount,
     });
   } catch (error) {
-    console.error("[PAYOUT_POST]", error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }
@@ -249,11 +246,9 @@ export async function PATCH(request: Request) {
 
       return NextResponse.json({ status: "completed", transferId: transfer.id });
     } catch (stripeError: any) {
-      console.error("[PAYOUT_TRANSFER]", stripeError);
       return apiError(`Transfer failed: ${stripeError.message}`, 500);
     }
   } catch (error) {
-    console.error("[PAYOUT_PATCH]", error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }

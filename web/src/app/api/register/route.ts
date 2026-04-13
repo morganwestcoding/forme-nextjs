@@ -202,10 +202,7 @@ export async function POST(request: Request) {
           });
         }
 
-        console.log('Employee created:', employee.id);
-        
       } catch (employeeError) {
-        console.error('Error creating employee record:', employeeError);
         await prisma.user.delete({ where: { id: user.id } });
         return apiError('Failed to create employee record', 500);
       }
@@ -261,16 +258,7 @@ export async function POST(request: Request) {
           },
         });
 
-        console.log(
-          'Student linked:',
-          user.id,
-          '→ academy',
-          studentAcademy.id,
-          '→ employee',
-          employee.id
-        );
       } catch (studentErr) {
-        console.error('Error linking student to academy:', studentErr);
         // Roll back the user to keep state consistent.
         await prisma.user.delete({ where: { id: user.id } });
         return apiError('Failed to link student to academy', 500);
@@ -332,10 +320,8 @@ export async function POST(request: Request) {
           }
         });
 
-        console.log('Independent provider listing created:', listing.id, 'with', serviceIds.length, 'services');
       } catch (listingError) {
-        console.error('Error creating listing/worker card for individual provider:', listingError);
-        // Don't fail registration if this fails, just log it
+        // Don't fail registration if this fails
       }
     }
 
@@ -350,7 +336,6 @@ export async function POST(request: Request) {
       token,
     });
   } catch (err) {
-    console.error('REGISTER_ERROR', err);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }

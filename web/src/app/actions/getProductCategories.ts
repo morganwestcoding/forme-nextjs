@@ -28,7 +28,6 @@ export default async function getProductCategories() {
 
     return safeCategories;
   } catch (error: any) {
-    console.error("Error in getProductCategories:", error);
     throw new Error(`Failed to fetch product categories: ${error.message}`);
   }
 }

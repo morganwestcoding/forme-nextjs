@@ -215,7 +215,6 @@ export default async function getProducts(params: IProductsParams): Promise<Safe
 
     return safeProducts;
   } catch (error: any) {
-    console.error("Error in getProducts:", error);
     throw new Error(`Failed to fetch products: ${error.message}`);
   }
 }

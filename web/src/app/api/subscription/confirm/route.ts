@@ -92,7 +92,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ ok: true });
   } catch (error: any) {
-    console.error("[SUB_CONFIRM_POST]", error);
     return apiError(error.message || "Internal error", 500);
   }
 }

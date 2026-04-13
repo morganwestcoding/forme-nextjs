@@ -63,8 +63,6 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Demo request error:', error);
-
     // Handle Prisma unique constraint error specifically
     if (error instanceof Error && error.message.includes('Unique constraint')) {
       return apiError('Demo request already exists for this email', 409);
@@ -89,7 +87,6 @@ export async function GET() {
     });
 
   } catch (error) {
-    console.error('Demo request count error:', error);
     return apiError('Failed to get demo request count', 500);
   } finally {
     await prisma.$disconnect();

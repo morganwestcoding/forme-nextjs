@@ -115,7 +115,6 @@ export async function GET(request: Request) {
       agreementType: employee.payAgreement?.type || null,
     });
   } catch (error) {
-    console.error("[BALANCE_GET]", error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }

@@ -76,7 +76,6 @@ export async function GET(request: Request) {
       requirements: account.requirements,
     });
   } catch (error: any) {
-    console.error("Stripe Connect status error:", error);
     return apiError(error.message || "Failed to get account status", 500);
   }
 }

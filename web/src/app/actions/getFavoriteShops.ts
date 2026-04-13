@@ -89,7 +89,6 @@ export default async function getFavoriteShops(): Promise<SafeShop[]> {
 
     return safeShops;
   } catch (error: any) {
-    console.error("Error fetching favorite shops:", error.message);
     return [];
   }
 }

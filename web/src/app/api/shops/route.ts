@@ -34,7 +34,6 @@ async function createProductsForShop(
     const { name, description, price, category, image, images, sizes } = productData;
 
     if (!name || !description || !price) {
-      console.log(`Skipping product missing fields`, { name, description, price });
       continue;
     }
 
@@ -49,7 +48,6 @@ async function createProductsForShop(
 
     const mainImage = image || (images?.length ? images[0] : null);
     if (!mainImage) {
-      console.log(`Skipping product ${name} due to missing image`);
       continue;
     }
 
@@ -88,7 +86,7 @@ async function createProductsForShop(
         data: { featuredProducts: { push: product.id } }
       });
     } catch (e) {
-      console.error(`Error creating product ${name}:`, e);
+      // Product creation failed; continue with remaining products
     }
   }
 
@@ -116,12 +114,6 @@ export async function POST(request: Request) {
     listingId,
     products
   } = body;
-
-  console.log("Received fields:", {
-    name, description, category, logo, coverImage, location,
-    address, zipCode, isOnlineOnly, storeUrl, galleryImages,
-    productsCount: products?.length || 0
-  });
 
   // Better missing-fields report
   const required: Record<string, any> = { name, description, logo };
@@ -166,7 +158,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ ...shop, products: createdProducts });
   } catch (error) {
-    console.error("Error creating shop:", error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }
@@ -195,7 +186,6 @@ export async function GET(request: Request) {
 
     return NextResponse.json(safe);
   } catch (error) {
-    console.error("Error fetching shops:", error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }

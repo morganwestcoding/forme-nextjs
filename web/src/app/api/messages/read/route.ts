@@ -69,7 +69,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json(safeConversation);
   } catch (error) {
-    console.error('Error updating message read status:', error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }

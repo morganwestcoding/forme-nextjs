@@ -54,7 +54,6 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
           setIsAuthenticated(false);
         }
       } catch (error) {
-        console.error('Error checking authentication:', error);
         await minLoadTime;
         setIsAuthenticated(false);
       } finally {
@@ -78,7 +77,7 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
           setWaitlistCount(data.count);
         }
       } catch (error) {
-        console.error('Error fetching waitlist count:', error);
+        // silently handled
       }
     };
 
@@ -134,7 +133,6 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
         }
       }
     } catch (error) {
-      console.error('Error submitting email:', error);
       setEmailError('Network error. Please try again.');
     } finally {
       setEmailLoading(false);
@@ -191,7 +189,6 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
         }
       }
     } catch (error) {
-      console.error('Error submitting demo request:', error);
       setDemoError('Network error. Please try again.');
     } finally {
       setDemoLoading(false);
@@ -205,7 +202,6 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
         localStorage.setItem('forme_early_access_timestamp', Date.now().toString());
         setIsAuthenticated(true);
       } catch (error) {
-        console.error('Error storing authentication:', error);
         alert('Authentication failed. Please try again.');
       }
     } else {

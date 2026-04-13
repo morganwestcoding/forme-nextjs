@@ -188,7 +188,6 @@ export async function PATCH(
 
     return NextResponse.json(updatedPost);
   } catch (error) {
-    console.error("Error in PATCH /api/post/[postId]:", error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }
@@ -229,7 +228,6 @@ export async function DELETE(
 
     return NextResponse.json(deletedPost);
   } catch (error) {
-    console.error("Error in DELETE /api/posts/[postId]:", error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }

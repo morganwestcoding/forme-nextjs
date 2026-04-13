@@ -28,25 +28,6 @@ export async function POST(request: Request) {
         mentions = [] // NEW: Handle mentions/tags
     } = body;
 
-    console.log("Received fields in POST request:", {
-        content,
-        imageSrc,
-        beforeImageSrc: beforeImageSrc || 'NOT PROVIDED',
-        mediaUrl,
-        mediaType,
-        mediaOverlay,
-        thumbnailUrl,
-        location,
-        tag,
-        category,
-        postType,
-        mentions
-    });
-
-    if (beforeImageSrc) {
-        console.log(">>> beforeImageSrc IS SET:", beforeImageSrc);
-    }
-
     // Check if content exists (allow empty content for Reels)
     if (content === undefined || content === null) {
         return apiError("Missing required field: content", 400);
@@ -130,7 +111,6 @@ export async function POST(request: Request) {
 
         return NextResponse.json(completePost);
     } catch (error) {
-        console.error("Error creating post:", error);
         return apiErrorCode('INTERNAL_ERROR');
     }
 }
@@ -199,7 +179,6 @@ export async function GET(request: Request) {
 
         return NextResponse.json(filteredPosts);
     } catch (error) {
-        console.error("Error fetching posts:", error);
         return apiErrorCode('INTERNAL_ERROR');
     }
 }

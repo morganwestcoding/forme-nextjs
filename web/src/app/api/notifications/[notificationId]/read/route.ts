@@ -38,7 +38,6 @@ export async function PATCH(
 
     return NextResponse.json(notification);
   } catch (error) {
-    console.error('[NOTIFICATION_READ]', error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }

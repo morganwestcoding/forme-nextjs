@@ -32,7 +32,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ url: loginLink.url });
   } catch (error: any) {
-    console.error("Stripe Connect dashboard error:", error);
     return apiError(error.message || "Failed to create dashboard link", 500);
   }
 }

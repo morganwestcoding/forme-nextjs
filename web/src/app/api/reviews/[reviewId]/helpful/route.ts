@@ -59,7 +59,6 @@ export async function POST(
       hasVoted: !hasVoted,
     });
   } catch (error) {
-    console.error('Failed to toggle helpful vote:', error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }

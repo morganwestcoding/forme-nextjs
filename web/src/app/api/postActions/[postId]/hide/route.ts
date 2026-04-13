@@ -41,7 +41,6 @@ export async function POST(
 
     return NextResponse.json(updatedPost);
   } catch (error) {
-    console.error("Error in POST /api/postActions/[postId]/hide:", error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }
@@ -85,7 +84,6 @@ export async function DELETE(
 
     return NextResponse.json(updatedPost);
   } catch (error) {
-    console.error("Error in DELETE /api/postActions/[postId]/hide:", error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }

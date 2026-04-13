@@ -57,7 +57,6 @@ export async function POST(
 
    return NextResponse.json(updated);
  } catch (error) {
-   console.error("[RESERVATION_STATUS_UPDATE]", error);
    return apiError("Failed to update", 500);
  }
 }
@@ -148,7 +147,6 @@ export async function PATCH(
 
    return NextResponse.json(updatedReservation);
  } catch (error) {
-   console.error(`Error ${request.method} reservation:`, error);
    return apiError('Error updating reservation', 500);
  }
 }
@@ -233,7 +231,6 @@ export async function DELETE(
 
    return NextResponse.json({ message: "Reservation cancelled successfully" });
  } catch (error) {
-   console.error("Error cancelling reservation:", error);
    return apiError("Error cancelling reservation", 500);
  }
 }

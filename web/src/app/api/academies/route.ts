@@ -26,7 +26,6 @@ export async function GET() {
 
     return NextResponse.json(academies);
   } catch (error) {
-    console.error("[GET /api/academies]", error);
     return apiError("Failed to load academies", 500);
   }
 }

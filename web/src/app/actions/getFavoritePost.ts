@@ -113,7 +113,6 @@ export default async function getFavoritePosts(): Promise<SafePost[]> {
 
     return safePosts;
   } catch (error: any) {
-    console.error("Error fetching favorite posts:", error.message);
     return [];
   }
 }

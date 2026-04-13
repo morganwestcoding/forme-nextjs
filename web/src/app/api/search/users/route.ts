@@ -45,7 +45,6 @@ export async function GET(request: Request) {
     // Return in wrapped format for consistency
     return NextResponse.json({ users });
   } catch (error) {
-    console.error('Error searching users:', error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }

@@ -72,7 +72,6 @@ export default async function getFavoriteWorkers(): Promise<SafeEmployee[]> {
 
     return safeWorkers;
   } catch (error: any) {
-    console.error("Error fetching favorite workers:", error.message);
     return [];
   }
 }

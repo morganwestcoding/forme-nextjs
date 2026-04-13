@@ -25,7 +25,6 @@ export async function PATCH(request: Request) {
 
     return NextResponse.json(notifications);
   } catch (error) {
-    console.error('[NOTIFICATIONS_READ_ALL]', error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }

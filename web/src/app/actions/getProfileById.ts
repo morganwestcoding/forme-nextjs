@@ -71,7 +71,6 @@ export default async function getProfileById(params: IParams) {
       postCount,
     };
   } catch (error: any) {
-    console.error("Error in getProfileById:", error);
     throw new Error(`Failed to fetch profile: ${error.message}`);
   }
 }

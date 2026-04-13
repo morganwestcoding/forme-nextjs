@@ -119,7 +119,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true, review, isVerifiedBooking: hasVerifiedBooking });
   } catch (error) {
-    console.error('Review creation failed:', error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }
@@ -236,7 +235,6 @@ export async function GET(request: Request) {
       ratingDistribution,
     });
   } catch (error) {
-    console.error('Failed to fetch reviews:', error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }

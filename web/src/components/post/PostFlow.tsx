@@ -146,7 +146,6 @@ export default function PostFlow({ currentUser }: PostFlowProps) {
             postType: 'work',
           };
 
-      console.log('[PostFlow] Submitting payload:', payload);
       await axios.post('/api/post', payload);
       toast.success('Post created!');
       router.push('/');

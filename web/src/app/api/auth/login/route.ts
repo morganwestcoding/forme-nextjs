@@ -48,7 +48,6 @@ export async function POST(request: Request) {
       token,
     });
   } catch (error) {
-    console.error('LOGIN_ERROR', error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }

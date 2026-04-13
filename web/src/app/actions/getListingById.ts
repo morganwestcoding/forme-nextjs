@@ -171,7 +171,6 @@ export default async function getListingById(params: IParams): Promise<(SafeList
       user: safeUser
     };
   } catch (error: any) {
-    console.error('Error fetching listing by ID:', error);
     return null;
   }
 }

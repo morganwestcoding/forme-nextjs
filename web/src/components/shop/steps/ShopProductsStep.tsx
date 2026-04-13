@@ -5,6 +5,7 @@ import { Plus } from 'lucide-react';
 import Image from 'next/image';
 import TypeformHeading from '@/components/registration/TypeformHeading';
 import { itemVariants } from '@/components/registration/TypeformStep';
+import { placeholderDataUri } from '@/lib/placeholders';
 
 interface ProductData {
   name: string;
@@ -38,7 +39,7 @@ export default function ShopProductsStep({
         {products.map((product, index) => {
           const src =
             (product.images && product.images.length > 0 ? product.images[0] : product.image) ||
-            '/images/placeholder-300x300.png';
+            placeholderDataUri(product.name || 'Product');
           return (
             <motion.div
               key={`${product.name}-${index}`}

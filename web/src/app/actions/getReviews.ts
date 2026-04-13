@@ -143,7 +143,6 @@ export default async function getReviews(
       ratingDistribution,
     };
   } catch (error) {
-    console.error('Failed to fetch reviews:', error);
     return {
       reviews: [],
       totalCount: 0,

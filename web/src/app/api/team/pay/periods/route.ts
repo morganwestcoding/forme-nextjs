@@ -36,7 +36,6 @@ export async function GET(request: Request) {
       })),
     });
   } catch (error) {
-    console.error("[PAY_PERIODS_GET]", error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }
@@ -126,7 +125,6 @@ export async function POST(request: Request) {
       status: period.status,
     });
   } catch (error) {
-    console.error("[PAY_PERIODS_POST]", error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }
@@ -185,7 +183,6 @@ export async function PATCH(request: Request) {
 
     return NextResponse.json({ status: action === "waive" ? "waived" : "charged" });
   } catch (error) {
-    console.error("[PAY_PERIODS_PATCH]", error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }

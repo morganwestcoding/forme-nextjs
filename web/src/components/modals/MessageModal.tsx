@@ -63,12 +63,6 @@ const MessageModal: React.FC = () => {
 
   useEffect(() => {
     if (messageModal.isOpen && messageModal.conversationId) {
-      console.log('MessageModal opened with:', {
-        conversationId: messageModal.conversationId,
-        otherUserId: messageModal.otherUserId,
-        otherUserData: messageModal.otherUserData
-      });
-
       // If we have user data from the modal, use it immediately
       if (messageModal.otherUserData) {
         setOtherUser(messageModal.otherUserData);
@@ -86,11 +80,8 @@ const MessageModal: React.FC = () => {
   // Update otherUser when messages load if we don't have user info yet
   useEffect(() => {
     if (messages.length > 0 && !otherUser && messageModal.otherUserId) {
-      console.log('Trying to get user from messages, otherUserId:', messageModal.otherUserId);
       const otherUserMessage = messages.find((msg: Message) => msg.senderId === messageModal.otherUserId);
-      console.log('Found message from other user:', otherUserMessage);
       if (otherUserMessage) {
-        console.log('Setting otherUser from message:', otherUserMessage.sender);
         setOtherUser({
           name: otherUserMessage.sender.name,
           image: otherUserMessage.sender.image
@@ -115,19 +106,16 @@ const MessageModal: React.FC = () => {
 
   const fetchOtherUser = async () => {
     if (!messageModal.otherUserId) {
-      console.log('No otherUserId available');
       return;
     }
-    console.log('Fetching user info for:', messageModal.otherUserId);
     try {
       const response = await axios.get(`/api/users/${messageModal.otherUserId}`);
-      console.log('User data received:', response.data);
       setOtherUser({
         name: response.data.name,
         image: response.data.image || response.data.imageSrc
       });
     } catch (error) {
-      console.error('Failed to load user info:', error);
+      // silently handled
     }
   };
 

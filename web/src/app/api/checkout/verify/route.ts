@@ -87,7 +87,6 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ success: true, reservation });
   } catch (error: any) {
-    console.error("Checkout verification error:", error);
     return apiError(error.message || "Something went wrong", 500);
   }
 }

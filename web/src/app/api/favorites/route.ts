@@ -50,7 +50,6 @@ export async function GET(request: Request) {
       })),
     });
   } catch (error) {
-    console.error("[FAVORITES_GET]", error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }

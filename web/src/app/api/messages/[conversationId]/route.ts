@@ -66,7 +66,6 @@ export async function GET(
 
     return NextResponse.json(safeMessages);
   } catch (error) {
-    console.error("Error getting messages:", error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }
@@ -161,7 +160,6 @@ export async function POST(
 
     return NextResponse.json(safeMessage);
   } catch (error) {
-    console.error("Error creating message:", error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }

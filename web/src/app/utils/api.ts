@@ -79,7 +79,6 @@ export function withErrorHandler(
     try {
       return await handler(request, context);
     } catch (error) {
-      console.error('API Error:', error);
 
       if (error instanceof Error) {
         // Don't expose internal error messages in production

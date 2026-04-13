@@ -34,7 +34,6 @@ export default function SuccessPage() {
           }
         }
       } catch (error) {
-        console.error('Error verifying payment', error);
         setSuccess(false);
       } finally {
         setLoading(false);

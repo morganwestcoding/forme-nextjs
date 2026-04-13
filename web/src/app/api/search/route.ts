@@ -37,7 +37,6 @@ async function safeQuery<T>(fn: () => Promise<T[]>): Promise<T[]> {
   try {
     return await fn();
   } catch (e) {
-    console.error("[SEARCH_QUERY_FAIL]", (e as any)?.message?.slice(0, 100));
     return [];
   }
 }

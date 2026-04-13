@@ -73,7 +73,7 @@ const SettingsClient = ({ currentUser, isEmployee }: SettingsClientProps) => {
       const { data } = await axios.get('/api/stripe-connect/status');
       setConnectStatus(data);
     } catch (error) {
-      console.error('Failed to fetch Connect status:', error);
+      // silently handled
     } finally {
       setConnectLoading(false);
     }

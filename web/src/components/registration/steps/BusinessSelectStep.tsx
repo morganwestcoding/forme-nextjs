@@ -52,7 +52,6 @@ export default function BusinessSelectStep({ selectedListing, onListingChange, o
         setListings(listingResults);
         setHasSearched(true);
       } catch (error) {
-        console.error('Search failed:', error);
         setListings([]);
       }
       setIsLoading(false);

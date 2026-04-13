@@ -71,7 +71,7 @@ export const FilterProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         });
       }
     } catch (error) {
-      console.error('Error loading filters:', error);
+      // silently handled
       setFilters(initialFilters);
     }
   }, []);

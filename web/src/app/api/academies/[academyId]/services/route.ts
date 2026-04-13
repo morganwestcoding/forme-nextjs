@@ -107,7 +107,6 @@ export async function POST(
 
     return NextResponse.json(service);
   } catch (error: any) {
-    console.error("[POST academy services]", error);
     return apiError(error.message || "Failed to create service", 500);
   }
 }

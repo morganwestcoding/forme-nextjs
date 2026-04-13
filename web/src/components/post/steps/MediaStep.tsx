@@ -75,8 +75,6 @@ const MediaStep: React.FC<MediaStepProps> = ({
     const processed = processResult(result);
     const target = uploadTargetRef.current;
 
-    console.log(`[MediaStep] Upload success - target: ${target}, type: ${processed?.type}, url: ${processed?.url}`);
-
     if (processed && target) {
       if (target === 'before') {
         onBeforeImageChange(processed.url);

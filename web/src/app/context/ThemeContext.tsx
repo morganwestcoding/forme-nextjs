@@ -33,7 +33,7 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
         if (parsed.accentColor) setAccentColorState(parsed.accentColor);
         if (typeof parsed.isDarkMode === 'boolean') setIsDarkModeState(parsed.isDarkMode);
       } catch (e) {
-        console.error('Failed to parse theme from localStorage:', e);
+        // silently handled
       }
     }
     setIsHydrated(true);

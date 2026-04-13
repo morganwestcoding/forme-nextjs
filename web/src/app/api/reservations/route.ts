@@ -59,7 +59,6 @@ export async function GET(request: Request) {
 
     return NextResponse.json(reservations);
   } catch (error) {
-    console.error('[RESERVATIONS_GET]', error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }
@@ -115,7 +114,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json(reservation);
   } catch (error) {
-    console.error('[RESERVATION_POST]', error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }

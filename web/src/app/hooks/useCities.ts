@@ -277,8 +277,6 @@ const useCities = (stateCode: string, opts?: UseCitiesOptions) => {
         setCities(items);
       } catch (e: any) {
         if (reqId !== reqIdRef.current) return;
-        // eslint-disable-next-line no-console
-        console.error('[useCities] error:', e);
         setError(e?.message || 'Failed to fetch cities');
         setCities([]);
       } finally {

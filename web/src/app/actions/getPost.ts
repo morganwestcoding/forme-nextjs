@@ -219,7 +219,6 @@ export default async function getPosts(params: IPostsParams): Promise<SafePost[]
     return safePosts as SafePost[];
 
   } catch (error) {
-    console.error("Error in getPosts:", error);
     throw new Error("Failed to fetch posts.");
   }
 }

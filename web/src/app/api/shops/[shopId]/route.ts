@@ -118,7 +118,6 @@ export async function PUT(
 
     return NextResponse.json(updatedShop);
   } catch (error) {
-    console.error("Error updating shop:", error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }

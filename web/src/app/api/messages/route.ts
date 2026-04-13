@@ -37,7 +37,6 @@ export async function POST(request: Request) {
     // ... (rest of the code to format and return the message)
 
   } catch (error) {
-    console.error("Error creating message:", error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }

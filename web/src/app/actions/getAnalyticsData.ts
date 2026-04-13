@@ -360,11 +360,9 @@ export default async function getAnalyticsData(userId: string): Promise<Analytic
       listings: listingsWithStats
     };
 
-    console.log('Fetched analytics data for user:', userId);
     return safeAnalyticsData;
 
   } catch (error: any) {
-    console.error("Error fetching analytics data:", error);
     throw new Error(`Failed to fetch analytics data: ${error.message}`);
   }
 }

@@ -379,9 +379,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                         price={priceNum}
                         showPrice={true}
                         variant="dark"
-                        onPriceClick={() => {
-                          console.log('Price clicked for service:', service.serviceName);
-                        }}
+                        onPriceClick={() => {}}
                         onBookNowClick={(e: React.MouseEvent) => {
                           e.stopPropagation();
                           if (listing && currentUser) {

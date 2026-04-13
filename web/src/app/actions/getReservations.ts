@@ -205,22 +205,18 @@ export default async function getReservations(params: IParams) {
 
     return safeReservations;
   } catch (error: any) {
-    console.error('Error fetching reservations:', error);
-    
     // As a fallback, try to get reservations without includes
     try {
-      console.log('Attempting fallback query without includes...');
-      const fallbackReservations = await prisma.reservation.findMany({
+      await prisma.reservation.findMany({
         where: params.userId ? { userId: params.userId } : {},
         orderBy: { createdAt: 'desc' },
       });
-      
-      console.log(`Found ${fallbackReservations.length} reservations without includes`);
+
       return []; // Return empty array for now, as we can't safely construct SafeReservation without listing data
     } catch (fallbackError) {
-      console.error('Fallback query also failed:', fallbackError);
+      // silently handled
     }
-    
+
     throw new Error(`Failed to fetch reservations: ${error.message}`);
   }
 }

@@ -27,7 +27,6 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ availability });
   } catch (error) {
-    console.error("[AVAILABILITY_GET]", error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }
@@ -95,7 +94,6 @@ export async function PUT(request: Request) {
 
     return NextResponse.json({ availability: results });
   } catch (error) {
-    console.error("[AVAILABILITY_PUT]", error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }

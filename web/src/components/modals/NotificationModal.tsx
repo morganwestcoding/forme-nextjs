@@ -120,7 +120,6 @@ const NotificationsModal = () => {
       const response = await axios.get('/api/notifications');
       setNotifications(response.data);
     } catch (error) {
-      console.error('Error fetching notifications:', error);
       toast.error('Failed to load notifications');
     } finally {
       setLoading(false);
@@ -141,7 +140,6 @@ const NotificationsModal = () => {
       // Call API to mark as read
       await axios.patch(`/api/notifications/${id}/read`);
     } catch (error) {
-      console.error('Error marking notification as read:', error);
       // Revert optimistic update
       setNotifications(prev => 
         prev.map(notification => 
@@ -164,7 +162,6 @@ const NotificationsModal = () => {
       // Call API to mark all as read
       await axios.patch('/api/notifications/read-all');
     } catch (error) {
-      console.error('Error marking all notifications as read:', error);
       // Revert optimistic update
       fetchNotifications();
       toast.error('Failed to mark all as read');

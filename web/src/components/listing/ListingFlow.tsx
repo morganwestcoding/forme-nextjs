@@ -321,7 +321,6 @@ export default function ListingFlow({ mode = 'create', listingId, initialData }:
       }
       router.refresh();
     } catch (e: any) {
-      console.error('[LISTING_SAVE]', e);
       toast.error(e?.response?.data?.message || `Failed to ${isEditMode ? 'update' : 'create'} listing`);
     } finally {
       setIsLoading(false);

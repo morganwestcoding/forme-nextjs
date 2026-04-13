@@ -61,7 +61,6 @@ export async function GET(request: Request) {
       hasMore: skip + listings.length < totalCount,
     });
   } catch (error) {
-    console.error('Error fetching listings:', error);
     return new Response('Internal Server Error', { status: 500 });
   }
 }
@@ -209,7 +208,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json(listing);
   } catch (error) {
-    console.error("Error creating listing:", error);
     if (error instanceof Error && error.message.includes("Users not found")) {
       return new Response(error.message, { status: 400 });
     }

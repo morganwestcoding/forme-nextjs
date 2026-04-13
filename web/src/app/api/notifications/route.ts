@@ -31,7 +31,6 @@ export async function GET(request: Request) {
 
     return NextResponse.json(formattedNotifications);
   } catch (error) {
-    console.error('[NOTIFICATIONS_GET]', error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }

@@ -111,7 +111,6 @@ export async function POST(request: Request) {
       services: updatedServices,
     });
   } catch (error) {
-    console.error('Error updating services:', error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }
@@ -151,7 +150,6 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ services });
   } catch (error) {
-    console.error('Error fetching services:', error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }

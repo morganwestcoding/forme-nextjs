@@ -79,7 +79,6 @@ export async function PATCH(
 
     return NextResponse.json(updated);
   } catch (error: any) {
-    console.error("[PATCH academy service]", error);
     return apiError(error.message || "Failed to update service", 500);
   }
 }
@@ -126,7 +125,6 @@ export async function DELETE(
 
     return NextResponse.json({ ok: true });
   } catch (error: any) {
-    console.error("[DELETE academy service]", error);
     return apiError(error.message || "Failed to delete service", 500);
   }
 }

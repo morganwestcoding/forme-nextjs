@@ -36,7 +36,6 @@ export async function POST(req: Request) {
 
     return NextResponse.json(user);
   } catch (e: any) {
-    console.error("[SUB_SELECT_POST]", e);
     return new NextResponse(e.message || "Internal error", { status: 500 });
   }
 }

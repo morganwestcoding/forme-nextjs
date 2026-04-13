@@ -98,16 +98,11 @@ export default function ImageUpload({
   }, [ratio, customAspectRatio]);
 
   const buildCloudinaryUrl = useCallback((publicId: string, cloudName: string) => {
-    console.log(`[${uploadId}] Building Cloudinary URL:`, { publicId, cloudName, enableCrop, ratio });
-
     if (!enableCrop) {
-      const url = `https://res.cloudinary.com/${cloudName}/image/upload/${publicId}`;
-      console.log(`[${uploadId}] Crop disabled, returning original:`, url);
-      return url;
+      return `https://res.cloudinary.com/${cloudName}/image/upload/${publicId}`;
     }
 
     const aspectRatio = getCropAspectRatio();
-    console.log(`[${uploadId}] Aspect ratio calculated:`, aspectRatio);
 
     let width: number;
     let height: number;
@@ -126,8 +121,6 @@ export default function ImageUpload({
       height = Math.round(width / aspectRatio);
     }
 
-    console.log(`[${uploadId}] Calculated dimensions:`, { width, height });
-
     let cropTransform: string;
     let gravity: string;
 
@@ -139,8 +132,6 @@ export default function ImageUpload({
       gravity = 'g_auto';
     }
 
-    console.log(`[${uploadId}] Crop strategy:`, { cropTransform, gravity });
-
     const transformations = [
       'q_auto:good',
       'f_auto',
@@ -150,58 +141,38 @@ export default function ImageUpload({
       gravity,
     ].join(',');
 
-    const finalUrl = `https://res.cloudinary.com/${cloudName}/image/upload/${transformations}/${publicId}`;
-    
-    console.log(`[${uploadId}] Final transformed URL:`, finalUrl);
-    console.log(`[${uploadId}] Transformation string:`, transformations);
-    
-    return finalUrl;
+    return `https://res.cloudinary.com/${cloudName}/image/upload/${transformations}/${publicId}`;
   }, [enableCrop, getCropAspectRatio, ratio, uploadId]);
 
   const handleUpload = useCallback(
     (result: CldUploadWidgetResults) => {
-      console.log(`[${uploadId}] Upload result received:`, result);
-      
       const info = result?.info;
-      
+
       if (info && typeof info === 'object') {
         const publicId = info.public_id;
-        console.log(`[${uploadId}] Extracted publicId:`, publicId);
-        
+
         let cloudName: string | null = null;
-        
+
         if (typeof info.cloud_name === 'string') {
           cloudName = info.cloud_name;
-          console.log(`[${uploadId}] Cloud name from info:`, cloudName);
         }
-        
+
         if (!cloudName && typeof info.secure_url === 'string') {
           const urlMatch = info.secure_url.match(/res\.cloudinary\.com\/([^\/]+)/);
           cloudName = urlMatch ? urlMatch[1] : null;
-          console.log(`[${uploadId}] Cloud name extracted from URL:`, cloudName);
         }
-        
+
         if (publicId && cloudName) {
-          let finalUrl: string;
-          
-          if (enableCrop) {
-            finalUrl = buildCloudinaryUrl(publicId, cloudName);
-            console.log(`[${uploadId}] Using cropped URL:`, finalUrl);
-          } else {
-            finalUrl = info.secure_url;
-            console.log(`[${uploadId}] Using original URL:`, finalUrl);
-          }
-          
+          const finalUrl = enableCrop
+            ? buildCloudinaryUrl(publicId, cloudName)
+            : info.secure_url;
+
           onChange(finalUrl);
         } else {
-          console.warn(`[${uploadId}] Missing publicId or cloudName:`, { publicId, cloudName });
           if (typeof info.secure_url === 'string') {
-            console.log(`[${uploadId}] Falling back to secure_url:`, info.secure_url);
             onChange(info.secure_url);
           }
         }
-      } else {
-        console.error(`[${uploadId}] Invalid upload result info:`, info);
       }
     },
     [onChange, enableCrop, buildCloudinaryUrl, uploadId]
@@ -228,7 +199,6 @@ export default function ImageUpload({
       publicId: `${uploadId}_${Date.now()}`,
     };
 
-    console.log(`[${uploadId}] Cloudinary options:`, options);
     return options;
   }, [accept, maxFileSizeMB, enableCrop, cropMode, getCropAspectRatio, uploadId]);
 

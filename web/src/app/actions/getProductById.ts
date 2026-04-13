@@ -55,7 +55,6 @@ export default async function getProductById(productId: string) {
         : null,
     };
   } catch (error: any) {
-    console.error("getProductById failed:", error);
     return null;
   }
 }

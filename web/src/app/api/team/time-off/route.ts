@@ -44,7 +44,6 @@ export async function GET(request: Request) {
       })),
     });
   } catch (error) {
-    console.error("[TIME_OFF_GET]", error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }
@@ -110,7 +109,6 @@ export async function POST(request: Request) {
       status: timeOff.status,
     });
   } catch (error) {
-    console.error("[TIME_OFF_POST]", error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }
@@ -164,7 +162,6 @@ export async function PATCH(request: Request) {
 
     return NextResponse.json({ status: updated.status });
   } catch (error) {
-    console.error("[TIME_OFF_PATCH]", error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }

@@ -72,7 +72,6 @@ export async function PUT(
 
     return NextResponse.json(updated);
   } catch (err) {
-    console.error("USER_UPDATE_ERROR", err);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }

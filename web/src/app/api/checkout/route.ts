@@ -204,7 +204,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ sessionId: checkoutSession.id, url: checkoutSession.url });
   } catch (error: any) {
-    console.error("Stripe checkout error:", error);
     return apiError(error.message || "Something went wrong", 500);
   }
 }

@@ -7,8 +7,7 @@ import { apiError, apiErrorCode } from '@/app/utils/api';
 export async function GET(request: Request) {
   try {
     const currentUser = await getUserFromRequest(request) || await getCurrentUser();
-    console.log('Current user:', currentUser); // Debug log
-    
+
     if (!currentUser?.id) {
       return apiErrorCode('UNAUTHORIZED');
     }
@@ -21,7 +20,6 @@ export async function GET(request: Request) {
         }
       }
     });
-    console.log('Found conversation count:', conversationCount); // Debug log
 
     const conversations = await prisma.conversation.findMany({
       where: {
@@ -42,8 +40,6 @@ export async function GET(request: Request) {
         lastMessageAt: 'desc'
       }
     });
-    
-    console.log('Raw conversations:', conversations); // Debug log
 
     const safeConversations = conversations.map((conversation: typeof conversations[number]) => {
       const otherUser = conversation.users.find((user: typeof conversation.users[number]) => user.id !== currentUser.id);
@@ -67,11 +63,8 @@ export async function GET(request: Request) {
       return safeConversation;
     });
 
-    console.log('Safe conversations:', safeConversations); // Debug log
-    
     return NextResponse.json(safeConversations);
   } catch (error) {
-    console.error('Error details:', error); // More detailed error logging
     return apiErrorCode('INTERNAL_ERROR');
   }
 }
@@ -80,9 +73,6 @@ export async function POST(request: Request) {
   try {
     const currentUser = await getUserFromRequest(request) || await getCurrentUser();
     const body = await request.json();
-    console.log('POST request body:', body); // Debug log
-    console.log('Current user:', currentUser); // Debug log
-
     if (!currentUser?.id) {
       return apiErrorCode('UNAUTHORIZED');
     }
@@ -106,8 +96,6 @@ export async function POST(request: Request) {
       }
     });
 
-    console.log('Existing conversation:', existingConversation); // Debug log
-
     if (existingConversation) {
       return NextResponse.json(existingConversation);
     }
@@ -128,11 +116,8 @@ export async function POST(request: Request) {
       }
     });
 
-    console.log('New conversation created:', newConversation); // Debug log
-
     return NextResponse.json(newConversation);
   } catch (error) {
-    console.error('Error details:', error); // More detailed error logging
     return apiErrorCode('INTERNAL_ERROR');
   }
 }

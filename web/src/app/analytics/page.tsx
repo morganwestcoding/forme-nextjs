@@ -29,7 +29,6 @@ const AnalyticsPage = async () => {
       </ClientProviders>
     );
   } catch (error) {
-    console.error("Error loading analytics:", error);
     return (
       <ClientProviders>
         <EmptyState 

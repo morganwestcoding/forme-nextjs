@@ -79,7 +79,6 @@ export default async function getServicesByUserId(userId: string): Promise<Provi
 
     return out;
   } catch (error) {
-    console.error("getServicesByUserId error:", error);
     return [];
   }
 }

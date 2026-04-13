@@ -15,7 +15,6 @@ const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
 export async function POST(req: Request) {
   try {
-    console.log("Webhook endpoint called!");
     const body = await req.text();
     const signature = headers().get('stripe-signature')!;
 
@@ -24,16 +23,12 @@ export async function POST(req: Request) {
     try {
       event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
     } catch (error: any) {
-      console.error(`Webhook signature verification failed: ${error.message}`);
       return apiError(error.message, 400);
     }
-
-    console.log(`Webhook event received: ${event.type}`);
 
     // ========== CHECKOUT COMPLETE ==========
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object as Stripe.Checkout.Session;
-      console.log(`Processing checkout session: ${session.id}`);
 
       const kind = session.metadata?.kind;
 
@@ -42,8 +37,6 @@ export async function POST(req: Request) {
         // Create reservation from the session metadata
         if (session.metadata) {
           try {
-            console.log("Session metadata:", JSON.stringify(session.metadata, null, 2));
-
             // Avoid duplicates by payment_intent
             const paymentIntent = session.payment_intent ? String(session.payment_intent) : null;
             if (paymentIntent) {
@@ -51,12 +44,10 @@ export async function POST(req: Request) {
                 where: { paymentIntentId: paymentIntent }
               });
               if (existingReservation) {
-                console.log(`Reservation already exists for payment intent ${paymentIntent}`);
                 return NextResponse.json({ received: true });
               }
             } else {
               // No payment_intent means we can't guarantee idempotency — skip creation
-              console.error(`Checkout session ${session.id} has no payment_intent, skipping reservation creation`);
               return NextResponse.json({ received: true });
             }
 
@@ -76,8 +67,6 @@ export async function POST(req: Request) {
                 paymentStatus: 'completed',
               },
             });
-
-            console.log(`Reservation created successfully: ${reservation.id}`);
 
             // Notifications
             try {
@@ -104,20 +93,11 @@ export async function POST(req: Request) {
                 });
               }
             } catch (notifyError) {
-              console.error('Error creating notifications:', notifyError);
+              // Notification creation failed; non-critical
             }
           } catch (error: any) {
-            console.error('Error creating reservation:', error);
-            console.error({
-              message: error.message,
-              code: error.code,
-              name: error.name,
-              stack: error.stack,
-              meta: error.meta
-            });
+            // Reservation creation failed
           }
-        } else {
-          console.error('No metadata found in session:', session.id);
         }
 
         return NextResponse.json({ received: true });
@@ -131,7 +111,6 @@ export async function POST(req: Request) {
           const interval = session.metadata?.interval as "monthly" | "yearly" | undefined;
 
           if (!userId || !session.subscription) {
-            console.error('Missing userId or subscription on session');
             return NextResponse.json({ received: true });
           }
 
@@ -142,7 +121,6 @@ export async function POST(req: Request) {
           // Idempotency: skip if this subscription is already stored for this user
           const existingUser = await prisma.user.findUnique({ where: { id: userId }, select: { stripeSubscriptionId: true } });
           if (existingUser?.stripeSubscriptionId === subId) {
-            console.log(`Subscription ${subId} already saved for user ${userId}, skipping`);
             return NextResponse.json({ received: true });
           }
 
@@ -174,9 +152,8 @@ export async function POST(req: Request) {
             },
           });
 
-          console.log(`Subscription saved for user ${userId} → ${tierLabel}`);
         } catch (err) {
-          console.error("Subscription handling error:", err);
+          // Subscription handling failed
         }
 
         return NextResponse.json({ received: true });
@@ -211,7 +188,6 @@ export async function POST(req: Request) {
           },
         });
 
-        console.log(`Subscription ${event.type} persisted for user ${userId}`);
       }
 
       return NextResponse.json({ received: true });
@@ -234,7 +210,6 @@ export async function POST(req: Request) {
             subscriptionPriceId: null,
           },
         });
-        console.log(`Subscription canceled for user ${userId}`);
       }
 
       return NextResponse.json({ received: true });
@@ -243,8 +218,6 @@ export async function POST(req: Request) {
     // ========== STRIPE CONNECT ACCOUNT EVENTS ==========
     if (event.type === 'account.updated') {
       const account = event.data.object as Stripe.Account;
-
-      console.log(`Processing account.updated for: ${account.id}`);
 
       // A Connect account ID may belong to either a User (worker) or an
       // Academy (Phase 5b). Try the user first, then fall back to academy.
@@ -267,8 +240,6 @@ export async function POST(req: Request) {
               : {}),
           },
         });
-
-        console.log(`Updated Connect status for user ${user.id}`);
 
         // Create notification when onboarding completes (idempotent — skip if already sent)
         if (account.details_submitted && wasNotComplete) {
@@ -306,9 +277,6 @@ export async function POST(req: Request) {
             },
           });
 
-          console.log(`Updated Connect status for academy ${academy.id}`);
-        } else {
-          console.log(`No user or academy found for Connect account ${account.id}`);
         }
       }
 
@@ -317,8 +285,6 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ received: true });
   } catch (error: any) {
-    console.error('Webhook error:', error);
-    console.error(error.stack);
     return apiError('Webhook handler failed', 500);
   }
 }

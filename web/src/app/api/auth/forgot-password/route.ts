@@ -68,7 +68,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ message: "Reset email sent successfully" });
   } catch (error) {
-    console.error("Password reset error:", error);
     return apiError("Error processing password reset", 500);
   }
 }

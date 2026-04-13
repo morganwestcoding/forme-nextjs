@@ -6,7 +6,7 @@ export const clearEarlyAccess = () => {
     localStorage.removeItem('forme_early_access_timestamp');
     window.location.reload(); // Reload to show coming soon page
   } catch (error) {
-    console.error('Error clearing early access:', error);
+    // silently handled
   }
 };
 
@@ -31,7 +31,7 @@ export const checkEarlyAccess = (): boolean => {
     }
     return false;
   } catch (error) {
-    console.error('Error checking early access:', error);
+    // silently handled
     return false;
   }
 };
@@ -42,7 +42,7 @@ export const setEarlyAccess = () => {
     localStorage.setItem('forme_early_access_timestamp', Date.now().toString());
     return true;
   } catch (error) {
-    console.error('Error setting early access:', error);
+    // silently handled
     return false;
   }
 };

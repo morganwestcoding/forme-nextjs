@@ -50,7 +50,6 @@ async function ShopPage({ searchParams }: ShopPageProps) {
       </Container>
     );
   } catch (error) {
-    console.error("Error fetching shop data:", error);
     // Return with empty arrays if there's an error
     return (
       <Container>

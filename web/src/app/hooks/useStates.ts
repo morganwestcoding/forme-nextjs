@@ -69,7 +69,6 @@ const useStates = (countryCode: string) => {
           setStates(formattedStates);
         }
       } catch (err) {
-        console.error('Error fetching states:', err);
         setError('Failed to fetch states');
       } finally {
         setLoading(false);

@@ -32,7 +32,6 @@ export default function SubscriptionSuccess() {
           router.refresh();
         } catch (e: any) {
           // If webhook already wrote, this might still be fine. We'll refresh anyway.
-          console.error("Confirm error:", e?.response?.data || e?.message);
           router.replace("/subscription");
           router.refresh();
         }

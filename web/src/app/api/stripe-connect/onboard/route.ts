@@ -71,7 +71,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ url: accountLink.url });
   } catch (error: any) {
-    console.error("Stripe Connect onboarding error:", error);
     return apiError(error.message || "Failed to create onboarding link", 500);
   }
 }

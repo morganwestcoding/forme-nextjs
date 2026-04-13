@@ -47,7 +47,6 @@ const StripeCheckoutModal = () => {
       }
       
     } catch (error: any) {
-      console.error('Checkout error:', error);
       toast.error(error?.response?.data?.error || 'Something went wrong');
     } finally {
       setIsLoading(false);

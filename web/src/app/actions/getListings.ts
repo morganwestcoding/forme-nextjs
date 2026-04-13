@@ -265,7 +265,6 @@ export default async function getListings(params: IListingsParams = {}): Promise
   } catch (error: any) {
     // Handle orphaned listings (user deleted but listing remains)
     if (error.message?.includes('Field user is required to return data, got `null`')) {
-      console.warn('getListings: Found orphaned listing(s) with missing user. Cleaning up...');
       try {
         // Find and delete orphaned listings
         const allListings = await prisma.listing.findMany({ select: { id: true, userId: true } });
@@ -273,16 +272,14 @@ export default async function getListings(params: IListingsParams = {}): Promise
           const userExists = await prisma.user.findUnique({ where: { id: listing.userId }, select: { id: true } });
           if (!userExists) {
             await prisma.listing.delete({ where: { id: listing.id } });
-            console.warn(`Deleted orphaned listing ${listing.id} (user ${listing.userId} not found)`);
           }
         }
         // Retry the query
         return getListings(params);
       } catch (cleanupError) {
-        console.error('Error cleaning up orphaned listings:', cleanupError);
+        // silently handled
       }
     }
-    console.error('Error fetching listings:', error);
     return [];
   }
 }

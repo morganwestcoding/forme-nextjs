@@ -50,7 +50,6 @@ export async function POST(request: Request, { params }: { params: IParams }) {
 
     return NextResponse.json(newComment);
   } catch (error) {
-    console.error('Comment creation failed:', error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }

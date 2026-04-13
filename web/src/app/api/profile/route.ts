@@ -11,7 +11,6 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json();
-  console.log("Received request body:", body);
   const { image, imageSrc, bio, location, action, galleryImage, targetUserId } = body;
 
   // Determine which user to update (self or target if master)
@@ -28,7 +27,6 @@ export async function POST(request: Request) {
     let updatedUser;
 
     if (action === "addGalleryImage") {
-      console.log("Adding new gallery image:", galleryImage);
       updatedUser = await prisma.user.update({
         where: { id: userIdToUpdate },
         data: {
@@ -37,7 +35,6 @@ export async function POST(request: Request) {
           }
         },
       });
-      console.log("Updated user after adding image:", updatedUser);
     } else if (action === "updateProfile") {
       // Update other profile information
       updatedUser = await prisma.user.update({
@@ -57,7 +54,6 @@ export async function POST(request: Request) {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("Error updating user:", error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }
@@ -82,7 +78,6 @@ export async function GET(request: Request) {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("Error fetching user:", error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }
@@ -134,7 +129,6 @@ export async function DELETE(request: Request) {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("Error deleting gallery image:", error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }

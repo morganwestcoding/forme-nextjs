@@ -35,7 +35,6 @@ export default function ServiceSelectStep({ selectedListingId, selectedServices,
         const response = await axios.get(`/api/listings/${selectedListingId}/services`);
         setServices(response.data?.services || []);
       } catch (error) {
-        console.error('Failed to fetch services:', error);
         setServices([]);
       }
       setIsLoading(false);

@@ -78,7 +78,6 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ success: true, subscription: null });
   } catch (error: any) {
-    console.error("Subscription verification error:", error);
     return apiError(error.message || "Something went wrong", 500);
   }
 }

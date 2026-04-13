@@ -58,8 +58,6 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Waitlist signup error:', error);
-    
     // Handle Prisma unique constraint error specifically
     if (error instanceof Error && error.message.includes('Unique constraint')) {
       return apiError('Email already exists in waitlist', 409);
@@ -84,7 +82,6 @@ export async function GET() {
     });
 
   } catch (error) {
-    console.error('Waitlist count error:', error);
     return apiError('Failed to get waitlist count', 500);
   } finally {
     await prisma.$disconnect();

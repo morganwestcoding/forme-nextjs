@@ -127,7 +127,6 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ clients });
   } catch (error) {
-    console.error("[CLIENTS_GET]", error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }
@@ -176,7 +175,6 @@ export async function PATCH(request: Request) {
 
     return NextResponse.json(record);
   } catch (error) {
-    console.error("[CLIENTS_PATCH]", error);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }

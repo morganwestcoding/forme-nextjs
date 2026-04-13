@@ -205,7 +205,6 @@ const InboxModal = () => {
       const response = await axios.get('/api/conversations');
       setConversations(response.data);
     } catch (error) {
-      console.error('Error fetching conversations:', error);
       toast.error('Failed to load conversations');
     }
   };
@@ -233,7 +232,6 @@ const InboxModal = () => {
       });
       inboxModal.onClose();
     } catch (error) {
-      console.error('Error updating message read status:', error);
       // Remove from read set if API call failed
       readConversations.delete(conversationId);
       setConversations(prev => [...prev]);
@@ -247,7 +245,6 @@ const InboxModal = () => {
       const newConversation = response.data;
       openConversation(newConversation.id, userId);
     } catch (error) {
-      console.error('Error starting new conversation:', error);
       toast.error('Failed to start new conversation');
     }
   };
@@ -356,7 +353,7 @@ const InboxModal = () => {
     <div className="flex flex-col h-[580px] pb-2 pt-6 md:pt-8 px-4">
       <style>{styles}</style>
 
-      <div className="mx-auto w-full max-w-[520px]">
+      <div className="mx-auto w-full max-w-[520px] flex flex-col flex-1 min-h-0">
         {/* Header */}
         <div className="text-center mb-6">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">Messages</h2>
@@ -444,7 +441,7 @@ const InboxModal = () => {
         </div>
 
         {/* Conversations */}
-        <div className="h-[380px] overflow-y-auto custom-scrollbar -mx-2 px-2">
+        <div className="flex-1 overflow-y-auto custom-scrollbar -mx-2 px-2">
           <div className="space-y-2 py-1">
             {conversations.map((conversation) => (
               <ConversationCard
@@ -472,8 +469,9 @@ const InboxModal = () => {
             )}
           </div>
         </div>
+
         {/* Full page link */}
-        <div className="pt-3 text-center border-t border-neutral-100 mt-2">
+        <div className="pt-4 mt-auto">
           <a
             href="/messages"
             onClick={(e) => {
@@ -481,9 +479,11 @@ const InboxModal = () => {
               inboxModal.onClose();
               window.location.href = '/messages';
             }}
-            className="text-[13px] text-stone-500 hover:text-stone-700 font-medium transition-colors"
+            className="block w-full py-2.5 rounded-xl text-center text-[13px] font-medium
+                       text-neutral-500 bg-neutral-100/80 hover:bg-neutral-100
+                       hover:text-neutral-700 transition-all duration-200"
           >
-            Open full messaging page →
+            See all messages
           </a>
         </div>
       </div>

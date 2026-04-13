@@ -99,8 +99,8 @@ const MapComponent: React.FC<MapComponentProps> = ({
             });
           }
         })
-        .catch(error => {
-          console.error('Error geocoding location:', error);
+        .catch(() => {
+          // silently handled
         });
     }
 
