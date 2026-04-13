@@ -8,6 +8,7 @@ import { SafeListing, SafePost, SafeUser, SafeReview } from '@/app/types';
 import type { ProviderService } from '@/app/actions/getServicesByUserId';
 import PostCard from '@/components/feed/PostCard';
 import ListingCard from '@/components/listings/ListingCard';
+import ServiceCard from '@/components/listings/ServiceCard';
 import { categories } from '@/components/Categories';
 import { placeholderDataUri } from '@/lib/placeholders';
 import useReviewModal from '@/app/hooks/useReviewModal';
@@ -291,7 +292,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                     title={studentAcademyName ? `Student at ${studentAcademyName}` : 'Student'}
                     className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-gradient-to-br from-indigo-600 to-indigo-900 ring-[1.5px] ring-white flex items-center justify-center shadow-[0_2px_8px_rgba(49,46,129,0.4)]"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>
                     </svg>
                   </div>
@@ -531,40 +532,44 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                 </div>
               </div>
               {services.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-10">
-                  {services.map((svc, idx) => (
-                    <button
-                      key={svc.id}
-                      type="button"
-                      onClick={() => {
-                        if (!currentUser) {
-                          router.push(`/listings/${svc.listingId}`);
-                          return;
-                        }
-                        router.push(`/reserve/${svc.listingId}?employeeId=${svc.employeeId}&serviceId=${svc.id}`);
-                      }}
-                      className="text-left rounded-2xl border border-stone-200/60 bg-white p-4 hover:border-stone-300 hover:shadow-sm transition-all"
-                      style={{
-                        opacity: 0,
-                        animation: `fadeInUp 520ms ease-out both`,
-                        animationDelay: `${Math.min(60 + idx * 30, 360)}ms`,
-                      }}
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex-1 min-w-0">
-                          <p className="text-[14px] font-semibold text-stone-900 truncate">
-                            {svc.serviceName}
-                          </p>
-                          <p className="text-[12px] text-stone-400 mt-0.5 truncate">
-                            {svc.category} · {svc.listingTitle}
-                          </p>
-                        </div>
-                        <p className="text-[14px] font-semibold text-stone-900 tabular-nums flex-shrink-0">
-                          ${svc.price}
-                        </p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 -mx-1 px-1 py-1 mb-10">
+                  {services.map((svc, idx) => {
+                    const stubListing = {
+                      id: svc.listingId,
+                      title: svc.listingTitle,
+                      user: { id: svc.employeeId },
+                    } as any;
+                    return (
+                      <div
+                        key={svc.id}
+                        style={{
+                          opacity: 0,
+                          animation: `fadeInUp 520ms ease-out both`,
+                          animationDelay: `${Math.min(60 + idx * 30, 360)}ms`,
+                        }}
+                      >
+                        <ServiceCard
+                          service={{
+                            id: svc.id,
+                            serviceName: svc.serviceName,
+                            price: svc.price,
+                            category: svc.category,
+                          }}
+                          listing={stubListing}
+                          currentUser={currentUser}
+                          onClick={() => {
+                            if (!currentUser) {
+                              router.push(`/listings/${svc.listingId}`);
+                              return;
+                            }
+                            router.push(`/reserve/${svc.listingId}?employeeId=${svc.employeeId}&serviceId=${svc.id}`);
+                          }}
+                          compact
+                          solidBackground
+                        />
                       </div>
-                    </button>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
                 <div className="text-center py-10 bg-gray-50 rounded-xl mb-10">
