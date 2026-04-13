@@ -1,8 +1,9 @@
 'use client';
 
 import { CldUploadWidget, type CldUploadWidgetResults } from 'next-cloudinary';
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useCallback, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { Plus } from 'lucide-react';
 import Image from 'next/image';
 import TypeformHeading from '@/components/registration/TypeformHeading';
 import { itemVariants } from '@/components/registration/TypeformStep';
@@ -18,7 +19,6 @@ export default function GalleryStep({
   galleryImages,
   onGalleryChange,
 }: GalleryStepProps) {
-  const [uploading, setUploading] = useState(false);
   const galleryRef = useRef(galleryImages);
 
   useEffect(() => {
@@ -49,10 +49,6 @@ export default function GalleryStep({
       onGalleryChange(updated);
     }
   }, [onGalleryChange]);
-
-  const handleClose = useCallback(() => {
-    setUploading(false);
-  }, []);
 
   const removeImage = (index: number) => {
     onGalleryChange(galleryImages.filter((_, i) => i !== index));
@@ -95,8 +91,6 @@ export default function GalleryStep({
         <CldUploadWidget
           uploadPreset={UPLOAD_PRESET}
           onSuccess={handleUpload}
-          onClose={handleClose}
-          onOpen={() => setUploading(true)}
           options={{
             multiple: true,
             maxFiles: 20,
@@ -107,25 +101,17 @@ export default function GalleryStep({
             folder: 'uploads/listings/gallery',
           }}
         >
-          {({ open }) => (
-            <motion.button
-              type="button"
-              onClick={() => open?.()}
+          {(props) => (
+            <motion.div
+              onClick={() => props?.open?.()}
               variants={itemVariants}
-              className="rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 hover:border-gray-400 hover:bg-gray-100 transition-all flex flex-col items-center justify-center gap-2"
+              className="cursor-pointer rounded-xl overflow-hidden border-2 border-dashed border-gray-200 bg-gray-50/50 hover:border-gray-900 hover:bg-gray-100 transition-all duration-300 flex flex-col items-center justify-center"
               style={{ width: '175px', height: '175px' }}
             >
-              {uploading ? (
-                <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
-              ) : (
-                <>
-                  <svg className="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                  </svg>
-                  <span className="text-sm text-gray-500">Add photo</span>
-                </>
-              )}
-            </motion.button>
+              <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm">
+                <Plus className="w-5 h-5 text-gray-400" />
+              </div>
+            </motion.div>
           )}
         </CldUploadWidget>
       </div>

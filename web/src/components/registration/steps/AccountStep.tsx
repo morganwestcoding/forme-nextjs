@@ -42,7 +42,7 @@ export default function AccountStep() {
   const allValid = Object.values(validation).every(Boolean);
 
   return (
-    <div className="-mt-8">
+    <div>
       <TypeformHeading
         question="Let's get you started"
         subtitle="Create your account to continue"

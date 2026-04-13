@@ -107,7 +107,7 @@ export default function LocationStep({ location, onLocationChange }: LocationSte
     : cities;
 
   return (
-    <div className="-mt-36">
+    <div>
       <TypeformHeading
         question="Where are you located?"
         subtitle="This helps clients find services near them"

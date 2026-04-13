@@ -82,10 +82,7 @@ export default function UserTypeStep({ userType, onUserTypeChange }: UserTypeSte
       </div>
 
       <motion.p variants={itemVariants} className="text-sm text-gray-400 text-center mt-6">
-        Press <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs font-mono">1</kbd>,{' '}
-        <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs font-mono">2</kbd>,{' '}
-        <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs font-mono">3</kbd>, or{' '}
-        <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs font-mono">4</kbd> to select
+        Select an option to continue
       </motion.p>
     </div>
   );

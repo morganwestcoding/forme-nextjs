@@ -1,8 +1,9 @@
 // components/inputs/StoreHours.tsx
 'use client';
 
-import { useState, useMemo } from 'react';
-import FloatingLabelSelect, { FLSelectOption } from './FloatingLabelSelect';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Check, ChevronDown } from 'lucide-react';
 
 interface StoreHoursProps {
   onChange: (hours: StoreHourType[]) => void;
@@ -16,11 +17,6 @@ export type StoreHourType = {
   isClosed: boolean;
 };
 
-interface TimeOption {
-  label: string;
-  value: string;
-}
-
 const DAYS_OF_WEEK = [
   { short: 'Mon', full: 'Monday' },
   { short: 'Tue', full: 'Tuesday' },
@@ -31,16 +27,89 @@ const DAYS_OF_WEEK = [
   { short: 'Sun', full: 'Sunday' },
 ];
 
-// 12-hour clock at :00 and :30 in AM/PM
-const HOURS: TimeOption[] = Array.from({ length: 12 }, (_, i) => {
+const HOURS: string[] = Array.from({ length: 12 }, (_, i) => {
   const hour = (i + 1).toString();
   return [
-    { label: `${hour}:00 AM`, value: `${hour}:00 AM` },
-    { label: `${hour}:30 AM`, value: `${hour}:30 AM` },
-    { label: `${hour}:00 PM`, value: `${hour}:00 PM` },
-    { label: `${hour}:30 PM`, value: `${hour}:30 PM` },
+    `${hour}:00 AM`,
+    `${hour}:30 AM`,
+    `${hour}:00 PM`,
+    `${hour}:30 PM`,
   ];
 }).flat();
+
+function TimeDropdown({
+  label,
+  value,
+  onChange,
+  disabled,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  disabled?: boolean;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  return (
+    <div ref={ref} className="relative flex-1">
+      <label className="block text-xs font-medium text-gray-500 mb-1.5">{label}</label>
+      <button
+        type="button"
+        onClick={() => !disabled && setIsOpen(!isOpen)}
+        disabled={disabled}
+        className={`
+          w-full flex items-center justify-between px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-left transition-all
+          ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent'}
+          ${isOpen ? 'ring-2 ring-gray-900 border-transparent' : ''}
+        `}
+      >
+        <span className="text-gray-900">{value}</span>
+        <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.15 }}
+            className="absolute z-50 mt-1.5 w-full bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden"
+          >
+            <div className="max-h-[200px] overflow-y-auto overscroll-contain">
+              {HOURS.map((time) => (
+                <button
+                  key={time}
+                  type="button"
+                  onClick={() => { onChange(time); setIsOpen(false); }}
+                  className={`w-full flex items-center justify-between px-3 py-2 text-sm transition-colors cursor-pointer ${
+                    value === time
+                      ? 'bg-gray-50 text-gray-900 font-medium'
+                      : 'text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  <span>{time}</span>
+                  {value === time && <Check className="w-3.5 h-3.5 text-gray-900" />}
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
 
 const StoreHours: React.FC<StoreHoursProps> = ({ onChange, id }) => {
   const [sameEveryDay, setSameEveryDay] = useState(false);
@@ -53,47 +122,32 @@ const StoreHours: React.FC<StoreHoursProps> = ({ onChange, id }) => {
     }))
   );
 
-  const hourOptions: FLSelectOption[] = useMemo(
-    () => HOURS.map((h) => ({ label: h.label, value: h.value })),
-    []
-  );
-
-  const applyAndEmit = (next: StoreHourType[]) => {
+  const applyAndEmit = useCallback((next: StoreHourType[]) => {
     setHours(next);
     onChange(next);
-  };
+  }, [onChange]);
 
-  const handleTimeChange = (
-    index: number,
-    type: 'openTime' | 'closeTime',
-    selected: FLSelectOption | null
-  ) => {
-    if (!selected) return;
+  const handleTimeChange = (index: number, type: 'openTime' | 'closeTime', value: string) => {
     const next = [...hours];
-    next[index][type] = selected.value;
-
+    next[index][type] = value;
     if (sameEveryDay) {
-      for (let i = 0; i < next.length; i++) next[i][type] = selected.value;
+      for (let i = 0; i < next.length; i++) next[i][type] = value;
     }
-
     applyAndEmit(next);
   };
 
   const handleClosedToggle = (index: number) => {
     const next = [...hours];
     next[index].isClosed = !next[index].isClosed;
-
     if (sameEveryDay) {
       for (let i = 0; i < next.length; i++) next[i].isClosed = next[index].isClosed;
     }
-
     applyAndEmit(next);
   };
 
   const toggleSameEveryDay = () => {
     const nextFlag = !sameEveryDay;
     setSameEveryDay(nextFlag);
-
     if (nextFlag) {
       const first = hours[0];
       const synced = hours.map((h) => ({
@@ -107,57 +161,41 @@ const StoreHours: React.FC<StoreHoursProps> = ({ onChange, id }) => {
   };
 
   const renderHourRow = (row: StoreHourType, index: number) => {
-    const disabled = row.isClosed || (sameEveryDay && index !== 0);
+    const disabled = sameEveryDay && index !== 0;
 
     return (
       <div
         key={DAYS_OF_WEEK[index].full}
-        id={`hours-row-${index}`}
-        className={[
-          'relative rounded-xl border-2 transition-all duration-300',
-          row.isClosed
-            ? 'bg-neutral-50/50 border-neutral-200'
-            : 'bg-white border-neutral-200 hover:border-neutral-300 hover:shadow-sm',
-          sameEveryDay && index !== 0 ? 'opacity-60' : '',
-        ].join(' ')}
+        className={`
+          rounded-xl border border-gray-200 transition-all duration-200
+          ${row.isClosed ? 'bg-gray-50/50' : 'bg-white hover:border-gray-300'}
+          ${disabled ? 'opacity-50' : ''}
+        `}
       >
         <div className="p-4">
           {/* Header: Day + Toggle */}
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div
-                id={`day-label-${index}`}
-                className={[
-                  'px-3 py-1.5 rounded-xl text-sm font-semibold transition-colors',
-                  row.isClosed
-                    ? 'bg-neutral-100 text-neutral-500'
-                    : 'bg-[#60A5FA]/10 text-[#60A5FA]',
-                ].join(' ')}
-              >
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2.5">
+              <span className="text-sm font-semibold text-gray-900">
                 {DAYS_OF_WEEK[index].short}
-              </div>
-              <span className={[
-                'text-sm font-medium transition-colors',
-                row.isClosed ? 'text-neutral-400' : 'text-neutral-700'
-              ].join(' ')}>
+              </span>
+              <span className="text-sm text-gray-500">
                 {DAYS_OF_WEEK[index].full}
               </span>
             </div>
 
-            {/* Closed Toggle Button */}
             <button
-              id={`toggle-closed-${index}`}
               type="button"
               onClick={() => handleClosedToggle(index)}
-              disabled={sameEveryDay && index !== 0}
-              className={[
-                'px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200',
-                'disabled:opacity-40 disabled:cursor-not-allowed',
-                'focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1',
-                row.isClosed
-                  ? 'bg-rose-50 text-rose-600 border-2 border-rose-200 hover:bg-rose-100 focus-visible:ring-rose-300'
-                  : 'bg-emerald-50 text-emerald-700 border-2 border-emerald-200 hover:bg-emerald-100 focus-visible:ring-emerald-300',
-              ].join(' ')}
+              disabled={disabled}
+              className={`
+                px-3 py-1.5 rounded-xl text-xs font-medium transition-all duration-200
+                ${row.isClosed
+                  ? 'border border-gray-200 bg-white text-gray-500 hover:border-gray-300 hover:bg-gray-50'
+                  : 'border border-gray-300 bg-gray-100 text-gray-900 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)]'
+                }
+                disabled:cursor-not-allowed
+              `}
             >
               {row.isClosed ? 'Closed' : 'Open'}
             </button>
@@ -165,43 +203,25 @@ const StoreHours: React.FC<StoreHoursProps> = ({ onChange, id }) => {
 
           {/* Time Selectors */}
           {!row.isClosed && (
-            <div className="flex items-center gap-3">
-              {/* OPEN time */}
-              <div className="flex-1">
-                <FloatingLabelSelect
-                  label="Opens at"
-                  options={hourOptions}
-                  value={{ label: row.openTime, value: row.openTime }}
-                  onChange={(opt) => handleTimeChange(index, 'openTime', opt)}
-                  isDisabled={disabled}
-                  isLoading={false}
-                />
-              </div>
-
-              <div className="text-neutral-400 font-medium pt-2">→</div>
-
-              {/* CLOSE time */}
-              <div className="flex-1">
-                <FloatingLabelSelect
-                  label="Closes at"
-                  options={hourOptions}
-                  value={{ label: row.closeTime, value: row.closeTime }}
-                  onChange={(opt) => handleTimeChange(index, 'closeTime', opt)}
-                  isDisabled={disabled}
-                  isLoading={false}
-                />
-              </div>
+            <div className="flex items-end gap-3">
+              <TimeDropdown
+                label="Opens at"
+                value={row.openTime}
+                onChange={(val) => handleTimeChange(index, 'openTime', val)}
+                disabled={disabled}
+              />
+              <span className="text-gray-300 pb-3">—</span>
+              <TimeDropdown
+                label="Closes at"
+                value={row.closeTime}
+                onChange={(val) => handleTimeChange(index, 'closeTime', val)}
+                disabled={disabled}
+              />
             </div>
           )}
 
-          {/* Closed State Message */}
           {row.isClosed && (
-            <div className="flex items-center gap-2 text-sm text-neutral-500">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
-              </svg>
-              <span>Closed all day</span>
-            </div>
+            <p className="text-sm text-gray-400">Closed all day</p>
           )}
         </div>
       </div>
@@ -209,61 +229,47 @@ const StoreHours: React.FC<StoreHoursProps> = ({ onChange, id }) => {
   };
 
   return (
-    <div id={id} className="flex flex-col gap-5">
+    <div id={id} className="flex flex-col gap-3">
       {/* Same hours every day toggle */}
-      <div
-        id="same-hours-toggle"
-        className="flex items-center justify-between p-4 rounded-xl border-2 border-neutral-200 bg-white hover:border-neutral-300 transition-colors"
+      <button
+        type="button"
+        onClick={toggleSameEveryDay}
+        className={`
+          w-full flex items-center gap-4 p-4 rounded-xl border text-left transition-all duration-200
+          ${sameEveryDay
+            ? 'border-gray-300 bg-gray-100 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)]'
+            : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
+          }
+        `}
       >
-        <div className="flex flex-col gap-0.5">
-          <span className="text-sm font-semibold text-neutral-800">Same hours every day</span>
-          <span className="text-xs text-neutral-500">
+        <div className={`
+          w-5 h-5 rounded-lg border-2 flex items-center justify-center transition-all
+          ${sameEveryDay ? 'border-gray-900 bg-gray-900' : 'border-gray-300'}
+        `}>
+          {sameEveryDay && (
+            <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          )}
+        </div>
+        <div>
+          <span className="text-sm font-medium text-gray-900">Same hours every day</span>
+          <p className="text-xs text-gray-500 mt-0.5">
             {sameEveryDay ? "All days use Monday's hours" : "Apply Monday's hours to all days"}
-          </span>
+          </p>
         </div>
-        <div className="relative inline-block w-12 select-none">
-          <input
-            type="checkbox"
-            name="toggle"
-            id="hours-toggle"
-            className="hidden"
-            checked={sameEveryDay}
-            onChange={toggleSameEveryDay}
-          />
-          <label
-            htmlFor="hours-toggle"
-            className={[
-              'block overflow-hidden h-7 rounded-full cursor-pointer transition-all duration-300',
-              sameEveryDay ? 'bg-[#60A5FA]' : 'bg-neutral-300',
-            ].join(' ')}
-          >
-            <span
-              className={[
-                'block w-5 h-5 rounded-full bg-white shadow-md transform transition-transform duration-300 ease-out mt-1',
-                sameEveryDay ? 'translate-x-[22px]' : 'translate-x-1',
-              ].join(' ')}
-            />
-          </label>
-        </div>
-      </div>
+      </button>
 
       {/* Hours list */}
       {sameEveryDay ? (
-        // Show only Monday when same hours every day
-        <div id="hours-grid" className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3">
           {renderHourRow(hours[0], 0)}
-          <div className="text-center py-2 px-4 rounded-xl bg-[#60A5FA]/5 border border-[#60A5FA]/20">
-            <p className="text-xs font-medium text-[#60A5FA]">
-              These hours apply to all days of the week
-            </p>
-          </div>
+          <p className="text-sm text-gray-400 text-center">
+            These hours apply to all days
+          </p>
         </div>
       ) : (
-        // Scrollable list when different hours per day
-        <div
-          id="hours-grid"
-          className="flex flex-col gap-3 max-h-[400px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-neutral-300 scrollbar-track-transparent hover:scrollbar-thumb-neutral-400"
-        >
+        <div className="flex flex-col gap-3 max-h-[400px] overflow-y-auto pr-1">
           {hours.map((h, i) => renderHourRow(h, i))}
         </div>
       )}

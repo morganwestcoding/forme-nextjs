@@ -263,7 +263,7 @@ export default function ListingFlow({ mode = 'create', listingId, initialData }:
       const isInput = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA';
 
       if (e.key === 'Enter' && !e.shiftKey) {
-        if (isInput && target.tagName === 'TEXTAREA') return;
+        if (isInput) return; // Let inputs handle Enter natively (search, etc.)
         if (canProceed() && !isLoading) {
           e.preventDefault();
           if (step === STEPS.EMPLOYEE) {

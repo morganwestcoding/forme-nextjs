@@ -513,7 +513,7 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
           />
         );
       case STEPS.IMAGES:
-        return <ImagesStep />;
+        return <ImagesStep userType={userType} />;
       case STEPS.STUDENT_ACADEMY:
         return (
           <StudentAcademyStep

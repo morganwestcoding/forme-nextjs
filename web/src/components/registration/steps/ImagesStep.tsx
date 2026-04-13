@@ -7,7 +7,11 @@ import TypeformHeading from '../TypeformHeading';
 
 const UPLOAD_PRESET = 'cs0am6m7';
 
-export default function ImagesStep() {
+interface ImagesStepProps {
+  userType?: string;
+}
+
+export default function ImagesStep({ userType }: ImagesStepProps) {
   const { watch, setValue, register } = useFormContext();
 
   const image = watch('image');
@@ -39,7 +43,7 @@ export default function ImagesStep() {
     <div>
       <TypeformHeading
         question="Almost done!"
-        subtitle="Add your photo so clients can recognize you"
+        subtitle={userType === 'customer' ? "Add a photo to personalize your profile" : "Add your photo so clients can recognize you"}
       />
 
       <div className="max-w-xl">

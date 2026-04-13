@@ -2,7 +2,7 @@
 
 import { useFormContext } from 'react-hook-form';
 import { CldUploadWidget, type CldUploadWidgetResults } from 'next-cloudinary';
-import { Plus, Check } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import TypeformHeading from '../TypeformHeading';
 
 const UPLOAD_PRESET = 'cs0am6m7';
@@ -43,7 +43,7 @@ export default function ListingInfoStep() {
         subtitle="This is how clients will find you"
       />
 
-      <div className="flex gap-6 items-center">
+      <div className="flex flex-col sm:flex-row gap-6 sm:items-center">
         {/* Left: Image upload / preview */}
         <div className="flex-shrink-0">
           <CldUploadWidget
@@ -96,14 +96,7 @@ export default function ListingInfoStep() {
             )}
           </CldUploadWidget>
 
-          {listingImage && (
-            <div className="flex items-center justify-center gap-1.5 mt-3">
-              <div className="w-4 h-4 rounded-full bg-emerald-100 flex items-center justify-center">
-                <Check className="w-2.5 h-2.5 text-emerald-600" />
-              </div>
-              <span className="text-xs text-emerald-600 font-medium">Photo added</span>
-            </div>
-          )}
+
         </div>
 
         {/* Right: Form inputs */}
@@ -128,11 +121,11 @@ export default function ListingInfoStep() {
             <label htmlFor="listingDescription" className="block text-sm font-medium text-gray-700 mb-2">
               Description
             </label>
-            <input
+            <textarea
               id="listingDescription"
-              type="text"
               {...register('listingDescription', { required: 'Description is required' })}
-              className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
+              rows={3}
+              className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all resize-none"
               placeholder="Briefly describe your services"
             />
             {errors.listingDescription && (

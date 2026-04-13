@@ -143,10 +143,10 @@ export default function ServiceFormStep({ services, setServices, editingIndex, o
                 type="button"
                 onClick={() => setCategory(cat.label)}
                 className={`
-                  p-3 rounded-xl border-2 text-sm font-medium transition-all duration-200
+                  p-3 rounded-xl border text-sm font-medium transition-all duration-200
                   ${category === cat.label
-                    ? 'border-gray-900 bg-gray-900 text-white'
-                    : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
+                    ? 'border-gray-300 bg-gray-100 text-gray-900 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)]'
+                    : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50'
                   }
                 `}
               >

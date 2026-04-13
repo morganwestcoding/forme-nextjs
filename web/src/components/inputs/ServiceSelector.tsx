@@ -139,28 +139,30 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
                     />
                   </div>
 
-                  <div className="flex-1">
-                    <label htmlFor={`serviceCategory-${i}`} className="block text-sm font-medium text-gray-700 mb-2">
-                      Category
-                    </label>
-                    <div className="relative">
-                      <select
-                        id={`serviceCategory-${i}`}
-                        value={svc.category}
-                        onChange={(e) => setRow(i, { category: e.target.value })}
-                        className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all appearance-none cursor-pointer"
+                </div>
+
+                {/* Category */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Category
+                  </label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {categoryOptions.map((cat) => (
+                      <button
+                        key={cat}
+                        type="button"
+                        onClick={() => setRow(i, { category: cat })}
+                        className={`
+                          p-3 rounded-xl border text-sm font-medium transition-all duration-200
+                          ${svc.category === cat
+                            ? 'border-gray-300 bg-gray-100 text-gray-900 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)]'
+                            : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50'
+                          }
+                        `}
                       >
-                        <option value="">Select</option>
-                        {categoryOptions.map((cat) => (
-                          <option key={cat} value={cat}>{cat}</option>
-                        ))}
-                      </select>
-                      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                        <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </div>
-                    </div>
+                        {cat}
+                      </button>
+                    ))}
                   </div>
                 </div>
               </div>
