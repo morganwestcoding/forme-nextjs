@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import { apiError, apiErrorCode } from "@/app/utils/api";
+import { sanitizeText } from "@/app/utils/sanitize";
+import { validateBody, createListingSchema } from "@/app/utils/validations";
 
 async function geocodeAddress(address: string): Promise<{ lat: number; lng: number } | null> {
   try {
@@ -76,6 +78,10 @@ export async function POST(request: Request) {
   if (!currentUser) return apiErrorCode('UNAUTHORIZED');
 
   const body = await request.json();
+  const validation = validateBody(createListingSchema, body);
+  if (!validation.success) {
+    return apiError(validation.error, 400);
+  }
 
   const {
     title,
@@ -84,20 +90,17 @@ export async function POST(request: Request) {
     category,
     location,
     services,
-    phoneNumber, 
-    galleryImages, 
-    website,      
+    phoneNumber,
+    galleryImages,
+    website,
     address,
     zipCode,
     employees,
     storeHours,
-  } = body;
+  } = validation.data;
 
-  const required = [ title, description, imageSrc, category, location, services, address, zipCode, storeHours, galleryImages ];
-  const missing = required.filter((f) => !f);
-  if (missing.length) {
-    return new Response(`Missing required fields: ${missing.join(", ")}`, { status: 400 });
-  }
+  const sanitizedTitle = sanitizeText(title);
+  const sanitizedDescription = sanitizeText(description);
 
   // Validate employees format - now expects EmployeeInput[] instead of string[]
   if (!Array.isArray(employees)) {
@@ -153,8 +156,8 @@ export async function POST(request: Request) {
 
     const listing = await prisma.listing.create({
       data: {
-        title,
-        description,
+        title: sanitizedTitle,
+        description: sanitizedDescription,
         imageSrc,
         category,
         galleryImages: galleryImages || [],

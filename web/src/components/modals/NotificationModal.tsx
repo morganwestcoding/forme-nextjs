@@ -13,6 +13,8 @@ import {
 } from 'hugeicons-react';
 import Modal from './Modal';
 import useNotificationsModal from '@/app/hooks/useNotificationsModal';
+import useUnreadCounts from '@/app/hooks/useUnreadCounts';
+import { useSSE } from '@/app/hooks/useSSE';
 
 // Type based on your Prisma schema
 interface Notification {
@@ -102,6 +104,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onMar
 
 const NotificationsModal = () => {
   const notificationsModal = useNotificationsModal();
+  const { setNotifications: setUnreadNotifications, decrementNotifications } = useUnreadCounts();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(false);
   
@@ -114,11 +117,29 @@ const NotificationsModal = () => {
     }
   }, [notificationsModal.isOpen]);
 
+  // Real-time: receive new notifications
+  useSSE('NOTIFICATION_CREATED', (data: any) => {
+    const newNotification: Notification = {
+      id: data.id || `temp-${Date.now()}`,
+      type: data.type || 'default',
+      content: data.content || '',
+      createdAt: data.createdAt || new Date().toISOString(),
+      isRead: false,
+    };
+    setNotifications((prev) => {
+      // Deduplicate
+      if (data.id && prev.some((n) => n.id === data.id)) return prev;
+      return [newNotification, ...prev];
+    });
+  });
+
   const fetchNotifications = async () => {
     try {
       setLoading(true);
       const response = await axios.get('/api/notifications');
       setNotifications(response.data);
+      const unread = response.data.filter((n: Notification) => !n.isRead).length;
+      setUnreadNotifications(unread);
     } catch (error) {
       toast.error('Failed to load notifications');
     } finally {
@@ -139,6 +160,7 @@ const NotificationsModal = () => {
 
       // Call API to mark as read
       await axios.patch(`/api/notifications/${id}/read`);
+      decrementNotifications();
     } catch (error) {
       // Revert optimistic update
       setNotifications(prev => 
@@ -161,6 +183,7 @@ const NotificationsModal = () => {
 
       // Call API to mark all as read
       await axios.patch('/api/notifications/read-all');
+      setUnreadNotifications(0);
     } catch (error) {
       // Revert optimistic update
       fetchNotifications();

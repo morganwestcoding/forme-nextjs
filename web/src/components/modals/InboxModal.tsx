@@ -10,6 +10,8 @@ import { SafeConversation } from "@/app/types";
 import useMessageModal from "@/app/hooks/useMessageModal";
 import Modal from './Modal';
 import useInboxModal from '@/app/hooks/useInboxModal';
+import useUnreadCounts from '@/app/hooks/useUnreadCounts';
+import { useSSE } from '@/app/hooks/useSSE';
 
 type ItemType = "user" | "listing" | "post" | "shop" | "product" | "employee" | "service";
 type ResultItem = { id: string; type: ItemType; title: string; subtitle?: string; image?: string | null };
@@ -183,6 +185,7 @@ const InboxModal = () => {
   const messageModal = useMessageModal();
   const inboxModal = useInboxModal();
   const currentUser = inboxModal.currentUser;
+  const { setMessages: setUnreadMessages } = useUnreadCounts();
 
   // search state
   const [q, setQ] = useState('');
@@ -204,6 +207,11 @@ const InboxModal = () => {
     try {
       const response = await axios.get('/api/conversations');
       setConversations(response.data);
+      // Sync unread badge count
+      const unread = response.data.filter(
+        (c: SafeConversation) => c.lastMessage && !c.lastMessage.isRead
+      ).length;
+      setUnreadMessages(unread);
     } catch (error) {
       toast.error('Failed to load conversations');
     }
@@ -327,6 +335,38 @@ const InboxModal = () => {
       setOpen(false);
     }
   };
+
+  // Real-time: update conversation list when new messages arrive
+  useSSE('CONVERSATION_UPDATED', (data: any) => {
+    setConversations((prev) => {
+      const idx = prev.findIndex((c) => c.id === data.conversationId);
+      if (idx === -1) {
+        // New conversation - refetch to get full data
+        fetchConversations();
+        return prev;
+      }
+      const updated = [...prev];
+      updated[idx] = {
+        ...updated[idx],
+        lastMessage: data.lastMessage,
+        lastMessageAt: data.lastMessageAt,
+      };
+      // Re-sort by lastMessageAt descending
+      updated.sort(
+        (a, b) =>
+          new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime()
+      );
+      return updated;
+    });
+  });
+
+  // Real-time: new notification means new message, clear read state
+  useSSE('NOTIFICATION_CREATED', (data: any) => {
+    if (data.type === 'NEW_MESSAGE') {
+      // A new message notification arrived - conversations list may need refresh
+      // The CONVERSATION_UPDATED event handles the actual data update
+    }
+  });
 
   // keep active in view
   useEffect(() => {

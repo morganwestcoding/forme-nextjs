@@ -21,6 +21,7 @@ import LayoutContent from '@/LayoutContent';
 import UserMenuModal from '@/components/modals/UserMenuModal';
 import CreateModal from '@/components/modals/CreateModal';
 import LocationModal from '@/components/modals/LocationModal';
+import UnreadBadgeProvider from '@/components/UnreadBadgeProvider';
 
 export const metadata: Metadata = {
   title: 'ForMe App',
@@ -73,6 +74,7 @@ export default async function RootLayout({
                 <UserMenuModal currentUser={currentUser} />
                 <CreateModal />
                 <LocationModal />
+                <UnreadBadgeProvider />
               </ComingSoonGate>
               </body>
             </html>

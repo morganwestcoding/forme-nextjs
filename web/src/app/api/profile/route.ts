@@ -3,6 +3,7 @@ import getCurrentUser from "@/app/actions/getCurrentUser";
 import { canModifyResource } from "@/app/libs/authorization";
 import { getUserFromRequest } from "@/app/utils/mobileAuth";
 import { apiError, apiErrorCode } from "@/app/utils/api";
+import { validateBody, updateProfileSchema } from "@/app/utils/validations";
 
 export async function POST(request: Request) {
   const currentUser = await getUserFromRequest(request) || await getCurrentUser();
@@ -11,7 +12,13 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json();
-  const { image, imageSrc, bio, location, action, galleryImage, targetUserId } = body;
+  const validation = validateBody(updateProfileSchema, body);
+  if (!validation.success) {
+    return apiError(validation.error, 400);
+  }
+
+  const { image, imageSrc, bio, location } = validation.data;
+  const { action, galleryImage, targetUserId } = body;
 
   // Determine which user to update (self or target if master)
   const userIdToUpdate = targetUserId || currentUser.id;

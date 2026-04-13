@@ -158,7 +158,7 @@ export default function AcademyDetailClient({ academy, stripeReturnedSuccess }: 
     <>
       {stripeReturnedSuccess && (
         <div className="mb-6 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-[13px] text-emerald-800">
-          Returned from Stripe. Click "Refresh status" below to sync the latest onboarding state.
+          Returned from Stripe. Click &quot;Refresh status&quot; below to sync the latest onboarding state.
         </div>
       )}
 
@@ -168,7 +168,7 @@ export default function AcademyDetailClient({ academy, stripeReturnedSuccess }: 
           <div>
             <h2 className="text-[15px] font-semibold text-stone-900">Stripe Connect</h2>
             <p className="text-[13px] text-stone-400 mt-1">
-              The academy's Connect account receives all student bookings.
+              The academy&apos;s Connect account receives all student bookings.
             </p>
           </div>
           {connected && (

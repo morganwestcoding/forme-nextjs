@@ -3,6 +3,7 @@ import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import { getUserFromRequest } from "@/app/utils/mobileAuth";
 import { apiError, apiErrorCode } from "@/app/utils/api";
+import { emitToMany } from '@/app/libs/eventEmitter';
 
 export async function GET(
   request: Request,
@@ -157,6 +158,32 @@ export async function POST(
         image: newMessage.sender.image || null,
       }
     };
+
+    // Real-time: notify other participants
+    const otherUserIds = otherUsers.map((u: typeof otherUsers[number]) => u.id);
+    emitToMany(otherUserIds, {
+      type: 'MESSAGE_CREATED',
+      payload: safeMessage,
+    });
+
+    // Also update conversation list for other users
+    emitToMany(otherUserIds, {
+      type: 'CONVERSATION_UPDATED',
+      payload: {
+        conversationId: params.conversationId,
+        lastMessage: { content: safeMessage.content, createdAt: safeMessage.createdAt, isRead: false },
+        lastMessageAt: safeMessage.createdAt,
+      },
+    });
+
+    // Notify other users about new notification
+    emitToMany(otherUserIds, {
+      type: 'NOTIFICATION_CREATED',
+      payload: {
+        type: 'NEW_MESSAGE',
+        content: `${currentUser.name || 'Someone'} sent you a message`,
+      },
+    });
 
     return NextResponse.json(safeMessage);
   } catch (error) {

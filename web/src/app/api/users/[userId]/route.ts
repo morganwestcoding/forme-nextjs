@@ -5,6 +5,7 @@ import getCurrentUser from "@/app/actions/getCurrentUser";
 import { canModifyResource } from "@/app/libs/authorization";
 import { getUserFromRequest } from "@/app/utils/mobileAuth";
 import { apiError, apiErrorCode } from "@/app/utils/api";
+import { sanitizeText } from "@/app/utils/sanitize";
 
 export async function GET(
   request: Request,
@@ -16,11 +17,17 @@ export async function GET(
     });
     if (!user) return apiErrorCode('NOT_FOUND');
     return NextResponse.json({
-      ...user,
-      hashedPassword: undefined,
+      id: user.id,
+      name: user.name,
+      image: user.image,
+      imageSrc: user.imageSrc,
+      backgroundImage: user.backgroundImage,
+      bio: user.bio,
+      location: user.location,
+      userType: user.userType,
+      verificationStatus: user.verificationStatus,
       createdAt: user.createdAt.toISOString(),
-      updatedAt: user.updatedAt.toISOString(),
-      emailVerified: user.emailVerified?.toISOString() || null,
+      favoriteIds: user.favoriteIds,
     });
   } catch (e) {
     return apiErrorCode('INTERNAL_ERROR');
@@ -58,12 +65,15 @@ export async function PUT(
       backgroundImage,
     } = body || {};
 
+    const sanitizedName = typeof name === "string" ? sanitizeText(name) : undefined;
+    const sanitizedBio = typeof bio === "string" ? sanitizeText(bio) : undefined;
+
     const updated = await prisma.user.update({
       where: { id: targetUserId },
       data: {
-        ...(typeof name === "string" ? { name } : {}),
+        ...(sanitizedName !== undefined ? { name: sanitizedName } : {}),
         ...(typeof location === "string" ? { location } : {}),
-        ...(typeof bio === "string" ? { bio } : {}),
+        ...(sanitizedBio !== undefined ? { bio: sanitizedBio } : {}),
         ...(typeof image === "string" ? { image } : {}),
         ...(typeof imageSrc === "string" ? { imageSrc } : {}),
         ...(typeof backgroundImage === "string" ? { backgroundImage } : {}),

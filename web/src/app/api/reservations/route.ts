@@ -3,6 +3,9 @@ import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import { getUserFromRequest } from "@/app/utils/mobileAuth";
 import { apiError, apiErrorCode } from "@/app/utils/api";
+import { createRateLimiter, getIP } from "@/app/libs/rateLimit";
+
+const reservationLimiter = createRateLimiter("reservations", { limit: 10, windowSeconds: 60 });
 
 export async function GET(request: Request) {
   try {
@@ -64,6 +67,12 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const ip = getIP(request);
+  const rl = reservationLimiter(ip);
+  if (!rl.allowed) {
+    return apiError(`Too many requests. Try again in ${rl.retryAfterSeconds}s`, 429);
+  }
+
   try {
     const currentUser = await getUserFromRequest(request) || await getCurrentUser();
 

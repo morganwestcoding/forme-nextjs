@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import { apiError, apiErrorCode } from '@/app/utils/api';
+import { emit } from '@/app/libs/eventEmitter';
 
 export async function POST(request: Request) {
   try {
@@ -66,6 +67,15 @@ export async function POST(request: Request) {
       } : undefined,
       lastMessageAt: updatedConversation.lastMessageAt?.toISOString() || '',
     };
+
+    // Notify senders their messages were read
+    const otherUserIds = updatedConversation.userIds.filter((id: string) => id !== currentUser.id);
+    otherUserIds.forEach((id: string) => {
+      emit(id, {
+        type: 'MESSAGES_READ',
+        payload: { conversationId },
+      });
+    });
 
     return NextResponse.json(safeConversation);
   } catch (error) {

@@ -4,9 +4,20 @@ import { NextResponse } from 'next/server';
 import prisma from '@/app/libs/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import { apiError, apiErrorCode } from '@/app/utils/api';
+import { sanitizeText } from '@/app/utils/sanitize';
+import { validateBody, createReviewSchema } from '@/app/utils/validations';
+import { createRateLimiter, getIP } from '@/app/libs/rateLimit';
+
+const limiter = createRateLimiter("reviews", { limit: 5, windowSeconds: 60 });
 
 // POST - Create a new review
 export async function POST(request: Request) {
+  const ip = getIP(request);
+  const rl = limiter(ip);
+  if (!rl.allowed) {
+    return apiError(`Too many requests. Try again in ${rl.retryAfterSeconds}s`, 429);
+  }
+
   const currentUser = await getCurrentUser();
 
   if (!currentUser || !currentUser.id) {
@@ -15,12 +26,13 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
-    const { rating, comment, targetType, targetUserId, targetListingId } = body;
-
-    // Validate rating
-    if (!rating || rating < 1 || rating > 5) {
-      return apiError('Rating must be between 1 and 5', 400);
+    const validation = validateBody(createReviewSchema, body);
+    if (!validation.success) {
+      return apiError(validation.error, 400);
     }
+
+    const { rating, comment, targetUserId, targetListingId } = validation.data;
+    const { targetType } = body;
 
     // Validate target
     if (!targetType || !['user', 'listing'].includes(targetType)) {
@@ -81,7 +93,7 @@ export async function POST(request: Request) {
     const review = await prisma.review.create({
       data: {
         rating,
-        comment: comment || null,
+        comment: comment ? sanitizeText(comment) : null,
         userId: currentUser.id,
         targetType,
         targetUserId: targetType === 'user' ? targetUserId : null,

@@ -5,33 +5,43 @@ import getCurrentUser from "@/app/actions/getCurrentUser";
 import { MediaType } from "@/app/types";
 import { getUserFromRequest } from "@/app/utils/mobileAuth";
 import { apiError, apiErrorCode } from "@/app/utils/api";
+import { sanitizeText } from "@/app/utils/sanitize";
+import { validateBody, createPostSchema } from "@/app/utils/validations";
+import { createRateLimiter, getIP } from "@/app/libs/rateLimit";
+
+const limiter = createRateLimiter("post", { limit: 10, windowSeconds: 60 });
 
 export async function POST(request: Request) {
+    const ip = getIP(request);
+    const rl = limiter(ip);
+    if (!rl.allowed) {
+        return apiError(`Too many requests. Try again in ${rl.retryAfterSeconds}s`, 429);
+    }
+
     const currentUser = await getUserFromRequest(request) || await getCurrentUser();
     if (!currentUser) {
         return apiErrorCode('UNAUTHORIZED');
     }
 
     const body = await request.json();
+    const validation = validateBody(createPostSchema, body);
+    if (!validation.success) {
+        return apiError(validation.error, 400);
+    }
+
     const {
         content,
         imageSrc,
-        beforeImageSrc,
         mediaUrl,
         mediaType,
-        mediaOverlay,
-        thumbnailUrl,
         location,
         tag,
         category,
-        postType,
-        mentions = [] // NEW: Handle mentions/tags
-    } = body;
+        mentions = [],
+    } = validation.data;
+    const { beforeImageSrc, mediaOverlay, thumbnailUrl, postType } = body;
 
-    // Check if content exists (allow empty content for Reels)
-    if (content === undefined || content === null) {
-        return apiError("Missing required field: content", 400);
-    }
+    const sanitizedContent = sanitizeText(content);
 
     // Use empty string if no category or if category is "All" or "Default"
     const finalCategory = category && category !== "All" && category !== "Default" 
@@ -61,7 +71,7 @@ export async function POST(request: Request) {
         // Create the post first
         const post = await prisma.post.create({
             data: {
-                content,
+                content: sanitizedContent,
                 imageSrc,
                 beforeImageSrc: beforeImageSrc || undefined,
                 mediaUrl,

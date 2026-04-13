@@ -8,6 +8,7 @@ import { toast } from 'react-hot-toast';
 import { ArrowLeft, Send } from 'lucide-react';
 import useMessageModal from '@/app/hooks/useMessageModal';
 import useInboxModal from '@/app/hooks/useInboxModal';
+import { useSSE } from '@/app/hooks/useSSE';
 import Modal from './Modal';
 
 interface Message {
@@ -60,6 +61,21 @@ const MessageModal: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [otherUser, setOtherUser] = useState<{ name: string | null; image: string | null } | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [isTyping, setIsTyping] = useState(false);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const lastTypingEmit = useRef(0);
+  const emitTyping = useCallback(() => {
+    const now = Date.now();
+    if (now - lastTypingEmit.current < 2000) return;
+    lastTypingEmit.current = now;
+    if (messageModal.conversationId) {
+      fetch('/api/sse/typing', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ conversationId: messageModal.conversationId }),
+      }).catch(() => {});
+    }
+  }, [messageModal.conversationId]);
 
   useEffect(() => {
     if (messageModal.isOpen && messageModal.conversationId) {
@@ -77,6 +93,13 @@ const MessageModal: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  useEffect(() => {
+    if (!messageModal.isOpen) {
+      setIsTyping(false);
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+    }
+  }, [messageModal.isOpen]);
+
   // Update otherUser when messages load if we don't have user info yet
   useEffect(() => {
     if (messages.length > 0 && !otherUser && messageModal.otherUserId) {
@@ -89,6 +112,39 @@ const MessageModal: React.FC = () => {
       }
     }
   }, [messages, otherUser, messageModal.otherUserId]);
+
+  // Real-time: receive new messages
+  useSSE('MESSAGE_CREATED', (data: any) => {
+    if (
+      messageModal.isOpen &&
+      data.conversationId === messageModal.conversationId &&
+      data.senderId !== inboxModal.currentUser?.id
+    ) {
+      setMessages((prev) => {
+        // Deduplicate by id
+        if (prev.some((m) => m.id === data.id)) return prev;
+        return [...prev, data];
+      });
+    }
+  });
+
+  // Real-time: typing indicator
+  useSSE('TYPING', (data: any) => {
+    if (
+      messageModal.isOpen &&
+      data.conversationId === messageModal.conversationId
+    ) {
+      setIsTyping(true);
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+      typingTimeoutRef.current = setTimeout(() => setIsTyping(false), 3000);
+    }
+  });
+
+  useSSE('MESSAGES_READ', (data: any) => {
+    if (data.conversationId === messageModal.conversationId) {
+      setMessages((prev) => prev.map((m) => ({ ...m, isRead: true })));
+    }
+  });
 
   const fetchMessages = async () => {
     if (!messageModal.conversationId) return;
@@ -323,6 +379,15 @@ const MessageModal: React.FC = () => {
                 })}
               </React.Fragment>
             ))}
+            {isTyping && (
+              <div className="flex items-center gap-2 ml-10 mt-1">
+                <div className="flex items-center gap-1 bg-gray-100 rounded-xl px-3 py-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <div className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <div className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: '300ms' }} />
+                </div>
+              </div>
+            )}
             <div ref={messagesEndRef} />
           </div>
           {/* Message Input */}
@@ -332,7 +397,7 @@ const MessageModal: React.FC = () => {
                 <input
                   type="text"
                   value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
+                  onChange={(e) => { setNewMessage(e.target.value); emitTyping(); }}
                   onKeyPress={handleKeyPress}
                   placeholder="Type a message..."
                   className="w-full px-4 py-2.5 pr-11 text-sm text-gray-700 placeholder-gray-400 bg-gray-50

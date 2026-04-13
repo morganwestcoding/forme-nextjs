@@ -146,7 +146,7 @@ const CreateModal = () => {
       <div className="px-5 pb-5">
         {showNoShop ? (
           <div className="text-center py-6">
-            <p className="text-sm font-medium text-gray-900 mb-1">You don't have a shop yet</p>
+            <p className="text-sm font-medium text-gray-900 mb-1">You don&apos;t have a shop yet</p>
             <p className="text-xs text-gray-500 mb-5">Create a shop first to start adding products</p>
             <button
               type="button"
@@ -165,7 +165,7 @@ const CreateModal = () => {
           </div>
         ) : showNoListing ? (
           <div className="text-center py-6">
-            <p className="text-sm font-medium text-gray-900 mb-1">You don't have a listing yet</p>
+            <p className="text-sm font-medium text-gray-900 mb-1">You don&apos;t have a listing yet</p>
             <p className="text-xs text-gray-500 mb-5">Create a listing first to start adding team members</p>
             <button
               type="button"

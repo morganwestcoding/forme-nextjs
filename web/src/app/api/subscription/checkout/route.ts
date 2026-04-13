@@ -5,6 +5,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import prisma from "@/app/libs/prismadb";
 import Stripe from "stripe";
+import { createRateLimiter, getIP } from "@/app/libs/rateLimit";
 
 export const dynamic = "force-dynamic";
 
@@ -69,7 +70,15 @@ async function ensureRecurringPrice(
   });
 }
 
+const subscriptionCheckoutLimiter = createRateLimiter("subscription-checkout", { limit: 5, windowSeconds: 60 });
+
 export async function POST(request: Request) {
+  const ip = getIP(request);
+  const rl = subscriptionCheckoutLimiter(ip);
+  if (!rl.allowed) {
+    return apiError(`Too many requests. Try again in ${rl.retryAfterSeconds}s`, 429);
+  }
+
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
     return apiErrorCode('UNAUTHORIZED');

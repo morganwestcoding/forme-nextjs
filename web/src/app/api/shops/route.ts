@@ -2,6 +2,12 @@ import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import { apiError, apiErrorCode } from "@/app/utils/api";
+import { sanitizeText } from "@/app/utils/sanitize";
+import { validateBody, createShopSchema } from "@/app/utils/validations";
+import { createRateLimiter, getIP } from "@/app/libs/rateLimit";
+
+const shopLimiter = createRateLimiter("shops", { limit: 5, windowSeconds: 60 });
+
 interface ProductInput {
   name: string;
   description: string;
@@ -94,44 +100,44 @@ async function createProductsForShop(
 }
 
 export async function POST(request: Request) {
+  const ip = getIP(request);
+  const rl = shopLimiter(ip);
+  if (!rl.allowed) {
+    return apiError(`Too many requests. Try again in ${rl.retryAfterSeconds}s`, 429);
+  }
+
   const currentUser = await getCurrentUser();
   if (!currentUser) return apiErrorCode('UNAUTHORIZED');
 
   const body = await request.json();
+  const validation = validateBody(createShopSchema, body);
+  if (!validation.success) {
+    return apiError(validation.error, 400);
+  }
+
   const {
     name,
     description,
-    category,
     logo,
     coverImage,
     location,
     address,
-    zipCode,
     isOnlineOnly,
     storeUrl,
-    galleryImages,
-    shopEnabled,
     listingId,
-    products
-  } = body;
+  } = validation.data;
+  const { category, zipCode, galleryImages, shopEnabled, products } = body;
 
-  // Better missing-fields report
-  const required: Record<string, any> = { name, description, logo };
-  const missingKeys = Object.entries(required)
-    .filter(([, v]) => !v)
-    .map(([k]) => k);
-
-  if (missingKeys.length) {
-    return apiError(`Missing required fields: ${missingKeys.join(", ")}`, 400);
-  }
+  const sanitizedName = sanitizeText(name);
+  const sanitizedDescription = description ? sanitizeText(description) : '';
 
   try {
     const shop = await prisma.shop.create({
       data: {
-        name,
-        description,
+        name: sanitizedName,
+        description: sanitizedDescription,
         category,
-        logo,
+        logo: logo || '',
         coverImage: coverImage || null,
         location,
         address: address || null,

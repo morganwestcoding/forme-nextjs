@@ -11,6 +11,7 @@ import useNotificationsModal from '@/app/hooks/useNotificationsModal';
 import useUserMenuModal from '@/app/hooks/useUserMenuModal';
 import useCreateModal from '@/app/hooks/useCreateModal';
 import useLoginModal from '@/app/hooks/useLoginModal';
+import useUnreadCounts from '@/app/hooks/useUnreadCounts';
 import useLocationModal from '@/app/hooks/useLocationModal';
 import PageSearch from '@/components/search/PageSearch';
 
@@ -30,6 +31,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
   const createModal = useCreateModal();
   const loginModal = useLoginModal();
   const locationModal = useLocationModal();
+  const { unreadMessages, unreadNotifications } = useUnreadCounts();
   const isNavActive = (path: string, includes?: string[]) => {
     if (pathname === path) return true;
     if (includes?.some(p => pathname?.startsWith(p))) return true;
@@ -106,15 +108,25 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
               </button>
               <button
                 onClick={() => notificationsModal.onOpen()}
-                className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-stone-500 dark:text-zinc-400 hover:text-stone-700 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-zinc-800 transition-colors"
+                className="relative shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-stone-500 dark:text-zinc-400 hover:text-stone-700 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-zinc-800 transition-colors"
               >
                 <Notification03Icon className="w-5 h-5 sm:w-[22px] sm:h-[22px]" strokeWidth={1.5} />
+                {unreadNotifications > 0 && (
+                  <span className="absolute top-1 right-1 min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold leading-none">
+                    {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                  </span>
+                )}
               </button>
               <button
                 onClick={() => inboxModal.onOpen(currentUser)}
-                className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-stone-500 dark:text-zinc-400 hover:text-stone-700 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-zinc-800 transition-colors"
+                className="relative shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-stone-500 dark:text-zinc-400 hover:text-stone-700 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-zinc-800 transition-colors"
               >
                 <MessageMultiple01Icon className="w-5 h-5 sm:w-[22px] sm:h-[22px]" strokeWidth={1.5} />
+                {unreadMessages > 0 && (
+                  <span className="absolute top-1 right-1 min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full bg-blue-500 text-white text-[10px] font-bold leading-none">
+                    {unreadMessages > 9 ? '9+' : unreadMessages}
+                  </span>
+                )}
               </button>
               <button
                 onClick={() => currentUser ? userMenuModal.onOpen() : loginModal.onOpen()}

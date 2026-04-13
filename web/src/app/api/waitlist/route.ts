@@ -3,10 +3,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { apiError, apiErrorCode } from '@/app/utils/api';
+import { createRateLimiter, getIP } from '@/app/libs/rateLimit';
 
 const prisma = new PrismaClient();
 
+const limiter = createRateLimiter("waitlist", { limit: 3, windowSeconds: 3600 });
+
 export async function POST(request: NextRequest) {
+  const ip = getIP(request);
+  const rl = limiter(ip);
+  if (!rl.allowed) {
+    return apiError(`Too many requests. Try again in ${rl.retryAfterSeconds}s`, 429);
+  }
+
   try {
     const body = await request.json();
     const { email, source = 'coming_soon' } = body;

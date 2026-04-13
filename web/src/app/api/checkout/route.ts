@@ -5,6 +5,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import prisma from "@/app/libs/prismadb";
 import Stripe from 'stripe';
+import { createRateLimiter, getIP } from "@/app/libs/rateLimit";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-02-24.acacia',
@@ -12,7 +13,15 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 const PLATFORM_FEE_PERCENT = 10; // 10% platform fee
 
+const limiter = createRateLimiter("checkout", { limit: 10, windowSeconds: 60 });
+
 export async function POST(request: Request) {
+  const ip = getIP(request);
+  const rl = limiter(ip);
+  if (!rl.allowed) {
+    return apiError(`Too many requests. Try again in ${rl.retryAfterSeconds}s`, 429);
+  }
+
   // Support both mobile Bearer token and web session auth
   const { getUserFromRequest } = await import("@/app/utils/mobileAuth");
   let currentUser = await getUserFromRequest(request);

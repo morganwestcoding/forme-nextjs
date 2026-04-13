@@ -3,6 +3,11 @@ import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import { canModifyResource } from "@/app/libs/authorization";
 import { apiError, apiErrorCode } from "@/app/utils/api";
+import { sanitizeText } from "@/app/utils/sanitize";
+import { validateBody, createProductSchema } from "@/app/utils/validations";
+import { createRateLimiter, getIP } from "@/app/libs/rateLimit";
+
+const productLimiter = createRateLimiter("products", { limit: 10, windowSeconds: 60 });
 
 // Function to get or create a default category
 async function getOrCreateDefaultCategory(categoryName: string) {
@@ -28,6 +33,12 @@ async function getOrCreateDefaultCategory(categoryName: string) {
 }
 
 export async function POST(request: Request) {
+  const ip = getIP(request);
+  const rl = productLimiter(ip);
+  if (!rl.allowed) {
+    return apiError(`Too many requests. Try again in ${rl.retryAfterSeconds}s`, 429);
+  }
+
   const currentUser = await getCurrentUser();
   if (!currentUser) {
     return apiErrorCode('UNAUTHORIZED');
@@ -44,6 +55,18 @@ export async function POST(request: Request) {
   const isShopWithProducts = body.name && !body.shopId && body.products && Array.isArray(body.products);
 
   if (isShopWithProducts) {
+    // Sanitize shop-level text fields
+    if (typeof body.name === 'string') body.name = sanitizeText(body.name);
+    if (typeof body.description === 'string') body.description = sanitizeText(body.description);
+    // Sanitize embedded product text fields
+    if (Array.isArray(body.products)) {
+      body.products = body.products.map((p: any) => ({
+        ...p,
+        ...(typeof p.name === 'string' ? { name: sanitizeText(p.name) } : {}),
+        ...(typeof p.description === 'string' ? { description: sanitizeText(p.description) } : {}),
+      }));
+    }
+
     try {
       // First, create the shop if it doesn't exist
       let shop;
@@ -199,9 +222,19 @@ export async function POST(request: Request) {
   }
 
   try {
+    // Note: createProductSchema expects `mainImage` but this route receives `image`.
+    // Use partial validation to check fields that do match the schema.
+    const productValidation = validateBody(
+      createProductSchema.partial({ mainImage: true }).passthrough(),
+      body
+    );
+    if (!productValidation.success) {
+      return apiError(productValidation.error, 400);
+    }
+
     const {
-      name,
-      description,
+      name: rawName,
+      description: rawDescription,
       price,
       category,
       image,
@@ -210,21 +243,10 @@ export async function POST(request: Request) {
       shopId,
     } = body;
 
-    // Required fields validation
-    const requiredFields = { name, description, price, image: image || (images && images.length > 0 ? images[0] : null), shopId };
-    const missingFields = Object.entries(requiredFields)
-      .filter(([_, value]) => !value)
-      .map(([key]) => key);
+    const name = typeof rawName === 'string' ? sanitizeText(rawName) : rawName;
+    const description = typeof rawDescription === 'string' ? sanitizeText(rawDescription) : rawDescription;
 
-    if (missingFields.length > 0) {
-      return apiError(`Missing required fields: ${missingFields.join(", ")}`, 400);
-    }
-
-    // Validate price format
-    const productPrice = parseFloat(price);
-    if (isNaN(productPrice) || productPrice < 0) {
-      return apiError("Invalid price format", 400);
-    }
+    const productPrice = typeof price === 'number' ? price : parseFloat(price);
 
     const shop = await prisma.shop.findUnique({
       where: { id: shopId },

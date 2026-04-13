@@ -160,7 +160,7 @@ export default function MessagesClient({ currentUser }: Props) {
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-stone-400"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
                   </div>
                   <p className="text-[14px] font-medium text-stone-700 mb-1">No conversations yet</p>
-                  <p className="text-[13px] text-stone-400">Start a conversation from a user's profile</p>
+                  <p className="text-[13px] text-stone-400">Start a conversation from a user&apos;s profile</p>
                 </div>
               ) : (
                 filteredConversations.map(convo => {
