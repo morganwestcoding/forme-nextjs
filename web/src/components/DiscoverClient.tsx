@@ -22,6 +22,7 @@ import useLoginModal from '@/app/hooks/useLoginModal';
 import { placeholderDataUri } from '@/lib/placeholders';
 import useInboxModal from '@/app/hooks/useInboxModal';
 import useNotificationsModal from '@/app/hooks/useNotificationsModal';
+import useLocationModal from '@/app/hooks/useLocationModal';
 import PageHeader from '@/components/PageHeader';
 
 interface DiscoverClientProps {
@@ -106,6 +107,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
   const loginModal = useLoginModal();
   const inboxModal = useInboxModal();
   const notificationsModal = useNotificationsModal();
+  const selectedLocation = useLocationModal((s) => s.selectedLocation);
 
   const isNavActive = (path: string, includes?: string[]) => {
     if (pathname === path) return true;
@@ -133,11 +135,23 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
   // Generate a stable seed for this session (changes on page refresh)
   const [shuffleSeed] = useState(() => Date.now());
 
-  // Filter and randomize data based on selected categories
+  // Location matching helper
+  const matchesLocation = (location?: string | null) => {
+    if (!selectedLocation) return true;
+    if (!location) return false;
+    const loc = location.toLowerCase();
+    const sel = selectedLocation.toLowerCase();
+    // Match city or state portion (e.g., "Brooklyn, NY" matches "New York, NY" by state)
+    const [selCity, selState] = sel.split(',').map(s => s.trim());
+    const [locCity, locState] = loc.split(',').map(s => s.trim());
+    return locCity === selCity || (selState && locState === selState);
+  };
+
+  // Filter and randomize data based on selected categories and location
   const shuffledPosts = useMemo(() => {
     let filtered = initialPosts;
     if (currentCategories.length > 0) {
-      filtered = initialPosts.filter(p => currentCategories.includes(p.category ?? ''));
+      filtered = filtered.filter(p => currentCategories.includes(p.category ?? ''));
     }
     return shuffleArray(filtered, shuffleSeed);
   }, [initialPosts, shuffleSeed, currentCategories]);
@@ -147,25 +161,36 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
     if (currentCategories.length > 0) {
       filtered = filtered.filter(l => currentCategories.includes(l.category));
     }
+    if (selectedLocation) {
+      filtered = filtered.filter(l => matchesLocation(l.location));
+    }
     return shuffleArray(filtered, shuffleSeed + 1);
-  }, [listings, shuffleSeed, currentCategories]);
+  }, [listings, shuffleSeed, currentCategories, selectedLocation]);
 
   const shuffledEmployees = useMemo(() => {
     let filtered = employees;
     if (currentCategories.length > 0) {
-      // Filter employees by their associated listing's category
-      filtered = employees.filter(emp => {
+      filtered = filtered.filter(emp => {
         const empListing = listings.find(l => l.employees?.some(e => e.id === emp.id));
         return empListing && currentCategories.includes(empListing.category);
       });
     }
+    if (selectedLocation) {
+      filtered = filtered.filter(emp => {
+        const empListing = listings.find(l => l.employees?.some(e => e.id === emp.id));
+        return empListing && matchesLocation(empListing.location);
+      });
+    }
     return shuffleArray(filtered, shuffleSeed + 2);
-  }, [employees, listings, shuffleSeed, currentCategories]);
+  }, [employees, listings, shuffleSeed, currentCategories, selectedLocation]);
 
   const shuffledShops = useMemo(() => {
     let filtered = shops;
     if (currentCategories.length > 0) {
-      filtered = shops.filter(s => currentCategories.includes(s.category ?? ''));
+      filtered = filtered.filter(s => currentCategories.includes(s.category ?? ''));
+    }
+    if (selectedLocation) {
+      filtered = filtered.filter(s => matchesLocation(s.location));
     }
     return shuffleArray(filtered, shuffleSeed + 3);
   }, [shops, shuffleSeed, currentCategories]);

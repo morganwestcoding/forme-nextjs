@@ -141,6 +141,7 @@ export default async function getTeamData(userId: string): Promise<TeamData> {
           user: {
             select: {
               id: true, name: true, image: true, imageSrc: true, email: true,
+              stripeConnectPayoutsEnabled: true,
             },
           },
           availability: true,
@@ -249,7 +250,7 @@ export default async function getTeamData(userId: string): Promise<TeamData> {
       rentalFrequency: emp.payAgreement.rentalFrequency,
       autoApprovePayout: emp.payAgreement.autoApprovePayout,
     } : null,
-    stripeConnectSetup: false, // Will be checked client-side via API
+    stripeConnectSetup: emp.user?.stripeConnectPayoutsEnabled ?? false,
   }));
 
   const mapBooking = (r: typeof todayReservations[number]): TeamBooking => ({

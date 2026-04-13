@@ -26,13 +26,27 @@ export async function POST(request: Request, { params }: { params: IParams }) {
   }
 
   try {
-    const newComment = await prisma.comment.create({
-      data: {
-        content,
-        user: { connect: { id: currentUser.id } },
-        post: { connect: { id: postId } },
-      },
-    });
+    const [newComment, post] = await Promise.all([
+      prisma.comment.create({
+        data: {
+          content,
+          user: { connect: { id: currentUser.id } },
+          post: { connect: { id: postId } },
+        },
+      }),
+      prisma.post.findUnique({ where: { id: postId }, select: { userId: true } }),
+    ]);
+
+    // Notify post author (not on own post)
+    if (post && post.userId !== currentUser.id) {
+      prisma.notification.create({
+        data: {
+          type: 'POST_COMMENTED',
+          content: `${currentUser.name || 'Someone'} commented on your post`,
+          userId: post.userId,
+        },
+      }).catch(() => {}); // fire-and-forget
+    }
 
     return NextResponse.json(newComment);
   } catch (error) {

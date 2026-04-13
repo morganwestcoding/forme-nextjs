@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Location01Icon } from 'hugeicons-react';
 import Modal from './Modal';
 import useLocationModal from '@/app/hooks/useLocationModal';
@@ -28,15 +28,87 @@ const POPULAR_LOCATIONS = [
   'Minneapolis, MN',
 ];
 
+interface MapboxFeature {
+  place_name: string;
+  text: string;
+  context?: Array<{ id: string; text: string; short_code?: string }>;
+}
+
 const LocationModal = () => {
   const locationModal = useLocationModal();
   const [search, setSearch] = useState('');
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
-  const filtered = search.trim()
-    ? POPULAR_LOCATIONS.filter((loc) =>
-        loc.toLowerCase().includes(search.toLowerCase())
-      )
-    : POPULAR_LOCATIONS;
+  const fetchSuggestions = useCallback(async (query: string) => {
+    if (query.length < 2) {
+      setSuggestions([]);
+      setIsSearching(false);
+      return;
+    }
+
+    const token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
+    if (!token) {
+      setSuggestions([]);
+      setIsSearching(false);
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?types=place&country=us&limit=6&access_token=${token}`
+      );
+      const data = await res.json();
+
+      const cities = (data.features || []).map((f: MapboxFeature) => {
+        const state = f.context?.find((c) => c.id.startsWith('region'))?.short_code?.replace('US-', '');
+        return state ? `${f.text}, ${state}` : f.place_name;
+      });
+
+      setSuggestions(cities);
+    } catch {
+      setSuggestions([]);
+    } finally {
+      setIsSearching(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    if (search.trim().length < 2) {
+      setSuggestions([]);
+      return;
+    }
+
+    setIsSearching(true);
+    debounceRef.current = setTimeout(() => {
+      fetchSuggestions(search.trim());
+    }, 300);
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [search, fetchSuggestions]);
+
+  const handleSelect = (loc: string) => {
+    locationModal.setLocation(loc);
+    setSearch('');
+    setSuggestions([]);
+  };
+
+  const handleClear = () => {
+    locationModal.setLocation('');
+    setSearch('');
+    setSuggestions([]);
+  };
+
+  // Show suggestions when searching, popular locations otherwise
+  const hasQuery = search.trim().length >= 2;
+  const displayList = hasQuery ? suggestions : POPULAR_LOCATIONS.filter((loc) =>
+    !search.trim() || loc.toLowerCase().includes(search.toLowerCase())
+  );
 
   const body = (
     <div className="flex flex-col">
@@ -54,11 +126,24 @@ const LocationModal = () => {
         </div>
       </div>
 
+      {/* Section label */}
+      <div className="px-6 pb-2">
+        <p className="text-[11px] font-medium text-stone-400 uppercase tracking-wider">
+          {hasQuery ? 'Results' : 'Popular Cities'}
+        </p>
+      </div>
+
       <div className="max-h-[320px] overflow-y-auto">
-        {filtered.map((loc) => (
+        {isSearching && (
+          <div className="flex items-center justify-center py-8">
+            <div className="w-5 h-5 border-2 border-stone-200 border-t-stone-500 rounded-full animate-spin" />
+          </div>
+        )}
+
+        {!isSearching && displayList.map((loc) => (
           <button
             key={loc}
-            onClick={() => locationModal.setLocation(loc)}
+            onClick={() => handleSelect(loc)}
             className={`w-full flex items-center gap-3 px-6 py-3 text-[14px] transition-colors ${
               locationModal.selectedLocation === loc
                 ? 'text-stone-900 font-medium bg-stone-50'
@@ -74,12 +159,25 @@ const LocationModal = () => {
             )}
           </button>
         ))}
-        {filtered.length === 0 && (
+
+        {!isSearching && hasQuery && displayList.length === 0 && (
           <p className="px-6 py-8 text-center text-[13px] text-stone-400">
             No cities found
           </p>
         )}
       </div>
+
+      {/* Clear location button */}
+      {locationModal.selectedLocation && (
+        <div className="px-6 pt-3 pb-1 border-t border-stone-100">
+          <button
+            onClick={handleClear}
+            className="w-full py-2.5 text-[13px] text-stone-500 hover:text-stone-700 transition-colors"
+          >
+            Clear location filter
+          </button>
+        </div>
+      )}
     </div>
   );
 

@@ -40,5 +40,16 @@ export async function POST(
     data: { likes: updatedLikes },
   });
 
+  // Notify post author on like (not on unlike, not on own post)
+  if (isLiking && post.userId !== currentUser.id) {
+    prisma.notification.create({
+      data: {
+        type: 'POST_LIKED',
+        content: `${currentUser.name || 'Someone'} liked your post`,
+        userId: post.userId,
+      },
+    }).catch(() => {}); // fire-and-forget
+  }
+
   return NextResponse.json({ likes: updatedPost.likes });
 }

@@ -12,6 +12,7 @@ import SectionHeader from '@/app/market/SectionHeader';
 import PageHeader from '@/components/PageHeader';
 import { categories } from '@/components/Categories';
 import { useSidebarState } from '@/app/hooks/useSidebarState';
+import useLocationModal from '@/app/hooks/useLocationModal';
 
 // Shuffle array using Fisher-Yates algorithm (seeded for stability during session)
 function shuffleArray<T>(array: T[], seed: number): T[] {
@@ -74,6 +75,7 @@ const ShopClient: React.FC<ShopClientProps> = ({
   const params = useSearchParams();
   const router = useRouter();
   const isSidebarCollapsed = useSidebarState();
+  const selectedLocation = useLocationModal((s) => s.selectedLocation);
 
   // Dynamic items per page: 12 when sidebar collapsed, 10 when expanded
   const ITEMS_PER_PAGE = isSidebarCollapsed ? 12 : 10;
@@ -163,8 +165,16 @@ const ShopClient: React.FC<ShopClientProps> = ({
     if (currentCategories.length > 0) {
       result = result.filter((s) => currentCategories.includes(s.category ?? ''));
     }
+    if (selectedLocation) {
+      const [selCity, selState] = selectedLocation.toLowerCase().split(',').map(p => p.trim());
+      result = result.filter((s) => {
+        if (!s.location) return false;
+        const [locCity, locState] = s.location.toLowerCase().split(',').map(p => p.trim());
+        return locCity === selCity || (selState && locState === selState);
+      });
+    }
     return result;
-  }, [allShops, q, currentCategories]);
+  }, [allShops, q, currentCategories, selectedLocation]);
 
   const filteredProducts = useMemo(() => {
     let result = allProducts;

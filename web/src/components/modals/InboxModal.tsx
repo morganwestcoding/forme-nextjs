@@ -472,6 +472,20 @@ const InboxModal = () => {
             )}
           </div>
         </div>
+        {/* Full page link */}
+        <div className="pt-3 text-center border-t border-neutral-100 mt-2">
+          <a
+            href="/messages"
+            onClick={(e) => {
+              e.preventDefault();
+              inboxModal.onClose();
+              window.location.href = '/messages';
+            }}
+            className="text-[13px] text-stone-500 hover:text-stone-700 font-medium transition-colors"
+          >
+            Open full messaging page →
+          </a>
+        </div>
       </div>
     </div>
   );

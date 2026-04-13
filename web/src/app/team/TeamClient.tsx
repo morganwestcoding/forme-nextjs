@@ -86,7 +86,14 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
 
   // Pay request state for employees
   const [payoutAmount, setPayoutAmount] = useState('');
+  const [payoutNote, setPayoutNote] = useState('');
   const [requestingPayout, setRequestingPayout] = useState(false);
+  const [denyNote, setDenyNote] = useState('');
+  const [denyingPayoutId, setDenyingPayoutId] = useState<string | null>(null);
+  const [waiveReason, setWaiveReason] = useState('');
+  const [waivingPeriodId, setWaivingPeriodId] = useState<string | null>(null);
+  const [showAllPayouts, setShowAllPayouts] = useState<Record<string, boolean>>({});
+  const [showAllPeriods, setShowAllPeriods] = useState<Record<string, boolean>>({});
 
   const tabs: { key: TeamTab; label: string; count?: number }[] = [
     { key: 'overview', label: 'Overview' },
@@ -223,7 +230,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
       const res = await fetch('/api/team/pay/payout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ employeeId: myEmployee.id, amount: Number(payoutAmount) }),
+        body: JSON.stringify({ employeeId: myEmployee.id, amount: Number(payoutAmount), note: payoutNote || undefined }),
       });
       if (!res.ok) {
         const data = await res.json();
@@ -231,6 +238,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
       }
       toast.success('Payout requested');
       setPayoutAmount('');
+      setPayoutNote('');
       loadPayData(myEmployee.id);
     } catch (err: any) {
       toast.error(err.message || 'Failed to request payout');
@@ -255,32 +263,34 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
     }
   }, [agreementForm, router]);
 
-  const handlePayoutAction = useCallback(async (payoutId: string, action: string) => {
+  const handlePayoutAction = useCallback(async (payoutId: string, action: string, note?: string) => {
     try {
       const res = await fetch('/api/team/pay/payout', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ payoutId, action }),
+        body: JSON.stringify({ payoutId, action, note: note || undefined }),
       });
       if (!res.ok) throw new Error('Failed');
       toast.success(`Payout ${action === 'approve' ? 'approved' : 'denied'}`);
-      // Reload pay data for the affected employee
-      const payout = payouts[Object.keys(payouts).find((k) => payouts[k].some((p: any) => p.id === payoutId)) || ''];
-      if (payout) router.refresh();
+      setDenyingPayoutId(null);
+      setDenyNote('');
+      router.refresh();
     } catch {
       toast.error('Action failed');
     }
-  }, [payouts, router]);
+  }, [router]);
 
-  const waivePeriod = useCallback(async (periodId: string, employeeId: string) => {
+  const waivePeriod = useCallback(async (periodId: string, employeeId: string, reason?: string) => {
     try {
       const res = await fetch('/api/team/pay/periods', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ periodId, action: 'waive' }),
+        body: JSON.stringify({ periodId, action: 'waive', reason: reason || undefined }),
       });
       if (!res.ok) throw new Error('Failed');
       toast.success('Fee waived');
+      setWaivingPeriodId(null);
+      setWaiveReason('');
       loadPayData(employeeId);
     } catch {
       toast.error('Failed to waive fee');
@@ -939,26 +949,35 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
                 {balances[myEmployee.id].availableBalance > 0 && (
                   <div className="border-t border-stone-100 pt-4">
                     <h4 className="text-[13px] font-semibold text-stone-900 mb-3">Request Payout</h4>
-                    <div className="flex gap-3 items-end">
-                      <div>
-                        <label className="text-[11px] text-stone-400 block mb-1">Amount ($)</label>
-                        <input
-                          type="number"
-                          min={1}
-                          max={balances[myEmployee.id].availableBalance}
-                          value={payoutAmount}
-                          onChange={(e) => setPayoutAmount(e.target.value)}
-                          placeholder={`Up to $${balances[myEmployee.id].availableBalance.toFixed(2)}`}
-                          className="w-48 text-[13px] px-3 py-2 rounded-xl border border-stone-200 bg-white"
-                        />
+                    <div className="space-y-3">
+                      <div className="flex gap-3 items-end">
+                        <div>
+                          <label className="text-[11px] text-stone-400 block mb-1">Amount ($)</label>
+                          <input
+                            type="number"
+                            min={1}
+                            max={balances[myEmployee.id].availableBalance}
+                            value={payoutAmount}
+                            onChange={(e) => setPayoutAmount(e.target.value)}
+                            placeholder={`Up to $${balances[myEmployee.id].availableBalance.toFixed(2)}`}
+                            className="w-48 text-[13px] px-3 py-2 rounded-xl border border-stone-200 bg-white"
+                          />
+                        </div>
+                        <button
+                          onClick={requestPayout}
+                          disabled={requestingPayout || !payoutAmount || Number(payoutAmount) <= 0}
+                          className="px-5 py-2 rounded-xl bg-stone-900 text-white text-[13px] font-medium hover:bg-stone-800 transition-all disabled:opacity-50"
+                        >
+                          {requestingPayout ? 'Requesting...' : 'Request Payout'}
+                        </button>
                       </div>
-                      <button
-                        onClick={requestPayout}
-                        disabled={requestingPayout || !payoutAmount || Number(payoutAmount) <= 0}
-                        className="px-5 py-2 rounded-xl bg-stone-900 text-white text-[13px] font-medium hover:bg-stone-800 transition-all disabled:opacity-50"
-                      >
-                        {requestingPayout ? 'Requesting...' : 'Request Payout'}
-                      </button>
+                      <input
+                        type="text"
+                        value={payoutNote}
+                        onChange={(e) => setPayoutNote(e.target.value)}
+                        placeholder="Add a note (optional)"
+                        className="w-full text-[13px] px-3 py-2 rounded-xl border border-stone-200 bg-white"
+                      />
                     </div>
                   </div>
                 )}
@@ -990,22 +1009,38 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
             )}
 
             {/* Payout history */}
-            {(payouts[myEmployee.id] || []).length > 0 && (
-              <div className="rounded-2xl border border-stone-200/60 bg-white p-5">
-                <h4 className="text-[13px] font-semibold text-stone-900 mb-3">Payout History</h4>
-                <div className="space-y-2">
-                  {(payouts[myEmployee.id] || []).map((payout: any) => (
-                    <div key={payout.id} className="flex items-center justify-between py-2">
-                      <div>
-                        <p className="text-[13px] font-medium text-stone-900 tabular-nums">${payout.amount.toFixed(2)}</p>
-                        <p className="text-[11px] text-stone-400">{new Date(payout.requestedAt).toLocaleDateString()}</p>
+            {(payouts[myEmployee.id] || []).length > 0 && (() => {
+              const allPayouts = payouts[myEmployee.id] || [];
+              const showAll = showAllPayouts[myEmployee.id];
+              const displayed = showAll ? allPayouts : allPayouts.slice(0, 5);
+              return (
+                <div className="rounded-2xl border border-stone-200/60 bg-white p-5">
+                  <h4 className="text-[13px] font-semibold text-stone-900 mb-3">Payout History</h4>
+                  <div className="space-y-2">
+                    {displayed.map((payout: any) => (
+                      <div key={payout.id} className="py-2">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-[13px] font-medium text-stone-900 tabular-nums">${payout.amount.toFixed(2)}</p>
+                            <p className="text-[11px] text-stone-400">{new Date(payout.requestedAt).toLocaleDateString()}</p>
+                          </div>
+                          <StatusBadge status={payout.status} />
+                        </div>
+                        {payout.note && <p className="text-[11px] text-stone-400 mt-1">{payout.note}</p>}
                       </div>
-                      <StatusBadge status={payout.status} />
-                    </div>
-                  ))}
+                    ))}
+                  </div>
+                  {allPayouts.length > 5 && (
+                    <button
+                      onClick={() => setShowAllPayouts(prev => ({ ...prev, [myEmployee.id]: !showAll }))}
+                      className="text-[12px] text-stone-400 hover:text-stone-600 mt-3 transition-colors"
+                    >
+                      {showAll ? 'Show less' : `View all ${allPayouts.length} payouts`}
+                    </button>
+                  )}
                 </div>
-              </div>
-            )}
+              );
+            })()}
           </div>
         )}
 
@@ -1179,30 +1214,56 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
                           </button>
                         </div>
                         <div className="space-y-2">
-                          {memberPeriods.slice(0, 5).map((period: any) => (
-                            <div key={period.id} className="flex items-center justify-between py-2">
-                              <div>
-                                <p className="text-[12px] text-stone-700">
-                                  {new Date(period.periodStart).toLocaleDateString()} - {new Date(period.periodEnd).toLocaleDateString()}
-                                </p>
-                                <p className="text-[11px] text-stone-400">${period.feeAmount}</p>
-                              </div>
-                              {period.status === 'charged' ? (
-                                <div className="flex items-center gap-2">
-                                  <StatusBadge status="charged" />
-                                  <button
-                                    onClick={() => waivePeriod(period.id, member.id)}
-                                    className="text-[11px] text-stone-400 hover:text-stone-600 transition-colors"
-                                  >
-                                    Waive
-                                  </button>
+                          {(showAllPeriods[member.id] ? memberPeriods : memberPeriods.slice(0, 5)).map((period: any) => (
+                            <div key={period.id} className="py-2">
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <p className="text-[12px] text-stone-700">
+                                    {new Date(period.periodStart).toLocaleDateString()} - {new Date(period.periodEnd).toLocaleDateString()}
+                                  </p>
+                                  <p className="text-[11px] text-stone-400">${period.feeAmount}</p>
                                 </div>
-                              ) : (
-                                <StatusBadge status={period.status} />
-                              )}
+                                {period.status === 'charged' ? (
+                                  <div className="flex items-center gap-2">
+                                    <StatusBadge status="charged" />
+                                    {waivingPeriodId === period.id ? (
+                                      <div className="flex items-center gap-1.5">
+                                        <input
+                                          type="text"
+                                          value={waiveReason}
+                                          onChange={(e) => setWaiveReason(e.target.value)}
+                                          placeholder="Reason"
+                                          className="w-28 text-[11px] px-2 py-1 rounded-lg border border-stone-200"
+                                          autoFocus
+                                        />
+                                        <button onClick={() => waivePeriod(period.id, member.id, waiveReason)} className="text-[11px] text-emerald-600 font-medium">OK</button>
+                                        <button onClick={() => { setWaivingPeriodId(null); setWaiveReason(''); }} className="text-[11px] text-stone-400">✕</button>
+                                      </div>
+                                    ) : (
+                                      <button
+                                        onClick={() => setWaivingPeriodId(period.id)}
+                                        className="text-[11px] text-stone-400 hover:text-stone-600 transition-colors"
+                                      >
+                                        Waive
+                                      </button>
+                                    )}
+                                  </div>
+                                ) : (
+                                  <StatusBadge status={period.status} />
+                                )}
+                              </div>
+                              {period.waivedReason && <p className="text-[11px] text-purple-400 mt-1">Reason: {period.waivedReason}</p>}
                             </div>
                           ))}
                         </div>
+                        {memberPeriods.length > 5 && (
+                          <button
+                            onClick={() => setShowAllPeriods(prev => ({ ...prev, [member.id]: !prev[member.id] }))}
+                            className="text-[12px] text-stone-400 hover:text-stone-600 mt-3 transition-colors"
+                          >
+                            {showAllPeriods[member.id] ? 'Show less' : `View all ${memberPeriods.length} periods`}
+                          </button>
+                        )}
                       </div>
                     )}
 
@@ -1211,33 +1272,59 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
                       <div className="p-5">
                         <h4 className="text-[13px] font-semibold text-stone-900 mb-3">Payouts</h4>
                         <div className="space-y-2">
-                          {memberPayouts.slice(0, 5).map((payout: any) => (
-                            <div key={payout.id} className="flex items-center justify-between py-2">
-                              <div>
-                                <p className="text-[13px] font-medium text-stone-900 tabular-nums">${payout.amount.toFixed(2)}</p>
-                                <p className="text-[11px] text-stone-400">{new Date(payout.requestedAt).toLocaleDateString()}</p>
-                              </div>
-                              {payout.status === 'pending' ? (
-                                <div className="flex gap-1.5">
-                                  <button
-                                    onClick={() => handlePayoutAction(payout.id, 'approve')}
-                                    className="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-600 text-[11px] font-medium hover:bg-emerald-100 transition-colors"
-                                  >
-                                    Approve
-                                  </button>
-                                  <button
-                                    onClick={() => handlePayoutAction(payout.id, 'deny')}
-                                    className="px-3 py-1.5 rounded-xl bg-red-50 text-red-600 text-[11px] font-medium hover:bg-red-100 transition-colors"
-                                  >
-                                    Deny
-                                  </button>
+                          {(showAllPayouts[member.id] ? memberPayouts : memberPayouts.slice(0, 5)).map((payout: any) => (
+                            <div key={payout.id} className="py-2">
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <p className="text-[13px] font-medium text-stone-900 tabular-nums">${payout.amount.toFixed(2)}</p>
+                                  <p className="text-[11px] text-stone-400">{new Date(payout.requestedAt).toLocaleDateString()}</p>
                                 </div>
-                              ) : (
-                                <StatusBadge status={payout.status} />
-                              )}
+                                {payout.status === 'pending' ? (
+                                  <div className="flex gap-1.5">
+                                    <button
+                                      onClick={() => handlePayoutAction(payout.id, 'approve')}
+                                      className="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-600 text-[11px] font-medium hover:bg-emerald-100 transition-colors"
+                                    >
+                                      Approve
+                                    </button>
+                                    {denyingPayoutId === payout.id ? (
+                                      <div className="flex items-center gap-1.5">
+                                        <input
+                                          type="text"
+                                          value={denyNote}
+                                          onChange={(e) => setDenyNote(e.target.value)}
+                                          placeholder="Reason"
+                                          className="w-28 text-[11px] px-2 py-1 rounded-lg border border-stone-200"
+                                          autoFocus
+                                        />
+                                        <button onClick={() => handlePayoutAction(payout.id, 'deny', denyNote)} className="text-[11px] text-red-600 font-medium">Deny</button>
+                                        <button onClick={() => { setDenyingPayoutId(null); setDenyNote(''); }} className="text-[11px] text-stone-400">✕</button>
+                                      </div>
+                                    ) : (
+                                      <button
+                                        onClick={() => setDenyingPayoutId(payout.id)}
+                                        className="px-3 py-1.5 rounded-xl bg-red-50 text-red-600 text-[11px] font-medium hover:bg-red-100 transition-colors"
+                                      >
+                                        Deny
+                                      </button>
+                                    )}
+                                  </div>
+                                ) : (
+                                  <StatusBadge status={payout.status} />
+                                )}
+                              </div>
+                              {payout.note && <p className="text-[11px] text-stone-400 mt-1">{payout.note}</p>}
                             </div>
                           ))}
                         </div>
+                        {memberPayouts.length > 5 && (
+                          <button
+                            onClick={() => setShowAllPayouts(prev => ({ ...prev, [member.id]: !prev[member.id] }))}
+                            className="text-[12px] text-stone-400 hover:text-stone-600 mt-3 transition-colors"
+                          >
+                            {showAllPayouts[member.id] ? 'Show less' : `View all ${memberPayouts.length} payouts`}
+                          </button>
+                        )}
                       </div>
                     )}
 
