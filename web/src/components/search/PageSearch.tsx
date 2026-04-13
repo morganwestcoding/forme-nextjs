@@ -5,8 +5,6 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { PlusSignIcon, Search01Icon } from 'hugeicons-react';
 import useFilterModal from '@/app/hooks/useFilterModal';
 import { useTheme } from '@/app/context/ThemeContext';
-import useShopModal from '@/app/hooks/useShopModal';
-import useProductModal from '@/app/hooks/useProductModal';
 import ContextualSearch from '@/components/search/ContextualSearch';
 import {
   useFloating,
@@ -74,8 +72,6 @@ const PageSearch: React.FC<PageSearchProps> = ({
   const params = useSearchParams();
   const router = useRouter();
   const filterModal = useFilterModal();
-  const shopModal = useShopModal();
-  const productModal = useProductModal();
   const { accentColor } = useTheme();
 
   // Action dropdown state
@@ -106,8 +102,7 @@ const PageSearch: React.FC<PageSearchProps> = ({
         ];
       case 'shops':
         return [
-          { label: 'Create Shop', action: () => shopModal.onOpen() },
-          { label: 'Create Product', action: () => productModal.onOpen() },
+          { label: 'Create Shop', action: () => router.push('/shop/new') },
           { label: 'Create Post', action: () => router.push('/post/new') },
         ];
       case 'discover':

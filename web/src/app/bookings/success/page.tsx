@@ -35,8 +35,7 @@ export default function SuccessPage() {
         }
       } catch (error) {
         console.error('Error verifying payment', error);
-        // Fallback: assume success if we have a session ID
-        setSuccess(true);
+        setSuccess(false);
       } finally {
         setLoading(false);
       }

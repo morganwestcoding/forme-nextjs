@@ -16,17 +16,9 @@ export default function LayoutContent({ children }: LayoutContentProps) {
   const isFullScreenPage = pathname?.startsWith('/register') || pathname?.startsWith('/listing/new') || pathname?.startsWith('/reserve') || pathname?.startsWith('/post/new') || pathname?.startsWith('/maps') || pathname?.startsWith('/newsfeed');
 
 
-  const [collapsed, setCollapsed] = useState(false);
   const [fadeKey, setFadeKey] = useState(0);
   const [visible, setVisible] = useState(false);
   const isFadingOut = useRef(false);
-
-  useEffect(() => {
-    const check = () => setCollapsed(localStorage.getItem('sidebarCollapsed') === 'true');
-    check();
-    window.addEventListener('sidebarToggle', check);
-    return () => window.removeEventListener('sidebarToggle', check);
-  }, []);
 
   // Fade in on every non-fullscreen navigation
   useEffect(() => {

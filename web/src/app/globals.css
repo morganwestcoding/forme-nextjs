@@ -292,31 +292,6 @@ main {
   animation: quickFlash 0.3s ease-out forwards;
 }
 
-/* ===========================
-   Sidebar Arrow Animations
-   =========================== */
-@keyframes pulseLeft {
-  0%, 100% {
-    opacity: 0.4;
-    transform: translateX(0);
-  }
-  50% {
-    opacity: 1;
-    transform: translateX(-2px);
-  }
-}
-
-@keyframes pulseRight {
-  0%, 100% {
-    opacity: 0.4;
-    transform: translateX(0);
-  }
-  50% {
-    opacity: 1;
-    transform: translateX(2px);
-  }
-}
-
 /* Apple-style subtle ambient glow */
 @keyframes ambient-glow {
   0%, 100% {

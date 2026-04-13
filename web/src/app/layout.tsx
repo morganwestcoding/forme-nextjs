@@ -5,23 +5,16 @@ import NotificationsModal from '@/components/modals/NotificationModal';
 import ToasterProvider from './providers/ToasterProvider';
 import LoginModal from '@/components/modals/LoginModal';
 import getCurrentUser from './actions/getCurrentUser';
-import ProfileModal from '@/components/modals/ProfileModal';
-import ProfileGalleryModal from '@/components/modals/profileGalleryModal';
 import ClientProviders from '@/components/ClientProviders';
 import MessageModal from '@/components/modals/MessageModal';
-import ListingGalleryModal from '@/components/modals/listingGalleryModal';
 import { CategoryProvider } from '@/CategoryContext';
 import { FilterProvider } from '@/FilterContext';
 import FilterModal from '@/components/modals/FilterModal';
 import ForgotPasswordModal from '@/components/modals/ForgotPasswordModal';
 import ResetPasswordModal from '@/components/modals/ResetPasswordModal';
-import SubscribeModal from '@/components/modals/SubscribeModal';
 import InboxModal from '@/components/modals/InboxModal';
-import PostModal from '@/components/modals/PostModal';
 import { ThemeProvider } from './context/ThemeContext';
 import StripeCheckoutModal from '@/components/modals/StripeCheckoutModal';
-import ShopModal from '@/components/modals/ShopModal';
-import SettingsModal from '@/components/modals/SettingsModal';
 import ReviewModal from '@/components/modals/ReviewModal';
 import ComingSoonGate from '@/ComingSoonGate';
 import LayoutContent from '@/LayoutContent';
@@ -68,23 +61,16 @@ export default async function RootLayout({
                 </div>
 
                 {/* Modals */}
-                <ShopModal/>
                 <ToasterProvider/>
                 <ReviewModal/>
                 <InboxModal/>
-                <ProfileModal/>
                 <StripeCheckoutModal />
-                <ProfileGalleryModal/>
-                <ListingGalleryModal/>
                 <ForgotPasswordModal/>
                 <ResetPasswordModal/>
                 <MessageModal />
-                <SubscribeModal/>
                 <NotificationsModal />
-                <PostModal/>
                 <FilterModal/>
                 <LoginModal />
-                <SettingsModal />
                 <UserMenuModal currentUser={currentUser} />
                 <CreateModal />
                 <LocationModal />

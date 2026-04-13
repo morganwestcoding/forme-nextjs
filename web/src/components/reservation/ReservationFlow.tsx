@@ -3,7 +3,6 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
-import axios from 'axios';
 import { AnimatePresence, motion } from 'framer-motion';
 import { format, isSameDay } from 'date-fns';
 
@@ -237,26 +236,8 @@ export default function ReservationFlow({
     setIsLoading(true);
 
     try {
-      // 1) Create reservation in DB
-      const reservationPayload = {
-        listingId: listing.id,
-        serviceId: selectedServices[0].value,
-        serviceName: selectedServices[0].label.split(' - ')[0],
-        employeeId: selectedEmployee.value,
-        date: date.toISOString(),
-        time,
-        note,
-        totalPrice,
-      };
-
-      const response = await axios.post('/api/reservations', reservationPayload);
-      const createdReservation = response.data;
-
-      toast.success('Reservation created! Proceeding to payment...');
-
-      // 2) Prepare Stripe data
+      // Prepare Stripe data — reservation is created by the webhook after payment
       const stripeData = {
-        reservationId: createdReservation.id,
         totalPrice,
         date: date.toISOString(),
         time,
