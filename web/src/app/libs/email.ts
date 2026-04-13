@@ -39,6 +39,20 @@ export async function sendEmail({ to, subject, html, text }: SendEmailOptions): 
   });
 }
 
+/**
+ * Send a notification email only if the user has emailNotifications enabled.
+ * Use this for non-transactional emails (new booking alerts, dispute alerts).
+ * Transactional emails (password reset, payment receipt) should use sendEmail directly.
+ */
+export async function sendNotificationEmail(
+  user: { email: string | null; emailNotifications?: boolean },
+  template: SendEmailOptions & { to: '' | string },
+): Promise<void> {
+  if (!user.email) return;
+  if (user.emailNotifications === false) return;
+  await sendEmail({ ...template, to: user.email });
+}
+
 // ---------------------------------------------------------------------------
 // Pre-built email templates
 // ---------------------------------------------------------------------------

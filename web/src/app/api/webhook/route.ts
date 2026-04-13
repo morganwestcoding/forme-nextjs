@@ -6,6 +6,7 @@ import prisma from '@/app/libs/prismadb';
 import { apiError } from '@/app/utils/api';
 import {
   sendEmail,
+  sendNotificationEmail,
   bookingConfirmationEmail,
   newBookingReceivedEmail,
   subscriptionConfirmationEmail,
@@ -114,12 +115,12 @@ export async function POST(req: Request) {
                   }
                 });
 
-                // Email: notify listing owner about new booking
+                // Email: notify listing owner about new booking (respects preferences)
                 const ownerUser = await prisma.user.findUnique({
                   where: { id: listing.userId },
-                  select: { email: true },
+                  select: { email: true, emailNotifications: true },
                 });
-                if (ownerUser?.email) {
+                if (ownerUser) {
                   const tpl = newBookingReceivedEmail({
                     serviceName: session.metadata.serviceName || 'Service',
                     customerName: session.metadata.employeeName || 'Customer',
@@ -127,7 +128,7 @@ export async function POST(req: Request) {
                     time: session.metadata.time,
                     totalPrice: Number(session.amount_total! / 100),
                   });
-                  sendEmail({ ...tpl, to: ownerUser.email }).catch(() => {});
+                  sendNotificationEmail(ownerUser, tpl).catch(() => {});
                 }
               }
 

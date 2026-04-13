@@ -117,6 +117,7 @@ export default async function getListingById(params: IParams): Promise<(SafeList
       ratingCount: listing.ratingCount ?? 0,
       lat: listing.lat ?? null,
       lng: listing.lng ?? null,
+      bufferMinutes: listing.bufferMinutes ?? 0,
     };
 
     const safeUser: SafeUser = {

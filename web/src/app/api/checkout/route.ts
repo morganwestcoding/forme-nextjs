@@ -14,6 +14,22 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 const PLATFORM_FEE_PERCENT = 10; // 10% platform fee (ForMe's cut)
 
+/** Parse a time string like "9:00 AM", "14:30", or "2:30 PM" into minutes since midnight */
+function timeToMinutes(time: string): number {
+  const cleaned = time.trim().toUpperCase();
+  const isPM = cleaned.includes('PM');
+  const isAM = cleaned.includes('AM');
+  const digits = cleaned.replace(/[APM\s]/g, '');
+  const [hStr, mStr] = digits.split(':');
+  let h = parseInt(hStr, 10);
+  const m = parseInt(mStr || '0', 10);
+
+  if (isAM && h === 12) h = 0;
+  if (isPM && h !== 12) h += 12;
+
+  return h * 60 + m;
+}
+
 const limiter = createRateLimiter("checkout", { limit: 10, windowSeconds: 60 });
 
 export async function POST(request: Request) {
@@ -71,6 +87,87 @@ export async function POST(request: Request) {
     // Validate the required fields
     if (!totalPrice || !date || !time || !listingId || !serviceId || !employeeId) {
       return apiErrorCode('MISSING_FIELDS');
+    }
+
+    // ====== BOOKING RELIABILITY CHECKS ======
+
+    const bookingDate = new Date(date);
+
+    // 7C. Business hours enforcement
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const bookingDay = dayNames[bookingDate.getDay()];
+
+    const storeHours = await prisma.storeHours.findFirst({
+      where: { listingId, dayOfWeek: bookingDay },
+    });
+
+    if (storeHours) {
+      if (storeHours.isClosed) {
+        return apiError(`This business is closed on ${bookingDay}s`, 400);
+      }
+
+      // Compare booking time against open/close (times stored as "HH:MM" or "H:MM AM/PM")
+      const bookingMinutes = timeToMinutes(time);
+      const openMinutes = timeToMinutes(storeHours.openTime);
+      const closeMinutes = timeToMinutes(storeHours.closeTime);
+
+      if (bookingMinutes < openMinutes || bookingMinutes >= closeMinutes) {
+        return apiError(
+          `Booking time is outside business hours (${storeHours.openTime} - ${storeHours.closeTime})`,
+          400
+        );
+      }
+    }
+
+    // 7A. Double-booking prevention
+    // Check for existing reservations for the same employee at the same date/time
+    const targetEmployeeId = employeeId !== "any" ? employeeId : null;
+
+    if (targetEmployeeId) {
+      // Get service duration and listing buffer for overlap check
+      const [service, listing] = await Promise.all([
+        prisma.service.findUnique({ where: { id: serviceId }, select: { durationMinutes: true } }),
+        prisma.listing.findUnique({ where: { id: listingId }, select: { bufferMinutes: true } }),
+      ]);
+
+      const serviceDuration = service?.durationMinutes || 60;
+      const buffer = listing?.bufferMinutes || 0;
+      const totalBlockMinutes = serviceDuration + buffer;
+
+      // Find existing reservations for this employee on the same date
+      const startOfDay = new Date(bookingDate);
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date(bookingDate);
+      endOfDay.setHours(23, 59, 59, 999);
+
+      const existingReservations = await prisma.reservation.findMany({
+        where: {
+          employeeId: targetEmployeeId,
+          date: { gte: startOfDay, lte: endOfDay },
+          status: { not: 'cancelled' },
+          paymentStatus: { not: 'refunded' },
+        },
+        include: {
+          service: { select: { durationMinutes: true } },
+        },
+      });
+
+      const newStartMin = timeToMinutes(time);
+      const newEndMin = newStartMin + totalBlockMinutes;
+
+      for (const existing of existingReservations) {
+        const existingStartMin = timeToMinutes(existing.time);
+        const existingDuration = existing.service?.durationMinutes || 60;
+        const existingEndMin = existingStartMin + existingDuration + buffer;
+
+        // Overlap check: two intervals [A, B) and [C, D) overlap when A < D and C < B
+        if (newStartMin < existingEndMin && existingStartMin < newEndMin) {
+          return apiError(
+            'This time slot is no longer available. Please choose a different time.',
+            409
+          );
+        }
+      }
     }
 
     // Get the employee and the listing owner's Stripe Connect account.

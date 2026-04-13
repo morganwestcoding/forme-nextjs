@@ -21,6 +21,7 @@ export type SafeService = {
   serviceName: string;
   price: number;
   category: string;
+  durationMinutes?: number;
 };
 
 export type SafeListing = Omit<Listing, "createdAt" | "rating" | "ratingCount" | "academyId"> & {
@@ -43,6 +44,7 @@ export type SafeListing = Omit<Listing, "createdAt" | "rating" | "ratingCount" |
   isTrending?: boolean;
   lat?: number | null;
   lng?: number | null;
+  bufferMinutes?: number;
   academyId?: string | null;
 };
 

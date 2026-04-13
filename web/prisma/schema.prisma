@@ -139,6 +139,9 @@ model Listing {
   lat           Float?
   lng           Float?
 
+  // Booking settings
+  bufferMinutes Int           @default(0)
+
   // Academy ownership — set when this listing belongs to an Academy (students get assigned to it)
   academyId     String?       @db.ObjectId
   academy       Academy?      @relation(fields: [academyId], references: [id])
@@ -212,13 +215,14 @@ model Reservation {
 }
 
 model Service {
-  id          String  @id @default(auto()) @map("_id") @db.ObjectId
-  serviceName String
-  price       Int
-  category    String
-  listingId   String  @db.ObjectId
-  listing     Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
-  reservations Reservation[]
+  id              String  @id @default(auto()) @map("_id") @db.ObjectId
+  serviceName     String
+  price           Int
+  category        String
+  durationMinutes Int     @default(60)
+  listingId       String  @db.ObjectId
+  listing         Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  reservations    Reservation[]
 }
 
 model Post {
@@ -327,7 +331,8 @@ model Message {
   senderId       String       @db.ObjectId
   conversation   Conversation @relation(fields: [conversationId], references: [id])
   conversationId String       @db.ObjectId
-  isRead         Boolean      @default(false) 
+  isRead         Boolean      @default(false)
+  deletedAt      DateTime?
 }
 
 model StoreHours {
