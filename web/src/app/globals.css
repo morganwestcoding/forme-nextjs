@@ -199,11 +199,6 @@ main {
   to   { opacity: 1; transform: translate3d(0, 0, 0); }
 }
 
-@keyframes shimmer {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
-
 @keyframes shadowRolling {
   0% {
     box-shadow:

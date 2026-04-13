@@ -311,11 +311,7 @@ const SettingsClient = ({ currentUser, isEmployee }: SettingsClientProps) => {
           <div className="space-y-6">
             <div className="rounded-2xl border border-stone-200/60 bg-white p-6">
               {connectLoading ? (
-                <div className="animate-pulse space-y-3">
-                  <div className="h-4 bg-stone-100 rounded w-1/3"></div>
-                  <div className="h-3 bg-stone-100 rounded w-2/3"></div>
-                  <div className="h-10 bg-stone-100 rounded w-1/3"></div>
-                </div>
+                null
               ) : !connectStatus?.hasAccount ? (
                 <div className="flex items-start gap-4">
                   <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center flex-shrink-0">

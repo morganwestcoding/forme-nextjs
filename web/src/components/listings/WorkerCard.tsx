@@ -6,7 +6,6 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { SafeListing, SafeUser, SafeEmployee, SafeStoreHours } from '@/app/types';
 import HeartButton from '../HeartButton';
-import { Mortarboard02Icon } from 'hugeicons-react';
 
 interface WorkerCardProps {
   employee: SafeEmployee & {
@@ -183,9 +182,11 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
                     {isStudent && (
                       <div
                         title={studentAcademyName ? `Student at ${studentAcademyName}` : 'Student'}
-                        className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-amber-500 ring-2 ring-white flex items-center justify-center shadow-sm"
+                        className="absolute -bottom-1 -right-1 w-[22px] h-[22px] rounded-full bg-gradient-to-br from-indigo-600 to-indigo-900 ring-[1.5px] ring-white flex items-center justify-center shadow-[0_1px_3px_rgba(49,46,129,0.35)]"
                       >
-                        <Mortarboard02Icon size={11} color="#fff" strokeWidth={2.5} />
+                        <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>
+                        </svg>
                       </div>
                     )}
                   </div>
@@ -263,9 +264,11 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
           {isStudent && (
             <div
               title={studentAcademyName ? `Student at ${studentAcademyName}` : 'Student'}
-              className="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-amber-500 ring-2 ring-white flex items-center justify-center shadow"
+              className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-gradient-to-br from-indigo-600 to-indigo-900 ring-[1.5px] ring-white flex items-center justify-center shadow-[0_2px_8px_rgba(49,46,129,0.4)]"
             >
-              <Mortarboard02Icon size={15} color="#fff" strokeWidth={2.5} />
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>
+              </svg>
             </div>
           )}
         </div>

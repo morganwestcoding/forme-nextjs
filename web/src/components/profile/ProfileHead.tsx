@@ -14,7 +14,6 @@ import useReviewModal from '@/app/hooks/useReviewModal';
 import useMessageModal from '@/app/hooks/useMessageModal';
 import ReviewCard from '@/components/reviews/ReviewCard';
 import VerificationBadge from '@/components/VerificationBadge';
-import { Mortarboard02Icon } from 'hugeicons-react';
 
 interface ProfileHeadProps {
   user: SafeUser;
@@ -59,6 +58,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
   const starGradientId = `starGrad-${React.useId().replace(/:/g, '')}`;
 
   const [showDropdown, setShowDropdown] = useState(false);
+  const [dropdownPos, setDropdownPos] = useState<{ top: number; left: number } | null>(null);
 
   // Extract dominant color from profile image
   const profileImage = image || imageSrc || placeholderDataUri(name || 'User');
@@ -156,7 +156,11 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
     router.push(`/profile/${id}/edit`);
   };
 
-  const handleDropdownToggle = () => {
+  const handleDropdownToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (!showDropdown) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      setDropdownPos({ top: rect.bottom + 4, left: rect.right });
+    }
     setShowDropdown(!showDropdown);
   };
 
@@ -165,6 +169,66 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
     listings.filter(l => l.category !== 'Personal'),
     [listings]
   );
+
+  const btnClass = "w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-4 transition-colors duration-150";
+
+  const dropdownMenu = showDropdown && dropdownPos ? (
+    <div
+      className="fixed w-48 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-50"
+      style={{ top: dropdownPos.top, left: dropdownPos.left - 192, maxHeight: 'calc(100vh - 100px)', overflowY: 'auto' }}
+    >
+      {isMasterUser && !isOwner && (
+        <>
+          <button onClick={openEditProfile} className={btnClass} type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/>
+            </svg>
+            Edit Profile
+          </button>
+          <hr className="my-1 border-gray-200" />
+        </>
+      )}
+      {canEdit && (
+        <button onClick={() => setShowDropdown(false)} className={btnClass} type="button">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
+            <path d="M3 6h18l-2 13H5L3 6z"/>
+            <path d="M8 10v6"/>
+            <path d="M16 10v6"/>
+            <path d="M12 10v6"/>
+          </svg>
+          View Analytics
+        </button>
+      )}
+      {!isOwner && currentUser && (
+        <>
+          <button onClick={() => { handleFollow(); setShowDropdown(false); }} className={btnClass} type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <line x1="19" y1="8" x2="19" y2="14"/>
+              <line x1="22" y1="11" x2="16" y2="11"/>
+            </svg>
+            {isFollowing ? 'Unfollow' : 'Follow'}
+          </button>
+          <button onClick={() => { setShowDropdown(false); reviewModal.onOpen({ targetType: 'user', targetUser: user, currentUser }); }} className={btnClass} type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
+              <path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z"/>
+            </svg>
+            Add Review
+          </button>
+          <hr className="my-1 border-gray-200" />
+          <button onClick={() => setShowDropdown(false)} className={btnClass} type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
+              <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
+              <line x1="4" x2="4" y1="22" y2="15"/>
+            </svg>
+            Report Profile
+          </button>
+        </>
+      )}
+    </div>
+  ) : null;
 
   return (
     <>
@@ -176,93 +240,8 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
         />
       )}
 
-      {/* Dropdown Menu */}
-      {showDropdown && (
-        <div
-          className="fixed top-20 right-6 md:right-24 w-48 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-50"
-          style={{ maxHeight: 'calc(100vh - 100px)', overflowY: 'auto' }}
-        >
-          {canEdit && (
-            <>
-              <button
-                onClick={openEditProfile}
-                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-4"
-                type="button"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
-                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                  <path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/>
-                </svg>
-                Edit Profile
-              </button>
-              <hr className="my-1 border-gray-200" />
-              <button
-                onClick={() => setShowDropdown(false)}
-                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-4"
-                type="button"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
-                  <path d="M3 6h18l-2 13H5L3 6z"/>
-                  <path d="M8 10v6"/>
-                  <path d="M16 10v6"/>
-                  <path d="M12 10v6"/>
-                </svg>
-                View Analytics
-              </button>
-            </>
-          )}
-
-          {!isOwner && currentUser && (
-            <>
-              <button
-                onClick={() => {
-                  handleFollow();
-                  setShowDropdown(false);
-                }}
-                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-4"
-                type="button"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
-                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                  <circle cx="9" cy="7" r="4"/>
-                  <line x1="19" y1="8" x2="19" y2="14"/>
-                  <line x1="22" y1="11" x2="16" y2="11"/>
-                </svg>
-                {isFollowing ? 'Unfollow' : 'Follow'}
-              </button>
-              <button
-                onClick={() => {
-                  setShowDropdown(false);
-                  reviewModal.onOpen({
-                    targetType: 'user',
-                    targetUser: user,
-                    currentUser,
-                  });
-                }}
-                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-4"
-                type="button"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
-                  <path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z"/>
-                </svg>
-                Add Review
-              </button>
-              <hr className="my-1 border-gray-200" />
-              <button
-                onClick={() => setShowDropdown(false)}
-                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-4"
-                type="button"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
-                  <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
-                  <line x1="4" x2="4" y1="22" y2="15"/>
-                </svg>
-                Report Profile
-              </button>
-            </>
-          )}
-        </div>
-      )}
+      {/* Dropdown Menu - rendered at top level to avoid overflow clipping */}
+      {dropdownMenu}
 
       {/* ========== TWO-COLUMN LAYOUT ========== */}
       <div className="flex gap-6 -mx-6 md:-mx-24 px-6 md:px-24 -mt-2 md:-mt-8 md:h-[calc(100vh-2rem)] md:overflow-hidden">
@@ -292,7 +271,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
               {/* 3-dot menu - top right */}
               <button
                 onClick={handleDropdownToggle}
-                className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center text-stone-400 hover:text-stone-600 hover:bg-stone-100 rounded-full transition-all"
+                className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center text-stone-400 hover:text-stone-600 hover:bg-stone-100 rounded-full transition-all z-20"
                 type="button"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -310,9 +289,11 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                 {isStudent && (
                   <div
                     title={studentAcademyName ? `Student at ${studentAcademyName}` : 'Student'}
-                    className="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-amber-500 ring-2 ring-white flex items-center justify-center shadow"
+                    className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-gradient-to-br from-indigo-600 to-indigo-900 ring-[1.5px] ring-white flex items-center justify-center shadow-[0_2px_8px_rgba(49,46,129,0.4)]"
                   >
-                    <Mortarboard02Icon size={15} color="#fff" strokeWidth={2.5} />
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>
+                    </svg>
                   </div>
                 )}
               </div>
@@ -439,7 +420,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                   </button>
                 </div>
               )}
-              {canEdit && (
+              {isOwner && (
                 <button
                   onClick={openEditProfile}
                   className="w-full flex items-center justify-center gap-2 px-3 py-3 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-[13px] font-medium transition-all"
