@@ -14,10 +14,15 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 type PlanId = "gold" | "platinum";
 type Interval = "monthly" | "yearly";
 
+// Pricing 2.0: Gold $30/mo, Platinum $100/mo. Yearly = 10x monthly (2 months free).
 const PLAN_PRICING: Record<PlanId, { monthly: number; yearly: number }> = {
-  gold: { monthly: 29, yearly: 290 },
-  platinum: { monthly: 99, yearly: 990 },
+  gold: { monthly: 30, yearly: 300 },
+  platinum: { monthly: 100, yearly: 1000 },
 };
+
+// Bump this when prices change so Stripe creates new Price objects instead of
+// reusing the old ones cached under the previous lookup_key.
+const PRICE_VERSION = "v2";
 
 async function ensureProduct(client: Stripe, apiId: PlanId): Promise<Stripe.Product> {
   let starting_after: string | undefined;
@@ -39,7 +44,7 @@ async function ensureRecurringPrice(
   planId: PlanId,
   interval: Interval
 ): Promise<Stripe.Price> {
-  const lookup_key = `${planId}_${interval}`;
+  const lookup_key = `${planId}_${interval}_${PRICE_VERSION}`;
 
   let starting_after: string | undefined;
   while (true) {

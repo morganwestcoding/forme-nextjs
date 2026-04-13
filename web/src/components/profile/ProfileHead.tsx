@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { SafeListing, SafePost, SafeUser, SafeReview } from '@/app/types';
+import type { ProviderService } from '@/app/actions/getServicesByUserId';
 import PostCard from '@/components/feed/PostCard';
 import ListingCard from '@/components/listings/ListingCard';
 import { categories } from '@/components/Categories';
@@ -13,12 +14,14 @@ import useReviewModal from '@/app/hooks/useReviewModal';
 import useMessageModal from '@/app/hooks/useMessageModal';
 import ReviewCard from '@/components/reviews/ReviewCard';
 import VerificationBadge from '@/components/VerificationBadge';
+import { Mortarboard02Icon } from 'hugeicons-react';
 
 interface ProfileHeadProps {
   user: SafeUser;
   currentUser: SafeUser | null;
   posts: SafePost[];
   listings: SafeListing[];
+  services?: ProviderService[];
   reviews?: SafeReview[];
   reviewStats?: {
     totalCount: number;
@@ -31,6 +34,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
   currentUser,
   posts = [],
   listings = [],
+  services = [],
   reviews = [],
   reviewStats,
 }) => {
@@ -44,6 +48,9 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
     following = [],
     galleryImages = [],
   } = user;
+
+  const isStudent = user.userType === 'student';
+  const studentAcademyName = user.academyName ?? null;
 
   const router = useRouter();
   const reviewModal = useReviewModal();
@@ -292,18 +299,28 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                   <circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/>
                 </svg>
               </button>
-              <div className="w-24 h-24 rounded-full mx-auto overflow-hidden" style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.06)' }}>
-                <img
-                  src={profileImage}
-                  alt={name ?? 'User'}
-                  className="w-full h-full object-cover"
-                />
+              <div className="relative w-24 h-24 mx-auto">
+                <div className="w-24 h-24 rounded-full overflow-hidden" style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.06)' }}>
+                  <img
+                    src={profileImage}
+                    alt={name ?? 'User'}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                {isStudent && (
+                  <div
+                    title={studentAcademyName ? `Student at ${studentAcademyName}` : 'Student'}
+                    className="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-amber-500 ring-2 ring-white flex items-center justify-center shadow"
+                  >
+                    <Mortarboard02Icon size={15} color="#fff" strokeWidth={2.5} />
+                  </div>
+                )}
               </div>
               <div className="mt-3">
                 <h1 className="text-lg font-semibold text-stone-900 text-center tracking-tight">
                   {name ?? 'User'}
                 </h1>
-                <p className="text-[13px] text-stone-400 mt-1">{jobTitle || 'Member'}</p>
+                <p className="text-[13px] text-stone-400 mt-1">{jobTitle || (isStudent ? 'Student' : 'Member')}</p>
                 {location && (
                   <a
                     href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`}
@@ -519,6 +536,58 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
               ) : (
                 <div className="text-center py-10 bg-gray-50 rounded-xl">
                   <p className="text-sm text-gray-400">No posts yet</p>
+                </div>
+              )}
+            </section>
+
+            {/* Services Section — every service this user is qualified to perform,
+                whether they own the listing or work there as an employee/student. */}
+            <section>
+              <div className="flex items-center justify-between mb-5">
+                <div className="flex items-center gap-4">
+                  <h3 className="text-xl font-semibold text-stone-900 tracking-tight">Services</h3>
+                  <span className="text-[11px] font-medium text-stone-500 bg-stone-100 px-2.5 py-1 rounded-full tabular-nums">{services.length}</span>
+                </div>
+              </div>
+              {services.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-10">
+                  {services.map((svc, idx) => (
+                    <button
+                      key={svc.id}
+                      type="button"
+                      onClick={() => {
+                        if (!currentUser) {
+                          router.push(`/listings/${svc.listingId}`);
+                          return;
+                        }
+                        router.push(`/reserve/${svc.listingId}?employeeId=${svc.employeeId}&serviceId=${svc.id}`);
+                      }}
+                      className="text-left rounded-2xl border border-stone-200/60 bg-white p-4 hover:border-stone-300 hover:shadow-sm transition-all"
+                      style={{
+                        opacity: 0,
+                        animation: `fadeInUp 520ms ease-out both`,
+                        animationDelay: `${Math.min(60 + idx * 30, 360)}ms`,
+                      }}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[14px] font-semibold text-stone-900 truncate">
+                            {svc.serviceName}
+                          </p>
+                          <p className="text-[12px] text-stone-400 mt-0.5 truncate">
+                            {svc.category} · {svc.listingTitle}
+                          </p>
+                        </div>
+                        <p className="text-[14px] font-semibold text-stone-900 tabular-nums flex-shrink-0">
+                          ${svc.price}
+                        </p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-10 bg-gray-50 rounded-xl mb-10">
+                  <p className="text-sm text-gray-400">No services yet</p>
                 </div>
               )}
             </section>

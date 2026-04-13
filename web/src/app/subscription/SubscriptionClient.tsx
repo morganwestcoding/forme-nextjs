@@ -13,39 +13,63 @@ import PageHeader from "@/components/PageHeader";
 import Celebration from "@/components/Celebration";
 
 function cleanLabel(label?: string | null) {
-  const cleaned = String(label || "Bronze").replace(/\s*\(.*\)\s*$/, "").trim();
-  return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+  const raw = String(label || "Freemium").replace(/\s*\(.*\)\s*$/, "").trim();
+  // Legacy "Bronze" tier in the DB is the same thing as today's "Freemium".
+  const normalized = raw.toLowerCase() === "bronze" ? "Freemium" : raw;
+  return normalized.charAt(0).toUpperCase() + normalized.slice(1);
 }
 
 interface Props {
   currentUser: SafeUser;
 }
 
+// Pricing 2.0 — see /Pricing 2.0.pdf
+// Plan ids ("bronze" / "gold" / "platinum") are kept stable for backward
+// compatibility with the checkout API and existing DB rows. Display name
+// for "bronze" is now "Freemium".
 const plans = [
   {
     id: "bronze",
-    name: "Bronze",
+    name: "Freemium",
     price: { monthly: 0, yearly: 0 },
     badge: null,
-    features: ["Core app access", "Post content", "Basic profile", "View professionals"],
-    cta: "Get Started"
+    features: [
+      "Full platform access",
+      "Professional profile & storefront",
+      "Marketing tools",
+      "Video content posting",
+      "Online booking",
+      "Stripe payment processing",
+    ],
+    fees: "Tiered transaction fees (7% / 5% / 3%)",
+    cta: "Get Started",
   },
   {
     id: "gold",
     name: "Gold",
-    price: { monthly: 29, yearly: 290 },
+    price: { monthly: 30, yearly: 300 },
     badge: "Most Popular",
-    features: ["Everything in Bronze", "ForMe Cash credit", "Member discounts", "Lead access", "Professional scheduling"],
-    cta: "Upgrade to Gold"
+    features: [
+      "Everything in Freemium",
+      "SEO tools",
+      "Business analytics dashboard",
+    ],
+    fees: "$0 transaction fees",
+    cta: "Upgrade to Gold",
   },
   {
     id: "platinum",
     name: "Platinum",
-    price: { monthly: 99, yearly: 990 },
+    price: { monthly: 100, yearly: 1000 },
     badge: null,
-    features: ["Everything in Gold", "Multi-user management", "Advanced analytics", "Team tools", "Priority support"],
-    cta: "Go Enterprise"
-  }
+    features: [
+      "Everything in Gold",
+      "$200 ForMe marketing credits",
+      "Run promotions inside marketplace",
+    ],
+    fees: "$0 transaction fees",
+    cta: "Upgrade to Platinum",
+  },
 ];
 
 const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
@@ -91,7 +115,6 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
   }, [dbValue]);
 
   const handleSelect = async (planId: string) => {
-    if (planId === "platinum") { window.location.href = "/contact"; return; }
     try {
       setSaving(true);
       if (planId === "bronze") {
@@ -177,6 +200,9 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
                   {billing === "yearly" && price > 0 && (
                     <p className={`text-[11px] font-medium ${isPopular ? 'text-emerald-400' : 'text-emerald-600'}`}>Save ${(plan.price.monthly * 12) - plan.price.yearly}/yr</p>
                   )}
+                  <p className={`text-[11px] mt-2 ${isPopular ? 'text-stone-400' : 'text-stone-500'}`}>
+                    {plan.fees}
+                  </p>
                 </div>
                 <ul className="space-y-2.5 mb-6">
                   {plan.features.map((feature, idx) => (

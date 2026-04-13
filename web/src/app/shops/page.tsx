@@ -12,7 +12,7 @@ interface ShopPageProps {
 }
 
 export const metadata = {
-  title: 'Shop - Forme',
+  title: 'Shop - ForMe',
   description: 'Discover unique products from our vendors',
 };
 

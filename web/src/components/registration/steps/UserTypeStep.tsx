@@ -1,7 +1,8 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { User, Briefcase, Users, GraduationCap } from 'lucide-react';
+import { User, Users, GraduationCap } from 'lucide-react';
+import { ShoppingBag02Icon } from 'hugeicons-react';
 import TypeformHeading from '../TypeformHeading';
 import { itemVariants } from '../TypeformStep';
 
@@ -13,13 +14,13 @@ interface UserTypeStepProps {
 const options = [
   {
     value: 'customer' as const,
-    icon: User,
+    icon: ShoppingBag02Icon,
     title: 'Customer',
     description: 'I want to discover and book services',
   },
   {
     value: 'individual' as const,
-    icon: Briefcase,
+    icon: User,
     title: 'Independent provider',
     description: 'I offer services on my own',
   },
@@ -45,7 +46,7 @@ export default function UserTypeStep({ userType, onUserTypeChange }: UserTypeSte
         subtitle="This helps us set up the right experience for you"
       />
 
-      <div className="space-y-3">
+      <div className="grid grid-cols-2 gap-3">
         {options.map((option) => {
           const Icon = option.icon;
           const isSelected = userType === option.value;
@@ -58,7 +59,7 @@ export default function UserTypeStep({ userType, onUserTypeChange }: UserTypeSte
               variants={itemVariants}
               whileTap={{ scale: 0.98 }}
               className={`
-                w-full flex items-center gap-4 p-5 rounded-xl border text-left transition-colors duration-200
+                flex flex-col items-center text-center gap-3 p-5 rounded-xl border transition-colors duration-200
                 ${isSelected
                   ? 'border-gray-300 bg-gray-100 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)]'
                   : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
@@ -71,9 +72,9 @@ export default function UserTypeStep({ userType, onUserTypeChange }: UserTypeSte
               `}>
                 <Icon className="w-5 h-5" />
               </div>
-              <div className="flex-1 min-w-0">
+              <div>
                 <h3 className="font-semibold text-gray-900">{option.title}</h3>
-                <p className="text-sm text-gray-500 mt-0.5">{option.description}</p>
+                <p className="text-xs text-gray-500 mt-0.5">{option.description}</p>
               </div>
             </motion.button>
           );

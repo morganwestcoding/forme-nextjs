@@ -16,7 +16,11 @@ export default async function getListingById(params: IParams): Promise<(SafeList
     const listing = await prisma.listing.findUnique({
       where: { id: listingId },
       include: {
-        user: true,
+        user: {
+          include: {
+            academy: { select: { name: true } }
+          }
+        },
         services: {
           select: {
             id: true,
@@ -37,10 +41,12 @@ export default async function getListingById(params: IParams): Promise<(SafeList
                 name: true,
                 image: true,
                 imageSrc: true,
+                userType: true,
+                academy: { select: { name: true } },
               }
             }
           }
-        }, 
+        },
         storeHours: {
           select: {
             dayOfWeek: true,
@@ -97,6 +103,8 @@ export default async function getListingById(params: IParams): Promise<(SafeList
             name: employee.user!.name,
             image: employee.user!.image,
             imageSrc: employee.user!.imageSrc,
+            userType: (employee.user as any)?.userType ?? null,
+            academyName: (employee.user as any)?.academy?.name ?? null,
           }
         })),
       storeHours: listing.storeHours.map((hour: typeof listing.storeHours[number]) => ({
@@ -155,6 +163,9 @@ export default async function getListingById(params: IParams): Promise<(SafeList
       stripeConnectChargesEnabled: listing.user.stripeConnectChargesEnabled || false,
       stripeConnectPayoutsEnabled: listing.user.stripeConnectPayoutsEnabled || false,
       stripeConnectOnboardedAt: listing.user.stripeConnectOnboardedAt || null,
+      userType: (listing.user as any).userType ?? null,
+      academyId: (listing.user as any).academyId ?? null,
+      academyName: (listing.user as any).academy?.name ?? null,
     };
 
     return {

@@ -24,6 +24,7 @@ export async function GET(request: Request) {
   const category = searchParams.get('category');
   const location = searchParams.get('location');
   const userId = searchParams.get('userId');
+  const includeAcademy = searchParams.get('includeAcademy') === 'true';
   const page = parseInt(searchParams.get('page') || '1');
   const limit = parseInt(searchParams.get('limit') || '20');
   const skip = (page - 1) * limit;
@@ -32,6 +33,9 @@ export async function GET(request: Request) {
   if (category) where.category = category;
   if (location) where.location = { contains: location, mode: 'insensitive' };
   if (userId) where.userId = userId;
+  // Hide academy-owned listings from public discovery by default.
+  // (See getListings.ts for the Mongo `isSet: false` rationale.)
+  if (!includeAcademy) where.academyId = { isSet: false };
 
   try {
     const [listings, totalCount] = await Promise.all([

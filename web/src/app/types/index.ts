@@ -142,6 +142,7 @@ export type SafeUser = Omit<
   // User type + student fields
   userType?: string | null; // "customer" | "individual" | "team" | "student"
   academyId?: string | null;
+  academyName?: string | null;
 };
 
 
@@ -247,6 +248,8 @@ export type SafeEmployee = {
     image: string | null;
     imageSrc: string | null;
     backgroundImage?: string | null;
+    userType?: string | null;
+    academyName?: string | null;
   };
 };
 

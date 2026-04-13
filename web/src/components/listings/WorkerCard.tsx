@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { SafeListing, SafeUser, SafeEmployee } from '@/app/types';
 import HeartButton from '../HeartButton';
+import { Mortarboard02Icon } from 'hugeicons-react';
 
 interface WorkerCardProps {
   employee: SafeEmployee & {
@@ -76,16 +77,18 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
   const router = useRouter();
 
   const handleCardClick = () => {
-    if (employee.isIndependent) {
-      router.push(`/profile/${employee.userId}`);
-    } else if (currentUser) {
-      router.push(`/reserve/${listing.id}?employeeId=${employee.id}`);
-    } else {
-      router.push(`/listings/${listing.id}`);
-    }
+    // Always send to the worker's own profile — the profile page lists every
+    // service they provide and offers booking from there. This works the same
+    // for independent providers, salon employees, and students.
+    router.push(`/profile/${employee.userId}`);
   };
 
   const initials = useMemo(() => getInitials(employee.fullName), [employee.fullName]);
+
+  // Student badge — show "Student at {Academy}" so customers don't mistake
+  // a trainee for a fully licensed pro before booking.
+  const isStudent = employee.user?.userType === 'student';
+  const studentAcademyName = employee.user?.academyName ?? null;
   const avatarBg = useMemo(
     () => stringToColor(`${employee.id}${employee.fullName}`),
     [employee.id, employee.fullName]
@@ -161,27 +164,37 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
               <div className="relative flex flex-col h-full p-5">
                 {/* Avatar */}
                 <div className="mb-3">
-                  {shouldShowImage ? (
-                    <div className="w-12 h-12 rounded-full overflow-hidden relative">
-                      <Image
-                        src={profileImage}
-                        alt={employee.fullName}
-                        fill
-                        className="object-cover"
-                        sizes="48px"
-                        priority={false}
-                        onError={handleImageError}
-                        onLoad={handleImageLoad}
-                      />
-                    </div>
-                  ) : (
-                    <div
-                      className="w-12 h-12 rounded-full flex items-center justify-center text-white text-sm font-semibold"
-                      style={{ backgroundColor: avatarBg }}
-                    >
-                      {initials}
-                    </div>
-                  )}
+                  <div className="relative w-12 h-12">
+                    {shouldShowImage ? (
+                      <div className="w-12 h-12 rounded-full overflow-hidden relative">
+                        <Image
+                          src={profileImage}
+                          alt={employee.fullName}
+                          fill
+                          className="object-cover"
+                          sizes="48px"
+                          priority={false}
+                          onError={handleImageError}
+                          onLoad={handleImageLoad}
+                        />
+                      </div>
+                    ) : (
+                      <div
+                        className="w-12 h-12 rounded-full flex items-center justify-center text-white text-sm font-semibold"
+                        style={{ backgroundColor: avatarBg }}
+                      >
+                        {initials}
+                      </div>
+                    )}
+                    {isStudent && (
+                      <div
+                        title={studentAcademyName ? `Student at ${studentAcademyName}` : 'Student'}
+                        className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-amber-500 ring-2 ring-white flex items-center justify-center shadow-sm"
+                      >
+                        <Mortarboard02Icon size={11} color="#fff" strokeWidth={2.5} />
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Name - large and bold */}
@@ -231,27 +244,37 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
     >
       {/* Avatar — 100px circle centered in 120px to align with ListingCard */}
       <div className="flex-shrink-0 w-[120px] h-[120px] flex items-center justify-center">
-      <div className="relative overflow-hidden rounded-full w-[100px] h-[100px] shadow-sm">
-        {shouldShowImage ? (
-          <Image
-            src={profileImage}
-            alt={employee.fullName}
-            fill
-            className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
-            sizes="120px"
-            priority={false}
-            onError={handleImageError}
-            onLoad={handleImageLoad}
-          />
-        ) : (
-          <div
-            className="w-full h-full flex items-center justify-center text-white text-xl font-semibold"
-            style={{ backgroundColor: avatarBg }}
-          >
-            {initials}
+        <div className="relative w-[100px] h-[100px]">
+          <div className="relative overflow-hidden rounded-full w-[100px] h-[100px] shadow-sm">
+            {shouldShowImage ? (
+              <Image
+                src={profileImage}
+                alt={employee.fullName}
+                fill
+                className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+                sizes="120px"
+                priority={false}
+                onError={handleImageError}
+                onLoad={handleImageLoad}
+              />
+            ) : (
+              <div
+                className="w-full h-full flex items-center justify-center text-white text-xl font-semibold"
+                style={{ backgroundColor: avatarBg }}
+              >
+                {initials}
+              </div>
+            )}
           </div>
-        )}
-      </div>
+          {isStudent && (
+            <div
+              title={studentAcademyName ? `Student at ${studentAcademyName}` : 'Student'}
+              className="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-amber-500 ring-2 ring-white flex items-center justify-center shadow"
+            >
+              <Mortarboard02Icon size={15} color="#fff" strokeWidth={2.5} />
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Info */}

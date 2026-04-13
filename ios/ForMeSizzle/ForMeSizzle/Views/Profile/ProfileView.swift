@@ -80,6 +80,24 @@ private extension ProfileView {
             }
             .padding(.top, ForMe.space2)
 
+            // Student badge
+            if user?.isStudent == true, let academy = user?.academyName {
+                Text("Student at \(academy)")
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundColor(Color(red: 0.71, green: 0.45, blue: 0.05))
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
+                    .background(
+                        Capsule()
+                            .fill(Color(red: 1.0, green: 0.97, blue: 0.92))
+                    )
+                    .overlay(
+                        Capsule()
+                            .stroke(Color(red: 0.99, green: 0.90, blue: 0.71), lineWidth: 1)
+                    )
+                    .padding(.top, 6)
+            }
+
             // Location
             if let location = user?.location {
                 Text(location)

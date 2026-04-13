@@ -10,39 +10,57 @@ interface IParams {
 export default async function getReservations(params: IParams) {
   try {
     const { listingId, userId, authorId } = params;
-    
-    // Step 1: Get all valid listings first to ensure we only query for reservations with existing listings
-    let validListingIds: string[] = [];
-    
+
+    // Step 1: Decide which reservations belong to this caller.
+    //
+    // For `authorId` (incoming-bookings view) we now combine TWO sources so
+    // employees — including students at academy-owned listings — can see the
+    // bookings made for THEM personally:
+    //
+    //   a) reservations on listings I own (existing behavior — salon owners)
+    //   b) reservations whose employeeId belongs to one of my Employee rows
+    //      (new — covers students + regular workers)
+    //
+    // For `listingId` we stay listing-scoped. For neither we return everything.
+    let query: any = {};
+
     if (authorId) {
-      const authorListings = await prisma.listing.findMany({
-        where: { userId: authorId },
-        select: { id: true }
-      });
-      validListingIds = authorListings.map((l: typeof authorListings[number]) => l.id);
+      const [authorListings, myEmployeeRows] = await Promise.all([
+        prisma.listing.findMany({
+          where: { userId: authorId },
+          select: { id: true },
+        }),
+        prisma.employee.findMany({
+          where: { userId: authorId, isActive: true },
+          select: { id: true },
+        }),
+      ]);
+
+      const ownedListingIds = authorListings.map((l) => l.id);
+      const myEmployeeIds = myEmployeeRows.map((e) => e.id);
+
+      if (ownedListingIds.length === 0 && myEmployeeIds.length === 0) {
+        return [];
+      }
+
+      const orClauses: any[] = [];
+      if (ownedListingIds.length > 0) {
+        orClauses.push({ listingId: { in: ownedListingIds } });
+      }
+      if (myEmployeeIds.length > 0) {
+        orClauses.push({ employeeId: { in: myEmployeeIds } });
+      }
+      query.OR = orClauses;
     } else if (listingId) {
       const listing = await prisma.listing.findUnique({
         where: { id: listingId },
-        select: { id: true }
+        select: { id: true },
       });
-      validListingIds = listing ? [listing.id] : [];
-    } else {
-      const allListings = await prisma.listing.findMany({
-        select: { id: true }
-      });
-      validListingIds = allListings.map((l: typeof allListings[number]) => l.id);
+      if (!listing) return [];
+      query.listingId = listing.id;
     }
+    // else: no scope filter — match all (used by debug/admin paths)
 
-    // If no valid listings found, return empty array
-    if (validListingIds.length === 0) {
-      return [];
-    }
-
-    // Step 2: Build the query with guaranteed valid listing IDs
-    const query: any = {
-      listingId: { in: validListingIds }
-    };
-        
     if (userId) {
       query.userId = userId;
     }

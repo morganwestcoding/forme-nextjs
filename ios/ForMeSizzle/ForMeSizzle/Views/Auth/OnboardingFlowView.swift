@@ -114,6 +114,8 @@ struct OnboardingFlowView: View {
             InterestsStepView(viewModel: viewModel)
         case .userType:
             UserTypeStepView(viewModel: viewModel)
+        case .studentAcademy:
+            StudentAcademyStepView(viewModel: viewModel)
         case .jobTitle:
             JobTitleStepView(viewModel: viewModel)
         case .listingCategory:

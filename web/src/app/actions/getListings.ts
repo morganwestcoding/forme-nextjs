@@ -17,6 +17,9 @@ export interface IListingsParams {
   order?: 'asc' | 'desc';
   limit?: number;
   page?: number;
+  // Set true to include academy-owned listings (admin views).
+  // Default false: public discovery hides academies — students aren't bookable salons.
+  includeAcademy?: boolean;
 }
 
 export default async function getListings(params: IListingsParams = {}): Promise<SafeListing[]> {
@@ -36,13 +39,23 @@ export default async function getListings(params: IListingsParams = {}): Promise
       maxPrice,
       order = 'desc',
       limit,
-      page
+      page,
+      includeAcademy = false,
     } = params;
 
     let query: any = {};
 
     if (userId) {
       query.userId = userId;
+    }
+
+    // Hide academy-owned listings from public discovery by default.
+    // Academy listings exist as parents for student Employees, not as bookable salons.
+    // MongoDB note: pre-existing listings have no `academyId` field at all,
+    // so `{ academyId: null }` matches zero docs. Use `isSet: false` to match
+    // both "field missing" and unset.
+    if (!includeAcademy) {
+      query.academyId = { isSet: false };
     }
 
     if (category && category !== 'all' && category !== 'featured') {
@@ -150,6 +163,10 @@ export default async function getListings(params: IListingsParams = {}): Promise
                 image: true,
                 imageSrc: true,
                 backgroundImage: true,
+                userType: true,
+                academy: {
+                  select: { name: true }
+                }
               }
             }
           }
@@ -220,6 +237,8 @@ export default async function getListings(params: IListingsParams = {}): Promise
             image: employee.user!.image,
             imageSrc: employee.user!.imageSrc,
             backgroundImage: employee.user!.backgroundImage,
+            userType: (employee.user as any)?.userType ?? null,
+            academyName: (employee.user as any)?.academy?.name ?? null,
           }
         })),
       storeHours: listing.storeHours.map((hour: typeof listing.storeHours[number]) => ({

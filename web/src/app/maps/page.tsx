@@ -3,7 +3,7 @@ import getListings from '@/app/actions/getListings';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 
 export const metadata = {
-  title: 'Maps - Forme',
+  title: 'Maps - ForMe',
   description: 'Explore listings and workers on the map',
 };
 

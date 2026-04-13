@@ -334,6 +334,23 @@ private extension ListingDetailView {
                                     .foregroundColor(ForMe.textTertiary)
                                     .lineLimit(1)
                             }
+                            if employee.user?.isStudent == true,
+                               let academy = employee.user?.academyName {
+                                Text("Student at \(academy)")
+                                    .font(.system(size: 10, weight: .medium))
+                                    .foregroundColor(Color(red: 0.71, green: 0.45, blue: 0.05))
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 3)
+                                    .background(
+                                        Capsule()
+                                            .fill(Color(red: 1.0, green: 0.97, blue: 0.92))
+                                    )
+                                    .overlay(
+                                        Capsule()
+                                            .stroke(Color(red: 0.99, green: 0.90, blue: 0.71), lineWidth: 1)
+                                    )
+                                    .lineLimit(1)
+                            }
                         }
                     }
                 }

@@ -15,6 +15,7 @@ import {
   Login01Icon,
   UserAdd01Icon,
   Delete02Icon,
+  School01Icon,
 } from 'hugeicons-react';
 import Modal from './Modal';
 import useUserMenuModal from '@/app/hooks/useUserMenuModal';
@@ -68,6 +69,16 @@ const UserMenuModal: React.FC<UserMenuModalProps> = ({ currentUser }) => {
           label: 'Subscription',
           onClick: () => handleNavigate('/subscription'),
         },
+        // Master-only: shortcut to the academy admin panel.
+        ...(currentUser.role === 'master'
+          ? [
+              {
+                icon: School01Icon,
+                label: 'Academies',
+                onClick: () => handleNavigate('/admin/academies'),
+              },
+            ]
+          : []),
       ]
     : [];
 

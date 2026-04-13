@@ -29,6 +29,11 @@ interface DiscoverClientProps {
   currentUser: SafeUser | null;
   categoryToUse?: string;
   listings: SafeListing[];
+  // Superset of `listings` used purely for employee→listing lookups in the
+  // worker rails. Includes academy-owned listings (which are hidden from the
+  // bookable listings rail) so that student WorkerCards can resolve their
+  // true listing for routing/booking links.
+  allListingsForLookup?: SafeListing[];
   employees?: SafeEmployee[];
   shops?: SafeShop[];
 }
@@ -46,9 +51,9 @@ const BANNERS = [
   },
   {
     src: '/assets/people/banner-6.png',
-    alt: 'New on Forme',
+    alt: 'New on ForMe',
     tag: 'Curated',
-    title: 'New on Forme',
+    title: 'New on ForMe',
     subtitle: 'Fresh brands joining our community',
     href: '/shops',
   },
@@ -84,9 +89,15 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
   currentUser,
   categoryToUse,
   listings,
+  allListingsForLookup,
   employees = [],
   shops = [],
 }) => {
+  // Used by the worker rails to resolve `employee.listingId → listing`.
+  // Falls back to `listings` if the lookup superset isn't provided so older
+  // callers keep working.
+  const listingsForLookup = allListingsForLookup ?? listings;
+
   const { viewMode, setViewMode } = useViewMode();
   const isSidebarCollapsed = useSidebarState();
   const searchParams = useSearchParams();
@@ -367,7 +378,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
         items = listingsToUse.map(listing => ({ type: 'listing' as const, data: listing }));
       } else if (filterInfo.typeFilter === 'professionals') {
         items = employeesToUse.map(employee => {
-          const listing = listings.find(l => l.id === employee.listingId) || listings[0];
+          const listing = listingsForLookup.find(l => l.id === employee.listingId) || listingsForLookup[0];
           return { type: 'employee' as const, data: employee, listingContext: listing };
         });
       } else if (filterInfo.typeFilter === 'shops') {
@@ -378,7 +389,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
         ...postsToUse.map(post => ({ type: 'post' as const, data: post })),
         ...listingsToUse.map(listing => ({ type: 'listing' as const, data: listing })),
         ...employeesToUse.map(employee => {
-          const listing = listings.find(l => l.id === employee.listingId) || listings[0];
+          const listing = listingsForLookup.find(l => l.id === employee.listingId) || listingsForLookup[0];
           return { type: 'employee' as const, data: employee, listingContext: listing };
         }),
         ...shopsToUse.map(shop => ({ type: 'shop' as const, data: shop })),
@@ -386,7 +397,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
     }
 
     return items;
-  }, [shuffledPosts, shuffledListings, shuffledEmployees, shuffledShops, listings, filterInfo.typeFilter]);
+  }, [shuffledPosts, shuffledListings, shuffledEmployees, shuffledShops, listingsForLookup, filterInfo.typeFilter]);
 
   return (
     <ClientProviders>
@@ -591,7 +602,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                     />
                     <div className={`grid ${gridColsClass} gap-x-8 gap-y-1 transition-all duration-300`}>
                       {employees.map((employee, idx) => {
-                        const listing = listings.find(l => l.id === employee.listingId) || listings[0];
+                        const listing = listingsForLookup.find(l => l.id === employee.listingId) || listingsForLookup[0];
                         const li: any = listing as any;
                         const imageSrc = li?.imageSrc || (Array.isArray(li?.galleryImages) ? li.galleryImages[0] : undefined) || placeholderDataUri(li?.title || 'Listing');
 
@@ -727,7 +738,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                         <div id="employees-rail">
                           <div className={`grid ${gridColsClass} gap-x-8 gap-y-1 transition-all duration-300`}>
                             {currentEmployees.slice(0, 9).map((employee, idx) => {
-                              const listing = listings.find(l => l.id === employee.listingId) || listings[0];
+                              const listing = listingsForLookup.find(l => l.id === employee.listingId) || listingsForLookup[0];
                               const li: any = listing as any;
                               const imageSrc = li?.imageSrc || (Array.isArray(li?.galleryImages) ? li.galleryImages[0] : undefined) || placeholderDataUri(li?.title || 'Listing');
 

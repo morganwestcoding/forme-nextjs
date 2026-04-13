@@ -5,6 +5,7 @@ enum OnboardingStep: Int, CaseIterable, Identifiable {
     case account
     case interests
     case userType
+    case studentAcademy
     case jobTitle
     case listingCategory
     case listingInfo
@@ -18,12 +19,14 @@ enum OnboardingUserType: String, CaseIterable {
     case customer
     case individual
     case team
+    case student
 
     var title: String {
         switch self {
         case .customer: return "Customer"
         case .individual: return "Independent provider"
         case .team: return "Team member"
+        case .student: return "Student"
         }
     }
 
@@ -32,6 +35,7 @@ enum OnboardingUserType: String, CaseIterable {
         case .customer: return "I want to discover and book services"
         case .individual: return "I offer services on my own"
         case .team: return "I work at a business or salon"
+        case .student: return "I'm enrolled at a partner academy"
         }
     }
 
@@ -40,6 +44,7 @@ enum OnboardingUserType: String, CaseIterable {
         case .customer: return "person.fill"
         case .individual: return "briefcase.fill"
         case .team: return "person.3.fill"
+        case .student: return "graduationcap.fill"
         }
     }
 }
@@ -68,6 +73,12 @@ class OnboardingViewModel: ObservableObject {
     @Published var listingCategory: ServiceCategory?
     @Published var listingTitle = ""
     @Published var listingDescription = ""
+
+    // MARK: - Student
+    @Published var academies: [Academy] = []
+    @Published var selectedAcademyId: String = ""
+    @Published var isLoadingAcademies = false
+    @Published var academiesError: String?
 
     // MARK: - Location
     @Published var selectedState = ""
@@ -98,6 +109,11 @@ class OnboardingViewModel: ObservableObject {
             flow.append(.listingCategory)
             flow.append(.listingInfo)
         case .team:
+            flow.append(.jobTitle)
+        case .student:
+            // Students pick their academy + their role/title.
+            // No licensing/subscription on iOS today, so location + profile finish the flow.
+            flow.append(.studentAcademy)
             flow.append(.jobTitle)
         }
 
@@ -160,6 +176,8 @@ class OnboardingViewModel: ObservableObject {
                 return isOwnerManager || !jobTitle.trimmingCharacters(in: .whitespaces).isEmpty
             }
             return !jobTitle.trimmingCharacters(in: .whitespaces).isEmpty
+        case .studentAcademy:
+            return !selectedAcademyId.trimmingCharacters(in: .whitespaces).isEmpty
         case .listingCategory:
             return listingCategory != nil
         case .listingInfo:
@@ -198,6 +216,20 @@ class OnboardingViewModel: ObservableObject {
         }
     }
 
+    // MARK: - Academies (student flow)
+
+    func loadAcademies() async {
+        guard academies.isEmpty, !isLoadingAcademies else { return }
+        isLoadingAcademies = true
+        academiesError = nil
+        do {
+            academies = try await api.getAcademies()
+        } catch {
+            academiesError = error.localizedDescription
+        }
+        isLoadingAcademies = false
+    }
+
     // MARK: - Email Check
 
     func checkEmail() async {
@@ -230,12 +262,13 @@ class OnboardingViewModel: ObservableObject {
             location: locationString,
             bio: bio.isEmpty ? nil : bio,
             image: nil, // image upload handled separately in future
-            jobTitle: (userType == .individual || userType == .team) && !jobTitle.isEmpty ? jobTitle : nil,
+            jobTitle: (userType == .individual || userType == .team || userType == .student) && !jobTitle.isEmpty ? jobTitle : nil,
             isOwnerManager: userType == .team ? isOwnerManager : nil,
             selectedListing: nil,
             listingCategory: userType == .individual ? listingCategory?.rawValue : nil,
             listingTitle: userType == .individual && !listingTitle.isEmpty ? listingTitle : nil,
-            listingDescription: userType == .individual && !listingDescription.isEmpty ? listingDescription : nil
+            listingDescription: userType == .individual && !listingDescription.isEmpty ? listingDescription : nil,
+            academyId: userType == .student ? selectedAcademyId : nil
         )
     }
 

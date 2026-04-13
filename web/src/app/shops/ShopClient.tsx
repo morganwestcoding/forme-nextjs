@@ -48,9 +48,9 @@ const BANNERS = [
   },
   {
     src: '/assets/people/banner-6.png',
-    alt: 'New on Forme',
+    alt: 'New on ForMe',
     tag: 'Curated',
-    title: 'New on Forme',
+    title: 'New on ForMe',
     subtitle: 'Fresh brands joining our community',
     href: '/shops?category=Wellness',
   },

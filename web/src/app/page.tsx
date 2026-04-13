@@ -22,10 +22,14 @@ const Discover = async ({ searchParams }: PostProps) => {
   // Get filter from searchParams or default to 'for-you'
   const filter = searchParams.filter || 'for-you';
   
-  // Create params objects with proper typing
+  // Create params objects with proper typing.
+  // We pull academy-owned listings here too so their student Employees show
+  // up in the worker rail. We'll strip the academy listings out of the
+  // bookable-listings prop below so they don't appear as bookable salons.
   const listingParams = {
     category: categoryToUse,
-    order: 'desc' as const // Default to newest listings
+    order: 'desc' as const,
+    includeAcademy: true,
   };
 
   const shopsParams: IShopsParams = {
@@ -47,17 +51,24 @@ const Discover = async ({ searchParams }: PostProps) => {
     getShops(shopsParams)
   ]);
 
-  // Ensure listings is an array and extract employees safely
+  // Ensure listings is an array and extract employees safely.
+  // Workers (including students) come from ALL listings — students live as
+  // Employees of an academy-owned listing. Bookable listings exclude academy
+  // listings so they don't appear as salons in discovery.
   const safeListings: SafeListing[] = Array.isArray(listings) ? listings : [];
   const employees = safeListings.flatMap((listing: SafeListing) => listing.employees);
+  const bookableListings = safeListings.filter((l) => !l.academyId);
 
 
   return (
-    <DiscoverClient 
+    <DiscoverClient
       initialPosts={posts}
       currentUser={currentUser}
       categoryToUse={categoryToUse}
-      listings={safeListings}
+      listings={bookableListings}
+      // Worker rails need the full listing set (including academy listings)
+      // so student WorkerCards can resolve their true listing for routing.
+      allListingsForLookup={safeListings}
       employees={employees}
       shops={shops}
     />

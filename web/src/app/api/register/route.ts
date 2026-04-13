@@ -208,13 +208,21 @@ export async function POST(request: Request) {
     // own Stripe Connect account (the academy holds the Connect account).
     if (isStudent && studentAcademy && studentAcademyListing) {
       try {
+        // Phase 8b: students auto-inherit every service the academy currently offers.
+        // Phase 8c keeps these in sync as the academy adds/removes services later.
+        const academyServices = await prisma.service.findMany({
+          where: { listingId: studentAcademyListing.id },
+          select: { id: true },
+        });
+        const inheritedServiceIds = academyServices.map((s) => s.id);
+
         const employee = await prisma.employee.create({
           data: {
             fullName: name,
             jobTitle: jobTitle || 'Student',
             listingId: studentAcademyListing.id,
             userId: user.id,
-            serviceIds: [],
+            serviceIds: inheritedServiceIds,
             isActive: true,
             isIndependent: false,
             teamRole: 'staff',

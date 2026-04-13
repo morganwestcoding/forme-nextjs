@@ -5,6 +5,7 @@ import getProfileById from '@/app/actions/getProfileById';
 import getListings from '@/app/actions/getListings';
 import getPosts from '@/app/actions/getPost';
 import getReviews from '@/app/actions/getReviews';
+import getServicesByUserId from '@/app/actions/getServicesByUserId';
 import ClientOnly from '@/components/ClientOnly';
 
 import getCurrentUser from '@/app/actions/getCurrentUser';
@@ -19,6 +20,7 @@ const ProfilePage = async ({ params }: any) => {
   const user = await getProfileById(params);
   const listings = await getListings(params);
   const posts = await getPosts(params);
+  const services = user ? await getServicesByUserId(user.id) : [];
 
   // Fetch reviews for this user profile
   const reviewsData = user ? await getReviews({
@@ -39,6 +41,7 @@ const ProfilePage = async ({ params }: any) => {
       <ProfileClient
         posts={posts}
         listings={listings}
+        services={services}
         currentUser={currentUser}
         user={user as any} // no need to change SafeUser or types.ts
         reviews={reviewsData.reviews}

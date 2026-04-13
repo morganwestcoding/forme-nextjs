@@ -150,6 +150,13 @@ class APIService {
         return response.exists
     }
 
+    // MARK: - Academies
+
+    func getAcademies() async throws -> [Academy] {
+        let request = try buildRequest(endpoint: "/academies")
+        return try await perform(request)
+    }
+
     func getCurrentUser() async throws -> User {
         let request = try buildRequest(endpoint: "/profile")
         return try await perform(request)

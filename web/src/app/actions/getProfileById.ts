@@ -15,6 +15,9 @@ export default async function getProfileById(params: IParams) {
     // Pull only the user record — you fetch listings/posts elsewhere already
     const user = await prisma.user.findUnique({
       where: { id: userId },
+      include: {
+        academy: { select: { name: true } },
+      },
     });
 
     if (!user) return null;
@@ -55,6 +58,9 @@ export default async function getProfileById(params: IParams) {
       subscriptionStartDate: user.subscriptionStartDate ?? null,
       subscriptionEndDate: user.subscriptionEndDate ?? null,
       subscriptionTier: user.subscriptionTier ?? null,
+
+      // Student badge data — academy name comes from the relation include above
+      academyName: user.academy?.name ?? null,
 
       // derived conveniences
       city,

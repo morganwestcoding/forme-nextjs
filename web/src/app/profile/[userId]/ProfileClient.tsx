@@ -3,12 +3,14 @@
 import Container from '@/components/Container';
 import ProfileHead from '@/components/profile/ProfileHead';
 import { SafeListing, SafePost, SafeUser, SafeReview } from '@/app/types';
+import type { ProviderService } from '@/app/actions/getServicesByUserId';
 
 interface ProfileClientProps {
   currentUser: SafeUser | null;
   posts: SafePost[];
   user: SafeUser;
   listings: SafeListing[];
+  services?: ProviderService[];
   reviews?: SafeReview[];
   reviewStats?: {
     totalCount: number;
@@ -20,6 +22,7 @@ const ProfileClient: React.FC<ProfileClientProps> = ({
   user,
   posts,
   listings,
+  services = [],
   currentUser,
   reviews = [],
   reviewStats,
@@ -33,6 +36,7 @@ const ProfileClient: React.FC<ProfileClientProps> = ({
         currentUser={currentUser}
         posts={posts}
         listings={listings}
+        services={services}
         reviews={reviews}
         reviewStats={reviewStats}
       />
