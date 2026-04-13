@@ -24,6 +24,8 @@ import LayoutContent from '@/LayoutContent';
 import UserMenuModal from '@/components/modals/UserMenuModal';
 import CreateModal from '@/components/modals/CreateModal';
 import LocationModal from '@/components/modals/LocationModal';
+import WelcomeModal from '@/components/modals/WelcomeModal';
+import WalkthroughOverlay from '@/components/walkthrough/WalkthroughOverlay';
 import UnreadBadgeProvider from '@/components/UnreadBadgeProvider';
 
 export const metadata: Metadata = {
@@ -77,6 +79,8 @@ export default async function RootLayout({
                 <UserMenuModal currentUser={currentUser} />
                 <CreateModal />
                 <LocationModal />
+                <WelcomeModal />
+                <WalkthroughOverlay />
                 <UnreadBadgeProvider />
               </ComingSoonGate>
               </body>

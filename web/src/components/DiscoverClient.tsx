@@ -432,6 +432,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
 
           {/* Editorial Banner — fades out when filtered */}
           <div
+            id="wt-banner"
             style={{
               opacity: filterInfo.isFiltered ? 0 : 1,
               maxHeight: filterInfo.isFiltered ? 0 : '600px',
@@ -492,7 +493,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
           </div>
 
           {/* Shop By Category */}
-          <div>
+          <div id="wt-categories">
             <SectionHeader
               title="Shop By Category"
             />
@@ -689,13 +690,13 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                     {/* ===== Trending Posts Section ===== */}
                     {!filterInfo.isFiltered && currentPosts.length > 0 && (
                       <>
-                        <SectionHeader
-                          title="Posts We Think You'll Love"
-                          onPrev={() => scrollPosts('left')}
-                          onNext={() => scrollPosts('right')}
-                          onViewAll={handleViewAllPosts}
-                        />
                         <div id="posts-rail">
+                          <SectionHeader
+                            title="Posts We Think You'll Love"
+                            onPrev={() => scrollPosts('left')}
+                            onNext={() => scrollPosts('right')}
+                            onViewAll={handleViewAllPosts}
+                          />
                           <div className="grid grid-cols-7 grid-rows-2 gap-0.5 rounded-xl overflow-hidden transition-all duration-300">
                             {currentPosts.slice(0, 14).map((post, idx) => (
                               <div
@@ -720,13 +721,13 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                     {/* ===== Trending Listings Section ===== */}
                     {!filterInfo.isFiltered && currentListings.length > 0 && (
                       <>
-                        <SectionHeader
-                          title="Local Businesses Worth Checking Out"
-                          onPrev={() => scrollListings('left')}
-                          onNext={() => scrollListings('right')}
-                          onViewAll={handleViewAllListings}
-                        />
                         <div id="listings-rail">
+                          <SectionHeader
+                            title="Local Businesses Worth Checking Out"
+                            onPrev={() => scrollListings('left')}
+                            onNext={() => scrollListings('right')}
+                            onViewAll={handleViewAllListings}
+                          />
                           <div className={`grid ${gridColsClass} gap-x-8 gap-y-1 transition-all duration-300`}>
                             {currentListings.slice(0, 9).map((listing, idx) => (
                               <div
@@ -751,13 +752,13 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                     {/* ===== Trending Professionals Section ===== */}
                     {!filterInfo.isFiltered && currentEmployees.length > 0 && (
                       <>
-                        <SectionHeader
-                          title="Trending Professionals"
-                          onPrev={() => scrollEmployees('left')}
-                          onNext={() => scrollEmployees('right')}
-                          onViewAll={handleViewAllProfessionals}
-                        />
                         <div id="employees-rail">
+                          <SectionHeader
+                            title="Trending Professionals"
+                            onPrev={() => scrollEmployees('left')}
+                            onNext={() => scrollEmployees('right')}
+                            onViewAll={handleViewAllProfessionals}
+                          />
                           <div className={`grid ${gridColsClass} gap-x-8 gap-y-1 transition-all duration-300`}>
                             {currentEmployees.slice(0, 9).map((employee, idx) => {
                               const listing = listingsForLookup.find(l => l.id === employee.listingId) || listingsForLookup[0];
@@ -797,13 +798,13 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                     {/* ===== Trending Shops Section ===== */}
                     {!filterInfo.isFiltered && currentShops.length > 0 && (
                       <>
-                        <SectionHeader
-                          title="Recommended Shops"
-                          onPrev={() => scrollShops('left')}
-                          onNext={() => scrollShops('right')}
-                          onViewAll={handleViewAllShops}
-                        />
                         <div id="shops-rail">
+                          <SectionHeader
+                            title="Recommended Shops"
+                            onPrev={() => scrollShops('left')}
+                            onNext={() => scrollShops('right')}
+                            onViewAll={handleViewAllShops}
+                          />
                           <div className={`grid ${gridColsClass} gap-x-8 gap-y-1 pb-8 transition-all duration-300`}>
                             {currentShops.map((shop, idx) => (
                               <div

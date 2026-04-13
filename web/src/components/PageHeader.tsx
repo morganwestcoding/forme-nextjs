@@ -58,7 +58,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
             <Link href="/" className="mr-4 shrink-0">
               <Image src="/logos/fm-logo.png" alt="Logo" width={72} height={46} className="opacity-90 hover:opacity-100 transition-opacity duration-200" />
             </Link>
-            <div className="flex-1 max-w-xl">
+            <div id="wt-search" className="flex-1 max-w-xl">
               <PageSearch
                 actionContext="discover"
                 showAttach={false}
@@ -91,6 +91,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
             </div>
             <div className="flex items-center gap-2 ml-auto">
               <button
+                id="wt-create"
                 onClick={() => createModal.onOpen()}
                 className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-stone-500 dark:text-zinc-400 hover:text-stone-700 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-zinc-800 transition-colors"
               >
@@ -107,6 +108,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
                 </svg>
               </button>
               <button
+                id="wt-notifications"
                 onClick={() => notificationsModal.onOpen()}
                 className="relative shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-stone-500 dark:text-zinc-400 hover:text-stone-700 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-zinc-800 transition-colors"
               >
@@ -118,6 +120,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
                 )}
               </button>
               <button
+                id="wt-messages"
                 onClick={() => inboxModal.onOpen(currentUser)}
                 className="relative shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-stone-500 dark:text-zinc-400 hover:text-stone-700 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-zinc-800 transition-colors"
               >
@@ -129,6 +132,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
                 )}
               </button>
               <button
+                id="wt-profile"
                 onClick={() => currentUser ? userMenuModal.onOpen() : loginModal.onOpen()}
                 className="outline-none"
               >
@@ -152,7 +156,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
           </div>
 
           {/* Navigation */}
-          <nav className="flex items-center gap-3 mt-4" style={{ paddingLeft: 'calc(72px + 1rem + 1.25rem)' }}>
+          <nav id="wt-nav" className="flex items-center gap-3 mt-4" style={{ paddingLeft: 'calc(72px + 1rem + 1.25rem)' }}>
             {(currentPage || currentCategories.length > 0) ? (
               <>
                 <Link
