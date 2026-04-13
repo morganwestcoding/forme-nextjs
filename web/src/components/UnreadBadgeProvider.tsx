@@ -29,8 +29,9 @@ export default function UnreadBadgeProvider() {
           setMessages(unread);
         }
         if (notifRes.ok) {
-          const notifications = await notifRes.json();
-          const unread = notifications.filter((n: any) => !n.isRead).length;
+          const data = await notifRes.json();
+          const items = data.notifications || data;
+          const unread = items.filter((n: any) => !n.isRead).length;
           setNotifications(unread);
         }
       } catch {

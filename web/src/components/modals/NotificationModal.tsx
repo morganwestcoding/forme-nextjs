@@ -137,8 +137,9 @@ const NotificationsModal = () => {
     try {
       setLoading(true);
       const response = await axios.get('/api/notifications');
-      setNotifications(response.data);
-      const unread = response.data.filter((n: Notification) => !n.isRead).length;
+      const items = response.data.notifications || response.data;
+      setNotifications(items);
+      const unread = items.filter((n: Notification) => !n.isRead).length;
       setUnreadNotifications(unread);
     } catch (error) {
       toast.error('Failed to load notifications');
