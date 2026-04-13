@@ -2,6 +2,10 @@ import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
+import { createRateLimiter, getIP } from "@/app/libs/rateLimit";
+import { apiError } from "@/app/utils/api";
+
+const limiter = createRateLimiter("forgot-password", { limit: 3, windowSeconds: 3600 });
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -13,6 +17,15 @@ const transporter = nodemailer.createTransport({
 
 export async function POST(request: Request) {
   try {
+    const ip = getIP(request);
+    const rate = limiter(ip);
+    if (!rate.allowed) {
+      return NextResponse.json(
+        { error: `Too many requests. Try again in ${rate.retryAfterSeconds}s` },
+        { status: 429 }
+      );
+    }
+
     const { email } = await request.json();
 
     const user = await prisma.user.findUnique({
@@ -20,10 +33,7 @@ export async function POST(request: Request) {
     });
 
     if (!user) {
-      return NextResponse.json(
-        { error: "No user found with this email" },
-        { status: 404 }
-      );
+      return apiError("No user found with this email", 404);
     }
 
     // Generate reset token
@@ -59,9 +69,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "Reset email sent successfully" });
   } catch (error) {
     console.error("Password reset error:", error);
-    return NextResponse.json(
-      { error: "Error processing password reset" },
-      { status: 500 }
-    );
+    return apiError("Error processing password reset", 500);
   }
 }

@@ -85,7 +85,11 @@ const Avatar: React.FC<{
               const target = e.currentTarget.parentElement;
               if (target) {
                 target.className = `relative rounded-full overflow-hidden flex items-center justify-center text-white font-semibold ${avatarColor}`;
-                target.innerHTML = `<span style="font-size: ${size * 0.4}px">${initials(name)}</span>`;
+                target.textContent = '';
+                const span = document.createElement('span');
+                span.style.fontSize = `${size * 0.4}px`;
+                span.textContent = initials(name);
+                target.appendChild(span);
               }
             }}
           />

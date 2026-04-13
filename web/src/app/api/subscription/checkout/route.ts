@@ -1,5 +1,6 @@
 // app/api/subscription/checkout/route.ts
 import { NextResponse } from "next/server";
+import { apiError, apiErrorCode } from "@/app/utils/api";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import prisma from "@/app/libs/prismadb";
@@ -71,7 +72,7 @@ async function ensureRecurringPrice(
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
-    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    return apiErrorCode('UNAUTHORIZED');
   }
 
   try {
@@ -82,7 +83,7 @@ export async function POST(request: Request) {
     };
 
     if (!planId || !interval) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+      return apiErrorCode('MISSING_FIELDS');
     }
 
     const isOnboarding = metadata?.isOnboarding === 'true';
@@ -91,7 +92,7 @@ export async function POST(request: Request) {
       where: { email: session.user.email as string },
     });
     if (!currentUser) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return apiErrorCode('USER_NOT_FOUND');
     }
 
     const price = await ensureRecurringPrice(stripe, planId, interval);
@@ -147,9 +148,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ sessionId: checkoutSession.id });
   } catch (error: any) {
     console.error("Subscription checkout error:", error);
-    return NextResponse.json(
-      { error: error.message || "Something went wrong" },
-      { status: 500 }
-    );
+    return apiError(error.message || "Something went wrong", 500);
   }
 }

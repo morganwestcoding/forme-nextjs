@@ -3,12 +3,13 @@ import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
+import { apiError, apiErrorCode } from "@/app/utils/api";
 
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return apiErrorCode('UNAUTHORIZED');
     }
 
     const { plan, interval } = await req.json() as { plan: string; interval?: "monthly" | "yearly" };
@@ -16,7 +17,7 @@ export async function POST(req: Request) {
     const normalized = (plan || "").toLowerCase();
     const isBronze = normalized.includes("bronze") || normalized.includes("basic") || normalized.includes("free");
     if (!isBronze) {
-      return new NextResponse("Paid plan requires Stripe checkout", { status: 400 });
+      return apiError("Paid plan requires Stripe checkout", 400);
     }
 
     const user = await prisma.user.update({

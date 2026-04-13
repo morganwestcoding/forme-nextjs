@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/app/libs/prismadb";
 import { getUserFromRequest } from "@/app/utils/mobileAuth";
+import { apiErrorCode } from '@/app/utils/api';
 
 interface IParams {
   listingId?: string;
@@ -14,7 +15,7 @@ export async function POST(
   const currentUser = await getUserFromRequest(request) || await getCurrentUser();
 
   if (!currentUser) {
-    return NextResponse.error();
+    return apiErrorCode('UNAUTHORIZED');
   }
 
   const { listingId } = params;
@@ -48,7 +49,7 @@ export async function DELETE(
   const currentUser = await getUserFromRequest(request) || await getCurrentUser();
 
   if (!currentUser) {
-    return NextResponse.error();
+    return apiErrorCode('UNAUTHORIZED');
   }
 
   const { listingId } = params;

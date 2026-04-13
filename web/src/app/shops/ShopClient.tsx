@@ -64,150 +64,7 @@ const BANNERS = [
   },
 ];
 
-// ── Mock data so the page always has content ──
-const MOCK_SHOPS: SafeShop[] = [
-  {
-    id: 'aaaaaaaaaaaaaaaaaaaaa001', name: 'Studio Noir', description: 'Premium barber studio in the heart of Brooklyn',
-    logo: '/assets/people/barber.png', coverImage: '/assets/people/barber.png',
-    location: 'Brooklyn, NY', address: '142 Bedford Ave', zipCode: '11249',
-    userId: 'bbbbbbbbbbbbbbbbbbbbbb01', storeUrl: null, galleryImages: [], createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(), isVerified: true, shopEnabled: true,
-    featuredProducts: [], followers: ['a','b','c'], listingId: null, category: 'Barber',
-    user: { id: 'bbbbbbbbbbbbbbbbbbbbbb01', name: 'Marcus J.', image: null },
-    products: [{ name: 'Fade', image: '/assets/people/barber.png', price: 45 }, { name: 'Line Up', image: '/assets/people/barber.png', price: 30 }, { name: 'Hot Towel', image: '/assets/people/barber.png', price: 20 }, { name: 'Beard Trim', image: '/assets/people/barber.png', price: 25 }],
-    productCount: 6, followerCount: 312, rating: 4.9,
-  },
-  {
-    id: 'aaaaaaaaaaaaaaaaaaaaa002', name: 'Glow Aesthetics', description: 'Skincare & facial treatments',
-    logo: '/assets/people/skincare.png', coverImage: '/assets/people/skincare.png',
-    location: 'Manhattan, NY', address: '88 Spring St', zipCode: '10012',
-    userId: 'bbbbbbbbbbbbbbbbbbbbbb02', storeUrl: null, galleryImages: [], createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(), isVerified: true, shopEnabled: true,
-    featuredProducts: [], followers: ['a','b'], listingId: null, category: 'Skincare',
-    user: { id: 'bbbbbbbbbbbbbbbbbbbbbb02', name: 'Ava Chen', image: null },
-    products: [{ name: 'Hydrafacial', image: '/assets/people/skincare.png', price: 120 }, { name: 'Peel', image: '/assets/people/skincare.png', price: 90 }, { name: 'Serum', image: '/assets/people/skincare.png', price: 45 }, { name: 'Mask', image: '/assets/people/skincare.png', price: 60 }],
-    productCount: 12, followerCount: 587, rating: 4.8,
-  },
-  {
-    id: 'aaaaaaaaaaaaaaaaaaaaa003', name: 'Lash Lounge', description: 'Lash extensions & lifts',
-    logo: '/assets/people/lashes.png', coverImage: '/assets/people/lashes.png',
-    location: 'Queens, NY', address: '25-11 Broadway', zipCode: '11106',
-    userId: 'bbbbbbbbbbbbbbbbbbbbbb03', storeUrl: null, galleryImages: [], createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(), isVerified: false, shopEnabled: true,
-    featuredProducts: [], followers: ['a'], listingId: null, category: 'Lashes',
-    user: { id: 'bbbbbbbbbbbbbbbbbbbbbb03', name: 'Priya M.', image: null },
-    products: [{ name: 'Classic Set', image: '/assets/people/lashes.png', price: 85 }, { name: 'Volume', image: '/assets/people/lashes.png', price: 120 }, { name: 'Lash Lift', image: '/assets/people/lashes.png', price: 65 }, { name: 'Refill', image: '/assets/people/lashes.png', price: 50 }],
-    productCount: 8, followerCount: 204, rating: 4.7,
-  },
-  {
-    id: 'aaaaaaaaaaaaaaaaaaaaa004', name: 'Iron Temple', description: 'Personal training & fitness coaching',
-    logo: '/assets/people/fitness.png', coverImage: '/assets/people/fitness.png',
-    location: 'Bronx, NY', address: '900 Grand Concourse', zipCode: '10451',
-    userId: 'bbbbbbbbbbbbbbbbbbbbbb04', storeUrl: null, galleryImages: [], createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(), isVerified: true, shopEnabled: true,
-    featuredProducts: [], followers: ['a','b','c','d'], listingId: null, category: 'Training',
-    user: { id: 'bbbbbbbbbbbbbbbbbbbbbb04', name: 'Derek W.', image: null },
-    products: [{ name: '1-on-1', image: '/assets/people/fitness.png', price: 75 }, { name: 'Group', image: '/assets/people/fitness.png', price: 40 }, { name: 'HIIT', image: '/assets/people/fitness.png', price: 55 }, { name: 'Stretch', image: '/assets/people/fitness.png', price: 30 }],
-    productCount: 4, followerCount: 891, rating: 5.0,
-  },
-  {
-    id: 'aaaaaaaaaaaaaaaaaaaaa005', name: 'The Nail Bar', description: 'Luxury nail art & spa',
-    logo: '/assets/people/nails.png', coverImage: '/assets/people/nails.png',
-    location: 'Manhattan, NY', address: '401 W 14th St', zipCode: '10014',
-    userId: 'bbbbbbbbbbbbbbbbbbbbbb05', storeUrl: null, galleryImages: [], createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(), isVerified: true, shopEnabled: true,
-    featuredProducts: [], followers: ['a','b','c'], listingId: null, category: 'Nails',
-    user: { id: 'bbbbbbbbbbbbbbbbbbbbbb05', name: 'Sofia R.', image: null },
-    products: [{ name: 'Gel Mani', image: '/assets/people/nails.png', price: 55 }, { name: 'Pedicure', image: '/assets/people/nails.png', price: 45 }, { name: 'Nail Art', image: '/assets/people/nails.png', price: 70 }, { name: 'Dip Set', image: '/assets/people/nails.png', price: 60 }],
-    productCount: 10, followerCount: 445, rating: 4.9,
-  },
-  {
-    id: 'aaaaaaaaaaaaaaaaaaaaa006', name: 'Zen Wellness', description: 'Holistic wellness & meditation',
-    logo: '/assets/people/wellness.png', coverImage: '/assets/people/wellness.png',
-    location: 'Brooklyn, NY', address: '58 N 3rd St', zipCode: '11249',
-    userId: 'bbbbbbbbbbbbbbbbbbbbbb06', storeUrl: null, galleryImages: [], createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(), isVerified: false, shopEnabled: true,
-    featuredProducts: [], followers: ['a','b'], listingId: null, category: 'Wellness',
-    user: { id: 'bbbbbbbbbbbbbbbbbbbbbb06', name: 'Luna K.', image: null },
-    products: [{ name: 'Sound Bath', image: '/assets/people/wellness.png', price: 40 }, { name: 'Reiki', image: '/assets/people/wellness.png', price: 65 }, { name: 'Yoga', image: '/assets/people/wellness.png', price: 25 }, { name: 'Breathwork', image: '/assets/people/wellness.png', price: 35 }],
-    productCount: 5, followerCount: 178, rating: 4.6,
-  },
-];
 
-const MOCK_PRODUCTS: SafeProduct[] = [
-  {
-    id: 'mock-prod-1', name: 'Signature Fade', description: 'Clean taper fade with hot towel finish',
-    price: 45, mainImage: '/assets/people/barber.png', galleryImages: [], shopId: 'aaaaaaaaaaaaaaaaaaaaa001',
-    createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
-    categoryId: 'cat-1', category: { id: 'cat-1', name: 'Haircuts' }, tags: ['barber', 'fade'],
-    isPublished: true, isFeatured: true, inventory: 99, lowStockThreshold: 5,
-    shop: { id: 'aaaaaaaaaaaaaaaaaaaaa001', name: 'Studio Noir', logo: '/assets/people/barber.png' },
-    favoritedBy: [],
-  },
-  {
-    id: 'mock-prod-2', name: 'Hydra Glow Facial', description: 'Deep cleansing & hydration treatment',
-    price: 120, mainImage: '/assets/people/skincare.png', galleryImages: [], shopId: 'aaaaaaaaaaaaaaaaaaaaa002',
-    createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
-    categoryId: 'cat-2', category: { id: 'cat-2', name: 'Skincare' }, tags: ['facial', 'glow'],
-    isPublished: true, isFeatured: true, inventory: 50, lowStockThreshold: 5,
-    shop: { id: 'aaaaaaaaaaaaaaaaaaaaa002', name: 'Glow Aesthetics', logo: '/assets/people/skincare.png' },
-    favoritedBy: [],
-  },
-  {
-    id: 'mock-prod-3', name: 'Volume Lash Set', description: 'Full volume lash extensions',
-    price: 150, mainImage: '/assets/people/lashes.png', galleryImages: [], shopId: 'aaaaaaaaaaaaaaaaaaaaa003',
-    createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
-    categoryId: 'cat-3', category: { id: 'cat-3', name: 'Lashes' }, tags: ['lash', 'extensions'],
-    isPublished: true, isFeatured: true, inventory: 30, lowStockThreshold: 5,
-    shop: { id: 'aaaaaaaaaaaaaaaaaaaaa003', name: 'Lash Lounge', logo: '/assets/people/lashes.png' },
-    favoritedBy: [],
-  },
-  {
-    id: 'mock-prod-4', name: 'Power Hour Training', description: '60-minute personalized training session',
-    price: 75, mainImage: '/assets/people/fitness.png', galleryImages: [], shopId: 'aaaaaaaaaaaaaaaaaaaaa004',
-    createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
-    categoryId: 'cat-4', category: { id: 'cat-4', name: 'Training' }, tags: ['fitness', 'personal'],
-    isPublished: true, isFeatured: true, inventory: 99, lowStockThreshold: 5,
-    shop: { id: 'aaaaaaaaaaaaaaaaaaaaa004', name: 'Iron Temple', logo: '/assets/people/fitness.png' },
-    favoritedBy: [],
-  },
-  {
-    id: 'mock-prod-5', name: 'Gel Art Manicure', description: 'Custom nail art with gel polish',
-    price: 65, mainImage: '/assets/people/nails.png', galleryImages: [], shopId: 'aaaaaaaaaaaaaaaaaaaaa005',
-    createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
-    categoryId: 'cat-5', category: { id: 'cat-5', name: 'Nails' }, tags: ['nails', 'gel'],
-    isPublished: true, isFeatured: true, inventory: 80, lowStockThreshold: 5,
-    shop: { id: 'aaaaaaaaaaaaaaaaaaaaa005', name: 'The Nail Bar', logo: '/assets/people/nails.png' },
-    favoritedBy: [],
-  },
-  {
-    id: 'mock-prod-6', name: 'Guided Sound Bath', description: 'Crystal bowl meditation session',
-    price: 40, mainImage: '/assets/people/wellness.png', galleryImages: [], shopId: 'aaaaaaaaaaaaaaaaaaaaa006',
-    createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
-    categoryId: 'cat-6', category: { id: 'cat-6', name: 'Wellness' }, tags: ['wellness', 'meditation'],
-    isPublished: true, isFeatured: true, inventory: 25, lowStockThreshold: 5,
-    shop: { id: 'aaaaaaaaaaaaaaaaaaaaa006', name: 'Zen Wellness', logo: '/assets/people/wellness.png' },
-    favoritedBy: [],
-  },
-  {
-    id: 'mock-prod-7', name: 'Brow Lamination', description: 'Full brow lamination & tint',
-    price: 85, mainImage: '/assets/people/brows.png', galleryImages: [], shopId: 'aaaaaaaaaaaaaaaaaaaaa007',
-    createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
-    categoryId: 'cat-7', category: { id: 'cat-7', name: 'Brows' }, tags: ['brows', 'lamination'],
-    isPublished: true, isFeatured: true, inventory: 40, lowStockThreshold: 5,
-    shop: { id: 'aaaaaaaaaaaaaaaaaaaaa007', name: 'Brow Studio', logo: '/assets/people/brows.png' },
-    favoritedBy: [],
-  },
-  {
-    id: 'mock-prod-8', name: 'Custom Tattoo Consult', description: 'Design consultation for custom ink',
-    price: 100, mainImage: '/assets/people/ink.png', galleryImages: [], shopId: 'aaaaaaaaaaaaaaaaaaaaa008',
-    createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
-    categoryId: 'cat-8', category: { id: 'cat-8', name: 'Ink' }, tags: ['tattoo', 'custom'],
-    isPublished: true, isFeatured: true, inventory: 15, lowStockThreshold: 5,
-    shop: { id: 'aaaaaaaaaaaaaaaaaaaaa008', name: 'Ink Masters', logo: '/assets/people/ink.png' },
-    favoritedBy: [],
-  },
-];
 
 const ShopClient: React.FC<ShopClientProps> = ({
   initialShops = [],
@@ -291,18 +148,8 @@ const ShopClient: React.FC<ShopClientProps> = ({
 
   const q = searchQuery.trim().toLowerCase();
 
-  // Merge real data with mocks (real data first, mocks fill in if empty)
-  const allShops = useMemo(() => {
-    const realIds = new Set(initialShops.map(s => s.id));
-    const mocks = MOCK_SHOPS.filter(s => !realIds.has(s.id));
-    return [...initialShops, ...mocks];
-  }, [initialShops]);
-
-  const allProducts = useMemo(() => {
-    const realIds = new Set(featuredProducts.map(p => p.id));
-    const mocks = MOCK_PRODUCTS.filter(p => !realIds.has(p.id));
-    return [...featuredProducts, ...mocks];
-  }, [featuredProducts]);
+  const allShops = initialShops;
+  const allProducts = featuredProducts;
 
   const filteredShops = useMemo(() => {
     let result = allShops;
@@ -314,7 +161,7 @@ const ShopClient: React.FC<ShopClientProps> = ({
       );
     }
     if (currentCategories.length > 0) {
-      result = result.filter((s) => currentCategories.includes((s as any).category));
+      result = result.filter((s) => currentCategories.includes(s.category ?? ''));
     }
     return result;
   }, [allShops, q, currentCategories]);
@@ -329,7 +176,7 @@ const ShopClient: React.FC<ShopClientProps> = ({
       );
     }
     if (currentCategories.length > 0) {
-      result = result.filter((p) => currentCategories.includes((p as any).category));
+      result = result.filter((p) => currentCategories.includes(p.category?.name ?? ''));
     }
     return result;
   }, [allProducts, q, currentCategories]);
@@ -466,8 +313,6 @@ const ShopClient: React.FC<ShopClientProps> = ({
       <div>
         <SectionHeader
           title="Shop By Category"
-          onViewAll={() => {/* TODO: show more categories */}}
-          viewAllLabel="View all"
         />
         <div className="flex gap-6 overflow-x-auto pb-2 pl-4 pr-4 -ml-4 scrollbar-hide">
           {(() => {
@@ -702,8 +547,22 @@ const ShopClient: React.FC<ShopClientProps> = ({
               )}
             </>
           ) : (
-            <div className="px-8 pt-32 text-center text-gray-500">
-              No shops or products found. Try adjusting your search.
+            <div className="flex flex-col items-center justify-center py-24 text-center">
+              <div className="w-16 h-16 rounded-2xl bg-stone-100 flex items-center justify-center mb-5">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-stone-400">
+                  <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+                  <line x1="3" y1="6" x2="21" y2="6" />
+                  <path d="M16 10a4 4 0 01-8 0" />
+                </svg>
+              </div>
+              <p className="text-[15px] font-medium text-stone-700 mb-1">
+                {filterInfo.isFiltered ? 'No results found' : 'No shops yet'}
+              </p>
+              <p className="text-[13px] text-stone-400 max-w-xs">
+                {filterInfo.isFiltered
+                  ? 'Try adjusting your search or filters to find what you\'re looking for.'
+                  : 'Shops and products will appear here as businesses join the platform.'}
+              </p>
             </div>
           )}
         </div>

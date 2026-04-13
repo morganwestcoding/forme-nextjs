@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import prisma from "@/app/libs/prismadb";
+import { apiError, apiErrorCode } from "@/app/utils/api";
 
 export const dynamic = "force-dynamic";
 
@@ -9,14 +10,14 @@ export const dynamic = "force-dynamic";
 async function requireMaster() {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
-    return { error: NextResponse.json({ error: "Not authenticated" }, { status: 401 }) };
+    return { error: apiError("Not authenticated", 401) };
   }
   const user = await prisma.user.findUnique({
     where: { email: session.user.email as string },
     select: { id: true, role: true },
   });
   if (!user || user.role !== "master") {
-    return { error: NextResponse.json({ error: "Forbidden" }, { status: 403 }) };
+    return { error: apiErrorCode("FORBIDDEN") };
   }
   return { user };
 }
@@ -39,7 +40,7 @@ export async function GET(
 
   const listing = await getAcademyListing(params.academyId);
   if (!listing) {
-    return NextResponse.json({ error: "Academy listing not found" }, { status: 404 });
+    return apiError("Academy listing not found", 404);
   }
 
   const services = await prisma.service.findMany({
@@ -63,7 +64,7 @@ export async function POST(
 
   const listing = await getAcademyListing(params.academyId);
   if (!listing) {
-    return NextResponse.json({ error: "Academy listing not found" }, { status: 404 });
+    return apiError("Academy listing not found", 404);
   }
 
   try {
@@ -71,10 +72,7 @@ export async function POST(
     const { serviceName, price, category } = body;
 
     if (!serviceName?.trim() || typeof price !== "number" || price < 0 || !category?.trim()) {
-      return NextResponse.json(
-        { error: "serviceName, price (>=0), and category are required" },
-        { status: 400 }
-      );
+      return apiError("serviceName, price (>=0), and category are required", 400);
     }
 
     const service = await prisma.service.create({
@@ -110,9 +108,6 @@ export async function POST(
     return NextResponse.json(service);
   } catch (error: any) {
     console.error("[POST academy services]", error);
-    return NextResponse.json(
-      { error: error.message || "Failed to create service" },
-      { status: 500 }
-    );
+    return apiError(error.message || "Failed to create service", 500);
   }
 }

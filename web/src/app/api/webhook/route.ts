@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 import Stripe from 'stripe';
 import prisma from '@/app/libs/prismadb';
+import { apiError } from '@/app/utils/api';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,7 +25,7 @@ export async function POST(req: Request) {
       event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
     } catch (error: any) {
       console.error(`Webhook signature verification failed: ${error.message}`);
-      return NextResponse.json({ error: error.message }, { status: 400 });
+      return apiError(error.message, 400);
     }
 
     console.log(`Webhook event received: ${event.type}`);
@@ -44,14 +45,19 @@ export async function POST(req: Request) {
             console.log("Session metadata:", JSON.stringify(session.metadata, null, 2));
 
             // Avoid duplicates by payment_intent
-            if (session.payment_intent) {
+            const paymentIntent = session.payment_intent ? String(session.payment_intent) : null;
+            if (paymentIntent) {
               const existingReservation = await prisma.reservation.findFirst({
-                where: { paymentIntentId: String(session.payment_intent) }
+                where: { paymentIntentId: paymentIntent }
               });
               if (existingReservation) {
-                console.log(`Reservation already exists for payment intent ${session.payment_intent}`);
+                console.log(`Reservation already exists for payment intent ${paymentIntent}`);
                 return NextResponse.json({ received: true });
               }
+            } else {
+              // No payment_intent means we can't guarantee idempotency — skip creation
+              console.error(`Checkout session ${session.id} has no payment_intent, skipping reservation creation`);
+              return NextResponse.json({ received: true });
             }
 
             const reservation = await prisma.reservation.create({
@@ -132,6 +138,13 @@ export async function POST(req: Request) {
           const subId = typeof session.subscription === 'string'
             ? session.subscription
             : session.subscription.id;
+
+          // Idempotency: skip if this subscription is already stored for this user
+          const existingUser = await prisma.user.findUnique({ where: { id: userId }, select: { stripeSubscriptionId: true } });
+          if (existingUser?.stripeSubscriptionId === subId) {
+            console.log(`Subscription ${subId} already saved for user ${userId}, skipping`);
+            return NextResponse.json({ received: true });
+          }
 
           const sub = await stripe.subscriptions.retrieve(subId);
 
@@ -257,15 +270,20 @@ export async function POST(req: Request) {
 
         console.log(`Updated Connect status for user ${user.id}`);
 
-        // Create notification when onboarding completes
+        // Create notification when onboarding completes (idempotent — skip if already sent)
         if (account.details_submitted && wasNotComplete) {
-          await prisma.notification.create({
-            data: {
-              type: 'STRIPE_CONNECT_COMPLETE',
-              content: 'Your payment account is now set up! You can start receiving payments for your services.',
-              userId: user.id,
-            },
+          const alreadyNotified = await prisma.notification.findFirst({
+            where: { userId: user.id, type: 'STRIPE_CONNECT_COMPLETE' },
           });
+          if (!alreadyNotified) {
+            await prisma.notification.create({
+              data: {
+                type: 'STRIPE_CONNECT_COMPLETE',
+                content: 'Your payment account is now set up! You can start receiving payments for your services.',
+                userId: user.id,
+              },
+            });
+          }
         }
       } else {
         const academy = await prisma.academy.findFirst({
@@ -301,9 +319,6 @@ export async function POST(req: Request) {
   } catch (error: any) {
     console.error('Webhook error:', error);
     console.error(error.stack);
-    return NextResponse.json(
-      { error: 'Webhook handler failed' },
-      { status: 500 }
-    );
+    return apiError('Webhook handler failed', 500);
   }
 }

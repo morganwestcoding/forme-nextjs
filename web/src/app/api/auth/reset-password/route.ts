@@ -1,9 +1,22 @@
 import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
 import bcrypt from "bcryptjs";
+import { createRateLimiter, getIP } from "@/app/libs/rateLimit";
+import { apiError } from "@/app/utils/api";
+
+const limiter = createRateLimiter("reset-password", { limit: 10, windowSeconds: 3600 });
 
 export async function POST(request: Request) {
   try {
+    const ip = getIP(request);
+    const rate = limiter(ip);
+    if (!rate.allowed) {
+      return NextResponse.json(
+        { error: `Too many attempts. Try again in ${rate.retryAfterSeconds}s` },
+        { status: 429 }
+      );
+    }
+
     const { token, newPassword } = await request.json();
 
     // Find user with valid reset token
@@ -25,10 +38,7 @@ export async function POST(request: Request) {
     });
 
     if (!user) {
-      return NextResponse.json(
-        { error: "Invalid or expired reset token" },
-        { status: 400 }
-      );
+      return apiError("Invalid or expired reset token", 400);
     }
 
     // Hash new password
@@ -49,9 +59,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "Password reset successful" });
   } catch (error) {
     console.error("Reset password error:", error);
-    return NextResponse.json(
-      { error: "Error resetting password" },
-      { status: 500 }
-    );
+    return apiError("Error resetting password", 500);
   }
 }

@@ -3,13 +3,14 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/app/libs/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
+import { apiError, apiErrorCode } from '@/app/utils/api';
 
 // POST - Create a new review
 export async function POST(request: Request) {
   const currentUser = await getCurrentUser();
 
   if (!currentUser || !currentUser.id) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return apiErrorCode('UNAUTHORIZED');
   }
 
   try {
@@ -18,25 +19,25 @@ export async function POST(request: Request) {
 
     // Validate rating
     if (!rating || rating < 1 || rating > 5) {
-      return NextResponse.json({ error: 'Rating must be between 1 and 5' }, { status: 400 });
+      return apiError('Rating must be between 1 and 5', 400);
     }
 
     // Validate target
     if (!targetType || !['user', 'listing'].includes(targetType)) {
-      return NextResponse.json({ error: 'Invalid target type' }, { status: 400 });
+      return apiError('Invalid target type', 400);
     }
 
     if (targetType === 'user' && !targetUserId) {
-      return NextResponse.json({ error: 'Target user ID is required' }, { status: 400 });
+      return apiError('Target user ID is required', 400);
     }
 
     if (targetType === 'listing' && !targetListingId) {
-      return NextResponse.json({ error: 'Target listing ID is required' }, { status: 400 });
+      return apiError('Target listing ID is required', 400);
     }
 
     // Prevent self-review for users
     if (targetType === 'user' && targetUserId === currentUser.id) {
-      return NextResponse.json({ error: "You can't review yourself" }, { status: 400 });
+      return apiError("You can't review yourself", 400);
     }
 
     // Check if user already reviewed this target
@@ -49,7 +50,7 @@ export async function POST(request: Request) {
     });
 
     if (existingReview) {
-      return NextResponse.json({ error: 'You have already reviewed this' }, { status: 400 });
+      return apiError('You have already reviewed this', 400);
     }
 
     // Check if user has had a booking with this target (for verified badge)
@@ -119,7 +120,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true, review, isVerifiedBooking: hasVerifiedBooking });
   } catch (error) {
     console.error('Review creation failed:', error);
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }
 
@@ -134,15 +135,15 @@ export async function GET(request: Request) {
     const offset = parseInt(searchParams.get('offset') || '0');
 
     if (!targetType || !['user', 'listing'].includes(targetType)) {
-      return NextResponse.json({ error: 'Invalid target type' }, { status: 400 });
+      return apiError('Invalid target type', 400);
     }
 
     if (targetType === 'user' && !targetUserId) {
-      return NextResponse.json({ error: 'Target user ID is required' }, { status: 400 });
+      return apiError('Target user ID is required', 400);
     }
 
     if (targetType === 'listing' && !targetListingId) {
-      return NextResponse.json({ error: 'Target listing ID is required' }, { status: 400 });
+      return apiError('Target listing ID is required', 400);
     }
 
     const whereClause = {
@@ -236,6 +237,6 @@ export async function GET(request: Request) {
     });
   } catch (error) {
     console.error('Failed to fetch reviews:', error);
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }

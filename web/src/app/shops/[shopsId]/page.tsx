@@ -19,7 +19,7 @@ const ShopPage = async ({ params }: { params: { shopsId?: string } }) => {
 
   // Fetch related shops (same category, excluding current shop)
   const relatedShops = await getShops({
-    category: (shop as any).category || undefined,
+    category: shop.category || undefined,
     limit: 10,
   }).then((shops) => shops.filter((s) => s.id !== shop.id));
 

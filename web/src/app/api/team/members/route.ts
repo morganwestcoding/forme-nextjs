@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { apiError, apiErrorCode } from "@/app/utils/api";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 
@@ -7,7 +8,7 @@ export async function GET() {
   try {
     const currentUser = await getCurrentUser();
     if (!currentUser) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return apiErrorCode('UNAUTHORIZED');
     }
 
     // Get all listings owned by the current user
@@ -80,7 +81,7 @@ export async function GET() {
     return NextResponse.json({ members, listings });
   } catch (error) {
     console.error("[TEAM_MEMBERS_GET]", error);
-    return NextResponse.json({ error: "Internal error" }, { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }
 
@@ -89,14 +90,14 @@ export async function PATCH(request: Request) {
   try {
     const currentUser = await getCurrentUser();
     if (!currentUser) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return apiErrorCode('UNAUTHORIZED');
     }
 
     const body = await request.json();
     const { employeeId, teamRole, isActive } = body;
 
     if (!employeeId) {
-      return NextResponse.json({ error: "Employee ID required" }, { status: 400 });
+      return apiError("Employee ID required", 400);
     }
 
     // Verify the employee belongs to a listing owned by the current user
@@ -106,7 +107,7 @@ export async function PATCH(request: Request) {
     });
 
     if (!employee || employee.listing.userId !== currentUser.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+      return apiErrorCode('FORBIDDEN');
     }
 
     const updateData: Record<string, unknown> = {};
@@ -121,6 +122,6 @@ export async function PATCH(request: Request) {
     return NextResponse.json(updated);
   } catch (error) {
     console.error("[TEAM_MEMBERS_PATCH]", error);
-    return NextResponse.json({ error: "Internal error" }, { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }

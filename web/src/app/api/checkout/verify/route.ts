@@ -1,5 +1,6 @@
 // app/api/checkout/verify/route.ts
 import { NextResponse } from "next/server";
+import { apiError, apiErrorCode } from "@/app/utils/api";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import prisma from "@/app/libs/prismadb";
@@ -13,7 +14,7 @@ export async function GET(request: Request) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.email) {
-    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    return apiErrorCode('UNAUTHORIZED');
   }
 
   try {
@@ -22,7 +23,7 @@ export async function GET(request: Request) {
     const sessionId = searchParams.get('session_id');
 
     if (!sessionId) {
-      return NextResponse.json({ error: "Missing session ID" }, { status: 400 });
+      return apiError("Missing session ID", 400);
     }
 
     // Get the current user
@@ -33,14 +34,14 @@ export async function GET(request: Request) {
     });
 
     if (!currentUser) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return apiErrorCode('USER_NOT_FOUND');
     }
 
     // Verify the session with Stripe
     const stripeSession = await stripe.checkout.sessions.retrieve(sessionId);
 
     if (!stripeSession || stripeSession.payment_status !== 'paid') {
-      return NextResponse.json({ success: false, error: "Payment not completed" }, { status: 400 });
+      return apiError("Payment not completed", 400);
     }
 
     // Find the reservation associated with this payment
@@ -87,9 +88,6 @@ export async function GET(request: Request) {
     return NextResponse.json({ success: true, reservation });
   } catch (error: any) {
     console.error("Checkout verification error:", error);
-    return NextResponse.json(
-      { success: false, error: error.message || "Something went wrong" },
-      { status: 500 }
-    );
+    return apiError(error.message || "Something went wrong", 500);
   }
 }

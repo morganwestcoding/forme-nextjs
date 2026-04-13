@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { apiErrorCode } from "@/app/utils/api";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 
@@ -7,7 +8,7 @@ export async function POST() {
   try {
     const currentUser = await getCurrentUser();
     if (!currentUser) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return apiErrorCode('UNAUTHORIZED');
     }
 
     const listings = await prisma.listing.findMany({
@@ -47,6 +48,6 @@ export async function POST() {
     });
   } catch (error) {
     console.error("[FIX_ROLES]", error);
-    return NextResponse.json({ error: "Internal error" }, { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }

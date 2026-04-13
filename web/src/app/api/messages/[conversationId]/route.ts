@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import { getUserFromRequest } from "@/app/utils/mobileAuth";
+import { apiError, apiErrorCode } from "@/app/utils/api";
 
 export async function GET(
   request: Request,
@@ -10,7 +11,7 @@ export async function GET(
   try {
     const currentUser = await getUserFromRequest(request) || await getCurrentUser();
     if (!currentUser) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return apiErrorCode('UNAUTHORIZED');
     }
 
     const conversation = await prisma.conversation.findUnique({
@@ -23,12 +24,12 @@ export async function GET(
     });
 
     if (!conversation) {
-      return new NextResponse("Conversation not found", { status: 404 });
+      return apiError("Conversation not found", 404);
     }
 
     const isParticipant = conversation.userIds.includes(currentUser.id);
     if (!isParticipant) {
-      return new NextResponse("Not authorized to access this conversation", { status: 403 });
+      return apiError("Not authorized to access this conversation", 403);
     }
 
     const messages = await prisma.message.findMany({
@@ -66,7 +67,7 @@ export async function GET(
     return NextResponse.json(safeMessages);
   } catch (error) {
     console.error("Error getting messages:", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }
 
@@ -77,14 +78,14 @@ export async function POST(
   try {
     const currentUser = await getCurrentUser();
     if (!currentUser) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return apiErrorCode('UNAUTHORIZED');
     }
 
     const body = await request.json();
     const { content } = body;
 
     if (!content) {
-      return new NextResponse("Missing content", { status: 400 });
+      return apiError("Missing content", 400);
     }
 
     const conversation = await prisma.conversation.findUnique({
@@ -102,7 +103,7 @@ export async function POST(
     });
 
     if (!conversation) {
-      return new NextResponse("Conversation not found", { status: 404 });
+      return apiError("Conversation not found", 404);
     }
 
     // Update last message at timestamp
@@ -161,6 +162,6 @@ export async function POST(
     return NextResponse.json(safeMessage);
   } catch (error) {
     console.error("Error creating message:", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }

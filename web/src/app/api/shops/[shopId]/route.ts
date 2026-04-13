@@ -1,22 +1,23 @@
 import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
+import { apiError, apiErrorCode } from "@/app/utils/api";
 
 export async function PUT(
   request: Request,
   { params }: { params: { shopId: string } }
 ) {
   const currentUser = await getCurrentUser();
-  if (!currentUser) return new Response("Unauthorized", { status: 401 });
+  if (!currentUser) return apiErrorCode('UNAUTHORIZED');
 
   const { shopId } = params;
 
   const shop = await prisma.shop.findUnique({ where: { id: shopId } });
-  if (!shop) return new Response("Shop not found", { status: 404 });
+  if (!shop) return apiError("Shop not found", 404);
 
   const isOwner = shop.userId === currentUser.id;
   const isAdmin = currentUser.role === "admin" || currentUser.role === "master";
-  if (!isOwner && !isAdmin) return new Response("Forbidden", { status: 403 });
+  if (!isOwner && !isAdmin) return apiErrorCode('FORBIDDEN');
 
   const body = await request.json();
   const {
@@ -118,6 +119,6 @@ export async function PUT(
     return NextResponse.json(updatedShop);
   } catch (error) {
     console.error("Error updating shop:", error);
-    return new Response("Internal Server Error", { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }

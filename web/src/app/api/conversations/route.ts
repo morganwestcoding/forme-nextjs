@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import { getUserFromRequest } from '@/app/utils/mobileAuth';
+import { apiError, apiErrorCode } from '@/app/utils/api';
 
 export async function GET(request: Request) {
   try {
@@ -9,7 +10,7 @@ export async function GET(request: Request) {
     console.log('Current user:', currentUser); // Debug log
     
     if (!currentUser?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return apiErrorCode('UNAUTHORIZED');
     }
 
     // First, let's check if we can find any conversations for this user
@@ -71,7 +72,7 @@ export async function GET(request: Request) {
     return NextResponse.json(safeConversations);
   } catch (error) {
     console.error('Error details:', error); // More detailed error logging
-    return NextResponse.json({ error: 'Internal server error', details: error }, { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }
 
@@ -83,13 +84,13 @@ export async function POST(request: Request) {
     console.log('Current user:', currentUser); // Debug log
 
     if (!currentUser?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return apiErrorCode('UNAUTHORIZED');
     }
 
     const { userId } = body;
 
     if (!userId) {
-      return NextResponse.json({ error: 'Invalid request - missing userId' }, { status: 400 });
+      return apiError('Invalid request - missing userId', 400);
     }
 
     // Check if a conversation already exists
@@ -132,6 +133,6 @@ export async function POST(request: Request) {
     return NextResponse.json(newConversation);
   } catch (error) {
     console.error('Error details:', error); // More detailed error logging
-    return NextResponse.json({ error: 'Internal server error', details: error }, { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }

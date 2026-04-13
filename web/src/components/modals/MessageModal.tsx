@@ -240,7 +240,10 @@ const MessageModal: React.FC = () => {
                     const target = e.currentTarget.parentElement;
                     if (target) {
                       target.className = `w-11 h-11 rounded-full overflow-hidden flex items-center justify-center text-white font-semibold text-sm ${avatarColor}`;
-                      target.innerHTML = `<span>${initials(otherUser?.name)}</span>`;
+                      target.textContent = '';
+                      const span = document.createElement('span');
+                      span.textContent = initials(otherUser?.name);
+                      target.appendChild(span);
                     }
                   }}
                 />

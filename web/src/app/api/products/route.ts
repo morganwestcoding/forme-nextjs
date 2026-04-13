@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import { canModifyResource } from "@/app/libs/authorization";
+import { apiError, apiErrorCode } from "@/app/utils/api";
 
 // Function to get or create a default category
 async function getOrCreateDefaultCategory(categoryName: string) {
@@ -40,9 +41,9 @@ export async function POST(request: Request) {
   const currentUser = await getCurrentUser();
   if (!currentUser) {
     console.log("[DEBUG] Unauthorized - No current user");
-    return new Response("Unauthorized", { status: 401 });
+    return apiErrorCode('UNAUTHORIZED');
   }
-  
+
   console.log(`[DEBUG] User authenticated: ${currentUser.id}`);
   
   let body;
@@ -51,7 +52,7 @@ export async function POST(request: Request) {
     console.log("[DEBUG] Request body parsed successfully");
   } catch (error) {
     console.error("[ERROR] Failed to parse request body:", error);
-    return new Response("Invalid request body", { status: 400 });
+    return apiError("Invalid request body", 400);
   }
 
   // Check if we're handling a shop with embedded products
@@ -75,13 +76,13 @@ export async function POST(request: Request) {
         
         if (!shop) {
           console.log(`[DEBUG] Shop not found with ID: ${body.id}`);
-          return new Response("Shop not found", { status: 404 });
+          return apiError("Shop not found", 404);
         }
         
         // Verify ownership (owner or master/admin)
         if (!canModifyResource(currentUser, shop.userId)) {
           console.log(`[DEBUG] Not authorized - Shop belongs to ${shop.userId}, not ${currentUser.id}`);
-          return new Response("Not authorized to modify this shop", { status: 403 });
+          return apiError("Not authorized to modify this shop", 403);
         }
         
         console.log(`[DEBUG] Found existing shop: ${shop.id}`);
@@ -112,7 +113,7 @@ export async function POST(request: Request) {
           console.log(`[DEBUG] Successfully created shop with ID: ${shop.id}`);
         } catch (shopError) {
           console.error("[ERROR] Failed to create shop:", shopError);
-          return new Response(`Failed to create shop: ${shopError instanceof Error ? shopError.message : 'Unknown error'}`, { status: 500 });
+          return apiError(`Failed to create shop: ${shopError instanceof Error ? shopError.message : 'Unknown error'}`, 500);
         }
       }
       
@@ -254,7 +255,7 @@ export async function POST(request: Request) {
       });
     } catch (error) {
       console.error("[ERROR] Error processing shop products:", error);
-      return new Response(`Error processing shop products: ${error instanceof Error ? error.message : 'Unknown error'}`, { status: 500 });
+      return apiError(`Error processing shop products: ${error instanceof Error ? error.message : 'Unknown error'}`, 500);
     }
   }
 
@@ -292,14 +293,14 @@ export async function POST(request: Request) {
 
     if (missingFields.length > 0) {
       console.log(`[DEBUG] Missing required fields: ${missingFields.join(", ")}`);
-      return new Response(`Missing required fields: ${missingFields.join(", ")}`, { status: 400 });
+      return apiError(`Missing required fields: ${missingFields.join(", ")}`, 400);
     }
 
     // Validate price format
     const productPrice = parseFloat(price);
     if (isNaN(productPrice) || productPrice < 0) {
       console.log(`[DEBUG] Invalid price format: ${price}`);
-      return new Response("Invalid price format", { status: 400 });
+      return apiError("Invalid price format", 400);
     }
 
     // Check if the user owns the shop
@@ -310,13 +311,13 @@ export async function POST(request: Request) {
 
     if (!shop) {
       console.log(`[DEBUG] Shop not found: ${shopId}`);
-      return new Response("Shop not found", { status: 404 });
+      return apiError("Shop not found", 404);
     }
 
     // Check if user can modify (owner or master/admin)
     if (!canModifyResource(currentUser, shop.userId)) {
       console.log(`[DEBUG] User ${currentUser.id} does not own shop ${shopId} (owned by ${shop.userId})`);
-      return new Response("Not authorized to add products to this shop", { status: 403 });
+      return apiError("Not authorized to add products to this shop", 403);
     }
     
     // Get or create a default category
@@ -329,7 +330,7 @@ export async function POST(request: Request) {
       console.log(`[DEBUG] Using category ID: ${categoryId}`);
     } catch (categoryError) {
       console.error(`[ERROR] Failed to get/create category:`, categoryError);
-      return new Response(`Failed to get/create category: ${categoryError instanceof Error ? categoryError.message : 'Unknown error'}`, { status: 500 });
+      return apiError(`Failed to get/create category: ${categoryError instanceof Error ? categoryError.message : 'Unknown error'}`, 500);
     }
 
     // Format product options from sizes if present
@@ -406,10 +407,10 @@ export async function POST(request: Request) {
       return NextResponse.json(product);
     } catch (productError) {
       console.error(`[ERROR] Failed to create product:`, productError);
-      return new Response(`Failed to create product: ${productError instanceof Error ? productError.message : 'Unknown error'}`, { status: 500 });
+      return apiError(`Failed to create product: ${productError instanceof Error ? productError.message : 'Unknown error'}`, 500);
     }
   } catch (error) {
     console.error("[ERROR] Error in direct product creation:", error);
-    return new Response(`Internal Server Error: ${error instanceof Error ? error.message : 'Unknown error'}`, { status: 500 });
+    return apiError(`Internal Server Error: ${error instanceof Error ? error.message : 'Unknown error'}`, 500);
   }
 }

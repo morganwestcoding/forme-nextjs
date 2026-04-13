@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server';
 import prisma from '@/app/libs/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import { getUserFromRequest } from '@/app/utils/mobileAuth';
+import { apiError, apiErrorCode } from '@/app/utils/api';
 
 interface IParams {
   postId?: string;
@@ -13,7 +14,7 @@ export async function POST(request: Request, { params }: { params: IParams }) {
   const currentUser = await getUserFromRequest(request) || await getCurrentUser();
 
   if (!currentUser || !currentUser.id) {
-    return NextResponse.error();
+    return apiErrorCode('UNAUTHORIZED');
   }
 
   const { postId } = params;
@@ -21,7 +22,7 @@ export async function POST(request: Request, { params }: { params: IParams }) {
   const { content } = body;
 
   if (!content || typeof content !== 'string' || !postId) {
-    return new NextResponse('Invalid input', { status: 400 });
+    return apiError('Invalid input', 400);
   }
 
   try {
@@ -36,6 +37,6 @@ export async function POST(request: Request, { params }: { params: IParams }) {
     return NextResponse.json(newComment);
   } catch (error) {
     console.error('Comment creation failed:', error);
-    return new NextResponse('Internal Error', { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }

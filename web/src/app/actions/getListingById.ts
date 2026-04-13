@@ -27,7 +27,6 @@ export default async function getListingById(params: IParams): Promise<(SafeList
             serviceName: true,
             price: true,
             category: true,
-            imageSrc: true,
           }
         },
         employees: {
@@ -82,7 +81,6 @@ export default async function getListingById(params: IParams): Promise<(SafeList
         serviceName: service.serviceName,
         price: service.price,
         category: service.category,
-        imageSrc: service.imageSrc,
       })),
       employees: listing.employees
         .filter((employee: typeof listing.employees[number]) => employee.user)
@@ -103,8 +101,8 @@ export default async function getListingById(params: IParams): Promise<(SafeList
             name: employee.user!.name,
             image: employee.user!.image,
             imageSrc: employee.user!.imageSrc,
-            userType: (employee.user as any)?.userType ?? null,
-            academyName: (employee.user as any)?.academy?.name ?? null,
+            userType: employee.user!.userType ?? null,
+            academyName: employee.user!.academy?.name ?? null,
           }
         })),
       storeHours: listing.storeHours.map((hour: typeof listing.storeHours[number]) => ({
@@ -163,9 +161,9 @@ export default async function getListingById(params: IParams): Promise<(SafeList
       stripeConnectChargesEnabled: listing.user.stripeConnectChargesEnabled || false,
       stripeConnectPayoutsEnabled: listing.user.stripeConnectPayoutsEnabled || false,
       stripeConnectOnboardedAt: listing.user.stripeConnectOnboardedAt || null,
-      userType: (listing.user as any).userType ?? null,
-      academyId: (listing.user as any).academyId ?? null,
-      academyName: (listing.user as any).academy?.name ?? null,
+      userType: listing.user.userType ?? null,
+      academyId: listing.user.academyId ?? null,
+      academyName: listing.user.academy?.name ?? null,
     };
 
     return {

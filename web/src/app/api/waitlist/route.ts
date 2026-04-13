@@ -2,6 +2,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { apiError, apiErrorCode } from '@/app/utils/api';
 
 const prisma = new PrismaClient();
 
@@ -12,19 +13,13 @@ export async function POST(request: NextRequest) {
 
     // Validate email
     if (!email || typeof email !== 'string') {
-      return NextResponse.json(
-        { error: 'Email is required' },
-        { status: 400 }
-      );
+      return apiError('Email is required', 400);
     }
 
     // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: 'Invalid email format' },
-        { status: 400 }
-      );
+      return apiError('Invalid email format', 400);
     }
 
     // Check if email already exists
@@ -67,16 +62,10 @@ export async function POST(request: NextRequest) {
     
     // Handle Prisma unique constraint error specifically
     if (error instanceof Error && error.message.includes('Unique constraint')) {
-      return NextResponse.json(
-        { error: 'Email already exists in waitlist' },
-        { status: 409 }
-      );
+      return apiError('Email already exists in waitlist', 409);
     }
 
-    return NextResponse.json(
-      { error: 'Failed to add email to waitlist' },
-      { status: 500 }
-    );
+    return apiError('Failed to add email to waitlist', 500);
   } finally {
     await prisma.$disconnect();
   }
@@ -96,10 +85,7 @@ export async function GET() {
 
   } catch (error) {
     console.error('Waitlist count error:', error);
-    return NextResponse.json(
-      { error: 'Failed to get waitlist count' },
-      { status: 500 }
-    );
+    return apiError('Failed to get waitlist count', 500);
   } finally {
     await prisma.$disconnect();
   }

@@ -1,19 +1,20 @@
 import { NextResponse } from 'next/server';
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from '@/app/actions/getCurrentUser';
+import { apiError, apiErrorCode } from '@/app/utils/api';
 
 export async function POST(request: Request) {
   try {
     const currentUser = await getCurrentUser();
     if (!currentUser?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return apiErrorCode('UNAUTHORIZED');
     }
 
     const body = await request.json();
     const { conversationId } = body;
 
     if (!conversationId) {
-      return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
+      return apiError('Invalid request', 400);
     }
     await prisma.message.updateMany({
       where: {
@@ -44,7 +45,7 @@ export async function POST(request: Request) {
     });
 
     if (!updatedConversation) {
-      return NextResponse.json({ error: 'Conversation not found' }, { status: 404 });
+      return apiError('Conversation not found', 404);
     }
 
     // Format the conversation to match your SafeConversation type
@@ -69,6 +70,6 @@ export async function POST(request: Request) {
     return NextResponse.json(safeConversation);
   } catch (error) {
     console.error('Error updating message read status:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }

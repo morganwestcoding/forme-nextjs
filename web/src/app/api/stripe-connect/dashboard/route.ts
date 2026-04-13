@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { apiError, apiErrorCode } from "@/app/utils/api";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import prisma from "@/app/libs/prismadb";
@@ -13,7 +14,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
-    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    return apiErrorCode('UNAUTHORIZED');
   }
 
   try {
@@ -22,10 +23,7 @@ export async function POST(request: Request) {
     });
 
     if (!currentUser?.stripeConnectAccountId) {
-      return NextResponse.json(
-        { error: "No Stripe Connect account found" },
-        { status: 404 }
-      );
+      return apiError("No Stripe Connect account found", 404);
     }
 
     const loginLink = await stripe.accounts.createLoginLink(
@@ -35,9 +33,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ url: loginLink.url });
   } catch (error: any) {
     console.error("Stripe Connect dashboard error:", error);
-    return NextResponse.json(
-      { error: error.message || "Failed to create dashboard link" },
-      { status: 500 }
-    );
+    return apiError(error.message || "Failed to create dashboard link", 500);
   }
 }

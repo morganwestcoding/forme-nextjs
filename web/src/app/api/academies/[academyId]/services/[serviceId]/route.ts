@@ -2,20 +2,21 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import prisma from "@/app/libs/prismadb";
+import { apiError, apiErrorCode } from "@/app/utils/api";
 
 export const dynamic = "force-dynamic";
 
 async function requireMaster() {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
-    return { error: NextResponse.json({ error: "Not authenticated" }, { status: 401 }) };
+    return { error: apiError("Not authenticated", 401) };
   }
   const user = await prisma.user.findUnique({
     where: { email: session.user.email as string },
     select: { id: true, role: true },
   });
   if (!user || user.role !== "master") {
-    return { error: NextResponse.json({ error: "Forbidden" }, { status: 403 }) };
+    return { error: apiErrorCode("FORBIDDEN") };
   }
   return { user };
 }
@@ -43,7 +44,7 @@ export async function PATCH(
 
   const found = await loadAcademyService(params.academyId, params.serviceId);
   if (!found) {
-    return NextResponse.json({ error: "Service not found" }, { status: 404 });
+    return apiError("Service not found", 404);
   }
 
   try {
@@ -52,21 +53,21 @@ export async function PATCH(
 
     if (typeof body.serviceName === "string") {
       if (!body.serviceName.trim()) {
-        return NextResponse.json({ error: "serviceName cannot be empty" }, { status: 400 });
+        return apiError("serviceName cannot be empty", 400);
       }
       data.serviceName = body.serviceName.trim();
     }
 
     if (typeof body.price === "number") {
       if (body.price < 0) {
-        return NextResponse.json({ error: "price must be >= 0" }, { status: 400 });
+        return apiError("price must be >= 0", 400);
       }
       data.price = Math.round(body.price);
     }
 
     if (typeof body.category === "string") {
       if (!body.category.trim()) {
-        return NextResponse.json({ error: "category cannot be empty" }, { status: 400 });
+        return apiError("category cannot be empty", 400);
       }
       data.category = body.category.trim();
     }
@@ -79,10 +80,7 @@ export async function PATCH(
     return NextResponse.json(updated);
   } catch (error: any) {
     console.error("[PATCH academy service]", error);
-    return NextResponse.json(
-      { error: error.message || "Failed to update service" },
-      { status: 500 }
-    );
+    return apiError(error.message || "Failed to update service", 500);
   }
 }
 
@@ -99,7 +97,7 @@ export async function DELETE(
 
   const found = await loadAcademyService(params.academyId, params.serviceId);
   if (!found) {
-    return NextResponse.json({ error: "Service not found" }, { status: 404 });
+    return apiError("Service not found", 404);
   }
 
   try {
@@ -129,9 +127,6 @@ export async function DELETE(
     return NextResponse.json({ ok: true });
   } catch (error: any) {
     console.error("[DELETE academy service]", error);
-    return NextResponse.json(
-      { error: error.message || "Failed to delete service" },
-      { status: 500 }
-    );
+    return apiError(error.message || "Failed to delete service", 500);
   }
 }

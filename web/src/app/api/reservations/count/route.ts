@@ -2,13 +2,14 @@
 import { NextResponse } from "next/server";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/app/libs/prismadb";
+import { apiErrorCode } from '@/app/utils/api';
 
 export async function GET() {
   try {
     const currentUser = await getCurrentUser();
 
     if (!currentUser) {
-      return NextResponse.error();
+      return apiErrorCode('UNAUTHORIZED');
     }
 
     // Get all listings owned by the current user
@@ -34,6 +35,6 @@ export async function GET() {
 
     return NextResponse.json(reservationCount);
   } catch (error) {
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }

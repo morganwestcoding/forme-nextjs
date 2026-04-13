@@ -2,11 +2,12 @@ import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import { canModifyResource } from "@/app/libs/authorization";
 import { getUserFromRequest } from "@/app/utils/mobileAuth";
+import { apiError, apiErrorCode } from "@/app/utils/api";
 
 export async function POST(request: Request) {
   const currentUser = await getUserFromRequest(request) || await getCurrentUser();
   if (!currentUser) {
-    return new Response("Unauthorized", { status: 401 });
+    return apiErrorCode('UNAUTHORIZED');
   }
 
   const body = await request.json();
@@ -19,7 +20,7 @@ export async function POST(request: Request) {
   // If trying to update another user, verify master/admin access
   if (targetUserId && targetUserId !== currentUser.id) {
     if (!canModifyResource(currentUser, targetUserId)) {
-      return new Response("Unauthorized to modify this user", { status: 403 });
+      return apiError("Unauthorized to modify this user", 403);
     }
   }
 
@@ -44,11 +45,11 @@ export async function POST(request: Request) {
         data: { image, imageSrc, bio, location },
       });
     } else {
-      return new Response("Invalid action", { status: 400 });
+      return apiError("Invalid action", 400);
     }
 
     if (!updatedUser) {
-      return new Response("User update failed", { status: 404 });
+      return apiError("User update failed", 404);
     }
 
     return new Response(JSON.stringify(updatedUser), {
@@ -57,14 +58,14 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error("Error updating user:", error);
-    return new Response("Internal Server Error", { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }
 
 export async function GET(request: Request) {
   const currentUser = await getUserFromRequest(request) || await getCurrentUser();
   if (!currentUser) {
-    return new Response("Unauthorized", { status: 401 });
+    return apiErrorCode('UNAUTHORIZED');
   }
 
   try {
@@ -73,7 +74,7 @@ export async function GET(request: Request) {
     });
 
     if (!user) {
-      return new Response("User not found", { status: 404 });
+      return apiErrorCode('USER_NOT_FOUND');
     }
 
     return new Response(JSON.stringify(user), {
@@ -82,14 +83,14 @@ export async function GET(request: Request) {
     });
   } catch (error) {
     console.error("Error fetching user:", error);
-    return new Response("Internal Server Error", { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }
 
 export async function DELETE(request: Request) {
   const currentUser = await getUserFromRequest(request) || await getCurrentUser();
   if (!currentUser) {
-    return new Response("Unauthorized", { status: 401 });
+    return apiErrorCode('UNAUTHORIZED');
   }
 
   const { searchParams } = new URL(request.url);
@@ -97,7 +98,7 @@ export async function DELETE(request: Request) {
   const targetUserId = searchParams.get('targetUserId');
 
   if (imageIndex === null) {
-    return new Response("Image index is required", { status: 400 });
+    return apiError("Image index is required", 400);
   }
 
   // Determine which user to update (self or target if master)
@@ -106,7 +107,7 @@ export async function DELETE(request: Request) {
   // If trying to update another user, verify master/admin access
   if (targetUserId && targetUserId !== currentUser.id) {
     if (!canModifyResource(currentUser, targetUserId)) {
-      return new Response("Unauthorized to modify this user", { status: 403 });
+      return apiError("Unauthorized to modify this user", 403);
     }
   }
 
@@ -116,7 +117,7 @@ export async function DELETE(request: Request) {
     });
 
     if (!user) {
-      return new Response("User not found", { status: 404 });
+      return apiErrorCode('USER_NOT_FOUND');
     }
 
     const updatedGalleryImages = user.galleryImages.filter((_: string, index: number) => index !== parseInt(imageIndex));
@@ -134,6 +135,6 @@ export async function DELETE(request: Request) {
     });
   } catch (error) {
     console.error("Error deleting gallery image:", error);
-    return new Response("Internal Server Error", { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }

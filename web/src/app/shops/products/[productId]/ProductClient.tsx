@@ -101,8 +101,8 @@ const ProductClient: React.FC<ProductClientProps> = ({
     ? Math.round(((product.compareAtPrice! - product.price) / product.compareAtPrice!) * 100)
     : 0;
 
-  const options = product.options as any[] | null | undefined;
-  const variants = product.variants as any[] | null | undefined;
+  const options = product.options;
+  const variants = product.variants;
 
   const handleAddToCart = () => {
     toast.success(`${product.name} added to cart`);
@@ -223,7 +223,7 @@ const ProductClient: React.FC<ProductClientProps> = ({
                 </div>
                 <div className="w-px h-10 bg-stone-100" />
                 <div className="flex-1">
-                  <p className="text-[18px] font-bold text-stone-900 tabular-nums">{(product.reviews as any[])?.length || 0}</p>
+                  <p className="text-[18px] font-bold text-stone-900 tabular-nums">{product.reviews?.length || 0}</p>
                   <p className="text-[12px] text-stone-400 mt-0.5">reviews</p>
                 </div>
               </div>

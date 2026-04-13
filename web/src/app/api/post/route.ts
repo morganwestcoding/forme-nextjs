@@ -4,11 +4,12 @@ import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import { MediaType } from "@/app/types";
 import { getUserFromRequest } from "@/app/utils/mobileAuth";
+import { apiError, apiErrorCode } from "@/app/utils/api";
 
 export async function POST(request: Request) {
     const currentUser = await getUserFromRequest(request) || await getCurrentUser();
     if (!currentUser) {
-        return new Response("Unauthorized", { status: 401 });
+        return apiErrorCode('UNAUTHORIZED');
     }
 
     const body = await request.json();
@@ -48,7 +49,7 @@ export async function POST(request: Request) {
 
     // Check if content exists (allow empty content for Reels)
     if (content === undefined || content === null) {
-        return new Response("Missing required field: content", { status: 400 });
+        return apiError("Missing required field: content", 400);
     }
 
     // Use empty string if no category or if category is "All" or "Default"
@@ -58,10 +59,7 @@ export async function POST(request: Request) {
 
     // Validate mediaType if provided
     if (mediaType && !['image', 'video', 'gif'].includes(mediaType)) {
-        return new Response(
-            "Invalid media type. Must be 'image', 'video', or 'gif'", 
-            { status: 400 }
-        );
+        return apiError("Invalid media type. Must be 'image', 'video', or 'gif'", 400);
     }
 
     // Validate mentions if provided
@@ -74,7 +72,7 @@ export async function POST(request: Request) {
         );
         
         if (!isValidMentions) {
-            return new Response("Invalid mentions format", { status: 400 });
+            return apiError("Invalid mentions format", 400);
         }
     }
 
@@ -133,8 +131,8 @@ export async function POST(request: Request) {
         return NextResponse.json(completePost);
     } catch (error) {
         console.error("Error creating post:", error);
-        return new Response("Internal Server Error", { status: 500 });
-    } 
+        return apiErrorCode('INTERNAL_ERROR');
+    }
 }
 
 export async function GET(request: Request) {
@@ -202,6 +200,6 @@ export async function GET(request: Request) {
         return NextResponse.json(filteredPosts);
     } catch (error) {
         console.error("Error fetching posts:", error);
-        return new Response("Internal Server Error", { status: 500 });
+        return apiErrorCode('INTERNAL_ERROR');
     }
 }

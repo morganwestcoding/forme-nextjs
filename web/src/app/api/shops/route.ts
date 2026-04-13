@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
+import { apiError, apiErrorCode } from "@/app/utils/api";
 interface ProductInput {
   name: string;
   description: string;
@@ -96,7 +97,7 @@ async function createProductsForShop(
 
 export async function POST(request: Request) {
   const currentUser = await getCurrentUser();
-  if (!currentUser) return new Response("Unauthorized", { status: 401 });
+  if (!currentUser) return apiErrorCode('UNAUTHORIZED');
 
   const body = await request.json();
   const {
@@ -129,7 +130,7 @@ export async function POST(request: Request) {
     .map(([k]) => k);
 
   if (missingKeys.length) {
-    return new Response(`Missing required fields: ${missingKeys.join(", ")}`, { status: 400 });
+    return apiError(`Missing required fields: ${missingKeys.join(", ")}`, 400);
   }
 
   try {
@@ -166,7 +167,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ ...shop, products: createdProducts });
   } catch (error) {
     console.error("Error creating shop:", error);
-    return new Response("Internal Server Error", { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }
 
@@ -195,6 +196,6 @@ export async function GET(request: Request) {
     return NextResponse.json(safe);
   } catch (error) {
     console.error("Error fetching shops:", error);
-    return new Response("Internal Server Error", { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }

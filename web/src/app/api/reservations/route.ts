@@ -2,13 +2,14 @@ import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import { getUserFromRequest } from "@/app/utils/mobileAuth";
+import { apiError, apiErrorCode } from "@/app/utils/api";
 
 export async function GET(request: Request) {
   try {
     const currentUser = await getUserFromRequest(request) || await getCurrentUser();
 
     if (!currentUser) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return apiErrorCode('UNAUTHORIZED');
     }
 
     // Get user's own listings to find incoming reservations
@@ -59,7 +60,7 @@ export async function GET(request: Request) {
     return NextResponse.json(reservations);
   } catch (error) {
     console.error('[RESERVATIONS_GET]', error);
-    return new NextResponse("Internal error", { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }
 
@@ -68,7 +69,7 @@ export async function POST(request: Request) {
     const currentUser = await getUserFromRequest(request) || await getCurrentUser();
 
     if (!currentUser) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return apiErrorCode('UNAUTHORIZED');
     }
 
     const body = await request.json();
@@ -84,7 +85,7 @@ export async function POST(request: Request) {
     } = body;
 
     if (!listingId || !date || !time || !totalPrice || !serviceId || !serviceName || !employeeId) {
-      return new NextResponse("Missing required fields", { status: 400 });
+      return apiErrorCode('MISSING_FIELDS');
     }
 
     const reservation = await prisma.reservation.create({
@@ -115,6 +116,6 @@ export async function POST(request: Request) {
     return NextResponse.json(reservation);
   } catch (error) {
     console.error('[RESERVATION_POST]', error);
-    return new NextResponse("Internal error", { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }

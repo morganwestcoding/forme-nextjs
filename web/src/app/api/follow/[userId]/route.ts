@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/app/libs/prismadb";
 import { getUserFromRequest } from "@/app/utils/mobileAuth";
+import { apiErrorCode } from '@/app/utils/api';
 
 type FollowType = "user" | "listing" | "shop"; // ✅ add 'shop'
 
@@ -11,7 +12,7 @@ export async function POST(
   { params }: { params: { userId: string } }
 ) {
   const currentUser = await getUserFromRequest(request) || await getCurrentUser();
-  if (!currentUser) return NextResponse.error();
+  if (!currentUser) return apiErrorCode('UNAUTHORIZED');
 
   const { userId } = params;
   if (!userId || typeof userId !== "string") throw new Error("Invalid ID");

@@ -4,6 +4,7 @@ import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/app/libs/prismadb";
 import { PostMention } from "@/app/types";
 import { canModifyResource } from "@/app/libs/authorization";
+import { apiError, apiErrorCode } from "@/app/utils/api";
 
 export async function GET(
   request: Request,
@@ -12,7 +13,7 @@ export async function GET(
   const { postId } = params;
 
   if (!postId || typeof postId !== 'string') {
-    return new NextResponse("Invalid ID", { status: 400 });
+    return apiError("Invalid ID", 400);
   }
 
   const post = await prisma.post.findUnique({
@@ -26,7 +27,7 @@ export async function GET(
     }
   });
 
-  if (!post) return new NextResponse("Not found", { status: 404 });
+  if (!post) return apiErrorCode('NOT_FOUND');
 
   // Process mentions from PostMention relations
   const mentions: PostMention[] = post.mentions.map((mention: typeof post.mentions[number]) => ({
@@ -90,7 +91,7 @@ export async function PATCH(
     const currentUser = await getCurrentUser();
 
     if (!currentUser) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return apiErrorCode('UNAUTHORIZED');
     }
 
     const postId = params.postId;
@@ -102,12 +103,12 @@ export async function PATCH(
     });
 
     if (!post) {
-      return new NextResponse("Post not found", { status: 404 });
+      return apiErrorCode('POST_NOT_FOUND');
     }
 
     // Check if user can modify (owner or master/admin)
     if (!canModifyResource(currentUser, post.userId)) {
-      return new NextResponse("Unauthorized", { status: 403 });
+      return apiErrorCode('FORBIDDEN');
     }
 
     // Delete existing mentions for this post
@@ -188,7 +189,7 @@ export async function PATCH(
     return NextResponse.json(updatedPost);
   } catch (error) {
     console.error("Error in PATCH /api/post/[postId]:", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }
 
@@ -200,7 +201,7 @@ export async function DELETE(
     const currentUser = await getCurrentUser();
 
     if (!currentUser) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return apiErrorCode('UNAUTHORIZED');
     }
 
     const postId = params.postId;
@@ -212,12 +213,12 @@ export async function DELETE(
     });
 
     if (!post) {
-      return new NextResponse("Post not found", { status: 404 });
+      return apiErrorCode('POST_NOT_FOUND');
     }
 
     // Check if user can modify (owner or master/admin)
     if (!canModifyResource(currentUser, post.userId)) {
-      return new NextResponse("Unauthorized", { status: 403 });
+      return apiErrorCode('FORBIDDEN');
     }
 
     const deletedPost = await prisma.post.delete({
@@ -229,6 +230,6 @@ export async function DELETE(
     return NextResponse.json(deletedPost);
   } catch (error) {
     console.error("Error in DELETE /api/posts/[postId]:", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }

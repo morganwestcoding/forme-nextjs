@@ -85,7 +85,6 @@ export default function ListingFlow({ mode = 'create', listingId, initialData }:
         serviceName: s.serviceName,
         price: s.price,
         category: s.category,
-        imageSrc: (s as any).imageSrc || '',
       }));
     }
     return [];

@@ -2,12 +2,13 @@
 import { NextResponse } from 'next/server';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import prisma from '@/app/libs/prismadb';
+import { apiError, apiErrorCode } from '@/app/utils/api';
 
 export async function GET(request: Request) {
   // Add authentication for employee selection
   const currentUser = await getCurrentUser();
   if (!currentUser) {
-    return new NextResponse("Unauthorized", { status: 401 });
+    return apiErrorCode('UNAUTHORIZED');
   }
 
   const { searchParams } = new URL(request.url);
@@ -45,6 +46,6 @@ export async function GET(request: Request) {
     return NextResponse.json({ users });
   } catch (error) {
     console.error('Error searching users:', error);
-    return NextResponse.json({ error: 'Failed to search users' }, { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }

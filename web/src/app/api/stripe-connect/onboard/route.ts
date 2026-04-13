@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { apiError, apiErrorCode } from "@/app/utils/api";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import prisma from "@/app/libs/prismadb";
@@ -13,7 +14,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
-    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    return apiErrorCode('UNAUTHORIZED');
   }
 
   try {
@@ -22,7 +23,7 @@ export async function POST(request: Request) {
     });
 
     if (!currentUser) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return apiErrorCode('USER_NOT_FOUND');
     }
 
     // Check if user is an employee (can receive payments)
@@ -31,10 +32,7 @@ export async function POST(request: Request) {
     });
 
     if (!employeeRecord) {
-      return NextResponse.json(
-        { error: "You must be an active worker to set up payments" },
-        { status: 403 }
-      );
+      return apiError("You must be an active worker to set up payments", 403);
     }
 
     let accountId = currentUser.stripeConnectAccountId;
@@ -74,9 +72,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ url: accountLink.url });
   } catch (error: any) {
     console.error("Stripe Connect onboarding error:", error);
-    return NextResponse.json(
-      { error: error.message || "Failed to create onboarding link" },
-      { status: 500 }
-    );
+    return apiError(error.message || "Failed to create onboarding link", 500);
   }
 }

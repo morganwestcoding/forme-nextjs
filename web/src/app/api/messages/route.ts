@@ -1,20 +1,20 @@
-import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import { getUserFromRequest } from "@/app/utils/mobileAuth";
+import { apiError, apiErrorCode } from "@/app/utils/api";
 
 export async function POST(request: Request) {
   try {
     const currentUser = await getUserFromRequest(request) || await getCurrentUser();
     if (!currentUser) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return apiErrorCode('UNAUTHORIZED');
     }
 
     const body = await request.json();
     const { content, conversationId } = body;
 
     if (!content || !conversationId) {
-      return new NextResponse("Missing required fields", { status: 400 });
+      return apiErrorCode('MISSING_FIELDS');
     }
 
     const newMessage = await prisma.message.create({
@@ -38,6 +38,6 @@ export async function POST(request: Request) {
 
   } catch (error) {
     console.error("Error creating message:", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }

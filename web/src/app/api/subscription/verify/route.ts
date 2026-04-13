@@ -1,5 +1,6 @@
 // app/api/subscription/verify/route.ts
 import { NextResponse } from "next/server";
+import { apiError, apiErrorCode } from "@/app/utils/api";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import prisma from "@/app/libs/prismadb";
@@ -12,34 +13,34 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 export async function GET(request: Request) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
-    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    return apiErrorCode('UNAUTHORIZED');
   }
 
   try {
     const { searchParams } = new URL(request.url);
     const sessionId = searchParams.get("session_id");
     if (!sessionId) {
-      return NextResponse.json({ error: "Missing session ID" }, { status: 400 });
+      return apiError("Missing session ID", 400);
     }
 
     const currentUser = await prisma.user.findUnique({
       where: { email: session.user.email as string },
     });
     if (!currentUser) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return apiErrorCode('USER_NOT_FOUND');
     }
 
     const stripeSession = await stripe.checkout.sessions.retrieve(sessionId);
     if (!stripeSession) {
-      return NextResponse.json({ success: false, error: "Invalid session" }, { status: 400 });
+      return apiError("Invalid session", 400);
     }
     if (stripeSession.mode !== "subscription") {
-      return NextResponse.json({ success: false, error: "Wrong session mode" }, { status: 400 });
+      return apiError("Wrong session mode", 400);
     }
 
     // Payment may be "paid" or "no payment required" depending on trial; we just confirm session completion
     if (stripeSession.status !== "complete") {
-      return NextResponse.json({ success: false, error: "Checkout not completed" }, { status: 400 });
+      return apiError("Checkout not completed", 400);
     }
 
     // Pull the subscription for receipt-ish info
@@ -78,9 +79,6 @@ export async function GET(request: Request) {
     return NextResponse.json({ success: true, subscription: null });
   } catch (error: any) {
     console.error("Subscription verification error:", error);
-    return NextResponse.json(
-      { success: false, error: error.message || "Something went wrong" },
-      { status: 500 }
-    );
+    return apiError(error.message || "Something went wrong", 500);
   }
 }

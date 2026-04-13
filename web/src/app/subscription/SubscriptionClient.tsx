@@ -148,8 +148,11 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
   };
 
   const handleCelebrationComplete = useCallback(() => {
-    router.push('/');
-  }, [router]);
+    // Hard navigation to guarantee the Celebration overlay fully unmounts.
+    // router.push('/') can leave the fixed z-[9999] overlay stuck during
+    // Next.js client-side transitions, resulting in a white screen.
+    window.location.href = '/';
+  }, []);
 
   if (showCelebration) {
     return <Celebration onComplete={handleCelebrationComplete} userName={currentUser?.name?.split(' ')[0]} />;

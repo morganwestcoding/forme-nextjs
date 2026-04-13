@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
+import { apiError, apiErrorCode } from "@/app/utils/api";
 
 interface IParams {
   listingId: string;
@@ -13,7 +14,7 @@ export async function GET(
     const { listingId } = params;
 
     if (!listingId || typeof listingId !== "string") {
-      return new NextResponse('Listing ID is required', { status: 400 });
+      return apiError('Listing ID is required', 400);
     }
 
     // Verify listing exists first
@@ -23,7 +24,7 @@ export async function GET(
     });
 
     if (!listing) {
-      return new NextResponse('Listing not found', { status: 404 });
+      return apiErrorCode('LISTING_NOT_FOUND');
     }
 
     // Fetch services for this listing
@@ -51,6 +52,6 @@ export async function GET(
     });
   } catch (error) {
     console.error('Error fetching listing services:', error);
-    return new NextResponse('Internal Error', { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
+import { apiError, apiErrorCode } from "@/app/utils/api";
 
 export async function POST(
   request: Request,
@@ -10,12 +11,12 @@ export async function POST(
     const { postId } = params;
 
     if (!postId || typeof postId !== 'string') {
-      return new NextResponse("Invalid ID", { status: 400 });
+      return apiError("Invalid ID", 400);
     }
 
     const currentUser = await getCurrentUser();
     if (!currentUser?.id) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return apiErrorCode('UNAUTHORIZED');
     }
 
     // Get current post to check if user already viewed
@@ -25,7 +26,7 @@ export async function POST(
     });
 
     if (!post) {
-      return new NextResponse("Post not found", { status: 404 });
+      return apiErrorCode('POST_NOT_FOUND');
     }
 
     // Only add user if they haven't viewed yet
@@ -41,6 +42,6 @@ export async function POST(
     return NextResponse.json({ viewed: true });
   } catch (error) {
     console.error("Error recording post view:", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }

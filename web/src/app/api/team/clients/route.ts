@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { apiError, apiErrorCode } from "@/app/utils/api";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 
@@ -7,7 +8,7 @@ export async function GET(request: Request) {
   try {
     const currentUser = await getCurrentUser();
     if (!currentUser) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return apiErrorCode('UNAUTHORIZED');
     }
 
     const { searchParams } = new URL(request.url);
@@ -15,7 +16,7 @@ export async function GET(request: Request) {
     const search = searchParams.get("search");
 
     if (!listingId) {
-      return NextResponse.json({ error: "Listing ID required" }, { status: 400 });
+      return apiError("Listing ID required", 400);
     }
 
     // Verify the current user owns the listing
@@ -25,7 +26,7 @@ export async function GET(request: Request) {
     });
 
     if (!listing || listing.userId !== currentUser.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+      return apiErrorCode('FORBIDDEN');
     }
 
     // Get all unique clients who have booked at this listing
@@ -127,7 +128,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ clients });
   } catch (error) {
     console.error("[CLIENTS_GET]", error);
-    return NextResponse.json({ error: "Internal error" }, { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }
 
@@ -136,14 +137,14 @@ export async function PATCH(request: Request) {
   try {
     const currentUser = await getCurrentUser();
     if (!currentUser) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return apiErrorCode('UNAUTHORIZED');
     }
 
     const body = await request.json();
     const { listingId, clientUserId, notes, tags } = body;
 
     if (!listingId || !clientUserId) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+      return apiErrorCode('MISSING_FIELDS');
     }
 
     // Verify ownership
@@ -153,7 +154,7 @@ export async function PATCH(request: Request) {
     });
 
     if (!listing || listing.userId !== currentUser.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+      return apiErrorCode('FORBIDDEN');
     }
 
     const updateData: Record<string, unknown> = {};
@@ -176,6 +177,6 @@ export async function PATCH(request: Request) {
     return NextResponse.json(record);
   } catch (error) {
     console.error("[CLIENTS_PATCH]", error);
-    return NextResponse.json({ error: "Internal error" }, { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }

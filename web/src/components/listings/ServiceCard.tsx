@@ -69,11 +69,10 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   const durationDisplay = service.unit || '60 min';
   const listingName = listing?.title || 'Service';
 
-  // Background image - use service image or fall back to listing image
-  const hasServiceImage = service.imageSrc && !service.imageSrc.startsWith('data:') && service.imageSrc !== '/images/placeholder.jpg';
+  // Background image - use listing image
   const listingImageSrc = listing?.imageSrc || listing?.galleryImages?.[0];
-  const backgroundImageSrc = hasServiceImage ? service.imageSrc : listingImageSrc;
-  const hasImage = hasServiceImage || !!listingImageSrc;
+  const backgroundImageSrc = listingImageSrc;
+  const hasImage = !!listingImageSrc;
 
   // Function to render title with verification badge that stays with last word
   const renderTitleWithBadge = (title: string) => {

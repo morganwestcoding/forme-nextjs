@@ -4,6 +4,9 @@ import prisma from "@/app/libs/prismadb";
 import { apiError, apiErrorCode } from "@/app/utils/api";
 import { registerSchema, validateBody } from "@/app/utils/validations";
 import { signMobileToken } from "@/app/utils/mobileAuth";
+import { createRateLimiter, getIP } from "@/app/libs/rateLimit";
+
+const limiter = createRateLimiter("register", { limit: 5, windowSeconds: 3600 });
 
 type CanonicalTier = 'bronze' | 'professional' | 'enterprise';
 type UserType = 'customer' | 'individual' | 'team' | 'student';
@@ -23,6 +26,12 @@ function normalizeSubscription(input: unknown): 'bronze' | 'professional' | 'ent
 
 export async function POST(request: Request) {
   try {
+    const ip = getIP(request);
+    const rate = limiter(ip);
+    if (!rate.allowed) {
+      return apiError(`Too many registration attempts. Try again in ${rate.retryAfterSeconds}s`, 429);
+    }
+
     const body = await request.json();
 
     // Validate request body
@@ -301,7 +310,6 @@ export async function POST(request: Request) {
                   serviceName: svc.serviceName.trim(),
                   price: Number(svc.price),
                   category: svc.category.trim(),
-                  imageSrc: svc.imageSrc || null,
                   listingId: listing.id,
                 }
               });

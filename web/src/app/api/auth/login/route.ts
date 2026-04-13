@@ -3,9 +3,18 @@ import bcrypt from 'bcryptjs';
 import prisma from '@/app/libs/prismadb';
 import { signMobileToken } from '@/app/utils/mobileAuth';
 import { apiError, apiErrorCode } from '@/app/utils/api';
+import { createRateLimiter, getIP } from '@/app/libs/rateLimit';
+
+const limiter = createRateLimiter('login', { limit: 5, windowSeconds: 900 });
 
 export async function POST(request: Request) {
   try {
+    const ip = getIP(request);
+    const rate = limiter(ip);
+    if (!rate.allowed) {
+      return apiError(`Too many login attempts. Try again in ${rate.retryAfterSeconds}s`, 429);
+    }
+
     const body = await request.json();
     const { email, password } = body;
 

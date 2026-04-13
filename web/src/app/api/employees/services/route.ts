@@ -1,20 +1,21 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/app/libs/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
+import { apiError, apiErrorCode } from '@/app/utils/api';
 
 export async function POST(request: Request) {
   try {
     const currentUser = await getCurrentUser();
 
     if (!currentUser) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return apiErrorCode('UNAUTHORIZED');
     }
 
     const body = await request.json();
     const { services } = body;
 
     if (!services || !Array.isArray(services)) {
-      return NextResponse.json({ error: 'Services array required' }, { status: 400 });
+      return apiError('Services array required', 400);
     }
 
     // Find the user's employee record (should be independent worker)
@@ -29,7 +30,7 @@ export async function POST(request: Request) {
     });
 
     if (!employee) {
-      return NextResponse.json({ error: 'Employee record not found' }, { status: 404 });
+      return apiError('Employee record not found', 404);
     }
 
     // Filter valid services
@@ -111,7 +112,7 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error('Error updating services:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }
 
@@ -121,7 +122,7 @@ export async function GET(request: Request) {
     const userId = searchParams.get('userId');
 
     if (!userId) {
-      return NextResponse.json({ error: 'UserId required' }, { status: 400 });
+      return apiError('UserId required', 400);
     }
 
     // Find the employee record for this user
@@ -151,6 +152,6 @@ export async function GET(request: Request) {
     return NextResponse.json({ services });
   } catch (error) {
     console.error('Error fetching services:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }

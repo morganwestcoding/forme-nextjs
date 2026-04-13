@@ -5,7 +5,6 @@ export interface ProviderService {
   serviceName: string;
   price: number;
   category: string;
-  imageSrc: string | null;
 
   // Where this service lives — used by the booking link.
   listingId: string;
@@ -46,7 +45,6 @@ export default async function getServicesByUserId(userId: string): Promise<Provi
                 serviceName: true,
                 price: true,
                 category: true,
-                imageSrc: true,
               },
             },
           },
@@ -72,7 +70,6 @@ export default async function getServicesByUserId(userId: string): Promise<Provi
           serviceName: s.serviceName,
           price: s.price,
           category: s.category,
-          imageSrc: s.imageSrc ?? null,
           listingId: emp.listing.id,
           listingTitle: emp.listing.title,
           employeeId: emp.id,

@@ -1,5 +1,6 @@
 // app/api/subscription/confirm/route.ts
 import { NextResponse } from "next/server";
+import { apiError, apiErrorCode } from "@/app/utils/api";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import prisma from "@/app/libs/prismadb";
@@ -15,19 +16,19 @@ export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return apiErrorCode('UNAUTHORIZED');
     }
 
     const { sessionId } = await request.json() as { sessionId?: string };
     if (!sessionId) {
-      return NextResponse.json({ error: "Missing sessionId" }, { status: 400 });
+      return apiError("Missing sessionId", 400);
     }
 
     // Load the returning user's record
     const user = await prisma.user.findUnique({
       where: { email: session.user.email as string },
     });
-    if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
+    if (!user) return apiErrorCode('USER_NOT_FOUND');
 
     // Fetch the checkout session and associated subscription
     const cs = await stripe.checkout.sessions.retrieve(sessionId, { expand: ["subscription"] });
@@ -54,7 +55,7 @@ export async function POST(request: Request) {
         : cs.subscription;
 
     if (!subscription) {
-      return NextResponse.json({ error: "Subscription not found" }, { status: 404 });
+      return apiError("Subscription not found", 404);
     }
 
     // Idempotency: if already stored and matches, short-circuit
@@ -92,9 +93,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true });
   } catch (error: any) {
     console.error("[SUB_CONFIRM_POST]", error);
-    return NextResponse.json(
-      { error: error.message || "Internal error" },
-      { status: 500 }
-    );
+    return apiError(error.message || "Internal error", 500);
   }
 }

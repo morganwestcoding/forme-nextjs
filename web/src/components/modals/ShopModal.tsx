@@ -93,15 +93,15 @@ const ShopModal = () => {
       if (key !== 'products') setValue(key, value);
     });
 
-    if (Array.isArray((shop as any).products)) {
-      const normalized: ProductData[] = (shop as any).products.map((p: any) => ({
+    if (Array.isArray(shop.products)) {
+      const normalized: ProductData[] = shop.products.map((p) => ({
         name: p.name,
         price: p.price,
         image: p.image,
-        description: p.description ?? '',
-        category: p.category ?? '',
-        sizes: Array.isArray(p.sizes) ? p.sizes : [],
-        images: p.image ? [p.image] : Array.isArray(p.images) ? p.images : []
+        description: '',
+        category: '',
+        sizes: [],
+        images: p.image ? [p.image] : []
       }));
       setProducts(normalized);
     }

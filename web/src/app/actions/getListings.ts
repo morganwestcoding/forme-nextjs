@@ -3,9 +3,6 @@ import { SafeListing } from "@/app/types";
 
 export interface IListingsParams {
   userId?: string;
-  guestCount?: number;
-  roomCount?: number;
-  bathroomCount?: number;
   startDate?: string;
   endDate?: string;
   locationValue?: string;
@@ -29,9 +26,6 @@ export default async function getListings(params: IListingsParams = {}): Promise
       locationValue,
       startDate,
       endDate,
-      guestCount,
-      roomCount,
-      bathroomCount,
       category,
       state,
       city,
@@ -85,24 +79,6 @@ export default async function getListings(params: IListingsParams = {}): Promise
       };
     }
 
-    if (roomCount) {
-      query.roomCount = {
-        gte: +roomCount
-      };
-    }
-
-    if (guestCount) {
-      query.guestCount = {
-        gte: +guestCount
-      };
-    }
-
-    if (bathroomCount) {
-      query.bathroomCount = {
-        gte: +bathroomCount
-      };
-    }
-
     if (startDate && endDate) {
       query.NOT = {
         reservations: {
@@ -148,7 +124,6 @@ export default async function getListings(params: IListingsParams = {}): Promise
             serviceName: true,
             price: true,
             category: true,
-            imageSrc: true,
           }
         },
         employees: {
@@ -215,7 +190,6 @@ export default async function getListings(params: IListingsParams = {}): Promise
         serviceName: service.serviceName,
         price: service.price,
         category: service.category,
-        imageSrc: service.imageSrc,
       })),
       employees: listing.employees
         .filter((employee: typeof listing.employees[number]) => employee.user)
@@ -237,8 +211,8 @@ export default async function getListings(params: IListingsParams = {}): Promise
             image: employee.user!.image,
             imageSrc: employee.user!.imageSrc,
             backgroundImage: employee.user!.backgroundImage,
-            userType: (employee.user as any)?.userType ?? null,
-            academyName: (employee.user as any)?.academy?.name ?? null,
+            userType: employee.user!.userType ?? null,
+            academyName: employee.user!.academy?.name ?? null,
           }
         })),
       storeHours: listing.storeHours.map((hour: typeof listing.storeHours[number]) => ({

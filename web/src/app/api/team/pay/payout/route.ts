@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { apiError, apiErrorCode } from "@/app/utils/api";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import Stripe from "stripe";
@@ -12,14 +13,14 @@ export async function GET(request: Request) {
   try {
     const currentUser = await getCurrentUser();
     if (!currentUser) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return apiErrorCode('UNAUTHORIZED');
     }
 
     const { searchParams } = new URL(request.url);
     const employeeId = searchParams.get("employeeId");
 
     if (!employeeId) {
-      return NextResponse.json({ error: "Employee ID required" }, { status: 400 });
+      return apiError("Employee ID required", 400);
     }
 
     const payouts = await prisma.payout.findMany({
@@ -39,7 +40,7 @@ export async function GET(request: Request) {
     });
   } catch (error) {
     console.error("[PAYOUT_GET]", error);
-    return NextResponse.json({ error: "Internal error" }, { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }
 
@@ -48,14 +49,14 @@ export async function POST(request: Request) {
   try {
     const currentUser = await getCurrentUser();
     if (!currentUser) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return apiErrorCode('UNAUTHORIZED');
     }
 
     const body = await request.json();
     const { employeeId, amount, note } = body;
 
     if (!employeeId || !amount || amount <= 0) {
-      return NextResponse.json({ error: "Valid employee ID and amount required" }, { status: 400 });
+      return apiError("Valid employee ID and amount required", 400);
     }
 
     // Verify the requester is the employee
@@ -68,7 +69,7 @@ export async function POST(request: Request) {
     });
 
     if (!employee || employee.userId !== currentUser.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+      return apiErrorCode('FORBIDDEN');
     }
 
     // Check if employee has Stripe Connect set up
@@ -78,7 +79,7 @@ export async function POST(request: Request) {
     });
 
     if (!employeeUser?.stripeConnectAccountId || !employeeUser.stripeConnectPayoutsEnabled) {
-      return NextResponse.json({ error: "Set up your payment account first" }, { status: 400 });
+      return apiError("Set up your payment account first", 400);
     }
 
     // Check if auto-approve is enabled
@@ -148,7 +149,7 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error("[PAYOUT_POST]", error);
-    return NextResponse.json({ error: "Internal error" }, { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }
 
@@ -157,14 +158,14 @@ export async function PATCH(request: Request) {
   try {
     const currentUser = await getCurrentUser();
     if (!currentUser) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return apiErrorCode('UNAUTHORIZED');
     }
 
     const body = await request.json();
     const { payoutId, action, note } = body; // action: "approve" | "deny"
 
     if (!payoutId || !["approve", "deny"].includes(action)) {
-      return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+      return apiError("Invalid request", 400);
     }
 
     const payout = await prisma.payout.findUnique({
@@ -182,16 +183,16 @@ export async function PATCH(request: Request) {
     });
 
     if (!payout) {
-      return NextResponse.json({ error: "Payout not found" }, { status: 404 });
+      return apiError("Payout not found", 404);
     }
 
     // Only the listing owner can approve/deny
     if (payout.employee.listing.userId !== currentUser.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+      return apiErrorCode('FORBIDDEN');
     }
 
     if (payout.status !== "pending") {
-      return NextResponse.json({ error: "Payout already processed" }, { status: 400 });
+      return apiError("Payout already processed", 400);
     }
 
     if (action === "deny") {
@@ -214,7 +215,7 @@ export async function PATCH(request: Request) {
     // Approve and process Stripe transfer
     const employeeStripeAccount = payout.employee.user.stripeConnectAccountId;
     if (!employeeStripeAccount || !payout.employee.user.stripeConnectPayoutsEnabled) {
-      return NextResponse.json({ error: "Employee payment account not set up" }, { status: 400 });
+      return apiError("Employee payment account not set up", 400);
     }
 
     try {
@@ -249,10 +250,10 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ status: "completed", transferId: transfer.id });
     } catch (stripeError: any) {
       console.error("[PAYOUT_TRANSFER]", stripeError);
-      return NextResponse.json({ error: `Transfer failed: ${stripeError.message}` }, { status: 500 });
+      return apiError(`Transfer failed: ${stripeError.message}`, 500);
     }
   } catch (error) {
     console.error("[PAYOUT_PATCH]", error);
-    return NextResponse.json({ error: "Internal error" }, { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }

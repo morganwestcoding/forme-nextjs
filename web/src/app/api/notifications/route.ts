@@ -3,13 +3,14 @@ import { NextResponse } from 'next/server';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import prisma from '@/app/libs/prismadb';
 import { getUserFromRequest } from '@/app/utils/mobileAuth';
+import { apiErrorCode } from '@/app/utils/api';
 
 export async function GET(request: Request) {
   try {
     const currentUser = await getUserFromRequest(request) || await getCurrentUser();
 
     if (!currentUser) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return apiErrorCode('UNAUTHORIZED');
     }
 
     const notifications = await prisma.notification.findMany({
@@ -31,6 +32,6 @@ export async function GET(request: Request) {
     return NextResponse.json(formattedNotifications);
   } catch (error) {
     console.error('[NOTIFICATIONS_GET]', error);
-    return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { apiError, apiErrorCode } from '@/app/utils/api';
 
 const prisma = new PrismaClient();
 
@@ -10,27 +11,18 @@ export async function POST(request: NextRequest) {
 
     // Validate name
     if (!name || typeof name !== 'string') {
-      return NextResponse.json(
-        { error: 'Name is required' },
-        { status: 400 }
-      );
+      return apiError('Name is required', 400);
     }
 
     // Validate email
     if (!email || typeof email !== 'string') {
-      return NextResponse.json(
-        { error: 'Email is required' },
-        { status: 400 }
-      );
+      return apiError('Email is required', 400);
     }
 
     // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: 'Invalid email format' },
-        { status: 400 }
-      );
+      return apiError('Invalid email format', 400);
     }
 
     // Check if email already exists in demo requests
@@ -75,16 +67,10 @@ export async function POST(request: NextRequest) {
 
     // Handle Prisma unique constraint error specifically
     if (error instanceof Error && error.message.includes('Unique constraint')) {
-      return NextResponse.json(
-        { error: 'Demo request already exists for this email' },
-        { status: 409 }
-      );
+      return apiError('Demo request already exists for this email', 409);
     }
 
-    return NextResponse.json(
-      { error: 'Failed to submit demo request' },
-      { status: 500 }
-    );
+    return apiError('Failed to submit demo request', 500);
   } finally {
     await prisma.$disconnect();
   }
@@ -104,10 +90,7 @@ export async function GET() {
 
   } catch (error) {
     console.error('Demo request count error:', error);
-    return NextResponse.json(
-      { error: 'Failed to get demo request count' },
-      { status: 500 }
-    );
+    return apiError('Failed to get demo request count', 500);
   } finally {
     await prisma.$disconnect();
   }

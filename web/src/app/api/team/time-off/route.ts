@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { apiError, apiErrorCode } from "@/app/utils/api";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 
@@ -7,14 +8,14 @@ export async function GET(request: Request) {
   try {
     const currentUser = await getCurrentUser();
     if (!currentUser) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return apiErrorCode('UNAUTHORIZED');
     }
 
     const { searchParams } = new URL(request.url);
     const listingId = searchParams.get("listingId");
 
     if (!listingId) {
-      return NextResponse.json({ error: "Listing ID required" }, { status: 400 });
+      return apiError("Listing ID required", 400);
     }
 
     // Get all time off requests for employees in this listing
@@ -44,7 +45,7 @@ export async function GET(request: Request) {
     });
   } catch (error) {
     console.error("[TIME_OFF_GET]", error);
-    return NextResponse.json({ error: "Internal error" }, { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }
 
@@ -53,14 +54,14 @@ export async function POST(request: Request) {
   try {
     const currentUser = await getCurrentUser();
     if (!currentUser) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return apiErrorCode('UNAUTHORIZED');
     }
 
     const body = await request.json();
     const { employeeId, startDate, endDate, reason } = body;
 
     if (!employeeId || !startDate || !endDate) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+      return apiErrorCode('MISSING_FIELDS');
     }
 
     // Verify the employee exists and the current user is either the employee or the listing owner
@@ -70,13 +71,13 @@ export async function POST(request: Request) {
     });
 
     if (!employee) {
-      return NextResponse.json({ error: "Employee not found" }, { status: 404 });
+      return apiError("Employee not found", 404);
     }
 
     const isOwner = employee.listing.userId === currentUser.id;
     const isSelf = employee.userId === currentUser.id;
     if (!isOwner && !isSelf) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+      return apiErrorCode('FORBIDDEN');
     }
 
     const timeOff = await prisma.timeOffRequest.create({
@@ -110,7 +111,7 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error("[TIME_OFF_POST]", error);
-    return NextResponse.json({ error: "Internal error" }, { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }
 
@@ -119,14 +120,14 @@ export async function PATCH(request: Request) {
   try {
     const currentUser = await getCurrentUser();
     if (!currentUser) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return apiErrorCode('UNAUTHORIZED');
     }
 
     const body = await request.json();
     const { requestId, status } = body; // status: "approved" | "denied"
 
     if (!requestId || !["approved", "denied"].includes(status)) {
-      return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+      return apiError("Invalid request", 400);
     }
 
     // Get the time off request and verify ownership
@@ -140,11 +141,11 @@ export async function PATCH(request: Request) {
     });
 
     if (!timeOff) {
-      return NextResponse.json({ error: "Request not found" }, { status: 404 });
+      return apiError("Request not found", 404);
     }
 
     if (timeOff.employee.listing.userId !== currentUser.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+      return apiErrorCode('FORBIDDEN');
     }
 
     const updated = await prisma.timeOffRequest.update({
@@ -164,6 +165,6 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ status: updated.status });
   } catch (error) {
     console.error("[TIME_OFF_PATCH]", error);
-    return NextResponse.json({ error: "Internal error" }, { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }

@@ -1,5 +1,5 @@
 import prisma from "@/app/libs/prismadb";
-import { SafePost, SafeUser, MediaType, PostMention } from '@/app/types';
+import { SafePost, SafeUser, MediaType, MediaOverlay, PostMention } from '@/app/types';
 import getCurrentUser from "./getCurrentUser";
 
 export interface IPostsParams {
@@ -16,7 +16,7 @@ export interface IPostsParams {
   filter?: 'following' | 'for-you' | 'likes' | 'bookmarks';
 }
 
-export default async function getPosts(params: IPostsParams) {
+export default async function getPosts(params: IPostsParams): Promise<SafePost[]> {
   try {
     const {
       userId,
@@ -170,10 +170,10 @@ export default async function getPosts(params: IPostsParams) {
         imageSrc: post.imageSrc,
         beforeImageSrc: post.beforeImageSrc || null,
         mediaUrl: post.mediaUrl || null,
-        mediaType: (post.mediaType as MediaType) || null,
-        mediaOverlay: post.mediaOverlay as any,
+        mediaType: (post.mediaType as unknown as MediaType) || null,
+        mediaOverlay: (post.mediaOverlay as unknown as MediaOverlay | null) ?? null,
         thumbnailUrl: post.thumbnailUrl || null,
-        postType: (post as any).postType || 'text',
+        postType: post.postType || 'text',
         location: post.location,
         tag: post.tag,
         photo: post.photo,
@@ -216,7 +216,7 @@ export default async function getPosts(params: IPostsParams) {
       };
     });
 
-    return safePosts;
+    return safePosts as SafePost[];
 
   } catch (error) {
     console.error("Error in getPosts:", error);

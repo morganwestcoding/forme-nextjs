@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import  getCurrentUser from '@/app/actions/getCurrentUser';
 import prisma from '@/app/libs/prismadb';
 import { getUserFromRequest } from '@/app/utils/mobileAuth';
+import { apiError, apiErrorCode } from '@/app/utils/api';
 
 interface IParams {
   notificationId?: string;
@@ -16,13 +17,13 @@ export async function PATCH(
     const currentUser = await getUserFromRequest(request) || await getCurrentUser();
 
     if (!currentUser) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return apiErrorCode('UNAUTHORIZED');
     }
 
     const { notificationId } = params;
 
     if (!notificationId || typeof notificationId !== 'string') {
-      return NextResponse.json({ error: 'Invalid ID' }, { status: 400 });
+      return apiError('Invalid ID', 400);
     }
 
     const notification = await prisma.notification.updateMany({
@@ -38,6 +39,6 @@ export async function PATCH(
     return NextResponse.json(notification);
   } catch (error) {
     console.error('[NOTIFICATION_READ]', error);
-    return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }

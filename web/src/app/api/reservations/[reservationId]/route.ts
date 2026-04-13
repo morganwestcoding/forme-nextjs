@@ -3,6 +3,7 @@ import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/app/libs/prismadb";
 import { canModifyResource, isMasterUser } from "@/app/libs/authorization";
 import { getUserFromRequest } from "@/app/utils/mobileAuth";
+import { apiError, apiErrorCode } from '@/app/utils/api';
 
 interface IParams {
  reservationId?: string;
@@ -15,12 +16,12 @@ export async function POST(
 ) {
  const currentUser = await getUserFromRequest(request) || await getCurrentUser();
  if (!currentUser) {
-   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+   return apiErrorCode('UNAUTHORIZED');
  }
 
  const { reservationId } = params;
  if (!reservationId) {
-   return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+   return apiError("Invalid ID", 400);
  }
 
  try {
@@ -33,7 +34,7 @@ export async function POST(
    });
 
    if (!reservation) {
-     return NextResponse.json({ error: "Not found" }, { status: 404 });
+     return apiErrorCode('NOT_FOUND');
    }
 
    const updated = await prisma.reservation.update({
@@ -57,7 +58,7 @@ export async function POST(
    return NextResponse.json(updated);
  } catch (error) {
    console.error("[RESERVATION_STATUS_UPDATE]", error);
-   return NextResponse.json({ error: "Failed to update" }, { status: 500 });
+   return apiError("Failed to update", 500);
  }
 }
 
@@ -67,7 +68,7 @@ export async function PATCH(
 ) {
  const currentUser = await getUserFromRequest(request) || await getCurrentUser();
  if (!currentUser) {
-   return NextResponse.error();
+   return apiErrorCode('UNAUTHORIZED');
  }
 
  const { reservationId } = params;
@@ -114,7 +115,7 @@ export async function PATCH(
 
    if (action === 'reschedule') {
      if (!newDate || !newTime) {
-       return NextResponse.json({ error: 'New date and time required for reschedule' }, { status: 400 });
+       return apiError('New date and time required for reschedule', 400);
      }
      updateData = { date: new Date(newDate), time: newTime, status: 'rescheduled' };
      notificationType = 'RESERVATION_RESCHEDULED';
@@ -148,7 +149,7 @@ export async function PATCH(
    return NextResponse.json(updatedReservation);
  } catch (error) {
    console.error(`Error ${request.method} reservation:`, error);
-   return new NextResponse(`Error updating reservation`, { status: 500 });
+   return apiError('Error updating reservation', 500);
  }
 }
 
@@ -159,7 +160,7 @@ export async function DELETE(
  const currentUser = await getUserFromRequest(request) || await getCurrentUser();
 
  if (!currentUser) {
-   return NextResponse.error();
+   return apiErrorCode('UNAUTHORIZED');
  }
 
  const { reservationId } = params;
@@ -233,6 +234,6 @@ export async function DELETE(
    return NextResponse.json({ message: "Reservation cancelled successfully" });
  } catch (error) {
    console.error("Error cancelling reservation:", error);
-   return new NextResponse("Error cancelling reservation", { status: 500 });
+   return apiError("Error cancelling reservation", 500);
  }
 }

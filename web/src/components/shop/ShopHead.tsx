@@ -48,9 +48,9 @@ const ShopHead: React.FC<ShopHeadProps> = ({
     isVerified = false,
     followers: initialFollowersRaw = [],
     listingId
-  } = shop as any;
+  } = shop;
 
-  const address = (shop as any).address;
+  const address = shop.address;
   const phoneNumber = (shop as any).phoneNumber;
   const website = (shop as any).website;
 
@@ -307,7 +307,7 @@ const ShopHead: React.FC<ShopHeadProps> = ({
                   </div>
                   {(address || location) && (
                     <a
-                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address || location)}`}
+                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address || location || '')}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
@@ -553,7 +553,7 @@ const ShopHead: React.FC<ShopHeadProps> = ({
                       <WorkerCard
                         employee={employee}
                         listingTitle={name}
-                        data={{ title: name, imageSrc: mainImage, category: (shop as any).category }}
+                        data={{ title: name, imageSrc: mainImage, category: shop.category || '' }}
                         listing={shop as any}
                         currentUser={currentUser}
                         onFollow={() => {}}

@@ -1,6 +1,6 @@
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "./getCurrentUser";
-import { SafePost } from "@/app/types";
+import { SafePost, MediaType, MediaOverlay } from "@/app/types";
 
 export default async function getFavoritePosts(): Promise<SafePost[]> {
   try {
@@ -48,8 +48,8 @@ export default async function getFavoritePosts(): Promise<SafePost[]> {
       userId: post.userId,
       createdAt: post.createdAt.toISOString(),
       mediaUrl: post.mediaUrl || null,
-      mediaType: post.mediaType as any,
-      mediaOverlay: post.mediaOverlay as any,
+      mediaType: (post.mediaType as unknown as MediaType | null) ?? null,
+      mediaOverlay: (post.mediaOverlay as unknown as MediaOverlay | null) ?? null,
       likes: post.likes || [],
       bookmarks: post.bookmarks || [],
       hiddenBy: post.hiddenBy || [],

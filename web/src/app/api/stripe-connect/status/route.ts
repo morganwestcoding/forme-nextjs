@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { apiError, apiErrorCode } from "@/app/utils/api";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import prisma from "@/app/libs/prismadb";
@@ -13,7 +14,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 export async function GET(request: Request) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
-    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    return apiErrorCode('UNAUTHORIZED');
   }
 
   try {
@@ -29,7 +30,7 @@ export async function GET(request: Request) {
     });
 
     if (!currentUser) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return apiErrorCode('USER_NOT_FOUND');
     }
 
     if (!currentUser.stripeConnectAccountId) {
@@ -76,9 +77,6 @@ export async function GET(request: Request) {
     });
   } catch (error: any) {
     console.error("Stripe Connect status error:", error);
-    return NextResponse.json(
-      { error: error.message || "Failed to get account status" },
-      { status: 500 }
-    );
+    return apiError(error.message || "Failed to get account status", 500);
   }
 }

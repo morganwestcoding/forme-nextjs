@@ -9,7 +9,6 @@ export type Service = {
   price: number;
   category: string;
   duration?: number;     // duration in minutes
-  imageSrc?: string;     // service-specific image (optional, not used in registration)
 };
 
 type ServiceSelectorProps = {

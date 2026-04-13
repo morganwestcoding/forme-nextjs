@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import { getUserFromRequest } from "@/app/utils/mobileAuth";
+import { apiErrorCode } from '@/app/utils/api';
 
 export async function POST(
   request: Request,
@@ -11,7 +12,7 @@ export async function POST(
 ) {
   const currentUser = await getUserFromRequest(request) || await getCurrentUser();
 
-  if (!currentUser) return NextResponse.error();
+  if (!currentUser) return apiErrorCode('UNAUTHORIZED');
 
   const { postId } = params;
 

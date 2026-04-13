@@ -3,6 +3,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/app/libs/prismadb';
 import getCurrentUser from '@/app/actions/getCurrentUser';
+import { apiError, apiErrorCode } from '@/app/utils/api';
 
 interface IParams {
   reviewId?: string;
@@ -16,13 +17,13 @@ export async function POST(
   const currentUser = await getCurrentUser();
 
   if (!currentUser || !currentUser.id) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return apiErrorCode('UNAUTHORIZED');
   }
 
   const { reviewId } = params;
 
   if (!reviewId) {
-    return NextResponse.json({ error: 'Review ID is required' }, { status: 400 });
+    return apiError('Review ID is required', 400);
   }
 
   try {
@@ -31,12 +32,12 @@ export async function POST(
     });
 
     if (!review) {
-      return NextResponse.json({ error: 'Review not found' }, { status: 404 });
+      return apiErrorCode('NOT_FOUND');
     }
 
     // Prevent voting on own review
     if (review.userId === currentUser.id) {
-      return NextResponse.json({ error: "You can't vote on your own review" }, { status: 400 });
+      return apiError("You can't vote on your own review", 400);
     }
 
     const helpfulVotes = review.helpfulVotes || [];
@@ -59,6 +60,6 @@ export async function POST(
     });
   } catch (error) {
     console.error('Failed to toggle helpful vote:', error);
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }

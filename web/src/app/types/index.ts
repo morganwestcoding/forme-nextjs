@@ -155,7 +155,7 @@ export interface MediaOverlay {
 
 export type SafePost = Omit<
   Post,
-  "createdAt" | "updatedAt" | "userId" | "categoryId" | "thumbnailUrl"
+  "createdAt" | "updatedAt" | "userId" | "categoryId" | "thumbnailUrl" | "mediaType" | "mediaOverlay"
 > & {
   createdAt: string;
   category?: string;
@@ -242,6 +242,7 @@ export type SafeEmployee = {
   createdAt: string;
   listingTitle: string;
   listingCategory: string;
+  rating?: number | null;
   user: {
     id: string;
     name: string | null;

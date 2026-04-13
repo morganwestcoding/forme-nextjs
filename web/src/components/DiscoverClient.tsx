@@ -137,7 +137,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
   const shuffledPosts = useMemo(() => {
     let filtered = initialPosts;
     if (currentCategories.length > 0) {
-      filtered = initialPosts.filter(p => currentCategories.includes((p as any).category));
+      filtered = initialPosts.filter(p => currentCategories.includes(p.category ?? ''));
     }
     return shuffleArray(filtered, shuffleSeed);
   }, [initialPosts, shuffleSeed, currentCategories]);
@@ -165,7 +165,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
   const shuffledShops = useMemo(() => {
     let filtered = shops;
     if (currentCategories.length > 0) {
-      filtered = shops.filter(s => currentCategories.includes((s as any).category));
+      filtered = shops.filter(s => currentCategories.includes(s.category ?? ''));
     }
     return shuffleArray(filtered, shuffleSeed + 3);
   }, [shops, shuffleSeed, currentCategories]);
@@ -470,8 +470,6 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
           <div>
             <SectionHeader
               title="Shop By Category"
-              onViewAll={() => {/* TODO: show more categories */}}
-              viewAllLabel="View all"
             />
             <div className="flex gap-6 overflow-x-auto pb-2 pl-4 pr-4 -ml-4 scrollbar-hide">
               {(() => {
@@ -603,8 +601,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                     <div className={`grid ${gridColsClass} gap-x-8 gap-y-1 transition-all duration-300`}>
                       {employees.map((employee, idx) => {
                         const listing = listingsForLookup.find(l => l.id === employee.listingId) || listingsForLookup[0];
-                        const li: any = listing as any;
-                        const imageSrc = li?.imageSrc || (Array.isArray(li?.galleryImages) ? li.galleryImages[0] : undefined) || placeholderDataUri(li?.title || 'Listing');
+                        const imageSrc = listing?.imageSrc || (Array.isArray(listing?.galleryImages) ? listing.galleryImages[0] : undefined) || placeholderDataUri(listing?.title || 'Listing');
 
                         return (
                           <div
@@ -622,7 +619,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                               data={{
                                 title: listing?.title || '',
                                 imageSrc,
-                                category: (listing as any)?.category ?? 'General',
+                                category: listing?.category ?? 'General',
                               }}
                               listing={listing}
                               currentUser={currentUser ?? undefined}
@@ -739,8 +736,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                           <div className={`grid ${gridColsClass} gap-x-8 gap-y-1 transition-all duration-300`}>
                             {currentEmployees.slice(0, 9).map((employee, idx) => {
                               const listing = listingsForLookup.find(l => l.id === employee.listingId) || listingsForLookup[0];
-                              const li: any = listing as any;
-                              const imageSrc = li?.imageSrc || (Array.isArray(li?.galleryImages) ? li.galleryImages[0] : undefined) || placeholderDataUri(li?.title || 'Listing');
+                              const imageSrc = listing?.imageSrc || (Array.isArray(listing?.galleryImages) ? listing.galleryImages[0] : undefined) || placeholderDataUri(listing?.title || 'Listing');
 
                               return (
                                 <div
@@ -760,7 +756,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                                     data={{
                                       title: listing?.title || '',
                                       imageSrc,
-                                      category: (listing as any)?.category ?? 'General',
+                                      category: listing?.category ?? 'General',
                                     }}
                                     listing={listing}
                                     currentUser={currentUser ?? undefined}

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/app/libs/prismadb";
+import { apiErrorCode } from "@/app/utils/api";
 
 export async function POST(
   request: Request,
@@ -10,11 +11,11 @@ export async function POST(
     const currentUser = await getCurrentUser();
 
     if (!currentUser) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return apiErrorCode('UNAUTHORIZED');
     }
 
     const postId = params.postId;
-    
+
     // Find the post
     const post = await prisma.post.findUnique({
       where: {
@@ -23,7 +24,7 @@ export async function POST(
     });
 
     if (!post) {
-      return new NextResponse("Post not found", { status: 404 });
+      return apiErrorCode('POST_NOT_FOUND');
     }
 
     // Update the post to add the current user to hiddenBy array
@@ -41,7 +42,7 @@ export async function POST(
     return NextResponse.json(updatedPost);
   } catch (error) {
     console.error("Error in POST /api/postActions/[postId]/hide:", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }
 
@@ -54,11 +55,11 @@ export async function DELETE(
     const currentUser = await getCurrentUser();
 
     if (!currentUser) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return apiErrorCode('UNAUTHORIZED');
     }
 
     const postId = params.postId;
-    
+
     // Find the post
     const post = await prisma.post.findUnique({
       where: {
@@ -67,7 +68,7 @@ export async function DELETE(
     });
 
     if (!post) {
-      return new NextResponse("Post not found", { status: 404 });
+      return apiErrorCode('POST_NOT_FOUND');
     }
 
     // Update the post to remove the current user from hiddenBy array
@@ -85,6 +86,6 @@ export async function DELETE(
     return NextResponse.json(updatedPost);
   } catch (error) {
     console.error("Error in DELETE /api/postActions/[postId]/hide:", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }

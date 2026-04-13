@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { apiError, apiErrorCode } from "@/app/utils/api";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 
@@ -9,14 +10,14 @@ export async function GET(request: Request) {
   try {
     const currentUser = await getCurrentUser();
     if (!currentUser) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return apiErrorCode('UNAUTHORIZED');
     }
 
     const { searchParams } = new URL(request.url);
     const employeeId = searchParams.get("employeeId");
 
     if (!employeeId) {
-      return NextResponse.json({ error: "Employee ID required" }, { status: 400 });
+      return apiError("Employee ID required", 400);
     }
 
     const availability = await prisma.employeeAvailability.findMany({
@@ -27,7 +28,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ availability });
   } catch (error) {
     console.error("[AVAILABILITY_GET]", error);
-    return NextResponse.json({ error: "Internal error" }, { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }
 
@@ -36,7 +37,7 @@ export async function PUT(request: Request) {
   try {
     const currentUser = await getCurrentUser();
     if (!currentUser) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return apiErrorCode('UNAUTHORIZED');
     }
 
     const body = await request.json();
@@ -44,7 +45,7 @@ export async function PUT(request: Request) {
     // schedule: Array<{ dayOfWeek, startTime, endTime, isOff }>
 
     if (!employeeId || !Array.isArray(schedule)) {
-      return NextResponse.json({ error: "Employee ID and schedule array required" }, { status: 400 });
+      return apiError("Employee ID and schedule array required", 400);
     }
 
     // Verify the employee belongs to a listing owned by the current user
@@ -54,14 +55,14 @@ export async function PUT(request: Request) {
     });
 
     if (!employee) {
-      return NextResponse.json({ error: "Employee not found" }, { status: 404 });
+      return apiError("Employee not found", 404);
     }
 
     // Allow if current user is listing owner or the employee themselves
     const isOwner = employee.listing.userId === currentUser.id;
     const isSelf = employee.userId === currentUser.id;
     if (!isOwner && !isSelf) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+      return apiErrorCode('FORBIDDEN');
     }
 
     // Validate and upsert each day
@@ -95,6 +96,6 @@ export async function PUT(request: Request) {
     return NextResponse.json({ availability: results });
   } catch (error) {
     console.error("[AVAILABILITY_PUT]", error);
-    return NextResponse.json({ error: "Internal error" }, { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }

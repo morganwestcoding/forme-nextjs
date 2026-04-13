@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import prisma from "@/app/libs/prismadb";
 import Stripe from "stripe";
+import { apiError, apiErrorCode } from "@/app/utils/api";
 
 export const dynamic = "force-dynamic";
 
@@ -24,7 +25,7 @@ export async function POST(
 ) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
-    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    return apiError("Not authenticated", 401);
   }
 
   const currentUser = await prisma.user.findUnique({
@@ -33,10 +34,7 @@ export async function POST(
   });
 
   if (!currentUser || currentUser.role !== "master") {
-    return NextResponse.json(
-      { error: "Only platform admins can onboard academies" },
-      { status: 403 }
-    );
+    return apiError("Only platform admins can onboard academies", 403);
   }
 
   try {
@@ -45,7 +43,7 @@ export async function POST(
     });
 
     if (!academy) {
-      return NextResponse.json({ error: "Academy not found" }, { status: 404 });
+      return apiError("Academy not found", 404);
     }
 
     let accountId = academy.stripeConnectAccountId;
@@ -87,9 +85,6 @@ export async function POST(
     return NextResponse.json({ url: accountLink.url });
   } catch (error: any) {
     console.error("Academy Stripe Connect onboarding error:", error);
-    return NextResponse.json(
-      { error: error.message || "Failed to create onboarding link" },
-      { status: 500 }
-    );
+    return apiError(error.message || "Failed to create onboarding link", 500);
   }
 }

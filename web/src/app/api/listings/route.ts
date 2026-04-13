@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
+import { apiError, apiErrorCode } from "@/app/utils/api";
 
 async function geocodeAddress(address: string): Promise<{ lat: number; lng: number } | null> {
   try {
@@ -73,7 +74,7 @@ interface EmployeeInput {
 
 export async function POST(request: Request) {
   const currentUser = await getCurrentUser();
-  if (!currentUser) return new Response("Unauthorized", { status: 401 });
+  if (!currentUser) return apiErrorCode('UNAUTHORIZED');
 
   const body = await request.json();
 
@@ -101,23 +102,23 @@ export async function POST(request: Request) {
 
   // Validate employees format - now expects EmployeeInput[] instead of string[]
   if (!Array.isArray(employees)) {
-    return new Response("Employees must be an array", { status: 400 });
+    return apiError("Employees must be an array", 400);
   }
 
   // Validate each employee has required userId
   const invalidEmployees = employees.filter((emp: any) => !emp.userId || typeof emp.userId !== 'string');
   if (invalidEmployees.length > 0) {
-    return new Response("Invalid employee data - missing userId", { status: 400 });
+    return apiError("Invalid employee data - missing userId", 400);
   }
 
   let parsedServices = services;
   if (typeof services === 'string') {
-    try { parsedServices = JSON.parse(services); } catch { return new Response("Invalid services format", { status: 400 }); }
+    try { parsedServices = JSON.parse(services); } catch { return apiError("Invalid services format", 400); }
   }
 
   let parsedStoreHours = storeHours;
   if (typeof storeHours === 'string') {
-    try { parsedStoreHours = JSON.parse(storeHours); } catch { return new Response("Invalid store hours format", { status: 400 }); }
+    try { parsedStoreHours = JSON.parse(storeHours); } catch { return apiError("Invalid store hours format", 400); }
   }
 
   try {
@@ -168,7 +169,6 @@ export async function POST(request: Request) {
             serviceName: s.serviceName,
             price: Math.round(Number(s.price) || 0),
             category: s.category,
-            imageSrc: s.imageSrc || null,
           })),
         },
 
@@ -213,6 +213,6 @@ export async function POST(request: Request) {
     if (error instanceof Error && error.message.includes("Users not found")) {
       return new Response(error.message, { status: 400 });
     }
-    return new Response("Internal Server Error", { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }

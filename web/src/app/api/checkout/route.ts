@@ -1,5 +1,6 @@
 // app/api/checkout/route.ts
 import { NextResponse } from "next/server";
+import { apiError, apiErrorCode } from "@/app/utils/api";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import prisma from "@/app/libs/prismadb";
@@ -39,7 +40,7 @@ export async function POST(request: Request) {
   }
 
   if (!currentUser) {
-    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    return apiErrorCode('UNAUTHORIZED');
   }
 
   try {
@@ -59,7 +60,7 @@ export async function POST(request: Request) {
 
     // Validate the required fields
     if (!totalPrice || !date || !time || !listingId || !serviceId || !employeeId) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+      return apiErrorCode('MISSING_FIELDS');
     }
 
     // Get the employee and the listing owner's Stripe Connect account.
@@ -204,9 +205,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ sessionId: checkoutSession.id, url: checkoutSession.url });
   } catch (error: any) {
     console.error("Stripe checkout error:", error);
-    return NextResponse.json(
-      { error: error.message || "Something went wrong" },
-      { status: 500 }
-    );
+    return apiError(error.message || "Something went wrong", 500);
   }
 }

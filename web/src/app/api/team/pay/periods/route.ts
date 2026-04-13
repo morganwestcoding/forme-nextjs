@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { apiError, apiErrorCode } from "@/app/utils/api";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 
@@ -7,14 +8,14 @@ export async function GET(request: Request) {
   try {
     const currentUser = await getCurrentUser();
     if (!currentUser) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return apiErrorCode('UNAUTHORIZED');
     }
 
     const { searchParams } = new URL(request.url);
     const employeeId = searchParams.get("employeeId");
 
     if (!employeeId) {
-      return NextResponse.json({ error: "Employee ID required" }, { status: 400 });
+      return apiError("Employee ID required", 400);
     }
 
     const periods = await prisma.payPeriod.findMany({
@@ -36,7 +37,7 @@ export async function GET(request: Request) {
     });
   } catch (error) {
     console.error("[PAY_PERIODS_GET]", error);
-    return NextResponse.json({ error: "Internal error" }, { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }
 
@@ -45,14 +46,14 @@ export async function POST(request: Request) {
   try {
     const currentUser = await getCurrentUser();
     if (!currentUser) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return apiErrorCode('UNAUTHORIZED');
     }
 
     const body = await request.json();
     const { employeeId } = body;
 
     if (!employeeId) {
-      return NextResponse.json({ error: "Employee ID required" }, { status: 400 });
+      return apiError("Employee ID required", 400);
     }
 
     // Verify ownership
@@ -65,16 +66,16 @@ export async function POST(request: Request) {
     });
 
     if (!employee || employee.listing.userId !== currentUser.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+      return apiErrorCode('FORBIDDEN');
     }
 
     if (!employee.payAgreement || employee.payAgreement.type !== "chair_rental") {
-      return NextResponse.json({ error: "Employee does not have a chair rental agreement" }, { status: 400 });
+      return apiError("Employee does not have a chair rental agreement", 400);
     }
 
     const { rentalAmount, rentalFrequency } = employee.payAgreement;
     if (!rentalAmount || !rentalFrequency) {
-      return NextResponse.json({ error: "Rental details not configured" }, { status: 400 });
+      return apiError("Rental details not configured", 400);
     }
 
     // Calculate period dates based on frequency
@@ -104,7 +105,7 @@ export async function POST(request: Request) {
     });
 
     if (existing) {
-      return NextResponse.json({ error: "Period already exists", period: existing }, { status: 409 });
+      return apiError("Period already exists", 409);
     }
 
     const period = await prisma.payPeriod.create({
@@ -126,7 +127,7 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error("[PAY_PERIODS_POST]", error);
-    return NextResponse.json({ error: "Internal error" }, { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }
 
@@ -135,14 +136,14 @@ export async function PATCH(request: Request) {
   try {
     const currentUser = await getCurrentUser();
     if (!currentUser) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return apiErrorCode('UNAUTHORIZED');
     }
 
     const body = await request.json();
     const { periodId, action, reason } = body; // action: "waive" | "charge"
 
     if (!periodId || !["waive", "charge"].includes(action)) {
-      return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+      return apiError("Invalid request", 400);
     }
 
     const period = await prisma.payPeriod.findUnique({
@@ -155,7 +156,7 @@ export async function PATCH(request: Request) {
     });
 
     if (!period || period.employee.listing.userId !== currentUser.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+      return apiErrorCode('FORBIDDEN');
     }
 
     if (action === "waive") {
@@ -185,6 +186,6 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ status: action === "waive" ? "waived" : "charged" });
   } catch (error) {
     console.error("[PAY_PERIODS_PATCH]", error);
-    return NextResponse.json({ error: "Internal error" }, { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }

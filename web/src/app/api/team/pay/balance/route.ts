@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { apiError, apiErrorCode } from "@/app/utils/api";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 
@@ -8,14 +9,14 @@ export async function GET(request: Request) {
   try {
     const currentUser = await getCurrentUser();
     if (!currentUser) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return apiErrorCode('UNAUTHORIZED');
     }
 
     const { searchParams } = new URL(request.url);
     const employeeId = searchParams.get("employeeId");
 
     if (!employeeId) {
-      return NextResponse.json({ error: "Employee ID required" }, { status: 400 });
+      return apiError("Employee ID required", 400);
     }
 
     const employee = await prisma.employee.findUnique({
@@ -27,14 +28,14 @@ export async function GET(request: Request) {
     });
 
     if (!employee) {
-      return NextResponse.json({ error: "Employee not found" }, { status: 404 });
+      return apiError("Employee not found", 404);
     }
 
     // Auth: must be the employee, the listing owner, or admin
     const isOwner = employee.listing.userId === currentUser.id;
     const isSelf = employee.userId === currentUser.id;
     if (!isOwner && !isSelf) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+      return apiErrorCode('FORBIDDEN');
     }
 
     // 1. Total booking revenue for this employee (completed payments only)
@@ -115,6 +116,6 @@ export async function GET(request: Request) {
     });
   } catch (error) {
     console.error("[BALANCE_GET]", error);
-    return NextResponse.json({ error: "Internal error" }, { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }

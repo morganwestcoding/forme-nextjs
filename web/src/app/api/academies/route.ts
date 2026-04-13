@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
+import { apiError } from "@/app/utils/api";
 
 // GET /api/academies — returns all partner academies for the licensing
 // "Need Training" page and the student registration academy picker.
@@ -26,9 +27,6 @@ export async function GET() {
     return NextResponse.json(academies);
   } catch (error) {
     console.error("[GET /api/academies]", error);
-    return NextResponse.json(
-      { error: "Failed to load academies" },
-      { status: 500 }
-    );
+    return apiError("Failed to load academies", 500);
   }
 }

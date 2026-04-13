@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { apiErrorCode } from "@/app/utils/api";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 
@@ -7,7 +8,7 @@ export async function POST(request: Request) {
     const currentUser = await getCurrentUser();
 
     if (!currentUser) {
-      return NextResponse.error();
+      return apiErrorCode('UNAUTHORIZED');
     }
 
     // Add payment processing logic here
@@ -25,6 +26,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json(user);
   } catch (error) {
-    return NextResponse.error();
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }

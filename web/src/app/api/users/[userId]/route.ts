@@ -4,6 +4,7 @@ import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import { canModifyResource } from "@/app/libs/authorization";
 import { getUserFromRequest } from "@/app/utils/mobileAuth";
+import { apiError, apiErrorCode } from "@/app/utils/api";
 
 export async function GET(
   request: Request,
@@ -13,7 +14,7 @@ export async function GET(
     const user = await prisma.user.findUnique({
       where: { id: params.userId },
     });
-    if (!user) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    if (!user) return apiErrorCode('NOT_FOUND');
     return NextResponse.json({
       ...user,
       hashedPassword: undefined,
@@ -22,7 +23,7 @@ export async function GET(
       emailVerified: user.emailVerified?.toISOString() || null,
     });
   } catch (e) {
-    return NextResponse.json({ error: "Internal error" }, { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }
 
@@ -34,17 +35,17 @@ export async function PUT(
     const currentUser = await getCurrentUser();
 
     if (!currentUser) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return apiErrorCode('UNAUTHORIZED');
     }
 
     const targetUserId = params.userId;
     if (!targetUserId) {
-      return new NextResponse("Missing userId", { status: 400 });
+      return apiError("Missing userId", 400);
     }
 
     // Only allow user to update themselves OR master/admin users
     if (!canModifyResource(currentUser, targetUserId)) {
-      return new NextResponse("Forbidden", { status: 403 });
+      return apiErrorCode('FORBIDDEN');
     }
 
     const body = await request.json();
@@ -72,6 +73,6 @@ export async function PUT(
     return NextResponse.json(updated);
   } catch (err) {
     console.error("USER_UPDATE_ERROR", err);
-    return new NextResponse("Internal Error", { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }

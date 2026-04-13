@@ -255,21 +255,31 @@ const MapsClient: React.FC<MapsClientProps> = ({ listings, currentUser }) => {
         `;
       } else {
         const imgSrc = item.workerImage || item.image;
-        el.innerHTML = `
-          <div style="
-            width: 34px; height: 34px; border-radius: 50%;
-            border: 2.5px solid white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-            overflow: hidden; cursor: pointer;
-            background: #e4e4e7;
-            transition: transform 0.15s;
-          ">
-            ${imgSrc
-              ? `<img src="${imgSrc}" style="width:100%;height:100%;object-fit:cover;" />`
-              : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#71717a;">${item.title.charAt(0)}</div>`
-            }
-          </div>
-        `;
+        const wrapper = document.createElement('div');
+        Object.assign(wrapper.style, {
+          width: '34px', height: '34px', borderRadius: '50%',
+          border: '2.5px solid white',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+          overflow: 'hidden', cursor: 'pointer',
+          background: '#e4e4e7',
+          transition: 'transform 0.15s',
+        });
+        if (imgSrc && /^https?:\/\//.test(imgSrc)) {
+          const img = document.createElement('img');
+          img.src = imgSrc;
+          Object.assign(img.style, { width: '100%', height: '100%', objectFit: 'cover' });
+          wrapper.appendChild(img);
+        } else {
+          const fallback = document.createElement('div');
+          Object.assign(fallback.style, {
+            width: '100%', height: '100%', display: 'flex',
+            alignItems: 'center', justifyContent: 'center',
+            fontSize: '13px', fontWeight: '600', color: '#71717a',
+          });
+          fallback.textContent = item.title.charAt(0);
+          wrapper.appendChild(fallback);
+        }
+        el.appendChild(wrapper);
       }
 
       el.addEventListener('mouseenter', () => {

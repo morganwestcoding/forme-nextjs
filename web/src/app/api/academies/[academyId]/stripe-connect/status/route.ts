@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import prisma from "@/app/libs/prismadb";
 import Stripe from "stripe";
+import { apiError, apiErrorCode } from "@/app/utils/api";
 
 export const dynamic = "force-dynamic";
 
@@ -20,7 +21,7 @@ export async function GET(
 ) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
-    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    return apiError("Not authenticated", 401);
   }
 
   const currentUser = await prisma.user.findUnique({
@@ -29,10 +30,7 @@ export async function GET(
   });
 
   if (!currentUser || currentUser.role !== "master") {
-    return NextResponse.json(
-      { error: "Only platform admins can view academy payment status" },
-      { status: 403 }
-    );
+    return apiError("Only platform admins can view academy payment status", 403);
   }
 
   try {
@@ -48,7 +46,7 @@ export async function GET(
     });
 
     if (!academy) {
-      return NextResponse.json({ error: "Academy not found" }, { status: 404 });
+      return apiError("Academy not found", 404);
     }
 
     if (!academy.stripeConnectAccountId) {
@@ -91,9 +89,6 @@ export async function GET(
     });
   } catch (error: any) {
     console.error("Academy Stripe Connect status error:", error);
-    return NextResponse.json(
-      { error: error.message || "Failed to get account status" },
-      { status: 500 }
-    );
+    return apiError(error.message || "Failed to get account status", 500);
   }
 }

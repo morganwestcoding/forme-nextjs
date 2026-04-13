@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { apiError, apiErrorCode } from "@/app/utils/api";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 
@@ -7,14 +8,14 @@ export async function GET(request: Request) {
   try {
     const currentUser = await getCurrentUser();
     if (!currentUser) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return apiErrorCode('UNAUTHORIZED');
     }
 
     const { searchParams } = new URL(request.url);
     const employeeId = searchParams.get("employeeId");
 
     if (!employeeId) {
-      return NextResponse.json({ error: "Employee ID required" }, { status: 400 });
+      return apiError("Employee ID required", 400);
     }
 
     const agreement = await prisma.payAgreement.findUnique({
@@ -24,7 +25,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ agreement });
   } catch (error) {
     console.error("[PAY_AGREEMENT_GET]", error);
-    return NextResponse.json({ error: "Internal error" }, { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }
 
@@ -33,18 +34,18 @@ export async function PUT(request: Request) {
   try {
     const currentUser = await getCurrentUser();
     if (!currentUser) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return apiErrorCode('UNAUTHORIZED');
     }
 
     const body = await request.json();
     const { employeeId, type, splitPercent, rentalAmount, rentalFrequency, autoApprovePayout } = body;
 
     if (!employeeId || !type) {
-      return NextResponse.json({ error: "Employee ID and type required" }, { status: 400 });
+      return apiError("Employee ID and type required", 400);
     }
 
     if (!["commission", "chair_rental"].includes(type)) {
-      return NextResponse.json({ error: "Type must be 'commission' or 'chair_rental'" }, { status: 400 });
+      return apiError("Type must be 'commission' or 'chair_rental'", 400);
     }
 
     // Verify the current user owns the listing this employee belongs to
@@ -54,7 +55,7 @@ export async function PUT(request: Request) {
     });
 
     if (!employee || employee.listing.userId !== currentUser.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+      return apiErrorCode('FORBIDDEN');
     }
 
     const data: Record<string, unknown> = {
@@ -64,17 +65,17 @@ export async function PUT(request: Request) {
 
     if (type === "commission") {
       if (splitPercent == null || splitPercent < 0 || splitPercent > 100) {
-        return NextResponse.json({ error: "Split percent must be 0-100" }, { status: 400 });
+        return apiError("Split percent must be 0-100", 400);
       }
       data.splitPercent = splitPercent;
       data.rentalAmount = null;
       data.rentalFrequency = null;
     } else {
       if (rentalAmount == null || rentalAmount < 0) {
-        return NextResponse.json({ error: "Rental amount must be positive" }, { status: 400 });
+        return apiError("Rental amount must be positive", 400);
       }
       if (!["daily", "weekly", "monthly"].includes(rentalFrequency)) {
-        return NextResponse.json({ error: "Rental frequency must be daily, weekly, or monthly" }, { status: 400 });
+        return apiError("Rental frequency must be daily, weekly, or monthly", 400);
       }
       data.rentalAmount = rentalAmount;
       data.rentalFrequency = rentalFrequency;
@@ -90,6 +91,6 @@ export async function PUT(request: Request) {
     return NextResponse.json({ agreement });
   } catch (error) {
     console.error("[PAY_AGREEMENT_PUT]", error);
-    return NextResponse.json({ error: "Internal error" }, { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }

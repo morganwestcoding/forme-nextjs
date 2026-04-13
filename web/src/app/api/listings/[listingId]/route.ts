@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/app/libs/prismadb";
 import { canModifyResource } from "@/app/libs/authorization";
+import { apiError, apiErrorCode } from "@/app/utils/api";
 
 async function geocodeAddress(address: string): Promise<{ lat: number; lng: number } | null> {
   try {
@@ -32,11 +33,11 @@ interface EmployeeInput {
 
 export async function PUT(request: Request, { params }: { params: IParams }) {
   const currentUser = await getCurrentUser();
-  if (!currentUser) return new NextResponse("Unauthorized", { status: 401 });
+  if (!currentUser) return apiErrorCode('UNAUTHORIZED');
 
   const { listingId } = params;
   if (!listingId || typeof listingId !== "string") {
-    return new NextResponse("Invalid ID", { status: 400 });
+    return apiError("Invalid ID", 400);
   }
 
   try {
@@ -49,12 +50,12 @@ export async function PUT(request: Request, { params }: { params: IParams }) {
     });
 
     if (!listing) {
-      return new NextResponse("Listing not found", { status: 404 });
+      return apiErrorCode('LISTING_NOT_FOUND');
     }
 
     // Check if user can modify (owner or master/admin)
     if (!canModifyResource(currentUser, listing.userId)) {
-      return new NextResponse("Unauthorized", { status: 403 });
+      return apiErrorCode('FORBIDDEN');
     }
 
     const incomingServices = Array.isArray(body.services) ? body.services : [];
@@ -100,7 +101,6 @@ export async function PUT(request: Request, { params }: { params: IParams }) {
               serviceName: s.serviceName,
               price: priceInt,
               category: s.category,
-              imageSrc: s.imageSrc || null,
             },
           });
         } else {
@@ -109,7 +109,6 @@ export async function PUT(request: Request, { params }: { params: IParams }) {
               serviceName: s.serviceName,
               price: priceInt,
               category: s.category,
-              imageSrc: s.imageSrc || null,
               listingId,
             },
           });
@@ -232,6 +231,6 @@ export async function PUT(request: Request, { params }: { params: IParams }) {
     if (error instanceof Error && error.message.includes("Users not found")) {
       return new NextResponse(error.message, { status: 400 });
     }
-    return new NextResponse("Internal Error", { status: 500 });
+    return apiErrorCode('INTERNAL_ERROR');
   }
 }

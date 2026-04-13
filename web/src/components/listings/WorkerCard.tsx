@@ -4,7 +4,7 @@
 import React, { useState, useMemo } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { SafeListing, SafeUser, SafeEmployee } from '@/app/types';
+import { SafeListing, SafeUser, SafeEmployee, SafeStoreHours } from '@/app/types';
 import HeartButton from '../HeartButton';
 import { Mortarboard02Icon } from 'hugeicons-react';
 
@@ -12,15 +12,9 @@ interface WorkerCardProps {
   employee: SafeEmployee & {
     followerCount?: number;
     followingCount?: number;
-    rating?: number;
     isTrending?: boolean;
     availabilityStatus?: 'free' | 'busy' | 'booked';
-    storeHours?: Array<{
-      dayOfWeek: string;
-      openTime: string;
-      closeTime: string;
-      isClosed: boolean;
-    }>;
+    storeHours?: SafeStoreHours[];
   };
   listingTitle: string;
   data: {
