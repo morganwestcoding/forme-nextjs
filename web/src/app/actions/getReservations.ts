@@ -109,6 +109,11 @@ export default async function getReservations(params: IParams) {
       createdAt: reservation.createdAt.toISOString(),
       paymentIntentId: reservation.paymentIntentId,
       paymentStatus: reservation.paymentStatus,
+      refundStatus: reservation.refundStatus,
+      refundAmount: reservation.refundAmount,
+      refundReason: reservation.refundReason,
+      refundId: reservation.refundId,
+      refundedAt: reservation.refundedAt,
       listing: {
         id: reservation.listing.id,
         title: reservation.listing.title,

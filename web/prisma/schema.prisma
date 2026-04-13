@@ -191,11 +191,19 @@ model Reservation {
   serviceId   String   @db.ObjectId 
   serviceName String
   paymentIntentId String?
-  paymentStatus   String?  @default("pending")          
+  paymentStatus   String?  @default("pending")
+
+  // Refund fields
+  refundStatus    String?   // "requested" | "approved" | "completed" | "declined"
+  refundAmount    Int?      // Amount refunded in cents
+  refundReason    String?   // User/admin reason for refund
+  refundId        String?   // Stripe refund ID
+  refundedAt      DateTime?
+
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
   service     Service @relation(fields: [serviceId], references: [id])
-  employee  Employee  @relation(fields: [employeeId], references: [id]) 
+  employee  Employee  @relation(fields: [employeeId], references: [id])
 
 }
 
@@ -535,5 +543,31 @@ model Review {
 
   @@index([targetType, targetUserId])
   @@index([targetType, targetListingId])
+  @@index([userId])
+}
+
+model WebhookEvent {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  stripeEventId String   @unique
+  type          String
+  processed     Boolean  @default(false)
+  createdAt     DateTime @default(now())
+}
+
+model Dispute {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  stripeDisputeId String   @unique
+  chargeId        String
+  paymentIntentId String?
+  reservationId   String?  @db.ObjectId
+  userId          String?  @db.ObjectId
+  amount          Int      // Disputed amount in cents
+  currency        String   @default("usd")
+  reason          String?  // Stripe dispute reason
+  status          String   // "needs_response" | "under_review" | "won" | "lost"
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([reservationId])
   @@index([userId])
 }

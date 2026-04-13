@@ -63,6 +63,26 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
     } finally { setProcessingId(''); }
   }, [router]);
 
+  const onRefund = useCallback(async (id: string) => {
+    if (!confirm('Are you sure you want to request a refund?')) return;
+    setProcessingId(id);
+    try {
+      const res = await axios.post(`/api/reservations/${id}/refund`, {
+        reason: 'Customer requested refund',
+      });
+      if (res.data.status === 'completed') {
+        toast.success('Refund processed successfully');
+      } else {
+        toast.success('Refund request submitted');
+      }
+      router.refresh();
+    } catch (error: any) {
+      toast.error(error?.response?.data?.error || 'Failed to process refund');
+    } finally {
+      setProcessingId('');
+    }
+  }, [router]);
+
   const baseReservations = useMemo(() => {
     return directionTab === 'outgoing' ? outgoingReservations : incomingReservations;
   }, [directionTab, incomingReservations, outgoingReservations]);
@@ -147,6 +167,7 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
                   onAccept={() => onAccept(reservation.id)}
                   onDecline={() => onDecline(reservation.id)}
                   onCancel={() => onCancel(reservation.id)}
+                  onRefund={() => onRefund(reservation.id)}
                   showAcceptDecline={directionTab === 'incoming'}
                   onCardClick={() => router.push(`/listings/${reservation.listing.id}`)}
                 />

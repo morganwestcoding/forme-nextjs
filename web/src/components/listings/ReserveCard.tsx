@@ -45,17 +45,19 @@ interface ReserveCardProps {
   onAccept?: () => void;
   onDecline?: () => void;
   onCancel?: () => void;
+  onRefund?: () => void;
   disabled?: boolean;
   showAcceptDecline?: boolean;
   showCancel?: boolean;
   onCardClick?: () => void;
 }
 
-type UiStatus = 'pending' | 'accepted' | 'declined';
+type UiStatus = 'pending' | 'accepted' | 'declined' | 'cancelled';
 
 const normalizeStatus = (status: string): UiStatus => {
   if (status === 'accepted') return 'accepted';
   if (status === 'declined') return 'declined';
+  if (status === 'cancelled') return 'cancelled';
   return 'pending';
 };
 
@@ -65,6 +67,7 @@ const ReserveCard: React.FC<ReserveCardProps> = ({
   onAccept,
   onDecline,
   onCancel,
+  onRefund,
   disabled,
   showAcceptDecline,
   showCancel,
@@ -104,11 +107,27 @@ const ReserveCard: React.FC<ReserveCardProps> = ({
   const showActions = showAcceptDecline || showCancel;
   const isPending = localStatus === 'pending';
 
+  const refundStatus = (reservation as any).refundStatus as string | null | undefined;
+  const paymentStatus = reservation.paymentStatus as string | null | undefined;
+  const hasPayment = !!reservation.paymentIntentId;
+
   const statusConfig = {
     accepted: { label: 'Confirmed', bg: 'bg-emerald-500/90 text-white border-emerald-400/50 shadow-[0_0_12px_rgba(16,185,129,0.4)]' },
     declined: { label: 'Declined', bg: 'bg-black/60 text-white/90 border-white/20' },
     pending: { label: 'Pending', bg: 'bg-amber-500/90 text-white border-amber-400/50 shadow-[0_0_12px_rgba(245,158,11,0.4)]' },
+    cancelled: { label: 'Cancelled', bg: 'bg-neutral-500/90 text-white border-neutral-400/50' },
   };
+
+  const isRefunded = paymentStatus === 'refunded' || refundStatus === 'completed';
+  const isRefundRequested = refundStatus === 'requested';
+  const isDisputed = paymentStatus === 'disputed';
+  const canRefund = onRefund
+    && hasPayment
+    && !refundStatus
+    && paymentStatus !== 'refunded'
+    && paymentStatus !== 'disputed'
+    && localStatus !== 'cancelled'
+    && localStatus !== 'declined';
 
   const status = statusConfig[localStatus];
 
@@ -216,8 +235,28 @@ const ReserveCard: React.FC<ReserveCardProps> = ({
                 <span className="text-neutral-300">|</span>
               </>
             )}
-            <span className="font-semibold text-neutral-900 tabular-nums">${reservation.totalPrice}</span>
+            <span className={`font-semibold tabular-nums ${isRefunded ? 'text-neutral-400 line-through' : 'text-neutral-900'}`}>
+              ${reservation.totalPrice}
+            </span>
+            {isRefunded && (
+              <span className="text-[10px] font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full">Refunded</span>
+            )}
+            {isRefundRequested && (
+              <span className="text-[10px] font-medium text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-full">Refund Requested</span>
+            )}
+            {isDisputed && (
+              <span className="text-[10px] font-medium text-red-600 bg-red-50 px-1.5 py-0.5 rounded-full">Disputed</span>
+            )}
           </div>
+          {canRefund && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onRefund(); }}
+              disabled={disabled}
+              className="mt-1 text-[11px] font-medium text-neutral-500 hover:text-red-600 transition-colors"
+            >
+              Request refund
+            </button>
+          )}
         </div>
       </div>
     </div>

@@ -26,6 +26,21 @@ export async function POST(req: Request) {
       return apiError(error.message, 400);
     }
 
+    // Idempotency: skip already-processed events
+    const existing = await prisma.webhookEvent.findUnique({
+      where: { stripeEventId: event.id },
+    });
+    if (existing?.processed) {
+      return NextResponse.json({ received: true, skipped: true });
+    }
+
+    // Record the event
+    await prisma.webhookEvent.upsert({
+      where: { stripeEventId: event.id },
+      create: { stripeEventId: event.id, type: event.type, processed: false },
+      update: {},
+    });
+
     // ========== CHECKOUT COMPLETE ==========
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object as Stripe.Checkout.Session;
@@ -282,6 +297,150 @@ export async function POST(req: Request) {
 
       return NextResponse.json({ received: true });
     }
+
+    // ========== DISPUTE HANDLING ==========
+    if (event.type === 'charge.dispute.created') {
+      const dispute = event.data.object as Stripe.Dispute;
+
+      // Find the reservation by paymentIntentId
+      const reservation = dispute.payment_intent
+        ? await prisma.reservation.findFirst({
+            where: { paymentIntentId: dispute.payment_intent as string },
+          })
+        : null;
+
+      // Store the dispute
+      await prisma.dispute.upsert({
+        where: { stripeDisputeId: dispute.id },
+        create: {
+          stripeDisputeId: dispute.id,
+          chargeId: typeof dispute.charge === 'string' ? dispute.charge : dispute.charge?.id || '',
+          paymentIntentId: typeof dispute.payment_intent === 'string' ? dispute.payment_intent : dispute.payment_intent?.id || null,
+          reservationId: reservation?.id || null,
+          userId: reservation?.userId || null,
+          amount: dispute.amount,
+          currency: dispute.currency,
+          reason: dispute.reason || null,
+          status: 'needs_response',
+        },
+        update: {
+          status: 'needs_response',
+          reason: dispute.reason || null,
+        },
+      });
+
+      // Update reservation payment status
+      if (reservation) {
+        await prisma.reservation.update({
+          where: { id: reservation.id },
+          data: { paymentStatus: 'disputed' },
+        });
+
+        // Notify the listing owner
+        const listing = await prisma.listing.findUnique({
+          where: { id: reservation.listingId },
+          select: { userId: true },
+        });
+        if (listing) {
+          await prisma.notification.create({
+            data: {
+              type: 'PAYMENT_DISPUTED',
+              content: `A payment dispute has been filed for ${reservation.serviceName}. Please review in your Stripe dashboard.`,
+              userId: listing.userId,
+            },
+          });
+        }
+      }
+    }
+
+    if (event.type === 'charge.dispute.updated' || event.type === 'charge.dispute.closed') {
+      const dispute = event.data.object as Stripe.Dispute;
+
+      const statusMap: Record<string, string> = {
+        'needs_response': 'needs_response',
+        'under_review': 'under_review',
+        'won': 'won',
+        'lost': 'lost',
+        'warning_needs_response': 'needs_response',
+        'warning_under_review': 'under_review',
+        'warning_closed': 'won',
+        'charge_refunded': 'lost',
+      };
+
+      await prisma.dispute.updateMany({
+        where: { stripeDisputeId: dispute.id },
+        data: {
+          status: statusMap[dispute.status] || dispute.status,
+        },
+      });
+
+      // If dispute is lost, update reservation
+      if (dispute.status === 'lost' || (dispute.status as string) === 'charge_refunded') {
+        const dbDispute = await prisma.dispute.findUnique({
+          where: { stripeDisputeId: dispute.id },
+        });
+        if (dbDispute?.reservationId) {
+          await prisma.reservation.update({
+            where: { id: dbDispute.reservationId },
+            data: { paymentStatus: 'dispute_lost' },
+          });
+        }
+      }
+
+      // If dispute is won, restore payment status
+      if (dispute.status === 'won' || dispute.status === 'warning_closed') {
+        const dbDispute = await prisma.dispute.findUnique({
+          where: { stripeDisputeId: dispute.id },
+        });
+        if (dbDispute?.reservationId) {
+          await prisma.reservation.update({
+            where: { id: dbDispute.reservationId },
+            data: { paymentStatus: 'completed' },
+          });
+        }
+      }
+    }
+
+    // ========== CHARGE REFUNDED (from Stripe dashboard) ==========
+    if (event.type === 'charge.refunded') {
+      const charge = event.data.object as Stripe.Charge;
+      const paymentIntentId = typeof charge.payment_intent === 'string'
+        ? charge.payment_intent
+        : charge.payment_intent?.id;
+
+      if (paymentIntentId) {
+        const reservation = await prisma.reservation.findFirst({
+          where: { paymentIntentId },
+        });
+        if (reservation && reservation.refundStatus !== 'completed') {
+          await prisma.reservation.update({
+            where: { id: reservation.id },
+            data: {
+              refundStatus: 'completed',
+              refundAmount: charge.amount_refunded,
+              paymentStatus: charge.refunded ? 'refunded' : 'partially_refunded',
+              refundedAt: new Date(),
+              status: charge.refunded ? 'cancelled' : reservation.status,
+            },
+          });
+
+          // Notify the customer
+          await prisma.notification.create({
+            data: {
+              type: 'REFUND_COMPLETED',
+              content: `Your payment for ${reservation.serviceName} has been refunded.`,
+              userId: reservation.userId,
+            },
+          });
+        }
+      }
+    }
+
+    // Mark event as processed
+    await prisma.webhookEvent.update({
+      where: { stripeEventId: event.id },
+      data: { processed: true },
+    }).catch(() => {});
 
     return NextResponse.json({ received: true });
   } catch (error: any) {

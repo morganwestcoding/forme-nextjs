@@ -1,6 +1,9 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import { validateEnv } from './utils/env'
+
+validateEnv();
 import NotificationsModal from '@/components/modals/NotificationModal';
 import ToasterProvider from './providers/ToasterProvider';
 import LoginModal from '@/components/modals/LoginModal';
