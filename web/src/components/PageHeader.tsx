@@ -98,16 +98,6 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
                 <PlusSignIcon className="w-5 h-5 sm:w-[22px] sm:h-[22px]" strokeWidth={1.5} />
               </button>
               <button
-                className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-stone-500 dark:text-zinc-400 hover:text-stone-700 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-zinc-800 transition-colors"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5 sm:w-[22px] sm:h-[22px]" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M17.5 8.75L15.0447 19.5532C15.015 19.684 15 19.8177 15 19.9518C15 20.9449 15.8051 21.75 16.7982 21.75H18" />
-                  <path d="M19.2192 21.75H4.78078C3.79728 21.75 3 20.9527 3 19.9692C3 19.8236 3.01786 19.6786 3.05317 19.5373L5.24254 10.7799C5.60631 9.32474 5.78821 8.59718 6.33073 8.17359C6.87325 7.75 7.6232 7.75 9.12311 7.75H14.8769C16.3768 7.75 17.1267 7.75 17.6693 8.17359C18.2118 8.59718 18.3937 9.32474 18.7575 10.7799L20.9468 19.5373C20.9821 19.6786 21 19.8236 21 19.9692C21 20.9527 20.2027 21.75 19.2192 21.75Z" />
-                  <path d="M15 7.75V5.75C15 4.09315 13.6569 2.75 12 2.75C10.3431 2.75 9 4.09315 9 5.75V7.75" />
-                  <path d="M10 10.75H12.5" />
-                </svg>
-              </button>
-              <button
                 id="wt-notifications"
                 onClick={() => notificationsModal.onOpen()}
                 className="relative shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-stone-500 dark:text-zinc-400 hover:text-stone-700 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-zinc-800 transition-colors"
@@ -134,7 +124,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
               <button
                 id="wt-profile"
                 onClick={() => currentUser ? userMenuModal.onOpen() : loginModal.onOpen()}
-                className="outline-none"
+                className="outline-none ml-1"
               >
                 <div className="shrink-0 w-12 h-12 rounded-full overflow-hidden cursor-pointer" style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.08)' }}>
                   {currentUser?.image ? (
