@@ -1,6 +1,5 @@
 "use client";
 import { useAcademies } from "@/app/hooks/useAcademies";
-import { CheckmarkCircle02Icon } from "hugeicons-react";
 
 interface AcademySelectProps {
   value: string;
@@ -44,40 +43,22 @@ const AcademySelect = ({ value, onChange }: AcademySelectProps) => {
             key={academy.id}
             type="button"
             onClick={() => onChange(academy.id)}
-            className={`text-left rounded-2xl border p-4 transition-all ${
-              isSelected
-                ? "bg-stone-900 border-stone-800 text-white"
-                : "bg-white border-stone-200/60 hover:border-stone-300"
-            }`}
+            className={`
+              text-left rounded-xl border p-4 transition-all duration-200
+              ${isSelected
+                ? 'border-gray-300 bg-gray-100 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)]'
+                : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
+              }
+            `}
           >
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex-1 min-w-0">
-                <p
-                  className={`text-[14px] font-semibold truncate ${
-                    isSelected ? "text-white" : "text-stone-900"
-                  }`}
-                >
-                  {academy.name}
-                </p>
-                {academy.description && (
-                  <p
-                    className={`text-[12px] mt-0.5 line-clamp-2 ${
-                      isSelected ? "text-stone-300" : "text-stone-500"
-                    }`}
-                  >
-                    {academy.description}
-                  </p>
-                )}
-              </div>
-              {isSelected && (
-                <CheckmarkCircle02Icon
-                  size={18}
-                  color="#fff"
-                  strokeWidth={1.5}
-                  className="flex-shrink-0"
-                />
-              )}
-            </div>
+            <p className="text-sm font-medium text-gray-900 truncate">
+              {academy.name}
+            </p>
+            {academy.description && (
+              <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">
+                {academy.description}
+              </p>
+            )}
           </button>
         );
       })}

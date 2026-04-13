@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
+import { FavouriteIcon, Comment01Icon, Bookmark02Icon } from 'hugeicons-react';
 import { SafeUser } from '@/app/types';
 import TypeformHeading from '@/components/registration/TypeformHeading';
 
@@ -23,9 +24,7 @@ const PreviewStep: React.FC<PreviewStepProps> = ({
   isTextPost = false,
 }) => {
   const [showBefore, setShowBefore] = useState(false);
-
-  const displayImage = showBefore && beforeImageSrc ? beforeImageSrc : mediaSrc;
-  const hasBeforeAfter = !!beforeImageSrc && !isTextPost;
+  const hasBeforeAfter = !!beforeImageSrc && !isTextPost && mediaType !== 'video';
 
   return (
     <div>
@@ -34,143 +33,127 @@ const PreviewStep: React.FC<PreviewStepProps> = ({
         subtitle="This is how your post will appear in the feed."
       />
 
-      {/* Card preview */}
-      <div className="flex justify-center">
-        <div className="relative w-[220px] aspect-square rounded-2xl overflow-hidden shadow-lg">
+      {/* Newsfeed-style layout: media card + side panel */}
+      <div className="flex items-center gap-5">
+        {/* Media card — same 4:5 proportions as newsfeed */}
+        <div
+          className="relative overflow-hidden rounded-2xl bg-stone-100 flex-shrink-0"
+          style={{
+            width: '280px',
+            aspectRatio: '4 / 5',
+            boxShadow: 'inset 0 0 30px rgba(0,0,0,0.08), inset 0 0 6px rgba(0,0,0,0.04)',
+          }}
+          onMouseEnter={() => hasBeforeAfter && setShowBefore(true)}
+          onMouseLeave={() => hasBeforeAfter && setShowBefore(false)}
+        >
           {isTextPost ? (
             <>
-              {/* Soft gradient background */}
-              <div className="absolute inset-0 bg-gradient-to-br from-stone-100 via-neutral-50 to-white" />
-
-              {/* Subtle pattern overlay */}
-              <div
-                className="absolute inset-0 opacity-[0.3]"
-                style={{
-                  backgroundImage: `radial-gradient(circle at 1px 1px, #a8a29e 0.5px, transparent 0)`,
-                  backgroundSize: '16px 16px',
-                }}
-              />
-
-              {/* Text content */}
+              <div className="absolute inset-0 bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900" />
               <div className="absolute inset-0 flex items-center justify-center p-6">
-                <p className="text-neutral-800 text-[13px] leading-relaxed font-medium text-center line-clamp-6 break-words whitespace-pre-wrap">
+                <p className="text-white/90 text-sm leading-relaxed font-medium text-center line-clamp-8 whitespace-pre-wrap">
                   {caption}
                 </p>
               </div>
-
-              {/* Quote mark accent */}
-              <div className="absolute top-3 left-3 text-stone-300 text-3xl font-serif leading-none select-none">
+              <div className="absolute top-3 left-3 text-white/20 text-3xl font-serif leading-none select-none">
                 &ldquo;
-              </div>
-
-              {/* Closing quote mark */}
-              <div className="absolute bottom-2 right-3 text-stone-300 text-3xl font-serif leading-none select-none rotate-180">
-                &rdquo;
               </div>
             </>
           ) : mediaType === 'video' ? (
+            <video
+              src={mediaSrc}
+              className="absolute inset-0 w-full h-full object-cover"
+              autoPlay
+              muted
+              loop
+              playsInline
+            />
+          ) : hasBeforeAfter ? (
             <>
-              <video
-                src={mediaSrc}
-                className="absolute inset-0 w-full h-full object-cover"
-                autoPlay
-                muted
-                loop
-                playsInline
+              <Image src={beforeImageSrc} alt="" fill className="object-cover" sizes="280px" />
+              <div
+                className="absolute inset-0 transition-[clip-path] duration-500 ease-out"
+                style={{ clipPath: showBefore ? 'inset(0 100% 0 0)' : 'inset(0 0% 0 0)' }}
+              >
+                <Image src={mediaSrc} alt="" fill className="object-cover" sizes="280px" />
+              </div>
+              <div
+                className="absolute top-0 bottom-0 w-0.5 bg-white shadow-[0_0_12px_rgba(255,255,255,0.8)] transition-all duration-500 ease-out z-10"
+                style={{ left: showBefore ? '0%' : '100%', opacity: showBefore ? 1 : 0 }}
               />
+              <div className="absolute bottom-12 left-0 right-0 flex justify-center pointer-events-none z-20">
+                <div className="relative w-[52px] h-[26px]">
+                  <span className={`absolute inset-0 flex items-center justify-center rounded-full text-[11px] font-medium bg-white/95 text-neutral-900 backdrop-blur-md transition-all duration-500 ease-out ${showBefore ? 'opacity-100 blur-0' : 'opacity-0 blur-sm'}`}>Before</span>
+                  <span className={`absolute inset-0 flex items-center justify-center rounded-full text-[11px] font-medium bg-white/95 text-neutral-900 backdrop-blur-md transition-all duration-500 ease-out ${showBefore ? 'opacity-0 blur-sm' : 'opacity-100 blur-0'}`}>After</span>
+                </div>
+              </div>
             </>
           ) : (
-            <>
-              <Image
-                src={displayImage}
-                alt="Post preview"
-                fill
-                className="object-cover"
-              />
-
-              {/* Before/After badge */}
-              {hasBeforeAfter && (
-                <button
-                  type="button"
-                  onClick={() => setShowBefore(!showBefore)}
-                  className="absolute bottom-3 left-0 right-0 flex justify-center"
-                >
-                  <span className="w-[52px] h-[26px] flex items-center justify-center rounded-full text-[11px] font-medium backdrop-blur-md bg-white/95 text-neutral-900">
-                    {showBefore ? 'Before' : 'After'}
-                  </span>
-                </button>
-              )}
-            </>
+            <Image
+              src={mediaSrc}
+              alt="Post preview"
+              fill
+              className="object-cover"
+              sizes="280px"
+            />
           )}
         </div>
-      </div>
 
-      {/* Expanded view preview */}
-      <div className="mt-6 bg-gray-50 rounded-xl p-4 space-y-4">
-        <h3 className="text-xs font-medium text-gray-400 uppercase tracking-wide">
-          Expanded view
-        </h3>
-
-        <div className="flex items-start gap-3">
-          {/* Avatar */}
-          <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200 flex-shrink-0">
-            {currentUser.image ? (
-              <Image
-                src={currentUser.image}
-                alt={currentUser.name || 'You'}
-                width={40}
-                height={40}
-                className="object-cover"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-gray-500 text-sm font-medium">
-                {(currentUser.name || 'U')[0].toUpperCase()}
-              </div>
-            )}
+        {/* Side panel — avatar, caption, engagement */}
+        <div className="flex-1 min-w-0">
+          {/* User info */}
+          <div className="flex items-center gap-3 mb-4">
+            <div
+              className="w-10 h-10 rounded-full overflow-hidden shrink-0 bg-gray-200"
+              style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.08)' }}
+            >
+              {currentUser.image ? (
+                <Image
+                  src={currentUser.image}
+                  alt={currentUser.name || 'You'}
+                  width={40}
+                  height={40}
+                  className="object-cover w-full h-full"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-gray-500 text-sm font-medium">
+                  {(currentUser.name || 'U')[0].toUpperCase()}
+                </div>
+              )}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[14px] font-semibold text-gray-900 truncate">
+                {currentUser.name || 'You'}
+              </p>
+              <p className="text-[11px] text-stone-400 mt-0.5">Just now</p>
+            </div>
           </div>
 
-          {/* Info */}
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-900">
-              {currentUser.name || 'You'}
+          {/* Caption */}
+          {caption && (
+            <p className="text-[13px] leading-[1.7] text-stone-600 line-clamp-4 mb-4">
+              {caption}
             </p>
-            <p className="text-xs text-gray-400">
-              Just now
-            </p>
+          )}
+
+          {/* Engagement buttons */}
+          <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-stone-400">
+              <FavouriteIcon className="w-[18px] h-[18px]" />
+              <span className="text-[12px]">0</span>
+            </div>
+            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-stone-400">
+              <Comment01Icon className="w-[18px] h-[18px]" />
+              <span className="text-[12px]">0</span>
+            </div>
+            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-stone-400">
+              <Bookmark02Icon className="w-[18px] h-[18px]" />
+            </div>
           </div>
-        </div>
-
-        {/* Caption preview */}
-        {caption && !isTextPost && (
-          <p className="text-sm text-gray-600 line-clamp-3">
-            {caption}
-          </p>
-        )}
-        {isTextPost && (
-          <p className="text-xs text-gray-400 italic">
-            Text post - content shown in card
-          </p>
-        )}
-
-        {/* Engagement preview (mock) */}
-        <div className="flex items-center gap-4 pt-2 text-gray-400">
-          <span className="flex items-center gap-1.5 text-xs">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-            </svg>
-            0
-          </span>
-          <span className="flex items-center gap-1.5 text-xs">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
-            </svg>
-            0
-          </span>
         </div>
       </div>
 
       <p className="mt-6 text-center text-xs text-gray-400">
-        Tap Post to share with your followers
+        This is how your post will look in the feed
       </p>
     </div>
   );

@@ -169,7 +169,7 @@ export default function PostFlow({ currentUser }: PostFlowProps) {
       const isInput = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA';
 
       if (e.key === 'Enter' && !e.shiftKey) {
-        if (isInput && target.tagName === 'TEXTAREA') return;
+        if (isInput) return; // Let inputs handle Enter natively
         if (canProceed() && !isLoading) {
           e.preventDefault();
           if (step === STEPS.PREVIEW) {

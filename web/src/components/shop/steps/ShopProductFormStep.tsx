@@ -3,7 +3,7 @@
 import { useState, useCallback } from 'react';
 import { CldUploadWidget, type CldUploadWidgetResults } from 'next-cloudinary';
 import { ChevronDown, Plus, X, ArrowLeft } from 'lucide-react';
-import { Cancel01Icon } from 'hugeicons-react';
+import { Cancel01Icon, PencilEdit01Icon } from 'hugeicons-react';
 import Image from 'next/image';
 import TypeformHeading from '@/components/registration/TypeformHeading';
 
@@ -50,41 +50,43 @@ function ProductImageUpload({
         folder: 'uploads/shops/products',
       }}
     >
-      {({ open }) => {
-        return (
-          <div className="relative">
-            <div
-              onClick={() => open?.()}
-              className={`cursor-pointer rounded-2xl overflow-hidden relative transition-all duration-200 flex-shrink-0 ${
-                value
-                  ? 'hover:opacity-90'
-                  : 'border-2 border-dashed border-gray-300 hover:border-gray-400 bg-gray-50'
-              }`}
-              style={{ width: '175px', height: '175px' }}
-            >
-              {value ? (
-                <Image src={value} alt={`Product ${index + 1}`} fill className="object-cover" />
-              ) : (
-                <div className="h-full flex flex-col items-center justify-center text-center p-2">
-                  <svg className="w-6 h-6 text-gray-400 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-                  </svg>
-                  <span className="text-xs font-medium text-gray-500">Add photo</span>
-                </div>
-              )}
-            </div>
-            {value && (
+      {(props) => (
+        <div
+          onClick={() => props?.open?.()}
+          className={`
+            group cursor-pointer rounded-xl overflow-hidden relative transition-all duration-300
+            ${value
+              ? ''
+              : 'border-2 border-dashed border-gray-200 bg-gray-50/50 hover:border-gray-900 hover:bg-gray-100'
+            }
+          `}
+          style={{ width: '175px', height: '175px' }}
+        >
+          {value ? (
+            <>
+              <Image src={value} alt={`Product ${index + 1}`} fill className="object-cover" />
+              <div className="absolute inset-0 rounded-xl bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                <PencilEdit01Icon className="w-5 h-5 text-white drop-shadow-sm" />
+              </div>
               <button
                 type="button"
                 onClick={(e) => { e.stopPropagation(); onRemove(); }}
-                className="absolute top-2 right-2 w-7 h-7 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center z-10"
+                className="absolute top-2 right-2 w-7 h-7 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10"
               >
-                <X className="w-4 h-4 text-white" />
+                <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
               </button>
-            )}
-          </div>
-        );
-      }}
+            </>
+          ) : (
+            <div className="h-full flex flex-col items-center justify-center">
+              <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm">
+                <Plus className="w-5 h-5 text-gray-400" />
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </CldUploadWidget>
   );
 }

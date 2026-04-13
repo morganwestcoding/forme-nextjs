@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { CldUploadWidget, type CldUploadWidgetResults } from 'next-cloudinary';
+import { PlusSignIcon, PencilEdit01Icon } from 'hugeicons-react';
 import Image from 'next/image';
 import TypeformHeading from '@/components/registration/TypeformHeading';
 
@@ -119,11 +120,11 @@ const MediaStep: React.FC<MediaStepProps> = ({
       <div
         onClick={() => handleBoxClick(target)}
         className={`
-          w-[220px] h-[220px] rounded-2xl cursor-pointer relative overflow-hidden
-          transition-all duration-200 group
+          w-[220px] h-[220px] rounded-xl cursor-pointer relative overflow-hidden
+          transition-all duration-300 group
           ${imageSrc
-            ? 'hover:opacity-90'
-            : 'border-2 border-dashed border-gray-300 bg-gray-50 hover:border-gray-400 hover:bg-gray-100'
+            ? 'hover:shadow-lg hover:-translate-y-1'
+            : 'border-2 border-dashed border-gray-200 bg-gray-50/50 hover:border-gray-900 hover:bg-gray-100'
           }
         `}
       >
@@ -134,35 +135,26 @@ const MediaStep: React.FC<MediaStepProps> = ({
             ) : (
               <Image src={imageSrc} alt={label} fill className="object-cover" />
             )}
-            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100">
-              <div className="flex gap-2">
-                <span className="px-2 py-1 bg-white rounded-full text-xs font-medium text-gray-900">
-                  Replace
-                </span>
+            <div className="absolute inset-0 rounded-xl bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+              <div className="flex items-center gap-3">
+                <PencilEdit01Icon className="w-5 h-5 text-white drop-shadow-sm" />
                 <button
                   type="button"
                   onClick={(e) => { e.stopPropagation(); onRemove(); }}
-                  className="px-2 py-1 bg-white/90 rounded-full text-xs font-medium text-red-600 hover:bg-white"
+                  className="text-white/80 hover:text-white transition-colors"
                 >
-                  Remove
+                  <svg className="w-5 h-5 drop-shadow-sm" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
                 </button>
               </div>
             </div>
           </>
         ) : (
-          <div className="h-full flex flex-col items-center justify-center gap-2">
-            {widgetOpen && uploadTargetRef.current === target ? (
-              <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
-            ) : (
-              <>
-                <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center group-hover:bg-gray-300 transition-colors">
-                  <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                  </svg>
-                </div>
-                <p className="text-[11px] text-gray-400">Photo or video</p>
-              </>
-            )}
+          <div className="h-full flex flex-col items-center justify-center">
+            <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm">
+              <PlusSignIcon className="w-5 h-5 text-gray-400" />
+            </div>
           </div>
         )}
       </div>
@@ -248,12 +240,12 @@ const MediaStep: React.FC<MediaStepProps> = ({
           onClick={() => setShowBeforeAfter(!showBeforeAfter)}
           className="flex items-center gap-3 text-sm text-gray-600 hover:text-gray-900 transition-colors"
         >
-          <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
+          <div className={`w-5 h-5 rounded-lg border-2 flex items-center justify-center transition-all ${
             showBeforeAfter ? 'border-gray-900 bg-gray-900' : 'border-gray-300'
           }`}>
             {showBeforeAfter && (
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3">
-                <path d="M5 12l5 5L20 7" />
+              <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
               </svg>
             )}
           </div>

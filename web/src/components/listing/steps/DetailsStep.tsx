@@ -4,6 +4,7 @@ import { CldUploadWidget, type CldUploadWidgetResults } from 'next-cloudinary';
 import { useCallback } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { Plus } from 'lucide-react';
+import { PencilEdit01Icon } from 'hugeicons-react';
 import TypeformHeading from '@/components/registration/TypeformHeading';
 
 interface DetailsStepProps {
@@ -92,8 +93,8 @@ export default function DetailsStep({
                       alt="Listing preview"
                       className="w-full h-full object-cover transition-[transform,filter] duration-500 ease-out group-hover:scale-105 group-hover:brightness-105"
                     />
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
-                      <span className="text-white text-xs font-medium px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-xl">Change</span>
+                    <div className="absolute inset-0 rounded-xl bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                      <PencilEdit01Icon className="w-5 h-5 text-white drop-shadow-sm" />
                     </div>
                   </>
                 ) : (

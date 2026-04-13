@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { Plus } from 'lucide-react';
 import Image from 'next/image';
 import TypeformHeading from '@/components/registration/TypeformHeading';
 import { itemVariants } from '@/components/registration/TypeformStep';
@@ -51,10 +52,6 @@ export default function ShopProductsStep({
                 fill
                 className="object-cover"
               />
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-3">
-                <p className="text-white text-sm font-medium">{product.name}</p>
-                <p className="text-white/80 text-xs">${product.price ?? 0}</p>
-              </div>
               <button
                 type="button"
                 onClick={() => onRemoveProduct(index)}
@@ -69,18 +66,16 @@ export default function ShopProductsStep({
         })}
 
         {/* Add Product Button */}
-        <motion.button
-          type="button"
+        <motion.div
           onClick={onAddProduct}
           variants={itemVariants}
-          className="rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 hover:border-gray-400 hover:bg-gray-100 transition-all flex flex-col items-center justify-center gap-2"
+          className="cursor-pointer rounded-xl overflow-hidden border-2 border-dashed border-gray-200 bg-gray-50/50 hover:border-gray-900 hover:bg-gray-100 transition-all duration-300 flex flex-col items-center justify-center"
           style={{ width: '175px', height: '175px' }}
         >
-          <svg className="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-          </svg>
-          <span className="text-sm text-gray-500">Add product</span>
-        </motion.button>
+          <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm">
+            <Plus className="w-5 h-5 text-gray-400" />
+          </div>
+        </motion.div>
       </div>
 
       {products.length === 0 && (

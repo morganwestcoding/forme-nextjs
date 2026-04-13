@@ -2,7 +2,7 @@
 
 import { useFormContext } from 'react-hook-form';
 import { CldUploadWidget, type CldUploadWidgetResults } from 'next-cloudinary';
-import { Camera01Icon } from 'hugeicons-react';
+import { Camera01Icon, PencilEdit01Icon } from 'hugeicons-react';
 import TypeformHeading from '../TypeformHeading';
 
 const UPLOAD_PRESET = 'cs0am6m7';
@@ -78,8 +78,8 @@ export default function ImagesStep({ userType }: ImagesStepProps) {
                 {image ? (
                   <>
                     <img src={image} alt="Profile" className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
-                      <Camera01Icon className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="absolute inset-0 rounded-full bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                      <PencilEdit01Icon className="w-5 h-5 text-white drop-shadow-sm" />
                     </div>
                   </>
                 ) : (
