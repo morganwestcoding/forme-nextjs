@@ -4,6 +4,13 @@ import { headers } from 'next/headers';
 import Stripe from 'stripe';
 import prisma from '@/app/libs/prismadb';
 import { apiError } from '@/app/utils/api';
+import {
+  sendEmail,
+  bookingConfirmationEmail,
+  newBookingReceivedEmail,
+  subscriptionConfirmationEmail,
+  refundEmail,
+} from '@/app/libs/email';
 
 export const dynamic = 'force-dynamic';
 
@@ -106,9 +113,41 @@ export async function POST(req: Request) {
                     userId: listing.userId
                   }
                 });
+
+                // Email: notify listing owner about new booking
+                const ownerUser = await prisma.user.findUnique({
+                  where: { id: listing.userId },
+                  select: { email: true },
+                });
+                if (ownerUser?.email) {
+                  const tpl = newBookingReceivedEmail({
+                    serviceName: session.metadata.serviceName || 'Service',
+                    customerName: session.metadata.employeeName || 'Customer',
+                    date: new Date(session.metadata.date).toLocaleDateString(),
+                    time: session.metadata.time,
+                    totalPrice: Number(session.amount_total! / 100),
+                  });
+                  sendEmail({ ...tpl, to: ownerUser.email }).catch(() => {});
+                }
+              }
+
+              // Email: booking confirmation to customer
+              const customer = await prisma.user.findUnique({
+                where: { id: session.metadata.userId },
+                select: { email: true },
+              });
+              if (customer?.email) {
+                const tpl = bookingConfirmationEmail({
+                  serviceName: session.metadata.serviceName || 'Service',
+                  businessName: session.metadata.businessName || 'Business',
+                  date: new Date(session.metadata.date).toLocaleDateString(),
+                  time: session.metadata.time,
+                  totalPrice: Number(session.amount_total! / 100),
+                });
+                sendEmail({ ...tpl, to: customer.email }).catch(() => {});
               }
             } catch (notifyError) {
-              // Notification creation failed; non-critical
+              // Notification/email creation failed; non-critical
             }
           } catch (error: any) {
             // Reservation creation failed
@@ -166,6 +205,17 @@ export async function POST(req: Request) {
               currentPeriodEnd,
             },
           });
+
+          // Email: subscription confirmation
+          const subUser = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { email: true },
+          });
+          if (subUser?.email) {
+            const billingInterval = sub.items.data[0]?.plan?.interval || interval || 'monthly';
+            const tpl = subscriptionConfirmationEmail(tierLabel, billingInterval);
+            sendEmail({ ...tpl, to: subUser.email }).catch(() => {});
+          }
 
         } catch (err) {
           // Subscription handling failed
@@ -432,6 +482,16 @@ export async function POST(req: Request) {
               userId: reservation.userId,
             },
           });
+
+          // Email: refund notification
+          const refundUser = await prisma.user.findUnique({
+            where: { id: reservation.userId },
+            select: { email: true },
+          });
+          if (refundUser?.email) {
+            const tpl = refundEmail(reservation.serviceName, charge.amount_refunded);
+            sendEmail({ ...tpl, to: refundUser.email }).catch(() => {});
+          }
         }
       }
     }

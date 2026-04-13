@@ -13,7 +13,7 @@ const useLocationModal = create<LocationModalStore>()(
   persist(
     (set) => ({
       isOpen: false,
-      selectedLocation: 'Los Angeles, CA',
+      selectedLocation: '',
       onOpen: () => set({ isOpen: true }),
       onClose: () => set({ isOpen: false }),
       setLocation: (location) => set({ selectedLocation: location, isOpen: false }),

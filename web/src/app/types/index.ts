@@ -139,6 +139,10 @@ export type SafeUser = Omit<
   // Role for access control
   role?: string | null; // "user" | "admin" | "master"
 
+  // Email preferences
+  emailNotifications?: boolean;
+  emailMarketing?: boolean;
+
   // User type + student fields
   userType?: string | null; // "customer" | "individual" | "team" | "student"
   academyId?: string | null;

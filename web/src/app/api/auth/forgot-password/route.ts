@@ -1,19 +1,11 @@
 import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
-import nodemailer from "nodemailer";
 import crypto from "crypto";
 import { createRateLimiter, getIP } from "@/app/libs/rateLimit";
 import { apiError } from "@/app/utils/api";
+import { sendEmail, passwordResetEmail } from "@/app/libs/email";
 
 const limiter = createRateLimiter("forgot-password", { limit: 3, windowSeconds: 3600 });
-
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_APP_PASSWORD,
-  },
-});
 
 export async function POST(request: Request) {
   try {
@@ -52,19 +44,9 @@ export async function POST(request: Request) {
     // Create reset link
     const resetLink = `${process.env.NEXT_PUBLIC_APP_URL}/reset-password?token=${resetToken}`;
 
-    // Send email
-    await transporter.sendMail({
-      from: process.env.EMAIL_FROM,
-      to: email,
-      subject: "Password Reset Request",
-      html: `
-        <h1>Password Reset Request</h1>
-        <p>Click the link below to reset your password:</p>
-        <a href="${resetLink}">Reset Password</a>
-        <p>This link will expire in 1 hour.</p>
-        <p>If you didn't request this, please ignore this email.</p>
-      `,
-    });
+    // Send email via SendGrid
+    const template = passwordResetEmail(resetLink);
+    await sendEmail({ ...template, to: email });
 
     return NextResponse.json({ message: "Reset email sent successfully" });
   } catch (error) {

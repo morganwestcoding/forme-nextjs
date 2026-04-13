@@ -27,6 +27,7 @@ export const ApiErrors = {
   // Authorization errors (403)
   FORBIDDEN: { message: 'Forbidden', status: 403 },
   NOT_OWNER: { message: 'You do not have permission to perform this action', status: 403 },
+  SUBSCRIPTION_REQUIRED: { message: 'This feature requires an active Gold or Platinum subscription', status: 403 },
 
   // Client errors (400)
   BAD_REQUEST: { message: 'Bad request', status: 400 },

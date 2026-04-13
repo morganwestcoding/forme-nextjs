@@ -20,7 +20,9 @@ import {
 import Modal from './Modal';
 import useUserMenuModal from '@/app/hooks/useUserMenuModal';
 import useLoginModal from '@/app/hooks/useLoginModal';
+import useUpgradeModal from '@/app/hooks/useUpgradeModal';
 import { clearEarlyAccess } from '@/app/utils/earlyAccess';
+import { hasFeature } from '@/app/utils/subscription';
 import { SafeUser } from '@/app/types';
 
 interface UserMenuModalProps {
@@ -31,6 +33,7 @@ const UserMenuModal: React.FC<UserMenuModalProps> = ({ currentUser }) => {
   const router = useRouter();
   const userMenuModal = useUserMenuModal();
   const loginModal = useLoginModal();
+  const upgradeModal = useUpgradeModal();
 
   const handleNavigate = (path: string) => {
     userMenuModal.onClose();
@@ -52,7 +55,14 @@ const UserMenuModal: React.FC<UserMenuModalProps> = ({ currentUser }) => {
         {
           icon: AnalyticsUpIcon,
           label: 'Analytics',
-          onClick: () => handleNavigate('/analytics'),
+          onClick: () => {
+            if (currentUser && !hasFeature(currentUser, 'analytics')) {
+              userMenuModal.onClose();
+              upgradeModal.onOpen('Business Analytics', 'Gold');
+            } else {
+              handleNavigate('/analytics');
+            }
+          },
         },
         {
           icon: FavouriteIcon,
@@ -69,13 +79,13 @@ const UserMenuModal: React.FC<UserMenuModalProps> = ({ currentUser }) => {
           label: 'Subscription',
           onClick: () => handleNavigate('/subscription'),
         },
-        // Master-only: shortcut to the academy admin panel.
+        // Master-only: admin panel.
         ...(currentUser.role === 'master'
           ? [
               {
                 icon: School01Icon,
-                label: 'Academies',
-                onClick: () => handleNavigate('/admin/academies'),
+                label: 'Admin',
+                onClick: () => handleNavigate('/admin'),
               },
             ]
           : []),

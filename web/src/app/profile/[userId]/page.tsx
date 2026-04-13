@@ -1,18 +1,36 @@
 import React from 'react';
+import type { Metadata } from 'next';
 import EmptyState from "@/components/EmptyState";
-import ProfileClient from "./ProfileClient"; // Ensure this component is implemented
+import ProfileClient from "./ProfileClient";
 import getProfileById from '@/app/actions/getProfileById';
 import getListings from '@/app/actions/getListings';
 import getPosts from '@/app/actions/getPost';
 import getReviews from '@/app/actions/getReviews';
 import getServicesByUserId from '@/app/actions/getServicesByUserId';
 import ClientOnly from '@/components/ClientOnly';
-
 import getCurrentUser from '@/app/actions/getCurrentUser';
 
-
-
 export const dynamic = 'force-dynamic';
+
+export async function generateMetadata({ params }: { params: { userId: string } }): Promise<Metadata> {
+  const user = await getProfileById(params);
+  if (!user) return { title: 'Profile Not Found' };
+
+  const name = user.name || 'Professional';
+  const description = user.bio
+    ? user.bio.slice(0, 160)
+    : `View ${name}'s professional profile on ForMe.`;
+
+  return {
+    title: name,
+    description,
+    openGraph: {
+      title: `${name} — ForMe`,
+      description,
+      ...(user.image ? { images: [{ url: user.image }] } : {}),
+    },
+  };
+}
 
 const ProfilePage = async ({ params }: any) => {
 

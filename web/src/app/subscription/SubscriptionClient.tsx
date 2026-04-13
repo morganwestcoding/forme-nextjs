@@ -5,7 +5,7 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import { SafeUser } from "@/app/types";
 import FeatureComparison from "@/components/subscription/FeatureComparison";
-import { CheckmarkCircle02Icon, ArrowRight01Icon } from "hugeicons-react";
+import { CheckmarkCircle02Icon, ArrowRight01Icon, Cancel01Icon } from "hugeicons-react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Container from "@/components/Container";
@@ -14,7 +14,6 @@ import Celebration from "@/components/Celebration";
 
 function cleanLabel(label?: string | null) {
   const raw = String(label || "Freemium").replace(/\s*\(.*\)\s*$/, "").trim();
-  // Legacy "Bronze" tier in the DB is the same thing as today's "Freemium".
   const normalized = raw.toLowerCase() === "bronze" ? "Freemium" : raw;
   return normalized.charAt(0).toUpperCase() + normalized.slice(1);
 }
@@ -23,10 +22,6 @@ interface Props {
   currentUser: SafeUser;
 }
 
-// Pricing 2.0 — see /Pricing 2.0.pdf
-// Plan ids ("bronze" / "gold" / "platinum") are kept stable for backward
-// compatibility with the checkout API and existing DB rows. Display name
-// for "bronze" is now "Freemium".
 const plans = [
   {
     id: "bronze",
@@ -79,6 +74,8 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
   const [saving, setSaving] = useState(false);
   const [hasProcessedPayment, setHasProcessedPayment] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [showChangeConfirm, setShowChangeConfirm] = useState<{ planId: string; interval: string } | null>(null);
   const [searchParams] = useState(() => {
     if (typeof window !== 'undefined') return new URLSearchParams(window.location.search);
     return new URLSearchParams();
@@ -114,10 +111,30 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
     return "bronze";
   }, [dbValue]);
 
+  const isActiveSubscriber = currentUser?.isSubscribed &&
+    ['active', 'trialing', 'past_due'].includes(currentUser?.subscriptionStatus || '');
+
+  const isCanceling = currentUser?.subscriptionStatus === 'active' &&
+    currentUser?.stripeSubscriptionId != null;
+
   const handleSelect = async (planId: string) => {
     try {
       setSaving(true);
+
+      // If user has an active paid subscription and is switching plans
+      if (isActiveSubscriber && planId !== "bronze" && planId !== currentPlan) {
+        setShowChangeConfirm({ planId, interval: billing });
+        setSaving(false);
+        return;
+      }
+
       if (planId === "bronze") {
+        if (isActiveSubscriber) {
+          // Show cancel confirmation instead of immediate downgrade
+          setShowCancelConfirm(true);
+          setSaving(false);
+          return;
+        }
         await axios.post("/api/subscription/select", { plan: "Bronze", interval: billing });
         router.refresh();
         if (isOnboarding) {
@@ -127,6 +144,7 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
         }
         return;
       }
+
       const res = await axios.post("/api/subscription/checkout", {
         planId: planId,
         interval: billing,
@@ -147,16 +165,66 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
     }
   };
 
+  const handleCancel = async () => {
+    try {
+      setSaving(true);
+      const res = await axios.post("/api/subscription/cancel");
+      const endDate = res.data?.currentPeriodEnd;
+      setShowCancelConfirm(false);
+      toast.success(
+        endDate
+          ? `Subscription cancelled. You have access until ${new Date(endDate).toLocaleDateString()}.`
+          : "Subscription cancelled."
+      );
+      router.refresh();
+    } catch (err) {
+      toast.error((err as any)?.response?.data?.error || "Failed to cancel subscription");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleChangePlan = async () => {
+    if (!showChangeConfirm) return;
+    try {
+      setSaving(true);
+      const res = await axios.post("/api/subscription/change", {
+        planId: showChangeConfirm.planId,
+        interval: showChangeConfirm.interval,
+      });
+      setShowChangeConfirm(null);
+      toast.success(`Switched to ${res.data?.plan} (${res.data?.interval})`);
+      router.refresh();
+    } catch (err) {
+      toast.error((err as any)?.response?.data?.error || "Failed to change plan");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleBillingPortal = async () => {
+    try {
+      setSaving(true);
+      const res = await axios.post("/api/subscription/portal");
+      if (res.data?.url) {
+        window.location.href = res.data.url;
+      }
+    } catch (err) {
+      toast.error((err as any)?.response?.data?.error || "Failed to open billing portal");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handleCelebrationComplete = useCallback(() => {
-    // Hard navigation to guarantee the Celebration overlay fully unmounts.
-    // router.push('/') can leave the fixed z-[9999] overlay stuck during
-    // Next.js client-side transitions, resulting in a white screen.
     window.location.href = '/';
   }, []);
 
   if (showCelebration) {
     return <Celebration onComplete={handleCelebrationComplete} userName={currentUser?.name?.split(' ')[0]} />;
   }
+
+  const currentPlanData = plans.find((p) => p.id === currentPlan);
 
   return (
     <Container>
@@ -173,6 +241,48 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
               : <>You&apos;re on <span className="font-semibold text-stone-900">{cleanLabel(currentUser?.subscriptionTier)}</span>. Change plans anytime.</>}
           </p>
         </div>
+
+        {/* Active subscription management card */}
+        {isActiveSubscriber && !isOnboarding && (
+          <div className="mb-8 rounded-2xl border border-stone-200/60 bg-white p-6">
+            <div className="flex items-start justify-between flex-wrap gap-4">
+              <div>
+                <p className="text-[11px] font-medium text-stone-400 uppercase tracking-wide mb-1">Current Plan</p>
+                <p className="text-xl font-bold text-stone-900">{currentPlanData?.name}</p>
+                <div className="flex flex-wrap gap-x-6 gap-y-1 mt-2 text-[13px] text-stone-500">
+                  {currentUser?.subscriptionBillingInterval && (
+                    <span>Billed {currentUser.subscriptionBillingInterval === 'year' ? 'yearly' : 'monthly'}</span>
+                  )}
+                  {currentUser?.currentPeriodEnd && (
+                    <span>
+                      {currentUser.subscriptionStatus === 'active'
+                        ? `Renews ${new Date(currentUser.currentPeriodEnd).toLocaleDateString()}`
+                        : `Access until ${new Date(currentUser.currentPeriodEnd).toLocaleDateString()}`}
+                    </span>
+                  )}
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={handleBillingPortal}
+                  disabled={saving}
+                  className="px-4 py-2 rounded-xl text-[12px] font-medium bg-stone-50 text-stone-600 hover:bg-stone-100 border border-stone-200/60 transition-all"
+                >
+                  Billing &amp; Invoices
+                </button>
+                <button
+                  onClick={() => setShowCancelConfirm(true)}
+                  disabled={saving}
+                  className="px-4 py-2 rounded-xl text-[12px] font-medium bg-red-50 text-red-600 hover:bg-red-100 border border-red-200/60 transition-all"
+                >
+                  Cancel Plan
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Billing toggle */}
         <div className="flex items-center gap-2 mb-8">
           {(["monthly", "yearly"] as const).map((b) => (
             <button key={b} onClick={() => setBilling(b)} className={`px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap ${billing === b ? 'bg-stone-900 text-white' : 'bg-stone-50 text-stone-500 hover:bg-stone-100 border border-stone-200/60'}`}>
@@ -180,11 +290,24 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
             </button>
           ))}
         </div>
+
+        {/* Plan cards */}
         <div className="grid md:grid-cols-3 gap-5 pb-12">
           {plans.map((plan) => {
             const price = billing === "monthly" ? plan.price.monthly : plan.price.yearly;
             const isCurrent = currentPlan === plan.id;
             const isPopular = plan.badge === "Most Popular";
+
+            // Determine CTA label
+            let ctaLabel = plan.cta;
+            if (isCurrent) {
+              ctaLabel = "Current Plan";
+            } else if (isActiveSubscriber && plan.id !== "bronze") {
+              ctaLabel = `Switch to ${plan.name}`;
+            } else if (plan.id === "bronze" && isActiveSubscriber) {
+              ctaLabel = "Downgrade";
+            }
+
             return (
               <div key={plan.id} className={`group relative rounded-2xl border p-6 transition-all duration-300 ${isPopular ? "bg-stone-900 border-stone-800 shadow-xl" : isCurrent ? "bg-white border-stone-200/60 shadow-sm" : "bg-white border-stone-200/60 hover:border-stone-300 hover:-translate-y-0.5 hover:shadow-lg"}`}>
                 {plan.badge && (
@@ -221,12 +344,13 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
                   className={`w-full py-3 px-5 rounded-xl font-medium text-[13px] transition-all duration-200 flex items-center justify-center gap-2 ${isPopular ? "bg-white text-stone-900 hover:bg-stone-50" : isCurrent ? "bg-stone-50 text-stone-400 cursor-default border border-stone-200/60" : "bg-stone-900 text-white hover:bg-stone-800"}`}
                   style={!isCurrent ? { boxShadow: '0 2px 8px rgba(0,0,0,0.12)' } : undefined}
                 >
-                  {saving ? "Processing..." : isCurrent ? (<><CheckmarkCircle02Icon size={14} strokeWidth={1.5} /> Current Plan</>) : (<>{plan.cta} <ArrowRight01Icon size={14} strokeWidth={1.5} /></>)}
+                  {saving ? "Processing..." : isCurrent ? (<><CheckmarkCircle02Icon size={14} strokeWidth={1.5} /> {ctaLabel}</>) : (<>{ctaLabel} <ArrowRight01Icon size={14} strokeWidth={1.5} /></>)}
                 </button>
               </div>
             );
           })}
         </div>
+
         <p className="text-center text-[11px] text-stone-400 pb-6">
           By selecting a plan, you agree to the ForMe{' '}
           <a href="/terms" target="_blank" className="underline hover:text-stone-600">Terms of Service</a>
@@ -237,6 +361,76 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
           <FeatureComparison />
         </div>
       </div>
+
+      {/* Cancel confirmation overlay */}
+      {showCancelConfirm && (
+        <div className="fixed inset-0 z-[9999] backdrop-blur-sm bg-neutral-900/60 flex items-center justify-center p-4" onClick={() => setShowCancelConfirm(false)}>
+          <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center">
+                <Cancel01Icon className="w-5 h-5 text-red-500" />
+              </div>
+              <h3 className="text-lg font-semibold text-stone-900">Cancel Subscription?</h3>
+            </div>
+            <p className="text-[13px] text-stone-500 mb-2">
+              Your {currentPlanData?.name} plan will remain active until the end of your current billing period
+              {currentUser?.currentPeriodEnd && (
+                <> ({new Date(currentUser.currentPeriodEnd).toLocaleDateString()})</>
+              )}.
+            </p>
+            <p className="text-[13px] text-stone-500 mb-6">
+              After that, you&apos;ll be downgraded to the Freemium plan and lose access to premium features like analytics and SEO tools.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowCancelConfirm(false)}
+                className="flex-1 py-3 rounded-xl text-[13px] font-medium bg-stone-50 text-stone-600 hover:bg-stone-100 border border-stone-200/60 transition-all"
+              >
+                Keep Plan
+              </button>
+              <button
+                onClick={handleCancel}
+                disabled={saving}
+                className="flex-1 py-3 rounded-xl text-[13px] font-medium bg-red-600 text-white hover:bg-red-700 transition-all"
+              >
+                {saving ? "Cancelling..." : "Cancel Subscription"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Change plan confirmation overlay */}
+      {showChangeConfirm && (
+        <div className="fixed inset-0 z-[9999] backdrop-blur-sm bg-neutral-900/60 flex items-center justify-center p-4" onClick={() => setShowChangeConfirm(null)}>
+          <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-lg font-semibold text-stone-900 mb-2">Change Plan</h3>
+            <p className="text-[13px] text-stone-500 mb-2">
+              Switch from <span className="font-semibold text-stone-900">{currentPlanData?.name}</span> to{' '}
+              <span className="font-semibold text-stone-900">{plans.find(p => p.id === showChangeConfirm.planId)?.name}</span>{' '}
+              ({showChangeConfirm.interval})?
+            </p>
+            <p className="text-[13px] text-stone-500 mb-6">
+              The price difference will be prorated to your current billing cycle. Your new plan starts immediately.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowChangeConfirm(null)}
+                className="flex-1 py-3 rounded-xl text-[13px] font-medium bg-stone-50 text-stone-600 hover:bg-stone-100 border border-stone-200/60 transition-all"
+              >
+                Never Mind
+              </button>
+              <button
+                onClick={handleChangePlan}
+                disabled={saving}
+                className="flex-1 py-3 rounded-xl text-[13px] font-medium bg-stone-900 text-white hover:bg-stone-800 transition-all"
+              >
+                {saving ? "Switching..." : "Confirm Switch"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </Container>
   );
 };

@@ -6,6 +6,7 @@
 const required = [
   'DATABASE_URL',
   'NEXTAUTH_SECRET',
+  'NEXT_PUBLIC_APP_URL',
 ] as const;
 
 const requiredForPayments = [
@@ -15,8 +16,7 @@ const requiredForPayments = [
 ] as const;
 
 const requiredForEmail = [
-  'EMAIL_USER',
-  'EMAIL_APP_PASSWORD',
+  'SENDGRID_API_KEY',
 ] as const;
 
 const optional = [
@@ -26,7 +26,6 @@ const optional = [
   'GITHUB_SECRET',
   'NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME',
   'NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN',
-  'NEXT_PUBLIC_APP_URL',
   'EMAIL_FROM',
 ] as const;
 

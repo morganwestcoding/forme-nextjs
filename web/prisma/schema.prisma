@@ -75,6 +75,10 @@ model User {
   // Client records (where this user is a client at a business)
   clientRecords   ClientRecord[] @relation("clientRecords")
 
+  // Email preferences
+  emailNotifications Boolean    @default(true)
+  emailMarketing     Boolean    @default(true)
+
   // Role field for access control
   role            String        @default("user") // "user" | "admin" | "master"
 

@@ -6,12 +6,13 @@ import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import prisma from "@/app/libs/prismadb";
 import Stripe from 'stripe';
 import { createRateLimiter, getIP } from "@/app/libs/rateLimit";
+import { getTransactionFeePercent } from "@/app/utils/subscription";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-02-24.acacia',
 });
 
-const PLATFORM_FEE_PERCENT = 10; // 10% platform fee
+const PLATFORM_FEE_PERCENT = 10; // 10% platform fee (ForMe's cut)
 
 const limiter = createRateLimiter("checkout", { limit: 10, windowSeconds: 60 });
 
@@ -151,9 +152,12 @@ export async function POST(request: Request) {
       : businessOwner?.stripeConnectChargesEnabled;
     const hasStripeConnect = destinationStripeAccountId && destinationChargesEnabled;
 
-    // Calculate amounts
+    // Calculate amounts — platform fee (ForMe's cut) + transaction fee (tier-based)
     const totalAmountCents = totalPrice * 100;
-    const applicationFeeCents = Math.round(totalAmountCents * (PLATFORM_FEE_PERCENT / 100));
+    const platformFeeCents = Math.round(totalAmountCents * (PLATFORM_FEE_PERCENT / 100));
+    const transactionFeePercent = getTransactionFeePercent(currentUser, totalAmountCents);
+    const transactionFeeCents = Math.round(totalAmountCents * (transactionFeePercent / 100));
+    const applicationFeeCents = platformFeeCents + transactionFeeCents;
 
     // Build checkout session config
     const sessionConfig: Stripe.Checkout.SessionCreateParams = {
@@ -192,6 +196,7 @@ export async function POST(request: Request) {
         businessOwnerId: businessOwner.id,
         employeeUserId: employee.userId,
         platformFeePercent: String(PLATFORM_FEE_PERCENT),
+        transactionFeePercent: String(transactionFeePercent),
         // When set, the booking is for an academy-owned listing (e.g. a student).
         // Funds were routed to the academy's Connect account, not the listing owner.
         academyId: listingAcademy?.id ?? '',

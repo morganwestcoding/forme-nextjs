@@ -5,6 +5,7 @@ import { apiError, apiErrorCode } from "@/app/utils/api";
 import { registerSchema, validateBody } from "@/app/utils/validations";
 import { signMobileToken } from "@/app/utils/mobileAuth";
 import { createRateLimiter, getIP } from "@/app/libs/rateLimit";
+import { sendEmail, welcomeEmail } from "@/app/libs/email";
 
 const limiter = createRateLimiter("register", { limit: 5, windowSeconds: 3600 });
 
@@ -326,6 +327,12 @@ export async function POST(request: Request) {
     }
 
     const token = await signMobileToken(user.id, user.email!);
+
+    // Send welcome email (fire-and-forget)
+    if (user.email) {
+      const template = welcomeEmail(user.name || '');
+      sendEmail({ ...template, to: user.email }).catch(() => {});
+    }
 
     return NextResponse.json({
       user: {

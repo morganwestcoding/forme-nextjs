@@ -26,11 +26,25 @@ import CreateModal from '@/components/modals/CreateModal';
 import LocationModal from '@/components/modals/LocationModal';
 import WelcomeModal from '@/components/modals/WelcomeModal';
 import WalkthroughOverlay from '@/components/walkthrough/WalkthroughOverlay';
+import UpgradeModal from '@/components/modals/UpgradeModal';
 import UnreadBadgeProvider from '@/components/UnreadBadgeProvider';
 
 export const metadata: Metadata = {
-  title: 'ForMe App',
-  description: 'Your complete business ecosystem',
+  title: {
+    default: 'ForMe — Your Complete Business Ecosystem',
+    template: '%s | ForMe',
+  },
+  description: 'Book services, manage your business, and grow your professional presence — all in one platform.',
+  openGraph: {
+    type: 'website',
+    siteName: 'ForMe',
+    title: 'ForMe — Your Complete Business Ecosystem',
+    description: 'Book services, manage your business, and grow your professional presence — all in one platform.',
+  },
+  twitter: {
+    card: 'summary_large_image',
+  },
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://forme.app'),
 }
 
 export const dynamic = 'force-dynamic';
@@ -80,6 +94,7 @@ export default async function RootLayout({
                 <CreateModal />
                 <LocationModal />
                 <WelcomeModal />
+                <UpgradeModal />
                 <WalkthroughOverlay />
                 <UnreadBadgeProvider />
               </ComingSoonGate>

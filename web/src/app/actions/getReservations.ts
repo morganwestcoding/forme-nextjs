@@ -205,6 +205,8 @@ export default async function getReservations(params: IParams) {
         stripeConnectChargesEnabled: reservation.user.stripeConnectChargesEnabled || false,
         stripeConnectPayoutsEnabled: reservation.user.stripeConnectPayoutsEnabled || false,
         stripeConnectOnboardedAt: reservation.user.stripeConnectOnboardedAt || null,
+        emailNotifications: reservation.user.emailNotifications ?? true,
+        emailMarketing: reservation.user.emailMarketing ?? true,
       }
     }));
 

@@ -1,5 +1,6 @@
 // app/actions/getAnalyticsData.ts
 import prisma from "@/app/libs/prismadb";
+import { hasFeature } from "@/app/utils/subscription";
 
 export interface AnalyticsData {
   overview: {
@@ -64,6 +65,15 @@ export default async function getAnalyticsData(userId: string): Promise<Analytic
   try {
     if (!userId) {
       throw new Error("User ID is required");
+    }
+
+    // Defense-in-depth: verify subscription access even if the page gate is bypassed
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { isSubscribed: true, subscriptionTier: true, subscriptionStatus: true },
+    });
+    if (!user || !hasFeature(user, 'analytics')) {
+      throw new Error("This feature requires an active Gold or Platinum subscription");
     }
 
     // Get current date and 12 months ago

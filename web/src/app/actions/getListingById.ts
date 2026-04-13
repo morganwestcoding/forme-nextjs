@@ -161,6 +161,8 @@ export default async function getListingById(params: IParams): Promise<(SafeList
       stripeConnectChargesEnabled: listing.user.stripeConnectChargesEnabled || false,
       stripeConnectPayoutsEnabled: listing.user.stripeConnectPayoutsEnabled || false,
       stripeConnectOnboardedAt: listing.user.stripeConnectOnboardedAt || null,
+      emailNotifications: listing.user.emailNotifications ?? true,
+      emailMarketing: listing.user.emailMarketing ?? true,
       userType: listing.user.userType ?? null,
       academyId: listing.user.academyId ?? null,
       academyName: listing.user.academy?.name ?? null,

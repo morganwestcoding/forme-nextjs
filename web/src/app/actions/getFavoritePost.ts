@@ -96,6 +96,8 @@ export default async function getFavoritePosts(): Promise<SafePost[]> {
         stripeConnectChargesEnabled: post.user.stripeConnectChargesEnabled || false,
         stripeConnectPayoutsEnabled: post.user.stripeConnectPayoutsEnabled || false,
         stripeConnectOnboardedAt: post.user.stripeConnectOnboardedAt || null,
+        emailNotifications: post.user.emailNotifications ?? true,
+        emailMarketing: post.user.emailMarketing ?? true,
       },
       comments: post.comments.map((comment: typeof post.comments[number]) => ({
         id: comment.id,
