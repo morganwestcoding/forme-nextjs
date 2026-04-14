@@ -273,10 +273,10 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
               {/* Content — matches WorkerCard text position */}
               <div className="relative flex flex-col h-full p-5">
                 {/* Spacer to match WorkerCard avatar height */}
-                <div className="mb-3 h-12" />
+                <div className={compact ? 'mb-2 h-8' : 'mb-3 h-12'} />
 
                 {/* Service name - large and bold */}
-                <h3 className="text-[17px] font-black text-neutral-900 leading-[1.15] line-clamp-3 tracking-tight pr-8">
+                <h3 className="text-[17px] font-black text-neutral-900 leading-[1.2] line-clamp-2 tracking-tight pr-8">
                   {service.serviceName || 'Untitled Service'}
                 </h3>
 

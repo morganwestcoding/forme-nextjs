@@ -10,6 +10,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 import TypeformStep from './TypeformStep';
 import TypeformProgress from './TypeformProgress';
+import EditStepJumper from './EditStepJumper';
 import TypeformNavigation from './TypeformNavigation';
 
 import AccountStep from './steps/AccountStep';
@@ -330,6 +331,7 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
           bio: data.bio,
           image: data.image,
           backgroundImage: data.backgroundImage,
+          interests: data.interests,
         });
 
         toast.success('Profile updated!');
@@ -542,6 +544,22 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
           currentStep={currentIndex + 1}
           totalSteps={totalSteps}
         />
+
+        {/* Edit-mode step jumper — jump directly to any editable section. */}
+        {isEditMode && (
+          <EditStepJumper
+            steps={[
+              { label: 'Interests', value: STEPS.INTERESTS },
+              { label: 'Location', value: STEPS.LOCATION },
+              { label: 'Images', value: STEPS.IMAGES },
+            ]}
+            currentValue={step}
+            onJump={(target) => {
+              setDirection(target > step ? 1 : -1);
+              setStep(target as STEPS);
+            }}
+          />
+        )}
 
         {/* Main content */}
         <div className="flex-1 flex items-center justify-center px-6 py-12">

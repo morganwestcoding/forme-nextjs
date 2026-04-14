@@ -9,6 +9,7 @@ import type { ProviderService } from '@/app/actions/getServicesByUserId';
 import PostCard from '@/components/feed/PostCard';
 import ListingCard from '@/components/listings/ListingCard';
 import ServiceCard from '@/components/listings/ServiceCard';
+import QRModal from '@/components/modals/QRModal';
 import { categories } from '@/components/Categories';
 import { placeholderDataUri } from '@/lib/placeholders';
 import useReviewModal from '@/app/hooks/useReviewModal';
@@ -60,6 +61,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
 
   const [showDropdown, setShowDropdown] = useState(false);
   const [dropdownPos, setDropdownPos] = useState<{ top: number; left: number } | null>(null);
+  const [showQRModal, setShowQRModal] = useState(false);
 
   // Extract dominant color from profile image
   const profileImage = image || imageSrc || placeholderDataUri(name || 'User');
@@ -173,11 +175,24 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
 
   const btnClass = "w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-4 transition-colors duration-150";
 
+  const qrIcon = (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" className="text-gray-500" strokeWidth="1.5">
+      <path d="M3 6C3 4.58579 3 3.87868 3.43934 3.43934C3.87868 3 4.58579 3 6 3C7.41421 3 8.12132 3 8.56066 3.43934C9 3.87868 9 4.58579 9 6C9 7.41421 9 8.12132 8.56066 8.56066C8.12132 9 7.41421 9 6 9C4.58579 9 3.87868 9 3.43934 8.56066C3 8.12132 3 7.41421 3 6Z" />
+      <path d="M3 18C3 16.5858 3 15.8787 3.43934 15.4393C3.87868 15 4.58579 15 6 15C7.41421 15 8.12132 15 8.56066 15.4393C9 15.8787 9 16.5858 9 18C9 19.4142 9 20.1213 8.56066 20.5607C8.12132 21 7.41421 21 6 21C4.58579 21 3.87868 21 3.43934 20.5607C3 20.1213 3 19.4142 3 18Z" />
+      <path d="M15 6C15 4.58579 15 3.87868 15.4393 3.43934C15.8787 3 16.5858 3 18 3C19.4142 3 20.1213 3 20.5607 3.43934C21 3.87868 21 4.58579 21 6C21 7.41421 21 8.12132 20.5607 8.56066C20.1213 9 19.4142 9 18 9C16.5858 9 15.8787 9 15.4393 8.56066C15 8.12132 15 7.41421 15 6Z" />
+    </svg>
+  );
+
   const dropdownMenu = showDropdown && dropdownPos ? (
     <div
       className="fixed w-48 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-50"
       style={{ top: dropdownPos.top, left: dropdownPos.left - 192, maxHeight: 'calc(100vh - 100px)', overflowY: 'auto' }}
     >
+      <button onClick={() => { setShowDropdown(false); setShowQRModal(true); }} className={btnClass} type="button">
+        {qrIcon}
+        {isOwner ? 'Show QR Code' : 'View QR Code'}
+      </button>
+      <hr className="my-1 border-gray-200" />
       {isMasterUser && !isOwner && (
         <>
           <button onClick={openEditProfile} className={btnClass} type="button">
@@ -231,8 +246,21 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
     </div>
   ) : null;
 
+  const profileUrl = typeof window !== 'undefined' ? `${window.location.origin}/profile/${id}` : '';
+
   return (
     <>
+      {/* QR Modal */}
+      <QRModal
+        isOpen={showQRModal}
+        onClose={() => setShowQRModal(false)}
+        url={profileUrl}
+        title={name ?? 'Profile'}
+        subtitle={jobTitle || (location ? `${city}${state ? `, ${state}` : ''}` : undefined)}
+        headerTitle={isOwner ? 'Share Your Profile' : 'Share This Profile'}
+        headerSubtitle="Let others easily find this profile"
+      />
+
       {/* Dropdown backdrop */}
       {showDropdown && (
         <div

@@ -9,6 +9,7 @@ import { AnimatePresence } from 'framer-motion';
 
 import TypeformStep from '../registration/TypeformStep';
 import TypeformProgress from '../registration/TypeformProgress';
+import EditStepJumper from '../registration/EditStepJumper';
 import TypeformNavigation from '../registration/TypeformNavigation';
 
 import CategoryStep from './steps/CategoryStep';
@@ -441,6 +442,27 @@ export default function ListingFlow({ mode = 'create', listingId, initialData }:
           <TypeformProgress
             currentStep={currentIndex + 1}
             totalSteps={totalSteps}
+          />
+        )}
+
+        {/* Edit-mode step jumper — lets users hop to any section instead of
+            clicking Next through every step. */}
+        {isEditMode && !isFormStep && (
+          <EditStepJumper
+            steps={[
+              { label: 'Category', value: STEPS.CATEGORY },
+              { label: 'Location', value: STEPS.LOCATION },
+              { label: 'Services', value: STEPS.SERVICES_LIST },
+              { label: 'Details', value: STEPS.DETAILS },
+              { label: 'Gallery', value: STEPS.GALLERY },
+              { label: 'Hours', value: STEPS.HOURS },
+              { label: 'Team', value: STEPS.EMPLOYEE },
+            ]}
+            currentValue={step}
+            onJump={(target) => {
+              setDirection(target > step ? 1 : -1);
+              setStep(target as STEPS);
+            }}
           />
         )}
 

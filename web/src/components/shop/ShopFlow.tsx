@@ -9,6 +9,7 @@ import { AnimatePresence } from 'framer-motion';
 
 import TypeformStep from '../registration/TypeformStep';
 import TypeformProgress from '../registration/TypeformProgress';
+import EditStepJumper from '../registration/EditStepJumper';
 import TypeformNavigation from '../registration/TypeformNavigation';
 
 import CategoryStep from '../listing/steps/CategoryStep';
@@ -346,6 +347,24 @@ export default function ShopFlow({ mode = 'create', shopId, initialData }: ShopF
           <TypeformProgress
             currentStep={currentIndex + 1}
             totalSteps={totalSteps}
+          />
+        )}
+
+        {/* Edit-mode step jumper — jump to any section directly. */}
+        {isEditMode && !isFormStep && (
+          <EditStepJumper
+            steps={[
+              { label: 'Category', value: STEPS.CATEGORY },
+              { label: 'Details', value: STEPS.DETAILS },
+              { label: 'Location', value: STEPS.LOCATION },
+              { label: 'Products', value: STEPS.PRODUCTS },
+              { label: 'Settings', value: STEPS.SETTINGS },
+            ]}
+            currentValue={step}
+            onJump={(target) => {
+              setDirection(target > step ? 1 : -1);
+              setStep(target as STEPS);
+            }}
           />
         )}
 

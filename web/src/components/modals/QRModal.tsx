@@ -7,18 +7,37 @@ import Modal from './Modal';
 interface QRModalProps {
   isOpen: boolean;
   onClose: () => void;
-  listing: SafeListing;
+  listing?: SafeListing;
+  // Optional overrides — when provided, the modal renders these instead of
+  // the listing fields. Lets us reuse the modal for profiles, posts, etc.
+  url?: string;
+  title?: string;
+  subtitle?: string;
+  headerTitle?: string;
+  headerSubtitle?: string;
 }
 
 const QRModal: React.FC<QRModalProps> = ({
   isOpen,
   onClose,
-  listing
+  listing,
+  url,
+  title,
+  subtitle,
+  headerTitle,
+  headerSubtitle,
 }) => {
-  // Generate the listing URL
-  const listingUrl = typeof window !== 'undefined' 
-    ? `${window.location.origin}/listings/${listing.id}` 
-    : '';
+  // Resolve the URL to encode in the QR. Explicit `url` wins, else fall back
+  // to the listing URL for backwards compatibility with existing callers.
+  const listingUrl = url
+    ?? (typeof window !== 'undefined' && listing
+      ? `${window.location.origin}/listings/${listing.id}`
+      : '');
+
+  const displayTitle = title ?? listing?.title ?? '';
+  const displaySubtitle = subtitle ?? listing?.location ?? '';
+  const modalHeaderTitle = headerTitle ?? 'Share Your Listing';
+  const modalHeaderSubtitle = headerSubtitle ?? 'Let customers easily access your listing';
 
   // Generate QR code using qr-server.com API (no dependencies needed)
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(listingUrl)}`;
@@ -37,10 +56,10 @@ const QRModal: React.FC<QRModalProps> = ({
       {/* Header */}
       <div className="space-y-2">
         <h3 className="text-xl font-semibold text-gray-900">
-          Share Your Listing
+          {modalHeaderTitle}
         </h3>
         <p className="text-gray-600 text-sm">
-          Let customers easily access your listing
+          {modalHeaderSubtitle}
         </p>
       </div>
 
@@ -50,7 +69,7 @@ const QRModal: React.FC<QRModalProps> = ({
           {listingUrl ? (
             <img
               src={qrCodeUrl}
-              alt={`QR Code for ${listing.title}`}
+              alt={`QR Code for ${displayTitle}`}
               className="w-full h-full object-contain"
               onError={(e) => {
                 // Fallback if QR service fails
@@ -70,20 +89,22 @@ const QRModal: React.FC<QRModalProps> = ({
         </div>
       </div>
 
-      {/* Listing Info */}
+      {/* Info */}
       <div className="space-y-1">
         <h4 className="font-medium text-gray-900">
-          {listing.title}
+          {displayTitle}
         </h4>
-        <p className="text-sm text-gray-500">
-          {listing.location}
-        </p>
+        {displaySubtitle && (
+          <p className="text-sm text-gray-500">
+            {displaySubtitle}
+          </p>
+        )}
       </div>
 
       {/* URL Display */}
       <div className="w-full">
         <div className="bg-gray-50 rounded-xl p-3 border">
-          <p className="text-xs text-gray-600 mb-1">Listing URL:</p>
+          <p className="text-xs text-gray-600 mb-1">URL:</p>
           <p className="text-sm font-mono text-gray-800 break-all">
             {listingUrl}
           </p>
@@ -106,7 +127,7 @@ const QRModal: React.FC<QRModalProps> = ({
         
         <button
           onClick={onClose}
-          className="flex-1 bg-[#60A5FA] hover:bg-[#4F94E5] text-white py-2.5 px-4 rounded-xl transition-colors text-sm font-medium"
+          className="flex-1 bg-neutral-900 hover:bg-neutral-800 text-white py-2.5 px-4 rounded-xl transition-colors text-sm font-medium"
           type="button"
         >
           Done
@@ -116,7 +137,7 @@ const QRModal: React.FC<QRModalProps> = ({
       {/* Instructions */}
       <div className="text-center">
         <p className="text-xs text-gray-500">
-          Customers can scan this QR code with their phone camera to visit your listing
+          Scan this QR code with a phone camera to open the link
         </p>
       </div>
     </div>
