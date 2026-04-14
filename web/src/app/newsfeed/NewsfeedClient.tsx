@@ -31,8 +31,17 @@ interface NewsfeedClientProps {
   initialPostId?: string;
 }
 
+const shuffle = <T,>(arr: T[]): T[] => {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+};
+
 const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
-  posts,
+  posts: initialPosts,
   currentUser,
   initialPostId,
 }) => {
@@ -68,14 +77,30 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
     }, 400);
   }, [isLeaving, router]);
 
-  const initialIndex = useMemo(() => {
-    if (!initialPostId) return 0;
-    const idx = posts.findIndex((p) => p.id === initialPostId);
-    return idx >= 0 ? idx : 0;
-  }, [initialPostId, posts]);
+  // Randomize post order on mount and append more shuffled copies as the user
+  // approaches the end, so the feed scrolls forever.
+  const [posts, setPosts] = useState<SafePost[]>(() => {
+    if (!initialPosts.length) return [];
+    if (initialPostId) {
+      // Pin the requested post first, shuffle the rest behind it.
+      const target = initialPosts.find((p) => p.id === initialPostId);
+      const rest = shuffle(initialPosts.filter((p) => p.id !== initialPostId));
+      return target ? [target, ...rest] : shuffle(initialPosts);
+    }
+    return shuffle(initialPosts);
+  });
 
-  const [currentIndex, setCurrentIndex] = useState(initialIndex);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const currentPost = posts[currentIndex];
+
+
+  // Append another shuffled batch as the user nears the tail.
+  useEffect(() => {
+    if (!initialPosts.length) return;
+    if (currentIndex >= posts.length - 3) {
+      setPosts((prev) => [...prev, ...shuffle(initialPosts)]);
+    }
+  }, [currentIndex, posts.length, initialPosts]);
 
   // Interaction state
   const [likes, setLikes] = useState<string[]>([]);
@@ -102,6 +127,39 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
 
   const userId = currentUser?.id;
 
+  // Track playback for the active video so the timeline can render progress.
+  const [videoProgress, setVideoProgress] = useState(0); // 0..1
+  const [videoDuration, setVideoDuration] = useState(0);
+  const activeVideoRef = useRef<HTMLVideoElement | null>(null);
+  const setActiveVideo = useCallback((el: HTMLVideoElement | null) => {
+    activeVideoRef.current = el;
+    if (!el) return;
+    const onTime = () => {
+      if (!el.duration || !isFinite(el.duration)) return;
+      setVideoProgress(el.currentTime / el.duration);
+      setVideoDuration(el.duration);
+    };
+    const onLoaded = () => { if (isFinite(el.duration)) setVideoDuration(el.duration); };
+    el.addEventListener('timeupdate', onTime);
+    el.addEventListener('loadedmetadata', onLoaded);
+    return () => {
+      el.removeEventListener('timeupdate', onTime);
+      el.removeEventListener('loadedmetadata', onLoaded);
+    };
+  }, []);
+
+  // Reset progress when the active post changes.
+  useEffect(() => {
+    setVideoProgress(0);
+    setVideoDuration(0);
+    setPlayPauseFlash(null);
+  }, [currentPost?.id]);
+
+  // Flash a play/pause icon overlay on tap. `tick` retriggers the CSS animation
+  // even when the same icon shows twice in a row.
+  const [playPauseFlash, setPlayPauseFlash] = useState<{ kind: 'play' | 'pause'; tick: number } | null>(null);
+  const flashTickRef = useRef(0);
+
   useEffect(() => {
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = ''; };
@@ -125,12 +183,13 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
 
   const navigatePost = useCallback((direction: 1 | -1) => {
     const next = currentIndex + direction;
-    if (next >= 0 && next < posts.length && canScrollRef.current) {
+    // Bottom is unbounded — the feed grows on demand. Top stays capped at 0.
+    if (next >= 0 && canScrollRef.current) {
       canScrollRef.current = false;
       setCurrentIndex(next);
-      setTimeout(() => { canScrollRef.current = true; }, 700);
+      setTimeout(() => { canScrollRef.current = true; }, 950);
     }
-  }, [currentIndex, posts.length]);
+  }, [currentIndex]);
 
   useEffect(() => {
     if (!containerRef.current || posts.length <= 1) return;
@@ -161,7 +220,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
     const t = e.touches[0]; const dt = Date.now() - lastTouchTime.current;
     if (dt > 0) touchVelocityRef.current = (t.clientY - lastTouchY.current) / dt;
     let offset = t.clientY - touchStartY.current;
-    if ((currentIndex === 0 && offset > 0) || (currentIndex === posts.length - 1 && offset < 0)) offset *= 0.3;
+    if (currentIndex === 0 && offset > 0) offset *= 0.3;
     setDragOffset(offset); lastTouchY.current = t.clientY; lastTouchTime.current = Date.now();
   }, [isDragging, currentIndex, posts.length]);
 
@@ -404,7 +463,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
             style={{
               height: `${posts.length * 100}%`,
               transform: `translate3d(0, ${(-currentIndex * 100 / posts.length)}% ${isDragging ? ` + ${dragOffset}px` : ''}, 0)`,
-              transition: isDragging ? 'none' : 'transform 0.7s cubic-bezier(0.25, 0.1, 0.25, 1)',
+              transition: isDragging ? 'none' : 'transform 950ms cubic-bezier(0.32, 0.72, 0, 1)',
               willChange: 'transform',
             }}
           >
@@ -415,7 +474,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
 
               return (
                 <div
-                  key={post.id}
+                  key={`${post.id}-${index}`}
                   className="absolute left-0 w-full flex items-center justify-center"
                   style={{ top: `${(index / posts.length) * 100}%`, height: `${100 / posts.length}%` }}
                 >
@@ -425,8 +484,10 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                       <div
                         className="relative overflow-hidden rounded-2xl bg-stone-100 dark:bg-zinc-900"
                         style={{
-                          width: '100%', maxWidth: '460px', aspectRatio: '4 / 5',
-                          maxHeight: 'calc(100% - 48px)',
+                          aspectRatio: '9 / 16',
+                          height: 'calc(100vh - 48px)',
+                          maxHeight: 'calc(100vh - 48px)',
+                          width: 'auto',
                           opacity: (isSettled && !isLeaving) ? 1 : 0,
                           transition: 'opacity 0.4s ease-out',
                         }}
@@ -436,7 +497,76 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                             <p className="text-white/90 text-lg leading-relaxed font-medium text-center whitespace-pre-wrap">{post.content}</p>
                           </div>
                         ) : postIsVideo ? (
-                          <video key={post.id} src={post.mediaUrl || post.imageSrc || ''} className="absolute inset-0 w-full h-full object-cover" autoPlay={isCurrent} muted loop playsInline />
+                          <>
+                            <video
+                              key={post.id}
+                              ref={isCurrent ? setActiveVideo : null}
+                              src={post.mediaUrl || post.imageSrc || ''}
+                              className="absolute inset-0 w-full h-full object-cover cursor-pointer"
+                              autoPlay={isCurrent}
+                              muted
+                              loop
+                              playsInline
+                              onClick={() => {
+                                if (!isCurrent) return;
+                                const v = activeVideoRef.current;
+                                if (!v) return;
+                                flashTickRef.current += 1;
+                                if (v.paused) {
+                                  v.play().catch(() => {});
+                                  setPlayPauseFlash({ kind: 'play', tick: flashTickRef.current });
+                                } else {
+                                  v.pause();
+                                  setPlayPauseFlash({ kind: 'pause', tick: flashTickRef.current });
+                                }
+                              }}
+                            />
+                            {isCurrent && playPauseFlash && (
+                              <div
+                                key={playPauseFlash.tick}
+                                className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center"
+                                style={{ animation: 'playPauseFlash 620ms cubic-bezier(0.16, 1, 0.3, 1) both' }}
+                              >
+                                <div
+                                  className="flex items-center justify-center rounded-full"
+                                  style={{
+                                    width: 84,
+                                    height: 84,
+                                    background: 'rgba(20, 20, 22, 0.55)',
+                                    backdropFilter: 'blur(18px) saturate(160%)',
+                                    WebkitBackdropFilter: 'blur(18px) saturate(160%)',
+                                    border: '1px solid rgba(255, 255, 255, 0.18)',
+                                    boxShadow:
+                                      '0 1px 0 rgba(255,255,255,0.18) inset, 0 12px 36px -12px rgba(0,0,0,0.55), 0 2px 8px -2px rgba(0,0,0,0.35)',
+                                  }}
+                                >
+                                  {playPauseFlash.kind === 'play' ? (
+                                    <svg width="34" height="34" viewBox="0 0 24 24" fill="white" className="ml-[3px] drop-shadow-sm">
+                                      <path d="M8 5.14v13.72a1 1 0 0 0 1.55.83l11-6.86a1 1 0 0 0 0-1.66l-11-6.86A1 1 0 0 0 8 5.14z" />
+                                    </svg>
+                                  ) : (
+                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="white" className="drop-shadow-sm">
+                                      <rect x="6.5" y="5" width="4" height="14" rx="1.2" />
+                                      <rect x="13.5" y="5" width="4" height="14" rx="1.2" />
+                                    </svg>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                            {isCurrent && (
+                              <VideoTimeline
+                                progress={videoProgress}
+                                duration={videoDuration}
+                                onSeek={(ratio) => {
+                                  const v = activeVideoRef.current;
+                                  if (v && isFinite(v.duration)) {
+                                    v.currentTime = ratio * v.duration;
+                                    setVideoProgress(ratio);
+                                  }
+                                }}
+                              />
+                            )}
+                          </>
                         ) : (
                           <>
                             <Image src={post.mediaUrl || post.imageSrc || ''} alt="" fill className="object-cover" priority={Math.abs(index - currentIndex) <= 1} sizes="460px" />
@@ -455,14 +585,8 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                       </div>
                     </div>
 
-                    {/* Info panel */}
-                    <div
-                      className="w-[500px] shrink-0 flex flex-col px-14"
-                      style={{
-                        opacity: isCurrent && isSettled && !isLeaving ? 1 : 0,
-                        transition: 'opacity 0.4s ease-out',
-                      }}
-                    >
+                    {/* Info panel — slides with the media as one unit */}
+                    <div className="hidden lg:flex w-[500px] shrink-0 flex-col px-14 max-h-[calc(100%-48px)]">
                       {/* User card */}
                       <div className="flex items-center gap-3.5 mb-5">
                         <button
@@ -551,12 +675,8 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                       {isCurrent && (
                         <div className="flex-1 min-h-0">
                           <div className="flex items-center justify-between mb-3">
-                            <span className="text-[13px] font-medium text-stone-800 dark:text-zinc-200">
-                              Comments
-                            </span>
-                            <span className="text-[12px] text-stone-400 dark:text-zinc-500 tabular-nums">
-                              {comments.length}
-                            </span>
+                            <span className="text-[13px] font-medium text-stone-800 dark:text-zinc-200">Comments</span>
+                            <span className="text-[12px] text-stone-400 dark:text-zinc-500 tabular-nums">{comments.length}</span>
                           </div>
 
                           <div className="max-h-[180px] overflow-y-auto space-y-4 pr-1 scrollbar-hide">
@@ -615,20 +735,45 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                         </div>
                       )}
                     </div>
+
                   </div>
                 </div>
               );
             })}
           </div>
 
-          {/* Scroll dots */}
-          <div className="fixed right-4 sm:right-6 lg:right-8 xl:right-16 top-1/2 -translate-y-1/2 flex flex-col gap-1.5 z-20" style={{ opacity: (isSettled && !isLeaving) ? 1 : 0, transition: 'opacity 0.4s ease-out' }}>
-            {posts.map((_, i) => (
-              <button key={i} onClick={() => { if (canScrollRef.current) { canScrollRef.current = false; setCurrentIndex(i); setTimeout(() => { canScrollRef.current = true; }, 700); } }}
-                className={`rounded-full transition-all duration-300 ${i === currentIndex ? 'w-1.5 h-5 bg-gray-900 dark:bg-white' : 'w-1.5 h-1.5 bg-gray-300 dark:bg-zinc-600 hover:bg-gray-400 dark:hover:bg-zinc-500'}`}
-              />
-            ))}
+          {/* ===== NAV ARROWS — minimal, right edge ===== */}
+          <div
+            className="hidden sm:flex fixed right-6 top-1/2 -translate-y-1/2 z-30 flex-col items-center gap-2 select-none"
+            style={{
+              opacity: (isSettled && !isLeaving) ? 1 : 0,
+              transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1)',
+            }}
+          >
+            <button
+              type="button"
+              onClick={() => navigatePost(-1)}
+              disabled={currentIndex === 0}
+              aria-label="Previous post"
+              className="group w-10 h-10 rounded-full flex items-center justify-center text-stone-500 hover:text-stone-900 transition-all duration-200 enabled:hover:bg-stone-100 enabled:active:scale-[0.92] disabled:opacity-25 disabled:cursor-not-allowed dark:text-zinc-400 dark:hover:text-white dark:enabled:hover:bg-zinc-800"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 15l-6-6-6 6" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              onClick={() => navigatePost(1)}
+              aria-label="Next post"
+              className="group w-10 h-10 rounded-full flex items-center justify-center text-stone-500 hover:text-stone-900 hover:bg-stone-100 active:scale-[0.92] transition-all duration-200 dark:text-zinc-400 dark:hover:text-white dark:hover:bg-zinc-800"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </button>
           </div>
+
+
         </div>
       </div>
     </ClientProviders>
@@ -636,3 +781,131 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
 };
 
 export default NewsfeedClient;
+
+/* ---------------------------------------------------------------------------
+ * VideoTimeline — minimal, refined progress bar pinned to the bottom of the
+ * media frame. Hairline track expands on hover, click/drag to seek.
+ * ------------------------------------------------------------------------ */
+interface VideoTimelineProps {
+  progress: number; // 0..1
+  duration: number; // seconds
+  onSeek: (ratio: number) => void;
+}
+
+const formatSecs = (s: number) => {
+  if (!s || !isFinite(s)) return '0:00';
+  const m = Math.floor(s / 60);
+  const r = Math.floor(s % 60);
+  return `${m}:${r.toString().padStart(2, '0')}`;
+};
+
+const VideoTimeline: React.FC<VideoTimelineProps> = ({ progress, duration, onSeek }) => {
+  const trackRef = useRef<HTMLDivElement | null>(null);
+  const [hovering, setHovering] = useState(false);
+  const [scrubbing, setScrubbing] = useState(false);
+  const [hoverRatio, setHoverRatio] = useState<number | null>(null);
+
+  const ratioFromEvent = useCallback((clientX: number) => {
+    const el = trackRef.current;
+    if (!el) return 0;
+    const rect = el.getBoundingClientRect();
+    return Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
+  }, []);
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    e.stopPropagation();
+    (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
+    setScrubbing(true);
+    onSeek(ratioFromEvent(e.clientX));
+  };
+  const onPointerMove = (e: React.PointerEvent) => {
+    const r = ratioFromEvent(e.clientX);
+    setHoverRatio(r);
+    if (scrubbing) onSeek(r);
+  };
+  const onPointerUp = (e: React.PointerEvent) => {
+    if (scrubbing) {
+      (e.target as HTMLElement).releasePointerCapture?.(e.pointerId);
+      setScrubbing(false);
+    }
+  };
+
+  const expanded = hovering || scrubbing;
+  const displayRatio = scrubbing && hoverRatio !== null ? hoverRatio : progress;
+  const currentSecs = displayRatio * duration;
+
+  return (
+    <div
+      className="absolute left-0 right-0 bottom-0 z-20"
+      onMouseEnter={() => setHovering(true)}
+      onMouseLeave={() => { setHovering(false); setHoverRatio(null); }}
+    >
+      {/* Soft fade behind so the timeline reads on bright videos */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/35 to-transparent" />
+
+      {/* Hover-revealed time chip */}
+      <div
+        className="pointer-events-none absolute bottom-6 left-5 text-[11px] font-medium text-white/85 tabular-nums tracking-wide"
+        style={{
+          opacity: expanded ? 1 : 0,
+          transform: `translateY(${expanded ? 0 : 4}px)`,
+          transition: 'opacity 220ms ease-out, transform 220ms ease-out',
+          textShadow: '0 1px 2px rgba(0,0,0,0.4)',
+        }}
+      >
+        {formatSecs(currentSecs)} <span className="text-white/45">/ {formatSecs(duration)}</span>
+      </div>
+
+      {/* Track */}
+      <div
+        ref={trackRef}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        className="relative w-full cursor-pointer touch-none"
+        style={{
+          height: expanded ? 18 : 14, // tap target stays generous; visual track is thinner
+          paddingTop: expanded ? 14 : 12,
+          paddingBottom: 4,
+          transition: 'height 220ms ease-out, padding-top 220ms ease-out',
+        }}
+      >
+        {/* Background track */}
+        <div
+          className="relative w-full overflow-hidden rounded-full"
+          style={{
+            height: expanded ? 3 : 2,
+            background: 'rgba(255,255,255,0.22)',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
+            transition: 'height 220ms ease-out, background 220ms ease-out',
+          }}
+        >
+          {/* Progress fill */}
+          <div
+            className="absolute inset-y-0 left-0 rounded-full"
+            style={{
+              width: `${Math.max(0, Math.min(1, displayRatio)) * 100}%`,
+              background: 'linear-gradient(90deg, rgba(255,255,255,0.95), rgba(255,255,255,1))',
+              boxShadow: '0 0 8px rgba(255,255,255,0.35)',
+              transition: scrubbing ? 'none' : 'width 120ms linear',
+            }}
+          />
+        </div>
+
+        {/* Scrubber dot */}
+        <div
+          className="pointer-events-none absolute top-1/2 -translate-y-1/2 -translate-x-1/2 rounded-full bg-white"
+          style={{
+            left: `${Math.max(0, Math.min(1, displayRatio)) * 100}%`,
+            width: expanded ? 10 : 0,
+            height: expanded ? 10 : 0,
+            opacity: expanded ? 1 : 0,
+            boxShadow: '0 1px 3px rgba(0,0,0,0.35), 0 0 0 1px rgba(0,0,0,0.06)',
+            transition: 'width 220ms ease-out, height 220ms ease-out, opacity 220ms ease-out',
+          }}
+        />
+      </div>
+    </div>
+  );
+};
