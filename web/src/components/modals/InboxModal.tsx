@@ -18,6 +18,9 @@ type ResultItem = { id: string; type: ItemType; title: string; subtitle?: string
 
 // Global state to persist read conversations across modal openings
 let readConversations = new Set<string>();
+// Cache last-known conversations so reopening the inbox renders instantly
+// while a fresh fetch runs in the background.
+let conversationsCache: SafeConversation[] | null = null;
 
 function useDebounced<T>(value: T, delay = 250) {
   const [v, setV] = useState(value);
@@ -171,7 +174,7 @@ const ConversationCard: React.FC<{
               )}
             </p>
             {hasUnread && (
-              <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></div>
+              <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: 'var(--accent-color)' }}></div>
             )}
           </div>
         </div>
@@ -181,7 +184,7 @@ const ConversationCard: React.FC<{
 };
 
 const InboxModal = () => {
-  const [conversations, setConversations] = useState<SafeConversation[]>([]);
+  const [conversations, setConversations] = useState<SafeConversation[]>(conversationsCache || []);
   const messageModal = useMessageModal();
   const inboxModal = useInboxModal();
   const currentUser = inboxModal.currentUser;
@@ -206,6 +209,7 @@ const InboxModal = () => {
   const fetchConversations = async () => {
     try {
       const response = await axios.get('/api/conversations');
+      conversationsCache = response.data;
       setConversations(response.data);
       // Sync unread badge count
       const unread = response.data.filter(
@@ -217,34 +221,28 @@ const InboxModal = () => {
     }
   };
 
-  const openConversation = async (
+  const openConversation = (
     conversationId: string,
     otherUserId: string,
     otherUserName?: string | null,
     otherUserImage?: string | null
   ) => {
-    try {
-      // Add to read conversations set immediately
-      readConversations.add(conversationId);
+    // Optimistically mark as read locally and open the conversation modal.
+    readConversations.add(conversationId);
+    setConversations(prev => [...prev]);
 
-      // Trigger re-render by updating conversations state
-      setConversations(prev => [...prev]);
+    messageModal.onOpen(conversationId, otherUserId, {
+      name: otherUserName || null,
+      image: otherUserImage || null
+    });
+    inboxModal.onClose();
 
-      // Call API to mark as read
-      await axios.post('/api/messages/read', { conversationId });
-
-      // Pass user data to modal
-      messageModal.onOpen(conversationId, otherUserId, {
-        name: otherUserName || null,
-        image: otherUserImage || null
-      });
-      inboxModal.onClose();
-    } catch (error) {
-      // Remove from read set if API call failed
+    // Fire-and-forget: mark as read on the server. A failure here must not
+    // block the conversation from opening or messages from loading.
+    axios.post('/api/messages/read', { conversationId }).catch(() => {
       readConversations.delete(conversationId);
       setConversations(prev => [...prev]);
-      toast.error('Failed to update message status');
-    }
+    });
   };
 
   const startNewConversation = async (userId: string) => {

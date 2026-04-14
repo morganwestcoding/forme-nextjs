@@ -23,6 +23,10 @@ interface Message {
   };
 }
 
+// Module-level cache so reopening a conversation shows messages instantly
+// while the network refresh runs in the background.
+const messagesCache = new Map<string, Message[]>();
+
 // Generate avatar colors based on name
 const getAvatarColor = (name?: string | null) => {
   if (!name) return 'bg-gray-500';
@@ -79,13 +83,13 @@ const MessageModal: React.FC = () => {
 
   useEffect(() => {
     if (messageModal.isOpen && messageModal.conversationId) {
-      // If we have user data from the modal, use it immediately
-      if (messageModal.otherUserData) {
-        setOtherUser(messageModal.otherUserData);
-      }
+      // Hydrate from cache instantly so the convo never flashes empty.
+      const cached = messagesCache.get(messageModal.conversationId) || [];
+      setMessages(cached);
+      setOtherUser(messageModal.otherUserData || null);
 
-      fetchMessages();
-      fetchOtherUser();
+      fetchMessages(cached.length === 0);
+      if (!messageModal.otherUserData) fetchOtherUser();
     }
   }, [messageModal.isOpen, messageModal.conversationId, messageModal.otherUserId]);
 
@@ -121,9 +125,10 @@ const MessageModal: React.FC = () => {
       data.senderId !== inboxModal.currentUser?.id
     ) {
       setMessages((prev) => {
-        // Deduplicate by id
         if (prev.some((m) => m.id === data.id)) return prev;
-        return [...prev, data];
+        const next = [...prev, data];
+        if (messageModal.conversationId) messagesCache.set(messageModal.conversationId, next);
+        return next;
       });
     }
   });
@@ -146,17 +151,19 @@ const MessageModal: React.FC = () => {
     }
   });
 
-  const fetchMessages = async () => {
-    if (!messageModal.conversationId) return;
-    setIsLoading(true);
+  const fetchMessages = async (showSpinner = true) => {
+    const cid = messageModal.conversationId;
+    if (!cid) return;
+    if (showSpinner) setIsLoading(true);
     try {
-      const response = await axios.get(`/api/messages/${messageModal.conversationId}`);
-      const messagesData = response.data;
+      const response = await axios.get(`/api/messages/${cid}`);
+      const messagesData: Message[] = response.data;
+      messagesCache.set(cid, messagesData);
       setMessages(messagesData);
     } catch {
-      toast.error('Failed to load messages');
+      if (showSpinner) toast.error('Failed to load messages');
     } finally {
-      setIsLoading(false);
+      if (showSpinner) setIsLoading(false);
     }
   };
 
@@ -181,7 +188,11 @@ const MessageModal: React.FC = () => {
       const response = await axios.post(`/api/messages/${messageModal.conversationId}`, {
         content: newMessage,
       });
-      setMessages((prev) => [...prev, response.data]);
+      setMessages((prev) => {
+        const next = [...prev, response.data];
+        if (messageModal.conversationId) messagesCache.set(messageModal.conversationId, next);
+        return next;
+      });
       setNewMessage('');
       
       // Mark as read in inbox
@@ -311,9 +322,10 @@ const MessageModal: React.FC = () => {
 
       {isLoading ? (
         <div className="flex-grow flex items-center justify-center">
-          <div className="flex items-center gap-3">
-            <div className="animate-spin w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full"></div>
-            <p className="text-gray-500">Loading messages...</p>
+          <div className="flex items-center gap-1.5">
+            <div className="w-1.5 h-1.5 rounded-full animate-[bounce_1s_ease-in-out_infinite]" style={{ background: 'var(--accent-color)' }} />
+            <div className="w-1.5 h-1.5 rounded-full animate-[bounce_1s_ease-in-out_0.15s_infinite]" style={{ background: 'var(--accent-color)' }} />
+            <div className="w-1.5 h-1.5 rounded-full animate-[bounce_1s_ease-in-out_0.3s_infinite]" style={{ background: 'var(--accent-color)' }} />
           </div>
         </div>
       ) : (
@@ -355,10 +367,9 @@ const MessageModal: React.FC = () => {
                           {/* Message Bubble */}
                           <div
                             className={`inline-block w-auto max-w-full rounded-xl px-3.5 py-2.5 ${
-                              isOther
-                                ? 'bg-gray-100 text-gray-900'
-                                : 'bg-blue-500 text-white'
+                              isOther ? 'bg-neutral-100 text-neutral-900' : 'text-white'
                             } ${!isOther && showTime ? 'rounded-br-sm' : ''} ${isOther && showTime ? 'rounded-bl-sm' : ''}`}
+                            style={!isOther ? { background: 'var(--accent-color)' } : undefined}
                           >
                             <p className="whitespace-pre-wrap break-words text-[13px] leading-relaxed">
                               {message.content}
@@ -391,28 +402,27 @@ const MessageModal: React.FC = () => {
             <div ref={messagesEndRef} />
           </div>
           {/* Message Input */}
-          <div className="p-3.5 border-t border-gray-100">
+          <div className="p-3.5 border-t border-neutral-100">
             <div className="flex items-center gap-2.5">
-              <div className="flex-1 relative">
+              <div
+                className="flex-1 relative border border-neutral-200 rounded-2xl overflow-hidden"
+                style={{ background: 'linear-gradient(to right, rgb(245 245 245) 0%, rgb(241 241 241) 100%)' }}
+              >
                 <input
                   type="text"
                   value={newMessage}
                   onChange={(e) => { setNewMessage(e.target.value); emitTyping(); }}
                   onKeyPress={handleKeyPress}
                   placeholder="Type a message..."
-                  className="w-full px-4 py-2.5 pr-11 text-sm text-gray-700 placeholder-gray-400 bg-gray-50
-                           border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500
-                           focus:border-transparent focus:bg-white transition-all duration-200"
+                  className="w-full pl-4 pr-12 py-2.5 text-[14px] bg-transparent border-none outline-none
+                             text-neutral-900 placeholder-neutral-400"
                 />
                 <button
                   onClick={sendMessage}
                   disabled={!newMessage.trim()}
-                  className={`absolute right-1.5 top-1/2 transform -translate-y-1/2 w-7 h-7 rounded-xl
-                            flex items-center justify-center transition-all duration-200 ${
-                            newMessage.trim()
-                              ? 'bg-blue-500 hover:bg-blue-600 text-white'
-                              : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                          }`}
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-xl
+                             flex items-center justify-center transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed text-white"
+                  style={{ background: newMessage.trim() ? 'var(--accent-color)' : 'rgb(229 229 229)' }}
                   aria-label="Send message"
                 >
                   <Send className="w-3.5 h-3.5" />

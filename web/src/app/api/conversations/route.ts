@@ -55,7 +55,10 @@ export async function GET(request: Request) {
         lastMessage: lastMessage ? {
           content: lastMessage.content,
           createdAt: lastMessage.createdAt.toISOString(),
-          isRead: lastMessage.isRead,
+          // Treat messages the current user sent as already read for badge purposes —
+          // unread should only reflect messages received from the other party.
+          isRead: lastMessage.senderId === currentUser.id ? true : lastMessage.isRead,
+          senderId: lastMessage.senderId,
         } : undefined,
         lastMessageAt: conversation.lastMessageAt?.toISOString() || new Date().toISOString(), // Provide default value
       };

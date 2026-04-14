@@ -33,10 +33,9 @@ export async function GET(
       return apiError("Not authorized to access this conversation", 403);
     }
 
-    const messages = await prisma.message.findMany({
+    const allMessages = await prisma.message.findMany({
       where: {
         conversationId: params.conversationId,
-        deletedAt: null,
       },
       include: {
         sender: {
@@ -51,6 +50,8 @@ export async function GET(
         createdAt: 'asc'
       }
     });
+
+    const messages = allMessages.filter((m: typeof allMessages[number]) => !m.deletedAt);
 
     const safeMessages = messages.map((message: typeof messages[number]) => ({
       id: message.id,
