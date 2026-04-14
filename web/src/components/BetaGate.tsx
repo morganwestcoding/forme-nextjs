@@ -101,7 +101,7 @@ const BetaGate = ({ children }: BetaGateProps) => {
               <div className="flex flex-col">
                 <div className="relative px-8 pt-8 pb-6 text-gray-800 dark:text-gray-200">
                   <div className="flex flex-col items-center text-center mb-6">
-                    <div className="w-80 h-80 sm:w-96 sm:h-96 mb-5 relative">
+                    <div className="w-80 h-80 sm:w-96 sm:h-96 -mb-12 relative">
                       <Image
                         src="/assets/people/beaver.png"
                         alt="Beaver"

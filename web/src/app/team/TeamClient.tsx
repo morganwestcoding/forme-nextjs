@@ -439,8 +439,8 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
               onClick={() => setActiveTab(tab.key)}
               className={`px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap flex items-center gap-1.5 ${
                 activeTab === tab.key
-                  ? 'bg-stone-900 text-white'
-                  : 'bg-stone-50 text-stone-500 hover:bg-stone-100 border border-stone-200/60'
+                  ? 'bg-gradient-to-br from-stone-800 to-black text-white shadow-[0_1px_3px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.12)]'
+                  : 'bg-stone-50 text-stone-500 hover:bg-stone-100 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]'
               }`}
             >
               {tab.label}

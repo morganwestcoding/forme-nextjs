@@ -201,105 +201,60 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
     <Container>
       <PageHeader currentUser={currentUser} />
 
-      <div className="mt-6 sm:mt-10 pb-20">
-        {/* Heading-as-switcher */}
-        <div className="flex items-end justify-between gap-4 mb-6">
-          <div className="min-w-0">
-            <h1 className="text-2xl font-semibold text-stone-900 tracking-tight leading-[0.95]">
-              {directionTab === 'outgoing' ? 'My bookings' : 'Incoming'}
-            </h1>
-            <p className="text-[13px] text-stone-400 mt-2">
-              {directionTab === 'outgoing'
-                ? 'Your trips and appointments'
-                : 'Requests from your customers'}
-            </p>
-          </div>
+      <div className="mt-8 pb-20">
+        <div className="mb-8">
+          <h1 className="text-2xl font-semibold text-stone-900 tracking-tight">Bookings</h1>
+          <p className="text-[14px] text-stone-400 mt-1">
+            {directionTab === 'outgoing'
+              ? 'Your trips and appointments'
+              : 'Requests from your customers'}
+          </p>
+        </div>
+
+        {/* Tabs */}
+        <div className="flex items-center gap-2 mb-8 overflow-x-auto scrollbar-hide pb-1">
           {(() => {
-            const otherIsIncoming = directionTab === 'outgoing';
-            const otherList = otherIsIncoming ? incomingReservations : outgoingReservations;
-            const otherCount = otherList.length;
-            const otherPending = otherList.filter(
+            const incomingPending = incomingReservations.filter(
               (r) => r.status === 'pending' && new Date(r.date) >= now,
             ).length;
-            const hasAttention = otherIsIncoming && otherPending > 0;
-            return (
-              <button
-                onClick={() => setDirectionTab(otherIsIncoming ? 'incoming' : 'outgoing')}
-                className={`group shrink-0 inline-flex items-center gap-2.5 pl-5 pr-3 h-11 rounded-xl text-[13px] font-semibold transition-all border ${
-                  hasAttention
-                    ? 'bg-stone-900 text-white border-stone-900 hover:bg-stone-800 shadow-[0_4px_14px_-2px_rgba(0,0,0,0.25)]'
-                    : 'bg-white text-stone-700 border-stone-200 hover:border-stone-300 hover:bg-stone-50'
-                }`}
-              >
-                <span>Switch to {otherIsIncoming ? 'Incoming' : 'Mine'}</span>
-                {otherCount > 0 && (
-                  <span
-                    className={`inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 rounded-full text-[11px] font-bold tabular-nums ${
-                      hasAttention
-                        ? 'bg-amber-400 text-stone-900'
-                        : 'bg-stone-100 text-stone-700'
-                    }`}
-                  >
-                    {otherCount}
-                  </span>
-                )}
-                <ArrowLeftRight className="w-3.5 h-3.5 opacity-70 group-hover:translate-x-0.5 transition-transform" strokeWidth={2.2} />
-              </button>
-            );
+            const tabs: Array<{ key: string; label: string; count: number; dir: DirectionTab; time: TimeTab; attention?: boolean }> = [
+              { key: 'mine-upcoming', label: 'Upcoming', count: outgoingReservations.filter((r) => new Date(r.date) >= now).length, dir: 'outgoing', time: 'upcoming' },
+              { key: 'mine-past', label: 'Past', count: outgoingReservations.filter((r) => new Date(r.date) < now).length, dir: 'outgoing', time: 'past' },
+              { key: 'incoming', label: 'Incoming', count: incomingReservations.length, dir: 'incoming', time: 'upcoming', attention: incomingPending > 0 },
+            ];
+            return tabs.map((tab) => {
+              const active = directionTab === tab.dir && timeTab === tab.time;
+              return (
+                <button
+                  key={tab.key}
+                  onClick={() => {
+                    setDirectionTab(tab.dir);
+                    setTimeTab(tab.time);
+                  }}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap ${
+                    active
+                      ? 'bg-gradient-to-br from-stone-800 to-black text-white shadow-[0_1px_3px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.12)]'
+                      : 'bg-stone-50 text-stone-500 hover:bg-stone-100 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]'
+                  }`}
+                >
+                  {tab.label}
+                  {tab.count > 0 && (
+                    <span
+                      className={`text-[11px] tabular-nums ${
+                        active ? 'text-white/60' : tab.attention ? 'text-amber-600' : 'text-stone-400'
+                      }`}
+                    >
+                      {tab.count}
+                    </span>
+                  )}
+                </button>
+              );
+            });
           })()}
-        </div>
 
-        {nextTrip ? (
-          <NextTripHero
-            trip={nextTrip}
-            direction={directionTab}
-            disabled={processingId === nextTrip.id}
-            onCancel={() => onCancel(nextTrip.id)}
-            onAccept={() => onAccept(nextTrip.id)}
-            onDecline={() => onDecline(nextTrip.id)}
-            onOpen={() => router.push(`/listings/${(nextTrip.listing as any).id}`)}
-          />
-        ) : (
-          <NoUpcomingHero
-            direction={directionTab}
-            onBrowse={() => router.push('/')}
-            lifetime={baseList.length}
-          />
-        )}
-
-        {/* Stats */}
-        <div className="mt-6 grid grid-cols-3 gap-3 sm:gap-4">
-          <StatCard label="Next 7 days" value={stats.next7.toString()} />
-          <StatCard
-            label={directionTab === 'incoming' ? 'Pending action' : 'Pending'}
-            value={stats.pending.toString()}
-          />
-          <StatCard
-            label={directionTab === 'incoming' ? 'Revenue this month' : 'Spend this month'}
-            value={`$${stats.monthValue}`}
-          />
-        </div>
-
-        {/* Controls */}
-        <div className="mt-10 mb-6 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
-          <div className="flex items-baseline gap-3 self-start">
-            <h2 className="text-[22px] sm:text-[24px] font-semibold text-stone-900 tracking-tight leading-none">
-              {timeTab === 'upcoming' ? 'Upcoming' : 'Past'}
-            </h2>
-            <span className="text-[14px] text-stone-400 font-medium tabular-nums">
-              {timeTab === 'upcoming' ? upcomingAll.length : pastAll.length}
-            </span>
-            <button
-              onClick={() => setTimeTab(timeTab === 'upcoming' ? 'past' : 'upcoming')}
-              className="ml-2 text-[12px] text-stone-400 hover:text-stone-900 transition-colors"
-            >
-              · show {timeTab === 'upcoming' ? 'past' : 'upcoming'}
-            </button>
-          </div>
-
-          <div className="relative flex-1 sm:max-w-sm sm:ml-auto">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" strokeWidth={2} />
+          <div className="relative ml-auto w-full sm:w-72">
             <input
+              type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder={
@@ -307,8 +262,11 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
                   ? 'Search by service, customer, place…'
                   : 'Search trips, shops, places…'
               }
-              className="w-full h-10 pl-10 pr-4 rounded-full bg-stone-100 border border-stone-200/70 text-[13px] text-stone-900 placeholder:text-stone-400 focus:outline-none focus:bg-white focus:border-stone-300 transition-all"
+              className="w-full bg-stone-50 dark:bg-zinc-800/50 border border-stone-200 dark:border-zinc-700/50 rounded-xl px-4 py-2.5 pr-11 text-[13px] text-stone-800 dark:text-white placeholder-stone-400 dark:placeholder-zinc-500 outline-none focus:border-stone-300 dark:focus:border-zinc-600 focus:bg-white dark:focus:bg-zinc-800 transition-all"
             />
+            <div className="absolute right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-xl flex items-center justify-center text-stone-400">
+              <Search className="w-4 h-4" strokeWidth={2} />
+            </div>
           </div>
         </div>
 
@@ -462,19 +420,19 @@ function NextTripHero({
                 <Image src={image} alt={listing.title} fill sizes="240px" className="object-cover" />
               </button>
               <div className="flex items-baseline justify-between gap-2">
-                <div>
-                  <div className="text-[11px] font-medium text-amber-300/90 leading-none">
+                <div className="flex items-baseline gap-2">
+                  <div className="text-[11px] font-medium text-amber-300/90">
                     {format(date, 'EEE, MMM')}
                   </div>
-                  <div className="text-[28px] font-bold tabular-nums leading-none mt-1.5 tracking-tight">
+                  <div className="text-[18px] font-bold tabular-nums tracking-tight">
                     {format(date, 'd')}
                   </div>
                 </div>
-                <div className="text-right">
-                  <div className="text-[11px] font-medium text-white/45 leading-none">
+                <div className="flex items-baseline gap-2 text-right">
+                  <div className="text-[11px] font-medium text-white/45">
                     Time
                   </div>
-                  <div className="text-[18px] font-semibold text-white tabular-nums leading-none mt-1.5">
+                  <div className="text-[18px] font-semibold text-white tabular-nums">
                     {formatTime(trip.time)}
                   </div>
                 </div>
@@ -533,19 +491,29 @@ function NextTripHero({
                 </div>
               </div>
 
-              <div className="mb-2.5">
-                <div className="text-[11px] font-medium text-white/45 leading-none">
-                  Place
+              <div className="mt-auto flex items-baseline justify-center gap-6 min-w-0">
+                <div className="flex items-baseline gap-2 min-w-0">
+                  <div className="text-[11px] font-medium text-white/45 shrink-0">
+                    Place
+                  </div>
+                  <div className="text-[18px] font-semibold text-white truncate">
+                    {!isIncoming && listing.address ? listing.address : '—'}
+                  </div>
                 </div>
-                <div className="text-lg font-semibold text-white leading-none mt-1.5 truncate">
-                  {!isIncoming && listing.address ? listing.address : '—'}
+                <div className="flex items-baseline gap-2 shrink-0">
+                  <div className="text-[11px] font-medium text-white/45">
+                    Booking
+                  </div>
+                  <div className="text-[18px] font-semibold text-white tabular-nums">
+                    #{bookingShortId}
+                  </div>
                 </div>
               </div>
             </div>
           </Quadrant>
 
           {/* Q3 (was Q4): Receipt-style summary */}
-          <Quadrant divider>
+          <Quadrant>
             <div className="h-full flex flex-col justify-center items-center gap-3 text-center">
               {/* Total label */}
               <span className="text-[12px] font-medium text-white/55">
@@ -559,22 +527,12 @@ function NextTripHero({
                 <span className="absolute -left-5 top-2 text-[24px] font-semibold text-white/50">$</span>
                 {trip.totalPrice}
               </div>
-
-              {/* Booking # */}
-              <div className="mt-3 text-center">
-                <div className="text-[11px] font-medium text-white/45 leading-none">
-                  Booking
-                </div>
-                <div className="text-lg font-semibold text-white tabular-nums leading-none mt-1.5">
-                  #{bookingShortId}
-                </div>
-              </div>
             </div>
           </Quadrant>
 
           {/* Q4 (was Q3): Action buttons aligned with listing image */}
           <Quadrant>
-            <div className="flex flex-col h-full min-h-[220px] gap-3 w-full">
+            <div className="flex flex-col h-full min-h-[240px] gap-3 w-full">
             {isIncoming && isPending ? (
               <div className="grid grid-cols-2 grid-rows-2 gap-2 flex-1 w-full">
                 <button
@@ -632,14 +590,17 @@ function NextTripHero({
                 />
               </div>
             )}
-            <div className="h-[44px] shrink-0 flex items-center justify-center">
+            <div className="shrink-0 flex items-baseline justify-center gap-2">
+              <span className="text-[11px] font-medium text-white/45">
+                Status
+              </span>
               <span
-                className={`text-[12px] font-medium tracking-wide ${
+                className={`text-[18px] font-semibold tabular-nums ${
                   status === 'pending'
                     ? 'text-amber-200/85'
                     : status === 'accepted'
                     ? 'text-emerald-200/85'
-                    : 'text-white/55'
+                    : 'text-white'
                 }`}
               >
                 {STATUS_LABELS[status]}
@@ -821,7 +782,7 @@ function Quadrant({
   spaced?: boolean;
 }) {
   return (
-    <div className={`relative min-h-[220px] flex ${divider ? 'pl-5 border-l border-white/10' : spaced ? 'pl-9' : ''}`}>
+    <div className={`relative min-h-[240px] flex ${divider ? 'pl-5 border-l border-white/10' : spaced ? 'pl-9' : ''}`}>
       <div className="w-full">{children}</div>
     </div>
   );
@@ -1017,12 +978,14 @@ function StatCard({
       {accent === 'amber' && (
         <div aria-hidden className="absolute -top-10 -right-10 w-28 h-28 rounded-full bg-amber-200/30 blur-2xl" />
       )}
-      <p className="relative text-[15px] font-semibold tracking-wider text-stone-400 uppercase">
-        {label}
-      </p>
-      <p className="relative mt-1.5 text-[22px] sm:text-[26px] font-semibold text-stone-900 tabular-nums tracking-tight leading-none">
-        {value}
-      </p>
+      <div className="relative flex items-center gap-2">
+        <p className="text-[13px] font-semibold tracking-wider text-stone-400 uppercase">
+          {label}
+        </p>
+        <p className="text-[18px] sm:text-[20px] font-semibold text-stone-900 tabular-nums tracking-tight leading-none">
+          {value}
+        </p>
+      </div>
     </div>
   );
 }
@@ -1043,15 +1006,18 @@ function TimelineGroup({
   return (
     <section>
       <div className="flex items-baseline gap-3 mb-5">
-        <h2 className="text-[18px] font-semibold text-stone-900 tracking-tight">{label}</h2>
-        {sublabel && <span className="text-[12px] text-stone-400 font-medium">{sublabel}</span>}
-        <span className="ml-auto inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 rounded-full bg-stone-100 text-stone-500 text-[15px] font-semibold tabular-nums">
-          {count}
-        </span>
+        <h2 className="text-[18px] font-semibold text-neutral-900 tracking-[-0.015em]">{label}</h2>
+        {sublabel && (
+          <span
+            className="text-[12px] text-stone-400"
+            style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}
+          >
+            {sublabel}
+          </span>
+        )}
       </div>
       <div className="relative">
-        <div className="absolute left-[27px] top-2 bottom-2 w-px bg-gradient-to-b from-stone-200 via-stone-200 to-transparent hidden sm:block" />
-        <div className="space-y-3">{children}</div>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">{children}</div>
       </div>
     </section>
   );
@@ -1120,210 +1086,102 @@ function TripRow({
       }}
       className="relative group"
     >
-      <div className="absolute left-[22px] top-[34px] hidden sm:block">
-        <div
-          className={`relative w-2.5 h-2.5 rounded-full border-2 border-white ${
-            isNext ? 'bg-amber-500' : past ? 'bg-stone-300' : 'bg-stone-900'
-          } shadow-[0_0_0_3px_rgba(245,245,244,1)]`}
-        >
-          {isNext && (
-            <span
-              className="absolute inset-0 rounded-full bg-amber-400"
-              style={{ animation: 'pulseDot 1.8s ease-out infinite' }}
-            />
-          )}
-        </div>
-      </div>
-
       <div
         onClick={onOpen}
-        className={`sm:ml-12 cursor-pointer rounded-2xl bg-white border transition-all overflow-hidden hover:-translate-y-0.5 hover:shadow-[0_18px_40px_-24px_rgba(0,0,0,0.22)] ${
+        className={`relative cursor-pointer rounded-3xl bg-white border transition-all overflow-hidden hover:-translate-y-0.5 hover:shadow-[0_24px_48px_-28px_rgba(0,0,0,0.25)] ${
           isNext
-            ? 'border-stone-900/15 shadow-[0_8px_24px_-16px_rgba(0,0,0,0.18)]'
+            ? 'border-stone-900/15 shadow-[0_12px_32px_-20px_rgba(0,0,0,0.22)]'
             : 'border-stone-200/70 hover:border-stone-300'
         }`}
       >
-        <div className="flex items-stretch">
-          <div className="flex-shrink-0 w-[70px] sm:w-[84px] py-4 sm:py-5 px-3 flex flex-col items-center justify-center border-r border-stone-100 bg-gradient-to-b from-stone-50/60 to-white">
-            <div className="text-[9px] font-bold tracking-[0.18em] text-stone-400 uppercase">
+        <div className="relative flex items-stretch">
+          {/* Date — keep as-is, on soft bg */}
+          <div className="relative flex-shrink-0 w-[96px] flex flex-col items-center justify-center py-6 bg-gradient-to-b from-stone-50/80 to-white">
+            <div className="text-[11px] font-medium text-stone-400">
               {format(date, 'MMM')}
             </div>
-            <div className="text-[24px] sm:text-[28px] font-semibold text-stone-900 tabular-nums leading-none mt-0.5">
+            <div className="text-[34px] font-semibold text-stone-900 tabular-nums leading-none mt-1.5">
               {format(date, 'd')}
             </div>
-            <div className="text-[10px] font-medium text-stone-400 mt-1 uppercase tracking-wide">
+            <div className="text-[11px] font-medium text-stone-400 mt-2">
               {format(date, 'EEE')}
             </div>
           </div>
 
-          <div className="relative shrink-0 w-[88px] sm:w-[120px] bg-stone-100 overflow-hidden">
-            <Image
-              src={image}
-              alt={listing.title}
-              fill
-              sizes="120px"
-              className={`object-cover transition-transform duration-700 ease-out group-hover:scale-105 ${
-                past ? 'grayscale-[35%]' : ''
-              }`}
-            />
-            {today && !past && (
-              <div className="absolute top-1.5 left-1.5 px-1.5 h-5 inline-flex items-center rounded-full bg-amber-500 text-white text-[9px] font-bold tracking-wider uppercase shadow-sm">
-                Today
-              </div>
-            )}
-            {isIncoming && isPending && (
-              <div className="absolute bottom-1.5 left-1.5 px-1.5 h-5 inline-flex items-center rounded-full bg-amber-500 text-white text-[9px] font-bold tracking-wider uppercase shadow-sm">
-                Action
-              </div>
-            )}
-          </div>
+          {/* Hairline */}
+          <div className="w-px bg-gradient-to-b from-transparent via-stone-200/80 to-transparent" />
 
-          <div className="min-w-0 flex-1 p-4 sm:p-5 flex flex-col justify-center">
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0 flex-1">
-                <h3 className="text-[15px] sm:text-[16px] font-semibold text-stone-900 leading-tight truncate">
+          {/* Main content */}
+          <div className="flex-1 min-w-0 px-5 py-5 flex flex-col justify-center gap-3">
+            <div className="flex items-start justify-between gap-4">
+              <div className="min-w-0">
+                <p className={`text-[11px] leading-none ${ROW_TEXT_COLORS[status]}`} style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}>
+                  {STATUS_LABELS[status]}
+                  {today && !past && <span className="text-amber-600 ml-2">· Today</span>}
+                </p>
+                <h3 className="mt-1.5 text-[18px] font-semibold text-neutral-900 tracking-[-0.015em] leading-tight truncate">
                   {reservation.serviceName}
                 </h3>
-                <p className="text-[12px] sm:text-[13px] text-stone-500 mt-0.5 truncate">
+                <p className="text-[12px] text-stone-500 truncate mt-0.5">
                   {isIncoming ? `${customerName} · ${listing.title}` : listing.title}
                 </p>
-                <div className="mt-2 flex items-center flex-wrap gap-x-3 gap-y-1 text-[11.5px] text-stone-400">
-                  <span className="inline-flex items-center gap-1">
-                    <Clock className="w-3 h-3" strokeWidth={2.2} />
-                    {formatTime(reservation.time)}
-                  </span>
-                  {!isIncoming && employeeName && (
-                    <span className="inline-flex items-center gap-1 truncate max-w-[140px]">
-                      <UserIcon className="w-3 h-3" strokeWidth={2.2} />
-                      <span className="truncate">{employeeName}</span>
-                    </span>
-                  )}
-                  {!isIncoming && listing.address && (
-                    <span className="hidden sm:inline-flex items-center gap-1 truncate max-w-[200px]">
-                      <MapPin className="w-3 h-3" strokeWidth={2.2} />
-                      <span className="truncate">{listing.address}</span>
-                    </span>
-                  )}
-                </div>
               </div>
 
-              <div className="shrink-0 flex flex-col items-end gap-2">
-                <StatusPill status={status} />
+              <div className="shrink-0 text-right">
                 <div
-                  className={`text-[20px] sm:text-[22px] font-bold tabular-nums tracking-tight leading-none ${
-                    isRefunded ? 'text-stone-400 line-through' : 'text-stone-900'
+                  className={`text-[26px] font-black tabular-nums tracking-tight leading-none ${
+                    isRefunded ? 'text-stone-400 line-through' : 'text-neutral-900'
                   }`}
                 >
-                  <span className="text-[12px] font-semibold text-stone-400 align-top mr-0.5">$</span>
-                  {reservation.totalPrice}
+                  ${reservation.totalPrice}
+                </div>
+                <div className="text-[11px] font-medium text-stone-400 mt-1">
+                  {formatTime(reservation.time)}
                 </div>
               </div>
             </div>
 
-            <div className="mt-3 flex items-center gap-1.5 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-              {isIncoming ? (
-                past ? (
-                  reservation.user?.email && (
-                    <RowAction
-                      href={`mailto:${reservation.user.email}`}
-                      icon={<UserIcon className="w-3 h-3" strokeWidth={2.2} />}
-                      label="Contact"
-                    />
-                  )
-                ) : (
-                  <>
-                    {reservation.user?.email && (
-                      <RowAction
-                        href={`mailto:${reservation.user.email}`}
-                        icon={<UserIcon className="w-3 h-3" strokeWidth={2.2} />}
-                        label="Contact"
-                      />
-                    )}
-                  </>
-                )
-              ) : past ? (
-                <>
-                  <RowAction
-                    onClick={(e) => { e.stopPropagation(); onRebook(); }}
-                    icon={<RotateCw className="w-3 h-3" strokeWidth={2.2} />}
-                    label="Book again"
-                  />
-                  <RowAction
-                    onClick={(e) => { e.stopPropagation(); onOpen(); }}
-                    icon={<Star className="w-3 h-3" strokeWidth={2.2} />}
-                    label="Review"
-                  />
-                  {canRefund && (
-                    <RowAction
-                      onClick={(e) => { e.stopPropagation(); onRefund(); }}
-                      disabled={disabled}
-                      icon={<Undo2 className="w-3 h-3" strokeWidth={2.2} />}
-                      label="Request refund"
-                    />
-                  )}
-                </>
-              ) : (
-                <>
-                  {listing.address && (
-                    <RowAction
-                      href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(listing.address)}`}
-                      external
-                      icon={<Navigation className="w-3 h-3" strokeWidth={2.2} />}
-                      label="Directions"
-                    />
-                  )}
-                  {listing.phoneNumber && (
-                    <RowAction
-                      href={`tel:${listing.phoneNumber}`}
-                      icon={<Phone className="w-3 h-3" strokeWidth={2.2} />}
-                      label="Call"
-                    />
-                  )}
-                  {status !== 'cancelled' && (
-                    <RowAction
-                      onClick={(e) => { e.stopPropagation(); onCancel(); }}
-                      disabled={disabled}
-                      icon={<X className="w-3 h-3" strokeWidth={2.5} />}
-                      label="Cancel"
-                      danger
-                    />
-                  )}
-                </>
-              )}
+            <div className="flex items-center gap-3 pt-2 border-t border-stone-100">
+              <div className="relative shrink-0 w-8 h-8 rounded-full overflow-hidden bg-stone-100 ring-1 ring-stone-200/60">
+                <Image
+                  src={image}
+                  alt={listing.title}
+                  fill
+                  sizes="32px"
+                  className={`object-cover ${past ? 'grayscale-[35%]' : ''}`}
+                />
+              </div>
+              <div className="min-w-0 text-[12px] text-stone-500 truncate">
+                {!isIncoming && employeeName
+                  ? <>with <span className="text-stone-700 font-medium">{employeeName}</span></>
+                  : !isIncoming && listing.address
+                  ? listing.address
+                  : isIncoming && reservation.user?.email
+                  ? reservation.user.email
+                  : listing.title}
+              </div>
             </div>
           </div>
         </div>
 
         {isIncoming && isPending && !past && (
-          <div className="border-t border-stone-100 bg-gradient-to-b from-amber-50/40 to-white px-4 sm:px-5 py-3 flex items-center gap-2">
-            <div className="flex items-center gap-1.5 text-[11px] text-amber-700 font-semibold">
-              <span className="relative inline-flex w-1.5 h-1.5">
-                <span
-                  className="absolute inset-0 rounded-full bg-amber-500"
-                  style={{ animation: 'pulseDot 1.8s ease-out infinite' }}
-                />
-                <span className="relative inline-flex w-1.5 h-1.5 rounded-full bg-amber-500" />
-              </span>
-              Awaiting your response
-            </div>
-            <div className="ml-auto flex items-center gap-2">
-              <button
-                onClick={(e) => { e.stopPropagation(); onDecline(); }}
-                disabled={disabled}
-                className="inline-flex items-center gap-1.5 px-3.5 h-8 rounded-full text-[12px] font-semibold text-stone-600 bg-white border border-stone-200 hover:text-red-600 hover:border-red-200 hover:bg-red-50 transition-all disabled:opacity-50"
-              >
-                <X className="w-3.5 h-3.5" strokeWidth={2.6} />
-                Decline
-              </button>
-              <button
-                onClick={(e) => { e.stopPropagation(); onAccept(); }}
-                disabled={disabled}
-                className="inline-flex items-center gap-1.5 px-4 h-8 rounded-full text-[12px] font-semibold text-white bg-gradient-to-b from-emerald-500 to-emerald-600 border border-emerald-400/60 shadow-[0_2px_8px_-1px_rgba(16,185,129,0.45),inset_0_1px_0_rgba(255,255,255,0.25)] hover:from-emerald-400 hover:to-emerald-500 transition-all disabled:opacity-50"
-              >
-                <Check className="w-3.5 h-3.5" strokeWidth={2.8} />
-                Accept
-              </button>
-            </div>
+          <div className="border-t border-stone-100 bg-gradient-to-b from-amber-50/40 to-white px-4 py-2.5 flex items-center gap-2">
+            <button
+              onClick={(e) => { e.stopPropagation(); onDecline(); }}
+              disabled={disabled}
+              className="flex-1 inline-flex items-center justify-center gap-1.5 h-8 rounded-full text-[12px] font-semibold text-stone-600 bg-white border border-stone-200 hover:text-red-600 hover:border-red-200 hover:bg-red-50 transition-all disabled:opacity-50"
+            >
+              <X className="w-3.5 h-3.5" strokeWidth={2.6} />
+              Decline
+            </button>
+            <button
+              onClick={(e) => { e.stopPropagation(); onAccept(); }}
+              disabled={disabled}
+              className="flex-1 inline-flex items-center justify-center gap-1.5 h-8 rounded-full text-[12px] font-semibold text-white bg-gradient-to-b from-emerald-500 to-emerald-600 border border-emerald-400/60 shadow-[0_2px_8px_-1px_rgba(16,185,129,0.45),inset_0_1px_0_rgba(255,255,255,0.25)] hover:from-emerald-400 hover:to-emerald-500 transition-all disabled:opacity-50"
+            >
+              <Check className="w-3.5 h-3.5" strokeWidth={2.8} />
+              Accept
+            </button>
           </div>
         )}
       </div>

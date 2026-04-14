@@ -95,8 +95,8 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
               onClick={() => setActiveTab(tab.key)}
               className={`flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap ${
                 activeTab === tab.key
-                  ? 'bg-stone-900 text-white'
-                  : 'bg-stone-50 text-stone-500 hover:bg-stone-100 border border-stone-200/60'
+                  ? 'bg-gradient-to-br from-stone-800 to-black text-white shadow-[0_1px_3px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.12)]'
+                  : 'bg-stone-50 text-stone-500 hover:bg-stone-100 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]'
               }`}
             >
               {tab.label}
