@@ -90,6 +90,7 @@ export default async function getFavoritePosts(): Promise<SafePost[]> {
         favoriteIds: post.user.favoriteIds || [],
         managedListings: post.user.managedListings || [],
         role: post.user.role,
+        jobTitle: post.user.jobTitle || null,
         stripeConnectAccountId: post.user.stripeConnectAccountId || null,
         stripeConnectOnboardingComplete: post.user.stripeConnectOnboardingComplete || false,
         stripeConnectDetailsSubmitted: post.user.stripeConnectDetailsSubmitted || false,

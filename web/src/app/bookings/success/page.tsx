@@ -103,7 +103,7 @@ export default function SuccessPage() {
               Go home
             </Link>
             <Link
-              href="/bookings/trips"
+              href="/bookings/reservations"
               className="flex-1 py-3 rounded-2xl bg-stone-900 text-white text-[13px] font-medium hover:bg-stone-800 transition-colors"
             >
               My trips
@@ -203,7 +203,7 @@ export default function SuccessPage() {
             Keep browsing
           </Link>
           <Link
-            href="/bookings/trips"
+            href="/bookings/reservations"
             className="flex-1 text-center py-3.5 rounded-2xl bg-stone-900 text-white text-[13px] font-medium hover:bg-stone-800 transition-colors"
           >
             View my trips

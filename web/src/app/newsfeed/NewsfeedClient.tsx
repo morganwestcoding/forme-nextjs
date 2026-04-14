@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { flushSync } from 'react-dom';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -77,30 +78,71 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
     }, 400);
   }, [isLeaving, router]);
 
-  // Randomize post order on mount and append more shuffled copies as the user
-  // approaches the end, so the feed scrolls forever.
-  const [posts, setPosts] = useState<SafePost[]>(() => {
+  // Stable per-instance keys so prepending/appending batches doesn't remount
+  // existing slides. Each entry pairs a post with a monotonic key.
+  type FeedItem = { post: SafePost; key: string };
+  const seqRef = useRef(0);
+  const wrapBatch = useCallback((arr: SafePost[]): FeedItem[] => {
+    return arr.map((p) => {
+      seqRef.current += 1;
+      return { post: p, key: `${p.id}-${seqRef.current}` };
+    });
+  }, []);
+
+  // Initial state: pre-prepend one shuffled batch ABOVE the starting batch so
+  // there's already headroom to scroll up at any time. The user lands on the
+  // first item of the second batch (or the requested post, if any).
+  const [posts, setPosts] = useState<FeedItem[]>(() => {
     if (!initialPosts.length) return [];
-    if (initialPostId) {
-      // Pin the requested post first, shuffle the rest behind it.
-      const target = initialPosts.find((p) => p.id === initialPostId);
-      const rest = shuffle(initialPosts.filter((p) => p.id !== initialPostId));
-      return target ? [target, ...rest] : shuffle(initialPosts);
-    }
-    return shuffle(initialPosts);
+    const first = (() => {
+      if (initialPostId) {
+        const target = initialPosts.find((p) => p.id === initialPostId);
+        const rest = shuffle(initialPosts.filter((p) => p.id !== initialPostId));
+        return target ? [target, ...rest] : shuffle(initialPosts);
+      }
+      return shuffle(initialPosts);
+    })();
+    seqRef.current = 0;
+    const above = wrapBatch(shuffle(initialPosts));
+    const below = wrapBatch(first);
+    return [...above, ...below];
   });
 
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const currentPost = posts[currentIndex];
+  const [currentIndex, setCurrentIndex] = useState(initialPosts.length);
+  const currentPost = posts[currentIndex]?.post;
 
+  // Suppress the slide transition for one frame whenever we prepend, so the
+  // index re-anchoring doesn't visually animate.
+  const [skipTransitionTick, setSkipTransitionTick] = useState(0);
 
-  // Append another shuffled batch as the user nears the tail.
+  // Grow the feed in either direction as the user approaches an edge.
   useEffect(() => {
     if (!initialPosts.length) return;
+    const batchLen = initialPosts.length;
+
+    // Approaching the tail — append a fresh shuffle.
     if (currentIndex >= posts.length - 3) {
-      setPosts((prev) => [...prev, ...shuffle(initialPosts)]);
+      setPosts((prev) => [...prev, ...wrapBatch(shuffle(initialPosts))]);
+      return;
     }
-  }, [currentIndex, posts.length, initialPosts]);
+
+    // Approaching the head — prepend a fresh shuffle and re-anchor index.
+    if (currentIndex < 3) {
+      const prepend = wrapBatch(shuffle(initialPosts));
+      flushSync(() => {
+        setSkipTransitionTick((t) => t + 1);
+        setPosts((prev) => [...prepend, ...prev]);
+        setCurrentIndex((idx) => idx + batchLen);
+      });
+      // Re-enable transitions on the next frame.
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => setSkipTransitionTick((t) => t + 1));
+      });
+    }
+  }, [currentIndex, posts.length, initialPosts, wrapBatch]);
+
+  // Whether transitions are currently suppressed (toggled off → on by ticks).
+  const transitionDisabled = skipTransitionTick % 2 === 1;
 
   // Interaction state
   const [likes, setLikes] = useState<string[]>([]);
@@ -160,6 +202,20 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
   const [playPauseFlash, setPlayPauseFlash] = useState<{ kind: 'play' | 'pause'; tick: number } | null>(null);
   const flashTickRef = useRef(0);
 
+  // Detect whether the comments list overflows its 180px window. When it does,
+  // we surface a "View all" affordance in the section header instead of the count.
+  const commentsScrollRef = useRef<HTMLDivElement | null>(null);
+  const [commentsOverflow, setCommentsOverflow] = useState(false);
+  useEffect(() => {
+    const el = commentsScrollRef.current;
+    if (!el) { setCommentsOverflow(false); return; }
+    const measure = () => setCommentsOverflow(el.scrollHeight > el.clientHeight + 1);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [comments, currentPost?.id]);
+
   useEffect(() => {
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = ''; };
@@ -182,14 +238,13 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
   }, [currentPost?.id]);
 
   const navigatePost = useCallback((direction: 1 | -1) => {
-    const next = currentIndex + direction;
-    // Bottom is unbounded — the feed grows on demand. Top stays capped at 0.
-    if (next >= 0 && canScrollRef.current) {
+    // Both directions are unbounded — the feed grows on demand at either edge.
+    if (canScrollRef.current) {
       canScrollRef.current = false;
-      setCurrentIndex(next);
+      setCurrentIndex((idx) => idx + direction);
       setTimeout(() => { canScrollRef.current = true; }, 950);
     }
-  }, [currentIndex]);
+  }, []);
 
   useEffect(() => {
     if (!containerRef.current || posts.length <= 1) return;
@@ -220,7 +275,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
     const t = e.touches[0]; const dt = Date.now() - lastTouchTime.current;
     if (dt > 0) touchVelocityRef.current = (t.clientY - lastTouchY.current) / dt;
     let offset = t.clientY - touchStartY.current;
-    if (currentIndex === 0 && offset > 0) offset *= 0.3;
+    // Edges are unbounded; no friction needed.
     setDragOffset(offset); lastTouchY.current = t.clientY; lastTouchTime.current = Date.now();
   }, [isDragging, currentIndex, posts.length]);
 
@@ -463,18 +518,19 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
             style={{
               height: `${posts.length * 100}%`,
               transform: `translate3d(0, ${(-currentIndex * 100 / posts.length)}% ${isDragging ? ` + ${dragOffset}px` : ''}, 0)`,
-              transition: isDragging ? 'none' : 'transform 950ms cubic-bezier(0.32, 0.72, 0, 1)',
+              transition: (isDragging || transitionDisabled) ? 'none' : 'transform 950ms cubic-bezier(0.32, 0.72, 0, 1)',
               willChange: 'transform',
             }}
           >
-            {posts.map((post, index) => {
+            {posts.map((item, index) => {
+              const post = item.post;
               const postIsVideo = post.mediaType === 'video';
               const postIsText = !post.imageSrc && !post.mediaUrl;
               const isCurrent = index === currentIndex;
 
               return (
                 <div
-                  key={`${post.id}-${index}`}
+                  key={item.key}
                   className="absolute left-0 w-full flex items-center justify-center"
                   style={{ top: `${(index / posts.length) * 100}%`, height: `${100 / posts.length}%` }}
                 >
@@ -676,10 +732,21 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                         <div className="flex-1 min-h-0">
                           <div className="flex items-center justify-between mb-3">
                             <span className="text-[13px] font-medium text-stone-800 dark:text-zinc-200">Comments</span>
-                            <span className="text-[12px] text-stone-400 dark:text-zinc-500 tabular-nums">{comments.length}</span>
+                            {commentsOverflow && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const el = commentsScrollRef.current;
+                                  if (el) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+                                }}
+                                className="text-[12px] font-medium text-stone-500 hover:text-stone-900 dark:text-zinc-400 dark:hover:text-white transition-colors"
+                              >
+                                View all
+                              </button>
+                            )}
                           </div>
 
-                          <div className="max-h-[180px] overflow-y-auto space-y-4 pr-1 scrollbar-hide">
+                          <div ref={commentsScrollRef} className="max-h-[180px] overflow-y-auto space-y-4 pr-1 scrollbar-hide">
                             {comments.length === 0 ? (
                               <div className="py-6 text-center">
                                 <p className="text-[13px] text-stone-400 dark:text-zinc-500">Start the conversation</p>
@@ -753,9 +820,8 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
             <button
               type="button"
               onClick={() => navigatePost(-1)}
-              disabled={currentIndex === 0}
               aria-label="Previous post"
-              className="group w-10 h-10 rounded-full flex items-center justify-center text-stone-500 hover:text-stone-900 transition-all duration-200 enabled:hover:bg-stone-100 enabled:active:scale-[0.92] disabled:opacity-25 disabled:cursor-not-allowed dark:text-zinc-400 dark:hover:text-white dark:enabled:hover:bg-zinc-800"
+              className="group w-10 h-10 rounded-full flex items-center justify-center text-stone-500 hover:text-stone-900 hover:bg-stone-100 active:scale-[0.92] transition-all duration-200 dark:text-zinc-400 dark:hover:text-white dark:hover:bg-zinc-800"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M18 15l-6-6-6 6" />

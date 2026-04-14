@@ -1,6 +1,7 @@
 import MapsClient from './MapsClient';
 import getListings from '@/app/actions/getListings';
 import getCurrentUser from '@/app/actions/getCurrentUser';
+import BetaGate from '@/components/BetaGate';
 
 export const metadata = {
   title: 'Maps - ForMe',
@@ -15,7 +16,11 @@ async function MapsPage() {
     getCurrentUser(),
   ]);
 
-  return <MapsClient listings={listings} currentUser={currentUser} />;
+  return (
+    <BetaGate>
+      <MapsClient listings={listings} currentUser={currentUser} />
+    </BetaGate>
+  );
 }
 
 export default MapsPage;

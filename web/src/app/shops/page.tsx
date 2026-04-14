@@ -5,6 +5,7 @@ import getProducts from '@/app/actions/getProducts';
 import getProductCategories from '@/app/actions/getProductCategories';
 import { SafeShop, SafeProduct, SafeProductCategory } from '@/app/types';
 import Container from '@/components/Container';
+import BetaGate from '@/components/BetaGate';
 
 
 interface ShopPageProps {
@@ -40,26 +41,30 @@ async function ShopPage({ searchParams }: ShopPageProps) {
     ]);
 
     return (
-      <Container>
-        <ShopClient 
-          initialShops={shops}  
-          featuredProducts={featuredProducts}
-          categories={categories}
-          currentUser={currentUser}
-        />
-      </Container>
+      <BetaGate>
+        <Container>
+          <ShopClient
+            initialShops={shops}
+            featuredProducts={featuredProducts}
+            categories={categories}
+            currentUser={currentUser}
+          />
+        </Container>
+      </BetaGate>
     );
   } catch (error) {
     // Return with empty arrays if there's an error
     return (
-      <Container>
-        <ShopClient 
-          initialShops={[]}
-          featuredProducts={[]}
-          categories={[]}
-          currentUser={currentUser}
-        />
-      </Container>
+      <BetaGate>
+        <Container>
+          <ShopClient
+            initialShops={[]}
+            featuredProducts={[]}
+            categories={[]}
+            currentUser={currentUser}
+          />
+        </Container>
+      </BetaGate>
     );
   }
 }
