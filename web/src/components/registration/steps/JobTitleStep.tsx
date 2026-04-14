@@ -79,7 +79,9 @@ export default function JobTitleStep({ userType, isOwnerManager, onOwnerManagerC
               type="text"
               autoFocus={!isTeam}
               {...register('jobTitle', {
-                required: !isOwnerManager ? 'Job title is required' : false,
+                // Requiredness is enforced at the flow level via canProceed so
+                // that the edit flow (where jobTitle is optional) isn't blocked
+                // at final submit by a stale required validation.
                 validate: (value: string) => {
                   if (!value) return true;
                   const blocked = /^(owner|manager|owner\/manager|ceo|founder|co-founder|president|director)$/i;

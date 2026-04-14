@@ -439,18 +439,18 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               </div>
             </div>
 
-            {/* Description */}
-            {description && (
-              <div className="px-6 py-5 ">
-                <p className="text-[13px] text-stone-500 leading-[1.7] line-clamp-4">
-                  {description}
-                </p>
+            {/* Description — always rendered so the Heart/Share row stays
+                in place even if this listing hasn't filled in a description. */}
+            <div className="px-6 py-5 ">
+              <p className={`text-[13px] leading-[1.7] whitespace-pre-wrap ${description && description.trim() ? 'text-stone-700' : 'text-stone-400 italic'}`}>
+                {description && description.trim() ? description : 'No description yet.'}
+              </p>
 
                 {/* Heart & Share */}
                 <div className="flex items-center justify-center gap-4 mt-6 mb-2">
                   <button
                     onClick={(e: any) => { e.stopPropagation(); toggleFavorite(e); }}
-                    className="flex items-center gap-1.5 text-stone-400 hover:text-red-400 transition-colors"
+                    className="flex items-center gap-1.5 text-stone-400 hover:text-stone-700 transition-colors"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill={hasFavorited ? '#292524' : 'none'} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z" />
@@ -477,7 +477,6 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   </button>
                 </div>
               </div>
-            )}
 
             {/* Action Buttons */}
             <div className="px-6 py-5 ">
@@ -617,6 +616,9 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                         currentUser={currentUser}
                         onFollow={() => {}}
                         onBook={() => {}}
+                        onCardClick={() =>
+                          router.push(`/reserve/${listing.id}?employeeId=${employee.id}`)
+                        }
                         compact
                         solidBackground
                       />

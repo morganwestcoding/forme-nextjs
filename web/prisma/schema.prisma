@@ -85,6 +85,11 @@ model User {
   // User type (how the user signed up / uses ForMe)
   userType        String?       // "customer" | "individual" | "team" | "student"
 
+  // Default professional title for the user — shown on the profile header when
+  // there's no Employee record to override it (e.g. solo/independent providers
+  // or users who haven't linked to a listing yet).
+  jobTitle        String?
+
   // Student fields — populated when userType == "student"
   academyId       String?       @db.ObjectId
   academy         Academy?      @relation(fields: [academyId], references: [id])

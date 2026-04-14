@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import { apiError, apiErrorCode } from "@/app/utils/api";
@@ -115,6 +116,11 @@ export async function PUT(
         data: { featuredProducts: createdProducts.map((p) => p.id) },
       });
     }
+
+    // Invalidate the shop page + any feed that lists shops.
+    revalidatePath('/shops');
+    revalidatePath(`/shops/${params.shopId}`);
+    revalidatePath('/');
 
     return NextResponse.json(updatedShop);
   } catch (error) {

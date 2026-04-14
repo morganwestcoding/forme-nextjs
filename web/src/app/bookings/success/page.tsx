@@ -1,174 +1,252 @@
-// app/bookings/success/page.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import axios from 'axios';
-import Container from '@/components/Container';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
+import { format } from 'date-fns';
+import { Check, Calendar as CalendarIcon, Clock, User as UserIcon, MapPin } from 'lucide-react';
+
+import { placeholderDataUri } from '@/lib/placeholders';
+
+interface ReservationView {
+  id?: string;
+  serviceName?: string;
+  date?: string | Date;
+  time?: string;
+  totalPrice?: number;
+  listing?: {
+    id?: string;
+    title?: string;
+    imageSrc?: string | null;
+    address?: string | null;
+    location?: string | null;
+  };
+  employee?: {
+    fullName?: string;
+    jobTitle?: string;
+  };
+}
+
+const formatTime = (t?: string) => {
+  if (!t) return '';
+  try {
+    return format(new Date(`2021-01-01T${t}`), 'h:mm a');
+  } catch {
+    return t;
+  }
+};
 
 export default function SuccessPage() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const sessionId = searchParams?.get('session_id') || '';
+
   const [loading, setLoading] = useState(true);
   const [success, setSuccess] = useState(false);
-  const [reservation, setReservation] = useState<any>(null);
-  const router = useRouter();
+  const [reservation, setReservation] = useState<ReservationView | null>(null);
 
   useEffect(() => {
-    const verifyPayment = async () => {
+    const verify = async () => {
       if (!sessionId) {
         setLoading(false);
         return;
       }
-
       try {
-        // Verify the payment with the backend
         const { data } = await axios.get(`/api/checkout/verify?session_id=${sessionId}`);
         if (data.success) {
           setSuccess(true);
-          if (data.reservation) {
-            setReservation(data.reservation);
-          }
+          if (data.reservation) setReservation(data.reservation);
         }
-      } catch (error) {
+      } catch {
         setSuccess(false);
       } finally {
         setLoading(false);
       }
     };
-
-    verifyPayment();
+    verify();
   }, [sessionId]);
-
-  // Auto-redirect after 5 seconds
-  useEffect(() => {
-    if (success) {
-      const timer = setTimeout(() => {
-        router.push('/bookings/trips');
-      }, 5000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [success, router]);
 
   if (loading) {
     return (
-      <Container>
-        <div className="flex flex-col items-center justify-center min-h-[70vh]">
-          <div className="w-16 h-16 border-t-4 border-blue-500 border-solid rounded-full animate-spin"></div>
-          <h2 className="mt-6 text-xl font-medium">Processing your reservation...</h2>
+      <div className="min-h-screen bg-stone-50 flex items-center justify-center px-4">
+        <div className="flex flex-col items-center text-center">
+          <div className="w-10 h-10 rounded-full border-2 border-stone-200 border-t-stone-900 animate-spin" />
+          <p className="mt-5 text-[14px] text-stone-500">Confirming your reservation…</p>
         </div>
-      </Container>
+      </div>
     );
   }
 
   if (!success) {
     return (
-      <Container>
-        <div className="flex flex-col items-center justify-center min-h-[70vh] text-center">
-          <div className="bg-red-100 p-4 rounded-full mb-6">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      <div className="min-h-screen bg-stone-50 flex items-center justify-center px-4">
+        <div className="max-w-md w-full bg-white rounded-3xl border border-stone-200/70 p-8 text-center">
+          <div className="w-12 h-12 rounded-full bg-red-50 mx-auto flex items-center justify-center mb-5">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-6 h-6 text-red-500">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold mb-2">Payment Verification Failed</h1>
-          <p className="text-gray-600 mb-6">We couldn&apos;t verify your payment. Please try again or contact support.</p>
-          <div className="flex gap-4">
-            <Link href="/" className="px-6 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors">
-              Go Home
-            </Link>
-            <Link href="/bookings/trips" className="px-6 py-3 bg-gray-200 text-gray-800 rounded-xl hover:bg-gray-300 transition-colors">
-              My Reservations
-            </Link>
-          </div>
-        </div>
-      </Container>
-    );
-  }
-
-  return (
-    <Container>
-      <div className="flex flex-col items-center justify-center min-h-[70vh] max-w-2xl mx-auto">
-        <div className="w-full bg-white rounded-xl shadow-sm border p-8 text-center">
-          <div className="bg-green-100 p-5 rounded-full inline-flex mb-6">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-          </div>
-          
-          <h1 className="text-2xl font-bold mb-2">Your Reservation is Confirmed!</h1>
-          <p className="text-gray-600 mb-8">
-            Thank you for your booking. We&apos;ve sent a confirmation to your email.
+          <h1 className="text-[20px] font-semibold text-stone-900 tracking-tight">
+            We couldn&apos;t verify your payment
+          </h1>
+          <p className="text-[13px] text-stone-500 mt-2">
+            If you were charged, your booking will appear in My Trips shortly. Please contact support if it doesn&apos;t.
           </p>
-
-          {reservation && (
-            <div className="bg-gray-50 rounded-xl p-6 text-left mb-8">
-              <div className="flex items-center gap-4 mb-4">
-                {reservation.listing?.imageSrc && (
-                  <div className="h-16 w-16 relative rounded-xl overflow-hidden">
-                    <Image 
-                      src={reservation.listing.imageSrc} 
-                      alt={reservation.listing.title || "Listing"} 
-                      fill 
-                      className="object-cover"
-                    />
-                  </div>
-                )}
-                <div>
-                  <h3 className="font-semibold text-lg">{reservation.listing?.title || "Your Booking"}</h3>
-                  <p className="text-gray-500 text-sm">{reservation.serviceName}</p>
-                </div>
-              </div>
-              
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between py-2 border-b border-gray-100">
-                  <span className="text-gray-600">Date:</span>
-                  <span className="font-medium">{new Date(reservation.date).toLocaleDateString(undefined, {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}</span>
-                </div>
-                <div className="flex justify-between py-2 border-b border-gray-100">
-                  <span className="text-gray-600">Time:</span>
-                  <span className="font-medium">{reservation.time}</span>
-                </div>
-                <div className="flex justify-between py-2 border-b border-gray-100">
-                  <span className="text-gray-600">Service:</span>
-                  <span className="font-medium">{reservation.serviceName}</span>
-                </div>
-                <div className="flex justify-between py-2">
-                  <span className="text-gray-600 font-medium">Total Amount:</span>
-                  <span className="font-semibold">${reservation.totalPrice}</span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <p className="text-sm text-gray-500 mb-8">
-            You will be redirected to your reservations in 5 seconds...
-          </p>
-          
-          <div className="flex gap-4 justify-center">
-            <Link 
-              href="/" 
-              className="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors"
+          <div className="flex gap-2.5 mt-6">
+            <Link
+              href="/"
+              className="flex-1 py-3 rounded-2xl bg-stone-100 text-stone-700 text-[13px] font-medium hover:bg-stone-200 transition-colors"
             >
-              Go Home
+              Go home
             </Link>
-            <Link 
-              href="/bookings/trips" 
-              className="px-6 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors"
+            <Link
+              href="/bookings/trips"
+              className="flex-1 py-3 rounded-2xl bg-stone-900 text-white text-[13px] font-medium hover:bg-stone-800 transition-colors"
             >
-              View My Reservations
+              My trips
             </Link>
           </div>
         </div>
       </div>
-    </Container>
+    );
+  }
+
+  const dateObj = reservation?.date ? new Date(reservation.date) : null;
+  const heroImage =
+    reservation?.listing?.imageSrc ||
+    placeholderDataUri(reservation?.listing?.title || 'Booking');
+
+  return (
+    <div className="min-h-screen bg-stone-50">
+      <div className="max-w-xl mx-auto px-4 sm:px-6 pt-12 sm:pt-20 pb-16">
+        {/* Confirmation header */}
+        <div className="text-center mb-8">
+          <div
+            className="w-14 h-14 rounded-full bg-stone-900 mx-auto flex items-center justify-center"
+            style={{ animation: 'pop 420ms cubic-bezier(0.34, 1.56, 0.64, 1) both' }}
+          >
+            <Check className="w-6 h-6 text-white" strokeWidth={3} />
+          </div>
+          <h1 className="mt-6 text-[26px] sm:text-[30px] font-semibold text-stone-900 tracking-tight">
+            You&apos;re booked
+          </h1>
+          <p className="text-[14px] text-stone-500 mt-2">
+            We&apos;ve sent a confirmation to your email.
+          </p>
+        </div>
+
+        {/* Reservation card */}
+        {reservation && (
+          <div className="rounded-3xl bg-white border border-stone-200/70 overflow-hidden">
+            <div className="flex items-center gap-4 p-5 border-b border-stone-100">
+              <div className="relative w-16 h-16 rounded-2xl overflow-hidden bg-stone-100 flex-shrink-0">
+                <Image
+                  src={heroImage}
+                  alt={reservation.listing?.title || 'Booking'}
+                  fill
+                  className="object-cover"
+                  sizes="64px"
+                />
+              </div>
+              <div className="min-w-0">
+                <h2 className="text-[15px] font-semibold text-stone-900 leading-snug truncate">
+                  {reservation.listing?.title || 'Your booking'}
+                </h2>
+                <p className="text-[12px] text-stone-500 mt-0.5 truncate">
+                  {reservation.serviceName}
+                </p>
+              </div>
+            </div>
+
+            <div className="p-5 space-y-3.5">
+              <DetailRow icon={<CalendarIcon className="w-4 h-4" strokeWidth={1.75} />} label="Date">
+                {dateObj
+                  ? format(dateObj, 'EEEE, MMMM d, yyyy')
+                  : '—'}
+              </DetailRow>
+              <DetailRow icon={<Clock className="w-4 h-4" strokeWidth={1.75} />} label="Time">
+                {formatTime(reservation.time) || '—'}
+              </DetailRow>
+              {reservation.employee?.fullName && (
+                <DetailRow icon={<UserIcon className="w-4 h-4" strokeWidth={1.75} />} label="With">
+                  {reservation.employee.fullName}
+                  {reservation.employee.jobTitle && (
+                    <span className="text-stone-400"> · {reservation.employee.jobTitle}</span>
+                  )}
+                </DetailRow>
+              )}
+              {(reservation.listing?.address || reservation.listing?.location) && (
+                <DetailRow icon={<MapPin className="w-4 h-4" strokeWidth={1.75} />} label="Location">
+                  {reservation.listing?.address || reservation.listing?.location}
+                </DetailRow>
+              )}
+            </div>
+
+            <div className="px-5 py-4 bg-stone-50/60 border-t border-stone-100 flex items-baseline justify-between">
+              <span className="text-[13px] text-stone-500">Total paid</span>
+              <span className="text-[18px] font-semibold text-stone-900 tabular-nums">
+                ${reservation.totalPrice ?? 0}
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Actions */}
+        <div className="flex gap-2.5 mt-6">
+          <Link
+            href="/"
+            className="flex-1 text-center py-3.5 rounded-2xl bg-white border border-stone-200/70 text-stone-700 text-[13px] font-medium hover:border-stone-300 transition-colors"
+          >
+            Keep browsing
+          </Link>
+          <Link
+            href="/bookings/trips"
+            className="flex-1 text-center py-3.5 rounded-2xl bg-stone-900 text-white text-[13px] font-medium hover:bg-stone-800 transition-colors"
+          >
+            View my trips
+          </Link>
+        </div>
+
+        <p className="text-center text-[12px] text-stone-400 mt-5">
+          You can cancel or reschedule from My Trips.
+        </p>
+      </div>
+
+      <style jsx>{`
+        @keyframes pop {
+          0% { transform: scale(0.6); opacity: 0; }
+          100% { transform: scale(1); opacity: 1; }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+function DetailRow({
+  icon,
+  label,
+  children,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="flex items-start gap-3">
+      <div className="w-8 h-8 rounded-full bg-stone-50 border border-stone-100 flex items-center justify-center text-stone-500 flex-shrink-0 mt-0.5">
+        {icon}
+      </div>
+      <div className="min-w-0 flex-1">
+        <div className="text-[11px] uppercase tracking-wider text-stone-400 font-medium">
+          {label}
+        </div>
+        <div className="text-[14px] text-stone-900 mt-0.5 leading-snug">
+          {children}
+        </div>
+      </div>
+    </div>
   );
 }

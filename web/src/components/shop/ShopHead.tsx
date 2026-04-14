@@ -377,12 +377,11 @@ const ShopHead: React.FC<ShopHeadProps> = ({
               </div>
             </div>
 
-            {/* Description */}
-            {description && (
-              <div className="px-6 py-5">
-                <p className="text-[13px] text-stone-500 leading-[1.7] line-clamp-4">
-                  {description}
-                </p>
+            {/* Description — always rendered so Heart/Share stays in place. */}
+            <div className="px-6 py-5">
+              <p className={`text-[13px] leading-[1.7] whitespace-pre-wrap ${description && description.trim() ? 'text-stone-700' : 'text-stone-400 italic'}`}>
+                {description && description.trim() ? description : 'No description yet.'}
+              </p>
 
                 {/* Heart & Share */}
                 <div className="flex items-center justify-center gap-4 mt-6 mb-2">
@@ -415,7 +414,6 @@ const ShopHead: React.FC<ShopHeadProps> = ({
                   </button>
                 </div>
               </div>
-            )}
 
             {/* Action Buttons */}
             <div className="px-6 py-5">

@@ -1,5 +1,6 @@
 // app/api/listings/[listingId]/route.ts - PUT route fix
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/app/libs/prismadb";
 import { canModifyResource } from "@/app/libs/authorization";
@@ -224,6 +225,12 @@ export async function PUT(request: Request, { params }: { params: IParams }) {
         },
       });
     });
+
+    // Invalidate server-rendered feeds so WorkerCard/ServiceCard changes
+    // show up on Discover, newsfeed, and the listing page itself.
+    revalidatePath('/');
+    revalidatePath(`/listings/${params.listingId}`);
+    revalidatePath('/newsfeed');
 
     return NextResponse.json(fresh);
   } catch (error) {

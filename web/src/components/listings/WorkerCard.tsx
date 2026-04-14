@@ -25,6 +25,7 @@ interface WorkerCardProps {
   currentUser?: SafeUser | null;
   onFollow?: () => void;
   onBook?: () => void;
+  onCardClick?: () => void;
   compact?: boolean;
   solidBackground?: boolean;
 }
@@ -63,6 +64,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
   listingTitle,
   listing,
   currentUser,
+  onCardClick,
   compact = false,
   solidBackground = false,
 }) => {
@@ -70,9 +72,11 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
   const router = useRouter();
 
   const handleCardClick = () => {
-    // Always send to the worker's own profile — the profile page lists every
-    // service they provide and offers booking from there. This works the same
-    // for independent providers, salon employees, and students.
+    if (onCardClick) {
+      onCardClick();
+      return;
+    }
+    // Default: send to the worker's profile (used on Discover, Shop, Favorites).
     router.push(`/profile/${employee.userId}`);
   };
 
@@ -199,7 +203,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
 
                 {/* Job title - understated */}
                 <p className="mt-1.5 text-[11px] text-neutral-400 font-medium">
-                  {employee.jobTitle || 'Specialist'}
+                  {employee.jobTitle || employee.user?.jobTitle || 'Specialist'}
                 </p>
 
                 {/* Spacer */}
@@ -277,9 +281,9 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
       {/* Info */}
       <div className="flex flex-col justify-center min-w-0 flex-1">
         {/* Category — editorial cursive */}
-        {(employee.jobTitle || listing.category) && (
+        {(employee.jobTitle || employee.user?.jobTitle || listing.category) && (
           <p className="text-[11px] text-stone-400 dark:text-zinc-500 leading-none" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}>
-            {employee.jobTitle || listing.category}
+            {employee.jobTitle || employee.user?.jobTitle || listing.category}
           </p>
         )}
 

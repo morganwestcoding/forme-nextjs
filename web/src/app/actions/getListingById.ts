@@ -41,6 +41,7 @@ export default async function getListingById(params: IParams): Promise<(SafeList
                 image: true,
                 imageSrc: true,
                 userType: true,
+                jobTitle: true,
                 academy: { select: { name: true } },
               }
             }
@@ -102,6 +103,7 @@ export default async function getListingById(params: IParams): Promise<(SafeList
             image: employee.user!.image,
             imageSrc: employee.user!.imageSrc,
             userType: employee.user!.userType ?? null,
+            jobTitle: (employee.user as any)!.jobTitle ?? null,
             academyName: employee.user!.academy?.name ?? null,
           }
         })),

@@ -93,18 +93,24 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
               <button
                 id="wt-create"
                 onClick={() => createModal.onOpen()}
-                className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-stone-500 dark:text-zinc-400 hover:text-stone-700 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-zinc-800 transition-colors"
+                className="shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-stone-500 dark:text-zinc-400 hover:text-stone-700 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-zinc-800 transition-colors"
               >
                 <PlusSignIcon className="w-5 h-5 sm:w-[22px] sm:h-[22px]" strokeWidth={1.5} />
               </button>
               <button
                 id="wt-notifications"
                 onClick={() => notificationsModal.onOpen()}
-                className="relative shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-stone-500 dark:text-zinc-400 hover:text-stone-700 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-zinc-800 transition-colors"
+                className="relative shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-stone-500 dark:text-zinc-400 hover:text-stone-700 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-zinc-800 transition-colors"
               >
                 <Notification03Icon className="w-5 h-5 sm:w-[22px] sm:h-[22px]" strokeWidth={1.5} />
                 {unreadNotifications > 0 && (
-                  <span className="absolute top-1 right-1 min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold leading-none">
+                  <span
+                    className="absolute top-1.5 right-1.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full text-white text-[10px] font-semibold leading-none ring-2 ring-white dark:ring-zinc-950"
+                    style={{
+                      background: 'linear-gradient(135deg, #2a2a2a 0%, #000 100%)',
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.12)',
+                    }}
+                  >
                     {unreadNotifications > 9 ? '9+' : unreadNotifications}
                   </span>
                 )}
@@ -112,11 +118,17 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
               <button
                 id="wt-messages"
                 onClick={() => inboxModal.onOpen(currentUser)}
-                className="relative shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-stone-500 dark:text-zinc-400 hover:text-stone-700 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-zinc-800 transition-colors"
+                className="relative shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-stone-500 dark:text-zinc-400 hover:text-stone-700 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-zinc-800 transition-colors"
               >
                 <MessageMultiple01Icon className="w-5 h-5 sm:w-[22px] sm:h-[22px]" strokeWidth={1.5} />
                 {unreadMessages > 0 && (
-                  <span className="absolute top-1 right-1 min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full bg-blue-500 text-white text-[10px] font-bold leading-none">
+                  <span
+                    className="absolute top-1.5 right-1.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full text-white text-[10px] font-semibold leading-none ring-2 ring-white dark:ring-zinc-950"
+                    style={{
+                      background: 'linear-gradient(135deg, #2a2a2a 0%, #000 100%)',
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.12)',
+                    }}
+                  >
                     {unreadMessages > 9 ? '9+' : unreadMessages}
                   </span>
                 )}

@@ -40,6 +40,8 @@ interface ProfileData {
   image: string;
   backgroundImage: string;
   interests?: string[];
+  jobTitle?: string;
+  userType?: string | null;
 }
 
 interface TypeformFlowProps {
@@ -110,7 +112,7 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
       backgroundImage: initialData?.backgroundImage || '',
       userType: '',
       selectedListing: '',
-      jobTitle: '',
+      jobTitle: initialData?.jobTitle || '',
       isOwnerManager: false,
       selectedServices: [],
       listingCategory: '',
@@ -146,9 +148,14 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
 
   // Calculate flow path based on user type and mode
   const getFlowPath = useCallback((): STEPS[] => {
-    // Edit mode has a simplified flow: just update profile info
+    // Edit mode has a simplified flow: just update profile info. Customers
+    // don't have a job title (they're booking, not providing), so skip
+    // that step for them.
     if (isEditMode) {
-      return [STEPS.INTERESTS, STEPS.LOCATION, STEPS.IMAGES];
+      const isCustomerProfile = initialData?.userType === 'customer';
+      return isCustomerProfile
+        ? [STEPS.INTERESTS, STEPS.LOCATION, STEPS.IMAGES]
+        : [STEPS.INTERESTS, STEPS.JOB_TITLE, STEPS.LOCATION, STEPS.IMAGES];
     }
 
     const basePath = [STEPS.ACCOUNT, STEPS.INTERESTS, STEPS.USER_TYPE];
@@ -219,6 +226,9 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
       case STEPS.USER_TYPE:
         return Boolean(data.userType);
       case STEPS.JOB_TITLE:
+        // In edit mode the job title is optional — users may just be updating
+        // other sections and don't need to fill this in again.
+        if (isEditMode) return true;
         if (userType === 'team') {
           return Boolean(data.isOwnerManager || data.jobTitle?.trim());
         }
@@ -332,11 +342,17 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
           image: data.image,
           backgroundImage: data.backgroundImage,
           interests: data.interests,
+          jobTitle: data.jobTitle,
         });
 
         toast.success('Profile updated!');
-        router.push(`/profile/${userId}`);
-        router.refresh();
+        // Root-layout RefreshOnEditSave watches this flag and triggers a
+        // route-scoped router.refresh() on the target page after back() —
+        // that's what actually invalidates the popped-to page's Router Cache.
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('editFlowJustSaved', '1');
+        }
+        router.back();
         return;
       }
 
@@ -548,11 +564,18 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
         {/* Edit-mode step jumper — jump directly to any editable section. */}
         {isEditMode && (
           <EditStepJumper
-            steps={[
-              { label: 'Interests', value: STEPS.INTERESTS },
-              { label: 'Location', value: STEPS.LOCATION },
-              { label: 'Images', value: STEPS.IMAGES },
-            ]}
+            steps={(initialData?.userType === 'customer'
+              ? [
+                  { label: 'Interests', value: STEPS.INTERESTS },
+                  { label: 'Location', value: STEPS.LOCATION },
+                  { label: 'Images', value: STEPS.IMAGES },
+                ]
+              : [
+                  { label: 'Interests', value: STEPS.INTERESTS },
+                  { label: 'Job Title', value: STEPS.JOB_TITLE },
+                  { label: 'Location', value: STEPS.LOCATION },
+                  { label: 'Images', value: STEPS.IMAGES },
+                ])}
             currentValue={step}
             onJump={(target) => {
               setDirection(target > step ? 1 : -1);
@@ -583,6 +606,8 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
             onBack={handleBack}
             submitLabel={isEditMode ? 'Save changes' : 'Create account'}
             termsNotice={!isEditMode}
+            isEditMode={isEditMode}
+            onSave={handleSubmit(onSubmit)}
           />
         )}
       </motion.div>

@@ -36,7 +36,10 @@ const ProfilePage = async ({ params }: any) => {
 
   const currentUser = await getCurrentUser();
   const user = await getProfileById(params);
-  const listings = await getListings(params);
+  // Include listings the user works at (as an active Employee) alongside
+  // the ones they own, so the Businesses section on their profile shows
+  // every place they're associated with.
+  const listings = await getListings({ ...params, includeEmployedBy: true });
   const posts = await getPosts(params);
   const services = user ? await getServicesByUserId(user.id) : [];
 

@@ -6,6 +6,7 @@ import { validateEnv } from './utils/env'
 validateEnv();
 import NotificationsModal from '@/components/modals/NotificationModal';
 import ToasterProvider from './providers/ToasterProvider';
+import RefreshOnEditSave from '@/components/RefreshOnEditSave';
 import LoginModal from '@/components/modals/LoginModal';
 import getCurrentUser from './actions/getCurrentUser';
 import ClientProviders from '@/components/ClientProviders';
@@ -78,6 +79,9 @@ export default async function RootLayout({
                     {children}
                   </LayoutContent>
                 </div>
+
+                {/* Auto-refresh after edit flows save */}
+                <RefreshOnEditSave />
 
                 {/* Modals */}
                 <ToasterProvider/>

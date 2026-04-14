@@ -6,12 +6,10 @@ import prisma from '@/app/libs/prismadb';
 import { apiError } from '@/app/utils/api';
 import {
   sendEmail,
-  sendNotificationEmail,
-  bookingConfirmationEmail,
-  newBookingReceivedEmail,
   subscriptionConfirmationEmail,
   refundEmail,
 } from '@/app/libs/email';
+import { createReservationFromCheckoutSession } from '@/app/libs/createReservationFromCheckout';
 
 export const dynamic = 'force-dynamic';
 
@@ -57,104 +55,11 @@ export async function POST(req: Request) {
 
       // ----- A) Reservations (existing) -----
       if (kind !== 'subscription') {
-        // Create reservation from the session metadata
-        if (session.metadata) {
-          try {
-            // Avoid duplicates by payment_intent
-            const paymentIntent = session.payment_intent ? String(session.payment_intent) : null;
-            if (paymentIntent) {
-              const existingReservation = await prisma.reservation.findFirst({
-                where: { paymentIntentId: paymentIntent }
-              });
-              if (existingReservation) {
-                return NextResponse.json({ received: true });
-              }
-            } else {
-              // No payment_intent means we can't guarantee idempotency — skip creation
-              return NextResponse.json({ received: true });
-            }
-
-            const reservation = await prisma.reservation.create({
-              data: {
-                userId: session.metadata.userId,
-                listingId: session.metadata.listingId,
-                serviceId: session.metadata.serviceId,
-                serviceName: session.metadata.serviceName || 'Service',
-                employeeId: session.metadata.employeeId,
-                date: new Date(session.metadata.date),
-                time: session.metadata.time,
-                note: session.metadata.note || '',
-                totalPrice: Number(session.amount_total! / 100),
-                status: 'pending',
-                paymentIntentId: session.payment_intent ? String(session.payment_intent) : null,
-                paymentStatus: 'completed',
-              },
-            });
-
-            // Notifications
-            try {
-              await prisma.notification.create({
-                data: {
-                  type: 'RESERVATION_CREATED',
-                  content: `Your reservation for ${session.metadata.serviceName} has been confirmed`,
-                  userId: session.metadata.userId
-                }
-              });
-
-              const listing = await prisma.listing.findUnique({
-                where: { id: session.metadata.listingId },
-                select: { userId: true }
-              });
-
-              if (listing) {
-                await prisma.notification.create({
-                  data: {
-                    type: 'NEW_RESERVATION',
-                    content: `New reservation for ${session.metadata.serviceName} on ${new Date(session.metadata.date).toLocaleDateString()}`,
-                    userId: listing.userId
-                  }
-                });
-
-                // Email: notify listing owner about new booking (respects preferences)
-                const ownerUser = await prisma.user.findUnique({
-                  where: { id: listing.userId },
-                  select: { email: true, emailNotifications: true },
-                });
-                if (ownerUser) {
-                  const tpl = newBookingReceivedEmail({
-                    serviceName: session.metadata.serviceName || 'Service',
-                    customerName: session.metadata.employeeName || 'Customer',
-                    date: new Date(session.metadata.date).toLocaleDateString(),
-                    time: session.metadata.time,
-                    totalPrice: Number(session.amount_total! / 100),
-                  });
-                  sendNotificationEmail(ownerUser, tpl).catch(() => {});
-                }
-              }
-
-              // Email: booking confirmation to customer
-              const customer = await prisma.user.findUnique({
-                where: { id: session.metadata.userId },
-                select: { email: true },
-              });
-              if (customer?.email) {
-                const tpl = bookingConfirmationEmail({
-                  serviceName: session.metadata.serviceName || 'Service',
-                  businessName: session.metadata.businessName || 'Business',
-                  date: new Date(session.metadata.date).toLocaleDateString(),
-                  time: session.metadata.time,
-                  totalPrice: Number(session.amount_total! / 100),
-                });
-                sendEmail({ ...tpl, to: customer.email }).catch(() => {});
-              }
-            } catch (notifyError) {
-              // Notification/email creation failed; non-critical
-            }
-          } catch (error: any) {
-            // Reservation creation failed
-          }
+        try {
+          await createReservationFromCheckoutSession(session);
+        } catch {
+          // Reservation creation failed; the verify endpoint will retry as a fallback
         }
-
         return NextResponse.json({ received: true });
       }
 

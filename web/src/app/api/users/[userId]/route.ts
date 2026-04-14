@@ -1,5 +1,6 @@
 // app/api/users/[userId]/route.ts
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import { canModifyResource } from "@/app/libs/authorization";
@@ -63,10 +64,12 @@ export async function PUT(
       image,
       imageSrc,
       backgroundImage,
+      jobTitle,
     } = body || {};
 
     const sanitizedName = typeof name === "string" ? sanitizeText(name) : undefined;
     const sanitizedBio = typeof bio === "string" ? sanitizeText(bio) : undefined;
+    const sanitizedJobTitle = typeof jobTitle === "string" ? sanitizeText(jobTitle) : undefined;
 
     const updated = await prisma.user.update({
       where: { id: targetUserId },
@@ -77,8 +80,26 @@ export async function PUT(
         ...(typeof image === "string" ? { image } : {}),
         ...(typeof imageSrc === "string" ? { imageSrc } : {}),
         ...(typeof backgroundImage === "string" ? { backgroundImage } : {}),
+        ...(sanitizedJobTitle !== undefined ? { jobTitle: sanitizedJobTitle } : {}),
       },
     });
+
+    // When the profile job title changes, sync it to this user's Employee
+    // records so WorkerCards (which read from employee.jobTitle) also update.
+    // This matches user expectation: if I set my title on my profile, it
+    // should show up everywhere I'm listed.
+    if (sanitizedJobTitle !== undefined) {
+      await prisma.employee.updateMany({
+        where: { userId: targetUserId },
+        data: { jobTitle: sanitizedJobTitle || null },
+      });
+    }
+
+    // Invalidate server-rendered routes that show user info so edits show up
+    // on Discover, the user's profile, and any listings they belong to.
+    revalidatePath('/');
+    revalidatePath(`/profile/${targetUserId}`);
+    revalidatePath('/newsfeed');
 
     return NextResponse.json(updated);
   } catch (err) {

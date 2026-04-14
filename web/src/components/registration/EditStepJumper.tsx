@@ -11,8 +11,8 @@ interface EditStepJumperProps {
 // Styled to match the stone/serif aesthetic used on ListingHead/ProfileHead.
 export default function EditStepJumper({ steps, currentValue, onJump }: EditStepJumperProps) {
   return (
-    <div className="sticky top-1 z-40 bg-white/70 backdrop-blur-md border-b border-stone-100">
-      <div className="max-w-5xl mx-auto px-6 py-3 overflow-x-auto">
+    <div className="fixed top-6 left-0 right-0 z-40 pointer-events-none">
+      <div className="max-w-5xl mx-auto px-6 h-10 flex items-center overflow-x-auto pointer-events-auto">
         <div className="flex items-center justify-center gap-6 min-w-max mx-auto w-fit">
           {steps.map((s, i) => {
             const isActive = s.value === currentValue;

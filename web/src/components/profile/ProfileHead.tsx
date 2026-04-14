@@ -10,6 +10,7 @@ import PostCard from '@/components/feed/PostCard';
 import ListingCard from '@/components/listings/ListingCard';
 import ServiceCard from '@/components/listings/ServiceCard';
 import QRModal from '@/components/modals/QRModal';
+import { ShieldUserIcon } from 'hugeicons-react';
 import { categories } from '@/components/Categories';
 import { placeholderDataUri } from '@/lib/placeholders';
 import useReviewModal from '@/app/hooks/useReviewModal';
@@ -45,12 +46,16 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
     location,
     image,
     imageSrc,
+    bio,
     followers = [],
     following = [],
     galleryImages = [],
   } = user;
 
   const isStudent = user.userType === 'student';
+  const isCustomer = user.userType === 'customer';
+  // Show an admin/master badge on the profile owner's avatar.
+  const isAdminProfile = (user as any).role === 'admin' || (user as any).role === 'master';
   const studentAcademyName = user.academyName ?? null;
 
   const router = useRouter();
@@ -120,14 +125,16 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
     [location]
   );
 
-  // Derive jobTitle from user's employee record
+  // Derive jobTitle: prefer the per-listing Employee title (more specific,
+  // e.g. "Lead Stylist at Salon X"), otherwise fall back to the global
+  // User.jobTitle set on the profile itself.
   const jobTitle = useMemo(() => {
     for (const listing of listings) {
       const employee = listing.employees?.find(emp => emp.userId === id);
       if (employee?.jobTitle) return employee.jobTitle;
     }
-    return null;
-  }, [listings, id]);
+    return (user as any).jobTitle || null;
+  }, [listings, id, user]);
 
   const handleFollow = async () => {
     if (!currentUser) {
@@ -325,12 +332,22 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                     </svg>
                   </div>
                 )}
+                {isAdminProfile && !isStudent && (
+                  <div
+                    title={(user as any).role === 'master' ? 'Master Admin' : 'Admin'}
+                    className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-amber-700 ring-[1.5px] ring-white flex items-center justify-center shadow-[0_2px_8px_rgba(180,83,9,0.4)]"
+                  >
+                    <ShieldUserIcon className="w-[18px] h-[18px] text-white" strokeWidth={2} />
+                  </div>
+                )}
               </div>
               <div className="mt-3">
                 <h1 className="text-lg font-semibold text-stone-900 text-center tracking-tight">
                   {name ?? 'User'}
                 </h1>
-                <p className="text-[13px] text-stone-400 mt-1">{jobTitle || (isStudent ? 'Student' : 'Member')}</p>
+                {!isCustomer && (
+                  <p className="text-[13px] text-stone-400 mt-1">{jobTitle || (isStudent ? 'Student' : 'Member')}</p>
+                )}
                 {location && (
                   <a
                     href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`}
@@ -343,30 +360,32 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                   </a>
                 )}
               </div>
-              {/* Rating */}
-              <div className="flex items-center justify-center gap-1 mt-3">
-                <svg width="0" height="0" className="absolute">
-                  <defs>
-                    <linearGradient id={starGradientId} x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stopColor="#fbbf24" />
-                      <stop offset="100%" stopColor="#f59e0b" />
-                    </linearGradient>
-                  </defs>
-                </svg>
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <svg
-                    key={star}
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill={star <= Math.round(reviewStats?.averageRating || 5) ? `url(#${starGradientId})` : '#e5e7eb'}
-                  >
-                    <path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z" />
+              {/* Rating — hidden for customers (they're booking, not being rated) */}
+              {!isCustomer && (
+                <div className="flex items-center justify-center gap-1 mt-3">
+                  <svg width="0" height="0" className="absolute">
+                    <defs>
+                      <linearGradient id={starGradientId} x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stopColor="#fbbf24" />
+                        <stop offset="100%" stopColor="#f59e0b" />
+                      </linearGradient>
+                    </defs>
                   </svg>
-                ))}
-                <span className="text-xs text-gray-400 ml-1.5">{reviewStats?.totalCount || 0}</span>
-              </div>
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <svg
+                      key={star}
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill={star <= Math.round(reviewStats?.averageRating || 0) ? `url(#${starGradientId})` : '#e5e7eb'}
+                    >
+                      <path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z" />
+                    </svg>
+                  ))}
+                  <span className="text-xs text-gray-400 ml-1.5">{reviewStats?.totalCount || 0}</span>
+                </div>
+              )}
             </div>
 
             {/* Stats */}
@@ -389,10 +408,15 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
               </div>
             </div>
 
-            {/* Bio Section */}
+            {/* Bio Section — show the user's actual bio, or a muted prompt
+                if they haven't written one yet. getProfileById returns the
+                string "No Bio Provided Yet.." as a fallback, so treat that
+                as empty for placeholder purposes. */}
             <div className="px-6 py-5">
-              <p className="text-[13px] text-stone-500 leading-[1.7]">
-                {`${firstName} hasn't added a bio yet. When they do, you'll be able to learn more about them, their interests, and what they're all about.`}
+              <p className={`text-[13px] leading-[1.7] whitespace-pre-wrap ${bio && bio.trim() && bio !== 'No Bio Provided Yet..' ? 'text-stone-700' : 'text-stone-400 italic'}`}>
+                {bio && bio.trim() && bio !== 'No Bio Provided Yet..'
+                  ? bio
+                  : `${firstName} hasn't added a bio yet.`}
               </p>
 
               {/* Share */}
@@ -480,7 +504,9 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                 <div className="flex items-center gap-2">
                   <h1 className="text-lg font-bold text-gray-900 truncate">{name ?? 'User'}</h1>
                 </div>
-                <p className="text-sm text-gray-500">{jobTitle || 'Member'}</p>
+                {!isCustomer && (
+                  <p className="text-sm text-gray-500">{jobTitle || 'Member'}</p>
+                )}
               </div>
               <button
                 onClick={handleDropdownToggle}
@@ -551,7 +577,9 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
             </section>
 
             {/* Services Section — every service this user is qualified to perform,
-                whether they own the listing or work there as an employee/student. */}
+                whether they own the listing or work there as an employee/student.
+                Hidden for customers since they don't provide services. */}
+            {!isCustomer && (
             <section>
               <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-4">
@@ -605,43 +633,48 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                 </div>
               )}
             </section>
+            )}
 
-            {/* Listings Section */}
-            <section>
-              <div className="flex items-center justify-between mb-5">
-                <div className="flex items-center gap-4">
-                  <h3 className="text-xl font-semibold text-stone-900 tracking-tight">Businesses</h3>
-                  <span className="text-[11px] font-medium text-stone-500 bg-stone-100 px-2.5 py-1 rounded-full tabular-nums">{visibleListings.length}</span>
+            {/* Businesses Section — places the user owns OR actively works at.
+                Hidden for students (represented via their academy) and for
+                customers (they book, they don't operate businesses). */}
+            {!isStudent && !isCustomer && (
+              <section>
+                <div className="flex items-center justify-between mb-5">
+                  <div className="flex items-center gap-4">
+                    <h3 className="text-xl font-semibold text-stone-900 tracking-tight">Businesses</h3>
+                    <span className="text-[11px] font-medium text-stone-500 bg-stone-100 px-2.5 py-1 rounded-full tabular-nums">{visibleListings.length}</span>
+                  </div>
+                  <button className="text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors">View all</button>
                 </div>
-                <button className="text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors">View all</button>
-              </div>
-              {visibleListings.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 -mx-1 px-1 py-1">
-                  {visibleListings.slice(0, 8).map((listing, idx) => (
-                    <div
-                      key={listing.id}
-                      style={{
-                        opacity: 0,
-                        animation: `fadeInUp 520ms ease-out both`,
-                        animationDelay: `${Math.min(60 + idx * 30, 360)}ms`,
-                      }}
-                    >
-                      <ListingCard
-                        data={listing}
-                        currentUser={currentUser}
-                        categories={categories}
-                        solidBackground
-                        compact
-                      />
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-10 bg-gray-50 rounded-xl">
-                  <p className="text-sm text-gray-400">No listings yet</p>
-                </div>
-              )}
-            </section>
+                {visibleListings.length > 0 ? (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 -mx-1 px-1 py-1">
+                    {visibleListings.slice(0, 8).map((listing, idx) => (
+                      <div
+                        key={listing.id}
+                        style={{
+                          opacity: 0,
+                          animation: `fadeInUp 520ms ease-out both`,
+                          animationDelay: `${Math.min(60 + idx * 30, 360)}ms`,
+                        }}
+                      >
+                        <ListingCard
+                          data={listing}
+                          currentUser={currentUser}
+                          categories={categories}
+                          solidBackground
+                          compact
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-10 bg-gray-50 rounded-xl">
+                    <p className="text-sm text-gray-400">No listings yet</p>
+                  </div>
+                )}
+              </section>
+            )}
 
             {/* Gallery Section */}
             <section>

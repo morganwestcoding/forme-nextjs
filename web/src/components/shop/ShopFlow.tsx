@@ -223,7 +223,9 @@ export default function ShopFlow({ mode = 'create', shopId, initialData }: ShopF
   }, [canProceed, isLoading, isLastStep, handleNext, handleBack, handleSubmit]);
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-    if (!isLastStep) {
+    // In edit mode, Save changes can be clicked on any step. In create mode,
+    // intermediate steps just advance to the next one.
+    if (!isEditMode && !isLastStep) {
       handleNext();
       return;
     }
@@ -244,8 +246,17 @@ export default function ShopFlow({ mode = 'create', shopId, initialData }: ShopF
         toast.success('Shop created successfully!');
       }
 
-      router.refresh();
-      router.push(isEditMode && shopId ? `/shops/${shopId}` : '/shops');
+      if (isEditMode && shopId) {
+        // Root-layout RefreshOnEditSave watches this flag and triggers a
+        // route-scoped router.refresh() on the target page after back().
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('editFlowJustSaved', '1');
+        }
+        router.back();
+      } else {
+        router.push('/shops');
+        router.refresh();
+      }
     } catch (error: any) {
       if (axios.isAxiosError(error) && error.response) {
         toast.error(`Error: ${error.response.data || 'Something went wrong'}`);
@@ -390,6 +401,8 @@ export default function ShopFlow({ mode = 'create', shopId, initialData }: ShopF
             onBack={handleBack}
             submitLabel={isEditMode ? 'Save changes' : 'Create shop'}
             termsNotice={!isEditMode}
+            isEditMode={isEditMode}
+            onSave={handleSubmit(onSubmit)}
           />
         )}
       </div>

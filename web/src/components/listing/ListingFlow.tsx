@@ -286,7 +286,9 @@ export default function ListingFlow({ mode = 'create', listingId, initialData }:
   }, [canProceed, isLoading, step, handleNext, handleBack, handleSubmit]);
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-    if (step !== STEPS.EMPLOYEE) {
+    // In create mode, intermediate steps just advance. In edit mode, any
+    // step can save directly — the flow doesn't require reaching the end.
+    if (!isEditMode && step !== STEPS.EMPLOYEE) {
       handleNext();
       return;
     }
@@ -314,13 +316,20 @@ export default function ListingFlow({ mode = 'create', listingId, initialData }:
       if (isEditMode && listingId) {
         await axios.put(`/api/listings/${listingId}`, payload);
         toast.success('Listing updated successfully!');
-        router.push(`/listings/${listingId}`);
+        // Set a flag that the root-level RefreshOnEditSave component watches.
+        // When the target page mounts after router.back(), it sees the flag
+        // and calls router.refresh() scoped to ITS route — which is what
+        // actually invalidates the popped-to page's client Router Cache.
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('editFlowJustSaved', '1');
+        }
+        router.back();
       } else {
         await axios.post('/api/listings', payload);
         toast.success('Listing created successfully!');
         router.push('/properties');
+        router.refresh();
       }
-      router.refresh();
     } catch (e: any) {
       toast.error(e?.response?.data?.message || `Failed to ${isEditMode ? 'update' : 'create'} listing`);
     } finally {
@@ -487,6 +496,8 @@ export default function ListingFlow({ mode = 'create', listingId, initialData }:
             onNext={isLastStep ? handleSubmit(onSubmit) : handleNext}
             onBack={handleBack}
             submitLabel={isEditMode ? "Save changes" : "Create listing"}
+            isEditMode={isEditMode}
+            onSave={handleSubmit(onSubmit)}
           />
         )}
       </div>

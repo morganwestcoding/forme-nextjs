@@ -17,6 +17,10 @@ export interface IListingsParams {
   // Set true to include academy-owned listings (admin views).
   // Default false: public discovery hides academies — students aren't bookable salons.
   includeAcademy?: boolean;
+  // When set together with userId, also return listings where this user is
+  // an active Employee — used on profile pages so the Businesses section
+  // shows places the person works at, not just ones they own.
+  includeEmployedBy?: boolean;
 }
 
 export default async function getListings(params: IListingsParams = {}): Promise<SafeListing[]> {
@@ -35,12 +39,22 @@ export default async function getListings(params: IListingsParams = {}): Promise
       limit,
       page,
       includeAcademy = false,
+      includeEmployedBy = false,
     } = params;
 
     let query: any = {};
 
     if (userId) {
-      query.userId = userId;
+      if (includeEmployedBy) {
+        // Owned OR actively employed at — covers both solo providers and
+        // people who just work at someone else's business.
+        query.OR = [
+          { userId },
+          { employees: { some: { userId, isActive: true } } },
+        ];
+      } else {
+        query.userId = userId;
+      }
     }
 
     // Hide academy-owned listings from public discovery by default.
@@ -139,6 +153,7 @@ export default async function getListings(params: IListingsParams = {}): Promise
                 imageSrc: true,
                 backgroundImage: true,
                 userType: true,
+                jobTitle: true,
                 academy: {
                   select: { name: true }
                 }
@@ -212,6 +227,7 @@ export default async function getListings(params: IListingsParams = {}): Promise
             imageSrc: employee.user!.imageSrc,
             backgroundImage: employee.user!.backgroundImage,
             userType: employee.user!.userType ?? null,
+            jobTitle: (employee.user as any)!.jobTitle ?? null,
             academyName: employee.user!.academy?.name ?? null,
           }
         })),

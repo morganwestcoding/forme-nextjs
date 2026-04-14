@@ -14,6 +14,11 @@ interface TypeformNavigationProps {
   submitLabel?: string;
   onExit?: () => void;
   termsNotice?: boolean;
+  // In edit mode the bottom CTA always reads "Save changes" and triggers
+  // onSave on every step, not just the last one. Linear navigation is
+  // handled by the EditStepJumper pill bar at the top instead.
+  isEditMode?: boolean;
+  onSave?: () => void;
 }
 
 export default function TypeformNavigation({
@@ -26,6 +31,8 @@ export default function TypeformNavigation({
   submitLabel = 'Create account',
   onExit,
   termsNotice,
+  isEditMode,
+  onSave,
 }: TypeformNavigationProps) {
   const router = useRouter();
 
@@ -72,14 +79,16 @@ export default function TypeformNavigation({
             )}
           </div>
 
-          {/* Continue button + hint */}
+          {/* Continue / Save button + hint */}
           <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-400 hidden sm:block">
-              Press <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs font-mono">Enter</kbd>
-            </span>
+            {!isEditMode && (
+              <span className="text-sm text-gray-400 hidden sm:block">
+                Press <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs font-mono">Enter</kbd>
+              </span>
+            )}
             <button
               type="button"
-              onClick={onNext}
+              onClick={isEditMode ? (onSave ?? onNext) : onNext}
               disabled={!canProceed || isLoading}
               className={`
                 px-6 py-2.5 rounded-xl font-medium text-sm transition-transform duration-200
@@ -91,6 +100,8 @@ export default function TypeformNavigation({
             >
               {isLoading ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : isEditMode ? (
+                'Save changes'
               ) : isLastStep ? (
                 submitLabel
               ) : (

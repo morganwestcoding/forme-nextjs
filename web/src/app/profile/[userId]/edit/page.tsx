@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import getProfileById from '@/app/actions/getProfileById';
 import TypeformFlow from '@/components/registration/TypeformFlow';
+import prisma from '@/app/libs/prismadb';
 
 interface IParams {
   userId: string;
@@ -30,6 +31,18 @@ export default async function EditProfilePage({ params }: { params: IParams }) {
     redirect(`/profile/${params.userId}`);
   }
 
+  // Resolve the job title: prefer what's stored on the user, otherwise fall
+  // back to whatever their primary Employee record says so existing users
+  // don't see a blank field the first time they open edit.
+  let resolvedJobTitle: string = (profile as any).jobTitle || '';
+  if (!resolvedJobTitle) {
+    const primaryEmployee = await prisma.employee.findFirst({
+      where: { userId: profile.id, isActive: true, jobTitle: { not: null } },
+      select: { jobTitle: true },
+    });
+    resolvedJobTitle = primaryEmployee?.jobTitle || '';
+  }
+
   // Prepare profile data for the form
   const initialData = {
     id: profile.id,
@@ -40,6 +53,8 @@ export default async function EditProfilePage({ params }: { params: IParams }) {
     image: profile.image || profile.imageSrc || '',
     backgroundImage: profile.backgroundImage || '',
     interests: [], // Could fetch from user if stored
+    jobTitle: resolvedJobTitle,
+    userType: (profile as any).userType || null,
   };
 
   return (

@@ -256,6 +256,7 @@ export type SafeEmployee = {
     imageSrc: string | null;
     backgroundImage?: string | null;
     userType?: string | null;
+    jobTitle?: string | null;
     academyName?: string | null;
   };
 };
