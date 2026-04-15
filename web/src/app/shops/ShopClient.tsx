@@ -311,8 +311,8 @@ const ShopClient: React.FC<ShopClientProps> = ({
               onClick={() => setActiveBanner(i)}
               className={`rounded-full transition-all duration-300 ${
                 activeBanner === i
-                  ? 'w-4 h-1.5 bg-stone-900 dark:bg-white'
-                  : 'w-1.5 h-1.5 bg-stone-300 dark:bg-zinc-600 hover:bg-stone-400 dark:hover:bg-zinc-500'
+                  ? 'w-4 h-1.5 bg-stone-900 dark:bg-white dark:bg-stone-900'
+                  : 'w-1.5 h-1.5 bg-stone-300 dark:bg-stone-600 hover:bg-stone-400 dark:hover:bg-stone-500'
               }`}
             />
           ))}
@@ -357,8 +357,8 @@ const ShopClient: React.FC<ShopClientProps> = ({
                   <div
                     className={`w-[100px] h-[100px] rounded-full overflow-hidden flex items-center justify-center bg-black transition-all duration-500 ease-out border-2 ${
                       isSelected
-                        ? 'border-zinc-900 dark:border-white scale-105 shadow-lg'
-                        : 'border-stone-200 dark:border-zinc-700 group-hover:border-stone-400 dark:group-hover:border-zinc-500 group-hover:scale-105 group-hover:shadow-md'
+                        ? 'border-stone-900 dark:border-white scale-105 shadow-lg'
+                        : 'border-stone-200 dark:border-stone-800 dark:border-stone-700 group-hover:border-stone-400 dark:group-hover:border-stone-500 group-hover:scale-105 group-hover:shadow-md'
                     }`}
                   >
                     {imageSrc && (
@@ -373,8 +373,8 @@ const ShopClient: React.FC<ShopClientProps> = ({
                   </div>
                   <span className={`text-sm transition-all duration-200 ${
                     isSelected
-                      ? 'text-gray-900 dark:text-white font-medium'
-                      : 'text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300'
+                      ? 'text-stone-900 dark:text-stone-100 dark:text-white font-medium'
+                      : 'text-stone-500 dark:text-stone-400 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500 group-hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 dark:group-hover:text-stone-300'
                   }`}>{cat.label}</span>
                 </button>
               );
@@ -558,17 +558,17 @@ const ShopClient: React.FC<ShopClientProps> = ({
             </>
           ) : (
             <div className="flex flex-col items-center justify-center py-24 text-center">
-              <div className="w-16 h-16 rounded-2xl bg-stone-100 flex items-center justify-center mb-5">
-                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-stone-400">
+              <div className="w-16 h-16 rounded-2xl bg-stone-100 dark:bg-stone-800 flex items-center justify-center mb-5">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-stone-400 dark:text-stone-500">
                   <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
                   <line x1="3" y1="6" x2="21" y2="6" />
                   <path d="M16 10a4 4 0 01-8 0" />
                 </svg>
               </div>
-              <p className="text-[15px] font-medium text-stone-700 mb-1">
+              <p className="text-[15px] font-medium text-stone-700 dark:text-stone-200 mb-1">
                 {filterInfo.isFiltered ? 'No results found' : 'No shops yet'}
               </p>
-              <p className="text-[13px] text-stone-400 max-w-xs">
+              <p className="text-[13px] text-stone-400 dark:text-stone-500 max-w-xs">
                 {filterInfo.isFiltered
                   ? 'Try adjusting your search or filters to find what you\'re looking for.'
                   : 'Shops and products will appear here as businesses join the platform.'}

@@ -108,7 +108,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
         {/* White background */}
         <div className="absolute inset-0 bg-gradient-to-br from-white to-stone-50/80 rounded-xl" />
         {/* Border overlay — renders on top of watermark */}
-        <div className="absolute inset-0 z-30 rounded-xl border border-stone-200/80 group-hover:border-stone-300 transition-colors pointer-events-none" />
+        <div className="absolute inset-0 z-30 rounded-xl border border-stone-200/80 group-hover:border-stone-300 dark:border-stone-700 transition-colors pointer-events-none" />
 
         <div className="relative z-10">
           <div className={compact ? 'relative h-[180px]' : 'relative h-[280px]'}>
@@ -146,7 +146,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
                     }
                   }}
                   aria-label="Share"
-                  className="transition-all duration-300 text-neutral-300 hover:text-neutral-900"
+                  className="transition-all duration-300 text-stone-300 hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100"
                 >
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M10.0017 3C7.05534 3.03208 5.41096 3.21929 4.31838 4.31188C2.99988 5.63037 2.99988 7.75248 2.99988 11.9966C2.99988 16.2409 2.99988 18.363 4.31838 19.6815C5.63688 21 7.75899 21 12.0032 21C16.2474 21 18.3695 21 19.688 19.6815C20.7808 18.5887 20.9678 16.9438 20.9999 13.9963" />
@@ -159,18 +159,18 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
               <div className="relative flex flex-col h-full p-5">
                 {/* Category */}
                 {data.category && (
-                  <span className="text-[11px] text-neutral-400 font-medium mb-1.5">
+                  <span className="text-[11px] text-stone-400 dark:text-stone-500 font-medium mb-1.5">
                     {data.category}
                   </span>
                 )}
 
                 {/* Title - large and bold */}
-                <h3 className="text-[17px] font-black text-neutral-900 leading-[1.15] line-clamp-2 tracking-tight pr-8">
+                <h3 className="text-[17px] font-black text-stone-900 dark:text-stone-100 leading-[1.15] line-clamp-2 tracking-tight pr-8">
                   {data.title}
                 </h3>
 
                 {/* Location - understated */}
-                <p className="mt-1.5 text-[11px] text-neutral-400 font-medium">
+                <p className="mt-1.5 text-[11px] text-stone-400 dark:text-stone-500 font-medium">
                   {city && state ? `${city}, ${state}` : city || state || 'Location'}
                 </p>
 
@@ -179,7 +179,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
 
                 {/* Bottom row - rating with arrow */}
                 <div className="flex items-end justify-between">
-                  <span className="text-2xl font-black text-neutral-900 tabular-nums">
+                  <span className="text-2xl font-black text-stone-900 dark:text-stone-100 tabular-nums">
                     {Number(data.rating ?? 5.0).toFixed(1)}
                   </span>
                   <svg
@@ -187,7 +187,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
                     height="20"
                     viewBox="0 0 24 24"
                     fill="none"
-                    className="text-neutral-300 group-hover:text-neutral-900 group-hover:translate-x-0.5 transition-all duration-300 mb-1"
+                    className="text-stone-300 group-hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 group-hover:translate-x-0.5 transition-all duration-300 mb-1"
                   >
                     <path d="M7 17L17 7M17 7H8M17 7V16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
@@ -208,7 +208,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
     return (
       <div
         onClick={() => router.push(`/listings/${data.id}`)}
-        className="group cursor-pointer overflow-hidden relative rounded-xl bg-neutral-900 transition-[transform,box-shadow,opacity] duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(0,0,0,0.15),0_8px_16px_rgba(0,0,0,0.1)] active:scale-[0.98] active:opacity-90 max-w-[250px]"
+        className="group cursor-pointer overflow-hidden relative rounded-xl bg-stone-900 transition-[transform,box-shadow,opacity] duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(0,0,0,0.15),0_8px_16px_rgba(0,0,0,0.1)] active:scale-[0.98] active:opacity-90 max-w-[250px]"
       >
         {/* Background image */}
         <div className="absolute inset-0 z-0">
@@ -291,7 +291,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
   return (
     <div
       onClick={() => router.push(`/listings/${data.id}`)}
-      className="group cursor-pointer rounded-2xl p-3 -mx-3 flex flex-row gap-4 relative transition-colors duration-200 hover:bg-stone-50/80 dark:hover:bg-zinc-900/40"
+      className="group cursor-pointer rounded-2xl p-3 -mx-3 flex flex-row gap-4 relative transition-colors duration-200 hover:bg-stone-50/80 dark:hover:bg-stone-900/40"
     >
       {/* Image */}
       <div className="relative overflow-hidden rounded-xl flex-shrink-0 w-[120px] h-[120px]">
@@ -309,24 +309,24 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
       <div className="flex flex-col justify-center min-w-0 flex-1">
         {/* Category — editorial cursive */}
         {data.category && (
-          <p className="text-[11px] text-stone-400 dark:text-zinc-500 leading-none" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}>
+          <p className="text-[11px] text-stone-400 dark:text-stone-500 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500 leading-none" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}>
             {data.category}
           </p>
         )}
 
         {/* Title */}
-        <h2 className="text-[15px] font-semibold text-neutral-900 dark:text-zinc-100 tracking-[-0.01em] leading-tight line-clamp-2 mt-0.5">
+        <h2 className="text-[15px] font-semibold text-stone-900 dark:text-stone-100 dark:text-stone-100 tracking-[-0.01em] leading-tight line-clamp-2 mt-0.5">
           {data.title}
         </h2>
 
         {/* Location */}
-        <p className="text-[11px] text-stone-400 dark:text-zinc-500 leading-none mt-1.5">
+        <p className="text-[11px] text-stone-400 dark:text-stone-500 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500 leading-none mt-1.5">
           {city && state ? `${city}, ${state}` : city || state || 'Location'}
         </p>
 
         {/* Rating | Price */}
-        <div className="flex items-center text-[11px] text-stone-400 dark:text-zinc-500 leading-none mt-2 tabular-nums">
-          <svg width="11" height="11" viewBox="0 0 24 24" className="text-stone-400 dark:text-zinc-500 mr-1 -mt-px flex-shrink-0">
+        <div className="flex items-center text-[11px] text-stone-400 dark:text-stone-500 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500 leading-none mt-2 tabular-nums">
+          <svg width="11" height="11" viewBox="0 0 24 24" className="text-stone-400 dark:text-stone-500 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500 mr-1 -mt-px flex-shrink-0">
             <defs>
               <linearGradient id="listingStarGold" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stopColor="#f5c842" />
@@ -335,8 +335,8 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
             </defs>
             <path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z" fill="url(#listingStarGold)" />
           </svg>
-          <span className="text-stone-500 dark:text-zinc-400">{ratingNum === '0.0' ? '5.0' : ratingNum}</span>
-          {priceRange && <><span className="mx-1.5 text-stone-300 dark:text-zinc-600">|</span>{priceRange}</>}
+          <span className="text-stone-500 dark:text-stone-400 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500">{ratingNum === '0.0' ? '5.0' : ratingNum}</span>
+          {priceRange && <><span className="mx-1.5 text-stone-300 dark:text-stone-600 dark:text-stone-300">|</span>{priceRange}</>}
         </div>
       </div>
 
@@ -357,7 +357,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
               }
             }}
             aria-label="Share"
-            className="transition-colors duration-200 text-stone-500 dark:text-zinc-400 hover:text-stone-700 dark:hover:text-zinc-200"
+            className="transition-colors duration-200 text-stone-500 dark:text-stone-400 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 dark:hover:text-stone-200"
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M10.0017 3C7.05534 3.03208 5.41096 3.21929 4.31838 4.31188C2.99988 5.63037 2.99988 7.75248 2.99988 11.9966C2.99988 16.2409 2.99988 18.363 4.31838 19.6815C5.63688 21 7.75899 21 12.0032 21C16.2474 21 18.3695 21 19.688 19.6815C20.7808 18.5887 20.9678 16.9438 20.9999 13.9963" />

@@ -56,7 +56,8 @@ export async function POST(
       data: {
         userId: post.userId,
         type: 'NEW_BOOKMARK',
-        content: `${currentUser.name} bookmarked your post`
+        content: `${currentUser.name} bookmarked your post`,
+        relatedUserId: currentUser.id
       }
     });
   }

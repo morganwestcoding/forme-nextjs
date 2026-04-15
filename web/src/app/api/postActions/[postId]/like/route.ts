@@ -47,6 +47,7 @@ export async function POST(
         type: 'POST_LIKED',
         content: `${currentUser.name || 'Someone'} liked your post`,
         userId: post.userId,
+        relatedUserId: currentUser.id,
       },
     }).catch(() => {}); // fire-and-forget
   }

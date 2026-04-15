@@ -1,6 +1,4 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
-@import url('https://fonts.googleapis.com/css?family=Raleway:900&display=swap');
-@import url('https://fonts.googleapis.com/css?family=Lato:600');
 
 @tailwind base;
 @tailwind components;
@@ -22,7 +20,7 @@ html {
 /* ---------- CSS Variables (theme) ---------- */
 @layer base {
   :root {
-    --background: 0 1% 66%;
+    --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
@@ -42,34 +40,29 @@ html {
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
     --radius: 0.5rem;
-    /* Theme accent color - updated dynamically via ThemeContext */
-    --accent-color: #60A5FA;
-    --accent-color-hover: #3b82f6;
-    --accent-color-light: #60A5FA1A;
-    --accent-color-shadow: #60A5FA40;
   }
 
-  /* Dark mode variables */
+  /* Dark mode — stone-scale */
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --background: 20 14% 4%;      /* stone-950 */
+    --foreground: 60 9% 98%;      /* stone-50 */
+    --card: 24 10% 10%;           /* stone-900 */
+    --card-foreground: 60 9% 98%;
+    --popover: 24 10% 10%;
+    --popover-foreground: 60 9% 98%;
+    --primary: 60 9% 98%;
+    --primary-foreground: 24 10% 10%;
+    --secondary: 12 6% 15%;       /* stone-800 */
+    --secondary-foreground: 60 9% 98%;
+    --muted: 12 6% 15%;
+    --muted-foreground: 24 5% 64%; /* stone-400 */
+    --accent: 12 6% 15%;
+    --accent-foreground: 60 9% 98%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --destructive-foreground: 60 9% 98%;
+    --border: 12 6% 15%;
+    --input: 12 6% 15%;
+    --ring: 24 5% 64%;
   }
 }
 
@@ -115,7 +108,7 @@ html {
   }
   html,
   body {
-    @apply text-foreground bg-white dark:bg-neutral-950;
+    @apply text-foreground bg-background;
     min-height: 100vh;
     overflow-x: hidden;
     transition: background-color 0.3s ease, color 0.3s ease;
@@ -157,36 +150,48 @@ main {
 }
 
 /* ===========================
-   Loading Dots Animation
+   Splash Loader (logo + gradient dots)
    =========================== */
-@keyframes loadingDotPulse {
+@keyframes splashLogoReveal {
+  0% { opacity: 0; transform: scale(0.8) translateY(10px); filter: blur(10px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+}
+
+@keyframes splashDotsContainer {
+  0% { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes splashDotPulse {
   0%, 100% { opacity: 0.3; transform: scale(0.8); }
-  50% { opacity: 1; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.1); }
 }
 
-.loading-dot {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  margin: 0 3px;
-  border-radius: 50%;
-  animation: loadingDotPulse 1s infinite;
+@keyframes splashFadeOut {
+  0% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.02); }
 }
 
-/* ===========================
-   Shadow Rolling Loader
-   =========================== */
-.loader {
-  width: 10px;
-  height: 10px;
+.splash-logo {
+  animation: splashLogoReveal 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+}
+
+.splash-dots {
+  animation: splashDotsContainer 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.12s forwards;
+  opacity: 0;
+}
+
+.splash-dot {
+  width: 14px;
+  height: 14px;
+  margin: 0 6px;
   border-radius: 50%;
-  display: block;
-  margin: 15px auto;
-  position: relative;
-  color: #60A5FA; /* 👈 Tailwind sky-400 blue fallback */
-  left: -100px;
-  box-sizing: border-box;
-  animation: shadowRolling 2s linear infinite;
+  animation: splashDotPulse 1.4s ease-in-out infinite;
+}
+
+.splash-fade-out {
+  animation: splashFadeOut 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 @keyframes fadeIn {
@@ -209,72 +214,6 @@ main {
   18%  { opacity: 1; transform: scale(1.0); }
   60%  { opacity: 1; transform: scale(1.04); }
   100% { opacity: 0; transform: scale(1.18); }
-}
-
-@keyframes shadowRolling {
-  0% {
-    box-shadow:
-      0px 0 rgba(96, 165, 250, 0),
-      0px 0 rgba(96, 165, 250, 0),
-      0px 0 rgba(96, 165, 250, 0),
-      0px 0 rgba(96, 165, 250, 0);
-  }
-  12% {
-    box-shadow:
-      100px 0 currentColor,
-      0px 0 rgba(96, 165, 250, 0),
-      0px 0 rgba(96, 165, 250, 0),
-      0px 0 rgba(96, 165, 250, 0);
-  }
-  25% {
-    box-shadow:
-      110px 0 currentColor,
-      100px 0 currentColor,
-      0px 0 rgba(96, 165, 250, 0),
-      0px 0 rgba(96, 165, 250, 0);
-  }
-  36% {
-    box-shadow:
-      120px 0 currentColor,
-      110px 0 currentColor,
-      100px 0 currentColor,
-      0px 0 rgba(96, 165, 250, 0);
-  }
-  50% {
-    box-shadow:
-      130px 0 currentColor,
-      120px 0 currentColor,
-      110px 0 currentColor,
-      100px 0 currentColor;
-  }
-  62% {
-    box-shadow:
-      200px 0 rgba(96, 165, 250, 0),
-      130px 0 currentColor,
-      120px 0 currentColor,
-      110px 0 currentColor;
-  }
-  75% {
-    box-shadow:
-      200px 0 rgba(96, 165, 250, 0),
-      200px 0 rgba(96, 165, 250, 0),
-      130px 0 currentColor,
-      120px 0 currentColor;
-  }
-  87% {
-    box-shadow:
-      200px 0 rgba(96, 165, 250, 0),
-      200px 0 rgba(96, 165, 250, 0),
-      200px 0 rgba(96, 165, 250, 0),
-      130px 0 currentColor;
-  }
-  100% {
-    box-shadow:
-      200px 0 rgba(96, 165, 250, 0),
-      200px 0 rgba(96, 165, 250, 0),
-      200px 0 rgba(96, 165, 250, 0),
-      200px 0 rgba(96, 165, 250, 0);
-  }
 }
 
 /* ===========================

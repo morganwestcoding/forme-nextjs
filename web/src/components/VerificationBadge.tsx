@@ -12,7 +12,7 @@ const VerificationBadge: React.FC<VerificationBadgeProps> = ({
   size = 18,
   className = ''
 }) => {
-  const { accentColor } = useTheme();
+  const {} = useTheme();
 
   // Calculate a slightly darker shade for the gradient
   const getDarkerShade = (hex: string): string => {
@@ -24,7 +24,7 @@ const VerificationBadge: React.FC<VerificationBadgeProps> = ({
     return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
   };
 
-  const darkerColor = getDarkerShade(accentColor);
+  const darkerColor = getDarkerShade('#1c1917');
 
   // Generate a unique gradient ID to avoid conflicts when multiple badges are on the page
   const gradientId = `verifiedGrad-${React.useId().replace(/:/g, '')}`;
@@ -51,7 +51,7 @@ const VerificationBadge: React.FC<VerificationBadgeProps> = ({
       />
       <defs>
         <linearGradient id={gradientId} x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor={accentColor} />
+          <stop offset="0%" stopColor={'#1c1917'} />
           <stop offset="100%" stopColor={darkerColor} />
         </linearGradient>
       </defs>

@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, Check, ChevronDown, Loader2 } from 'lucide-react';
+
 import TypeformHeading from '../TypeformHeading';
+import { Location01Icon as MapPin, Tick02Icon as Check, ArrowDown01Icon as ChevronDown, Loading03Icon as Loader2 } from 'hugeicons-react';
 
 interface LocationStepProps {
   location: string;
@@ -116,21 +117,21 @@ export default function LocationStep({ location, onLocationChange }: LocationSte
       <div className="space-y-5">
         {/* State select */}
         <div ref={stateDropdownRef} className="relative">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-stone-700 dark:text-stone-200 mb-2">
             State
           </label>
           <button
             type="button"
             onClick={() => { setIsStateOpen(!isStateOpen); setIsCityOpen(false); }}
-            className={`w-full flex items-center gap-3 px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-left transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent ${
-              isStateOpen ? 'ring-2 ring-gray-900 border-transparent' : ''
+            className={`w-full flex items-center gap-3 px-4 py-3.5 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl text-left transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent ${
+              isStateOpen ? 'ring-2 ring-stone-900 border-transparent' : ''
             }`}
           >
-            <span className={selectedState ? 'text-gray-900' : 'text-gray-400'}>
+            <span className={selectedState ? 'text-stone-900 dark:text-stone-100' : 'text-stone-400 dark:text-stone-500'}>
               {selectedState || 'Select a state'}
             </span>
             <ChevronDown
-              className={`ml-auto w-5 h-5 text-gray-400 transition-transform duration-200 ${isStateOpen ? 'rotate-180' : ''}`}
+              className={`ml-auto w-5 h-5 text-stone-400 dark:text-stone-500 transition-transform duration-200 ${isStateOpen ? 'rotate-180' : ''}`}
             />
           </button>
 
@@ -141,7 +142,7 @@ export default function LocationStep({ location, onLocationChange }: LocationSte
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.15 }}
-                className="absolute z-50 mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden"
+                className="absolute z-50 mt-2 w-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl shadow-lg overflow-hidden"
               >
                 <div className="max-h-[240px] overflow-y-auto overscroll-contain">
                   {US_STATES.map((state) => (
@@ -151,13 +152,13 @@ export default function LocationStep({ location, onLocationChange }: LocationSte
                       onClick={() => handleStateSelect(state)}
                       className={`w-full flex items-center gap-3 px-4 py-3 text-sm transition-colors cursor-pointer ${
                         selectedState === state
-                          ? 'bg-gray-50 text-gray-900 font-medium'
-                          : 'text-gray-700 hover:bg-gray-50'
+                          ? 'bg-stone-50 dark:bg-stone-900 text-stone-900 dark:text-stone-100 font-medium'
+                          : 'text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900'
                       }`}
                     >
                       <span className="flex-1 text-left">{state}</span>
                       {selectedState === state && (
-                        <Check className="w-4 h-4 text-gray-900" />
+                        <Check className="w-4 h-4 text-stone-900 dark:text-stone-100" />
                       )}
                     </button>
                   ))}
@@ -178,7 +179,7 @@ export default function LocationStep({ location, onLocationChange }: LocationSte
               transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
               className="relative overflow-visible"
             >
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-stone-700 dark:text-stone-200 mb-2">
                 City
               </label>
               <div className="relative">
@@ -193,7 +194,7 @@ export default function LocationStep({ location, onLocationChange }: LocationSte
                   }}
                   onFocus={() => { setIsCityOpen(true); setIsStateOpen(false); }}
                   autoFocus
-                  className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3.5 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all"
                   placeholder={isLoadingCities ? 'Loading cities...' : 'Type to search cities...'}
                   disabled={isLoadingCities}
                   onKeyDown={(e) => {
@@ -205,7 +206,7 @@ export default function LocationStep({ location, onLocationChange }: LocationSte
                   }}
                 />
                 {isLoadingCities && (
-                  <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 animate-spin" />
+                  <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400 dark:text-stone-500 animate-spin" />
                 )}
               </div>
 
@@ -216,7 +217,7 @@ export default function LocationStep({ location, onLocationChange }: LocationSte
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -8 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute z-50 mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden"
+                    className="absolute z-50 mt-2 w-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl shadow-lg overflow-hidden"
                   >
                     <div className="max-h-[240px] overflow-y-auto overscroll-contain">
                       {filteredCities.map((c) => (
@@ -226,13 +227,13 @@ export default function LocationStep({ location, onLocationChange }: LocationSte
                           onClick={() => handleCitySelect(c)}
                           className={`w-full flex items-center gap-3 px-4 py-3 text-sm transition-colors cursor-pointer ${
                             city === c
-                              ? 'bg-gray-50 text-gray-900 font-medium'
-                              : 'text-gray-700 hover:bg-gray-50'
+                              ? 'bg-stone-50 dark:bg-stone-900 text-stone-900 dark:text-stone-100 font-medium'
+                              : 'text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900'
                           }`}
                         >
                           <span className="flex-1 text-left">{c}</span>
                           {city === c && (
-                            <Check className="w-4 h-4 text-gray-900" />
+                            <Check className="w-4 h-4 text-stone-900 dark:text-stone-100" />
                           )}
                         </button>
                       ))}
@@ -252,14 +253,14 @@ export default function LocationStep({ location, onLocationChange }: LocationSte
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
-              className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl"
+              className="flex items-center gap-3 p-4 bg-stone-50 dark:bg-stone-900 rounded-xl"
             >
-              <div className="w-10 h-10 rounded-full bg-gray-900 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full bg-stone-900 flex items-center justify-center">
                 <MapPin className="w-5 h-5 text-white" />
               </div>
               <div>
-                <p className="font-medium text-gray-900">{city}, {selectedState}</p>
-                <p className="text-sm text-gray-500">Your location</p>
+                <p className="font-medium text-stone-900 dark:text-stone-100">{city}, {selectedState}</p>
+                <p className="text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500">Your location</p>
               </div>
             </motion.div>
           )}

@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Search, Building2, ArrowRight } from 'lucide-react';
+
 import axios from 'axios';
 import TypeformHeading from '../TypeformHeading';
 import { itemVariants } from '../TypeformStep';
+import { Search01Icon as Search, Building02Icon as Building2, ArrowRight01Icon as ArrowRight } from 'hugeicons-react';
 
 interface BusinessSelectStepProps {
   selectedListing: string;
@@ -73,18 +74,18 @@ export default function BusinessSelectStep({ selectedListing, onListingChange, o
       <div className="space-y-4">
         {/* Search input */}
         <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400 dark:text-stone-500" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             autoFocus
-            className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
+            className="w-full pl-12 pr-4 py-3.5 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all"
             placeholder="Search for a business..."
           />
           {isLoading && (
             <div className="absolute right-4 top-1/2 -translate-y-1/2">
-              <div className="w-5 h-5 border-2 border-gray-200 border-t-gray-600 rounded-full animate-spin" />
+              <div className="w-5 h-5 border-2 border-stone-200 dark:border-stone-800 border-t-stone-600 rounded-full animate-spin" />
             </div>
           )}
         </div>
@@ -101,8 +102,8 @@ export default function BusinessSelectStep({ selectedListing, onListingChange, o
                 className={`
                   w-full flex items-center gap-4 p-4 rounded-xl border-2 text-left transition-all duration-200
                   ${selectedListing === listing.id
-                    ? 'border-gray-900 bg-gray-50'
-                    : 'border-gray-200 bg-white hover:border-gray-300'
+                    ? 'border-stone-900 bg-stone-50 dark:bg-stone-900'
+                    : 'border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 hover:border-stone-300 dark:border-stone-700'
                   }
                 `}
               >
@@ -113,13 +114,13 @@ export default function BusinessSelectStep({ selectedListing, onListingChange, o
                     className="w-12 h-12 rounded-xl object-cover"
                   />
                 ) : (
-                  <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center">
-                    <Building2 className="w-5 h-5 text-gray-400" />
+                  <div className="w-12 h-12 rounded-xl bg-stone-100 dark:bg-stone-800 flex items-center justify-center">
+                    <Building2 className="w-5 h-5 text-stone-400 dark:text-stone-500" />
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-medium text-gray-900 truncate">{listing.title}</h3>
-                  <p className="text-sm text-gray-500 truncate">{listing.location || listing.category}</p>
+                  <h3 className="font-medium text-stone-900 dark:text-stone-100 truncate">{listing.title}</h3>
+                  <p className="text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500 truncate">{listing.location || listing.category}</p>
                 </div>
               </motion.button>
             ))}
@@ -129,8 +130,8 @@ export default function BusinessSelectStep({ selectedListing, onListingChange, o
         {/* No results */}
         {hasSearched && listings.length === 0 && searchQuery.length >= 2 && (
           <div className="text-center py-8">
-            <p className="text-gray-500">No businesses found</p>
-            <p className="text-sm text-gray-400 mt-1">Try a different search term</p>
+            <p className="text-stone-500 dark:text-stone-400 dark:text-stone-500">No businesses found</p>
+            <p className="text-sm text-stone-400 dark:text-stone-500 mt-1">Try a different search term</p>
           </div>
         )}
 
@@ -139,7 +140,7 @@ export default function BusinessSelectStep({ selectedListing, onListingChange, o
           type="button"
           variants={itemVariants}
           onClick={onSkip}
-          className="w-full flex items-center justify-center gap-2 py-3 text-gray-500 hover:text-gray-900 transition-colors"
+          className="w-full flex items-center justify-center gap-2 py-3 text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 transition-colors"
         >
           <span className="text-sm">Skip for now</span>
           <ArrowRight className="w-4 h-4" />

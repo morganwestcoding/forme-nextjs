@@ -43,13 +43,13 @@ export default function VerificationQueue({ users }: { users: PendingUser[] }) {
   return (
     <div className="grid gap-4">
       {users.map((user) => (
-        <div key={user.id} className="rounded-2xl border border-stone-200/60 bg-white p-5">
+        <div key={user.id} className="rounded-2xl border border-stone-200/60 bg-white dark:bg-stone-900 p-5">
           <div className="flex items-start gap-4">
             {/* User info */}
             <div className="flex-1 min-w-0">
-              <p className="text-[15px] font-semibold text-stone-900">{user.name || 'No Name'}</p>
-              <p className="text-[12px] text-stone-400">{user.email}</p>
-              <div className="flex items-center gap-3 mt-2 text-[12px] text-stone-400">
+              <p className="text-[15px] font-semibold text-stone-900 dark:text-stone-100">{user.name || 'No Name'}</p>
+              <p className="text-[12px] text-stone-400 dark:text-stone-500">{user.email}</p>
+              <div className="flex items-center gap-3 mt-2 text-[12px] text-stone-400 dark:text-stone-500">
                 {user.userType && <span>{user.userType}</span>}
                 {user.location && <><span>•</span><span>{user.location}</span></>}
                 <span>•</span>
@@ -80,8 +80,8 @@ export default function VerificationQueue({ users }: { users: PendingUser[] }) {
           {/* Licensing image */}
           {user.licensingImage && (
             <div className="mt-4">
-              <p className="text-[11px] font-medium text-stone-400 uppercase tracking-wide mb-2">Licensing Document</p>
-              <div className="relative w-full max-w-md aspect-[4/3] rounded-xl overflow-hidden border border-stone-200">
+              <p className="text-[11px] font-medium text-stone-400 dark:text-stone-500 uppercase tracking-wide mb-2">Licensing Document</p>
+              <div className="relative w-full max-w-md aspect-[4/3] rounded-xl overflow-hidden border border-stone-200 dark:border-stone-800">
                 <Image
                   src={user.licensingImage}
                   alt="Licensing document"
@@ -100,13 +100,13 @@ export default function VerificationQueue({ users }: { users: PendingUser[] }) {
                 value={rejectReason[user.id] || ''}
                 onChange={(e) => setRejectReason({ ...rejectReason, [user.id]: e.target.value })}
                 placeholder="e.g., Document is expired, image is unclear..."
-                className="w-full px-3 py-2 rounded-lg border border-red-200 text-[13px] text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-red-200 resize-none"
+                className="w-full px-3 py-2 rounded-lg border border-red-200 text-[13px] text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-red-200 resize-none"
                 rows={2}
               />
               <div className="flex gap-2 mt-3">
                 <button
                   onClick={() => setShowReject(null)}
-                  className="text-[12px] font-medium px-4 py-2 rounded-xl text-stone-600 bg-white border border-stone-200/60 hover:bg-stone-50 transition-all"
+                  className="text-[12px] font-medium px-4 py-2 rounded-xl text-stone-600 dark:text-stone-300 bg-white dark:bg-stone-900 border border-stone-200/60 hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900 transition-all"
                 >
                   Cancel
                 </button>

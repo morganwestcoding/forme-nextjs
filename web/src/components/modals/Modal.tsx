@@ -8,9 +8,10 @@ import React, {
   useState,
   forwardRef,
 } from "react";
-import { X } from "lucide-react";
-import ModalButton from "./ModalButton";
+
+import Button from "../ui/Button";
 import ModalBackdrop from "./ModalBackdrop";
+import { Cancel01Icon as X } from 'hugeicons-react';
 
 export interface ModalHandle {
   close: () => void; // expose animated close
@@ -125,7 +126,7 @@ const Modal = forwardRef<ModalHandle, ModalProps>(({
       role="dialog"
       aria-modal="true"
       aria-labelledby={title ? `${id || "modal"}-title` : undefined}
-      className="fixed inset-0 z-[9999] backdrop-blur-sm bg-neutral-900/60 animate-in fade-in duration-200"
+      className="fixed inset-0 z-[9999] backdrop-blur-sm bg-stone-900/60 animate-in fade-in duration-200"
       onMouseDown={handleBackdropClick}
     >
       {backdropVideo && <ModalBackdrop videoSrc={backdropVideo} />}
@@ -143,15 +144,15 @@ const Modal = forwardRef<ModalHandle, ModalProps>(({
           >
             <div
               id={id}
-              className="relative flex flex-col w-full bg-white/95 dark:bg-neutral-900/95 backdrop-blur-xl border border-gray-200/60 dark:border-neutral-700/60 rounded-2xl shadow-2xl shadow-gray-900/20 overflow-hidden"
+              className="relative flex flex-col w-full bg-white/95 dark:bg-stone-900/95 backdrop-blur-xl border border-stone-200/60 dark:border-stone-700/60 rounded-2xl shadow-2xl shadow-stone-900/20 overflow-hidden"
             >
               {/* Close (X) */}
               <button
                 aria-label="Close"
                 onClick={(e) => { e.stopPropagation(); handleClose(); }}
-                className="absolute right-5 top-5 p-2 rounded-xl hover:bg-gray-100/80 dark:hover:bg-neutral-700/80 active:bg-gray-200/80 dark:active:bg-neutral-600/80 transition-all duration-200 z-10 group"
+                className="absolute right-5 top-5 p-2 rounded-xl hover:bg-stone-100/80 dark:hover:bg-stone-700/80 active:bg-stone-200/80 dark:active:bg-stone-600/80 transition-all duration-200 z-10 group"
               >
-                <X size={20} className="text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors duration-200" />
+                <X size={20} className="text-stone-400 dark:text-stone-500 group-hover:text-stone-600 dark:group-hover:text-stone-300 transition-colors duration-200" />
               </button>
 
               {/* Content */}
@@ -162,7 +163,7 @@ const Modal = forwardRef<ModalHandle, ModalProps>(({
                   </h2>
                 )}
                 <div id={modalContentId || "modal-content"} className="flex flex-col">
-                  <div className="relative px-8 pt-8 pb-6 text-gray-800 dark:text-gray-200">
+                  <div className="relative px-8 pt-8 pb-6 text-stone-800 dark:text-stone-200">
                     {body}
                   </div>
                 </div>
@@ -171,21 +172,27 @@ const Modal = forwardRef<ModalHandle, ModalProps>(({
                   <div className="flex flex-col gap-3 px-8 pb-8 pt-2">
                     <div className="flex flex-row items-center gap-3 w-full">
                       {secondaryAction && secondaryActionLabel && (
-                        <ModalButton
+                        <Button
                           id="secondary-action-button"
-                          outline
-                          label={secondaryActionLabel}
+                          variant="outline"
+                          size="lg"
+                          fullWidth
                           disabled={disabled}
                           onClick={handleSecondaryAction}
-                        />
+                        >
+                          {secondaryActionLabel}
+                        </Button>
                       )}
                       {actionLabel && (
-                        <ModalButton
+                        <Button
                           id={actionId || "primary-action-button"}
-                          label={actionLabel}
+                          size="lg"
+                          fullWidth
                           disabled={disabled}
                           onClick={handleSubmit}
-                        />
+                        >
+                          {actionLabel}
+                        </Button>
                       )}
                     </div>
                     {footer}

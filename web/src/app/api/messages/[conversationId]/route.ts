@@ -142,7 +142,8 @@ export async function POST(
         data: {
           type: 'NEW_MESSAGE',
           content: `${currentUser.name || 'Someone'} sent you a message: "${content.length > 30 ? content.substring(0, 30) + '...' : content}"`,
-          userId: user.id
+          userId: user.id,
+          relatedUserId: currentUser.id
         }
       })
     ));

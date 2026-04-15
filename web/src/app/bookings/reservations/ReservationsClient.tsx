@@ -16,39 +16,13 @@ import {
   startOfMonth,
   isSameDay,
 } from 'date-fns';
-import {
-  Inbox,
-  ArrowUpRight,
-  Clock,
-  MapPin,
-  User as UserIcon,
-  X,
-  Search,
-  Navigation,
-  Phone,
-  CalendarPlus,
-  Share2,
-  Star,
-  RotateCw,
-  ChevronRight,
-  Sparkles,
-  Check,
-  Undo2,
-  ArrowLeftRight,
-} from 'lucide-react';
-import {
-  Navigation03Icon,
-  Call02Icon,
-  CalendarAdd02Icon,
-  Tick02Icon,
-  Cancel01Icon,
-  UserAccountIcon,
-} from 'hugeicons-react';
 
 import { SafeReservation, SafeUser } from '@/app/types';
+import Button from '@/components/ui/Button';
 import Container from '@/components/Container';
 import PageHeader from '@/components/PageHeader';
 import { placeholderDataUri } from '@/lib/placeholders';
+import { Navigation03Icon, Call02Icon, CalendarAdd02Icon, Tick02Icon, Cancel01Icon, UserAccountIcon, InboxIcon as Inbox, ArrowUpRight01Icon as ArrowUpRight, Clock01Icon as Clock, Location01Icon as MapPin, UserIcon, Cancel01Icon as X, Search01Icon as Search, Navigation03Icon as Navigation, Call02Icon as Phone, CalendarAdd02Icon as CalendarPlus, Share08Icon as Share2, StarIcon as Star, RefreshIcon as RotateCw, ArrowRight01Icon as ChevronRight, SparklesIcon as Sparkles, Tick02Icon as Check, RotateLeft03Icon as Undo2, ArrowLeftRightIcon as ArrowLeftRight } from 'hugeicons-react';
 
 interface ReservationsClientProps {
   incomingReservations: SafeReservation[];
@@ -203,8 +177,8 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
 
       <div className="mt-8 pb-20">
         <div className="mb-8">
-          <h1 className="text-2xl font-semibold text-stone-900 tracking-tight">Bookings</h1>
-          <p className="text-[14px] text-stone-400 mt-1">
+          <h1 className="text-2xl font-semibold text-stone-900 dark:text-stone-100 tracking-tight">Bookings</h1>
+          <p className="text-[14px] text-stone-400 dark:text-stone-500 mt-1">
             {directionTab === 'outgoing'
               ? 'Your trips and appointments'
               : 'Requests from your customers'}
@@ -234,14 +208,14 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
                   className={`flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap ${
                     active
                       ? 'bg-gradient-to-br from-stone-800 to-black text-white shadow-[0_1px_3px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.12)]'
-                      : 'bg-stone-50 text-stone-500 hover:bg-stone-100 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]'
+                      : 'bg-stone-50 dark:bg-stone-900 text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]'
                   }`}
                 >
                   {tab.label}
                   {tab.count > 0 && (
                     <span
                       className={`text-[11px] tabular-nums ${
-                        active ? 'text-white/60' : tab.attention ? 'text-amber-600' : 'text-stone-400'
+                        active ? 'text-white/60' : tab.attention ? 'text-amber-600' : 'text-stone-400 dark:text-stone-500'
                       }`}
                     >
                       {tab.count}
@@ -262,9 +236,9 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
                   ? 'Search by service, customer, place…'
                   : 'Search trips, shops, places…'
               }
-              className="w-full bg-stone-50 dark:bg-zinc-800/50 border border-stone-200 dark:border-zinc-700/50 rounded-xl px-4 py-2.5 pr-11 text-[13px] text-stone-800 dark:text-white placeholder-stone-400 dark:placeholder-zinc-500 outline-none focus:border-stone-300 dark:focus:border-zinc-600 focus:bg-white dark:focus:bg-zinc-800 transition-all"
+              className="w-full bg-stone-50 dark:bg-stone-900 dark:bg-stone-800/50 border border-stone-200 dark:border-stone-800 dark:border-stone-700/50 rounded-xl px-4 py-2.5 pr-11 text-[13px] text-stone-800 dark:text-stone-200 dark:text-white placeholder-stone-400 dark:placeholder-stone-500 outline-none focus:border-stone-300 dark:border-stone-700 dark:focus:border-stone-600 focus:bg-white dark:bg-stone-900 dark:focus:bg-stone-800 transition-all"
             />
-            <div className="absolute right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-xl flex items-center justify-center text-stone-400">
+            <div className="absolute right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-xl flex items-center justify-center text-stone-400 dark:text-stone-500">
               <Search className="w-4 h-4" strokeWidth={2} />
             </div>
           </div>
@@ -696,7 +670,7 @@ function BigAction({
 }) {
   const cls = `inline-flex flex-col items-center justify-center gap-1.5 rounded-xl text-[13px] font-semibold transition-all border ${
     primary
-      ? 'bg-white text-stone-900 border-white hover:bg-stone-100'
+      ? 'bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 border-white hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800'
       : 'bg-white/[0.04] text-white border-white/10 hover:bg-white/10 hover:border-white/20'
   } disabled:opacity-50`;
   if (href) {
@@ -884,7 +858,7 @@ function StackedAction({
 }) {
   const cls = `w-full inline-flex items-center ${compact ? 'justify-center' : 'justify-start'} gap-2 px-3.5 h-11 rounded-xl text-[13px] font-semibold whitespace-nowrap transition-all border ${
     primary
-      ? 'bg-white text-stone-900 border-white hover:bg-stone-100'
+      ? 'bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 border-white hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800'
       : danger
       ? 'bg-white/0 text-white/75 border-white/15 hover:bg-red-500/15 hover:text-red-200 hover:border-red-400/40'
       : 'bg-white/5 text-white border-white/15 hover:bg-white/15'
@@ -946,7 +920,7 @@ function NoUpcomingHero({
         {!isIncoming && (
           <button
             onClick={onBrowse}
-            className="mt-7 inline-flex items-center gap-2 px-5 h-11 rounded-full bg-white text-stone-900 text-[13px] font-semibold hover:bg-stone-100 transition-colors"
+            className="mt-7 inline-flex items-center gap-2 px-5 h-11 rounded-full bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 text-[13px] font-semibold hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 transition-colors"
           >
             <Sparkles className="w-4 h-4" strokeWidth={2.2} />
             Discover services
@@ -971,7 +945,7 @@ function StatCard({
 }) {
   return (
     <div
-      className={`relative overflow-hidden rounded-2xl border bg-white p-4 sm:p-5 transition-all hover:border-stone-300 ${
+      className={`relative overflow-hidden rounded-2xl border bg-white dark:bg-stone-900 p-4 sm:p-5 transition-all hover:border-stone-300 dark:border-stone-700 ${
         accent === 'amber' ? 'border-amber-200/80' : 'border-stone-200/70'
       }`}
     >
@@ -979,10 +953,10 @@ function StatCard({
         <div aria-hidden className="absolute -top-10 -right-10 w-28 h-28 rounded-full bg-amber-200/30 blur-2xl" />
       )}
       <div className="relative flex items-center gap-2">
-        <p className="text-[13px] font-semibold tracking-wider text-stone-400 uppercase">
+        <p className="text-[13px] font-semibold tracking-wider text-stone-400 dark:text-stone-500 uppercase">
           {label}
         </p>
-        <p className="text-[18px] sm:text-[20px] font-semibold text-stone-900 tabular-nums tracking-tight leading-none">
+        <p className="text-[18px] sm:text-[20px] font-semibold text-stone-900 dark:text-stone-100 tabular-nums tracking-tight leading-none">
           {value}
         </p>
       </div>
@@ -1006,10 +980,10 @@ function TimelineGroup({
   return (
     <section>
       <div className="flex items-baseline gap-3 mb-5">
-        <h2 className="text-[18px] font-semibold text-neutral-900 tracking-[-0.015em]">{label}</h2>
+        <h2 className="text-[18px] font-semibold text-stone-900 dark:text-stone-100 tracking-[-0.015em]">{label}</h2>
         {sublabel && (
           <span
-            className="text-[12px] text-stone-400"
+            className="text-[12px] text-stone-400 dark:text-stone-500"
             style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}
           >
             {sublabel}
@@ -1074,8 +1048,7 @@ function TripRow({
   const canRefund =
     !isIncoming &&
     paymentStatus === 'paid' &&
-    !isRefunded &&
-    paymentStatus !== 'disputed';
+    !isRefunded;
 
   return (
     <div
@@ -1088,22 +1061,22 @@ function TripRow({
     >
       <div
         onClick={onOpen}
-        className={`relative cursor-pointer rounded-3xl bg-white border transition-all overflow-hidden hover:-translate-y-0.5 hover:shadow-[0_24px_48px_-28px_rgba(0,0,0,0.25)] ${
+        className={`relative cursor-pointer rounded-3xl bg-white dark:bg-stone-900 border transition-all overflow-hidden hover:-translate-y-0.5 hover:shadow-[0_24px_48px_-28px_rgba(0,0,0,0.25)] ${
           isNext
             ? 'border-stone-900/15 shadow-[0_12px_32px_-20px_rgba(0,0,0,0.22)]'
-            : 'border-stone-200/70 hover:border-stone-300'
+            : 'border-stone-200/70 hover:border-stone-300 dark:border-stone-700'
         }`}
       >
         <div className="relative flex items-stretch">
           {/* Date — keep as-is, on soft bg */}
           <div className="relative flex-shrink-0 w-[96px] flex flex-col items-center justify-center py-6 bg-gradient-to-b from-stone-50/80 to-white">
-            <div className="text-[11px] font-medium text-stone-400">
+            <div className="text-[11px] font-medium text-stone-400 dark:text-stone-500">
               {format(date, 'MMM')}
             </div>
-            <div className="text-[34px] font-semibold text-stone-900 tabular-nums leading-none mt-1.5">
+            <div className="text-[34px] font-semibold text-stone-900 dark:text-stone-100 tabular-nums leading-none mt-1.5">
               {format(date, 'd')}
             </div>
-            <div className="text-[11px] font-medium text-stone-400 mt-2">
+            <div className="text-[11px] font-medium text-stone-400 dark:text-stone-500 mt-2">
               {format(date, 'EEE')}
             </div>
           </div>
@@ -1119,10 +1092,10 @@ function TripRow({
                   {STATUS_LABELS[status]}
                   {today && !past && <span className="text-amber-600 ml-2">· Today</span>}
                 </p>
-                <h3 className="mt-1.5 text-[18px] font-semibold text-neutral-900 tracking-[-0.015em] leading-tight truncate">
+                <h3 className="mt-1.5 text-[18px] font-semibold text-stone-900 dark:text-stone-100 tracking-[-0.015em] leading-tight truncate">
                   {reservation.serviceName}
                 </h3>
-                <p className="text-[12px] text-stone-500 truncate mt-0.5">
+                <p className="text-[12px] text-stone-500 dark:text-stone-400 dark:text-stone-500 truncate mt-0.5">
                   {isIncoming ? `${customerName} · ${listing.title}` : listing.title}
                 </p>
               </div>
@@ -1130,19 +1103,19 @@ function TripRow({
               <div className="shrink-0 text-right">
                 <div
                   className={`text-[26px] font-black tabular-nums tracking-tight leading-none ${
-                    isRefunded ? 'text-stone-400 line-through' : 'text-neutral-900'
+                    isRefunded ? 'text-stone-400 dark:text-stone-500 line-through' : 'text-stone-900 dark:text-stone-100'
                   }`}
                 >
                   ${reservation.totalPrice}
                 </div>
-                <div className="text-[11px] font-medium text-stone-400 mt-1">
+                <div className="text-[11px] font-medium text-stone-400 dark:text-stone-500 mt-1">
                   {formatTime(reservation.time)}
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center gap-3 pt-2 border-t border-stone-100">
-              <div className="relative shrink-0 w-8 h-8 rounded-full overflow-hidden bg-stone-100 ring-1 ring-stone-200/60">
+            <div className="flex items-center gap-3 pt-2 border-t border-stone-100 dark:border-stone-800">
+              <div className="relative shrink-0 w-8 h-8 rounded-full overflow-hidden bg-stone-100 dark:bg-stone-800 ring-1 ring-stone-200/60">
                 <Image
                   src={image}
                   alt={listing.title}
@@ -1151,9 +1124,9 @@ function TripRow({
                   className={`object-cover ${past ? 'grayscale-[35%]' : ''}`}
                 />
               </div>
-              <div className="min-w-0 text-[12px] text-stone-500 truncate">
+              <div className="min-w-0 text-[12px] text-stone-500 dark:text-stone-400 dark:text-stone-500 truncate">
                 {!isIncoming && employeeName
-                  ? <>with <span className="text-stone-700 font-medium">{employeeName}</span></>
+                  ? <>with <span className="text-stone-700 dark:text-stone-200 font-medium">{employeeName}</span></>
                   : !isIncoming && listing.address
                   ? listing.address
                   : isIncoming && reservation.user?.email
@@ -1165,11 +1138,11 @@ function TripRow({
         </div>
 
         {isIncoming && isPending && !past && (
-          <div className="border-t border-stone-100 bg-gradient-to-b from-amber-50/40 to-white px-4 py-2.5 flex items-center gap-2">
+          <div className="border-t border-stone-100 dark:border-stone-800 bg-gradient-to-b from-amber-50/40 to-white px-4 py-2.5 flex items-center gap-2">
             <button
               onClick={(e) => { e.stopPropagation(); onDecline(); }}
               disabled={disabled}
-              className="flex-1 inline-flex items-center justify-center gap-1.5 h-8 rounded-full text-[12px] font-semibold text-stone-600 bg-white border border-stone-200 hover:text-red-600 hover:border-red-200 hover:bg-red-50 transition-all disabled:opacity-50"
+              className="flex-1 inline-flex items-center justify-center gap-1.5 h-8 rounded-full text-[12px] font-semibold text-stone-600 dark:text-stone-300 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 hover:text-red-600 hover:border-red-200 hover:bg-red-50 transition-all disabled:opacity-50"
             >
               <X className="w-3.5 h-3.5" strokeWidth={2.6} />
               Decline
@@ -1212,7 +1185,7 @@ function ActionChip({
 }) {
   const cls = `inline-flex items-center gap-1.5 px-3.5 h-9 rounded-full text-[12px] font-semibold whitespace-nowrap transition-all backdrop-blur-md border ${
     primary
-      ? 'bg-white text-stone-900 border-white hover:bg-stone-100'
+      ? 'bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 border-white hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800'
       : danger
       ? 'bg-white/0 text-white/80 border-white/15 hover:bg-red-500/15 hover:text-red-200 hover:border-red-400/40'
       : 'bg-white/10 text-white border-white/15 hover:bg-white/20'
@@ -1263,8 +1236,8 @@ function RowAction({
     accent
       ? 'border-stone-900 bg-stone-900 text-white hover:bg-stone-800'
       : danger
-      ? 'border-stone-200 text-stone-400 hover:text-red-600 hover:border-red-200 hover:bg-red-50'
-      : 'border-stone-200 text-stone-500 hover:text-stone-900 hover:border-stone-300 hover:bg-stone-50'
+      ? 'border-stone-200 dark:border-stone-800 text-stone-400 dark:text-stone-500 hover:text-red-600 hover:border-red-200 hover:bg-red-50'
+      : 'border-stone-200 dark:border-stone-800 text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 hover:border-stone-300 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900'
   } disabled:opacity-50`;
   if (href) {
     return (
@@ -1305,16 +1278,16 @@ function EmptyState({
 }) {
   const isIncoming = direction === 'incoming';
   return (
-    <div className="rounded-3xl border border-dashed border-stone-200 bg-white py-20 px-6 text-center">
-      <div className="w-14 h-14 rounded-2xl bg-stone-100 mx-auto flex items-center justify-center mb-5">
-        <Inbox className="w-6 h-6 text-stone-400" strokeWidth={1.5} />
+    <div className="rounded-3xl border border-dashed border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 py-20 px-6 text-center">
+      <div className="w-14 h-14 rounded-2xl bg-stone-100 dark:bg-stone-800 mx-auto flex items-center justify-center mb-5">
+        <Inbox className="w-6 h-6 text-stone-400 dark:text-stone-500" strokeWidth={1.5} />
       </div>
-      <p className="text-[15px] font-medium text-stone-800">
+      <p className="text-[15px] font-medium text-stone-800 dark:text-stone-200">
         {hasQuery
           ? 'No matches'
           : `No ${timeTab} ${isIncoming ? 'requests' : 'bookings'}`}
       </p>
-      <p className="text-[13px] text-stone-400 mt-1.5 max-w-xs mx-auto">
+      <p className="text-[13px] text-stone-400 dark:text-stone-500 mt-1.5 max-w-xs mx-auto">
         {hasQuery
           ? 'Try a different search term.'
           : timeTab === 'upcoming'
@@ -1326,19 +1299,21 @@ function EmptyState({
       {hasQuery ? (
         <button
           onClick={onClear}
-          className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-stone-100 text-stone-700 text-[13px] font-medium hover:bg-stone-200 transition-colors"
+          className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-200 text-[13px] font-medium hover:bg-stone-200 dark:bg-stone-700 transition-colors"
         >
           Clear search
         </button>
       ) : (
         timeTab === 'upcoming' && !isIncoming && (
-          <button
-            onClick={onBrowse}
-            className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-stone-900 text-white text-[13px] font-medium hover:bg-stone-800 transition-colors"
-          >
-            Browse services
-            <ArrowUpRight className="w-3.5 h-3.5" />
-          </button>
+          <div className="mt-6">
+            <Button
+              onClick={onBrowse}
+              rightIcon={<ArrowUpRight className="w-3.5 h-3.5" />}
+              className="rounded-full"
+            >
+              Browse services
+            </Button>
+          </div>
         )
       )}
     </div>
@@ -1366,8 +1341,8 @@ const STATUS_LABELS: Record<UiStatus, string> = {
 const ROW_TEXT_COLORS: Record<UiStatus, string> = {
   accepted: 'text-emerald-700',
   pending: 'text-amber-700',
-  declined: 'text-stone-500',
-  cancelled: 'text-stone-400',
+  declined: 'text-stone-500 dark:text-stone-400 dark:text-stone-500',
+  cancelled: 'text-stone-400 dark:text-stone-500',
 };
 
 const HERO_TEXT_COLORS: Record<UiStatus, string> = {

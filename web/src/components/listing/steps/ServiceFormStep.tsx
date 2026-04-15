@@ -1,8 +1,9 @@
 'use client';
 
-import { ArrowLeft } from 'lucide-react';
 import TypeformHeading from '@/components/registration/TypeformHeading';
 import ServiceSelector, { Service } from '@/components/inputs/ServiceSelector';
+import { ArrowLeft01Icon as ArrowLeft } from 'hugeicons-react';
+import Button from '@/components/ui/Button';
 
 interface ServiceFormStepProps {
   services: Service[];
@@ -23,7 +24,7 @@ export default function ServiceFormStep({
         <button
           type="button"
           onClick={onBack}
-          className="flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors mb-4"
+          className="flex items-center gap-2 text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 transition-colors mb-4"
         >
           <ArrowLeft className="w-4 h-4" />
           <span className="text-sm">Back to services</span>
@@ -43,13 +44,9 @@ export default function ServiceFormStep({
       />
 
       <div className="mt-6">
-        <button
-          type="button"
-          onClick={onBack}
-          className="w-full px-6 py-2.5 rounded-xl font-medium text-sm bg-gray-900 text-white hover:bg-gray-800 active:scale-[0.98] transition-all duration-200"
-        >
+        <Button type="button" onClick={onBack} fullWidth>
           Save service
-        </button>
+        </Button>
       </div>
     </div>
   );

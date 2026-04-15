@@ -91,66 +91,66 @@ const StripeCheckoutModal = () => {
       
       {reservationData && (
         <div className="space-y-6">
-          <div className="p-5 bg-gray-50 rounded-xl">
+          <div className="p-5 bg-stone-50 dark:bg-stone-900 rounded-xl">
             <div className="mb-4">
               <h3 className="text-lg font-semibold mb-3">{reservationData.businessName}</h3>
-              <div className="h-px w-full bg-gray-200 my-2"></div>
+              <div className="h-px w-full bg-stone-200 dark:bg-stone-700 my-2"></div>
             </div>
             
             <div className="space-y-3">
               <div className="flex justify-between">
-                <span className="text-gray-600">Service:</span>
+                <span className="text-stone-600 dark:text-stone-300">Service:</span>
                 <span className="font-medium">{reservationData.serviceName}</span>
               </div>
               
               <div className="flex justify-between">
-                <span className="text-gray-600">Provider:</span>
+                <span className="text-stone-600 dark:text-stone-300">Provider:</span>
                 <span className="font-medium">{reservationData.employeeName}</span>
               </div>
               
               <div className="flex justify-between">
-                <span className="text-gray-600">Date:</span>
+                <span className="text-stone-600 dark:text-stone-300">Date:</span>
                 <span className="font-medium">{formattedDate}</span>
               </div>
               
               <div className="flex justify-between">
-                <span className="text-gray-600">Time:</span>
+                <span className="text-stone-600 dark:text-stone-300">Time:</span>
                 <span className="font-medium">{formattedTime}</span>
               </div>
               
               {reservationData.note && (
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Note:</span>
+                  <span className="text-stone-600 dark:text-stone-300">Note:</span>
                   <span className="font-medium text-right max-w-xs">{reservationData.note}</span>
                 </div>
               )}
               
-              <div className="h-px w-full bg-gray-200 my-2"></div>
+              <div className="h-px w-full bg-stone-200 dark:bg-stone-700 my-2"></div>
               
               <div className="flex justify-between">
-                <span className="text-gray-600 font-medium">Total:</span>
+                <span className="text-stone-600 dark:text-stone-300 font-medium">Total:</span>
                 <span className="font-semibold text-lg">${reservationData.totalPrice}</span>
               </div>
             </div>
           </div>
           
           <div className="space-y-4">
-            <div className="bg-blue-50 border border-blue-100 rounded-xl p-4">
+            <div className="bg-stone-50 dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-xl p-4">
               <div className="flex items-start">
                 <div className="flex-shrink-0 mt-0.5">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-stone-500 dark:text-stone-400 dark:text-stone-500" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                   </svg>
                 </div>
                 <div className="ml-3">
-                  <p className="text-sm text-blue-700">
+                  <p className="text-sm text-stone-700 dark:text-stone-200">
                     You&apos;ll be redirected to Stripe&apos;s secure payment page. Your reservation will be confirmed once payment is complete.
                   </p>
                 </div>
               </div>
             </div>
             
-            <div className="text-xs text-gray-500 text-center">
+            <div className="text-xs text-stone-500 dark:text-stone-400 dark:text-stone-500 text-center">
               By clicking &quot;Proceed to Payment&quot;, you agree to our Terms of Service and Cancellation Policy.
             </div>
           </div>

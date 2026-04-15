@@ -42,14 +42,14 @@ export default function TimeStep({
               className={`
                 p-4 rounded-xl border text-center transition-all duration-200
                 ${isDisabled
-                  ? 'border-gray-100 bg-gray-50 text-gray-300 cursor-not-allowed'
+                  ? 'border-stone-100 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 text-stone-300 cursor-not-allowed'
                   : isSelected
-                    ? 'border-gray-300 bg-gray-100 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)]'
-                    : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50 cursor-pointer'
+                    ? 'border-stone-300 dark:border-stone-700 bg-stone-100 dark:bg-stone-800 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)]'
+                    : 'border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 hover:border-stone-300 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900 cursor-pointer'
                 }
               `}
             >
-              <span className={`font-medium text-sm ${isDisabled ? 'line-through text-gray-300' : 'text-gray-900'}`}>
+              <span className={`font-medium text-sm ${isDisabled ? 'line-through text-stone-300' : 'text-stone-900 dark:text-stone-100'}`}>
                 {format(new Date(`2021-01-01T${t}`), 'h:mm a')}
               </span>
             </motion.button>
@@ -58,7 +58,7 @@ export default function TimeStep({
       </div>
 
       {isToday && (
-        <p className="text-sm text-gray-400 text-center mt-6">
+        <p className="text-sm text-stone-400 dark:text-stone-500 text-center mt-6">
           Times within 1 hour are unavailable for same-day bookings
         </p>
       )}

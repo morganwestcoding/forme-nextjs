@@ -2,7 +2,7 @@
 
 import { useFormContext } from 'react-hook-form';
 import { useState, useEffect } from 'react';
-import { FiEye, FiEyeOff, FiCheck } from 'react-icons/fi';
+import { ViewIcon as FiEye, ViewOffIcon as FiEyeOff, Tick02Icon as FiCheck } from 'hugeicons-react';
 import TypeformHeading from '../TypeformHeading';
 
 interface PasswordValidation {
@@ -51,7 +51,7 @@ export default function AccountStep() {
       <div className="space-y-5">
         {/* Email */}
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="email" className="block text-sm font-medium text-stone-700 dark:text-stone-200 mb-2">
             Email
           </label>
           <input
@@ -66,7 +66,7 @@ export default function AccountStep() {
                 message: 'Please enter a valid email'
               }
             })}
-            className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
+            className="w-full px-4 py-3.5 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all"
             placeholder="you@example.com"
           />
           {errors.email && (
@@ -76,7 +76,7 @@ export default function AccountStep() {
 
         {/* First Name */}
         <div>
-          <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="firstName" className="block text-sm font-medium text-stone-700 dark:text-stone-200 mb-2">
             First name
           </label>
           <input
@@ -90,7 +90,7 @@ export default function AccountStep() {
                 message: 'First name can only contain letters and common punctuation'
               }
             })}
-            className={`w-full px-4 py-3.5 bg-gray-50 border rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:border-transparent transition-all ${errors.firstName ? 'border-red-400 focus:ring-red-500' : 'border-gray-200 focus:ring-gray-900'}`}
+            className={`w-full px-4 py-3.5 bg-stone-50 dark:bg-stone-900 border rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:border-transparent transition-all ${errors.firstName ? 'border-red-400 focus:ring-red-500' : 'border-stone-200 dark:border-stone-800 focus:ring-stone-900'}`}
             placeholder="John"
           />
           {errors.firstName && (
@@ -100,7 +100,7 @@ export default function AccountStep() {
 
         {/* Last Name */}
         <div>
-          <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="lastName" className="block text-sm font-medium text-stone-700 dark:text-stone-200 mb-2">
             Last name
           </label>
           <input
@@ -114,7 +114,7 @@ export default function AccountStep() {
                 message: 'Last name can only contain letters and common punctuation'
               }
             })}
-            className={`w-full px-4 py-3.5 bg-gray-50 border rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:border-transparent transition-all ${errors.lastName ? 'border-red-400 focus:ring-red-500' : 'border-gray-200 focus:ring-gray-900'}`}
+            className={`w-full px-4 py-3.5 bg-stone-50 dark:bg-stone-900 border rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:border-transparent transition-all ${errors.lastName ? 'border-red-400 focus:ring-red-500' : 'border-stone-200 dark:border-stone-800 focus:ring-stone-900'}`}
             placeholder="Doe"
           />
           {errors.lastName && (
@@ -124,7 +124,7 @@ export default function AccountStep() {
 
         {/* Password */}
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="password" className="block text-sm font-medium text-stone-700 dark:text-stone-200 mb-2">
             Password
           </label>
           <div className="relative">
@@ -133,13 +133,13 @@ export default function AccountStep() {
               type={showPassword ? 'text' : 'password'}
               autoComplete="new-password"
               {...register('password', { required: 'Password is required' })}
-              className="w-full px-4 py-3.5 pr-12 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
+              className="w-full px-4 py-3.5 pr-12 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all"
               placeholder="Create a password"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300 transition-colors"
             >
               {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
             </button>
@@ -164,8 +164,8 @@ export default function AccountStep() {
 
 function RequirementItem({ met, text }: { met: boolean; text: string }) {
   return (
-    <div className={`flex items-center gap-2 text-sm transition-colors ${met ? 'text-emerald-600' : 'text-gray-400'}`}>
-      <div className={`w-4 h-4 rounded-full flex items-center justify-center ${met ? 'bg-emerald-100' : 'bg-gray-100'}`}>
+    <div className={`flex items-center gap-2 text-sm transition-colors ${met ? 'text-emerald-600 dark:text-emerald-400' : 'text-stone-400 dark:text-stone-500'}`}>
+      <div className={`w-4 h-4 rounded-full flex items-center justify-center border ${met ? 'bg-emerald-50 border-emerald-200/60 dark:bg-emerald-500/10 dark:border-emerald-500/20' : 'bg-stone-100 border-stone-200/60 dark:bg-stone-800 dark:border-stone-700'}`}>
         {met && <FiCheck size={10} />}
       </div>
       {text}

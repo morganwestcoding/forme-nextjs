@@ -1,8 +1,9 @@
 'use client';
 
-import { ArrowLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { Cancel01Icon } from 'hugeicons-react';
+import { Cancel01Icon, ArrowLeft01Icon as ArrowLeft } from 'hugeicons-react';
+import Button from '@/components/ui/Button';
+import IconButton from '@/components/ui/IconButton';
 
 interface TypeformNavigationProps {
   canProceed: boolean;
@@ -47,21 +48,21 @@ export default function TypeformNavigation({
   return (
     <>
       {/* Exit button — top right */}
-      <button
-        type="button"
+      <IconButton
+        aria-label="Exit"
         onClick={handleExit}
-        className="fixed top-6 right-6 z-50 w-10 h-10 rounded-full flex items-center justify-center text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition-all"
-      >
-        <Cancel01Icon className="w-5 h-5" strokeWidth={1.5} />
-      </button>
+        size="lg"
+        icon={<Cancel01Icon className="w-5 h-5" strokeWidth={1.5} />}
+        className="fixed top-6 right-6 z-50 rounded-full"
+      />
 
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-6 py-4">
+      <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-stone-900 border-t border-stone-100 dark:border-stone-800 px-6 py-4">
         {termsNotice && isLastStep && (
-          <p className="text-center text-[11px] text-stone-400 mb-2 max-w-xl mx-auto">
+          <p className="text-center text-[11px] text-stone-400 dark:text-stone-500 mb-2 max-w-xl mx-auto">
             By continuing, you agree to the ForMe{' '}
-            <a href="/terms" target="_blank" className="underline hover:text-stone-600">Terms of Service</a>
+            <a href="/terms" target="_blank" className="underline hover:text-stone-600 dark:text-stone-300">Terms of Service</a>
             {' '}and{' '}
-            <a href="/privacy" target="_blank" className="underline hover:text-stone-600">Privacy Policy</a>.
+            <a href="/privacy" target="_blank" className="underline hover:text-stone-600 dark:text-stone-300">Privacy Policy</a>.
           </p>
         )}
         <div className="max-w-xl mx-auto flex items-center justify-between">
@@ -71,7 +72,7 @@ export default function TypeformNavigation({
               <button
                 type="button"
                 onClick={onBack}
-                className="flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors"
+                className="flex items-center gap-2 text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 transition-colors"
               >
                 <ArrowLeft className="w-4 h-4" />
                 <span className="text-sm">Back</span>
@@ -82,32 +83,19 @@ export default function TypeformNavigation({
           {/* Continue / Save button + hint */}
           <div className="flex items-center gap-4">
             {!isEditMode && (
-              <span className="text-sm text-gray-400 hidden sm:block">
-                Press <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-xs font-mono">Enter</kbd>
+              <span className="text-sm text-stone-400 dark:text-stone-500 hidden sm:block">
+                Press <kbd className="px-1.5 py-0.5 bg-stone-100 dark:bg-stone-800 rounded text-xs font-mono">Enter</kbd>
               </span>
             )}
-            <button
+            <Button
               type="button"
               onClick={isEditMode ? (onSave ?? onNext) : onNext}
-              disabled={!canProceed || isLoading}
-              className={`
-                px-6 py-2.5 rounded-xl font-medium text-sm transition-transform duration-200
-                ${canProceed && !isLoading
-                  ? 'bg-gray-900 text-white hover:bg-gray-800 active:scale-[0.98]'
-                  : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                }
-              `}
+              disabled={!canProceed}
+              loading={isLoading}
+              size="md"
             >
-              {isLoading ? (
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              ) : isEditMode ? (
-                'Save changes'
-              ) : isLastStep ? (
-                submitLabel
-              ) : (
-                'Continue'
-              )}
-            </button>
+              {isEditMode ? 'Save changes' : isLastStep ? submitLabel : 'Continue'}
+            </Button>
           </div>
         </div>
       </div>

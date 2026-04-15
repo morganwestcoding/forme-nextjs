@@ -136,6 +136,7 @@ export async function POST(request: Request) {
           type: "PAYOUT_REQUEST",
           content: `${employee.fullName} requested a payout of $${amount.toFixed(2)}`,
           userId: employee.listing.userId,
+          relatedUserId: employee.userId,
         },
       });
     }

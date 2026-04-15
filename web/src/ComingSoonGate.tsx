@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import { Lock, ArrowRight, Check, AlertCircle, Calendar, Users, ShoppingBag, BarChart3 } from 'lucide-react';
+import SplashLoader from '@/components/ui/SplashLoader';
+import { LockIcon as Lock, ArrowRight01Icon as ArrowRight, Tick02Icon as Check, AlertCircleIcon as AlertCircle, Calendar03Icon as Calendar, UserMultipleIcon as Users, ShoppingBag02Icon as ShoppingBag, ChartIcon as BarChart3 } from 'hugeicons-react';
 
 // Routes that bypass the coming soon gate
 const BYPASS_ROUTES = ['/register', '/reset-password'];
@@ -225,93 +226,8 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
             overscroll-behavior: none !important;
             overflow: hidden !important;
           }
-
-          @keyframes logoReveal {
-            0% {
-              opacity: 0;
-              transform: scale(0.8) translateY(10px);
-              filter: blur(10px);
-            }
-            100% {
-              opacity: 1;
-              transform: scale(1) translateY(0);
-              filter: blur(0);
-            }
-          }
-
-          @keyframes dotsContainer {
-            0% {
-              opacity: 0;
-              transform: translateY(8px);
-            }
-            100% {
-              opacity: 1;
-              transform: translateY(0);
-            }
-          }
-
-          @keyframes dotPulse {
-            0%, 100% {
-              opacity: 0.3;
-              transform: scale(0.8);
-            }
-            50% {
-              opacity: 1;
-              transform: scale(1.1);
-            }
-          }
-
-          @keyframes fadeOut {
-            0% {
-              opacity: 1;
-              transform: scale(1);
-            }
-            100% {
-              opacity: 0;
-              transform: scale(1.02);
-            }
-          }
-
-          .loader-logo {
-            animation: logoReveal 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-          }
-
-          .loader-dots-container {
-            animation: dotsContainer 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.12s forwards;
-            opacity: 0;
-          }
-
-          .loader-dot {
-            width: 14px;
-            height: 14px;
-            margin: 0 6px;
-            border-radius: 50%;
-            animation: dotPulse 1.4s ease-in-out infinite;
-          }
-
-          .loader-fade-out {
-            animation: fadeOut 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-          }
         `}</style>
-        <div className={`min-h-screen bg-[#09090B] flex items-center justify-center ${isFadingOut ? 'loader-fade-out' : ''}`}>
-          <div className="text-center">
-            <img
-              src="/logos/fm-logo-white.png"
-              alt="ForMe Logo"
-              className="loader-logo h-20 w-auto mx-auto mb-12"
-              style={{ opacity: 0 }}
-            />
-            <div className="loader-dots-container flex justify-center items-center">
-              <span className="loader-dot" style={{ backgroundColor: '#1c1917', animationDelay: '0s' }} />
-              <span className="loader-dot" style={{ backgroundColor: '#33302e', animationDelay: '0.1s' }} />
-              <span className="loader-dot" style={{ backgroundColor: '#57534e', animationDelay: '0.2s' }} />
-              <span className="loader-dot" style={{ backgroundColor: '#78716c', animationDelay: '0.3s' }} />
-              <span className="loader-dot" style={{ backgroundColor: '#a8a29e', animationDelay: '0.4s' }} />
-              <span className="loader-dot" style={{ backgroundColor: '#d6d3d1', animationDelay: '0.5s' }} />
-              <span className="loader-dot" style={{ backgroundColor: '#FFFFFF', animationDelay: '0.6s' }} />
-            </div>
-          </div>
-        </div>
+        <SplashLoader fadingOut={isFadingOut} />
       </>
     );
   }
@@ -333,7 +249,7 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
         {/* Refined background */}
         <div className="fixed inset-0">
           <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:72px_72px]" />
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-gradient-to-b from-neutral-800/20 via-transparent to-transparent blur-3xl" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-gradient-to-b from-stone-800/20 via-transparent to-transparent blur-3xl" />
         </div>
 
         {/* Content */}
@@ -347,7 +263,7 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
             />
             <button
               onClick={() => setShowPassword(!showPassword)}
-              className="text-[11px] text-neutral-500 hover:text-white transition-colors flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-neutral-800 hover:border-neutral-700"
+              className="text-[11px] text-stone-500 hover:text-white transition-colors flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-stone-800 hover:border-stone-700"
             >
               <Lock className="w-3 h-3" />
               Early Access
@@ -357,20 +273,20 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
           {/* Hero Section */}
           <div className="px-6 pt-28 pb-20 max-w-3xl mx-auto">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2.5 mb-10 px-3 py-1.5 rounded-full border border-neutral-800 bg-neutral-900/50">
+            <div className="inline-flex items-center gap-2.5 mb-10 px-3 py-1.5 rounded-full border border-stone-800 bg-stone-900/50">
               <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
-              <span className="text-[11px] text-neutral-300 uppercase tracking-wider font-medium">Launching Early 2026</span>
+              <span className="text-[11px] text-stone-300 uppercase tracking-wider font-medium">Launching Early 2026</span>
             </div>
 
             {/* Main headline */}
             <h1 className="text-4xl sm:text-5xl md:text-[3.5rem] font-medium tracking-tight leading-[1.1] mb-6">
               <span className="text-white">Stop juggling apps.</span>
               <br />
-              <span className="text-neutral-500 whitespace-nowrap">Run your business from one place.</span>
+              <span className="text-stone-500 whitespace-nowrap">Run your business from one place.</span>
             </h1>
 
             {/* Subheadline */}
-            <p className="text-lg text-neutral-400 max-w-xl mb-12 leading-relaxed">
+            <p className="text-lg text-stone-400 max-w-xl mb-12 leading-relaxed">
               Scheduling, payments, storefront, team management, and marketing — unified in a single platform built for professionals.
             </p>
 
@@ -389,19 +305,19 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
                       onKeyDown={(e) => e.key === 'Enter' && !emailLoading && handleEmailSubmit()}
                       placeholder="you@company.com"
                       disabled={emailLoading || emailSubmitted}
-                      className={`flex-1 bg-transparent border rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-600 focus:outline-none transition-colors disabled:opacity-50 ${
+                      className={`flex-1 bg-transparent border rounded-xl px-4 py-3 text-sm text-white placeholder-stone-600 focus:outline-none transition-colors disabled:opacity-50 ${
                         emailError
                           ? 'border-red-500/50 focus:border-red-500/70'
-                          : 'border-neutral-800 focus:border-neutral-600 hover:border-neutral-700'
+                          : 'border-stone-800 focus:border-stone-600 hover:border-stone-700'
                       }`}
                     />
                     <button
                       onClick={handleEmailSubmit}
                       disabled={emailLoading || emailSubmitted}
-                      className="bg-white text-black font-medium px-5 py-3 rounded-xl hover:bg-neutral-200 transition-colors disabled:opacity-50 flex items-center justify-center min-w-[100px] text-sm"
+                      className="bg-white text-black font-medium px-5 py-3 rounded-xl hover:bg-stone-200 transition-colors disabled:opacity-50 flex items-center justify-center min-w-[100px] text-sm"
                     >
                       {emailLoading ? (
-                        <div className="w-4 h-4 border border-neutral-400 border-t-neutral-700 rounded-full animate-spin" />
+                        <div className="w-4 h-4 border border-stone-400 border-t-stone-700 rounded-full animate-spin" />
                       ) : emailSubmitted ? (
                         <Check className="w-4 h-4" />
                       ) : (
@@ -426,14 +342,14 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
                     </p>
                   )}
 
-                  <div className="flex items-center gap-4 text-xs text-neutral-500">
+                  <div className="flex items-center gap-4 text-xs text-stone-500">
                     {waitlistCount !== null && waitlistCount > 0 && (
                       <span>{waitlistCount.toLocaleString()} on the waitlist</span>
                     )}
-                    <span className="text-neutral-700">·</span>
+                    <span className="text-stone-700">·</span>
                     <button
                       onClick={() => setActiveTab('demo')}
-                      className="hover:text-neutral-300 transition-colors"
+                      className="hover:text-stone-300 transition-colors"
                     >
                       Request a demo
                     </button>
@@ -450,10 +366,10 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
                     }}
                     placeholder="Your name"
                     disabled={demoLoading || demoSubmitted}
-                    className={`w-full bg-transparent border rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-600 focus:outline-none transition-colors disabled:opacity-50 ${
+                    className={`w-full bg-transparent border rounded-xl px-4 py-3 text-sm text-white placeholder-stone-600 focus:outline-none transition-colors disabled:opacity-50 ${
                       demoError
                         ? 'border-red-500/50 focus:border-red-500/70'
-                        : 'border-neutral-800 focus:border-neutral-600 hover:border-neutral-700'
+                        : 'border-stone-800 focus:border-stone-600 hover:border-stone-700'
                     }`}
                   />
                   <div className="flex gap-2">
@@ -467,19 +383,19 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
                       onKeyDown={(e) => e.key === 'Enter' && !demoLoading && handleDemoSubmit()}
                       placeholder="Work email"
                       disabled={demoLoading || demoSubmitted}
-                      className={`flex-1 bg-transparent border rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-600 focus:outline-none transition-colors disabled:opacity-50 ${
+                      className={`flex-1 bg-transparent border rounded-xl px-4 py-3 text-sm text-white placeholder-stone-600 focus:outline-none transition-colors disabled:opacity-50 ${
                         demoError
                           ? 'border-red-500/50 focus:border-red-500/70'
-                          : 'border-neutral-800 focus:border-neutral-600 hover:border-neutral-700'
+                          : 'border-stone-800 focus:border-stone-600 hover:border-stone-700'
                       }`}
                     />
                     <button
                       onClick={handleDemoSubmit}
                       disabled={demoLoading || demoSubmitted}
-                      className="bg-white text-black font-medium px-5 py-3 rounded-xl hover:bg-neutral-200 transition-colors disabled:opacity-50 flex items-center justify-center min-w-[100px] text-sm"
+                      className="bg-white text-black font-medium px-5 py-3 rounded-xl hover:bg-stone-200 transition-colors disabled:opacity-50 flex items-center justify-center min-w-[100px] text-sm"
                     >
                       {demoLoading ? (
-                        <div className="w-4 h-4 border border-neutral-400 border-t-neutral-700 rounded-full animate-spin" />
+                        <div className="w-4 h-4 border border-stone-400 border-t-stone-700 rounded-full animate-spin" />
                       ) : demoSubmitted ? (
                         <Check className="w-4 h-4" />
                       ) : (
@@ -504,7 +420,7 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
 
                   <button
                     onClick={() => setActiveTab('waitlist')}
-                    className="text-xs text-neutral-500 hover:text-neutral-300 transition-colors"
+                    className="text-xs text-stone-500 hover:text-stone-300 transition-colors"
                   >
                     ← Back to waitlist
                   </button>
@@ -515,7 +431,7 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
 
           {/* Divider */}
           <div className="max-w-5xl mx-auto px-6">
-            <div className="border-t border-neutral-800/50" />
+            <div className="border-t border-stone-800/50" />
           </div>
 
           {/* Features Grid */}
@@ -528,11 +444,11 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
                 { icon: BarChart3, label: 'Analytics', desc: 'Insights that help you make better decisions' },
               ].map((feature, i) => (
                 <div key={i} className="group">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-b from-neutral-800 to-neutral-900 border border-neutral-800 flex items-center justify-center mb-4 group-hover:border-neutral-700 group-hover:from-neutral-700/80 transition-all duration-300">
-                    <feature.icon className="w-[18px] h-[18px] text-neutral-300" />
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-b from-stone-800 to-stone-900 border border-stone-800 flex items-center justify-center mb-4 group-hover:border-stone-700 group-hover:from-stone-700/80 transition-all duration-300">
+                    <feature.icon className="w-[18px] h-[18px] text-stone-300" />
                   </div>
                   <h3 className="text-sm font-medium text-white mb-1.5">{feature.label}</h3>
-                  <p className="text-[13px] text-neutral-500 leading-relaxed">{feature.desc}</p>
+                  <p className="text-[13px] text-stone-500 leading-relaxed">{feature.desc}</p>
                 </div>
               ))}
             </div>
@@ -540,7 +456,7 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
 
           {/* Divider */}
           <div className="max-w-5xl mx-auto px-6">
-            <div className="border-t border-neutral-800/50" />
+            <div className="border-t border-stone-800/50" />
           </div>
 
           {/* Value Props */}
@@ -564,9 +480,9 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
                 }
               ].map((prop, i) => (
                 <div key={i} className="relative">
-                  <span className="text-[10px] text-neutral-700 font-mono tracking-wider">{prop.num}</span>
+                  <span className="text-[10px] text-stone-700 font-mono tracking-wider">{prop.num}</span>
                   <h3 className="text-[15px] font-medium text-white mt-3 mb-2">{prop.title}</h3>
-                  <p className="text-[13px] text-neutral-500 leading-relaxed">{prop.desc}</p>
+                  <p className="text-[13px] text-stone-500 leading-relaxed">{prop.desc}</p>
                 </div>
               ))}
             </div>
@@ -579,9 +495,9 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
                 className="absolute inset-0 bg-black/90 backdrop-blur-sm"
                 onClick={() => setShowPassword(false)}
               />
-              <div className="relative bg-[#09090B] border border-neutral-800 rounded-2xl p-6 max-w-sm w-full shadow-2xl">
+              <div className="relative bg-[#09090B] border border-stone-800 rounded-2xl p-6 max-w-sm w-full shadow-2xl">
                 <h3 className="text-sm font-medium text-white mb-1">Early Access</h3>
-                <p className="text-xs text-neutral-500 mb-5">Enter your access code to preview ForMe.</p>
+                <p className="text-xs text-stone-500 mb-5">Enter your access code to preview ForMe.</p>
                 <div className="flex gap-2">
                   <input
                     type="password"
@@ -589,12 +505,12 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
                     onChange={(e) => setPassword(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handlePasswordSubmit()}
                     placeholder="Access code"
-                    className="flex-1 bg-neutral-900/50 border border-neutral-800 rounded-xl px-4 py-2.5 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-neutral-700 focus:bg-neutral-900 transition-all"
+                    className="flex-1 bg-stone-900/50 border border-stone-800 rounded-xl px-4 py-2.5 text-sm text-white placeholder-stone-600 focus:outline-none focus:border-stone-700 focus:bg-stone-900 transition-all"
                     autoFocus
                   />
                   <button
                     onClick={handlePasswordSubmit}
-                    className="bg-white text-black font-medium px-4 py-2.5 rounded-xl hover:bg-neutral-100 transition-colors"
+                    className="bg-white text-black font-medium px-4 py-2.5 rounded-xl hover:bg-stone-100 transition-colors"
                   >
                     <ArrowRight className="w-4 h-4" />
                   </button>
@@ -604,9 +520,9 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
           )}
 
           {/* Footer */}
-          <footer className="px-6 py-10 border-t border-neutral-900/50">
+          <footer className="px-6 py-10 border-t border-stone-900/50">
             <div className="max-w-5xl mx-auto flex items-center justify-between">
-              <p className="text-[11px] text-neutral-600">&copy; 2025 ForMe. All rights reserved.</p>
+              <p className="text-[11px] text-stone-600">&copy; 2025 ForMe. All rights reserved.</p>
               <img
                 src="/logos/logo-white.svg"
                 alt="ForMe"

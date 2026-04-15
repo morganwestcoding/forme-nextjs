@@ -3,19 +3,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { useRouter, useSearchParams } from 'next/navigation';
-import {
-  MapPin,
-  DollarSign,
-  Star,
-  Grid3X3,
-  ChevronLeft,
-  ChevronRight,
-  Check,
-  RotateCcw
-} from 'lucide-react';
+
 import Modal from './Modal';
 import useFilterModal from '@/app/hooks/useFilterModal';
 import { categories } from '../Categories';
+import { Location01Icon as MapPin, DollarCircleIcon as DollarSign, StarIcon as Star, GridViewIcon as Grid3X3, ArrowLeft01Icon as ChevronLeft, ArrowRight01Icon as ChevronRight, Tick02Icon as Check, RefreshIcon as RotateCcw } from 'hugeicons-react';
 
 export interface FilterValues {
   location?: string;
@@ -213,28 +205,28 @@ const FilterModal = () => {
       onClick={onClick}
       className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all duration-200 text-left ${
         hasFilter
-          ? 'border-[#60A5FA] bg-[#60A5FA]/5'
-          : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800/50'
+          ? 'border-stone-900 bg-stone-900/5'
+          : 'border-stone-200 dark:border-stone-800 dark:border-stone-700 hover:border-stone-300 dark:border-stone-700 dark:hover:border-stone-600 hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900 dark:hover:bg-stone-800/50'
       }`}
     >
       <div className="flex items-center gap-4">
         <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${
           hasFilter
-            ? 'bg-[#60A5FA] text-white'
-            : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400'
+            ? 'bg-stone-900 text-white'
+            : 'bg-stone-100 dark:bg-stone-800 dark:bg-stone-800 text-stone-500 dark:text-stone-400 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500'
         }`}>
           <Icon className="w-5 h-5" />
         </div>
         <div>
-          <div className="font-medium text-gray-900 dark:text-white">{label}</div>
+          <div className="font-medium text-stone-900 dark:text-stone-100 dark:text-white">{label}</div>
           {summary ? (
-            <div className="text-sm text-[#60A5FA]">{summary}</div>
+            <div className="text-sm text-stone-900 dark:text-stone-100">{summary}</div>
           ) : (
-            <div className="text-sm text-gray-500 dark:text-gray-400">Any</div>
+            <div className="text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500">Any</div>
           )}
         </div>
       </div>
-      <ChevronRight className={`w-5 h-5 ${hasFilter ? 'text-[#60A5FA]' : 'text-gray-400'}`} />
+      <ChevronRight className={`w-5 h-5 ${hasFilter ? 'text-stone-900 dark:text-stone-100' : 'text-stone-400 dark:text-stone-500'}`} />
     </button>
   );
 
@@ -276,30 +268,30 @@ const FilterModal = () => {
   const PriceContent = () => (
     <div className="flex flex-col gap-6">
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <label className="block text-sm font-medium text-stone-700 dark:text-stone-200 dark:text-stone-300 mb-2">
           Minimum Price
         </label>
         <div className="relative">
-          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg">$</span>
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 dark:text-stone-500 text-lg">$</span>
           <input
             {...register('priceMin')}
             type="number"
             placeholder="0"
-            className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl pl-10 pr-4 py-4 text-lg text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#60A5FA] focus:border-transparent transition-all"
+            className="w-full bg-white dark:bg-stone-900 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 dark:border-stone-700 rounded-xl pl-10 pr-4 py-4 text-lg text-stone-900 dark:text-stone-100 dark:text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all"
           />
         </div>
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <label className="block text-sm font-medium text-stone-700 dark:text-stone-200 dark:text-stone-300 mb-2">
           Maximum Price
         </label>
         <div className="relative">
-          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg">$</span>
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 dark:text-stone-500 text-lg">$</span>
           <input
             {...register('priceMax')}
             type="number"
             placeholder="No limit"
-            className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl pl-10 pr-4 py-4 text-lg text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#60A5FA] focus:border-transparent transition-all"
+            className="w-full bg-white dark:bg-stone-900 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 dark:border-stone-700 rounded-xl pl-10 pr-4 py-4 text-lg text-stone-900 dark:text-stone-100 dark:text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all"
           />
         </div>
       </div>
@@ -310,21 +302,21 @@ const FilterModal = () => {
   const LocationContent = () => (
     <div className="flex flex-col gap-6">
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <label className="block text-sm font-medium text-stone-700 dark:text-stone-200 dark:text-stone-300 mb-2">
           City, state, or zip code
         </label>
         <div className="relative">
-          <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400 dark:text-stone-500" />
           <input
             {...register('location')}
             type="text"
             placeholder="Enter location"
-            className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl pl-12 pr-4 py-4 text-lg text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#60A5FA] focus:border-transparent transition-all"
+            className="w-full bg-white dark:bg-stone-900 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 dark:border-stone-700 rounded-xl pl-12 pr-4 py-4 text-lg text-stone-900 dark:text-stone-100 dark:text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all"
           />
         </div>
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+        <label className="block text-sm font-medium text-stone-700 dark:text-stone-200 dark:text-stone-300 mb-3">
           Distance
         </label>
         <div className="grid grid-cols-2 gap-2">
@@ -337,8 +329,8 @@ const FilterModal = () => {
                 onClick={() => setCustomValue('radius', option.value)}
                 className={`py-3.5 px-4 rounded-xl text-sm font-medium transition-all duration-200 ${
                   isActive
-                    ? 'bg-[#60A5FA] text-white'
-                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                    ? 'bg-stone-900 text-white'
+                    : 'bg-stone-100 dark:bg-stone-800 dark:bg-stone-800 text-stone-700 dark:text-stone-200 dark:text-stone-300 hover:bg-stone-200 dark:bg-stone-700 dark:hover:bg-stone-700'
                 }`}
               >
                 {option.label}
@@ -362,8 +354,8 @@ const FilterModal = () => {
             onClick={() => toggleCategory(cat.label)}
             className={`w-full flex items-center justify-between p-4 rounded-xl transition-all duration-200 ${
               isActive
-                ? 'bg-[#60A5FA] text-white'
-                : 'bg-gray-50 dark:bg-gray-800/50 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800'
+                ? 'bg-stone-900 text-white'
+                : 'bg-stone-50 dark:bg-stone-900 dark:bg-stone-800/50 text-stone-900 dark:text-stone-100 dark:text-white hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 dark:hover:bg-stone-800'
             }`}
           >
             <span className="font-medium">{cat.label}</span>
@@ -386,13 +378,13 @@ const FilterModal = () => {
             onClick={() => setCustomValue('rating', option.value)}
             className={`w-full flex items-center justify-between p-4 rounded-xl transition-all duration-200 ${
               isActive
-                ? 'bg-[#60A5FA] text-white'
-                : 'bg-gray-50 dark:bg-gray-800/50 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800'
+                ? 'bg-stone-900 text-white'
+                : 'bg-stone-50 dark:bg-stone-900 dark:bg-stone-800/50 text-stone-900 dark:text-stone-100 dark:text-white hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 dark:hover:bg-stone-800'
             }`}
           >
             <div>
               <div className="font-medium">{option.label}</div>
-              <div className={`text-sm ${isActive ? 'text-white/70' : 'text-gray-500 dark:text-gray-400'}`}>
+              <div className={`text-sm ${isActive ? 'text-white/70' : 'text-stone-500 dark:text-stone-400 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500'}`}>
                 {option.description}
               </div>
             </div>
@@ -423,12 +415,12 @@ const FilterModal = () => {
             <button
               type="button"
               onClick={() => setCurrentStep('main')}
-              className="p-2 -ml-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              className="p-2 -ml-2 rounded-xl hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 dark:hover:bg-stone-800 transition-colors"
             >
-              <ChevronLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+              <ChevronLeft className="w-5 h-5 text-stone-600 dark:text-stone-300 dark:text-stone-400 dark:text-stone-500" />
             </button>
           )}
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+          <h2 className="text-xl font-semibold text-stone-900 dark:text-stone-100 dark:text-white">
             {getStepTitle()}
           </h2>
         </div>
@@ -436,7 +428,7 @@ const FilterModal = () => {
           <button
             type="button"
             onClick={clearAllFilters}
-            className="flex items-center gap-1.5 text-sm text-[#60A5FA] hover:text-[#3B82F6] transition-colors"
+            className="flex items-center gap-1.5 text-sm text-stone-900 dark:text-stone-100 hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 transition-colors"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             Clear all

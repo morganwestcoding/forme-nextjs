@@ -244,10 +244,10 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
         placeholder=" "
         autoComplete="off"
         className={`
-          peer w-full p-3 pt-6 bg-white border rounded-xl outline-none transition-all duration-200
-          disabled:opacity-50 disabled:cursor-not-allowed hover:border-gray-300
+          peer w-full p-3 pt-6 bg-white dark:bg-stone-900 border rounded-xl outline-none transition-all duration-200
+          disabled:opacity-50 disabled:cursor-not-allowed hover:border-stone-300
           pl-4 pr-4 h-[60px]
-          ${errors[id] ? 'border-rose-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/10' : 'border-gray-200/60 focus:border-[#60A5FA] focus:ring-2 focus:ring-[#60A5FA]/10'}
+          ${errors[id] ? 'border-rose-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/10' : 'border-stone-200/60 focus:border-stone-900 focus:ring-2 focus:ring-stone-900/10'}
         `}
         aria-autocomplete="list"
         aria-controls={`${id}-listbox`}
@@ -258,7 +258,7 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
         htmlFor={id}
         className={`
           absolute text-sm duration-150 transform -translate-y-3 top-5 left-4 origin-[0] pointer-events-none
-          ${errors[id] ? 'text-rose-500' : 'text-gray-500'}
+          ${errors[id] ? 'text-rose-500' : 'text-stone-500 dark:text-stone-400 dark:text-stone-500'}
           peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0
           peer-focus:scale-75 peer-focus:-translate-y-4
         `}
@@ -271,7 +271,7 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
           id={`${id}-listbox`}
           role="listbox"
           ref={listRef}
-          className="absolute w-full bg-white shadow-xl rounded-xl mt-2 z-[9999] max-h-[220px] overflow-y-auto border border-gray-200/60 p-1.5"
+          className="absolute w-full bg-white dark:bg-stone-900 shadow-xl rounded-xl mt-2 z-[9999] max-h-[220px] overflow-y-auto border border-stone-200/60 p-1.5"
         >
           {suggestions.map((sugg, index) => (
             <div
@@ -280,7 +280,7 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
               aria-selected={activeIndex === index}
               key={`${sugg.place_name}-${index}`}
               className={`p-3 cursor-pointer text-sm rounded-xl transition-all duration-200
-                ${activeIndex === index ? 'bg-[#60A5FA]/10 text-[#60A5FA] font-medium' : 'text-gray-700 hover:bg-gray-50'}
+                ${activeIndex === index ? 'bg-stone-900/10 text-stone-900 dark:text-stone-100 font-medium' : 'text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900'}
               `}
               onMouseEnter={() => setActiveIndex(index)}
               onMouseLeave={() => setActiveIndex(-1)}

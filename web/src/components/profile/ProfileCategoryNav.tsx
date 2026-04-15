@@ -14,7 +14,7 @@ const ProfileCategoryNav: React.FC<ProfileCategoryNavProps> = ({
   activeTab,
   onTabChange,
 }) => {
-  const { accentColor, isDarkMode } = useTheme();
+  const { isDarkMode } = useTheme();
 
   const tabs: Array<{ key: TabKey; label: string }> = [
     { key: 'About', label: 'About' },
@@ -53,11 +53,11 @@ const ProfileCategoryNav: React.FC<ProfileCategoryNavProps> = ({
                 relative px-3 sm:px-4 h-9 flex items-center text-[12px] sm:text-[13px] font-medium rounded-xl border transition-all duration-200 active:scale-[0.97] whitespace-nowrap
                 ${isSelected
                   ? 'text-white border-transparent'
-                  : 'border-stone-300/90 dark:border-zinc-600/60 text-stone-500 dark:text-zinc-400 hover:border-stone-400 dark:hover:border-zinc-500 hover:text-stone-600 dark:hover:text-zinc-300'
+                  : 'border-stone-300/90 dark:border-stone-600/60 text-stone-500 dark:text-stone-400 hover:border-stone-400 dark:hover:border-stone-500 hover:text-stone-600 dark:hover:text-stone-300'
                 }
               `}
               style={isSelected ? {
-                background: accentColor,
+                background: '#1c1917',
                 boxShadow: '0 1px 3px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.15)',
               } : {
                 background: isDarkMode ? '#222225' : '#F7F7F6',
@@ -77,7 +77,7 @@ const ProfileCategoryNav: React.FC<ProfileCategoryNavProps> = ({
       <div className="flex items-center gap-1 w-20 justify-end">
         <button
           type="button"
-          className="w-9 h-9 flex items-center justify-center rounded-xl border border-stone-300/90 dark:border-zinc-600/60 text-stone-500 dark:text-zinc-400 hover:border-stone-400 dark:hover:border-zinc-500 hover:text-stone-600 dark:hover:text-zinc-300 transition-all duration-200"
+          className="w-9 h-9 flex items-center justify-center rounded-xl border border-stone-300/90 dark:border-stone-600/60 text-stone-500 dark:text-stone-400 hover:border-stone-400 dark:hover:border-stone-500 hover:text-stone-600 dark:hover:text-stone-300 transition-all duration-200"
           style={iconButtonStyle}
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -87,7 +87,7 @@ const ProfileCategoryNav: React.FC<ProfileCategoryNavProps> = ({
         </button>
         <button
           type="button"
-          className="w-9 h-9 flex items-center justify-center rounded-xl border border-stone-300/90 dark:border-zinc-600/60 text-stone-500 dark:text-zinc-400 hover:border-stone-400 dark:hover:border-zinc-500 hover:text-stone-600 dark:hover:text-zinc-300 transition-all duration-200"
+          className="w-9 h-9 flex items-center justify-center rounded-xl border border-stone-300/90 dark:border-stone-600/60 text-stone-500 dark:text-stone-400 hover:border-stone-400 dark:hover:border-stone-500 hover:text-stone-600 dark:hover:text-stone-300 transition-all duration-200"
           style={iconButtonStyle}
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

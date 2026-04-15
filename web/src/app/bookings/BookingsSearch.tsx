@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Search } from 'lucide-react';
+import { Search01Icon as Search } from 'hugeicons-react';
 
 interface BookingsSearchProps {
   onSearch?: (q: string) => void;
@@ -22,21 +22,21 @@ const BookingsSearch: React.FC<BookingsSearchProps> = ({
   };
 
   // Hero mode or normal mode button styles
-  const buttonBaseClasses = "bg-transparent border border-gray-300 hover:border-gray-400 text-gray-500 hover:text-gray-700";
+  const buttonBaseClasses = "bg-transparent border border-stone-300 dark:border-stone-700 hover:border-stone-400 text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200";
 
   return (
     <div className="min-h-0">
       <div className="flex mt-4 gap-3">
         <form onSubmit={submitSearch} className="relative flex-grow">
           <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-            <Search className="w-5 h-5 text-gray-400" />
+            <Search className="w-5 h-5 text-stone-400 dark:text-stone-500" />
           </div>
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             type="text"
             placeholder="Search bookings, guests, listings…"
-            className="w-full h-12 pl-12 pr-4 border text-sm border-gray-200 rounded-xl"
+            className="w-full h-12 pl-12 pr-4 border text-sm border-stone-200 dark:border-stone-800 rounded-xl"
           />
           <button type="submit" className="hidden" />
         </form>

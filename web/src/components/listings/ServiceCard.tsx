@@ -120,11 +120,11 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
       {/* Background with image or empty state */}
       {/* Border overlay — renders on top of everything */}
       {solidBackground && (
-        <div className="absolute inset-0 z-30 rounded-2xl border border-stone-200/80 group-hover:border-stone-300 transition-colors pointer-events-none" />
+        <div className="absolute inset-0 z-30 rounded-2xl border border-stone-200/80 dark:border-stone-800 group-hover:border-stone-300 dark:group-hover:border-stone-700 transition-colors pointer-events-none" />
       )}
       <div className="absolute inset-0 z-0">
         {solidBackground ? (
-          <div className="absolute inset-0 bg-gradient-to-br from-white to-stone-50/80 rounded-2xl" />
+          <div className="absolute inset-0 bg-gradient-to-br from-white to-stone-50/80 dark:from-stone-900 dark:to-stone-950 rounded-2xl" />
         ) : hasImage ? (
           <>
             <Image
@@ -165,14 +165,14 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
           </>
         ) : (
           /* Empty state when no service image */
-          <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200">
+          <div className="absolute inset-0 bg-gradient-to-br from-stone-100 to-stone-200 dark:from-stone-800 dark:to-stone-900">
             <div className="absolute inset-0 flex items-center justify-center">
               {isOwner ? (
                 /* Owner sees upload CTA */
                 <div className="text-center px-6">
-                  <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-white/90 backdrop-blur-sm shadow-lg flex items-center justify-center border-2 border-gray-200">
+                  <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-white/90 backdrop-blur-sm shadow-lg flex items-center justify-center border-2 border-stone-200 dark:border-stone-800">
                     <svg
-                      className="w-9 h-9 text-gray-400"
+                      className="w-9 h-9 text-stone-400 dark:text-stone-500"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -184,14 +184,14 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                       <circle cx="12" cy="13" r="4" />
                     </svg>
                   </div>
-                  <p className="text-sm font-semibold text-gray-700 mb-1">Add Service Photo</p>
-                  <p className="text-xs text-gray-500 leading-relaxed">Photos get 3x more bookings</p>
+                  <p className="text-sm font-semibold text-stone-700 dark:text-stone-200 mb-1">Add Service Photo</p>
+                  <p className="text-xs text-stone-500 dark:text-stone-400 dark:text-stone-500 leading-relaxed">Photos get 3x more bookings</p>
                 </div>
               ) : (
                 /* Non-owners see minimal placeholder */
-                <div className="w-20 h-20 rounded-full bg-white/90 backdrop-blur-sm shadow-lg flex items-center justify-center border-2 border-gray-200">
+                <div className="w-20 h-20 rounded-full bg-white/90 backdrop-blur-sm shadow-lg flex items-center justify-center border-2 border-stone-200 dark:border-stone-800">
                   <svg
-                    className="w-9 h-9 text-gray-400"
+                    className="w-9 h-9 text-stone-400 dark:text-stone-500"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -250,7 +250,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
               }
             }}
             aria-label="Share"
-            className="transition-all duration-300 text-neutral-300 hover:text-neutral-900"
+            className="transition-all duration-300 text-stone-300 hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M10.0017 3C7.05534 3.03208 5.41096 3.21929 4.31838 4.31188C2.99988 5.63037 2.99988 7.75248 2.99988 11.9966C2.99988 16.2409 2.99988 18.363 4.31838 19.6815C5.63688 21 7.75899 21 12.0032 21C16.2474 21 18.3695 21 19.688 19.6815C20.7808 18.5887 20.9678 16.9438 20.9999 13.9963" />
@@ -266,7 +266,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
             /* Bold editorial layout */
             <div className="absolute inset-0 flex flex-col z-20 overflow-hidden rounded-2xl">
               {/* Large price watermark in background */}
-              <div className="absolute -right-2 -top-4 text-[80px] font-black text-stone-100/80 leading-none select-none pointer-events-none">
+              <div className="absolute -right-2 -top-4 text-[80px] font-black text-stone-100/80 dark:text-stone-800/60 leading-none select-none pointer-events-none">
                 {priceNum}
               </div>
 
@@ -276,12 +276,12 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                 <div className={compact ? 'mb-2 h-8' : 'mb-3 h-12'} />
 
                 {/* Service name - large and bold */}
-                <h3 className="text-[17px] font-black text-neutral-900 leading-[1.2] line-clamp-2 tracking-tight pr-8">
+                <h3 className="text-[17px] font-black text-stone-900 dark:text-stone-100 leading-[1.2] line-clamp-2 tracking-tight pr-8">
                   {service.serviceName || 'Untitled Service'}
                 </h3>
 
                 {/* Duration - understated */}
-                <p className="mt-1.5 text-[11px] text-neutral-400 font-medium">
+                <p className="mt-1.5 text-[11px] text-stone-400 dark:text-stone-500 font-medium">
                   {durationDisplay}
                 </p>
 
@@ -290,13 +290,13 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
 
                 {/* Bottom row - price with subtle arrow */}
                 <div className="flex items-end justify-between">
-                  <span className="text-2xl font-black text-neutral-900 tabular-nums">${priceNum}</span>
+                  <span className="text-2xl font-black text-stone-900 dark:text-stone-100 tabular-nums">${priceNum}</span>
                   <svg
                     width="20"
                     height="20"
                     viewBox="0 0 24 24"
                     fill="none"
-                    className="text-neutral-300 group-hover:text-neutral-900 group-hover:translate-x-0.5 transition-all duration-300 mb-1"
+                    className="text-stone-300 group-hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 group-hover:translate-x-0.5 transition-all duration-300 mb-1"
                   >
                     <path d="M7 17L17 7M17 7H8M17 7V16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>

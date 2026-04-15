@@ -122,7 +122,7 @@ const MediaStep: React.FC<MediaStepProps> = ({
           transition-all duration-300 group
           ${imageSrc
             ? 'hover:shadow-lg hover:-translate-y-1'
-            : 'border-2 border-dashed border-gray-200 bg-gray-50/50 hover:border-gray-900 hover:bg-gray-100'
+            : 'border-2 border-dashed border-stone-200 dark:border-stone-800 bg-stone-50/50 hover:border-stone-900 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800'
           }
         `}
       >
@@ -150,13 +150,13 @@ const MediaStep: React.FC<MediaStepProps> = ({
           </>
         ) : (
           <div className="h-full flex flex-col items-center justify-center">
-            <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm">
-              <PlusSignIcon className="w-5 h-5 text-gray-400" />
+            <div className="w-10 h-10 rounded-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 flex items-center justify-center shadow-sm">
+              <PlusSignIcon className="w-5 h-5 text-stone-400 dark:text-stone-500" />
             </div>
           </div>
         )}
       </div>
-      <span className="text-xs font-medium text-gray-500">{label}</span>
+      <span className="text-xs font-medium text-stone-500 dark:text-stone-400 dark:text-stone-500">{label}</span>
     </div>
   );
 
@@ -195,7 +195,7 @@ const MediaStep: React.FC<MediaStepProps> = ({
                     {[0, 1, 2, 3, 4].map((i) => (
                       <svg
                         key={i}
-                        className="w-4 h-4 text-gray-300 animate-pulse"
+                        className="w-4 h-4 text-stone-300 animate-pulse"
                         style={{ animationDelay: `${i * 120}ms` }}
                         fill="none"
                         viewBox="0 0 24 24"
@@ -236,10 +236,10 @@ const MediaStep: React.FC<MediaStepProps> = ({
         <button
           type="button"
           onClick={() => setShowBeforeAfter(!showBeforeAfter)}
-          className="flex items-center gap-3 text-sm text-gray-600 hover:text-gray-900 transition-colors"
+          className="flex items-center gap-3 text-sm text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 transition-colors"
         >
           <div className={`w-5 h-5 rounded-lg border-2 flex items-center justify-center transition-all ${
-            showBeforeAfter ? 'border-gray-900 bg-gray-900' : 'border-gray-300'
+            showBeforeAfter ? 'border-stone-900 bg-stone-900' : 'border-stone-300 dark:border-stone-700'
           }`}>
             {showBeforeAfter && (
               <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>

@@ -2,9 +2,8 @@
 
 import * as React from "react"
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu"
-import { Check, ChevronRight, Circle } from "lucide-react"
-
 import { cn } from "@/lib/utils"
+import { Tick02Icon as Check, ArrowRight01Icon as ChevronRight, CircleIcon as Circle } from 'hugeicons-react';
 
 const DropdownMenu = DropdownMenuPrimitive.Root
 
@@ -48,8 +47,8 @@ const DropdownMenuSubContent = React.forwardRef<
     ref={ref}
     className={cn(
       "z-50 min-w-[8rem] overflow-hidden rounded-xl p-1.5 shadow-lg",
-      "bg-white border border-gray-100 text-gray-900 shadow-lg shadow-gray-900/10",
-      "dark:bg-zinc-800 dark:border-zinc-700/50 dark:text-zinc-100 dark:shadow-xl dark:shadow-black/20",
+      "bg-white border border-stone-100 text-stone-900 shadow-lg shadow-stone-900/10",
+      "dark:bg-stone-800 dark:border-stone-700/50 dark:text-stone-100 dark:shadow-xl dark:shadow-black/20",
       className
     )}
     {...props}
@@ -71,8 +70,8 @@ const DropdownMenuContent = React.forwardRef<
       className={cn(
         "z-50 min-w-[8rem] overflow-hidden rounded-xl p-1.5 shadow-lg",
         variant === "dark"
-          ? "bg-zinc-800 border border-zinc-700/50 text-zinc-100 shadow-xl shadow-black/20"
-          : "bg-white border border-gray-100 text-gray-900 shadow-lg shadow-gray-900/10",
+          ? "bg-stone-800 border border-stone-700/50 text-stone-100 shadow-xl shadow-black/20"
+          : "bg-white border border-stone-100 text-stone-900 shadow-lg shadow-stone-900/10",
         className
       )}
       {...props}
@@ -91,8 +90,8 @@ const DropdownMenuItem = React.forwardRef<
     ref={ref}
     className={cn(
       "relative flex cursor-pointer select-none items-center rounded-xl px-3 py-2.5 text-[13px] font-medium outline-none transition-colors duration-150",
-      "focus:bg-gray-50 focus:text-gray-900 dark:focus:bg-zinc-700 dark:focus:text-white",
-      "hover:bg-gray-50 dark:hover:bg-zinc-700",
+      "focus:bg-stone-50 focus:text-stone-900 dark:focus:bg-stone-700 dark:focus:text-white",
+      "hover:bg-stone-50 dark:hover:bg-stone-700",
       "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       inset && "pl-8",
       className
@@ -172,7 +171,7 @@ const DropdownMenuSeparator = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DropdownMenuPrimitive.Separator
     ref={ref}
-    className={cn("mx-1 my-1.5 h-px bg-gray-100 dark:bg-zinc-700/50", className)}
+    className={cn("mx-1 my-1.5 h-px bg-stone-100 dark:bg-stone-700/50", className)}
     {...props}
   />
 ))

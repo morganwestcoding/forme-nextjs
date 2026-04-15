@@ -97,6 +97,7 @@ export async function POST(request: Request) {
           type: "TIME_OFF_REQUEST",
           content: `${employee.fullName} requested time off from ${new Date(startDate).toLocaleDateString()} to ${new Date(endDate).toLocaleDateString()}`,
           userId: employee.listing.userId,
+          relatedUserId: employee.userId,
         },
       });
     }

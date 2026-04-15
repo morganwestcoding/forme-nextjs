@@ -172,6 +172,7 @@ export default async function getReservations(params: IParams) {
         backgroundImage: reservation.user.backgroundImage || null,
         bio: reservation.user.bio || "No Bio Provided Yet..",
         location: reservation.user.location || null,
+        jobTitle: reservation.user.jobTitle || null,
         galleryImages: reservation.user.galleryImages || [],
         licensingImage: reservation.user.licensingImage || null,
         verificationStatus: reservation.user.verificationStatus || null,

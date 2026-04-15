@@ -83,8 +83,8 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
       <div className="mt-8">
         {/* Page header */}
         <div className="mb-8">
-          <h1 className="text-2xl font-semibold text-stone-900 tracking-tight">Favorites</h1>
-          <p className="text-[14px] text-stone-400 mt-1">{totalCount} saved {totalCount === 1 ? 'item' : 'items'}</p>
+          <h1 className="text-2xl font-semibold text-stone-900 dark:text-stone-100 tracking-tight">Favorites</h1>
+          <p className="text-[14px] text-stone-400 dark:text-stone-500 mt-1">{totalCount} saved {totalCount === 1 ? 'item' : 'items'}</p>
         </div>
 
         {/* Tab bar */}
@@ -96,12 +96,12 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
               className={`flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap ${
                 activeTab === tab.key
                   ? 'bg-gradient-to-br from-stone-800 to-black text-white shadow-[0_1px_3px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.12)]'
-                  : 'bg-stone-50 text-stone-500 hover:bg-stone-100 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]'
+                  : 'bg-stone-50 dark:bg-stone-900 text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]'
               }`}
             >
               {tab.label}
               <span className={`text-[11px] tabular-nums ${
-                activeTab === tab.key ? 'text-white/60' : 'text-stone-400'
+                activeTab === tab.key ? 'text-white/60' : 'text-stone-400 dark:text-stone-500'
               }`}>
                 {tab.count}
               </span>
@@ -157,8 +157,8 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
               <>
                 {activeTab === 'all' && contentItems.some(i => i.type !== 'post') && (
                   <div className="mt-10 mb-6 flex items-center gap-3">
-                    <h2 className="text-xl font-semibold text-stone-900 tracking-tight">Posts</h2>
-                    <span className="text-[11px] font-medium text-stone-500 bg-stone-100 px-2.5 py-1 rounded-full tabular-nums">
+                    <h2 className="text-xl font-semibold text-stone-900 dark:text-stone-100 tracking-tight">Posts</h2>
+                    <span className="text-[11px] font-medium text-stone-500 dark:text-stone-400 dark:text-stone-500 bg-stone-100 dark:bg-stone-800 px-2.5 py-1 rounded-full tabular-nums">
                       {contentItems.filter(i => i.type === 'post').length}
                     </span>
                   </div>
@@ -182,15 +182,15 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
           </>
         ) : (
           <div className="flex flex-col items-center justify-center py-24 text-center">
-            <div className="w-16 h-16 rounded-2xl bg-stone-100 flex items-center justify-center mb-5">
-              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-stone-400">
+            <div className="w-16 h-16 rounded-2xl bg-stone-100 dark:bg-stone-800 flex items-center justify-center mb-5">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-stone-400 dark:text-stone-500">
                 <path d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z" />
               </svg>
             </div>
-            <p className="text-[15px] font-medium text-stone-700 mb-1">
+            <p className="text-[15px] font-medium text-stone-700 dark:text-stone-200 mb-1">
               {activeTab === 'all' ? 'No favorites yet' : `No favorite ${activeTab}`}
             </p>
-            <p className="text-[13px] text-stone-400 max-w-xs">
+            <p className="text-[13px] text-stone-400 dark:text-stone-500 max-w-xs">
               Save listings, professionals, shops, and posts to find them here.
             </p>
           </div>

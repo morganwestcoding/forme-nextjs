@@ -57,7 +57,7 @@ const ForgotPasswordModal = () => {
       <div className="text-black text-center mt-4 font-light">
         <p>
           Remembered it?
-          <span onClick={backToLogin} className="text-neutral-500 cursor-pointer hover:underline"> Back to login</span>
+          <span onClick={backToLogin} className="text-stone-500 dark:text-stone-400 dark:text-stone-500 cursor-pointer hover:underline"> Back to login</span>
         </p>
       </div>
     </div>

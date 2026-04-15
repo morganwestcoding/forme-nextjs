@@ -2,9 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import { FiEye, FiEyeOff } from 'react-icons/fi';
-import ModalButton from './modals/ModalButton';
+import { ViewIcon as FiEye, ViewOffIcon as FiEyeOff } from 'hugeicons-react';
+import Button from './ui/Button';
 
 const PASSWORD = 'Admin#1';
 const ANIM_MS = 200;
@@ -86,7 +85,7 @@ const BetaGate = ({ children }: BetaGateProps) => {
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-[9999] backdrop-blur-sm bg-neutral-900/60 animate-in fade-in duration-200"
+      className="fixed inset-0 z-[9999] backdrop-blur-sm bg-stone-900/60 animate-in fade-in duration-200"
     >
       <div className="fixed inset-0 flex items-center justify-center overflow-y-auto p-4">
         <div className="relative w-full md:w-4/6 lg:w-3/6 xl:w-2/5 mx-auto">
@@ -97,21 +96,11 @@ const BetaGate = ({ children }: BetaGateProps) => {
                 : 'translate-y-4 opacity-0 scale-[0.98]'
             }`}
           >
-            <div className="relative flex flex-col w-full bg-white/95 dark:bg-neutral-900/95 backdrop-blur-xl border border-gray-200/60 dark:border-neutral-700/60 rounded-2xl shadow-2xl shadow-gray-900/20 overflow-hidden">
+            <div className="relative flex flex-col w-full bg-white/95 dark:bg-stone-900/95 backdrop-blur-xl border border-stone-200/60 dark:border-stone-700/60 rounded-2xl shadow-2xl shadow-stone-900/20 overflow-hidden">
               <div className="flex flex-col">
-                <div className="relative px-8 pt-8 pb-6 text-gray-800 dark:text-gray-200">
+                <div className="relative px-8 pt-8 pb-6 text-stone-800 dark:text-stone-200 dark:text-stone-200">
                   <div className="flex flex-col items-center text-center mb-6">
-                    <div className="w-80 h-80 sm:w-96 sm:h-96 -mb-12 relative">
-                      <Image
-                        src="/assets/people/beaver.png"
-                        alt="Beaver"
-                        fill
-                        sizes="384px"
-                        className="object-contain"
-                        priority
-                      />
-                    </div>
-                    <p className="text-base sm:text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+                    <p className="text-base sm:text-lg text-stone-700 dark:text-stone-200 dark:text-stone-300 leading-relaxed">
                       {MESSAGE}
                     </p>
                   </div>
@@ -119,7 +108,7 @@ const BetaGate = ({ children }: BetaGateProps) => {
                   <div>
                     <label
                       htmlFor="beta-gate-password"
-                      className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                      className="block text-sm font-medium text-stone-700 dark:text-stone-200 dark:text-stone-300 mb-2"
                     >
                       Password
                     </label>
@@ -137,13 +126,13 @@ const BetaGate = ({ children }: BetaGateProps) => {
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') handleSubmit();
                         }}
-                        className="w-full px-4 py-3.5 pr-12 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
+                        className="w-full px-4 py-3.5 pr-12 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all"
                         placeholder="Enter password"
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300 transition-colors"
                       >
                         {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
                       </button>
@@ -156,17 +145,23 @@ const BetaGate = ({ children }: BetaGateProps) => {
 
                 <div className="flex flex-col gap-3 px-8 pb-8 pt-2">
                   <div className="flex flex-row items-center gap-3 w-full">
-                    <ModalButton
+                    <Button
                       id="beta-gate-back"
-                      outline
-                      label="Go Back"
+                      variant="outline"
+                      size="lg"
+                      fullWidth
                       onClick={handleBack}
-                    />
-                    <ModalButton
+                    >
+                      Go Back
+                    </Button>
+                    <Button
                       id="beta-gate-submit"
-                      label="Continue"
+                      size="lg"
+                      fullWidth
                       onClick={handleSubmit}
-                    />
+                    >
+                      Continue
+                    </Button>
                   </div>
                 </div>
               </div>

@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Search, X } from "lucide-react";
+import { Search01Icon as Search, Cancel01Icon as X } from 'hugeicons-react';
 
 interface ListingLocalSearchProps {
   placeholder?: string;

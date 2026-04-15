@@ -251,7 +251,7 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
       <div
         className={`rounded-xl border ${
           isDarkMode
-            ? 'border-zinc-600/60'
+            ? 'border-stone-600/60'
             : 'border-stone-300/90'
         }`}
         style={{
@@ -275,14 +275,14 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
             placeholder={placeholder}
             className={`flex-1 pl-1.5 text-[14px] bg-transparent border-none outline-none ${
               isDarkMode
-                ? 'text-white placeholder-zinc-400'
+                ? 'text-white placeholder-stone-400'
                 : 'text-stone-900 placeholder-stone-500'
             }`}
           />
 
           {actionButtons && (
             <>
-              <div className={`w-px h-5 ${isDarkMode ? 'bg-zinc-700' : 'bg-stone-200'}`} />
+              <div className={`w-px h-5 ${isDarkMode ? 'bg-stone-700' : 'bg-stone-200'}`} />
               {actionButtons}
             </>
           )}
@@ -294,7 +294,7 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
         <FloatingPortal>
           <div
             ref={refs.setFloating}
-            className="z-[50] max-h-80 overflow-auto rounded-xl bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700/50 shadow-lg shadow-gray-900/10 dark:shadow-xl dark:shadow-black/20"
+            className="z-[50] max-h-80 overflow-auto rounded-xl bg-white dark:bg-stone-800 border border-stone-100 dark:border-stone-700/50 shadow-lg shadow-stone-900/10 dark:shadow-xl dark:shadow-black/20"
             style={{
               ...floatingStyles,
               visibility: isPositioned ? 'visible' : 'hidden',
@@ -304,18 +304,18 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
             {loading && (
               <div className="px-4 py-6 flex flex-col items-center justify-center gap-3">
                 <div className="flex items-center gap-1">
-                  <div className="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-zinc-500 animate-[bounce_1s_ease-in-out_infinite]" />
-                  <div className="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-zinc-500 animate-[bounce_1s_ease-in-out_0.15s_infinite]" />
-                  <div className="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-zinc-500 animate-[bounce_1s_ease-in-out_0.3s_infinite]" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-stone-400 dark:bg-stone-500 animate-[bounce_1s_ease-in-out_infinite]" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-stone-400 dark:bg-stone-500 animate-[bounce_1s_ease-in-out_0.15s_infinite]" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-stone-400 dark:bg-stone-500 animate-[bounce_1s_ease-in-out_0.3s_infinite]" />
                 </div>
               </div>
             )}
 
             {/* Empty */}
             {!loading && debouncedQ.length >= 2 && flatItems.length === 0 && (
-              <div className="px-4 py-6 text-sm text-gray-400 dark:text-zinc-500 text-center">
-                <div className="w-10 h-10 mx-auto mb-3 rounded-full bg-gray-100 dark:bg-zinc-700 flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-gray-400 dark:text-zinc-500">
+              <div className="px-4 py-6 text-sm text-stone-400 dark:text-stone-500 text-center">
+                <div className="w-10 h-10 mx-auto mb-3 rounded-full bg-stone-100 dark:bg-stone-700 flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-stone-400 dark:text-stone-500">
                     <circle cx="11" cy="11" r="8"/>
                     <path d="m21 21-4.3-4.3"/>
                   </svg>
@@ -334,7 +334,7 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
                     return (
                       <div key={typeKey}>
                         <div className="px-4 pt-3 pb-2">
-                          <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 dark:text-zinc-500">
+                          <span className="text-[11px] font-semibold uppercase tracking-wider text-stone-400 dark:text-stone-500">
                             {typeLabel[typeKey as ItemType]}
                           </span>
                         </div>
@@ -350,8 +350,8 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
                                 data-idx={idx}
                                 className={`mx-1.5 px-3 py-2.5 cursor-pointer flex items-center gap-3 rounded-xl transition-colors duration-150 ${
                                   active
-                                    ? "bg-gray-50 dark:bg-zinc-700"
-                                    : "hover:bg-gray-50 dark:hover:bg-zinc-700"
+                                    ? "bg-stone-50 dark:bg-stone-700"
+                                    : "hover:bg-stone-50 dark:hover:bg-stone-700"
                                 }`}
                                 onMouseEnter={() => setActiveIdx(idx)}
                                 onClick={(e) => {
@@ -362,7 +362,7 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
                               >
                                 {/* Thumbnail */}
                                 <div className={`w-9 h-9 rounded-xl overflow-hidden shrink-0 transition-all duration-150 ${
-                                  active ? "ring-2 ring-gray-300 dark:ring-zinc-500" : "bg-gray-100 dark:bg-zinc-700"
+                                  active ? "ring-2 ring-stone-300 dark:ring-stone-500" : "bg-stone-100 dark:bg-stone-700"
                                 }`}>
                                   {item.image ? (
                                     // eslint-disable-next-line @next/next/no-img-element
@@ -372,7 +372,7 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
                                       className="w-full h-full object-cover"
                                     />
                                   ) : (
-                                    <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-50 dark:from-zinc-700 dark:to-zinc-800 flex items-center justify-center text-[10px] font-medium text-gray-400 dark:text-zinc-500 uppercase">
+                                    <div className="w-full h-full bg-gradient-to-br from-stone-100 to-stone-50 dark:from-stone-700 dark:to-stone-800 flex items-center justify-center text-[10px] font-medium text-stone-400 dark:text-stone-500 uppercase">
                                       {typeKey.slice(0, 2)}
                                     </div>
                                   )}
@@ -380,19 +380,19 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
                                 {/* Text */}
                                 <div className="min-w-0 flex-1">
                                   <div className={`text-sm font-medium truncate transition-colors duration-150 ${
-                                    active ? "text-gray-900 dark:text-white" : "text-gray-700 dark:text-zinc-300"
+                                    active ? "text-stone-900 dark:text-white" : "text-stone-700 dark:text-stone-300"
                                   }`}>
                                     {item.title}
                                   </div>
                                   {!!item.subtitle && (
-                                    <div className="text-xs text-gray-400 dark:text-zinc-500 truncate">
+                                    <div className="text-xs text-stone-400 dark:text-stone-500 truncate">
                                       {item.subtitle}
                                     </div>
                                   )}
                                 </div>
                                 {/* Type badge */}
                                 <div className={`text-[10px] uppercase tracking-wider font-medium px-2 py-0.5 rounded-xl transition-all duration-150 ${
-                                  active ? "text-gray-600 dark:text-zinc-300 bg-gray-200 dark:bg-zinc-600" : "text-gray-400 dark:text-zinc-500 bg-gray-100 dark:bg-zinc-700"
+                                  active ? "text-stone-600 dark:text-stone-300 bg-stone-200 dark:bg-stone-600" : "text-stone-400 dark:text-stone-500 bg-stone-100 dark:bg-stone-700"
                                 }`}>
                                   {typeKey}
                                 </div>

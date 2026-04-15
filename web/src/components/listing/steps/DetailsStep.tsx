@@ -3,9 +3,9 @@
 import { CldUploadWidget, type CldUploadWidgetResults } from 'next-cloudinary';
 import { useCallback } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { Plus } from 'lucide-react';
-import { PencilEdit01Icon } from 'hugeicons-react';
+
 import TypeformHeading from '@/components/registration/TypeformHeading';
+import { PencilEdit01Icon, PlusSignIcon as Plus } from 'hugeicons-react';
 
 interface DetailsStepProps {
   imageSrc: string;
@@ -81,8 +81,8 @@ export default function DetailsStep({
                 className={`
                   group cursor-pointer rounded-xl overflow-hidden relative transition-all duration-300
                   ${imageSrc
-                    ? 'hover:shadow-lg bg-neutral-900 hover:-translate-y-1'
-                    : 'border-2 border-dashed border-gray-200 bg-gray-50/50 hover:border-gray-900 hover:bg-gray-100'}
+                    ? 'hover:shadow-lg bg-stone-900 hover:-translate-y-1'
+                    : 'border-2 border-dashed border-stone-200 dark:border-stone-800 bg-stone-50/50 hover:border-stone-900 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800'}
                 `}
                 style={{ width: '200px', height: '224px' }}
               >
@@ -99,8 +99,8 @@ export default function DetailsStep({
                   </>
                 ) : (
                   <div className="h-full flex flex-col items-center justify-center text-center p-4">
-                    <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm">
-                      <Plus className="w-5 h-5 text-gray-400" />
+                    <div className="w-10 h-10 rounded-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 flex items-center justify-center shadow-sm">
+                      <Plus className="w-5 h-5 text-stone-400 dark:text-stone-500" />
                     </div>
                   </div>
                 )}
@@ -112,14 +112,14 @@ export default function DetailsStep({
         {/* Right: Form inputs */}
         <div className="flex-1 min-w-0 space-y-4">
           <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="title" className="block text-sm font-medium text-stone-700 dark:text-stone-200 mb-2">
               Listing title
             </label>
             <input
               id="title"
               type="text"
               {...register('title', { required: 'Title is required' })}
-              className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
+              className="w-full px-4 py-3.5 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all"
               placeholder="e.g., John's Hair Studio"
             />
             {errors.title && (
@@ -128,14 +128,14 @@ export default function DetailsStep({
           </div>
 
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="description" className="block text-sm font-medium text-stone-700 dark:text-stone-200 mb-2">
               Description
             </label>
             <textarea
               id="description"
               {...register('description', { required: 'Description is required' })}
               rows={3}
-              className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all resize-none"
+              className="w-full px-4 py-3.5 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all resize-none"
               placeholder="Briefly describe your services"
             />
             {errors.description && (

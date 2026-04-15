@@ -2,10 +2,11 @@
 
 import { useState, useCallback } from 'react';
 import { CldUploadWidget, type CldUploadWidgetResults } from 'next-cloudinary';
-import { ChevronDown, Plus, X, ArrowLeft } from 'lucide-react';
-import { Cancel01Icon, PencilEdit01Icon } from 'hugeicons-react';
+
 import Image from 'next/image';
 import TypeformHeading from '@/components/registration/TypeformHeading';
+import { Cancel01Icon, PencilEdit01Icon, ArrowDown01Icon as ChevronDown, PlusSignIcon as Plus, Cancel01Icon as X, ArrowLeft01Icon as ArrowLeft } from 'hugeicons-react';
+import Button from '@/components/ui/Button';
 
 interface ProductData {
   name: string;
@@ -57,7 +58,7 @@ function ProductImageUpload({
             group cursor-pointer rounded-xl overflow-hidden relative transition-all duration-300
             ${value
               ? ''
-              : 'border-2 border-dashed border-gray-200 bg-gray-50/50 hover:border-gray-900 hover:bg-gray-100'
+              : 'border-2 border-dashed border-stone-200 dark:border-stone-800 bg-stone-50/50 hover:border-stone-900 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800'
             }
           `}
           style={{ width: '175px', height: '175px' }}
@@ -80,8 +81,8 @@ function ProductImageUpload({
             </>
           ) : (
             <div className="h-full flex flex-col items-center justify-center">
-              <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm">
-                <Plus className="w-5 h-5 text-gray-400" />
+              <div className="w-10 h-10 rounded-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 flex items-center justify-center shadow-sm">
+                <Plus className="w-5 h-5 text-stone-400 dark:text-stone-500" />
               </div>
             </div>
           )}
@@ -169,7 +170,7 @@ export default function ShopProductFormStep({
       <div className="space-y-5">
         {/* Product Images */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-stone-700 dark:text-stone-200 mb-2">
             Product images
           </label>
           <div className="flex flex-wrap gap-3">
@@ -188,22 +189,22 @@ export default function ShopProductFormStep({
         {/* Name & Price */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Product name</label>
+            <label className="block text-sm font-medium text-stone-700 dark:text-stone-200 mb-2">Product name</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
+              className="w-full px-4 py-3.5 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all"
               placeholder="Product name"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Price</label>
+            <label className="block text-sm font-medium text-stone-700 dark:text-stone-200 mb-2">Price</label>
             <input
               type="number"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
-              className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
+              className="w-full px-4 py-3.5 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all"
               placeholder="0.00"
             />
           </div>
@@ -211,24 +212,24 @@ export default function ShopProductFormStep({
 
         {/* Description */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+          <label className="block text-sm font-medium text-stone-700 dark:text-stone-200 mb-2">Description</label>
           <textarea
             rows={3}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all resize-none"
+            className="w-full px-4 py-3.5 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all resize-none"
             placeholder="Describe your product..."
           />
         </div>
 
         {/* Category */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+          <label className="block text-sm font-medium text-stone-700 dark:text-stone-200 mb-2">Category</label>
           <div className="relative">
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all appearance-none"
+              className="w-full px-4 py-3.5 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all appearance-none"
             >
               <option value="">Select category</option>
               <option value="clothing">Clothing</option>
@@ -241,14 +242,14 @@ export default function ShopProductFormStep({
               <option value="books">Books & Media</option>
             </select>
             <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-              <ChevronDown className="w-5 h-5 text-gray-400" />
+              <ChevronDown className="w-5 h-5 text-stone-400 dark:text-stone-500" />
             </div>
           </div>
         </div>
 
         {/* Sizes */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Sizes</label>
+          <label className="block text-sm font-medium text-stone-700 dark:text-stone-200 mb-2">Sizes</label>
           <div className="relative">
             <input
               type="text"
@@ -256,22 +257,22 @@ export default function ShopProductFormStep({
               onChange={(e) => setCurrentSize(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddSize(); } }}
               placeholder="Add size (e.g., S, M, L)"
-              className="w-full px-4 pr-12 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
+              className="w-full px-4 pr-12 py-3.5 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all"
             />
             <button
               type="button"
               onClick={handleAddSize}
-              className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-xl bg-gray-200 hover:bg-gray-300 transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-xl bg-stone-200 dark:bg-stone-700 hover:bg-stone-300 transition-colors"
             >
-              <Plus className="w-4 h-4 text-gray-600" />
+              <Plus className="w-4 h-4 text-stone-600 dark:text-stone-300" />
             </button>
           </div>
           {sizes.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-3">
               {sizes.map((size) => (
-                <div key={size} className="bg-gray-100 px-3 py-1 rounded-full flex items-center gap-1.5 text-sm">
+                <div key={size} className="bg-stone-100 dark:bg-stone-800 px-3 py-1 rounded-full flex items-center gap-1.5 text-sm">
                   <span>{size}</span>
-                  <button type="button" onClick={() => setSizes(prev => prev.filter(s => s !== size))} className="text-gray-400 hover:text-gray-600">
+                  <button type="button" onClick={() => setSizes(prev => prev.filter(s => s !== size))} className="text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300">
                     <X className="w-3.5 h-3.5" />
                   </button>
                 </div>
@@ -286,34 +287,25 @@ export default function ShopProductFormStep({
       <button
         type="button"
         onClick={onBack}
-        className="fixed top-6 right-6 z-50 w-10 h-10 rounded-full flex items-center justify-center text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition-all"
+        className="fixed top-6 right-6 z-50 w-10 h-10 rounded-full flex items-center justify-center text-stone-400 dark:text-stone-500 hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 transition-all"
       >
         <Cancel01Icon className="w-5 h-5" strokeWidth={1.5} />
       </button>
 
       {/* Bottom navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-6 py-4">
+      <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-stone-900 border-t border-stone-100 dark:border-stone-800 px-6 py-4">
         <div className="max-w-xl mx-auto flex items-center justify-between">
           <button
             type="button"
             onClick={onBack}
-            className="flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors"
+            className="flex items-center gap-2 text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             <span className="text-sm">Back</span>
           </button>
-          <button
-            type="button"
-            onClick={handleSave}
-            disabled={!canSave}
-            className={`px-6 py-2.5 rounded-xl font-medium text-sm transition-transform duration-200 ${
-              canSave
-                ? 'bg-gray-900 text-white hover:bg-gray-800 active:scale-[0.98]'
-                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-            }`}
-          >
+          <Button type="button" onClick={handleSave} disabled={!canSave}>
             Save product
-          </button>
+          </Button>
         </div>
       </div>
     </div>

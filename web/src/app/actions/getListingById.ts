@@ -131,6 +131,7 @@ export default async function getListingById(params: IParams): Promise<(SafeList
       backgroundImage: listing.user.backgroundImage || null,
       bio: listing.user.bio || '',
       location: listing.user.location || null,
+      jobTitle: listing.user.jobTitle || null,
       galleryImages: listing.user.galleryImages || [],
       licensingImage: listing.user.licensingImage || null,
       verificationStatus: listing.user.verificationStatus || null,

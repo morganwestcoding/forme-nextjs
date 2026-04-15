@@ -77,17 +77,17 @@ const ReviewModal: React.FC = () => {
     <div className="flex flex-col gap-6">
       {/* Header with target info */}
       <div className="text-center">
-        <div className="w-16 h-16 rounded-full overflow-hidden mx-auto mb-3 ring-4 ring-gray-100">
+        <div className="w-16 h-16 rounded-full overflow-hidden mx-auto mb-3 ring-4 ring-stone-100">
           <img
             src={targetImage}
             alt={targetName}
             className="w-full h-full object-cover"
           />
         </div>
-        <h2 className="text-xl font-bold text-gray-900">
+        <h2 className="text-xl font-bold text-stone-900 dark:text-stone-100">
           Review {targetName}
         </h2>
-        <p className="text-sm text-gray-500 mt-1">
+        <p className="text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500 mt-1">
           Share your experience to help others
         </p>
       </div>
@@ -110,7 +110,7 @@ const ReviewModal: React.FC = () => {
                 className={`w-10 h-10 transition-colors duration-150 ${
                   star <= (hoveredRating || rating)
                     ? 'text-amber-400'
-                    : 'text-gray-200'
+                    : 'text-stone-200'
                 }`}
                 fill="currentColor"
               >
@@ -131,8 +131,8 @@ const ReviewModal: React.FC = () => {
 
       {/* Comment */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Your review <span className="text-gray-400 font-normal">(optional)</span>
+        <label className="block text-sm font-medium text-stone-700 dark:text-stone-200 mb-2">
+          Your review <span className="text-stone-400 dark:text-stone-500 font-normal">(optional)</span>
         </label>
         <textarea
           value={comment}
@@ -140,18 +140,18 @@ const ReviewModal: React.FC = () => {
           placeholder="Tell others about your experience..."
           rows={4}
           maxLength={1000}
-          className="w-full px-4 py-3 border border-gray-200 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all text-sm placeholder:text-gray-400"
+          className="w-full px-4 py-3 border border-stone-200 dark:border-stone-800 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-stone-500/20 focus:border-stone-400 transition-all text-sm placeholder:text-stone-400 dark:text-stone-500"
         />
         <div className="flex justify-end mt-1">
-          <span className="text-xs text-gray-400">
+          <span className="text-xs text-stone-400 dark:text-stone-500">
             {comment.length}/1000
           </span>
         </div>
       </div>
 
       {/* Guidelines */}
-      <div className="bg-gray-50 rounded-xl p-4">
-        <p className="text-xs text-gray-500 leading-relaxed">
+      <div className="bg-stone-50 dark:bg-stone-900 rounded-xl p-4">
+        <p className="text-xs text-stone-500 dark:text-stone-400 dark:text-stone-500 leading-relaxed">
           By submitting this review, you confirm that it represents your genuine experience.
           Reviews should be helpful, respectful, and relevant.
         </p>

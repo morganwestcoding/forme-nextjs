@@ -37,7 +37,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ data, currentUser, disabled =
     >
       {/* Image */}
       <div
-        className="relative overflow-hidden bg-stone-100 dark:bg-zinc-800"
+        className="relative overflow-hidden bg-stone-100 dark:bg-stone-800 dark:bg-stone-800 dark:bg-stone-800"
         style={{ aspectRatio: '5 / 6', boxShadow: 'inset 0 0 30px rgba(0,0,0,0.08), inset 0 0 6px rgba(0,0,0,0.04)' }}
       >
         <Image
@@ -67,21 +67,21 @@ const ProductCard: React.FC<ProductCardProps> = ({ data, currentUser, disabled =
       {/* Info — always visible */}
       <div className="mt-2">
         {(categoryName || shopName) && (
-          <p className="text-[11px] text-stone-400 dark:text-zinc-500 leading-none truncate" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}>
+          <p className="text-[11px] text-stone-400 dark:text-stone-500 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500 leading-none truncate" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}>
             {categoryName || shopName}
           </p>
         )}
 
-        <h2 className="text-[13px] font-semibold text-neutral-900 dark:text-zinc-100 tracking-[-0.01em] leading-snug line-clamp-2 mt-0.5">
+        <h2 className="text-[13px] font-semibold text-stone-900 dark:text-stone-100 dark:text-stone-100 dark:text-stone-100 tracking-[-0.01em] leading-snug line-clamp-2 mt-0.5">
           {data.name}
         </h2>
 
         <div className="flex items-center gap-1.5 mt-1">
-          <span className="text-[12px] font-medium text-neutral-900 dark:text-zinc-100 tabular-nums">{priceLabel}</span>
+          <span className="text-[12px] font-medium text-stone-900 dark:text-stone-100 dark:text-stone-100 dark:text-stone-100 tabular-nums">{priceLabel}</span>
           {shopName && categoryName && (
             <>
-              <span className="text-stone-300 dark:text-zinc-600">·</span>
-              <span className="text-[11px] text-stone-400 dark:text-zinc-500 truncate">{shopName}</span>
+              <span className="text-stone-300 dark:text-stone-600 dark:text-stone-300 dark:text-stone-300">·</span>
+              <span className="text-[11px] text-stone-400 dark:text-stone-500 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500 truncate">{shopName}</span>
             </>
           )}
         </div>

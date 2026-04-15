@@ -3,7 +3,7 @@
 import { CldUploadWidget } from "next-cloudinary";
 import Image from "next/image";
 import { useCallback } from "react";
-import { TbPhotoPlus } from 'react-icons/tb'
+import { ImageAdd01Icon as TbPhotoPlus } from 'hugeicons-react'
 
 declare global {
   var cloudinary: any
@@ -49,12 +49,12 @@ const ProfilePicUpload: React.FC<ProfilePicUploadProps> = ({
             border-2 
             p-4
             w-24 h-24
-            border-neutral-300
+            border-stone-300
             flex
             flex-col
             justify-center
             items-center
-            text-neutral-600
+            text-stone-600
             rounded-xl
             "
           >

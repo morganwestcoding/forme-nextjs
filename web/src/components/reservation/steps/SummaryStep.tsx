@@ -50,28 +50,28 @@ export default function SummaryStep({
         {/* Date Card */}
         <motion.div
           variants={itemVariants}
-          className="p-4 rounded-xl border border-gray-200 bg-gray-50"
+          className="p-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900"
         >
-          <p className="text-xs text-gray-500 mb-1">Date</p>
-          <p className="text-sm font-medium text-gray-900">{formattedDate}</p>
+          <p className="text-xs text-stone-500 dark:text-stone-400 dark:text-stone-500 mb-1">Date</p>
+          <p className="text-sm font-medium text-stone-900 dark:text-stone-100">{formattedDate}</p>
         </motion.div>
 
         {/* Time Card */}
         <motion.div
           variants={itemVariants}
-          className="p-4 rounded-xl border border-gray-200 bg-gray-50"
+          className="p-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900"
         >
-          <p className="text-xs text-gray-500 mb-1">Time</p>
-          <p className="text-sm font-medium text-gray-900">{formattedTime}</p>
+          <p className="text-xs text-stone-500 dark:text-stone-400 dark:text-stone-500 mb-1">Time</p>
+          <p className="text-sm font-medium text-stone-900 dark:text-stone-100">{formattedTime}</p>
         </motion.div>
 
         {/* Professional Card */}
         <motion.div
           variants={itemVariants}
-          className="p-4 rounded-xl border border-gray-200 bg-white"
+          className="p-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900"
         >
-          <p className="text-xs text-gray-500 mb-1">With</p>
-          <p className="text-sm font-medium text-gray-900 truncate">
+          <p className="text-xs text-stone-500 dark:text-stone-400 dark:text-stone-500 mb-1">With</p>
+          <p className="text-sm font-medium text-stone-900 dark:text-stone-100 truncate">
             {selectedEmployee?.label || 'Any available'}
           </p>
         </motion.div>
@@ -79,10 +79,10 @@ export default function SummaryStep({
         {/* Location Card */}
         <motion.div
           variants={itemVariants}
-          className="p-4 rounded-xl border border-gray-200 bg-white"
+          className="p-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900"
         >
-          <p className="text-xs text-gray-500 mb-1">At</p>
-          <p className="text-sm font-medium text-gray-900 truncate">{businessName}</p>
+          <p className="text-xs text-stone-500 dark:text-stone-400 dark:text-stone-500 mb-1">At</p>
+          <p className="text-sm font-medium text-stone-900 dark:text-stone-100 truncate">{businessName}</p>
         </motion.div>
       </div>
 
@@ -91,18 +91,18 @@ export default function SummaryStep({
         variants={itemVariants}
         className="mb-6"
       >
-        <p className="text-xs text-gray-500 mb-3">Services</p>
+        <p className="text-xs text-stone-500 dark:text-stone-400 dark:text-stone-500 mb-3">Services</p>
         <div className="space-y-2">
           {selectedServices.map((service) => (
             <div key={service.value} className="flex justify-between items-center">
-              <span className="text-sm text-gray-900">{service.label.split(' - ')[0]}</span>
-              <span className="text-sm text-gray-600">${service.price}</span>
+              <span className="text-sm text-stone-900 dark:text-stone-100">{service.label.split(' - ')[0]}</span>
+              <span className="text-sm text-stone-600 dark:text-stone-300">${service.price}</span>
             </div>
           ))}
         </div>
-        <div className="flex justify-between items-center pt-3 mt-3 border-t border-gray-100">
-          <span className="text-sm font-medium text-gray-900">Total</span>
-          <span className="text-base font-semibold text-gray-900">${totalPrice}</span>
+        <div className="flex justify-between items-center pt-3 mt-3 border-t border-stone-100 dark:border-stone-800">
+          <span className="text-sm font-medium text-stone-900 dark:text-stone-100">Total</span>
+          <span className="text-base font-semibold text-stone-900 dark:text-stone-100">${totalPrice}</span>
         </div>
       </motion.div>
 
@@ -112,7 +112,7 @@ export default function SummaryStep({
           placeholder="Add a note for the professional (optional)"
           value={note}
           onChange={(e) => onNoteChange(e.target.value)}
-          className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent transition-all resize-none text-sm"
+          className="w-full px-4 py-3 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-300 focus:border-transparent transition-all resize-none text-sm"
           rows={2}
         />
       </motion.div>

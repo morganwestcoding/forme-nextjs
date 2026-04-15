@@ -6,7 +6,7 @@ import { signIn } from "next-auth/react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { FiEye, FiEyeOff } from "react-icons/fi";
+import { ViewIcon as FiEye, ViewOffIcon as FiEyeOff } from "hugeicons-react";
 
 import useLoginModal from "@/app/hooks/useLoginModal";
 import useForgotPasswordModal from "@/app/hooks/useForgotPasswordModal";
@@ -88,10 +88,10 @@ const LoginModal = () => {
     <div>
       {/* Typeform-style heading */}
       <div className="mb-8 pt-2">
-        <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900 leading-tight">
+        <h1 className="text-2xl sm:text-3xl font-semibold text-stone-900 dark:text-stone-100 leading-tight">
           Welcome back
         </h1>
-        <p className="text-base text-gray-500 mt-2">
+        <p className="text-base text-stone-500 dark:text-stone-400 dark:text-stone-500 mt-2">
           Login to your account
         </p>
       </div>
@@ -100,7 +100,7 @@ const LoginModal = () => {
       <div className="space-y-5">
         {/* Email */}
         <div>
-          <label htmlFor="login-email" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="login-email" className="block text-sm font-medium text-stone-700 dark:text-stone-200 mb-2">
             Email
           </label>
           <input
@@ -110,7 +110,7 @@ const LoginModal = () => {
             autoFocus
             disabled={isLoading}
             {...register('email', { required: 'Email is required' })}
-            className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full px-4 py-3.5 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             placeholder="you@example.com"
           />
           {errors.email && (
@@ -120,7 +120,7 @@ const LoginModal = () => {
 
         {/* Password */}
         <div>
-          <label htmlFor="login-password" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="login-password" className="block text-sm font-medium text-stone-700 dark:text-stone-200 mb-2">
             Password
           </label>
           <div className="relative">
@@ -130,13 +130,13 @@ const LoginModal = () => {
               autoComplete="current-password"
               disabled={isLoading}
               {...register('password', { required: 'Password is required' })}
-              className="w-full px-4 py-3.5 pr-12 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full px-4 py-3.5 pr-12 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               placeholder="Enter your password"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300 transition-colors"
             >
               {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
             </button>
@@ -148,7 +148,7 @@ const LoginModal = () => {
 
         {/* Forgot password */}
         <div
-          className="text-right text-sm text-gray-500 cursor-pointer hover:text-gray-900 transition-colors"
+          className="text-right text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500 cursor-pointer hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 transition-colors"
           onClick={onForgotPassword}
         >
           Forgot password?
@@ -159,13 +159,13 @@ const LoginModal = () => {
 
   const footerContent = (
     <div className="flex flex-col gap-4 pt-2">
-      <div className="h-px bg-gray-100" />
+      <div className="h-px bg-stone-100 dark:bg-stone-800" />
       <div className="flex flex-row justify-center items-center gap-1.5 text-sm">
-        <span className="text-gray-500">First time using ForMe?</span>
+        <span className="text-stone-500 dark:text-stone-400 dark:text-stone-500">First time using ForMe?</span>
         <button
           type="button"
           onClick={onToggleToRegister}
-          className="text-gray-900 font-medium hover:underline transition-colors"
+          className="text-stone-900 dark:text-stone-100 font-medium hover:underline transition-colors"
         >
           Create an account
         </button>

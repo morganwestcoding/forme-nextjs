@@ -39,11 +39,11 @@ const Calendar: React.FC<CalendarProps> = ({
           key={index}
           className={`flex justify-center items-center p-2 rounded-xl transition-all duration-200 ${
             isSelected 
-              ? 'bg-blue-500 text-white shadow-md' 
+              ? 'bg-stone-500 text-white shadow-md' 
               : isClickDisabled
-                ? 'cursor-not-allowed text-gray-300 bg-gray-50'
-                : 'cursor-pointer hover:bg-blue-50 hover:text-blue-600'
-          } ${!isCurrentMonth ? 'text-gray-200' : ''}`}
+                ? 'cursor-not-allowed text-stone-300 bg-stone-50 dark:bg-stone-900'
+                : 'cursor-pointer hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900 hover:text-stone-600 dark:text-stone-300'
+          } ${!isCurrentMonth ? 'text-stone-200' : ''}`}
           onClick={() => !isClickDisabled && onChange(date)}
         >
           <div className={`text-sm font-medium ${
@@ -72,27 +72,27 @@ const Calendar: React.FC<CalendarProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm overflow-hidden w-full mx-auto border border-gray-200">
-      <div className="flex justify-between items-center p-4 pb-2 bg-gray-50 border-b border-gray-100">
+    <div className="bg-white dark:bg-stone-900 rounded-xl shadow-sm overflow-hidden w-full mx-auto border border-stone-200 dark:border-stone-800">
+      <div className="flex justify-between items-center p-4 pb-2 bg-stone-50 dark:bg-stone-900 border-b border-stone-100 dark:border-stone-800">
         <button 
           onClick={goToPreviousMonth} 
           disabled={!canGoToPreviousMonth()}
           className={`p-2 rounded-xl transition-all duration-200 ${
             canGoToPreviousMonth() 
-              ? 'hover:bg-gray-200 text-gray-700 cursor-pointer' 
-              : 'text-gray-300 cursor-not-allowed'
+              ? 'hover:bg-stone-200 dark:bg-stone-700 text-stone-700 dark:text-stone-200 cursor-pointer' 
+              : 'text-stone-300 cursor-not-allowed'
           }`}
         >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </button>
-        <div className="text-lg font-semibold text-gray-900">
+        <div className="text-lg font-semibold text-stone-900 dark:text-stone-100">
           {format(currentMonth, 'MMMM yyyy')}
         </div>
         <button 
           onClick={goToNextMonth} 
-          className="p-2 rounded-xl hover:bg-gray-200 text-gray-700 transition-all duration-200"
+          className="p-2 rounded-xl hover:bg-stone-200 dark:bg-stone-700 text-stone-700 dark:text-stone-200 transition-all duration-200"
         >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M6 12L10 8L6 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -102,7 +102,7 @@ const Calendar: React.FC<CalendarProps> = ({
       <div className="p-4">
         <div className="grid grid-cols-7 gap-1 mb-2">
           {daysOfWeek.map(day => (
-            <div key={day} className="text-center text-gray-500 text-sm font-medium py-2">
+            <div key={day} className="text-center text-stone-500 dark:text-stone-400 dark:text-stone-500 text-sm font-medium py-2">
               {day}
             </div>
           ))}
@@ -114,7 +114,7 @@ const Calendar: React.FC<CalendarProps> = ({
       
       {/* Helper text */}
       <div className="px-4 pb-4">
-        <p className="text-xs text-gray-500 text-center">
+        <p className="text-xs text-stone-500 dark:text-stone-400 dark:text-stone-500 text-center">
           Past dates are disabled and cannot be selected
         </p>
       </div>

@@ -6,9 +6,9 @@ import axios from 'axios';
 import Link from 'next/link';
 import Image from 'next/image';
 import { format } from 'date-fns';
-import { Check, Calendar as CalendarIcon, Clock, User as UserIcon, MapPin } from 'lucide-react';
 
 import { placeholderDataUri } from '@/lib/placeholders';
+import { Tick02Icon as Check, Calendar03Icon as CalendarIcon, Clock01Icon as Clock, UserIcon, Location01Icon as MapPin } from 'hugeicons-react';
 
 interface ReservationView {
   id?: string;
@@ -70,10 +70,10 @@ export default function SuccessPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-stone-50 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-stone-50 dark:bg-stone-900 flex items-center justify-center px-4">
         <div className="flex flex-col items-center text-center">
-          <div className="w-10 h-10 rounded-full border-2 border-stone-200 border-t-stone-900 animate-spin" />
-          <p className="mt-5 text-[14px] text-stone-500">Confirming your reservation…</p>
+          <div className="w-10 h-10 rounded-full border-2 border-stone-200 dark:border-stone-800 border-t-stone-900 animate-spin" />
+          <p className="mt-5 text-[14px] text-stone-500 dark:text-stone-400 dark:text-stone-500">Confirming your reservation…</p>
         </div>
       </div>
     );
@@ -81,24 +81,24 @@ export default function SuccessPage() {
 
   if (!success) {
     return (
-      <div className="min-h-screen bg-stone-50 flex items-center justify-center px-4">
-        <div className="max-w-md w-full bg-white rounded-3xl border border-stone-200/70 p-8 text-center">
+      <div className="min-h-screen bg-stone-50 dark:bg-stone-900 flex items-center justify-center px-4">
+        <div className="max-w-md w-full bg-white dark:bg-stone-900 rounded-3xl border border-stone-200/70 p-8 text-center">
           <div className="w-12 h-12 rounded-full bg-red-50 mx-auto flex items-center justify-center mb-5">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-6 h-6 text-red-500">
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
           </div>
-          <h1 className="text-[20px] font-semibold text-stone-900 tracking-tight">
+          <h1 className="text-[20px] font-semibold text-stone-900 dark:text-stone-100 tracking-tight">
             We couldn&apos;t verify your payment
           </h1>
-          <p className="text-[13px] text-stone-500 mt-2">
+          <p className="text-[13px] text-stone-500 dark:text-stone-400 dark:text-stone-500 mt-2">
             If you were charged, your booking will appear in My Trips shortly. Please contact support if it doesn&apos;t.
           </p>
           <div className="flex gap-2.5 mt-6">
             <Link
               href="/"
-              className="flex-1 py-3 rounded-2xl bg-stone-100 text-stone-700 text-[13px] font-medium hover:bg-stone-200 transition-colors"
+              className="flex-1 py-3 rounded-2xl bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-200 text-[13px] font-medium hover:bg-stone-200 dark:bg-stone-700 transition-colors"
             >
               Go home
             </Link>
@@ -120,7 +120,7 @@ export default function SuccessPage() {
     placeholderDataUri(reservation?.listing?.title || 'Booking');
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="min-h-screen bg-stone-50 dark:bg-stone-900">
       <div className="max-w-xl mx-auto px-4 sm:px-6 pt-12 sm:pt-20 pb-16">
         {/* Confirmation header */}
         <div className="text-center mb-8">
@@ -130,19 +130,19 @@ export default function SuccessPage() {
           >
             <Check className="w-6 h-6 text-white" strokeWidth={3} />
           </div>
-          <h1 className="mt-6 text-[26px] sm:text-[30px] font-semibold text-stone-900 tracking-tight">
+          <h1 className="mt-6 text-[26px] sm:text-[30px] font-semibold text-stone-900 dark:text-stone-100 tracking-tight">
             You&apos;re booked
           </h1>
-          <p className="text-[14px] text-stone-500 mt-2">
+          <p className="text-[14px] text-stone-500 dark:text-stone-400 dark:text-stone-500 mt-2">
             We&apos;ve sent a confirmation to your email.
           </p>
         </div>
 
         {/* Reservation card */}
         {reservation && (
-          <div className="rounded-3xl bg-white border border-stone-200/70 overflow-hidden">
-            <div className="flex items-center gap-4 p-5 border-b border-stone-100">
-              <div className="relative w-16 h-16 rounded-2xl overflow-hidden bg-stone-100 flex-shrink-0">
+          <div className="rounded-3xl bg-white dark:bg-stone-900 border border-stone-200/70 overflow-hidden">
+            <div className="flex items-center gap-4 p-5 border-b border-stone-100 dark:border-stone-800">
+              <div className="relative w-16 h-16 rounded-2xl overflow-hidden bg-stone-100 dark:bg-stone-800 flex-shrink-0">
                 <Image
                   src={heroImage}
                   alt={reservation.listing?.title || 'Booking'}
@@ -152,10 +152,10 @@ export default function SuccessPage() {
                 />
               </div>
               <div className="min-w-0">
-                <h2 className="text-[15px] font-semibold text-stone-900 leading-snug truncate">
+                <h2 className="text-[15px] font-semibold text-stone-900 dark:text-stone-100 leading-snug truncate">
                   {reservation.listing?.title || 'Your booking'}
                 </h2>
-                <p className="text-[12px] text-stone-500 mt-0.5 truncate">
+                <p className="text-[12px] text-stone-500 dark:text-stone-400 dark:text-stone-500 mt-0.5 truncate">
                   {reservation.serviceName}
                 </p>
               </div>
@@ -174,7 +174,7 @@ export default function SuccessPage() {
                 <DetailRow icon={<UserIcon className="w-4 h-4" strokeWidth={1.75} />} label="With">
                   {reservation.employee.fullName}
                   {reservation.employee.jobTitle && (
-                    <span className="text-stone-400"> · {reservation.employee.jobTitle}</span>
+                    <span className="text-stone-400 dark:text-stone-500"> · {reservation.employee.jobTitle}</span>
                   )}
                 </DetailRow>
               )}
@@ -185,9 +185,9 @@ export default function SuccessPage() {
               )}
             </div>
 
-            <div className="px-5 py-4 bg-stone-50/60 border-t border-stone-100 flex items-baseline justify-between">
-              <span className="text-[13px] text-stone-500">Total paid</span>
-              <span className="text-[18px] font-semibold text-stone-900 tabular-nums">
+            <div className="px-5 py-4 bg-stone-50/60 border-t border-stone-100 dark:border-stone-800 flex items-baseline justify-between">
+              <span className="text-[13px] text-stone-500 dark:text-stone-400 dark:text-stone-500">Total paid</span>
+              <span className="text-[18px] font-semibold text-stone-900 dark:text-stone-100 tabular-nums">
                 ${reservation.totalPrice ?? 0}
               </span>
             </div>
@@ -198,7 +198,7 @@ export default function SuccessPage() {
         <div className="flex gap-2.5 mt-6">
           <Link
             href="/"
-            className="flex-1 text-center py-3.5 rounded-2xl bg-white border border-stone-200/70 text-stone-700 text-[13px] font-medium hover:border-stone-300 transition-colors"
+            className="flex-1 text-center py-3.5 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200/70 text-stone-700 dark:text-stone-200 text-[13px] font-medium hover:border-stone-300 dark:border-stone-700 transition-colors"
           >
             Keep browsing
           </Link>
@@ -210,7 +210,7 @@ export default function SuccessPage() {
           </Link>
         </div>
 
-        <p className="text-center text-[12px] text-stone-400 mt-5">
+        <p className="text-center text-[12px] text-stone-400 dark:text-stone-500 mt-5">
           You can cancel or reschedule from My Trips.
         </p>
       </div>
@@ -236,14 +236,14 @@ function DetailRow({
 }) {
   return (
     <div className="flex items-start gap-3">
-      <div className="w-8 h-8 rounded-full bg-stone-50 border border-stone-100 flex items-center justify-center text-stone-500 flex-shrink-0 mt-0.5">
+      <div className="w-8 h-8 rounded-full bg-stone-50 dark:bg-stone-900 border border-stone-100 dark:border-stone-800 flex items-center justify-center text-stone-500 dark:text-stone-400 dark:text-stone-500 flex-shrink-0 mt-0.5">
         {icon}
       </div>
       <div className="min-w-0 flex-1">
-        <div className="text-[11px] uppercase tracking-wider text-stone-400 font-medium">
+        <div className="text-[11px] uppercase tracking-wider text-stone-400 dark:text-stone-500 font-medium">
           {label}
         </div>
-        <div className="text-[14px] text-stone-900 mt-0.5 leading-snug">
+        <div className="text-[14px] text-stone-900 dark:text-stone-100 mt-0.5 leading-snug">
           {children}
         </div>
       </div>

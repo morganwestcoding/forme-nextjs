@@ -50,6 +50,7 @@ export async function POST(
           type: "SHOP_FOLLOW",
           content: `${currentUser.name || "Someone"} followed your shop "${shop.name || "your shop"}"`,
           userId: shop.userId,
+          relatedUserId: currentUser.id,
         },
       });
     }
@@ -85,6 +86,7 @@ export async function POST(
           type: "LISTING_FOLLOW",
           content: `${currentUser.name || "Someone"} followed your listing "${listing.title || "your listing"}"`,
           userId: listing.userId,
+          relatedListingId: listing.id,
         },
       });
     }
@@ -127,6 +129,7 @@ export async function POST(
         type: "NEW_FOLLOWER",
         content: `${currentUser.name || "Someone"} started following you`,
         userId,
+        relatedUserId: currentUser.id,
       },
     });
 
@@ -138,6 +141,7 @@ export async function POST(
           type: "MUTUAL_FOLLOW",
           content: `${currentUser.name || "Someone"} followed you back - you are now mutually following each other!`,
           userId,
+          relatedUserId: currentUser.id,
         },
       });
     }

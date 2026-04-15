@@ -2,44 +2,121 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import {
   Notification03Icon,
-  UserIcon,
+  UserAdd01Icon,
+  UserMultiple02Icon,
   FavouriteIcon,
-  Location01Icon,
-  Calendar03Icon
+  Bookmark02Icon,
+  MessageMultiple01Icon,
+  Comment01Icon,
+  Calendar03Icon,
+  CheckmarkCircle02Icon,
+  Cancel01Icon,
+  ShieldUserIcon,
+  Alert02Icon,
+  DollarSend01Icon,
+  DollarCircleIcon,
+  MoneyReceive02Icon,
+  MoneyBag02Icon,
+  CalendarRemove02Icon,
+  CalendarAdd02Icon,
+  Clock01Icon,
+  RefreshIcon,
 } from 'hugeicons-react';
 import Modal from './Modal';
+import BouncingDots from '../ui/BouncingDots';
 import useNotificationsModal from '@/app/hooks/useNotificationsModal';
 import useUnreadCounts from '@/app/hooks/useUnreadCounts';
 import { useSSE } from '@/app/hooks/useSSE';
 
-// Type based on your Prisma schema
 interface Notification {
   id: string;
-  type: string; // 'follow', 'favorite_post', 'favorite_listing', 'reservation', etc.
+  type: string;
   content: string;
   createdAt: string;
   isRead: boolean;
+  relatedUser?: {
+    id: string;
+    name: string | null;
+    image: string | null;
+  } | null;
+  relatedListing?: {
+    id: string;
+    title: string;
+    imageSrc: string | null;
+  } | null;
 }
 
-// Notification type to icon and color mapping
 const getNotificationStyle = (type: string) => {
   switch (type) {
-    case 'follow':
-      return { icon: UserIcon, color: 'text-neutral-700', bg: 'bg-neutral-50' };
-    case 'favorite_listing':
-      return { icon: Location01Icon, color: 'text-neutral-700', bg: 'bg-neutral-50' };
-    case 'favorite_post':
-      return { icon: FavouriteIcon, color: 'text-neutral-700', bg: 'bg-neutral-50' };
-    case 'reservation':
-    case 'reservation_request':
-      return { icon: Calendar03Icon, color: 'text-neutral-700', bg: 'bg-neutral-50' };
+    case 'NEW_FOLLOWER':
+    case 'SHOP_FOLLOW':
+    case 'LISTING_FOLLOW':
+      return { icon: UserAdd01Icon, color: 'text-stone-600 dark:text-stone-300', bg: 'bg-stone-50 dark:bg-stone-900' };
+    case 'MUTUAL_FOLLOW':
+      return { icon: UserMultiple02Icon, color: 'text-stone-600 dark:text-stone-300', bg: 'bg-stone-50 dark:bg-stone-900' };
+    case 'POST_LIKED':
+      return { icon: FavouriteIcon, color: 'text-rose-600', bg: 'bg-rose-50' };
+    case 'POST_COMMENTED':
+      return { icon: Comment01Icon, color: 'text-violet-600', bg: 'bg-violet-50' };
+    case 'NEW_BOOKMARK':
+      return { icon: Bookmark02Icon, color: 'text-amber-600', bg: 'bg-amber-50' };
+    case 'NEW_MESSAGE':
+      return { icon: MessageMultiple01Icon, color: 'text-stone-600 dark:text-stone-300', bg: 'bg-stone-50 dark:bg-stone-900' };
+    case 'NEW_RESERVATION':
+    case 'RESERVATION_CREATED':
+      return { icon: CalendarAdd02Icon, color: 'text-emerald-600', bg: 'bg-emerald-50' };
+    case 'RESERVATION_ACCEPTED':
+      return { icon: CheckmarkCircle02Icon, color: 'text-emerald-600', bg: 'bg-emerald-50' };
+    case 'RESERVATION_DECLINED':
+    case 'RESERVATION_CANCELLED_BY_BUSINESS':
+    case 'RESERVATION_CANCELLED_BY_USER':
+      return { icon: CalendarRemove02Icon, color: 'text-rose-600', bg: 'bg-rose-50' };
+    case 'REFUND_REQUESTED':
+      return { icon: RefreshIcon, color: 'text-amber-600', bg: 'bg-amber-50' };
+    case 'REFUND_COMPLETED':
+      return { icon: MoneyReceive02Icon, color: 'text-emerald-600', bg: 'bg-emerald-50' };
+    case 'VERIFICATION_APPROVED':
+      return { icon: ShieldUserIcon, color: 'text-emerald-600', bg: 'bg-emerald-50' };
+    case 'VERIFICATION_REJECTED':
+      return { icon: Alert02Icon, color: 'text-rose-600', bg: 'bg-rose-50' };
+    case 'PAYOUT_REQUEST':
+      return { icon: DollarSend01Icon, color: 'text-amber-600', bg: 'bg-amber-50' };
+    case 'PAYOUT_COMPLETED':
+      return { icon: DollarCircleIcon, color: 'text-emerald-600', bg: 'bg-emerald-50' };
+    case 'PAYOUT_DENIED':
+      return { icon: Cancel01Icon, color: 'text-rose-600', bg: 'bg-rose-50' };
+    case 'FEE_WAIVED':
+      return { icon: MoneyBag02Icon, color: 'text-emerald-600', bg: 'bg-emerald-50' };
+    case 'TIME_OFF_REQUEST':
+      return { icon: Clock01Icon, color: 'text-amber-600', bg: 'bg-amber-50' };
+    case 'TIME_OFF_APPROVED':
+      return { icon: CheckmarkCircle02Icon, color: 'text-emerald-600', bg: 'bg-emerald-50' };
+    case 'TIME_OFF_DENIED':
+      return { icon: Cancel01Icon, color: 'text-rose-600', bg: 'bg-rose-50' };
     default:
-      return { icon: Notification03Icon, color: 'text-neutral-700', bg: 'bg-neutral-50' };
+      return { icon: Notification03Icon, color: 'text-stone-700 dark:text-stone-200', bg: 'bg-stone-50 dark:bg-stone-900' };
   }
+};
+
+const AVATAR_COLORS = [
+  'bg-stone-500', 'bg-green-500', 'bg-yellow-500', 'bg-purple-500',
+  'bg-pink-500', 'bg-stone-500', 'bg-teal-500', 'bg-orange-500',
+  'bg-red-500', 'bg-stone-500',
+];
+const getAvatarColor = (name?: string | null) => {
+  if (!name) return 'bg-stone-500';
+  const idx = name.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
+  return AVATAR_COLORS[idx % AVATAR_COLORS.length];
+};
+const initials = (name?: string | null) => {
+  if (!name) return 'U';
+  const parts = name.trim().split(/\s+/);
+  return ((parts[0]?.[0] || '') + (parts[1]?.[0] || '') || parts[0]?.[0] || 'U').toUpperCase();
 };
 
 // Time formatting helper
@@ -69,33 +146,69 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onMar
         className={`group relative flex items-center gap-3.5 px-5 py-4 rounded-xl
                     transition-all duration-200 cursor-pointer
                     ${!notification.isRead
-                      ? 'bg-white hover:bg-neutral-50/60'
-                      : 'bg-white/50 hover:bg-white/80'
+                      ? 'bg-stone-50 dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700'
+                      : 'bg-white dark:bg-stone-900 hover:bg-stone-50 dark:hover:bg-stone-800'
                     }`}
         onClick={() => !notification.isRead && onMarkAsRead(notification.id)}
       >
-        {/* Icon */}
-        <div className={`flex-shrink-0 w-9 h-9 rounded-full ${style.bg}
-                        flex items-center justify-center
-                        transition-transform duration-200 group-hover:scale-105`}>
-          <Icon className={`w-[15px] h-[15px] ${style.color}`} strokeWidth={1.5} />
+        {/* Listing image, Avatar, or Icon */}
+        <div className="relative flex-shrink-0 transition-transform duration-200 group-hover:scale-105">
+          {notification.relatedListing ? (
+            <div className="w-10 h-10 rounded-xl overflow-hidden bg-stone-100 dark:bg-stone-800 flex items-center justify-center">
+              {notification.relatedListing.imageSrc ? (
+                <Image
+                  src={notification.relatedListing.imageSrc}
+                  alt={notification.relatedListing.title}
+                  width={40}
+                  height={40}
+                  className="object-cover w-full h-full"
+                />
+              ) : (
+                <Icon className="w-[15px] h-[15px] text-stone-900 dark:text-white" strokeWidth={1.5} />
+              )}
+            </div>
+          ) : notification.relatedUser ? (
+            <>
+              <div className={`w-10 h-10 rounded-full overflow-hidden flex items-center justify-center text-white font-semibold text-[11px]
+                              ${!notification.relatedUser.image ? getAvatarColor(notification.relatedUser.name) : 'bg-stone-100 dark:bg-stone-800'}`}>
+                {notification.relatedUser.image ? (
+                  <Image
+                    src={notification.relatedUser.image}
+                    alt={notification.relatedUser.name || 'User'}
+                    width={40}
+                    height={40}
+                    className="object-cover w-full h-full"
+                  />
+                ) : (
+                  <span>{initials(notification.relatedUser.name)}</span>
+                )}
+              </div>
+              <div className="absolute -bottom-0.5 -right-0.5 w-[18px] h-[18px] rounded-full bg-white dark:bg-stone-900 ring-2 ring-white dark:ring-stone-800 flex items-center justify-center">
+                <Icon className="w-[10px] h-[10px] text-stone-900 dark:text-white" strokeWidth={2} />
+              </div>
+            </>
+          ) : (
+            <div className="w-9 h-9 rounded-full bg-white dark:bg-stone-900 ring-1 ring-stone-200 dark:ring-stone-700 flex items-center justify-center">
+              <Icon className="w-[15px] h-[15px] text-stone-900 dark:text-white" strokeWidth={1.5} />
+            </div>
+          )}
         </div>
 
         {/* Content */}
         <div className="flex-1 min-w-0">
           <p className={`text-[13.5px] leading-[1.5] tracking-[-0.01em] ${
-            !notification.isRead ? 'font-medium text-neutral-900' : 'text-neutral-600'
+            !notification.isRead ? 'font-medium text-stone-900 dark:text-stone-100' : 'text-stone-700 dark:text-stone-200'
           }`}>
             {notification.content}
           </p>
-          <p className="text-[11.5px] text-neutral-500 mt-1.5">
+          <p className="text-[11.5px] text-stone-500 dark:text-stone-400 dark:text-stone-500 mt-1.5">
             {formatTimeAgo(notification.createdAt)}
           </p>
         </div>
 
         {/* Unread indicator */}
         {!notification.isRead && (
-          <div className="flex-shrink-0 w-1.5 h-1.5 bg-neutral-900 rounded-full" />
+          <div className="flex-shrink-0 w-1.5 h-1.5 bg-stone-900 rounded-full" />
         )}
       </div>
     </div>
@@ -207,11 +320,11 @@ const NotificationsModal = () => {
       <div className="mx-auto w-full max-w-[460px] flex flex-col h-full">
         {/* Header - Centered */}
         <div className="text-center mb-8">
-          <h2 className="text-[15px] font-semibold text-neutral-900 tracking-tight">
+          <h2 className="text-[15px] font-semibold text-stone-900 dark:text-stone-100 tracking-tight">
             Notifications
           </h2>
           {unreadCount > 0 && (
-            <p className="text-[12px] text-neutral-500 mt-1">
+            <p className="text-[12px] text-stone-500 dark:text-stone-400 dark:text-stone-500 mt-1">
               {unreadCount} unread
             </p>
           )}
@@ -222,9 +335,9 @@ const NotificationsModal = () => {
           <div className="flex justify-center mb-6">
             <button
               onClick={handleMarkAllAsRead}
-              className="text-[11.5px] text-neutral-600 hover:text-neutral-900
+              className="text-[11.5px] text-stone-600 dark:text-stone-300 hover:text-stone-900
                          font-medium transition-colors duration-200
-                         px-4 py-1.5 hover:bg-neutral-50 rounded-full"
+                         px-4 py-1.5 hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900 rounded-full"
             >
               Mark all as read
             </button>
@@ -235,18 +348,18 @@ const NotificationsModal = () => {
         <div className="flex-1 overflow-y-auto custom-scrollbar -mx-6 px-6">
           {loading ? (
             <div className="flex items-center justify-center h-48">
-              <div className="animate-spin w-5 h-5 border-[1.5px] border-neutral-300 border-t-neutral-900 rounded-full"></div>
+              <BouncingDots />
             </div>
           ) : notifications.length === 0 ? (
             <div className="text-center pt-20">
-              <div className="w-12 h-12 bg-neutral-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Notification03Icon className="w-5 h-5 text-neutral-400" strokeWidth={1.5} />
+              <div className="w-12 h-12 bg-stone-50 dark:bg-stone-900 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Notification03Icon className="w-5 h-5 text-stone-400 dark:text-stone-500" strokeWidth={1.5} />
               </div>
               <div>
-                <h3 className="text-[13.5px] font-medium text-neutral-900 mb-1">
+                <h3 className="text-[13.5px] font-medium text-stone-900 dark:text-stone-100 mb-1">
                   No notifications
                 </h3>
-                <p className="text-neutral-500 text-[12px] max-w-[240px] mx-auto leading-relaxed">
+                <p className="text-stone-500 dark:text-stone-400 dark:text-stone-500 text-[12px] max-w-[240px] mx-auto leading-relaxed">
                   When you receive notifications, they&apos;ll appear here
                 </p>
               </div>

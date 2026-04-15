@@ -44,6 +44,7 @@ export async function POST(request: Request, { params }: { params: IParams }) {
           type: 'POST_COMMENTED',
           content: `${currentUser.name || 'Someone'} commented on your post`,
           userId: post.userId,
+          relatedUserId: currentUser.id,
         },
       }).catch(() => {}); // fire-and-forget
     }

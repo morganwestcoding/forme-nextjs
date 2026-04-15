@@ -15,11 +15,11 @@ const Heading: React.FC<HeadingProps> = ({
   center = false
 }) => {
   const category = categories.find(category => category.label === label);
-  const defaultBgColor = 'bg-gray-200';
+  const defaultBgColor = 'bg-stone-200';
 
   return (
     <div className={`${center ? 'text-center' : 'text-left'} space-y-1.5`}>
-      <div className="text-xl font-semibold tracking-tight flex items-center justify-start text-gray-900 dark:text-white">
+      <div className="text-xl font-semibold tracking-tight flex items-center justify-start text-stone-900 dark:text-white">
         {title}
         {label && category && (
           <div className={`rounded-full px-3 py-1.5 ml-3 text-xs font-medium shadow-sm ${category ? category.color : defaultBgColor} text-white inline-flex items-center`}>
@@ -29,7 +29,7 @@ const Heading: React.FC<HeadingProps> = ({
       </div>
 
       {subtitle && (
-        <div className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+        <div className="text-sm text-stone-500 dark:text-stone-400 leading-relaxed">
           {subtitle}
         </div>
       )}

@@ -114,13 +114,13 @@ const LocationModal = () => {
     <div className="flex flex-col">
       <div className="px-6 pb-4">
         <div className="relative">
-          <Location01Icon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" strokeWidth={1.5} />
+          <Location01Icon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 dark:text-stone-500" strokeWidth={1.5} />
           <input
             type="text"
             placeholder="Search cities..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-stone-50 border border-stone-200 rounded-xl pl-10 pr-4 py-3 text-[14px] text-stone-900 placeholder-stone-400 outline-none focus:border-stone-300 focus:bg-white transition-all"
+            className="w-full bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl pl-10 pr-4 py-3 text-[14px] text-stone-900 dark:text-stone-100 placeholder-stone-400 outline-none focus:border-stone-300 dark:border-stone-700 focus:bg-white dark:bg-stone-900 transition-all"
             autoFocus
           />
         </div>
@@ -128,7 +128,7 @@ const LocationModal = () => {
 
       {/* Section label */}
       <div className="px-6 pb-2">
-        <p className="text-[11px] font-medium text-stone-400 uppercase tracking-wider">
+        <p className="text-[11px] font-medium text-stone-400 dark:text-stone-500 uppercase tracking-wider">
           {hasQuery ? 'Results' : 'Popular Cities'}
         </p>
       </div>
@@ -136,7 +136,7 @@ const LocationModal = () => {
       <div className="max-h-[320px] overflow-y-auto">
         {isSearching && (
           <div className="flex items-center justify-center py-8">
-            <div className="w-5 h-5 border-2 border-stone-200 border-t-stone-500 rounded-full animate-spin" />
+            <div className="w-5 h-5 border-2 border-stone-200 dark:border-stone-800 border-t-stone-500 rounded-full animate-spin" />
           </div>
         )}
 
@@ -146,14 +146,14 @@ const LocationModal = () => {
             onClick={() => handleSelect(loc)}
             className={`w-full flex items-center gap-3 px-6 py-3 text-[14px] transition-colors ${
               locationModal.selectedLocation === loc
-                ? 'text-stone-900 font-medium bg-stone-50'
-                : 'text-stone-600 hover:bg-stone-50'
+                ? 'text-stone-900 dark:text-stone-100 font-medium bg-stone-50 dark:bg-stone-900'
+                : 'text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900'
             }`}
           >
-            <Location01Icon className="w-4 h-4 text-stone-400 shrink-0" strokeWidth={1.5} />
+            <Location01Icon className="w-4 h-4 text-stone-400 dark:text-stone-500 shrink-0" strokeWidth={1.5} />
             {loc}
             {locationModal.selectedLocation === loc && (
-              <svg className="w-4 h-4 ml-auto text-stone-900" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg className="w-4 h-4 ml-auto text-stone-900 dark:text-stone-100" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="20 6 9 17 4 12" />
               </svg>
             )}
@@ -161,7 +161,7 @@ const LocationModal = () => {
         ))}
 
         {!isSearching && hasQuery && displayList.length === 0 && (
-          <p className="px-6 py-8 text-center text-[13px] text-stone-400">
+          <p className="px-6 py-8 text-center text-[13px] text-stone-400 dark:text-stone-500">
             No cities found
           </p>
         )}
@@ -169,10 +169,10 @@ const LocationModal = () => {
 
       {/* Clear location button */}
       {locationModal.selectedLocation && (
-        <div className="px-6 pt-3 pb-1 border-t border-stone-100">
+        <div className="px-6 pt-3 pb-1 border-t border-stone-100 dark:border-stone-800">
           <button
             onClick={handleClear}
-            className="w-full py-2.5 text-[13px] text-stone-500 hover:text-stone-700 transition-colors"
+            className="w-full py-2.5 text-[13px] text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 transition-colors"
           >
             Clear location filter
           </button>

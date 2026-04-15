@@ -36,13 +36,13 @@ export default async function AdminPage() {
     <Container>
       <div className="mt-8 mb-12">
         <div className="mb-2">
-          <Link href="/" className="text-[12px] text-stone-400 hover:text-stone-600 transition-colors">
+          <Link href="/" className="text-[12px] text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300 transition-colors">
             ← Back to ForMe
           </Link>
         </div>
         <div className="mb-8">
-          <p className="text-[12px] text-stone-400 mb-1">Master admin</p>
-          <h1 className="text-2xl font-semibold text-stone-900 tracking-tight">Dashboard</h1>
+          <p className="text-[12px] text-stone-400 dark:text-stone-500 mb-1">Master admin</p>
+          <h1 className="text-2xl font-semibold text-stone-900 dark:text-stone-100 tracking-tight">Dashboard</h1>
         </div>
 
         {/* Stats grid */}
@@ -50,10 +50,10 @@ export default async function AdminPage() {
           {cards.map((card) => (
             <div
               key={card.label}
-              className={`rounded-2xl border p-5 ${card.alert ? 'border-amber-200 bg-amber-50/50' : 'border-stone-200/60 bg-white'}`}
+              className={`rounded-2xl border p-5 ${card.alert ? 'border-amber-200 bg-amber-50/50' : 'border-stone-200/60 bg-white dark:bg-stone-900'}`}
             >
-              <p className="text-[11px] font-medium text-stone-400 uppercase tracking-wide mb-1">{card.label}</p>
-              <p className={`text-2xl font-bold tracking-tight ${card.alert ? 'text-amber-700' : 'text-stone-900'}`}>
+              <p className="text-[11px] font-medium text-stone-400 dark:text-stone-500 uppercase tracking-wide mb-1">{card.label}</p>
+              <p className={`text-2xl font-bold tracking-tight ${card.alert ? 'text-amber-700' : 'text-stone-900 dark:text-stone-100'}`}>
                 {card.value}
               </p>
             </div>
@@ -66,10 +66,10 @@ export default async function AdminPage() {
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-2xl border border-stone-200/60 bg-white p-5 hover:border-stone-300 hover:shadow-sm transition-all"
+              className="rounded-2xl border border-stone-200/60 bg-white dark:bg-stone-900 p-5 hover:border-stone-300 dark:border-stone-700 hover:shadow-sm transition-all"
             >
-              <h3 className="text-[15px] font-semibold text-stone-900">{item.label}</h3>
-              <p className="text-[13px] text-stone-500 mt-1">{item.description}</p>
+              <h3 className="text-[15px] font-semibold text-stone-900 dark:text-stone-100">{item.label}</h3>
+              <p className="text-[13px] text-stone-500 dark:text-stone-400 dark:text-stone-500 mt-1">{item.description}</p>
             </Link>
           ))}
         </div>

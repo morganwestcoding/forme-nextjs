@@ -15,7 +15,7 @@ interface CategoryNavProps {
 const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams, basePath = '/market' }) => {
   const router = useRouter();
   const params = useSearchParams();
-  const { accentColor, isDarkMode } = useTheme();
+  const { isDarkMode } = useTheme();
 
   // Support both single category (legacy) and multiple categories
   const currentCategories = params?.get('categories')?.split(',').filter(Boolean) ||
@@ -62,11 +62,11 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams, basePath = '/ma
                 relative px-3 sm:px-4 h-9 flex items-center text-[12px] sm:text-[13px] font-medium rounded-xl border transition-all duration-200 active:scale-[0.97] whitespace-nowrap flex-shrink-0 overflow-hidden
                 ${isSelected
                   ? 'text-white border-transparent scale-[1.02]'
-                  : 'border-stone-300/90 dark:border-zinc-600/60 text-stone-500 dark:text-zinc-400 hover:border-stone-400 dark:hover:border-zinc-500 hover:text-stone-600 dark:hover:text-zinc-300'
+                  : 'border-stone-300/90 dark:border-stone-600/60 text-stone-500 dark:text-stone-400 hover:border-stone-400 dark:hover:border-stone-500 hover:text-stone-600 dark:hover:text-stone-300'
                 }
               `}
               style={isSelected ? {
-                background: accentColor,
+                background: '#1c1917',
                 boxShadow: `0 1px 3px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.15)`,
               } : {
                 background: isDarkMode ? '#222225' : '#F7F7F6',

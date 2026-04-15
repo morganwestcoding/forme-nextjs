@@ -46,16 +46,16 @@ const AcademySelect = ({ value, onChange }: AcademySelectProps) => {
             className={`
               text-left rounded-xl border p-4 transition-all duration-200
               ${isSelected
-                ? 'border-gray-300 bg-gray-100 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)]'
-                : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
+                ? 'border-stone-300 dark:border-stone-700 bg-stone-100 dark:bg-stone-800 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)]'
+                : 'border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 hover:border-stone-300 dark:hover:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800'
               }
             `}
           >
-            <p className="text-sm font-medium text-gray-900 truncate">
+            <p className="text-sm font-medium text-stone-900 dark:text-stone-100 truncate">
               {academy.name}
             </p>
             {academy.description && (
-              <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">
+              <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5 line-clamp-2">
                 {academy.description}
               </p>
             )}

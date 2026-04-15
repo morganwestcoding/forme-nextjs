@@ -3,9 +3,17 @@ import React, { useState } from 'react';
 import { SafeUser } from '@/app/types';
 import { AnalyticsData } from '@/app/actions/getAnalyticsData';
 import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { TrendingUp, TrendingDown, Users, Calendar, DollarSign, FileText, Eye, Heart, MessageCircle, Star } from 'lucide-react';
+
 import Container from '@/components/Container';
 import PageHeader from '@/components/PageHeader';
+import { useTheme } from '@/app/context/ThemeContext';
+
+const CHART_THEME = (isDark: boolean) => ({
+  accent: isDark ? '#f5f5f4' : '#1c1917',
+  grid: isDark ? '#292524' : '#e7e5e4',
+  axis: isDark ? '#78716c' : '#9ca3af',
+});
+import { AnalyticsUpIcon as TrendingUp, AnalyticsDownIcon as TrendingDown, UserMultipleIcon as Users, Calendar03Icon as Calendar, DollarCircleIcon as DollarSign, File02Icon as FileText, ViewIcon as Eye, FavouriteIcon as Heart, MessageMultiple01Icon as MessageCircle, StarIcon as Star } from 'hugeicons-react';
 
 interface AnalyticsClientProps {
   currentUser: SafeUser;
@@ -18,6 +26,8 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
 }) => {
   type TabType = 'overview' | 'listings' | 'revenue' | 'engagement' | 'reviews';
   const [activeTab, setActiveTab] = useState('overview' as TabType);
+  const { isDarkMode } = useTheme();
+  const chartTheme = CHART_THEME(isDarkMode);
 
   const { overview, recentActivity, monthlyData, topServices, listings, reviews } = analyticsData;
 
@@ -52,9 +62,9 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
     growth?: number;
   }) {
     return (
-      <div className="group relative rounded-2xl border border-stone-200/60 p-6 transition-all duration-300 bg-white hover:border-stone-300 hover:-translate-y-0.5 hover:shadow-lg">
+      <div className="group relative rounded-2xl border border-stone-200/60 p-6 transition-all duration-300 bg-white dark:bg-stone-900 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-lg">
         <div className="flex items-center justify-between mb-2">
-          <p className="text-[12px] text-stone-400">{title}</p>
+          <p className="text-[12px] text-stone-400 dark:text-stone-500">{title}</p>
           {growth !== undefined && (
             <div className={`flex items-center gap-1 text-[11px] font-medium ${
               growth >= 0 ? 'text-emerald-600' : 'text-red-500'
@@ -64,7 +74,7 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
             </div>
           )}
         </div>
-        <div className="text-[28px] font-bold tracking-tight text-stone-900 tabular-nums">{value}</div>
+        <div className="text-[28px] font-bold tracking-tight text-stone-900 dark:text-stone-100 tabular-nums">{value}</div>
       </div>
     );
   }
@@ -92,8 +102,8 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
       <div>
         <div className="mt-8">
           <div className="mb-8">
-            <h1 className="text-2xl font-semibold text-stone-900 tracking-tight">Analytics</h1>
-            <p className="text-[14px] text-stone-400 mt-1">Welcome back, {currentUser.name}</p>
+            <h1 className="text-2xl font-semibold text-stone-900 dark:text-stone-100 tracking-tight">Analytics</h1>
+            <p className="text-[14px] text-stone-400 dark:text-stone-500 mt-1">Welcome back, {currentUser.name}</p>
           </div>
 
           {/* Tab bar */}
@@ -105,7 +115,7 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
                 className={`px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap ${
                   activeTab === tab
                     ? 'bg-gradient-to-br from-stone-800 to-black text-white shadow-[0_1px_3px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.12)]'
-                    : 'bg-stone-50 text-stone-500 hover:bg-stone-100 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]'
+                    : 'bg-stone-50 dark:bg-stone-900 text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]'
                 }`}
               >
                 {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -152,13 +162,13 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
             {/* Charts Row */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
               {/* Revenue & Reservations Chart */}
-              <div className="bg-white rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
-                <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-stone-400">Revenue & Reservations</h3>
+              <div className="bg-white dark:bg-stone-900 rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
+                <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-stone-400 dark:text-stone-500">Revenue & Reservations</h3>
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={monthlyData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
-                    <XAxis dataKey="month" stroke="#9ca3af" fontSize={11} tickLine={false} />
-                    <YAxis stroke="#9ca3af" fontSize={11} tickLine={false} />
+                    <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid} vertical={false} />
+                    <XAxis dataKey="month" stroke={chartTheme.axis} fontSize={11} tickLine={false} />
+                    <YAxis stroke={chartTheme.axis} fontSize={11} tickLine={false} />
                     <Tooltip
                       contentStyle={{
                         backgroundColor: 'white',
@@ -170,7 +180,7 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
                     <Line
                       type="monotone"
                       dataKey="reservations"
-                      stroke="#60A5FA"
+                      stroke={chartTheme.accent}
                       strokeWidth={2}
                       dot={false}
                       name="Reservations"
@@ -188,18 +198,18 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
               </div>
 
               {/* Top Services */}
-              <div className="bg-white rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
-                <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-stone-400">Top Services</h3>
+              <div className="bg-white dark:bg-stone-900 rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
+                <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-stone-400 dark:text-stone-500">Top Services</h3>
                 <div className="space-y-3">
                   {topServices.slice(0, 5).map((service) => (
-                    <div key={service.serviceName} className="flex items-center justify-between py-3 border-b border-stone-100 last:border-0">
+                    <div key={service.serviceName} className="flex items-center justify-between py-3 border-b border-stone-100 dark:border-stone-800 last:border-0">
                       <div>
-                        <p className="text-sm font-medium text-stone-900">{service.serviceName}</p>
-                        <p className="text-xs text-stone-500 mt-0.5">{service.category}</p>
+                        <p className="text-sm font-medium text-stone-900 dark:text-stone-100">{service.serviceName}</p>
+                        <p className="text-xs text-stone-500 dark:text-stone-400 dark:text-stone-500 mt-0.5">{service.category}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm font-semibold text-stone-900">{service.bookings}</p>
-                        <p className="text-xs text-stone-500 mt-0.5">{formatCurrency(service.revenue)}</p>
+                        <p className="text-sm font-semibold text-stone-900 dark:text-stone-100">{service.bookings}</p>
+                        <p className="text-xs text-stone-500 dark:text-stone-400 dark:text-stone-500 mt-0.5">{formatCurrency(service.revenue)}</p>
                       </div>
                     </div>
                   ))}
@@ -210,19 +220,19 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
             {/* Recent Activity */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
               {/* Recent Reservations */}
-              <div className="bg-white rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
-                <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-stone-400">Recent Reservations</h3>
+              <div className="bg-white dark:bg-stone-900 rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
+                <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-stone-400 dark:text-stone-500">Recent Reservations</h3>
                 <div className="space-y-1">
                   {recentActivity.reservations.slice(0, 5).map((reservation) => (
-                    <div key={reservation.id} className="flex items-center gap-4 py-3 border-b border-stone-100 last:border-0">
+                    <div key={reservation.id} className="flex items-center gap-4 py-3 border-b border-stone-100 dark:border-stone-800 last:border-0">
                       <div className="flex-1">
-                        <p className="text-sm font-medium text-stone-900">{reservation.serviceName}</p>
-                        <p className="text-xs text-stone-500 mt-0.5">
+                        <p className="text-sm font-medium text-stone-900 dark:text-stone-100">{reservation.serviceName}</p>
+                        <p className="text-xs text-stone-500 dark:text-stone-400 dark:text-stone-500 mt-0.5">
                           {reservation.user.name} • {formatDate(reservation.date)}
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm font-semibold text-stone-900">{formatCurrency(reservation.totalPrice)}</p>
+                        <p className="text-sm font-semibold text-stone-900 dark:text-stone-100">{formatCurrency(reservation.totalPrice)}</p>
                         <span className={`text-xs font-medium mt-0.5 inline-block ${
                           reservation.status === 'accepted' ? 'text-green-600' :
                           reservation.status === 'pending' ? 'text-yellow-600' :
@@ -237,13 +247,13 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
               </div>
 
               {/* Recent Posts */}
-              <div className="bg-white rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
-                <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-stone-400">Recent Posts</h3>
+              <div className="bg-white dark:bg-stone-900 rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
+                <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-stone-400 dark:text-stone-500">Recent Posts</h3>
                 <div className="space-y-1">
                   {recentActivity.posts.slice(0, 5).map((post) => (
-                    <div key={post.id} className="py-3 border-b border-stone-100 last:border-0">
-                      <p className="text-sm text-gray-700 mb-2 line-clamp-2">{post.content}</p>
-                      <div className="flex items-center gap-4 text-xs text-stone-500">
+                    <div key={post.id} className="py-3 border-b border-stone-100 dark:border-stone-800 last:border-0">
+                      <p className="text-sm text-stone-700 dark:text-stone-200 mb-2 line-clamp-2">{post.content}</p>
+                      <div className="flex items-center gap-4 text-xs text-stone-500 dark:text-stone-400 dark:text-stone-500">
                         <span className="flex items-center gap-1">
                           <Heart size={12} />
                           {post.likes.length}
@@ -264,37 +274,37 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
 
         {/* Listings Tab */}
         {activeTab === 'listings' && (
-          <div className="bg-white rounded-2xl border border-stone-200/60 overflow-hidden hover:border-stone-300 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
+          <div className="bg-white dark:bg-stone-900 rounded-2xl border border-stone-200/60 overflow-hidden hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="px-8 py-4 text-left text-xs font-semibold text-stone-500 tracking-tight">Listing</th>
-                    <th className="px-8 py-4 text-left text-xs font-semibold text-stone-500 tracking-tight">Category</th>
-                    <th className="px-8 py-4 text-left text-xs font-semibold text-stone-500 tracking-tight">Reservations</th>
-                    <th className="px-8 py-4 text-left text-xs font-semibold text-stone-500 tracking-tight">Revenue</th>
-                    <th className="px-8 py-4 text-left text-xs font-semibold text-stone-500 tracking-tight">Created</th>
+                  <tr className="border-b border-stone-200 dark:border-stone-800">
+                    <th className="px-8 py-4 text-left text-xs font-semibold text-stone-500 dark:text-stone-400 dark:text-stone-500 tracking-tight">Listing</th>
+                    <th className="px-8 py-4 text-left text-xs font-semibold text-stone-500 dark:text-stone-400 dark:text-stone-500 tracking-tight">Category</th>
+                    <th className="px-8 py-4 text-left text-xs font-semibold text-stone-500 dark:text-stone-400 dark:text-stone-500 tracking-tight">Reservations</th>
+                    <th className="px-8 py-4 text-left text-xs font-semibold text-stone-500 dark:text-stone-400 dark:text-stone-500 tracking-tight">Revenue</th>
+                    <th className="px-8 py-4 text-left text-xs font-semibold text-stone-500 dark:text-stone-400 dark:text-stone-500 tracking-tight">Created</th>
                   </tr>
                 </thead>
                 <tbody>
                   {listings.map((listing) => (
-                    <tr key={listing.id} className="border-b border-stone-100 last:border-0 hover:bg-white/50 transition-colors">
+                    <tr key={listing.id} className="border-b border-stone-100 dark:border-stone-800 last:border-0 hover:bg-white/50 transition-colors">
                       <td className="px-8 py-4">
-                        <div className="font-medium text-sm text-stone-900">{listing.title}</div>
+                        <div className="font-medium text-sm text-stone-900 dark:text-stone-100">{listing.title}</div>
                       </td>
                       <td className="px-8 py-4">
-                        <span className="text-xs font-medium text-stone-600">
+                        <span className="text-xs font-medium text-stone-600 dark:text-stone-300">
                           {listing.category}
                         </span>
                       </td>
                       <td className="px-8 py-4">
-                        <div className="text-sm text-stone-900">{listing.reservations}</div>
+                        <div className="text-sm text-stone-900 dark:text-stone-100">{listing.reservations}</div>
                       </td>
                       <td className="px-8 py-4">
-                        <div className="text-sm font-semibold text-stone-900">{formatCurrency(listing.revenue)}</div>
+                        <div className="text-sm font-semibold text-stone-900 dark:text-stone-100">{formatCurrency(listing.revenue)}</div>
                       </td>
                       <td className="px-8 py-4">
-                        <div className="text-sm text-stone-500">{formatDate(listing.createdAt)}</div>
+                        <div className="text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500">{formatDate(listing.createdAt)}</div>
                       </td>
                     </tr>
                   ))}
@@ -308,13 +318,13 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
         {activeTab === 'revenue' && (
           <div className="space-y-5">
             {/* Revenue Chart */}
-            <div className="bg-white rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
-              <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-stone-400">Monthly Revenue</h3>
+            <div className="bg-white dark:bg-stone-900 rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
+              <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-stone-400 dark:text-stone-500">Monthly Revenue</h3>
               <ResponsiveContainer width="100%" height={400}>
                 <AreaChart data={monthlyData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
-                  <XAxis dataKey="month" stroke="#9ca3af" fontSize={11} tickLine={false} />
-                  <YAxis stroke="#9ca3af" fontSize={11} tickLine={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid} vertical={false} />
+                  <XAxis dataKey="month" stroke={chartTheme.axis} fontSize={11} tickLine={false} />
+                  <YAxis stroke={chartTheme.axis} fontSize={11} tickLine={false} />
                   <Tooltip
                     contentStyle={{
                       backgroundColor: 'white',
@@ -326,8 +336,8 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
                   <Area
                     type="monotone"
                     dataKey="revenue"
-                    stroke="#60A5FA"
-                    fill="#60A5FA"
+                    stroke={chartTheme.accent}
+                    fill={chartTheme.accent}
                     fillOpacity={0.15}
                     strokeWidth={2}
                     name="Revenue ($)"
@@ -337,13 +347,13 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
             </div>
 
             {/* Revenue by Service */}
-            <div className="bg-white rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
-              <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-stone-400">Revenue by Service</h3>
+            <div className="bg-white dark:bg-stone-900 rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
+              <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-stone-400 dark:text-stone-500">Revenue by Service</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={topServices}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
-                  <XAxis dataKey="serviceName" stroke="#9ca3af" fontSize={11} tickLine={false} />
-                  <YAxis stroke="#9ca3af" fontSize={11} tickLine={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid} vertical={false} />
+                  <XAxis dataKey="serviceName" stroke={chartTheme.axis} fontSize={11} tickLine={false} />
+                  <YAxis stroke={chartTheme.axis} fontSize={11} tickLine={false} />
                   <Tooltip
                     contentStyle={{
                       backgroundColor: 'white',
@@ -352,7 +362,7 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
                       boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)'
                     }}
                   />
-                  <Bar dataKey="revenue" fill="#60A5FA" radius={[6, 6, 0, 0]} />
+                  <Bar dataKey="revenue" fill={chartTheme.accent} radius={[6, 6, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -379,13 +389,13 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
             </div>
 
             {/* Posts Chart */}
-            <div className="bg-white rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
-              <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-stone-400">Monthly Posts</h3>
+            <div className="bg-white dark:bg-stone-900 rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
+              <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-stone-400 dark:text-stone-500">Monthly Posts</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={monthlyData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
-                  <XAxis dataKey="month" stroke="#9ca3af" fontSize={11} tickLine={false} />
-                  <YAxis stroke="#9ca3af" fontSize={11} tickLine={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid} vertical={false} />
+                  <XAxis dataKey="month" stroke={chartTheme.axis} fontSize={11} tickLine={false} />
+                  <YAxis stroke={chartTheme.axis} fontSize={11} tickLine={false} />
                   <Tooltip
                     contentStyle={{
                       backgroundColor: 'white',
@@ -394,7 +404,7 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
                       boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)'
                     }}
                   />
-                  <Bar dataKey="posts" fill="#60A5FA" radius={[6, 6, 0, 0]} />
+                  <Bar dataKey="posts" fill={chartTheme.accent} radius={[6, 6, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -406,37 +416,37 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
           <div className="space-y-8">
             {/* Rating Overview */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-              <div className="group relative rounded-2xl border p-8 transition-all duration-300 bg-white border-gray-200 hover:border-gray-300 hover:shadow-md">
-                <p className="text-xs font-semibold uppercase tracking-wider text-stone-400 mb-3">Average Rating</p>
+              <div className="group relative rounded-2xl border p-8 transition-all duration-300 bg-white dark:bg-stone-900 border-stone-200 dark:border-stone-800 hover:border-stone-300 dark:border-stone-700 hover:shadow-md">
+                <p className="text-xs font-semibold uppercase tracking-wider text-stone-400 dark:text-stone-500 mb-3">Average Rating</p>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-semibold tracking-tight text-stone-900">
+                  <span className="text-4xl font-semibold tracking-tight text-stone-900 dark:text-stone-100">
                     {reviews.averageRating.toFixed(1)}
                   </span>
-                  <span className="text-xl text-stone-400">/5</span>
+                  <span className="text-xl text-stone-400 dark:text-stone-500">/5</span>
                 </div>
                 <div className="flex items-center gap-1 mt-3">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <Star
                       key={star}
                       size={18}
-                      className={star <= Math.round(reviews.averageRating) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200'}
+                      className={star <= Math.round(reviews.averageRating) ? 'text-yellow-400 fill-yellow-400' : 'text-stone-200'}
                     />
                   ))}
                 </div>
               </div>
-              <div className="group relative rounded-2xl border p-8 transition-all duration-300 bg-white border-gray-200 hover:border-gray-300 hover:shadow-md">
-                <p className="text-xs font-semibold uppercase tracking-wider text-stone-400 mb-3">Total Reviews</p>
-                <div className="text-4xl font-semibold tracking-tight text-stone-900">
+              <div className="group relative rounded-2xl border p-8 transition-all duration-300 bg-white dark:bg-stone-900 border-stone-200 dark:border-stone-800 hover:border-stone-300 dark:border-stone-700 hover:shadow-md">
+                <p className="text-xs font-semibold uppercase tracking-wider text-stone-400 dark:text-stone-500 mb-3">Total Reviews</p>
+                <div className="text-4xl font-semibold tracking-tight text-stone-900 dark:text-stone-100">
                   {reviews.totalReviews}
                 </div>
-                <p className="text-sm text-stone-500 mt-3">Reviews received</p>
+                <p className="text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500 mt-3">Reviews received</p>
               </div>
-              <div className="group relative rounded-2xl border p-8 transition-all duration-300 bg-white border-gray-200 hover:border-gray-300 hover:shadow-md">
-                <p className="text-xs font-semibold uppercase tracking-wider text-stone-400 mb-3">5-Star Reviews</p>
-                <div className="text-4xl font-semibold tracking-tight text-stone-900">
+              <div className="group relative rounded-2xl border p-8 transition-all duration-300 bg-white dark:bg-stone-900 border-stone-200 dark:border-stone-800 hover:border-stone-300 dark:border-stone-700 hover:shadow-md">
+                <p className="text-xs font-semibold uppercase tracking-wider text-stone-400 dark:text-stone-500 mb-3">5-Star Reviews</p>
+                <div className="text-4xl font-semibold tracking-tight text-stone-900 dark:text-stone-100">
                   {reviews.ratingDistribution.find(r => r.rating === 5)?.count || 0}
                 </div>
-                <p className="text-sm text-stone-500 mt-3">
+                <p className="text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500 mt-3">
                   {reviews.totalReviews > 0
                     ? `${Math.round(((reviews.ratingDistribution.find(r => r.rating === 5)?.count || 0) / reviews.totalReviews) * 100)}% of total`
                     : 'No reviews yet'}
@@ -447,8 +457,8 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
             {/* Rating Distribution & Goal Calculator */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
               {/* Rating Distribution */}
-              <div className="bg-white rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
-                <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-stone-400">Rating Distribution</h3>
+              <div className="bg-white dark:bg-stone-900 rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
+                <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-stone-400 dark:text-stone-500">Rating Distribution</h3>
                 <div className="space-y-4">
                   {[5, 4, 3, 2, 1].map((rating) => {
                     const count = reviews.ratingDistribution.find(r => r.rating === rating)?.count || 0;
@@ -456,16 +466,16 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
                     return (
                       <div key={rating} className="flex items-center gap-3">
                         <div className="flex items-center gap-1 w-16">
-                          <span className="text-sm font-medium text-gray-700">{rating}</span>
+                          <span className="text-sm font-medium text-stone-700 dark:text-stone-200">{rating}</span>
                           <Star size={14} className="text-yellow-400 fill-yellow-400" />
                         </div>
-                        <div className="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden">
+                        <div className="flex-1 h-3 bg-stone-100 dark:bg-stone-800 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-[#60A5FA] rounded-full transition-all duration-500"
+                            className="h-full bg-stone-900 rounded-full transition-all duration-500"
                             style={{ width: `${percentage}%` }}
                           />
                         </div>
-                        <span className="text-sm text-stone-500 w-12 text-right">{count}</span>
+                        <span className="text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500 w-12 text-right">{count}</span>
                       </div>
                     );
                   })}
@@ -473,14 +483,14 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
               </div>
 
               {/* Goal Calculator */}
-              <div className="bg-white rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
-                <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-stone-400">Rating Goal Calculator</h3>
+              <div className="bg-white dark:bg-stone-900 rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
+                <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-stone-400 dark:text-stone-500">Rating Goal Calculator</h3>
 
                 {reviews.totalReviews === 0 ? (
                   <div className="text-center py-8">
-                    <Star size={48} className="text-gray-200 mx-auto mb-4" />
-                    <p className="text-stone-500">No reviews yet</p>
-                    <p className="text-sm text-stone-400 mt-2">Start collecting reviews to see your goal progress</p>
+                    <Star size={48} className="text-stone-200 mx-auto mb-4" />
+                    <p className="text-stone-500 dark:text-stone-400 dark:text-stone-500">No reviews yet</p>
+                    <p className="text-sm text-stone-400 dark:text-stone-500 mt-2">Start collecting reviews to see your goal progress</p>
                   </div>
                 ) : reviews.averageRating >= 5 ? (
                   <div className="text-center py-8">
@@ -489,26 +499,26 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
                         <Star key={star} size={32} className="text-yellow-400 fill-yellow-400" />
                       ))}
                     </div>
-                    <p className="text-xl font-semibold text-stone-900">Perfect 5-Star Rating!</p>
-                    <p className="text-sm text-stone-500 mt-2">You&apos;ve achieved the highest possible rating</p>
+                    <p className="text-xl font-semibold text-stone-900 dark:text-stone-100">Perfect 5-Star Rating!</p>
+                    <p className="text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500 mt-2">You&apos;ve achieved the highest possible rating</p>
                   </div>
                 ) : (
                   <div className="space-y-6">
                     {/* Current Status */}
-                    <div className="p-4 bg-stone-50 rounded-xl">
-                      <p className="text-sm text-stone-600 mb-1">Current Rating</p>
+                    <div className="p-4 bg-stone-50 dark:bg-stone-900 rounded-xl">
+                      <p className="text-sm text-stone-600 dark:text-stone-300 mb-1">Current Rating</p>
                       <div className="flex items-center gap-2">
-                        <span className="text-2xl font-bold text-stone-900">{reviews.averageRating.toFixed(1)}</span>
+                        <span className="text-2xl font-bold text-stone-900 dark:text-stone-100">{reviews.averageRating.toFixed(1)}</span>
                         <div className="flex gap-0.5">
                           {[1, 2, 3, 4, 5].map((star) => (
                             <Star
                               key={star}
                               size={16}
-                              className={star <= Math.round(reviews.averageRating) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200'}
+                              className={star <= Math.round(reviews.averageRating) ? 'text-yellow-400 fill-yellow-400' : 'text-stone-200'}
                             />
                           ))}
                         </div>
-                        <span className="text-sm text-stone-500">from {reviews.totalReviews} reviews</span>
+                        <span className="text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500">from {reviews.totalReviews} reviews</span>
                       </div>
                     </div>
 
@@ -523,14 +533,14 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
                             className={`p-4 rounded-xl border transition-all ${
                               isAchieved
                                 ? 'bg-green-50 border-green-200'
-                                : 'bg-white border-gray-200'
+                                : 'bg-white dark:bg-stone-900 border-stone-200 dark:border-stone-800'
                             }`}
                           >
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2">
-                                <span className="text-lg font-semibold text-stone-900">{target.toFixed(1)}</span>
+                                <span className="text-lg font-semibold text-stone-900 dark:text-stone-100">{target.toFixed(1)}</span>
                                 <Star size={16} className="text-yellow-400 fill-yellow-400" />
-                                <span className="text-sm text-stone-500">rating goal</span>
+                                <span className="text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500">rating goal</span>
                               </div>
                               {isAchieved ? (
                                 <span className="text-sm font-medium text-green-600 flex items-center gap-1">
@@ -540,16 +550,16 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
                                   Achieved
                                 </span>
                               ) : (
-                                <span className="text-sm font-medium text-[#60A5FA]">
+                                <span className="text-sm font-medium text-stone-900 dark:text-stone-100">
                                   {needed} more 5-star {needed === 1 ? 'review' : 'reviews'} needed
                                 </span>
                               )}
                             </div>
                             {!isAchieved && (
                               <div className="mt-2">
-                                <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                                <div className="h-2 bg-stone-100 dark:bg-stone-800 rounded-full overflow-hidden">
                                   <div
-                                    className="h-full bg-[#60A5FA] rounded-full transition-all duration-500"
+                                    className="h-full bg-stone-900 rounded-full transition-all duration-500"
                                     style={{ width: `${Math.min((reviews.averageRating / target) * 100, 100)}%` }}
                                   />
                                 </div>

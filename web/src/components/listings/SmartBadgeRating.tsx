@@ -98,7 +98,7 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
 
   return (
     <div
-      className={`flex items-center gap-2.5 text-[11px] ${isLight ? 'text-white' : 'text-neutral-600'}`}
+      className={`flex items-center gap-2.5 text-[11px] ${isLight ? 'text-white' : 'text-stone-600'}`}
       style={isLight ? { textShadow: '0 1px 2px rgba(0,0,0,0.5)' } : undefined}
     >
       <span className="font-medium tabular-nums">{Number(rating).toFixed(1)}</span>
@@ -108,7 +108,7 @@ const SmartBadgeRating: React.FC<SmartBadgeRatingProps> = ({
         type="button"
       >
         <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: dotColor }} />
-        <span className={`${isLight ? 'text-white/80' : 'text-neutral-400'}`}>{timeStatus.message}</span>
+        <span className={`${isLight ? 'text-white/80' : 'text-stone-400'}`}>{timeStatus.message}</span>
       </button>
     </div>
   );

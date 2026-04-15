@@ -3,6 +3,7 @@
 import React from 'react';
 import { SafeListing } from '@/app/types';
 import Modal from './Modal';
+import Button from '../ui/Button';
 
 interface QRModalProps {
   isOpen: boolean;
@@ -55,17 +56,17 @@ const QRModal: React.FC<QRModalProps> = ({
     <div className="flex flex-col items-center text-center space-y-6 py-4">
       {/* Header */}
       <div className="space-y-2">
-        <h3 className="text-xl font-semibold text-gray-900">
+        <h3 className="text-xl font-semibold text-stone-900 dark:text-stone-100">
           {modalHeaderTitle}
         </h3>
-        <p className="text-gray-600 text-sm">
+        <p className="text-stone-600 dark:text-stone-300 text-sm">
           {modalHeaderSubtitle}
         </p>
       </div>
 
       {/* QR Code Container */}
-      <div className="bg-white p-6 rounded-2xl border-2 border-gray-100 shadow-sm">
-        <div className="w-48 h-48 mx-auto bg-white rounded-xl flex items-center justify-center">
+      <div className="bg-white dark:bg-stone-900 p-6 rounded-2xl border-2 border-stone-100 dark:border-stone-800 shadow-sm">
+        <div className="w-48 h-48 mx-auto bg-white dark:bg-stone-900 rounded-xl flex items-center justify-center">
           {listingUrl ? (
             <img
               src={qrCodeUrl}
@@ -76,13 +77,13 @@ const QRModal: React.FC<QRModalProps> = ({
                 const target = e.currentTarget;
                 target.style.display = 'none';
                 const fallback = document.createElement('div');
-                fallback.className = 'w-full h-full flex items-center justify-center text-gray-400 text-sm';
+                fallback.className = 'w-full h-full flex items-center justify-center text-stone-400 dark:text-stone-500 text-sm';
                 fallback.innerHTML = 'QR Code<br/>Unavailable';
                 target.parentNode?.appendChild(fallback);
               }}
             />
           ) : (
-            <div className="text-gray-400 text-sm">
+            <div className="text-stone-400 dark:text-stone-500 text-sm">
               Loading QR Code...
             </div>
           )}
@@ -91,11 +92,11 @@ const QRModal: React.FC<QRModalProps> = ({
 
       {/* Info */}
       <div className="space-y-1">
-        <h4 className="font-medium text-gray-900">
+        <h4 className="font-medium text-stone-900 dark:text-stone-100">
           {displayTitle}
         </h4>
         {displaySubtitle && (
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500">
             {displaySubtitle}
           </p>
         )}
@@ -103,9 +104,9 @@ const QRModal: React.FC<QRModalProps> = ({
 
       {/* URL Display */}
       <div className="w-full">
-        <div className="bg-gray-50 rounded-xl p-3 border">
-          <p className="text-xs text-gray-600 mb-1">URL:</p>
-          <p className="text-sm font-mono text-gray-800 break-all">
+        <div className="bg-stone-50 dark:bg-stone-900 rounded-xl p-3 border">
+          <p className="text-xs text-stone-600 dark:text-stone-300 mb-1">URL:</p>
+          <p className="text-sm font-mono text-stone-800 dark:text-stone-200 break-all">
             {listingUrl}
           </p>
         </div>
@@ -115,7 +116,7 @@ const QRModal: React.FC<QRModalProps> = ({
       <div className="flex gap-3 w-full">
         <button
           onClick={handleCopyLink}
-          className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2.5 px-4 rounded-xl transition-colors text-sm font-medium flex items-center justify-center gap-2"
+          className="flex-1 bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:bg-stone-700 text-stone-700 dark:text-stone-200 py-2.5 px-4 rounded-xl transition-colors text-sm font-medium flex items-center justify-center gap-2"
           type="button"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -125,18 +126,14 @@ const QRModal: React.FC<QRModalProps> = ({
           Copy Link
         </button>
         
-        <button
-          onClick={onClose}
-          className="flex-1 bg-neutral-900 hover:bg-neutral-800 text-white py-2.5 px-4 rounded-xl transition-colors text-sm font-medium"
-          type="button"
-        >
+        <Button onClick={onClose} type="button" fullWidth>
           Done
-        </button>
+        </Button>
       </div>
 
       {/* Instructions */}
       <div className="text-center">
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-stone-500 dark:text-stone-400 dark:text-stone-500">
           Scan this QR code with a phone camera to open the link
         </p>
       </div>

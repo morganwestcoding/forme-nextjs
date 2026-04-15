@@ -53,7 +53,7 @@ const makeStyles = (
     borderColor: error
       ? '#fb7185'
       : state.isFocused
-        ? '#60A5FA'
+        ? '#1c1917'
         : 'rgba(229, 231, 235, 0.6)',
     borderWidth: '1px',
     boxShadow: error
@@ -61,13 +61,13 @@ const makeStyles = (
         ? '0 0 0 2px rgba(251, 113, 133, 0.1)'
         : 'none'
       : state.isFocused
-        ? '0 0 0 2px rgba(96, 165, 250, 0.1)'
+        ? '0 0 0 2px rgba(28,25,23,0.08)'
         : 'none',
     ':hover': {
       borderColor: error
         ? '#fb7185'
         : state.isFocused
-          ? '#60A5FA'
+          ? '#1c1917'
           : '#d1d5db',
     },
     padding: 0,
@@ -132,11 +132,11 @@ const makeStyles = (
     padding: '10px 14px',
     margin: '2px 0',
     backgroundColor: state.isSelected
-      ? 'rgba(96, 165, 250, 0.1)'
+      ? 'rgba(28,25,23,0.08)'
       : state.isFocused
         ? '#f9fafb'
         : '#ffffff',
-    color: state.isSelected ? '#60A5FA' : '#374151',
+    color: state.isSelected ? '#1c1917' : '#374151',
     cursor: 'pointer',
     fontSize: `${FONT_SIZE_PX}px`,
     lineHeight: `${LINE_HEIGHT_PX}px`,
@@ -265,7 +265,7 @@ const FloatingLabelSelect: React.FC<FloatingLabelSelectProps> = ({
       <label
         className={[
           'absolute left-4 origin-[0] pointer-events-none transition-all duration-150',
-          error ? 'text-rose-500' : 'text-gray-500',
+          error ? 'text-rose-500' : 'text-stone-500 dark:text-stone-400 dark:text-stone-500',
           labelSize,
           labelPos,
         ].join(' ')}

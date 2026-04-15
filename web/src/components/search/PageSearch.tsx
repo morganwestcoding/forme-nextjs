@@ -72,7 +72,7 @@ const PageSearch: React.FC<PageSearchProps> = ({
   const params = useSearchParams();
   const router = useRouter();
   const filterModal = useFilterModal();
-  const { accentColor } = useTheme();
+  const {} = useTheme();
 
   // Action dropdown state
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -188,7 +188,7 @@ const PageSearch: React.FC<PageSearchProps> = ({
 
   const activeFilterCount = getActiveFilterCount();
 
-  const iconButtonClasses = "p-2 rounded-xl text-stone-400 dark:text-zinc-500 hover:text-stone-600 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-zinc-800 transition-colors";
+  const iconButtonClasses = "p-2 rounded-xl text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors";
 
   const defaultActionButtons = showDefaultActions ? (
     <>
@@ -219,7 +219,7 @@ const PageSearch: React.FC<PageSearchProps> = ({
           {activeFilterCount > 0 && (
             <span
               className="absolute -top-0.5 -right-0.5 text-white text-[9px] font-bold rounded-full min-w-[15px] h-[15px] flex items-center justify-center"
-              style={{ backgroundColor: accentColor }}
+              style={{ backgroundColor: '#1c1917' }}
             >
               {activeFilterCount}
             </span>
@@ -245,7 +245,7 @@ const PageSearch: React.FC<PageSearchProps> = ({
         <button
           ref={refs.setReference}
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          className={`${iconButtonClasses} ${isDropdownOpen ? 'bg-stone-100 dark:bg-zinc-800 text-stone-600 dark:text-white' : ''}`}
+          className={`${iconButtonClasses} ${isDropdownOpen ? 'bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-white' : ''}`}
           type="button"
           title="Create"
         >
@@ -276,7 +276,7 @@ const PageSearch: React.FC<PageSearchProps> = ({
         <FloatingPortal>
           <div
             ref={refs.setFloating}
-            className="z-[50] bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700/50 rounded-xl shadow-lg shadow-gray-900/10 dark:shadow-xl dark:shadow-black/20 p-1.5 w-[160px]"
+            className="z-[50] bg-white dark:bg-stone-800 border border-stone-100 dark:border-stone-700/50 rounded-xl shadow-lg shadow-stone-900/10 dark:shadow-xl dark:shadow-black/20 p-1.5 w-[160px]"
             style={{
               ...floatingStyles,
               visibility: isPositioned ? 'visible' : 'hidden',
@@ -286,7 +286,7 @@ const PageSearch: React.FC<PageSearchProps> = ({
               <button
                 key={item.label}
                 onClick={() => handleActionClick(item.action)}
-                className="w-full px-3 py-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-zinc-700 transition-colors duration-150 text-left text-[13px] font-medium text-gray-700 dark:text-zinc-200"
+                className="w-full px-3 py-2.5 rounded-xl hover:bg-stone-50 dark:hover:bg-stone-700 transition-colors duration-150 text-left text-[13px] font-medium text-stone-700 dark:text-stone-200"
                 type="button"
               >
                 {item.label}

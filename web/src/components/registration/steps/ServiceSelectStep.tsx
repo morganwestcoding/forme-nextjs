@@ -54,7 +54,7 @@ export default function ServiceSelectStep({ selectedListingId, selectedServices,
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="w-8 h-8 border-2 border-gray-200 border-t-gray-900 rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-stone-200 dark:border-stone-800 border-t-stone-900 rounded-full animate-spin" />
       </div>
     );
   }
@@ -80,13 +80,13 @@ export default function ServiceSelectStep({ selectedListingId, selectedServices,
                 className={`
                   p-4 rounded-xl border text-left transition-all duration-200
                   ${isSelected
-                    ? 'border-gray-300 bg-gray-100 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)]'
-                    : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
+                    ? 'border-stone-300 dark:border-stone-700 bg-stone-100 dark:bg-stone-800 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)]'
+                    : 'border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 hover:border-stone-300 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900'
                   }
                 `}
               >
-                <span className="text-sm font-medium block truncate text-gray-900">{service.serviceName}</span>
-                <span className="text-xs mt-1 block text-gray-500">
+                <span className="text-sm font-medium block truncate text-stone-900 dark:text-stone-100">{service.serviceName}</span>
+                <span className="text-xs mt-1 block text-stone-500 dark:text-stone-400 dark:text-stone-500">
                   ${service.price}
                 </span>
               </motion.button>
@@ -95,13 +95,13 @@ export default function ServiceSelectStep({ selectedListingId, selectedServices,
         </div>
       ) : (
         <div className="text-center py-8">
-          <p className="text-gray-500">No services found for this business</p>
-          <p className="text-sm text-gray-400 mt-1">You can add services later</p>
+          <p className="text-stone-500 dark:text-stone-400 dark:text-stone-500">No services found for this business</p>
+          <p className="text-sm text-stone-400 dark:text-stone-500 mt-1">You can add services later</p>
         </div>
       )}
 
       {selectedServices.length > 0 && (
-        <p className="text-sm text-gray-500 text-center mt-6">
+        <p className="text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500 text-center mt-6">
           {selectedServices.length} service{selectedServices.length !== 1 ? 's' : ''} selected
         </p>
       )}

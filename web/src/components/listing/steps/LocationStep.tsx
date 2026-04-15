@@ -2,10 +2,11 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, Check, ChevronDown, Loader2 } from 'lucide-react';
+
 import TypeformHeading from '@/components/registration/TypeformHeading';
 import { itemVariants } from '@/components/registration/TypeformStep';
 import { FieldErrors } from 'react-hook-form';
+import { Location01Icon as MapPin, Tick02Icon as Check, ArrowDown01Icon as ChevronDown, Loading03Icon as Loader2 } from 'hugeicons-react';
 
 interface LocationStepProps {
   onLocationChange: (location: string) => void;
@@ -201,21 +202,21 @@ export default function LocationStep({
         <div className="flex gap-3">
           {/* State dropdown */}
           <div ref={stateDropdownRef} className="flex-1 relative">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-stone-700 dark:text-stone-200 mb-2">
               State
             </label>
             <button
               type="button"
               onClick={() => { setIsStateOpen(!isStateOpen); setIsCityOpen(false); }}
-              className={`w-full flex items-center gap-3 px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-left transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent ${
-                isStateOpen ? 'ring-2 ring-gray-900 border-transparent' : ''
+              className={`w-full flex items-center gap-3 px-4 py-3.5 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl text-left transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent ${
+                isStateOpen ? 'ring-2 ring-stone-900 border-transparent' : ''
               }`}
             >
-              <span className={selectedState ? 'text-gray-900' : 'text-gray-400'}>
+              <span className={selectedState ? 'text-stone-900 dark:text-stone-100' : 'text-stone-400 dark:text-stone-500'}>
                 {selectedState || 'Select'}
               </span>
               <ChevronDown
-                className={`ml-auto w-5 h-5 text-gray-400 transition-transform duration-200 ${isStateOpen ? 'rotate-180' : ''}`}
+                className={`ml-auto w-5 h-5 text-stone-400 dark:text-stone-500 transition-transform duration-200 ${isStateOpen ? 'rotate-180' : ''}`}
               />
             </button>
 
@@ -226,7 +227,7 @@ export default function LocationStep({
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute z-50 mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden"
+                  className="absolute z-50 mt-2 w-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl shadow-lg overflow-hidden"
                 >
                   <div className="max-h-[240px] overflow-y-auto overscroll-contain">
                     {US_STATES.map((state) => (
@@ -236,13 +237,13 @@ export default function LocationStep({
                         onClick={() => handleStateSelect(state)}
                         className={`w-full flex items-center gap-3 px-4 py-3 text-sm transition-colors cursor-pointer ${
                           selectedState === state
-                            ? 'bg-gray-50 text-gray-900 font-medium'
-                            : 'text-gray-700 hover:bg-gray-50'
+                            ? 'bg-stone-50 dark:bg-stone-900 text-stone-900 dark:text-stone-100 font-medium'
+                            : 'text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900'
                         }`}
                       >
                         <span className="flex-1 text-left">{state}</span>
                         {selectedState === state && (
-                          <Check className="w-4 h-4 text-gray-900" />
+                          <Check className="w-4 h-4 text-stone-900 dark:text-stone-100" />
                         )}
                       </button>
                     ))}
@@ -254,7 +255,7 @@ export default function LocationStep({
 
           {/* City autocomplete */}
           <div ref={cityDropdownRef} className="flex-1 relative">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-stone-700 dark:text-stone-200 mb-2">
               City
             </label>
             <div className="relative">
@@ -270,7 +271,7 @@ export default function LocationStep({
                 }}
                 onFocus={() => { if (selectedState) { setIsCityOpen(true); setIsStateOpen(false); } }}
                 disabled={!selectedState || isLoadingCities}
-                className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-4 py-3.5 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 placeholder={isLoadingCities ? 'Loading...' : selectedState ? 'Type to search...' : 'Select state first'}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && filteredCities.length > 0) {
@@ -281,7 +282,7 @@ export default function LocationStep({
                 }}
               />
               {isLoadingCities && (
-                <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 animate-spin" />
+                <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400 dark:text-stone-500 animate-spin" />
               )}
             </div>
 
@@ -292,7 +293,7 @@ export default function LocationStep({
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute z-50 mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden"
+                  className="absolute z-50 mt-2 w-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl shadow-lg overflow-hidden"
                 >
                   <div className="max-h-[240px] overflow-y-auto overscroll-contain">
                     {filteredCities.map((c) => (
@@ -302,13 +303,13 @@ export default function LocationStep({
                         onClick={() => handleCitySelect(c)}
                         className={`w-full flex items-center gap-3 px-4 py-3 text-sm transition-colors cursor-pointer ${
                           city === c
-                            ? 'bg-gray-50 text-gray-900 font-medium'
-                            : 'text-gray-700 hover:bg-gray-50'
+                            ? 'bg-stone-50 dark:bg-stone-900 text-stone-900 dark:text-stone-100 font-medium'
+                            : 'text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900'
                         }`}
                       >
                         <span className="flex-1 text-left">{c}</span>
                         {city === c && (
-                          <Check className="w-4 h-4 text-gray-900" />
+                          <Check className="w-4 h-4 text-stone-900 dark:text-stone-100" />
                         )}
                       </button>
                     ))}
@@ -329,7 +330,7 @@ export default function LocationStep({
             className="flex gap-3"
           >
             <div ref={addressDropdownRef} className="flex-[2] relative">
-              <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="address" className="block text-sm font-medium text-stone-700 dark:text-stone-200 mb-2">
                 Street address
               </label>
               <div className="relative">
@@ -340,7 +341,7 @@ export default function LocationStep({
                   onChange={handleAddressChange}
                   onFocus={() => { if (addressSuggestions.length > 0) setIsAddressOpen(true); }}
                   autoFocus
-                  className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3.5 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all"
                   placeholder="Start typing an address..."
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && addressSuggestions.length > 0) {
@@ -351,7 +352,7 @@ export default function LocationStep({
                   }}
                 />
                 {isLoadingAddresses && (
-                  <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 animate-spin" />
+                  <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400 dark:text-stone-500 animate-spin" />
                 )}
               </div>
 
@@ -362,7 +363,7 @@ export default function LocationStep({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -8 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute z-50 mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden"
+                    className="absolute z-50 mt-2 w-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl shadow-lg overflow-hidden"
                   >
                     <div className="max-h-[200px] overflow-y-auto overscroll-contain">
                       {addressSuggestions.map((s, i) => (
@@ -372,12 +373,12 @@ export default function LocationStep({
                           onClick={() => handleAddressSelect(s.display, s.zip)}
                           className={`w-full flex items-center justify-between px-4 py-3 text-sm transition-colors cursor-pointer ${
                             streetAddress === s.display
-                              ? 'bg-gray-50 text-gray-900 font-medium'
-                              : 'text-gray-700 hover:bg-gray-50'
+                              ? 'bg-stone-50 dark:bg-stone-900 text-stone-900 dark:text-stone-100 font-medium'
+                              : 'text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900'
                           }`}
                         >
                           <span className="text-left">{s.display}</span>
-                          {s.zip && <span className="text-[11px] text-gray-400 ml-2 flex-shrink-0">{s.zip}</span>}
+                          {s.zip && <span className="text-[11px] text-stone-400 dark:text-stone-500 ml-2 flex-shrink-0">{s.zip}</span>}
                         </button>
                       ))}
                     </div>
@@ -390,7 +391,7 @@ export default function LocationStep({
               )}
             </div>
             <div className="flex-1">
-              <label htmlFor="zipCode" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="zipCode" className="block text-sm font-medium text-stone-700 dark:text-stone-200 mb-2">
                 ZIP code
               </label>
               <input
@@ -398,7 +399,7 @@ export default function LocationStep({
                 type="text"
                 value={zip}
                 onChange={handleZipChange}
-                className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
+                className="w-full px-4 py-3.5 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all"
                 placeholder="12345"
                 maxLength={10}
               />
@@ -413,14 +414,14 @@ export default function LocationStep({
         {streetAddress && city && selectedState && zip && (
           <motion.div
             variants={itemVariants}
-            className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl"
+            className="flex items-center gap-3 p-4 bg-stone-50 dark:bg-stone-900 rounded-xl"
           >
-            <div className="w-10 h-10 rounded-full bg-gray-900 flex items-center justify-center flex-shrink-0">
+            <div className="w-10 h-10 rounded-full bg-stone-900 flex items-center justify-center flex-shrink-0">
               <MapPin className="w-5 h-5 text-white" />
             </div>
             <div className="min-w-0">
-              <p className="font-medium text-gray-900 text-sm truncate">{streetAddress}</p>
-              <p className="text-sm text-gray-500">{city}, {selectedState} {zip}</p>
+              <p className="font-medium text-stone-900 dark:text-stone-100 text-sm truncate">{streetAddress}</p>
+              <p className="text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500">{city}, {selectedState} {zip}</p>
             </div>
           </motion.div>
         )}

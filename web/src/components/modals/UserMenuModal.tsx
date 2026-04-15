@@ -18,6 +18,7 @@ import {
   School01Icon,
 } from 'hugeicons-react';
 import Modal from './Modal';
+import Button from '../ui/Button';
 import useUserMenuModal from '@/app/hooks/useUserMenuModal';
 import useLoginModal from '@/app/hooks/useLoginModal';
 import useUpgradeModal from '@/app/hooks/useUpgradeModal';
@@ -110,16 +111,16 @@ const UserMenuModal: React.FC<UserMenuModalProps> = ({ currentUser }) => {
                 className="object-cover w-full h-full"
               />
             ) : (
-              <div className="w-full h-full bg-gradient-to-br from-stone-200 to-stone-300 flex items-center justify-center text-stone-600 text-base font-medium">
+              <div className="w-full h-full bg-gradient-to-br from-stone-200 to-stone-300 flex items-center justify-center text-stone-600 dark:text-stone-300 text-base font-medium">
                 {currentUser.name?.[0] || 'U'}
               </div>
             )}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[16px] font-semibold text-stone-900 truncate">
+            <p className="text-[16px] font-semibold text-stone-900 dark:text-stone-100 truncate">
               {currentUser.name || 'User'}
             </p>
-            <p className="text-[13px] text-stone-400 truncate">
+            <p className="text-[13px] text-stone-400 dark:text-stone-500 truncate">
               {currentUser.email}
             </p>
           </div>
@@ -135,10 +136,10 @@ const UserMenuModal: React.FC<UserMenuModalProps> = ({ currentUser }) => {
                 <button
                   key={item.label}
                   onClick={item.onClick}
-                  className="flex flex-col items-center gap-2.5 py-5 px-2 rounded-2xl bg-stone-50 hover:bg-stone-100 border border-stone-100 hover:border-stone-200 transition-all"
+                  className="flex flex-col items-center gap-2.5 py-5 px-2 rounded-2xl bg-stone-50 dark:bg-stone-900 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border border-stone-100 dark:border-stone-800 hover:border-stone-200 dark:border-stone-800 transition-all"
                 >
-                  <item.icon className="w-[22px] h-[22px] text-stone-500" strokeWidth={1.5} />
-                  <span className="text-[12px] font-medium text-stone-600">{item.label}</span>
+                  <item.icon className="w-[22px] h-[22px] text-stone-500 dark:text-stone-400 dark:text-stone-500" strokeWidth={1.5} />
+                  <span className="text-[12px] font-medium text-stone-600 dark:text-stone-300">{item.label}</span>
                 </button>
               ))}
               <button
@@ -148,45 +149,45 @@ const UserMenuModal: React.FC<UserMenuModalProps> = ({ currentUser }) => {
                     userMenuModal.onClose();
                   }
                 }}
-                className="flex flex-col items-center gap-2.5 py-5 px-2 rounded-2xl bg-red-50 hover:bg-red-100 border border-red-100 hover:border-red-200 transition-all"
+                className="flex flex-col items-center gap-2.5 py-5 px-2 rounded-2xl bg-red-50 hover:bg-red-100 border border-red-200/60 dark:bg-red-500/10 dark:hover:bg-red-500/20 dark:border-red-500/20 transition-all"
               >
-                <Delete02Icon className="w-[22px] h-[22px] text-red-400" strokeWidth={1.5} />
-                <span className="text-[12px] font-medium text-red-500">Clear Data</span>
+                <Delete02Icon className="w-[22px] h-[22px] text-red-500 dark:text-red-400" strokeWidth={1.5} />
+                <span className="text-[12px] font-medium text-red-600 dark:text-red-400">Clear Data</span>
               </button>
             </div>
           </div>
 
           {/* Sign out */}
           <div className="px-5 pb-4">
-            <button
+            <Button
               onClick={() => {
                 userMenuModal.onClose();
                 signOut({ callbackUrl: '/' });
               }}
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-[13px] font-medium transition-all"
-              style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.12)' }}
+              fullWidth
+              size="lg"
+              leftIcon={<Logout01Icon className="w-[16px] h-[16px]" strokeWidth={1.5} />}
             >
-              <Logout01Icon className="w-[16px] h-[16px]" strokeWidth={1.5} />
               Sign Out
-            </button>
+            </Button>
           </div>
         </>
       ) : (
         <div className="px-5 pb-4 flex gap-2.5">
-          <button
+          <Button
             onClick={() => {
               userMenuModal.onClose();
               loginModal.onOpen();
             }}
-            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-[13px] font-medium transition-all"
-            style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.12)' }}
+            fullWidth
+            size="lg"
+            leftIcon={<Login01Icon className="w-[16px] h-[16px]" strokeWidth={1.5} />}
           >
-            <Login01Icon className="w-[16px] h-[16px]" strokeWidth={1.5} />
             Sign In
-          </button>
+          </Button>
           <button
             onClick={() => handleNavigate('/register')}
-            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-stone-50 hover:bg-stone-100 text-stone-700 border border-stone-200/60 text-[13px] font-medium transition-all"
+            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-stone-50 dark:bg-stone-900 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 text-stone-700 dark:text-stone-200 border border-stone-200/60 text-[13px] font-medium transition-all"
           >
             <UserAdd01Icon className="w-[16px] h-[16px]" strokeWidth={1.5} />
             Sign Up

@@ -111,9 +111,9 @@ const ShopLocationInput: React.FC<ShopLocationInputProps> = ({
   const baseSelectClasses = {
     option: (state: any) => `
       !py-4 !px-4 !cursor-pointer
-      ${state.isFocused ? '!bg-neutral-100' : '!bg-white'}
-      ${state.isSelected ? '!bg-neutral-200 !text-black' : ''}
-      !text-black hover:!text-neutral-500
+      ${state.isFocused ? '!bg-stone-100 dark:bg-stone-800' : '!bg-white dark:bg-stone-900'}
+      ${state.isSelected ? '!bg-stone-200 dark:bg-stone-700 !text-black' : ''}
+      !text-black hover:!text-stone-500
       !font-normal!  
     `,
     dropdownIndicator: () => `
@@ -121,9 +121,9 @@ const ShopLocationInput: React.FC<ShopLocationInputProps> = ({
     `,
     indicatorSeparator: () => `!hidden`,
     singleValue: () => '!text-black',
-    input: () => '!text-neutral-500 !font-normal!',
-    placeholder: () => '!text-neutral-500 !text-sm !font-normal', 
-    menu: () => '!bg-neutral-50 !rounded-xl !shadow-md !mt-1 !z-[9999]',
+    input: () => '!text-stone-500 dark:text-stone-400 dark:text-stone-500 !font-normal!',
+    placeholder: () => '!text-stone-500 dark:text-stone-400 dark:text-stone-500 !text-sm !font-normal', 
+    menu: () => '!bg-stone-50 dark:bg-stone-900 !rounded-xl !shadow-md !mt-1 !z-[9999]',
     menuList: () => '!p-0',
     valueContainer: () => '!p-0.5',
     container: () => '!relative !w-full'
@@ -132,20 +132,20 @@ const ShopLocationInput: React.FC<ShopLocationInputProps> = ({
   return (
     <div id={id} className="flex flex-col gap-4 text-sm -mt-4">
       {/* Online Shop Toggle */}
-      <div className="flex items-center py-5 px-4 bg-neutral-50 rounded-xl border border-neutral-300">
+      <div className="flex items-center py-5 px-4 bg-stone-50 dark:bg-stone-900 rounded-xl border border-stone-300 dark:border-stone-700">
         <div className="flex items-center">
           <input
             type="checkbox"
             id="online-shop"
             checked={isOnline}
             onChange={handleOnlineToggle}
-            className="w-5 h-5 text-green-600 rounded border-gray-300 focus:ring-green-500"
+            className="w-5 h-5 text-green-600 rounded border-stone-300 dark:border-stone-700 focus:ring-green-500"
           />
-          <label htmlFor="online-shop" className="ml-2 text-neutral-800 font-medium">
+          <label htmlFor="online-shop" className="ml-2 text-stone-800 dark:text-stone-200 font-medium">
             This is an online-only shop
           </label>
         </div>
-        <div className="ml-3 text-sm text-neutral-600">
+        <div className="ml-3 text-sm text-stone-600 dark:text-stone-300">
           No physical address required
         </div>
       </div>
@@ -176,10 +176,10 @@ const ShopLocationInput: React.FC<ShopLocationInputProps> = ({
                   ...baseSelectClasses,
                   control: (state: any) => `
                     !w-full !pl-3 !pb-1 !pt-3
-                    !bg-neutral-50 !border !border-neutral-300
+                    !bg-stone-50 dark:bg-stone-900 !border !border-stone-300
                     !rounded-xl !outline-none !transition
                     !ring-0 !outline-0 !box-shadow-none
-                    ${state.isFocused ? '!border-black' : '!border-neutral-300'}
+                    ${state.isFocused ? '!border-black' : '!border-stone-300 dark:border-stone-700'}
                     ${errors['state'] ? '!border-rose-500' : ''}
                     ${isOnline ? '!opacity-50 !cursor-not-allowed' : ''}
                   `
@@ -194,7 +194,7 @@ const ShopLocationInput: React.FC<ShopLocationInputProps> = ({
                 transform 
                 top-5 
                 origin-[0] 
-                text-neutral-600
+                text-stone-600
                 ${selectedState ? 'scale-100 -translate-y-3' : 'translate-y-0'}
               `}>
                 State
@@ -213,10 +213,10 @@ const ShopLocationInput: React.FC<ShopLocationInputProps> = ({
                   ...baseSelectClasses,
                   control: (state: any) => `
                     !w-full !pl-3 !pb-1 !pt-3
-                    !bg-neutral-50 !border !border-neutral-300
+                    !bg-stone-50 dark:bg-stone-900 !border !border-stone-300
                     !rounded-xl !outline-none !transition
                     !ring-0 !outline-0 !box-shadow-none
-                    ${state.isFocused ? '!border-black' : '!border-neutral-300'}
+                    ${state.isFocused ? '!border-black' : '!border-stone-300 dark:border-stone-700'}
                     ${errors['city'] ? '!border-rose-500' : ''}
                     ${isOnline ? '!opacity-50 !cursor-not-allowed' : ''}
                   `
@@ -231,7 +231,7 @@ const ShopLocationInput: React.FC<ShopLocationInputProps> = ({
                 top-5 
                 left-4
                 origin-[0] 
-                text-neutral-600
+                text-stone-600
                 ${selectedCity ? 'scale-100 -translate-y-3' : 'translate-y-0'}
               `}>
                 City

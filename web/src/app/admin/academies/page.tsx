@@ -21,24 +21,24 @@ export default async function AdminAcademiesPage() {
         <div className="mb-2">
           <Link
             href="/"
-            className="text-[12px] text-stone-400 hover:text-stone-600 transition-colors"
+            className="text-[12px] text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300 transition-colors"
           >
             ← Back to ForMe
           </Link>
         </div>
         <div className="mb-8">
-          <p className="text-[12px] text-stone-400 mb-1">Master admin</p>
-          <h1 className="text-2xl font-semibold text-stone-900 tracking-tight">
+          <p className="text-[12px] text-stone-400 dark:text-stone-500 mb-1">Master admin</p>
+          <h1 className="text-2xl font-semibold text-stone-900 dark:text-stone-100 tracking-tight">
             Partner academies
           </h1>
-          <p className="text-[14px] text-stone-400 mt-1">
+          <p className="text-[14px] text-stone-400 dark:text-stone-500 mt-1">
             Manage academy partners, Stripe Connect onboarding, and student pay defaults
           </p>
         </div>
 
         <div className="grid gap-3">
           {academies.length === 0 ? (
-            <div className="text-[13px] text-stone-400 py-8 text-center">
+            <div className="text-[13px] text-stone-400 dark:text-stone-500 py-8 text-center">
               No academies found. Run the seed script to populate.
             </div>
           ) : (
@@ -50,19 +50,19 @@ export default async function AdminAcademiesPage() {
                 <Link
                   key={a.id}
                   href={`/admin/academies/${a.id}`}
-                  className="rounded-2xl border border-stone-200/60 bg-white p-5 hover:border-stone-300 hover:shadow-sm transition-all"
+                  className="rounded-2xl border border-stone-200/60 bg-white dark:bg-stone-900 p-5 hover:border-stone-300 dark:border-stone-700 hover:shadow-sm transition-all"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-[15px] font-semibold text-stone-900">
+                      <h3 className="text-[15px] font-semibold text-stone-900 dark:text-stone-100">
                         {a.name}
                       </h3>
                       {a.description && (
-                        <p className="text-[13px] text-stone-500 mt-1 line-clamp-2">
+                        <p className="text-[13px] text-stone-500 dark:text-stone-400 dark:text-stone-500 mt-1 line-clamp-2">
                           {a.description}
                         </p>
                       )}
-                      <div className="flex items-center gap-4 mt-3 text-[12px] text-stone-400">
+                      <div className="flex items-center gap-4 mt-3 text-[12px] text-stone-400 dark:text-stone-500">
                         <span>{a.studentCount} students</span>
                         <span>•</span>
                         <span>{a.listingCount} listings</span>
@@ -90,7 +90,7 @@ export default async function AdminAcademiesPage() {
                         </span>
                       )}
                       {!a.stripeConnectAccountId && (
-                        <span className="inline-flex items-center text-[11px] font-medium text-stone-500 bg-stone-100 ring-1 ring-stone-200 px-2.5 py-1 rounded-full">
+                        <span className="inline-flex items-center text-[11px] font-medium text-stone-500 dark:text-stone-400 dark:text-stone-500 bg-stone-100 dark:bg-stone-800 ring-1 ring-stone-200 px-2.5 py-1 rounded-full">
                           Not connected
                         </span>
                       )}

@@ -52,6 +52,7 @@ export async function POST(
        type: status === 'confirmed' ? 'RESERVATION_ACCEPTED' : 'RESERVATION_DECLINED',
        content: notifContent,
        userId: reservation.userId,
+       relatedListingId: reservation.listingId,
      },
    });
 
@@ -141,7 +142,8 @@ export async function PATCH(
      data: {
        type: notificationType,
        content: notificationContent,
-       userId: reservation.userId
+       userId: reservation.userId,
+       relatedListingId: reservation.listingId
      }
    });
 
@@ -215,7 +217,8 @@ export async function DELETE(
        data: {
          type: 'RESERVATION_CANCELLED_BY_BUSINESS',
          content: `Your reservation at ${reservation.listing.title} has been cancelled by the business`,
-         userId: reservation.userId
+         userId: reservation.userId,
+         relatedListingId: reservation.listingId
        }
      });
    } else {
@@ -224,7 +227,8 @@ export async function DELETE(
        data: {
          type: 'RESERVATION_CANCELLED_BY_USER',
          content: `${reservation.user.name || 'Someone'} has cancelled their reservation for ${reservation.date.toLocaleDateString()}`,
-         userId: reservation.listing.userId
+         userId: reservation.listing.userId,
+         relatedListingId: reservation.listingId
        }
      });
    }

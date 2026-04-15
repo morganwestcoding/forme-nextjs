@@ -63,6 +63,7 @@ model User {
   followers    String[]      @db.ObjectId
   comments Comment[]
   notifications Notification[]
+  relatedNotifications Notification[] @relation("NotificationRelatedUser")
   conversationIds String[]       @db.ObjectId
   conversations   Conversation[] @relation(fields: [conversationIds], references: [id])
   messages       Message[]  
@@ -139,6 +140,7 @@ model Listing {
   storeHours     StoreHours[]
   shops         Shop[]
   clientRecords ClientRecord[]
+  relatedNotifications Notification[] @relation("NotificationRelatedListing")
   rating        Float?
   ratingCount   Int           @default(0)
   lat           Float?
@@ -309,14 +311,18 @@ model Comment {
 }
 
 model Notification {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  type      String  
-  content   String
-  userId    String   @db.ObjectId
-  createdAt DateTime @default(now())
-  isRead    Boolean  @default(false)
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  type             String
+  content          String
+  userId           String   @db.ObjectId
+  relatedUserId    String?  @db.ObjectId
+  relatedListingId String?  @db.ObjectId
+  createdAt        DateTime @default(now())
+  isRead           Boolean  @default(false)
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  relatedUser    User?    @relation("NotificationRelatedUser", fields: [relatedUserId], references: [id], onDelete: SetNull)
+  relatedListing Listing? @relation("NotificationRelatedListing", fields: [relatedListingId], references: [id], onDelete: SetNull)
 }
 
 model Conversation {

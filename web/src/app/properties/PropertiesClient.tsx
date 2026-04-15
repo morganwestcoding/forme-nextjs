@@ -8,6 +8,7 @@ import { categories } from '@/components/Categories';
 import { SafeListing, SafeUser } from "@/app/types";
 import ClientProviders from "@/components/ClientProviders";
 import ListingCard from "@/components/listings/ListingCard";
+import Button from "@/components/ui/Button";
 import Container from "@/components/Container";
 import PageHeader from "@/components/PageHeader";
 import { PencilEdit01Icon, Delete02Icon } from 'hugeicons-react';
@@ -54,8 +55,8 @@ const PropertiesClient: React.FC<PropertiesClientProps> = ({
         <div className="mt-8">
           {/* Page title */}
           <div className="mb-8">
-            <h1 className="text-2xl font-semibold text-stone-900 tracking-tight">My Listings</h1>
-            <p className="text-[14px] text-stone-400 mt-1">{listings.length} {listings.length === 1 ? 'listing' : 'listings'}</p>
+            <h1 className="text-2xl font-semibold text-stone-900 dark:text-stone-100 tracking-tight">My Listings</h1>
+            <p className="text-[14px] text-stone-400 dark:text-stone-500 mt-1">{listings.length} {listings.length === 1 ? 'listing' : 'listings'}</p>
           </div>
 
           {listings.length > 0 ? (
@@ -99,7 +100,7 @@ const PropertiesClient: React.FC<PropertiesClientProps> = ({
                           onMouseLeave={(e) => e.currentTarget.style.color = '#78716c'}
                         >
                           {deletingId === listing.id ? (
-                            <div className="w-4 h-4 border-[1.5px] border-stone-300 border-t-stone-600 rounded-full animate-spin" />
+                            <div className="w-4 h-4 border-[1.5px] border-stone-300 dark:border-stone-700 border-t-stone-600 rounded-full animate-spin" />
                           ) : (
                             <Delete02Icon className="w-[20px] h-[20px]" strokeWidth={1.5} />
                           )}
@@ -112,20 +113,18 @@ const PropertiesClient: React.FC<PropertiesClientProps> = ({
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-24 text-center">
-              <div className="w-16 h-16 rounded-2xl bg-stone-100 flex items-center justify-center mb-5">
-                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-stone-400">
+              <div className="w-16 h-16 rounded-2xl bg-stone-100 dark:bg-stone-800 flex items-center justify-center mb-5">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-stone-400 dark:text-stone-500">
                   <path d="M12 5v14M5 12h14" />
                 </svg>
               </div>
-              <p className="text-[15px] font-medium text-stone-700 mb-1">No listings yet</p>
-              <p className="text-[13px] text-stone-400 max-w-xs">Create your first listing to start showcasing your services.</p>
-              <button
-                onClick={() => router.push('/listing/new')}
-                className="mt-5 px-5 py-2.5 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-[13px] font-medium transition-all"
-                style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.12)' }}
-              >
-                Create Listing
-              </button>
+              <p className="text-[15px] font-medium text-stone-700 dark:text-stone-200 mb-1">No listings yet</p>
+              <p className="text-[13px] text-stone-400 dark:text-stone-500 max-w-xs">Create your first listing to start showcasing your services.</p>
+              <div className="mt-5">
+                <Button onClick={() => router.push('/listing/new')}>
+                  Create Listing
+                </Button>
+              </div>
             </div>
           )}
         </div>

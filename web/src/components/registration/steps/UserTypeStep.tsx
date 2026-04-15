@@ -1,10 +1,11 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { User, Users, GraduationCap } from 'lucide-react';
-import { ShoppingBag02Icon } from 'hugeicons-react';
+
 import TypeformHeading from '../TypeformHeading';
 import { itemVariants } from '../TypeformStep';
+import { ShoppingBag02Icon, UserIcon as User, UserMultipleIcon as Users } from 'hugeicons-react';
+import { GraduationCap } from 'lucide-react';
 
 interface UserTypeStepProps {
   userType: string;
@@ -61,27 +62,27 @@ export default function UserTypeStep({ userType, onUserTypeChange }: UserTypeSte
               className={`
                 flex flex-col items-center text-center gap-3 p-5 rounded-xl border transition-colors duration-200
                 ${isSelected
-                  ? 'border-gray-300 bg-gray-100 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)]'
-                  : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
+                  ? 'border-stone-300 dark:border-stone-700 bg-stone-100 dark:bg-stone-800 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)]'
+                  : 'border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 hover:border-stone-300 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900'
                 }
               `}
             >
               <div className={`
                 w-12 h-12 rounded-xl flex items-center justify-center transition-colors duration-200
-                ${isSelected ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-600'}
+                ${isSelected ? 'bg-stone-800 text-white' : 'bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300'}
               `}>
                 <Icon className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900">{option.title}</h3>
-                <p className="text-xs text-gray-500 mt-0.5">{option.description}</p>
+                <h3 className="font-semibold text-stone-900 dark:text-stone-100">{option.title}</h3>
+                <p className="text-xs text-stone-500 dark:text-stone-400 dark:text-stone-500 mt-0.5">{option.description}</p>
               </div>
             </motion.button>
           );
         })}
       </div>
 
-      <motion.p variants={itemVariants} className="text-sm text-gray-400 text-center mt-6">
+      <motion.p variants={itemVariants} className="text-sm text-stone-400 dark:text-stone-500 text-center mt-6">
         Select an option to continue
       </motion.p>
     </div>

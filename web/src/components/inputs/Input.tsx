@@ -1,9 +1,8 @@
 'use client';
 
 import { FieldErrors, FieldValues, UseFormRegister } from "react-hook-form";
-import { BiDollar } from "react-icons/bi";
+import { DollarCircleIcon as BiDollar, ViewIcon as FiEye, ViewOffIcon as FiEyeOff } from 'hugeicons-react';
 import { useState, useEffect, ChangeEvent } from 'react';
-import { FiEye, FiEyeOff } from 'react-icons/fi';
 
 interface InputProps {
   id: string;
@@ -165,7 +164,7 @@ const Input: React.FC<InputProps> = ({
   return (
     <div className={`w-full relative ${className ?? ''}`}>
       {formatPrice && (
-        <BiDollar size={24} className="text-neutral-700 absolute top-5 left-2 z-10" />
+        <BiDollar size={24} className="text-stone-700 dark:text-stone-200 absolute top-5 left-2 z-10" />
       )}
 
       <div className="relative">
@@ -176,12 +175,12 @@ const Input: React.FC<InputProps> = ({
             {...(isControlled ? { value, onBlur } : register?.(id, getValidationRules()))}
             placeholder={placeholder}
             className={`
-              peer w-full p-3 pt-6 bg-white border border-gray-200/60 rounded-xl
+              peer w-full p-3 pt-6 bg-white dark:bg-stone-900 border border-stone-200/60 rounded-xl
               outline-none transition-all duration-200 resize-none h-[200px]
               disabled:opacity-50 disabled:cursor-not-allowed
-              hover:border-gray-300
+              hover:border-stone-300
               ${formatPrice ? 'pl-9' : 'pl-4'}
-              ${errors?.[id] ? 'border-rose-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/10' : 'focus:border-[var(--accent-color)] focus:ring-2 focus:ring-[var(--accent-color-light)]'}
+              ${errors?.[id] ? 'border-rose-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/10' : 'focus:border-stone-900 focus:ring-2 focus:ring-stone-100'}
               ${inputClassName ?? ''}
             `}
             onChange={handleChange}
@@ -202,12 +201,12 @@ const Input: React.FC<InputProps> = ({
             }
             spellCheck={id === "name" || id === "bio"}
             className={`
-              peer w-full p-3 pt-6 bg-white border border-gray-200/60 rounded-xl h-[58px]
+              peer w-full p-3 pt-6 bg-white dark:bg-stone-900 border border-stone-200/60 rounded-xl h-[58px]
               outline-none transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed
-              hover:border-gray-300
+              hover:border-stone-300
               ${formatPrice ? 'pl-9' : 'pl-4'}
               ${type === "password" && showPasswordValidation ? 'pr-24' : type === "password" ? 'pr-12' : 'pr-4'}
-              ${errors?.[id] ? 'border-rose-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/10' : 'focus:border-[var(--accent-color)] focus:ring-2 focus:ring-[var(--accent-color-light)]'}
+              ${errors?.[id] ? 'border-rose-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/10' : 'focus:border-stone-900 focus:ring-2 focus:ring-stone-100'}
               ${inputClassName ?? ''}
             `}
             onChange={handleChange}
@@ -223,7 +222,7 @@ const Input: React.FC<InputProps> = ({
               e.stopPropagation();
               setShowPassword(!showPassword);
             }}
-            className="absolute right-4 top-[20px] p-1 rounded-xl text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-all duration-200 z-10"
+            className="absolute right-4 top-[20px] p-1 rounded-xl text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900 transition-all duration-200 z-10"
             tabIndex={-1}
             aria-label={showPassword ? "Hide password" : "Show password"}
           >
@@ -240,7 +239,7 @@ const Input: React.FC<InputProps> = ({
               e.stopPropagation();
               setShowPasswordHelp(!showPasswordHelp);
             }}
-            className="absolute right-12 top-[20px] p-1 rounded-xl text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-all duration-200 z-10"
+            className="absolute right-12 top-[20px] p-1 rounded-xl text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900 transition-all duration-200 z-10"
             tabIndex={-1}
             aria-label="Password requirements"
             title="Show password requirements"
@@ -257,13 +256,13 @@ const Input: React.FC<InputProps> = ({
           <label
             htmlFor={id}
             className={`
-              absolute text-sm duration-150 transform origin-[0] pointer-events-none bg-white px-1 z-10
+              absolute text-sm duration-150 transform origin-[0] pointer-events-none bg-white dark:bg-stone-900 px-1 z-10
               ${formatPrice ? 'left-9' : 'left-3'}
               ${errors?.[id]
                 ? 'text-rose-500 scale-75 -translate-y-4 top-5'
                 : isControlled && value
-                  ? 'text-gray-500 -translate-y-3 top-5 peer-focus:scale-75 peer-focus:-translate-y-4'
-                  : 'text-gray-500 -translate-y-3 top-5 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4'
+                  ? 'text-stone-500 dark:text-stone-400 dark:text-stone-500 -translate-y-3 top-5 peer-focus:scale-75 peer-focus:-translate-y-4'
+                  : 'text-stone-500 dark:text-stone-400 dark:text-stone-500 -translate-y-3 top-5 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4'
               }
             `}
           >
@@ -273,7 +272,7 @@ const Input: React.FC<InputProps> = ({
       </div>
 
       {maxLength && (
-        <span className="text-xs text-gray-500 text-right block mt-1">
+        <span className="text-xs text-stone-500 dark:text-stone-400 dark:text-stone-500 text-right block mt-1">
           {charCount}/{maxLength}
         </span>
       )}
@@ -286,30 +285,30 @@ const Input: React.FC<InputProps> = ({
 
       {/* Password help - Only shows when showPasswordHelp is true */}
       {type === "password" && showPasswordValidation && showPasswordHelp && (
-        <div className="mt-3 -mb-6 p-4 bg-gray-50/80 backdrop-blur-sm border border-gray-200/60 rounded-xl">
+        <div className="mt-3 -mb-6 p-4 bg-stone-50/80 backdrop-blur-sm border border-stone-200/60 rounded-xl">
           <div className="grid grid-cols-2 gap-2.5 text-xs">
-            <div className={`flex items-center gap-2 transition-colors duration-200 ${passwordValidation.hasMinLength ? 'text-green-600' : 'text-gray-400'}`}>
-              <div className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${passwordValidation.hasMinLength ? 'bg-green-500 shadow-sm shadow-green-500/50' : 'bg-gray-300'}`} />
+            <div className={`flex items-center gap-2 transition-colors duration-200 ${passwordValidation.hasMinLength ? 'text-green-600' : 'text-stone-400 dark:text-stone-500'}`}>
+              <div className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${passwordValidation.hasMinLength ? 'bg-green-500 shadow-sm shadow-green-500/50' : 'bg-stone-300'}`} />
               At least 6 characters
             </div>
-            <div className={`flex items-center gap-2 transition-colors duration-200 ${passwordValidation.hasMaxLength ? 'text-green-600' : 'text-gray-400'}`}>
-              <div className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${passwordValidation.hasMaxLength ? 'bg-green-500 shadow-sm shadow-green-500/50' : 'bg-gray-300'}`} />
+            <div className={`flex items-center gap-2 transition-colors duration-200 ${passwordValidation.hasMaxLength ? 'text-green-600' : 'text-stone-400 dark:text-stone-500'}`}>
+              <div className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${passwordValidation.hasMaxLength ? 'bg-green-500 shadow-sm shadow-green-500/50' : 'bg-stone-300'}`} />
               Max 18 characters
             </div>
-            <div className={`flex items-center gap-2 transition-colors duration-200 ${passwordValidation.hasUpperCase ? 'text-green-600' : 'text-gray-400'}`}>
-              <div className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${passwordValidation.hasUpperCase ? 'bg-green-500 shadow-sm shadow-green-500/50' : 'bg-gray-300'}`} />
+            <div className={`flex items-center gap-2 transition-colors duration-200 ${passwordValidation.hasUpperCase ? 'text-green-600' : 'text-stone-400 dark:text-stone-500'}`}>
+              <div className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${passwordValidation.hasUpperCase ? 'bg-green-500 shadow-sm shadow-green-500/50' : 'bg-stone-300'}`} />
               One uppercase letter
             </div>
-            <div className={`flex items-center gap-2 transition-colors duration-200 ${passwordValidation.hasLowerCase ? 'text-green-600' : 'text-gray-400'}`}>
-              <div className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${passwordValidation.hasLowerCase ? 'bg-green-500 shadow-sm shadow-green-500/50' : 'bg-gray-300'}`} />
+            <div className={`flex items-center gap-2 transition-colors duration-200 ${passwordValidation.hasLowerCase ? 'text-green-600' : 'text-stone-400 dark:text-stone-500'}`}>
+              <div className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${passwordValidation.hasLowerCase ? 'bg-green-500 shadow-sm shadow-green-500/50' : 'bg-stone-300'}`} />
               One lowercase letter
             </div>
-            <div className={`flex items-center gap-2 transition-colors duration-200 ${passwordValidation.hasNumber ? 'text-green-600' : 'text-gray-400'}`}>
-              <div className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${passwordValidation.hasNumber ? 'bg-green-500 shadow-sm shadow-green-500/50' : 'bg-gray-300'}`} />
+            <div className={`flex items-center gap-2 transition-colors duration-200 ${passwordValidation.hasNumber ? 'text-green-600' : 'text-stone-400 dark:text-stone-500'}`}>
+              <div className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${passwordValidation.hasNumber ? 'bg-green-500 shadow-sm shadow-green-500/50' : 'bg-stone-300'}`} />
               One number
             </div>
-            <div className={`flex items-center gap-2 transition-colors duration-200 ${passwordValidation.hasSpecialChar ? 'text-green-600' : 'text-gray-400'}`}>
-              <div className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${passwordValidation.hasSpecialChar ? 'bg-green-500 shadow-sm shadow-green-500/50' : 'bg-gray-300'}`} />
+            <div className={`flex items-center gap-2 transition-colors duration-200 ${passwordValidation.hasSpecialChar ? 'text-green-600' : 'text-stone-400 dark:text-stone-500'}`}>
+              <div className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${passwordValidation.hasSpecialChar ? 'bg-green-500 shadow-sm shadow-green-500/50' : 'bg-stone-300'}`} />
               One special character
             </div>
           </div>

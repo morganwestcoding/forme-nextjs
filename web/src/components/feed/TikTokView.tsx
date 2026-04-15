@@ -33,8 +33,9 @@ import Image from 'next/image';
 import { format } from 'date-fns';
 import { SafePost, SafeUser, SafeListing, SafeEmployee, SafeShop } from '@/app/types';
 import { useRouter } from 'next/navigation';
-import { X } from 'lucide-react';
+
 import { placeholderDataUri } from '@/lib/placeholders';
+import { Cancel01Icon as X } from 'hugeicons-react';
 
 type ContentItem = {
   type: 'post' | 'listing' | 'employee' | 'shop';
@@ -424,7 +425,7 @@ const TikTokView: React.FC<TikTokViewProps> = ({ items, currentUser, onClose }) 
               />
             )
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-purple-900 to-blue-900 flex items-center justify-center">
+            <div className="w-full h-full bg-gradient-to-br from-purple-900 to-stone-900 flex items-center justify-center">
               <p className="text-white text-2xl text-center px-8 max-w-2xl leading-relaxed">{item.data.content}</p>
             </div>
           )}
@@ -447,7 +448,7 @@ const TikTokView: React.FC<TikTokViewProps> = ({ items, currentUser, onClose }) 
                     onClick={(e) => handleProgressClick(item.data.id, e)}
                   >
                     <div
-                      className="h-full bg-white rounded-full transition-all duration-150"
+                      className="h-full bg-white dark:bg-stone-900 rounded-full transition-all duration-150"
                       style={{ width: `${videoState.duration ? (videoState.currentTime / videoState.duration) * 100 : 0}%` }}
                     />
                   </div>
@@ -538,7 +539,7 @@ const TikTokView: React.FC<TikTokViewProps> = ({ items, currentUser, onClose }) 
                               onClick={(e) => handleProgressClick(item.data.id, e)}
                             >
                               <div
-                                className="h-full bg-white rounded-full transition-all duration-150"
+                                className="h-full bg-white dark:bg-stone-900 rounded-full transition-all duration-150"
                                 style={{ width: `${videoState.duration ? (videoState.currentTime / videoState.duration) * 100 : 0}%` }}
                               />
                             </div>
@@ -632,8 +633,8 @@ const TikTokView: React.FC<TikTokViewProps> = ({ items, currentUser, onClose }) 
                   </div>
                 )
               ) : (
-                <div className="flex-1 bg-white flex items-center justify-center p-8 relative">
-                  <p className="text-gray-900 text-lg text-center leading-relaxed">{item.data.content}</p>
+                <div className="flex-1 bg-white dark:bg-stone-900 flex items-center justify-center p-8 relative">
+                  <p className="text-stone-900 dark:text-stone-100 text-lg text-center leading-relaxed">{item.data.content}</p>
 
                   <div className="absolute bottom-4 left-0 right-0 px-4 z-30">
                     <div className="video-controls rounded-2xl p-6 text-white shadow-2xl">
@@ -751,7 +752,7 @@ const TikTokView: React.FC<TikTokViewProps> = ({ items, currentUser, onClose }) 
 
       {/* Backdrop with fade */}
       <div
-        className={`fixed inset-0 z-40 bg-neutral-900/70 transition-opacity duration-300 ${
+        className={`fixed inset-0 z-40 bg-stone-900/70 transition-opacity duration-300 ${
           showModal ? 'opacity-100' : 'opacity-0'
         }`}
         style={{ pointerEvents: showModal ? 'auto' : 'none' }}

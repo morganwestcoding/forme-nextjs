@@ -5,11 +5,12 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-import { ArrowLeft, Send } from 'lucide-react';
+
 import useMessageModal from '@/app/hooks/useMessageModal';
 import useInboxModal from '@/app/hooks/useInboxModal';
 import { useSSE } from '@/app/hooks/useSSE';
 import Modal from './Modal';
+import { ArrowLeft01Icon as ArrowLeft, SentIcon as Send } from 'hugeicons-react';
 
 interface Message {
   id: string;
@@ -29,19 +30,19 @@ const messagesCache = new Map<string, Message[]>();
 
 // Generate avatar colors based on name
 const getAvatarColor = (name?: string | null) => {
-  if (!name) return 'bg-gray-500';
+  if (!name) return 'bg-stone-500';
   
   const colors = [
-    'bg-blue-500',
+    'bg-stone-500',
     'bg-green-500', 
     'bg-yellow-500',
     'bg-purple-500',
     'bg-pink-500',
-    'bg-indigo-500',
+    'bg-stone-500',
     'bg-teal-500',
     'bg-orange-500',
     'bg-red-500',
-    'bg-cyan-500'
+    'bg-stone-500'
   ];
   
   const index = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
@@ -253,11 +254,11 @@ const MessageModal: React.FC = () => {
 
     return (
       <div className="relative flex items-center my-5">
-        <div className="flex-grow border-t border-gray-100" />
-        <span className="mx-3 text-gray-400 font-medium text-[10px] px-2.5 py-0.5 rounded-full bg-gray-50">
+        <div className="flex-grow border-t border-stone-100 dark:border-stone-800" />
+        <span className="mx-3 text-stone-400 dark:text-stone-500 font-medium text-[10px] px-2.5 py-0.5 rounded-full bg-stone-50 dark:bg-stone-900">
           {formatted}
         </span>
-        <div className="flex-grow border-t border-gray-100" />
+        <div className="flex-grow border-t border-stone-100 dark:border-stone-800" />
       </div>
     );
   };
@@ -269,20 +270,20 @@ const MessageModal: React.FC = () => {
       {/* Back button */}
       <button
         onClick={handleBackToInbox}
-        className="absolute left-4 top-5 p-1.5 rounded-xl hover:bg-gray-100 transition-colors z-20"
+        className="absolute left-4 top-5 p-1.5 rounded-xl hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 transition-colors z-20"
         aria-label="Back to Inbox"
       >
-        <ArrowLeft className="w-4 h-4 text-gray-600" />
+        <ArrowLeft className="w-4 h-4 text-stone-600 dark:text-stone-300" />
       </button>
 
       {/* Clean Header with user info */}
-      <div className="flex items-center justify-center py-4 px-4 border-b border-gray-100">
+      <div className="flex items-center justify-center py-4 px-4 border-b border-stone-100 dark:border-stone-800">
         <div className="flex items-center gap-3">
           {/* Avatar */}
           <div className="relative flex-shrink-0">
             <div
               className={`w-11 h-11 rounded-full overflow-hidden flex items-center justify-center text-white font-semibold text-sm
-                         ${!otherUser?.image ? avatarColor : 'bg-gray-100'}`}
+                         ${!otherUser?.image ? avatarColor : 'bg-stone-100 dark:bg-stone-800'}`}
             >
               {otherUser?.image ? (
                 <Image
@@ -306,16 +307,13 @@ const MessageModal: React.FC = () => {
                 <span>{initials(otherUser?.name)}</span>
               )}
             </div>
-            {/* Online status */}
-            <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></div>
           </div>
 
           {/* Name */}
           <div>
-            <h3 className="font-semibold text-gray-900 text-sm tracking-tight">
+            <h3 className="font-semibold text-stone-900 dark:text-stone-100 text-sm tracking-tight">
               {otherUser?.name || 'Loading...'}
             </h3>
-            <p className="text-[10px] text-gray-500 font-medium">Active now</p>
           </div>
         </div>
       </div>
@@ -323,9 +321,9 @@ const MessageModal: React.FC = () => {
       {isLoading ? (
         <div className="flex-grow flex items-center justify-center">
           <div className="flex items-center gap-1.5">
-            <div className="w-1.5 h-1.5 rounded-full animate-[bounce_1s_ease-in-out_infinite]" style={{ background: 'var(--accent-color)' }} />
-            <div className="w-1.5 h-1.5 rounded-full animate-[bounce_1s_ease-in-out_0.15s_infinite]" style={{ background: 'var(--accent-color)' }} />
-            <div className="w-1.5 h-1.5 rounded-full animate-[bounce_1s_ease-in-out_0.3s_infinite]" style={{ background: 'var(--accent-color)' }} />
+            <div className="w-1.5 h-1.5 rounded-full bg-black animate-[bounce_1s_ease-in-out_infinite]" />
+            <div className="w-1.5 h-1.5 rounded-full bg-black animate-[bounce_1s_ease-in-out_0.15s_infinite]" />
+            <div className="w-1.5 h-1.5 rounded-full bg-black animate-[bounce_1s_ease-in-out_0.3s_infinite]" />
           </div>
         </div>
       ) : (
@@ -342,34 +340,12 @@ const MessageModal: React.FC = () => {
                     <div key={message.id} className="w-full">
                       <div className={`w-full flex ${isOther ? 'justify-start' : 'justify-end'}`}>
                         <div className={`relative w-full flex ${isOther ? 'flex-row' : 'flex-row-reverse'} items-end gap-2 max-w-[80%]`}>
-                          {/* Avatar - only show for other user and at end of message runs */}
-                          {isOther && showTime && (
-                            <div className="w-7 h-7 rounded-full overflow-hidden shrink-0 mb-0.5">
-                              <div
-                                className={`w-full h-full flex items-center justify-center text-white font-semibold text-[10px]
-                                           ${!message.sender.image ? getAvatarColor(message.sender.name) : 'bg-gray-100'}`}
-                              >
-                                {message.sender.image ? (
-                                  <Image
-                                    src={message.sender.image}
-                                    alt={message.sender.name || 'User'}
-                                    width={28}
-                                    height={28}
-                                    className="object-cover w-full h-full"
-                                  />
-                                ) : (
-                                  <span>{initials(message.sender.name)}</span>
-                                )}
-                              </div>
-                            </div>
-                          )}
-
                           {/* Message Bubble */}
                           <div
                             className={`inline-block w-auto max-w-full rounded-xl px-3.5 py-2.5 ${
-                              isOther ? 'bg-neutral-100 text-neutral-900' : 'text-white'
+                              isOther ? 'bg-stone-200 dark:bg-stone-700 text-stone-900 dark:text-stone-100' : 'text-white'
                             } ${!isOther && showTime ? 'rounded-br-sm' : ''} ${isOther && showTime ? 'rounded-bl-sm' : ''}`}
-                            style={!isOther ? { background: 'var(--accent-color)' } : undefined}
+                            style={!isOther ? { background: '#1c1917' } : undefined}
                           >
                             <p className="whitespace-pre-wrap break-words text-[13px] leading-relaxed">
                               {message.content}
@@ -379,8 +355,8 @@ const MessageModal: React.FC = () => {
                       </div>
 
                       {showTime && (
-                        <div className={`mt-1 flex ${isOther ? 'justify-start' : 'justify-end'} ${isOther ? 'ml-10' : 'mr-2'}`}>
-                          <span className="text-[11px] text-gray-500">
+                        <div className={`mt-1 flex ${isOther ? 'justify-start' : 'justify-end'} ${isOther ? 'ml-2' : 'mr-2'}`}>
+                          <span className="text-[11px] text-stone-500 dark:text-stone-400 dark:text-stone-500">
                             {new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </span>
                         </div>
@@ -391,21 +367,21 @@ const MessageModal: React.FC = () => {
               </React.Fragment>
             ))}
             {isTyping && (
-              <div className="flex items-center gap-2 ml-10 mt-1">
-                <div className="flex items-center gap-1 bg-gray-100 rounded-xl px-3 py-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: '0ms' }} />
-                  <div className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: '150ms' }} />
-                  <div className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: '300ms' }} />
+              <div className="flex items-center gap-2 ml-2 mt-1">
+                <div className="flex items-center gap-1 bg-stone-100 dark:bg-stone-800 rounded-xl px-3 py-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-stone-400 animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <div className="w-1.5 h-1.5 rounded-full bg-stone-400 animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <div className="w-1.5 h-1.5 rounded-full bg-stone-400 animate-bounce" style={{ animationDelay: '300ms' }} />
                 </div>
               </div>
             )}
             <div ref={messagesEndRef} />
           </div>
           {/* Message Input */}
-          <div className="p-3.5 border-t border-neutral-100">
+          <div className="p-3.5 border-t border-stone-100 dark:border-stone-800">
             <div className="flex items-center gap-2.5">
               <div
-                className="flex-1 relative border border-neutral-200 rounded-2xl overflow-hidden"
+                className="flex-1 relative border border-stone-200 dark:border-stone-800 rounded-2xl overflow-hidden"
                 style={{ background: 'linear-gradient(to right, rgb(245 245 245) 0%, rgb(241 241 241) 100%)' }}
               >
                 <input
@@ -415,14 +391,14 @@ const MessageModal: React.FC = () => {
                   onKeyPress={handleKeyPress}
                   placeholder="Type a message..."
                   className="w-full pl-4 pr-12 py-2.5 text-[14px] bg-transparent border-none outline-none
-                             text-neutral-900 placeholder-neutral-400"
+                             text-stone-900 dark:text-stone-100 placeholder-stone-400"
                 />
                 <button
                   onClick={sendMessage}
                   disabled={!newMessage.trim()}
                   className="absolute right-1.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-xl
                              flex items-center justify-center transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed text-white"
-                  style={{ background: newMessage.trim() ? 'var(--accent-color)' : 'rgb(229 229 229)' }}
+                  style={{ background: newMessage.trim() ? '#1c1917' : 'rgb(229 229 229)' }}
                   aria-label="Send message"
                 >
                   <Send className="w-3.5 h-3.5" />

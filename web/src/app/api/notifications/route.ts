@@ -22,6 +22,10 @@ export async function GET(request: Request) {
       orderBy: { createdAt: 'desc' },
       take: limit + 1, // fetch one extra to detect hasMore
       ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
+      include: {
+        relatedUser: { select: { id: true, name: true, image: true } },
+        relatedListing: { select: { id: true, title: true, imageSrc: true } },
+      },
     });
 
     const hasMore = notifications.length > limit;

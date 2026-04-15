@@ -48,10 +48,10 @@ const WelcomeModal: React.FC = () => {
   const body = (
     <div className="flex flex-col items-center text-center py-4">
       {/* Heading */}
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+      <h2 className="text-2xl font-bold text-stone-900 dark:text-stone-100 dark:text-white mb-2">
         Welcome to ForMe
       </h2>
-      <p className="text-[14px] text-gray-500 dark:text-gray-400 leading-relaxed max-w-sm mb-2">
+      <p className="text-[14px] text-stone-500 dark:text-stone-400 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500 leading-relaxed max-w-sm mb-2">
         Discover local businesses, book services, shop products, and connect with professionals — all in one place.
       </p>
 
@@ -61,9 +61,9 @@ const WelcomeModal: React.FC = () => {
           type="checkbox"
           checked={neverShow}
           onChange={(e) => setNeverShow(e.target.checked)}
-          className="w-4 h-4 rounded border-gray-300 dark:border-neutral-600 text-gray-900 dark:text-white focus:ring-gray-500 dark:focus:ring-neutral-400 bg-transparent"
+          className="w-4 h-4 rounded border-stone-300 dark:border-stone-700 dark:border-stone-600 text-stone-900 dark:text-stone-100 dark:text-white focus:ring-stone-500 dark:focus:ring-stone-400 bg-transparent"
         />
-        <span className="text-[12px] text-gray-400 dark:text-gray-500">
+        <span className="text-[12px] text-stone-400 dark:text-stone-500 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500">
           Don&apos;t show this again
         </span>
       </label>

@@ -36,7 +36,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 
 const CategoryInputBase: React.FC<CategoryInputProps> = ({ label, selected, onClick }) => {
   const Icon = iconMap[label] || SparklesIcon;
-  const { accentColor } = useTheme();
+  const {} = useTheme();
 
   // Calculate a darker shade for the gradient
   const getDarkerShade = (hex: string): string => {
@@ -48,7 +48,7 @@ const CategoryInputBase: React.FC<CategoryInputProps> = ({ label, selected, onCl
     return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
   };
 
-  const darkerColor = getDarkerShade(accentColor);
+  const darkerColor = getDarkerShade('#1c1917');
 
   return (
     <button
@@ -63,16 +63,16 @@ const CategoryInputBase: React.FC<CategoryInputProps> = ({ label, selected, onCl
         focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2
         ${selected
           ? 'text-white border'
-          : 'bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-600 text-gray-600 dark:text-gray-300 hover:border-gray-400 hover:text-gray-700 dark:hover:text-white'
+          : 'bg-white dark:bg-stone-900 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 dark:border-stone-600 text-stone-600 dark:text-stone-300 dark:text-stone-300 hover:border-stone-400 hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 dark:hover:text-white'
         }
       `}
       style={{
         ...(selected ? {
-          background: `linear-gradient(to bottom right, ${accentColor}, ${darkerColor})`,
-          borderColor: `${accentColor}80`
+          background: `linear-gradient(to bottom right, ${'#1c1917'}, ${darkerColor})`,
+          borderColor: `${'#1c1917'}80`
         } : {}),
         // @ts-expect-error CSS custom property for focus ring
-        '--tw-ring-color': accentColor
+        '--tw-ring-color': '#1c1917'
       }}
     >
       <div className="relative z-10 flex flex-col items-center gap-2">
@@ -80,12 +80,12 @@ const CategoryInputBase: React.FC<CategoryInputProps> = ({ label, selected, onCl
         <div
           className={`
             transition-all duration-300
-            ${selected ? 'text-white' : 'text-gray-500 dark:text-gray-400'}
+            ${selected ? 'text-white' : 'text-stone-500 dark:text-stone-400 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500'}
           `}
           style={!selected ? undefined : undefined}
           onMouseEnter={(e) => {
             if (!selected) {
-              e.currentTarget.style.color = accentColor;
+              e.currentTarget.style.color = '#1c1917';
             }
           }}
           onMouseLeave={(e) => {
@@ -104,7 +104,7 @@ const CategoryInputBase: React.FC<CategoryInputProps> = ({ label, selected, onCl
           className={`
             text-xs font-medium leading-tight
             transition-all duration-300 ease-out
-            ${selected ? 'text-white' : 'text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white'}
+            ${selected ? 'text-white' : 'text-stone-700 dark:text-stone-200 dark:text-stone-300 group-hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 dark:group-hover:text-white'}
             transform-gpu
           `}
         >

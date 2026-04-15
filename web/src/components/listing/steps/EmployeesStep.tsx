@@ -55,7 +55,7 @@ export default function EmployeesStep({
       </motion.div>
 
       {employees.length === 0 && (
-        <p className="text-sm text-gray-400 text-center mt-6">
+        <p className="text-sm text-stone-400 dark:text-stone-500 text-center mt-6">
           Optional — you can add team members later
         </p>
       )}

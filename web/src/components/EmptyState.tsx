@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 
-import ModalButton from "./modals/ModalButton";
+import Button from "./ui/Button";
 import Heading from "./Heading";
 
 interface EmptyStateProps {
@@ -36,11 +36,14 @@ const EmptyState: React.FC<EmptyStateProps> = ({
       />
       <div className="w-48 mt-4">
         {showReset && (
-          <ModalButton
-            outline
-            label="Remove all filters"
+          <Button
+            variant="outline"
+            size="lg"
+            fullWidth
             onClick={() => router.push('/')}
-          />
+          >
+            Remove all filters
+          </Button>
         )}
       </div>
     </div>

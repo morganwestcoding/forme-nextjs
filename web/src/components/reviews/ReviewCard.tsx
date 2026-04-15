@@ -72,13 +72,13 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, currentUser }) => {
   const isVerified = review.user.verificationStatus === 'verified';
 
   return (
-    <div className="group max-w-[250px] h-[280px] bg-white rounded-2xl p-4 border border-gray-100 hover:border-gray-200 hover:shadow-md hover:-translate-y-1 hover:scale-[1.01] transition-all duration-300 flex flex-col">
+    <div className="group max-w-[250px] h-[280px] bg-white dark:bg-stone-900 rounded-2xl p-4 border border-stone-100 dark:border-stone-800 hover:border-stone-200 dark:border-stone-800 hover:shadow-md hover:-translate-y-1 hover:scale-[1.01] transition-all duration-300 flex flex-col">
       {/* Header: Avatar + Name */}
       <div className="flex items-center gap-2 min-w-0">
         {/* Avatar */}
         <button
           onClick={handleProfileClick}
-          className="relative flex-shrink-0 w-8 h-8 rounded-full overflow-hidden bg-gray-100 hover:ring-2 hover:ring-gray-200 transition-all"
+          className="relative flex-shrink-0 w-8 h-8 rounded-full overflow-hidden bg-stone-100 dark:bg-stone-800 hover:ring-2 hover:ring-stone-200 transition-all"
         >
           <img
             src={review.user.image || review.user.imageSrc || placeholderDataUri(review.user.name || 'User')}
@@ -92,7 +92,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, currentUser }) => {
           <div className="flex items-center gap-1.5">
             <button
               onClick={handleProfileClick}
-              className="font-semibold text-gray-900 text-sm truncate hover:underline"
+              className="font-semibold text-stone-900 dark:text-stone-100 text-sm truncate hover:underline"
             >
               {review.user.name || 'Anonymous'}
             </button>
@@ -107,7 +107,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, currentUser }) => {
                 <path d="M9 12.8929C9 12.8929 10.2 13.5447 10.8 14.5C10.8 14.5 12.6 10.75 15 9.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
                 <defs>
                   <linearGradient id="reviewVerifiedGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="#60A5FA" />
+                    <stop offset="0%" stopColor="#1c1917" />
                     <stop offset="100%" stopColor="#4A90E2" />
                   </linearGradient>
                 </defs>
@@ -117,12 +117,12 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, currentUser }) => {
 
           {/* Time & Verified Booking */}
           <div className="flex items-center gap-2 mt-0.5">
-            <span className="text-xs text-gray-400">
+            <span className="text-xs text-stone-400 dark:text-stone-500">
               {getRelativeTime(review.createdAt)}
             </span>
             {review.isVerifiedBooking && (
               <>
-                <span className="text-gray-200">·</span>
+                <span className="text-stone-200">·</span>
                 <span className="inline-flex items-center gap-1 text-xs text-emerald-600 font-medium">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -138,11 +138,11 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, currentUser }) => {
       {/* Comment */}
       <div className="flex-1 mt-3 overflow-hidden">
         {review.comment ? (
-          <p className="text-sm text-gray-600 leading-relaxed line-clamp-5">
+          <p className="text-sm text-stone-600 dark:text-stone-300 leading-relaxed line-clamp-5">
             {review.comment}
           </p>
         ) : (
-          <p className="text-sm text-gray-400 italic">No comment</p>
+          <p className="text-sm text-stone-400 dark:text-stone-500 italic">No comment</p>
         )}
       </div>
 
@@ -153,7 +153,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, currentUser }) => {
             key={star}
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
-            className={`w-4 h-4 ${star <= review.rating ? 'text-amber-400' : 'text-gray-200'}`}
+            className={`w-4 h-4 ${star <= review.rating ? 'text-amber-400' : 'text-stone-200'}`}
             fill="currentColor"
           >
             <path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z"/>
@@ -162,15 +162,15 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, currentUser }) => {
       </div>
 
       {/* Footer: Helpful */}
-      <div className="pt-2 border-t border-gray-100 flex items-center justify-between">
+      <div className="pt-2 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between">
         <button
           onClick={handleHelpfulVote}
           disabled={isVoting || !currentUser || currentUser.id === review.userId}
           className={`
             inline-flex items-center gap-1.5 text-xs font-medium transition-colors
             ${hasVoted
-              ? 'text-blue-600'
-              : 'text-gray-400 hover:text-gray-600'
+              ? 'text-stone-600 dark:text-stone-300'
+              : 'text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300'
             }
             ${(!currentUser || currentUser.id === review.userId) ? 'cursor-default' : 'cursor-pointer'}
           `}
@@ -192,7 +192,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, currentUser }) => {
         {/* Report (only show for other users' reviews) */}
         {currentUser && currentUser.id !== review.userId && (
           <button
-            className="text-xs text-gray-300 hover:text-gray-400 transition-colors opacity-0 group-hover:opacity-100"
+            className="text-xs text-stone-300 hover:text-stone-400 dark:text-stone-500 transition-colors opacity-0 group-hover:opacity-100"
           >
             Report
           </button>

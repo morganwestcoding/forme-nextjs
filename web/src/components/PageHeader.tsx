@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
+import Logo from '@/components/ui/Logo';
 import { PlusSignIcon, Notification03Icon, MessageMultiple01Icon } from 'hugeicons-react';
 import { SafeUser } from '@/app/types';
 import useInboxModal from '@/app/hooks/useInboxModal';
@@ -56,7 +57,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
           {/* Search and Controls */}
           <div className="flex items-center gap-3 w-full">
             <Link href="/" className="mr-4 shrink-0">
-              <Image src="/logos/fm-logo.png" alt="Logo" width={72} height={46} className="opacity-90 hover:opacity-100 transition-opacity duration-200" />
+              <Logo />
             </Link>
             <div id="wt-search" className="flex-1 max-w-xl">
               <PageSearch
@@ -66,7 +67,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
                 showFilters={false}
                 showDefaultActions={false}
                 leftIcon={
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 shrink-0 ml-1.5 text-stone-500 dark:text-zinc-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 shrink-0 ml-1.5 text-stone-500 dark:text-stone-400">
                     <path d="M15 15L16.5 16.5" />
                     <path d="M16.9333 19.0252C16.3556 18.4475 16.3556 17.5109 16.9333 16.9333C17.5109 16.3556 18.4475 16.3556 19.0252 16.9333L21.0667 18.9748C21.6444 19.5525 21.6444 20.4891 21.0667 21.0667C20.4891 21.6444 19.5525 21.6444 18.9748 21.0667L16.9333 19.0252Z" />
                     <path d="M16.5 9.5C16.5 5.63401 13.366 2.5 9.5 2.5C5.63401 2.5 2.5 5.63401 2.5 9.5C2.5 13.366 5.63401 16.5 9.5 16.5C13.366 16.5 16.5 13.366 16.5 9.5Z" />
@@ -76,7 +77,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
                   <button
                     type="button"
                     onClick={() => locationModal.onOpen()}
-                    className="flex items-center gap-2 px-6 py-1.5 rounded-xl text-stone-500 dark:text-zinc-400 hover:text-stone-700 dark:hover:text-zinc-200 hover:bg-stone-100 dark:hover:bg-zinc-800 transition-colors text-[13px] whitespace-nowrap"
+                    className="flex items-center gap-2 px-6 py-1.5 rounded-xl text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors text-[13px] whitespace-nowrap"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5" color="currentColor" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
                       <path d="M10.0808 2C5.47023 2.9359 2 7.01218 2 11.899C2 17.4776 6.52238 22 12.101 22C16.9878 22 21.0641 18.5298 22 13.9192" />
@@ -93,19 +94,19 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
               <button
                 id="wt-create"
                 onClick={() => createModal.onOpen()}
-                className="shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-stone-500 dark:text-zinc-400 hover:text-stone-700 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-zinc-800 transition-colors"
+                className="shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
               >
                 <PlusSignIcon className="w-5 h-5 sm:w-[22px] sm:h-[22px]" strokeWidth={1.5} />
               </button>
               <button
                 id="wt-notifications"
                 onClick={() => notificationsModal.onOpen()}
-                className="relative shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-stone-500 dark:text-zinc-400 hover:text-stone-700 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-zinc-800 transition-colors"
+                className="relative shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
               >
                 <Notification03Icon className="w-5 h-5 sm:w-[22px] sm:h-[22px]" strokeWidth={1.5} />
                 {unreadNotifications > 0 && (
                   <span
-                    className="absolute top-1.5 right-1.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full text-white text-[10px] font-semibold leading-none ring-2 ring-white dark:ring-zinc-950"
+                    className="absolute top-1.5 right-1.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full text-white text-[10px] font-semibold leading-none ring-2 ring-white dark:ring-stone-950"
                     style={{
                       background: 'linear-gradient(135deg, #2a2a2a 0%, #000 100%)',
                       boxShadow: '0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.12)',
@@ -118,12 +119,12 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
               <button
                 id="wt-messages"
                 onClick={() => inboxModal.onOpen(currentUser)}
-                className="relative shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-stone-500 dark:text-zinc-400 hover:text-stone-700 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-zinc-800 transition-colors"
+                className="relative shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
               >
                 <MessageMultiple01Icon className="w-5 h-5 sm:w-[22px] sm:h-[22px]" strokeWidth={1.5} />
                 {unreadMessages > 0 && (
                   <span
-                    className="absolute top-1.5 right-1.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full text-white text-[10px] font-semibold leading-none ring-2 ring-white dark:ring-zinc-950"
+                    className="absolute top-1.5 right-1.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full text-white text-[10px] font-semibold leading-none ring-2 ring-white dark:ring-stone-950"
                     style={{
                       background: 'linear-gradient(135deg, #2a2a2a 0%, #000 100%)',
                       boxShadow: '0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.12)',
@@ -148,7 +149,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
                       className="object-cover w-full h-full"
                     />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-zinc-200 to-zinc-300 dark:from-zinc-600 dark:to-zinc-700 flex items-center justify-center text-zinc-600 dark:text-zinc-300 text-sm font-medium">
+                    <div className="w-full h-full bg-gradient-to-br from-stone-200 to-stone-300 dark:from-stone-600 dark:to-stone-700 flex items-center justify-center text-stone-600 dark:text-stone-300 text-sm font-medium">
                       G
                     </div>
                   )}
@@ -163,12 +164,12 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
               <>
                 <Link
                   href="/"
-                  className="text-[14px] transition-colors duration-200 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                  className="text-[14px] transition-colors duration-200 text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-300"
                 >
                   Home
                 </Link>
-                <span className="text-gray-300 dark:text-gray-600 text-[13px]">/</span>
-                <span className="text-[14px] text-gray-900 dark:text-white font-medium">
+                <span className="text-stone-300 dark:text-stone-600 text-[13px]">/</span>
+                <span className="text-[14px] text-stone-900 dark:text-white font-medium">
                   {currentPage
                     ? currentPage
                     : currentCategories.length === 1
@@ -179,13 +180,13 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
             ) : (
               navItems.map((item, i) => (
                 <React.Fragment key={item.label}>
-                  {i > 0 && <span className="text-gray-300 dark:text-gray-600 text-[13px]">/</span>}
+                  {i > 0 && <span className="text-stone-300 dark:text-stone-600 text-[13px]">/</span>}
                   <Link
                     href={item.href}
                     className={`text-[14px] transition-colors duration-200 ${
                       item.active
-                        ? 'text-gray-900 dark:text-white font-medium'
-                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                        ? 'text-stone-900 dark:text-white font-medium'
+                        : 'text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-300'
                     }`}
                   >
                     {item.label}

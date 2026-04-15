@@ -99,6 +99,7 @@ export async function POST(
             type: 'REFUND_COMPLETED',
             content: `Your reservation for ${reservation.serviceName} has been refunded.`,
             userId: reservation.userId,
+            relatedListingId: reservation.listingId,
           },
         });
       }
@@ -124,6 +125,7 @@ export async function POST(
           type: 'REFUND_REQUESTED',
           content: `${currentUser.name || 'A customer'} requested a refund for ${reservation.serviceName}.`,
           userId: reservation.listing.userId,
+          relatedListingId: reservation.listingId,
         },
       });
 

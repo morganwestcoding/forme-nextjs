@@ -61,6 +61,7 @@ export async function createReservationFromCheckoutSession(
         type: 'RESERVATION_CREATED',
         content: `Your reservation for ${metadata.serviceName} has been confirmed`,
         userId: metadata.userId,
+        relatedListingId: metadata.listingId,
       },
     });
 
@@ -75,6 +76,7 @@ export async function createReservationFromCheckoutSession(
           type: 'NEW_RESERVATION',
           content: `New reservation for ${metadata.serviceName} on ${new Date(metadata.date).toLocaleDateString()}`,
           userId: listing.userId,
+          relatedListingId: metadata.listingId,
         },
       });
 

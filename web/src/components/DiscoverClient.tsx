@@ -484,8 +484,8 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                   onClick={() => setActiveBanner(i)}
                   className={`rounded-full transition-all duration-300 ${
                     activeBanner === i
-                      ? 'w-4 h-1.5 bg-stone-900 dark:bg-white'
-                      : 'w-1.5 h-1.5 bg-stone-300 dark:bg-zinc-600 hover:bg-stone-400 dark:hover:bg-zinc-500'
+                      ? 'w-4 h-1.5 bg-stone-900 dark:bg-white dark:bg-stone-900'
+                      : 'w-1.5 h-1.5 bg-stone-300 dark:bg-stone-600 hover:bg-stone-400 dark:hover:bg-stone-500'
                   }`}
                 />
               ))}
@@ -530,8 +530,8 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                       <div
                         className={`w-[100px] h-[100px] rounded-full overflow-hidden flex items-center justify-center bg-black transition-all duration-500 ease-out border-2 ${
                           isSelected
-                            ? 'border-zinc-900 dark:border-white shadow-lg'
-                            : 'border-stone-200 dark:border-zinc-700 group-hover:border-stone-400 dark:group-hover:border-zinc-500 group-hover:shadow-md'
+                            ? 'border-stone-900 dark:border-white shadow-lg'
+                            : 'border-stone-200 dark:border-stone-800 dark:border-stone-700 group-hover:border-stone-400 dark:group-hover:border-stone-500 group-hover:shadow-md'
                         }`}
                       >
                         {imageSrc && (
@@ -546,8 +546,8 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                       </div>
                       <span className={`text-sm transition-all duration-200 ${
                         isSelected
-                          ? 'text-gray-900 dark:text-white font-medium'
-                          : 'text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300'
+                          ? 'text-stone-900 dark:text-stone-100 dark:text-white font-medium'
+                          : 'text-stone-500 dark:text-stone-400 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500 group-hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 dark:group-hover:text-stone-300'
                       }`}>{cat.label}</span>
                     </button>
                   );
@@ -835,7 +835,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                           animation: 'fadeInUp 600ms ease-out 300ms both',
                         }}
                       >
-                        <h2 className="text-[22px] font-semibold text-gray-900 dark:text-white leading-tight">
+                        <h2 className="text-[22px] font-semibold text-stone-900 dark:text-stone-100 dark:text-white leading-tight">
                           {allContentItems.length} {allContentItems.length === 1 ? 'Result' : 'Results'}
                           {filterInfo.resultsHeaderText ? ` — ${filterInfo.resultsHeaderText}` : ''}
                         </h2>
@@ -885,7 +885,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                 )}
               </>
             ) : (
-              <div className="px-8 pt-32 text-center text-gray-500">
+              <div className="px-8 pt-32 text-center text-stone-500 dark:text-stone-400 dark:text-stone-500">
                 No posts found. Try adjusting your filters.
               </div>
             )}

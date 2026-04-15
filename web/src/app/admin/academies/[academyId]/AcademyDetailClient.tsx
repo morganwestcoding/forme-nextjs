@@ -4,6 +4,8 @@ import { useState } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { categories as canonicalCategories } from "@/components/Categories";
+import Button from "@/components/ui/Button";
+import Card from "@/components/ui/Card";
 
 interface Student {
   id: string;
@@ -163,11 +165,11 @@ export default function AcademyDetailClient({ academy, stripeReturnedSuccess }: 
       )}
 
       {/* Stripe Connect card */}
-      <div className="rounded-2xl border border-stone-200/60 bg-white p-6 mb-6">
+      <Card padding="lg" className="mb-6">
         <div className="flex items-start justify-between gap-4 mb-4">
           <div>
-            <h2 className="text-[15px] font-semibold text-stone-900">Stripe Connect</h2>
-            <p className="text-[13px] text-stone-400 mt-1">
+            <h2 className="text-[15px] font-semibold text-stone-900 dark:text-stone-100">Stripe Connect</h2>
+            <p className="text-[13px] text-stone-400 dark:text-stone-500 mt-1">
               The academy&apos;s Connect account receives all student bookings.
             </p>
           </div>
@@ -182,36 +184,35 @@ export default function AcademyDetailClient({ academy, stripeReturnedSuccess }: 
             </span>
           )}
           {!academy.stripeConnectAccountId && (
-            <span className="inline-flex items-center text-[11px] font-medium text-stone-500 bg-stone-100 ring-1 ring-stone-200 px-2.5 py-1 rounded-full">
+            <span className="inline-flex items-center text-[11px] font-medium text-stone-500 dark:text-stone-400 dark:text-stone-500 bg-stone-100 dark:bg-stone-800 ring-1 ring-stone-200 px-2.5 py-1 rounded-full">
               Not connected
             </span>
           )}
         </div>
 
         {academy.stripeConnectAccountId && (
-          <p className="text-[12px] text-stone-400 font-mono mb-4">
+          <p className="text-[12px] text-stone-400 dark:text-stone-500 font-mono mb-4">
             {academy.stripeConnectAccountId}
           </p>
         )}
 
         <div className="flex items-center gap-3">
-          <button
+          <Button
             type="button"
             onClick={handleOnboard}
-            disabled={isLoading}
-            className="py-2.5 px-5 bg-stone-900 text-white rounded-xl font-medium text-[13px] hover:bg-stone-800 transition-all disabled:opacity-50"
+            loading={isLoading}
           >
             {isLoading
               ? "Loading…"
               : academy.stripeConnectAccountId
               ? "Continue onboarding"
               : "Onboard with Stripe"}
-          </button>
+          </Button>
           {academy.stripeConnectAccountId && (
             <button
               type="button"
               onClick={refreshStatus}
-              className="py-2.5 px-4 text-[13px] text-stone-500 hover:text-stone-900 transition-colors"
+              className="py-2.5 px-4 text-[13px] text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 transition-colors"
             >
               Refresh status
             </button>
@@ -222,94 +223,90 @@ export default function AcademyDetailClient({ academy, stripeReturnedSuccess }: 
           <div className="mt-4 grid grid-cols-2 gap-3 text-[12px]">
             <div className="flex items-center gap-2">
               <span className={`w-1.5 h-1.5 rounded-full ${academy.stripeConnectChargesEnabled ? "bg-emerald-500" : "bg-stone-300"}`} />
-              <span className="text-stone-500">Charges enabled</span>
+              <span className="text-stone-500 dark:text-stone-400 dark:text-stone-500">Charges enabled</span>
             </div>
             <div className="flex items-center gap-2">
               <span className={`w-1.5 h-1.5 rounded-full ${academy.stripeConnectPayoutsEnabled ? "bg-emerald-500" : "bg-stone-300"}`} />
-              <span className="text-stone-500">Payouts enabled</span>
+              <span className="text-stone-500 dark:text-stone-400 dark:text-stone-500">Payouts enabled</span>
             </div>
           </div>
         )}
-      </div>
+      </Card>
 
       {/* Default pay split card */}
-      <div className="rounded-2xl border border-stone-200/60 bg-white p-6 mb-6">
-        <h2 className="text-[15px] font-semibold text-stone-900 mb-1">Default student pay split</h2>
-        <p className="text-[13px] text-stone-400 mb-4">
+      <Card padding="lg" className="mb-6">
+        <h2 className="text-[15px] font-semibold text-stone-900 dark:text-stone-100 mb-1">Default student pay split</h2>
+        <p className="text-[13px] text-stone-400 dark:text-stone-500 mb-4">
           Applied to new students at registration. Existing students keep their current PayAgreement.
         </p>
 
         {academy.defaultPayType === "commission" ? (
-          <p className="text-[14px] text-stone-700">
+          <p className="text-[14px] text-stone-700 dark:text-stone-200">
             Students earn <span className="font-semibold">{academy.defaultSplitPercent ?? 0}%</span> commission
-            <span className="text-stone-400"> · academy keeps the rest</span>
+            <span className="text-stone-400 dark:text-stone-500"> · academy keeps the rest</span>
           </p>
         ) : academy.defaultPayType === "chair_rental" ? (
-          <p className="text-[14px] text-stone-700">
+          <p className="text-[14px] text-stone-700 dark:text-stone-200">
             ${academy.defaultRentalAmount ?? 0}{" "}
-            <span className="text-stone-400">per {academy.defaultRentalFrequency ?? "period"}</span>
+            <span className="text-stone-400 dark:text-stone-500">per {academy.defaultRentalFrequency ?? "period"}</span>
           </p>
         ) : (
-          <p className="text-[14px] text-stone-400">No default configured (students default to 0% commission)</p>
+          <p className="text-[14px] text-stone-400 dark:text-stone-500">No default configured (students default to 0% commission)</p>
         )}
 
-        <p className="text-[11px] text-stone-400 mt-4">
+        <p className="text-[11px] text-stone-400 dark:text-stone-500 mt-4">
           Editing the default still requires a script — UI editing comes in Phase 7b.
         </p>
-      </div>
+      </Card>
 
       {/* Services card */}
-      <div className="rounded-2xl border border-stone-200/60 bg-white p-6 mb-6">
+      <Card padding="lg" className="mb-6">
         <div className="flex items-start justify-between gap-4 mb-4">
           <div>
-            <h2 className="text-[15px] font-semibold text-stone-900">
-              Services <span className="text-stone-400 font-normal">· {services.length}</span>
+            <h2 className="text-[15px] font-semibold text-stone-900 dark:text-stone-100">
+              Services <span className="text-stone-400 dark:text-stone-500 font-normal">· {services.length}</span>
             </h2>
-            <p className="text-[13px] text-stone-400 mt-1">
+            <p className="text-[13px] text-stone-400 dark:text-stone-500 mt-1">
               Every active student at this academy automatically inherits these services.
             </p>
           </div>
           {!showAddForm && !editingId && (
-            <button
-              type="button"
-              onClick={startAdd}
-              className="py-2 px-4 bg-stone-900 text-white rounded-xl font-medium text-[13px] hover:bg-stone-800 transition-all flex-shrink-0"
-            >
+            <Button type="button" onClick={startAdd} className="flex-shrink-0">
               Add service
-            </button>
+            </Button>
           )}
         </div>
 
         {(showAddForm || editingId) && (
-          <div className="rounded-xl border border-stone-200 bg-stone-50 p-4 mb-4">
+          <div className="rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 p-4 mb-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
               <div className="md:col-span-2">
-                <label className="block text-[11px] text-stone-500 mb-1">Service name</label>
+                <label className="block text-[11px] text-stone-500 dark:text-stone-400 dark:text-stone-500 mb-1">Service name</label>
                 <input
                   type="text"
                   value={serviceName}
                   onChange={(e) => setServiceName(e.target.value)}
                   placeholder="e.g. Haircut"
-                  className="w-full px-3 py-2 text-[13px] rounded-lg border border-stone-200 bg-white focus:outline-none focus:border-stone-400"
+                  className="w-full px-3 py-2 text-[13px] rounded-lg border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:border-stone-400"
                 />
               </div>
               <div>
-                <label className="block text-[11px] text-stone-500 mb-1">Price (USD)</label>
+                <label className="block text-[11px] text-stone-500 dark:text-stone-400 dark:text-stone-500 mb-1">Price (USD)</label>
                 <input
                   type="number"
                   min={0}
                   value={servicePrice}
                   onChange={(e) => setServicePrice(e.target.value)}
                   placeholder="50"
-                  className="w-full px-3 py-2 text-[13px] rounded-lg border border-stone-200 bg-white focus:outline-none focus:border-stone-400"
+                  className="w-full px-3 py-2 text-[13px] rounded-lg border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:border-stone-400"
                 />
               </div>
               <div className="md:col-span-3">
-                <label className="block text-[11px] text-stone-500 mb-1">Category</label>
+                <label className="block text-[11px] text-stone-500 dark:text-stone-400 dark:text-stone-500 mb-1">Category</label>
                 <select
                   value={serviceCategory}
                   onChange={(e) => setServiceCategory(e.target.value)}
-                  className="w-full px-3 py-2 text-[13px] rounded-lg border border-stone-200 bg-white focus:outline-none focus:border-stone-400"
+                  className="w-full px-3 py-2 text-[13px] rounded-lg border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:border-stone-400"
                 >
                   {CATEGORY_LABELS.map((label) => (
                     <option key={label} value={label}>
@@ -320,18 +317,13 @@ export default function AcademyDetailClient({ academy, stripeReturnedSuccess }: 
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={saveService}
-                disabled={serviceSaving}
-                className="py-2 px-4 bg-stone-900 text-white rounded-lg font-medium text-[13px] hover:bg-stone-800 transition-all disabled:opacity-50"
-              >
+              <Button type="button" onClick={saveService} loading={serviceSaving} size="sm">
                 {serviceSaving ? "Saving…" : editingId ? "Save changes" : "Add"}
-              </button>
+              </Button>
               <button
                 type="button"
                 onClick={resetForm}
-                className="py-2 px-4 text-[13px] text-stone-500 hover:text-stone-900 transition-colors"
+                className="py-2 px-4 text-[13px] text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 transition-colors"
               >
                 Cancel
               </button>
@@ -340,23 +332,23 @@ export default function AcademyDetailClient({ academy, stripeReturnedSuccess }: 
         )}
 
         {services.length === 0 && !showAddForm ? (
-          <p className="text-[13px] text-stone-400">No services yet. Add the first one above.</p>
+          <p className="text-[13px] text-stone-400 dark:text-stone-500">No services yet. Add the first one above.</p>
         ) : (
           <div className="divide-y divide-stone-100">
             {services.map((svc) => (
               <div key={svc.id} className="flex items-center gap-3 py-3">
                 <div className="flex-1 min-w-0">
-                  <p className="text-[13px] font-medium text-stone-900 truncate">{svc.serviceName}</p>
-                  <p className="text-[12px] text-stone-400 truncate">{svc.category}</p>
+                  <p className="text-[13px] font-medium text-stone-900 dark:text-stone-100 truncate">{svc.serviceName}</p>
+                  <p className="text-[12px] text-stone-400 dark:text-stone-500 truncate">{svc.category}</p>
                 </div>
-                <p className="text-[13px] font-semibold text-stone-900 tabular-nums flex-shrink-0">
+                <p className="text-[13px] font-semibold text-stone-900 dark:text-stone-100 tabular-nums flex-shrink-0">
                   ${svc.price}
                 </p>
                 <div className="flex items-center gap-1 flex-shrink-0">
                   <button
                     type="button"
                     onClick={() => startEdit(svc)}
-                    className="text-[12px] text-stone-500 hover:text-stone-900 px-2 py-1 transition-colors"
+                    className="text-[12px] text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 px-2 py-1 transition-colors"
                   >
                     Edit
                   </button>
@@ -372,38 +364,38 @@ export default function AcademyDetailClient({ academy, stripeReturnedSuccess }: 
             ))}
           </div>
         )}
-      </div>
+      </Card>
 
       {/* Students list */}
-      <div className="rounded-2xl border border-stone-200/60 bg-white p-6">
-        <h2 className="text-[15px] font-semibold text-stone-900 mb-1">
-          Enrolled students <span className="text-stone-400 font-normal">· {academy.studentCount}</span>
+      <Card padding="lg">
+        <h2 className="text-[15px] font-semibold text-stone-900 dark:text-stone-100 mb-1">
+          Enrolled students <span className="text-stone-400 dark:text-stone-500 font-normal">· {academy.studentCount}</span>
         </h2>
 
         {academy.students.length === 0 ? (
-          <p className="text-[13px] text-stone-400 mt-4">No students enrolled yet.</p>
+          <p className="text-[13px] text-stone-400 dark:text-stone-500 mt-4">No students enrolled yet.</p>
         ) : (
           <div className="mt-4 divide-y divide-stone-100">
             {academy.students.map((s) => (
               <div key={s.id} className="flex items-center gap-3 py-3">
-                <div className="w-9 h-9 rounded-full bg-stone-200 overflow-hidden flex-shrink-0">
+                <div className="w-9 h-9 rounded-full bg-stone-200 dark:bg-stone-700 overflow-hidden flex-shrink-0">
                   {s.image && (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={s.image} alt={s.name ?? "Student"} className="w-full h-full object-cover" />
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-[13px] font-medium text-stone-900 truncate">{s.name ?? "Unnamed"}</p>
-                  <p className="text-[12px] text-stone-400 truncate">{s.email}</p>
+                  <p className="text-[13px] font-medium text-stone-900 dark:text-stone-100 truncate">{s.name ?? "Unnamed"}</p>
+                  <p className="text-[12px] text-stone-400 dark:text-stone-500 truncate">{s.email}</p>
                 </div>
-                <p className="text-[11px] text-stone-400 flex-shrink-0">
+                <p className="text-[11px] text-stone-400 dark:text-stone-500 flex-shrink-0">
                   Joined {new Date(s.joinedAt).toLocaleDateString()}
                 </p>
               </div>
             ))}
           </div>
         )}
-      </div>
+      </Card>
     </>
   );
 }

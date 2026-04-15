@@ -73,7 +73,7 @@ export default function ImagesStep({ userType }: ImagesStepProps) {
               <button
                 type="button"
                 onClick={() => profileProps?.open?.()}
-                className="w-20 h-20 rounded-full bg-gray-100 hover:bg-gray-200 shadow-md transition-colors relative overflow-hidden group flex-shrink-0"
+                className="w-20 h-20 rounded-full bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:bg-stone-700 shadow-md transition-colors relative overflow-hidden group flex-shrink-0"
               >
                 {image ? (
                   <>
@@ -83,7 +83,7 @@ export default function ImagesStep({ userType }: ImagesStepProps) {
                     </div>
                   </>
                 ) : (
-                  <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                  <div className="flex flex-col items-center justify-center h-full text-stone-400 dark:text-stone-500">
                     <Camera01Icon className="w-6 h-6" />
                   </div>
                 )}
@@ -93,25 +93,25 @@ export default function ImagesStep({ userType }: ImagesStepProps) {
 
           {/* Name preview */}
           <div className="flex flex-col items-start">
-            <h3 className="text-xl font-bold text-gray-900">{name || 'Your Name'}</h3>
-            <p className="text-sm text-gray-500">{jobTitle || 'Your profession'}</p>
+            <h3 className="text-xl font-bold text-stone-900 dark:text-stone-100">{name || 'Your Name'}</h3>
+            <p className="text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500">{jobTitle || 'Your profession'}</p>
           </div>
         </div>
 
         {/* Bio */}
         <div className="mt-8">
-          <label htmlFor="bio" className="block text-sm font-medium text-gray-900 mb-2">
-            Bio <span className="text-gray-400 font-normal">(optional)</span>
+          <label htmlFor="bio" className="block text-sm font-medium text-stone-900 dark:text-stone-100 mb-2">
+            Bio <span className="text-stone-400 dark:text-stone-500 font-normal">(optional)</span>
           </label>
           <textarea
             id="bio"
             {...register('bio')}
             rows={2}
             maxLength={150}
-            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all resize-none"
+            className="w-full px-4 py-3 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all resize-none"
             placeholder="Tell clients a bit about yourself..."
           />
-          <p className="text-xs text-gray-400 text-right mt-1">
+          <p className="text-xs text-stone-400 dark:text-stone-500 text-right mt-1">
             {(bio?.length || 0)}/150
           </p>
         </div>

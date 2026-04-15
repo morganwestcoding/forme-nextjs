@@ -35,6 +35,7 @@ const ProductIcon = ({ className, strokeWidth }: { className?: string; strokeWid
   </svg>
 );
 import Modal from './Modal';
+import Button from '../ui/Button';
 import useCreateModal from '@/app/hooks/useCreateModal';
 
 const CreateModal = () => {
@@ -139,45 +140,37 @@ const CreateModal = () => {
     <div className="flex flex-col">
       {/* Header */}
       <div className="px-6 pb-5">
-        <p className="text-[16px] font-semibold text-stone-900">What would you like to create?</p>
-        <p className="text-[13px] text-stone-400 mt-0.5">Choose an option to get started</p>
+        <p className="text-[16px] font-semibold text-stone-900 dark:text-stone-100">What would you like to create?</p>
+        <p className="text-[13px] text-stone-400 dark:text-stone-500 mt-0.5">Choose an option to get started</p>
       </div>
 
       <div className="px-5 pb-5">
         {showNoShop ? (
           <div className="text-center py-6">
-            <p className="text-sm font-medium text-gray-900 mb-1">You don&apos;t have a shop yet</p>
-            <p className="text-xs text-gray-500 mb-5">Create a shop first to start adding products</p>
-            <button
-              type="button"
-              onClick={() => handleNavigate('/shop/new')}
-              className="px-6 py-2.5 rounded-xl font-medium text-sm bg-gray-900 text-white hover:bg-gray-800 active:scale-[0.98] transition-all duration-200"
-            >
+            <p className="text-sm font-medium text-stone-900 dark:text-stone-100 mb-1">You don&apos;t have a shop yet</p>
+            <p className="text-xs text-stone-500 dark:text-stone-400 dark:text-stone-500 mb-5">Create a shop first to start adding products</p>
+            <Button type="button" onClick={() => handleNavigate('/shop/new')}>
               Create a shop
-            </button>
+            </Button>
             <button
               type="button"
               onClick={() => setShowNoShop(false)}
-              className="block mx-auto mt-3 text-xs text-gray-400 hover:text-gray-600 transition-colors"
+              className="block mx-auto mt-3 text-xs text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300 transition-colors"
             >
               Go back
             </button>
           </div>
         ) : showNoListing ? (
           <div className="text-center py-6">
-            <p className="text-sm font-medium text-gray-900 mb-1">You don&apos;t have a listing yet</p>
-            <p className="text-xs text-gray-500 mb-5">Create a listing first to start adding team members</p>
-            <button
-              type="button"
-              onClick={() => handleNavigate('/listing/new')}
-              className="px-6 py-2.5 rounded-xl font-medium text-sm bg-gray-900 text-white hover:bg-gray-800 active:scale-[0.98] transition-all duration-200"
-            >
+            <p className="text-sm font-medium text-stone-900 dark:text-stone-100 mb-1">You don&apos;t have a listing yet</p>
+            <p className="text-xs text-stone-500 dark:text-stone-400 dark:text-stone-500 mb-5">Create a listing first to start adding team members</p>
+            <Button type="button" onClick={() => handleNavigate('/listing/new')}>
               Create a listing
-            </button>
+            </Button>
             <button
               type="button"
               onClick={() => setShowNoListing(false)}
-              className="block mx-auto mt-3 text-xs text-gray-400 hover:text-gray-600 transition-colors"
+              className="block mx-auto mt-3 text-xs text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300 transition-colors"
             >
               Go back
             </button>
@@ -189,16 +182,16 @@ const CreateModal = () => {
                 key={item.label}
                 onClick={item.onClick}
                 disabled={'loading' in item && item.loading}
-                className="flex flex-col items-center gap-2 py-5 px-2 rounded-2xl bg-stone-50 hover:bg-stone-100 border border-stone-100 hover:border-stone-200 transition-all disabled:opacity-50"
+                className="flex flex-col items-center gap-2 py-5 px-2 rounded-2xl bg-stone-50 dark:bg-stone-900 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border border-stone-100 dark:border-stone-800 hover:border-stone-200 dark:border-stone-800 transition-all disabled:opacity-50"
               >
                 {'loading' in item && item.loading ? (
-                  <div className="w-[22px] h-[22px] border-2 border-gray-200 border-t-gray-600 rounded-full animate-spin" />
+                  <div className="w-[22px] h-[22px] border-2 border-stone-200 dark:border-stone-800 border-t-stone-600 rounded-full animate-spin" />
                 ) : (
-                  <item.icon className="w-[22px] h-[22px] text-stone-500" strokeWidth={1.5} />
+                  <item.icon className="w-[22px] h-[22px] text-stone-500 dark:text-stone-400 dark:text-stone-500" strokeWidth={1.5} />
                 )}
                 <div className="text-center">
-                  <span className="text-[12px] font-medium text-stone-600 block">{item.label}</span>
-                  <span className="text-[10px] text-stone-400 block mt-0.5">{item.description}</span>
+                  <span className="text-[12px] font-medium text-stone-600 dark:text-stone-300 block">{item.label}</span>
+                  <span className="text-[10px] text-stone-400 dark:text-stone-500 block mt-0.5">{item.description}</span>
                 </div>
               </button>
             ))}

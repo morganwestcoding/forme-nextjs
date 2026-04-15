@@ -14,7 +14,7 @@ interface CategoryNavProps {
 const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams }) => {
   const router = useRouter();
   const params = useSearchParams();
-  const { accentColor } = useTheme();
+  const {} = useTheme();
 
   // Support both single category (legacy) and multiple categories
   const currentCategories = params?.get('categories')?.split(',').filter(Boolean) ||
@@ -63,7 +63,7 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams }) => {
   };
 
   return (
-    <div className="-mx-6 md:-mx-24 pb-3 border-b-[0.75px] border-gray-400 dark:border-gray-600">
+    <div className="-mx-6 md:-mx-24 pb-3 border-b-[0.75px] border-stone-400 dark:border-stone-600">
       <div className="flex items-center justify-center">
         {categories.map((category, index) => {
           const isSelected = currentCategories.includes(category.label);
@@ -77,10 +77,10 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams }) => {
                   px-8 py-3.5 text-sm transition-all duration-200
                   ${isSelected
                     ? 'font-medium'
-                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                    : 'text-stone-500 dark:text-stone-400 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 dark:hover:text-stone-200'
                   }
                 `}
-                style={isSelected ? { color: accentColor } : undefined}
+                style={isSelected ? { color: '#1c1917' } : undefined}
                 type="button"
               >
                 {category.label}
@@ -90,12 +90,12 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams }) => {
               {index < categories.length - 1 && (
                 <span
                   className={`
-                    bg-gray-300 dark:bg-gray-600 transition-all duration-300 ease-out
+                    bg-stone-300 dark:bg-stone-600 transition-all duration-300 ease-out
                     ${dividerState === 'horizontal' ? 'w-3 h-[0.5px]' : ''}
                     ${dividerState === 'vertical' ? 'w-[0.5px] h-4' : ''}
                     ${dividerState === 'hidden' ? 'w-[0.5px] h-4 opacity-0' : ''}
                   `}
-                  style={dividerState === 'horizontal' ? { backgroundColor: accentColor } : undefined}
+                  style={dividerState === 'horizontal' ? { backgroundColor: '#1c1917' } : undefined}
                 />
               )}
             </div>
