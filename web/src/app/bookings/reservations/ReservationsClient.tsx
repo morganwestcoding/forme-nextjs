@@ -1069,7 +1069,7 @@ function TripRow({
       >
         <div className="relative flex items-stretch">
           {/* Date — keep as-is, on soft bg */}
-          <div className="relative flex-shrink-0 w-[96px] flex flex-col items-center justify-center py-6 bg-gradient-to-b from-stone-50/80 to-white">
+          <div className="relative flex-shrink-0 w-[96px] flex flex-col items-center justify-center py-6 bg-gradient-to-b from-stone-50/80 to-white dark:from-stone-900 dark:to-stone-900">
             <div className="text-[11px] font-medium text-stone-400 dark:text-stone-500">
               {format(date, 'MMM')}
             </div>
@@ -1138,7 +1138,7 @@ function TripRow({
         </div>
 
         {isIncoming && isPending && !past && (
-          <div className="border-t border-stone-100 dark:border-stone-800 bg-gradient-to-b from-amber-50/40 to-white px-4 py-2.5 flex items-center gap-2">
+          <div className="border-t border-stone-100 dark:border-stone-800 bg-gradient-to-b from-amber-50/40 to-white dark:from-stone-900 dark:to-stone-900 px-4 py-2.5 flex items-center gap-2">
             <button
               onClick={(e) => { e.stopPropagation(); onDecline(); }}
               disabled={disabled}
