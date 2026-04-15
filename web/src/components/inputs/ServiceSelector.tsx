@@ -108,7 +108,7 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
               <div className="space-y-4">
                 {/* Service Name */}
                 <div>
-                  <label htmlFor={`serviceName-${i}`} className="block text-sm font-medium text-stone-700 dark:text-stone-200 dark:text-stone-200 mb-2">
+                  <label htmlFor={`serviceName-${i}`} className="block text-sm font-medium text-stone-700 dark:text-stone-200  mb-2">
                     Service name
                   </label>
                   <input
@@ -116,7 +116,7 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
                     type="text"
                     value={svc.serviceName}
                     onChange={(e) => setRow(i, { serviceName: e.target.value })}
-                    className="w-full px-4 py-3.5 bg-stone-50 dark:bg-stone-900 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 dark:border-stone-800 rounded-xl text-stone-900 dark:text-stone-100 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3.5 bg-stone-50 dark:bg-stone-900  border border-stone-200 dark:border-stone-800  rounded-xl text-stone-900 dark:text-stone-100  placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all"
                     placeholder="e.g. Haircut"
                   />
                 </div>
@@ -124,7 +124,7 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
                 {/* Price & Category row */}
                 <div className="flex gap-3">
                   <div className="flex-1">
-                    <label htmlFor={`servicePrice-${i}`} className="block text-sm font-medium text-stone-700 dark:text-stone-200 dark:text-stone-200 mb-2">
+                    <label htmlFor={`servicePrice-${i}`} className="block text-sm font-medium text-stone-700 dark:text-stone-200  mb-2">
                       Price
                     </label>
                     <input
@@ -134,7 +134,7 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
                       value={priceInputs[i]}
                       onChange={(e) => handlePriceChange(i, e.target.value)}
                       onBlur={() => handlePriceBlur(i)}
-                      className="w-full px-4 py-3.5 bg-stone-50 dark:bg-stone-900 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 dark:border-stone-800 rounded-xl text-stone-900 dark:text-stone-100 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all"
+                      className="w-full px-4 py-3.5 bg-stone-50 dark:bg-stone-900  border border-stone-200 dark:border-stone-800  rounded-xl text-stone-900 dark:text-stone-100  placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all"
                       placeholder="0.00"
                     />
                   </div>
@@ -143,7 +143,7 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
 
                 {/* Category */}
                 <div>
-                  <label className="block text-sm font-medium text-stone-700 dark:text-stone-200 dark:text-stone-200 mb-2">
+                  <label className="block text-sm font-medium text-stone-700 dark:text-stone-200  mb-2">
                     Category
                   </label>
                   <div className="grid grid-cols-3 gap-2">
@@ -155,8 +155,8 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
                         className={`
                           p-3 rounded-xl border text-sm font-medium transition-all duration-200
                           ${svc.category === cat
-                            ? 'border-stone-300 dark:border-stone-700 dark:border-stone-700 bg-stone-100 dark:bg-stone-800 dark:bg-stone-800 text-stone-900 dark:text-stone-100 dark:text-stone-100 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)]'
-                            : 'border-stone-200 dark:border-stone-800 dark:border-stone-800 bg-white dark:bg-stone-900 dark:bg-stone-900 text-stone-700 dark:text-stone-200 dark:text-stone-200 hover:border-stone-300 dark:border-stone-700 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900 dark:hover:bg-stone-800 dark:bg-stone-900'
+                            ? 'border-stone-300 dark:border-stone-700  bg-stone-100 dark:bg-stone-800  text-stone-900 dark:text-stone-100  shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)]'
+                            : 'border-stone-200   bg-white dark:bg-stone-900  text-stone-700 dark:text-stone-200  hover:border-stone-300 dark:border-stone-700  hover:bg-stone-50 dark:hover:bg-stone-800   '
                           }
                         `}
                       >
@@ -177,7 +177,7 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
         <button
           type="button"
           onClick={addService}
-          className="mt-6 inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-stone-700 dark:text-stone-200 dark:text-stone-200 hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 dark:hover:text-stone-100 dark:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 dark:hover:bg-stone-800 dark:bg-stone-800 transition"
+          className="mt-6 inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-stone-700   hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100   hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800   transition"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

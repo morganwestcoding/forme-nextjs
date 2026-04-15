@@ -46,7 +46,7 @@ export default async function AdminDisputesPage() {
     <Container>
       <div className="mt-8 mb-12">
         <div className="mb-2">
-          <Link href="/admin" className="text-[12px] text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300 transition-colors">
+          <Link href="/admin" className="text-[12px] text-stone-400  hover:text-stone-600 dark:text-stone-300 transition-colors">
             ← Back to Admin
           </Link>
         </div>
@@ -65,13 +65,13 @@ export default async function AdminDisputesPage() {
             <table className="w-full text-[13px]">
               <thead>
                 <tr className="border-b border-stone-200/60 bg-stone-50/50">
-                  <th className="text-left py-3 px-4 font-medium text-stone-500 dark:text-stone-400 dark:text-stone-500">Status</th>
-                  <th className="text-left py-3 px-4 font-medium text-stone-500 dark:text-stone-400 dark:text-stone-500">Amount</th>
-                  <th className="text-left py-3 px-4 font-medium text-stone-500 dark:text-stone-400 dark:text-stone-500">Reason</th>
-                  <th className="text-left py-3 px-4 font-medium text-stone-500 dark:text-stone-400 dark:text-stone-500">Service</th>
-                  <th className="text-left py-3 px-4 font-medium text-stone-500 dark:text-stone-400 dark:text-stone-500">Customer</th>
-                  <th className="text-left py-3 px-4 font-medium text-stone-500 dark:text-stone-400 dark:text-stone-500">Business</th>
-                  <th className="text-left py-3 px-4 font-medium text-stone-500 dark:text-stone-400 dark:text-stone-500">Date</th>
+                  <th className="text-left py-3 px-4 font-medium text-stone-500  dark:text-stone-500">Status</th>
+                  <th className="text-left py-3 px-4 font-medium text-stone-500  dark:text-stone-500">Amount</th>
+                  <th className="text-left py-3 px-4 font-medium text-stone-500  dark:text-stone-500">Reason</th>
+                  <th className="text-left py-3 px-4 font-medium text-stone-500  dark:text-stone-500">Service</th>
+                  <th className="text-left py-3 px-4 font-medium text-stone-500  dark:text-stone-500">Customer</th>
+                  <th className="text-left py-3 px-4 font-medium text-stone-500  dark:text-stone-500">Business</th>
+                  <th className="text-left py-3 px-4 font-medium text-stone-500  dark:text-stone-500">Date</th>
                 </tr>
               </thead>
               <tbody>
@@ -103,7 +103,7 @@ export default async function AdminDisputesPage() {
                       <td className="py-3 px-4 text-stone-600 dark:text-stone-300">
                         {reservation?.listing?.title || '—'}
                       </td>
-                      <td className="py-3 px-4 text-stone-500 dark:text-stone-400 dark:text-stone-500">
+                      <td className="py-3 px-4 text-stone-500  dark:text-stone-500">
                         {dispute.createdAt.toLocaleDateString()}
                       </td>
                     </tr>

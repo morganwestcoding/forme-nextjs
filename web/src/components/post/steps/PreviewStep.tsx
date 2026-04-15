@@ -115,7 +115,7 @@ const PreviewStep: React.FC<PreviewStepProps> = ({
                   className="object-cover w-full h-full"
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-stone-500 dark:text-stone-400 dark:text-stone-500 text-sm font-medium">
+                <div className="w-full h-full flex items-center justify-center text-stone-500  dark:text-stone-500 text-sm font-medium">
                   {(currentUser.name || 'U')[0].toUpperCase()}
                 </div>
               )}

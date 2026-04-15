@@ -24,7 +24,7 @@ export default function ServiceFormStep({
         <button
           type="button"
           onClick={onBack}
-          className="flex items-center gap-2 text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 transition-colors mb-4"
+          className="flex items-center gap-2 text-stone-500   hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 transition-colors mb-4"
         >
           <ArrowLeft className="w-4 h-4" />
           <span className="text-sm">Back to services</span>

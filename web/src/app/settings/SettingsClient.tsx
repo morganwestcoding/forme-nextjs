@@ -131,7 +131,7 @@ const SettingsClient = ({ currentUser, isEmployee }: SettingsClientProps) => {
               className={`px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap ${
                 activeTab === tab.key
                   ? 'bg-gradient-to-br from-stone-800 to-black text-white shadow-[0_1px_3px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.12)]'
-                  : 'bg-stone-50 dark:bg-stone-900 text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]'
+                  : 'bg-stone-50  text-stone-500  dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]'
               }`}
             >
               {tab.label}
@@ -185,7 +185,7 @@ const SettingsClient = ({ currentUser, isEmployee }: SettingsClientProps) => {
                 <a
                   href="/terms"
                   target="_blank"
-                  className="flex items-center justify-between py-2.5 px-1 border-b border-stone-100 dark:border-stone-800 text-[13px] text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 transition-colors"
+                  className="flex items-center justify-between py-2.5 px-1 border-b border-stone-100 dark:border-stone-800 text-[13px] text-stone-600  hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 transition-colors"
                 >
                   Terms of Service
                   <ArrowRight01Icon size={14} className="text-stone-400 dark:text-stone-500" strokeWidth={1.5} />
@@ -193,7 +193,7 @@ const SettingsClient = ({ currentUser, isEmployee }: SettingsClientProps) => {
                 <a
                   href="/privacy"
                   target="_blank"
-                  className="flex items-center justify-between py-2.5 px-1 text-[13px] text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 transition-colors"
+                  className="flex items-center justify-between py-2.5 px-1 text-[13px] text-stone-600  hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 transition-colors"
                 >
                   Privacy Policy
                   <ArrowRight01Icon size={14} className="text-stone-400 dark:text-stone-500" strokeWidth={1.5} />
@@ -212,7 +212,7 @@ const SettingsClient = ({ currentUser, isEmployee }: SettingsClientProps) => {
               ) : !connectStatus?.hasAccount ? (
                 <div className="flex items-start gap-4">
                   <div className="w-10 h-10 rounded-full bg-stone-100 dark:bg-stone-800 flex items-center justify-center flex-shrink-0">
-                    <CreditCardIcon size={18} className="text-stone-500 dark:text-stone-400 dark:text-stone-500" strokeWidth={1.5} />
+                    <CreditCardIcon size={18} className="text-stone-500  dark:text-stone-500" strokeWidth={1.5} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="text-[15px] font-semibold text-stone-900 dark:text-stone-100 mb-1">Set Up Payments</h3>

@@ -98,9 +98,9 @@ const BetaGate = ({ children }: BetaGateProps) => {
           >
             <div className="relative flex flex-col w-full bg-white/95 dark:bg-stone-900/95 backdrop-blur-xl border border-stone-200/60 dark:border-stone-700/60 rounded-2xl shadow-2xl shadow-stone-900/20 overflow-hidden">
               <div className="flex flex-col">
-                <div className="relative px-8 pt-8 pb-6 text-stone-800 dark:text-stone-200 dark:text-stone-200">
+                <div className="relative px-8 pt-8 pb-6 text-stone-800 dark:text-stone-200 ">
                   <div className="flex flex-col items-center text-center mb-6">
-                    <p className="text-base sm:text-lg text-stone-700 dark:text-stone-200 dark:text-stone-300 leading-relaxed">
+                    <p className="text-base sm:text-lg text-stone-700  dark:text-stone-300 leading-relaxed">
                       {MESSAGE}
                     </p>
                   </div>
@@ -108,7 +108,7 @@ const BetaGate = ({ children }: BetaGateProps) => {
                   <div>
                     <label
                       htmlFor="beta-gate-password"
-                      className="block text-sm font-medium text-stone-700 dark:text-stone-200 dark:text-stone-300 mb-2"
+                      className="block text-sm font-medium text-stone-700  dark:text-stone-300 mb-2"
                     >
                       Password
                     </label>
@@ -132,7 +132,7 @@ const BetaGate = ({ children }: BetaGateProps) => {
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300 transition-colors"
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-stone-400  hover:text-stone-600 dark:text-stone-300 transition-colors"
                       >
                         {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
                       </button>

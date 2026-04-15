@@ -61,7 +61,7 @@ const Toggle: React.FC<ToggleProps> = ({
       <div className="ml-3">
         <span className="text-sm font-medium text-stone-900 dark:text-stone-100">{label}</span>
         {description && (
-          <p className="text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500">{description}</p>
+          <p className="text-sm text-stone-500  dark:text-stone-500">{description}</p>
         )}
       </div>
     </div>

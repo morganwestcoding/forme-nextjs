@@ -36,7 +36,7 @@ export default async function AdminPage() {
     <Container>
       <div className="mt-8 mb-12">
         <div className="mb-2">
-          <Link href="/" className="text-[12px] text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300 transition-colors">
+          <Link href="/" className="text-[12px] text-stone-400  hover:text-stone-600 dark:text-stone-300 transition-colors">
             ← Back to ForMe
           </Link>
         </div>
@@ -69,7 +69,7 @@ export default async function AdminPage() {
               className="rounded-2xl border border-stone-200/60 bg-white dark:bg-stone-900 p-5 hover:border-stone-300 dark:border-stone-700 hover:shadow-sm transition-all"
             >
               <h3 className="text-[15px] font-semibold text-stone-900 dark:text-stone-100">{item.label}</h3>
-              <p className="text-[13px] text-stone-500 dark:text-stone-400 dark:text-stone-500 mt-1">{item.description}</p>
+              <p className="text-[13px] text-stone-500  dark:text-stone-500 mt-1">{item.description}</p>
             </Link>
           ))}
         </div>

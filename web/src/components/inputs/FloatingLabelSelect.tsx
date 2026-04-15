@@ -265,7 +265,7 @@ const FloatingLabelSelect: React.FC<FloatingLabelSelectProps> = ({
       <label
         className={[
           'absolute left-4 origin-[0] pointer-events-none transition-all duration-150',
-          error ? 'text-rose-500' : 'text-stone-500 dark:text-stone-400 dark:text-stone-500',
+          error ? 'text-rose-500' : 'text-stone-500  dark:text-stone-500',
           labelSize,
           labelPos,
         ].join(' ')}

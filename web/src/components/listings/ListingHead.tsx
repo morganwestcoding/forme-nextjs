@@ -189,7 +189,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
   };
 
   const qrIcon = (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" className="text-stone-500 dark:text-stone-400 dark:text-stone-500" strokeWidth="1.5">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" className="text-stone-500  dark:text-stone-500" strokeWidth="1.5">
       <path d="M3 6C3 4.58579 3 3.87868 3.43934 3.43934C3.87868 3 4.58579 3 6 3C7.41421 3 8.12132 3 8.56066 3.43934C9 3.87868 9 4.58579 9 6C9 7.41421 9 8.12132 8.56066 8.56066C8.12132 9 7.41421 9 6 9C4.58579 9 3.87868 9 3.43934 8.56066C3 8.12132 3 7.41421 3 6Z" />
       <path d="M3 18C3 16.5858 3 15.8787 3.43934 15.4393C3.87868 15 4.58579 15 6 15C7.41421 15 8.12132 15 8.56066 15.4393C9 15.8787 9 16.5858 9 18C9 19.4142 9 20.1213 8.56066 20.5607C8.12132 21 7.41421 21 6 21C4.58579 21 3.87868 21 3.43934 20.5607C3 20.1213 3 19.4142 3 18Z" />
       <path d="M15 6C15 4.58579 15 3.87868 15.4393 3.43934C15.8787 3 16.5858 3 18 3C19.4142 3 20.1213 3 20.5607 3.43934C21 3.87868 21 4.58579 21 6C21 7.41421 21 8.12132 20.5607 8.56066C20.1213 9 19.4142 9 18 9C16.5858 9 15.8787 9 15.4393 8.56066C15 8.12132 15 7.41421 15 6Z" />
@@ -213,7 +213,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
             <>
               <hr className="my-1 border-stone-200 dark:border-stone-800" />
               <button onClick={handleEditListing} className={btnClass} type="button">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-stone-500 dark:text-stone-400 dark:text-stone-500">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-stone-500  dark:text-stone-500">
                   <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/>
                 </svg>
                 Edit Listing
@@ -227,7 +227,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
           {isMasterUser && (
             <>
               <button onClick={handleEditListing} className={btnClass} type="button">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-stone-500 dark:text-stone-400 dark:text-stone-500">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-stone-500  dark:text-stone-500">
                   <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/>
                 </svg>
                 Edit Listing
@@ -241,13 +241,13 @@ const ListingHead: React.FC<ListingHeadProps> = ({
           </button>
           <hr className="my-1 border-stone-200 dark:border-stone-800" />
           <button onClick={() => { handleToggleFollow(); setShowDropdown(false); }} className={btnClass} type="button">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-stone-500 dark:text-stone-400 dark:text-stone-500">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-stone-500  dark:text-stone-500">
               <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/>
             </svg>
             {isFollowing ? 'Unfollow' : 'Follow'}
           </button>
           <button onClick={(e: any) => { toggleFavorite(e); setShowDropdown(false); }} className={btnClass} type="button">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill={hasFavorited ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={hasFavorited ? "text-rose-500" : "text-stone-500 dark:text-stone-400 dark:text-stone-500"}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill={hasFavorited ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={hasFavorited ? "text-rose-500" : "text-stone-500  dark:text-stone-500"}>
               <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
             </svg>
             {hasFavorited ? 'Favorited' : 'Favorite'}
@@ -257,7 +257,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
             className={btnClass}
             type="button"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-stone-500 dark:text-stone-400 dark:text-stone-500">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-stone-500  dark:text-stone-500">
               <path d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z"/>
             </svg>
             Add Review
@@ -341,7 +341,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               {/* Back button - top left */}
               <button
                 onClick={() => router.back()}
-                className="absolute top-3 left-3 w-8 h-8 flex items-center justify-center text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 rounded-full transition-all z-20"
+                className="absolute top-3 left-3 w-8 h-8 flex items-center justify-center text-stone-400  hover:text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 rounded-full transition-all z-20"
                 type="button"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -352,7 +352,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               {/* 3-dot menu - top right */}
               <button
                 onClick={handleDropdownToggle}
-                className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 rounded-full transition-all z-20"
+                className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center text-stone-400  hover:text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 rounded-full transition-all z-20"
                 type="button"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -378,7 +378,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className="text-[13px] text-stone-400 dark:text-stone-500 mt-1 hover:text-stone-600 dark:text-stone-300 transition-colors"
+                    className="text-[13px] text-stone-400  mt-1 hover:text-stone-600 dark:text-stone-300 transition-colors"
                   >
                     {address || location}
                   </a>
@@ -455,7 +455,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 <div className="flex items-center justify-center gap-4 mt-6 mb-2">
                   <button
                     onClick={(e: any) => { e.stopPropagation(); toggleFavorite(e); }}
-                    className="flex items-center gap-1.5 text-stone-400 dark:text-stone-500 hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 transition-colors"
+                    className="flex items-center gap-1.5 text-stone-400  hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 transition-colors"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill={hasFavorited ? '#292524' : 'none'} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z" />
@@ -472,7 +472,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                         toast.success('Link copied');
                       }
                     }}
-                    className="flex items-center gap-1.5 text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300 transition-colors"
+                    className="flex items-center gap-1.5 text-stone-400  hover:text-stone-600 dark:text-stone-300 transition-colors"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M10.0017 3C7.05534 3.03208 5.41096 3.21929 4.31838 4.31188C2.99988 5.63037 2.99988 7.75248 2.99988 11.9966C2.99988 16.2409 2.99988 18.363 4.31838 19.6815C5.63688 21 7.75899 21 12.0032 21C16.2474 21 18.3695 21 19.688 19.6815C20.7808 18.5887 20.9678 16.9438 20.9999 13.9963" />
@@ -524,11 +524,11 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 <div className="flex items-center gap-2">
                   <h1 className="text-lg font-bold text-stone-900 dark:text-stone-100 truncate">{title}</h1>
                 </div>
-                <p className="text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500">{location || 'Business'}</p>
+                <p className="text-sm text-stone-500  dark:text-stone-500">{location || 'Business'}</p>
               </div>
               <button
                 onClick={handleDropdownToggle}
-                className="w-8 h-8 rounded-full flex items-center justify-center text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800"
+                className="w-8 h-8 rounded-full flex items-center justify-center text-stone-400  hover:text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800"
                 type="button"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -546,10 +546,10 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                   <h3 className="text-xl font-semibold text-stone-900 dark:text-stone-100 tracking-tight">Services</h3>
-                  <span className="text-[11px] font-medium text-stone-500 dark:text-stone-400 dark:text-stone-500 bg-stone-100 dark:bg-stone-800 px-2.5 py-1 rounded-full tabular-nums">{validServices.length}</span>
+                  <span className="text-[11px] font-medium text-stone-500  dark:text-stone-500 bg-stone-100 dark:bg-stone-800 px-2.5 py-1 rounded-full tabular-nums">{validServices.length}</span>
                 </div>
                 {validServices.length > 8 && (
-                  <button className="text-xs font-medium text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 transition-colors">View all</button>
+                  <button className="text-xs font-medium text-stone-500   hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 transition-colors">View all</button>
                 )}
               </div>
               {validServices.length > 0 ? (
@@ -586,10 +586,10 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-4">
                   <h3 className="text-xl font-semibold text-stone-900 dark:text-stone-100 tracking-tight">Professionals</h3>
-                  <span className="text-[11px] font-medium text-stone-500 dark:text-stone-400 dark:text-stone-500 bg-stone-100 dark:bg-stone-800 px-2.5 py-1 rounded-full tabular-nums">{employees.length}</span>
+                  <span className="text-[11px] font-medium text-stone-500  dark:text-stone-500 bg-stone-100 dark:bg-stone-800 px-2.5 py-1 rounded-full tabular-nums">{employees.length}</span>
                 </div>
                 {employees.length > 8 && (
-                  <button className="text-xs font-medium text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 transition-colors">View all</button>
+                  <button className="text-xs font-medium text-stone-500   hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 transition-colors">View all</button>
                 )}
               </div>
               {employees.length > 0 ? (
@@ -632,10 +632,10 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-4">
                   <h3 className="text-xl font-semibold text-stone-900 dark:text-stone-100 tracking-tight">Gallery</h3>
-                  <span className="text-[11px] font-medium text-stone-500 dark:text-stone-400 dark:text-stone-500 bg-stone-100 dark:bg-stone-800 px-2.5 py-1 rounded-full tabular-nums">{(galleryImages?.length || 0) + posts.length}</span>
+                  <span className="text-[11px] font-medium text-stone-500  dark:text-stone-500 bg-stone-100 dark:bg-stone-800 px-2.5 py-1 rounded-full tabular-nums">{(galleryImages?.length || 0) + posts.length}</span>
                 </div>
                 {((galleryImages?.length || 0) + posts.length) > 8 && (
-                  <button className="text-xs font-medium text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 transition-colors">View all</button>
+                  <button className="text-xs font-medium text-stone-500   hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 transition-colors">View all</button>
                 )}
               </div>
 
@@ -677,10 +677,10 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-4">
                   <h3 className="text-xl font-semibold text-stone-900 dark:text-stone-100 tracking-tight">Reviews</h3>
-                  <span className="text-[11px] font-medium text-stone-500 dark:text-stone-400 dark:text-stone-500 bg-stone-100 dark:bg-stone-800 px-2.5 py-1 rounded-full tabular-nums">{reviews.length}</span>
+                  <span className="text-[11px] font-medium text-stone-500  dark:text-stone-500 bg-stone-100 dark:bg-stone-800 px-2.5 py-1 rounded-full tabular-nums">{reviews.length}</span>
                 </div>
                 {reviews.length > 8 && (
-                  <button className="text-xs font-medium text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 transition-colors">View all</button>
+                  <button className="text-xs font-medium text-stone-500   hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 transition-colors">View all</button>
                 )}
               </div>
               {reviews.length > 0 ? (

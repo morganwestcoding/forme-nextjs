@@ -356,7 +356,7 @@ const MessageModal: React.FC = () => {
 
                       {showTime && (
                         <div className={`mt-1 flex ${isOther ? 'justify-start' : 'justify-end'} ${isOther ? 'ml-2' : 'mr-2'}`}>
-                          <span className="text-[11px] text-stone-500 dark:text-stone-400 dark:text-stone-500">
+                          <span className="text-[11px] text-stone-500  dark:text-stone-500">
                             {new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </span>
                         </div>

@@ -25,7 +25,7 @@ export default function EditStepJumper({ steps, currentValue, onJump }: EditStep
               >
                 <span
                   className={`text-[11px] tabular-nums tracking-wider ${
-                    isActive ? 'text-stone-900 dark:text-stone-100' : 'text-stone-300 group-hover:text-stone-500 dark:text-stone-400 dark:text-stone-500'
+                    isActive ? 'text-stone-900 dark:text-stone-100' : 'text-stone-300 group-hover:text-stone-500  dark:text-stone-500'
                   }`}
                   style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}
                 >
@@ -35,7 +35,7 @@ export default function EditStepJumper({ steps, currentValue, onJump }: EditStep
                   className={`text-[12px] tracking-tight transition-colors ${
                     isActive
                       ? 'text-stone-900 dark:text-stone-100 font-semibold'
-                      : 'text-stone-400 dark:text-stone-500 group-hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 font-medium'
+                      : 'text-stone-400  group-hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 font-medium'
                   }`}
                 >
                   {s.label}

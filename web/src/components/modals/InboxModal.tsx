@@ -158,7 +158,7 @@ const ConversationCard: React.FC<{
             </h3>
             {conversation.lastMessage?.createdAt && (
               <span className={`text-[11px] flex-shrink-0 ${
-                hasUnread ? 'text-stone-500 dark:text-stone-400 dark:text-stone-500 font-medium' : 'text-stone-400 dark:text-stone-500'
+                hasUnread ? 'text-stone-500  dark:text-stone-500 font-medium' : 'text-stone-400 dark:text-stone-500'
               }`}>
                 {formatRelativeTime(conversation.lastMessage.createdAt)}
               </span>
@@ -167,7 +167,7 @@ const ConversationCard: React.FC<{
 
           <div className="flex items-center justify-between gap-3">
             <p className={`text-[13px] truncate ${
-              hasUnread ? 'text-stone-600 dark:text-stone-300' : 'text-stone-500 dark:text-stone-400 dark:text-stone-500'
+              hasUnread ? 'text-stone-600 dark:text-stone-300' : 'text-stone-500  dark:text-stone-500'
             }`}>
               {conversation.lastMessage?.content || (
                 <span className="italic text-stone-400 dark:text-stone-500">Say hello...</span>
@@ -395,7 +395,7 @@ const InboxModal = () => {
         {/* Header */}
         <div className="text-center mb-6">
           <h2 className="text-3xl md:text-4xl font-bold text-stone-900 dark:text-stone-100 tracking-tight">Messages</h2>
-          <p className="text-stone-500 dark:text-stone-400 dark:text-stone-500 text-sm mt-2">Connect with your community</p>
+          <p className="text-stone-500  dark:text-stone-500 text-sm mt-2">Connect with your community</p>
         </div>
 
         {/* Search - Market style */}
@@ -491,7 +491,7 @@ const InboxModal = () => {
                   <MessageCircle className="w-7 h-7 text-stone-400 dark:text-stone-500" />
                 </div>
                 <h3 className="text-base font-semibold text-stone-900 dark:text-stone-100 mb-1.5">No conversations yet</h3>
-                <p className="text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500 max-w-[240px] mx-auto">
+                <p className="text-sm text-stone-500  dark:text-stone-500 max-w-[240px] mx-auto">
                   Search for someone above to start your first conversation
                 </p>
               </div>

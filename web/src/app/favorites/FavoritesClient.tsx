@@ -96,7 +96,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
               className={`flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap ${
                 activeTab === tab.key
                   ? 'bg-gradient-to-br from-stone-800 to-black text-white shadow-[0_1px_3px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.12)]'
-                  : 'bg-stone-50 dark:bg-stone-900 text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]'
+                  : 'bg-stone-50  text-stone-500  dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]'
               }`}
             >
               {tab.label}
@@ -158,7 +158,7 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
                 {activeTab === 'all' && contentItems.some(i => i.type !== 'post') && (
                   <div className="mt-10 mb-6 flex items-center gap-3">
                     <h2 className="text-xl font-semibold text-stone-900 dark:text-stone-100 tracking-tight">Posts</h2>
-                    <span className="text-[11px] font-medium text-stone-500 dark:text-stone-400 dark:text-stone-500 bg-stone-100 dark:bg-stone-800 px-2.5 py-1 rounded-full tabular-nums">
+                    <span className="text-[11px] font-medium text-stone-500  dark:text-stone-500 bg-stone-100 dark:bg-stone-800 px-2.5 py-1 rounded-full tabular-nums">
                       {contentItems.filter(i => i.type === 'post').length}
                     </span>
                   </div>

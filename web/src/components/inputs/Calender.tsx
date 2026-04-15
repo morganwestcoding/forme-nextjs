@@ -102,7 +102,7 @@ const Calendar: React.FC<CalendarProps> = ({
       <div className="p-4">
         <div className="grid grid-cols-7 gap-1 mb-2">
           {daysOfWeek.map(day => (
-            <div key={day} className="text-center text-stone-500 dark:text-stone-400 dark:text-stone-500 text-sm font-medium py-2">
+            <div key={day} className="text-center text-stone-500  dark:text-stone-500 text-sm font-medium py-2">
               {day}
             </div>
           ))}
@@ -114,7 +114,7 @@ const Calendar: React.FC<CalendarProps> = ({
       
       {/* Helper text */}
       <div className="px-4 pb-4">
-        <p className="text-xs text-stone-500 dark:text-stone-400 dark:text-stone-500 text-center">
+        <p className="text-xs text-stone-500  dark:text-stone-500 text-center">
           Past dates are disabled and cannot be selected
         </p>
       </div>

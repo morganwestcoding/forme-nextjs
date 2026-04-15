@@ -64,7 +64,7 @@ export default function ServiceFormStep({ services, setServices, editingIndex, o
       <button
         type="button"
         onClick={onBack}
-        className="flex items-center gap-2 text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 transition-colors mb-6"
+        className="flex items-center gap-2 text-stone-500   hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 transition-colors mb-6"
       >
         <ArrowLeft className="w-4 h-4" />
         <span className="text-sm">Back to services</span>
@@ -148,7 +148,7 @@ export default function ServiceFormStep({ services, setServices, editingIndex, o
                   p-3 rounded-xl border text-sm font-medium transition-all duration-200
                   ${category === cat.label
                     ? 'border-stone-300 dark:border-stone-700 bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-stone-100 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)]'
-                    : 'border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-200 hover:border-stone-300 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900'
+                    : 'border-stone-200  bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-200 hover:border-stone-300 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800 '
                   }
                 `}
               >

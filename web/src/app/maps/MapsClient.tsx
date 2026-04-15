@@ -362,7 +362,7 @@ const MapsClient: React.FC<MapsClientProps> = ({ listings, currentUser }) => {
           }}
         >
           <Logo className="opacity-90 shrink-0 mt-[1.2px]" />
-          <button onClick={() => navigateAway('/')} className="w-8 h-8 rounded-full flex items-center justify-center text-stone-400 dark:text-stone-500 hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 transition-colors">
+          <button onClick={() => navigateAway('/')} className="w-8 h-8 rounded-full flex items-center justify-center text-stone-400  hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 transition-colors">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M19 12H5M5 12l7-7M5 12l7 7"/>
             </svg>
@@ -480,7 +480,7 @@ const MapsClient: React.FC<MapsClientProps> = ({ listings, currentUser }) => {
                 {/* Info */}
                 <div className="flex-1 min-w-0">
                   <p className="text-[13px] font-medium text-stone-800 dark:text-stone-200 truncate">{item.title}</p>
-                  <p className="text-[12px] text-stone-500 dark:text-stone-400 dark:text-stone-500 truncate">{item.category}</p>
+                  <p className="text-[12px] text-stone-500  dark:text-stone-500 truncate">{item.category}</p>
                   <p className="text-[11px] text-stone-400 dark:text-stone-500 truncate">{item.location}</p>
                 </div>
 
@@ -542,7 +542,7 @@ const MapsClient: React.FC<MapsClientProps> = ({ listings, currentUser }) => {
                 </div>
                 <button
                   onClick={(e) => { e.stopPropagation(); setSelected(null); }}
-                  className="w-7 h-7 rounded-full flex items-center justify-center text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:text-white hover:bg-stone-800 transition-colors shrink-0"
+                  className="w-7 h-7 rounded-full flex items-center justify-center text-stone-500  dark:text-stone-500 hover:text-white hover:bg-stone-800 transition-colors shrink-0"
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                     <path d="M18 6L6 18M6 6l12 12"/>

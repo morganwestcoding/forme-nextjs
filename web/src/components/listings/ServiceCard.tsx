@@ -185,7 +185,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                     </svg>
                   </div>
                   <p className="text-sm font-semibold text-stone-700 dark:text-stone-200 mb-1">Add Service Photo</p>
-                  <p className="text-xs text-stone-500 dark:text-stone-400 dark:text-stone-500 leading-relaxed">Photos get 3x more bookings</p>
+                  <p className="text-xs text-stone-500  dark:text-stone-500 leading-relaxed">Photos get 3x more bookings</p>
                 </div>
               ) : (
                 /* Non-owners see minimal placeholder */

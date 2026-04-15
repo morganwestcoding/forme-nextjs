@@ -63,7 +63,7 @@ function TimeDropdown({
 
   return (
     <div ref={ref} className="relative flex-1">
-      <label className="block text-xs font-medium text-stone-500 dark:text-stone-400 dark:text-stone-500 mb-1.5">{label}</label>
+      <label className="block text-xs font-medium text-stone-500  dark:text-stone-500 mb-1.5">{label}</label>
       <button
         type="button"
         onClick={() => !disabled && setIsOpen(!isOpen)}
@@ -179,7 +179,7 @@ const StoreHours: React.FC<StoreHoursProps> = ({ onChange, id }) => {
               <span className="text-sm font-semibold text-stone-900 dark:text-stone-100">
                 {DAYS_OF_WEEK[index].short}
               </span>
-              <span className="text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500">
+              <span className="text-sm text-stone-500  dark:text-stone-500">
                 {DAYS_OF_WEEK[index].full}
               </span>
             </div>
@@ -191,7 +191,7 @@ const StoreHours: React.FC<StoreHoursProps> = ({ onChange, id }) => {
               className={`
                 px-3 py-1.5 rounded-xl text-xs font-medium transition-all duration-200
                 ${row.isClosed
-                  ? 'border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:border-stone-300 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900'
+                  ? 'border border-stone-200  bg-white dark:bg-stone-900 text-stone-500  dark:text-stone-500 hover:border-stone-300 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800 '
                   : 'border border-stone-300 dark:border-stone-700 bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-stone-100 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)]'
                 }
                 disabled:cursor-not-allowed
@@ -238,7 +238,7 @@ const StoreHours: React.FC<StoreHoursProps> = ({ onChange, id }) => {
           w-full flex items-center gap-4 p-4 rounded-xl border text-left transition-all duration-200
           ${sameEveryDay
             ? 'border-stone-300 dark:border-stone-700 bg-stone-100 dark:bg-stone-800 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)]'
-            : 'border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 hover:border-stone-300 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900'
+            : 'border-stone-200  bg-white dark:bg-stone-900 hover:border-stone-300 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800 '
           }
         `}
       >
@@ -254,7 +254,7 @@ const StoreHours: React.FC<StoreHoursProps> = ({ onChange, id }) => {
         </div>
         <div>
           <span className="text-sm font-medium text-stone-900 dark:text-stone-100">Same hours every day</span>
-          <p className="text-xs text-stone-500 dark:text-stone-400 dark:text-stone-500 mt-0.5">
+          <p className="text-xs text-stone-500  dark:text-stone-500 mt-0.5">
             {sameEveryDay ? "All days use Monday's hours" : "Apply Monday's hours to all days"}
           </p>
         </div>

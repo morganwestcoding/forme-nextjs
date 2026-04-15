@@ -206,14 +206,14 @@ const FilterModal = () => {
       className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all duration-200 text-left ${
         hasFilter
           ? 'border-stone-900 bg-stone-900/5'
-          : 'border-stone-200 dark:border-stone-800 dark:border-stone-700 hover:border-stone-300 dark:border-stone-700 dark:hover:border-stone-600 hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900 dark:hover:bg-stone-800/50'
+          : 'border-stone-200  dark:border-stone-700 hover:border-stone-300  dark:hover:border-stone-600 hover:bg-stone-50  dark:bg-stone-900 dark:hover:bg-stone-800/50'
       }`}
     >
       <div className="flex items-center gap-4">
         <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${
           hasFilter
             ? 'bg-stone-900 text-white'
-            : 'bg-stone-100 dark:bg-stone-800 dark:bg-stone-800 text-stone-500 dark:text-stone-400 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500'
+            : 'bg-stone-100 dark:bg-stone-800  text-stone-500  dark:text-stone-500  '
         }`}>
           <Icon className="w-5 h-5" />
         </div>
@@ -222,7 +222,7 @@ const FilterModal = () => {
           {summary ? (
             <div className="text-sm text-stone-900 dark:text-stone-100">{summary}</div>
           ) : (
-            <div className="text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500">Any</div>
+            <div className="text-sm text-stone-500  dark:text-stone-500  ">Any</div>
           )}
         </div>
       </div>
@@ -268,7 +268,7 @@ const FilterModal = () => {
   const PriceContent = () => (
     <div className="flex flex-col gap-6">
       <div>
-        <label className="block text-sm font-medium text-stone-700 dark:text-stone-200 dark:text-stone-300 mb-2">
+        <label className="block text-sm font-medium text-stone-700  dark:text-stone-300 mb-2">
           Minimum Price
         </label>
         <div className="relative">
@@ -277,12 +277,12 @@ const FilterModal = () => {
             {...register('priceMin')}
             type="number"
             placeholder="0"
-            className="w-full bg-white dark:bg-stone-900 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 dark:border-stone-700 rounded-xl pl-10 pr-4 py-4 text-lg text-stone-900 dark:text-stone-100 dark:text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all"
+            className="w-full bg-white dark:bg-stone-900  border border-stone-200  dark:border-stone-700 rounded-xl pl-10 pr-4 py-4 text-lg text-stone-900 dark:text-stone-100 dark:text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all"
           />
         </div>
       </div>
       <div>
-        <label className="block text-sm font-medium text-stone-700 dark:text-stone-200 dark:text-stone-300 mb-2">
+        <label className="block text-sm font-medium text-stone-700  dark:text-stone-300 mb-2">
           Maximum Price
         </label>
         <div className="relative">
@@ -291,7 +291,7 @@ const FilterModal = () => {
             {...register('priceMax')}
             type="number"
             placeholder="No limit"
-            className="w-full bg-white dark:bg-stone-900 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 dark:border-stone-700 rounded-xl pl-10 pr-4 py-4 text-lg text-stone-900 dark:text-stone-100 dark:text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all"
+            className="w-full bg-white dark:bg-stone-900  border border-stone-200  dark:border-stone-700 rounded-xl pl-10 pr-4 py-4 text-lg text-stone-900 dark:text-stone-100 dark:text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all"
           />
         </div>
       </div>
@@ -302,7 +302,7 @@ const FilterModal = () => {
   const LocationContent = () => (
     <div className="flex flex-col gap-6">
       <div>
-        <label className="block text-sm font-medium text-stone-700 dark:text-stone-200 dark:text-stone-300 mb-2">
+        <label className="block text-sm font-medium text-stone-700  dark:text-stone-300 mb-2">
           City, state, or zip code
         </label>
         <div className="relative">
@@ -311,12 +311,12 @@ const FilterModal = () => {
             {...register('location')}
             type="text"
             placeholder="Enter location"
-            className="w-full bg-white dark:bg-stone-900 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 dark:border-stone-700 rounded-xl pl-12 pr-4 py-4 text-lg text-stone-900 dark:text-stone-100 dark:text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all"
+            className="w-full bg-white dark:bg-stone-900  border border-stone-200  dark:border-stone-700 rounded-xl pl-12 pr-4 py-4 text-lg text-stone-900 dark:text-stone-100 dark:text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all"
           />
         </div>
       </div>
       <div>
-        <label className="block text-sm font-medium text-stone-700 dark:text-stone-200 dark:text-stone-300 mb-3">
+        <label className="block text-sm font-medium text-stone-700  dark:text-stone-300 mb-3">
           Distance
         </label>
         <div className="grid grid-cols-2 gap-2">
@@ -330,7 +330,7 @@ const FilterModal = () => {
                 className={`py-3.5 px-4 rounded-xl text-sm font-medium transition-all duration-200 ${
                   isActive
                     ? 'bg-stone-900 text-white'
-                    : 'bg-stone-100 dark:bg-stone-800 dark:bg-stone-800 text-stone-700 dark:text-stone-200 dark:text-stone-300 hover:bg-stone-200 dark:bg-stone-700 dark:hover:bg-stone-700'
+                    : 'bg-stone-100   text-stone-700  dark:text-stone-300 hover:bg-stone-200 dark:bg-stone-700 dark:hover:bg-stone-700'
                 }`}
               >
                 {option.label}
@@ -355,7 +355,7 @@ const FilterModal = () => {
             className={`w-full flex items-center justify-between p-4 rounded-xl transition-all duration-200 ${
               isActive
                 ? 'bg-stone-900 text-white'
-                : 'bg-stone-50 dark:bg-stone-900 dark:bg-stone-800/50 text-stone-900 dark:text-stone-100 dark:text-white hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 dark:hover:bg-stone-800'
+                : 'bg-stone-50   text-stone-900 dark:text-stone-100 dark:text-white hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 '
             }`}
           >
             <span className="font-medium">{cat.label}</span>
@@ -379,12 +379,12 @@ const FilterModal = () => {
             className={`w-full flex items-center justify-between p-4 rounded-xl transition-all duration-200 ${
               isActive
                 ? 'bg-stone-900 text-white'
-                : 'bg-stone-50 dark:bg-stone-900 dark:bg-stone-800/50 text-stone-900 dark:text-stone-100 dark:text-white hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 dark:hover:bg-stone-800'
+                : 'bg-stone-50   text-stone-900 dark:text-stone-100 dark:text-white hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 '
             }`}
           >
             <div>
               <div className="font-medium">{option.label}</div>
-              <div className={`text-sm ${isActive ? 'text-white/70' : 'text-stone-500 dark:text-stone-400 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500'}`}>
+              <div className={`text-sm ${isActive ? 'text-white/70' : 'text-stone-500  dark:text-stone-500  '}`}>
                 {option.description}
               </div>
             </div>
@@ -415,9 +415,9 @@ const FilterModal = () => {
             <button
               type="button"
               onClick={() => setCurrentStep('main')}
-              className="p-2 -ml-2 rounded-xl hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 dark:hover:bg-stone-800 transition-colors"
+              className="p-2 -ml-2 rounded-xl hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800  transition-colors"
             >
-              <ChevronLeft className="w-5 h-5 text-stone-600 dark:text-stone-300 dark:text-stone-400 dark:text-stone-500" />
+              <ChevronLeft className="w-5 h-5 text-stone-600   dark:text-stone-500" />
             </button>
           )}
           <h2 className="text-xl font-semibold text-stone-900 dark:text-stone-100 dark:text-white">
@@ -428,7 +428,7 @@ const FilterModal = () => {
           <button
             type="button"
             onClick={clearAllFilters}
-            className="flex items-center gap-1.5 text-sm text-stone-900 dark:text-stone-100 hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 transition-colors"
+            className="flex items-center gap-1.5 text-sm text-stone-900  hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 transition-colors"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             Clear all

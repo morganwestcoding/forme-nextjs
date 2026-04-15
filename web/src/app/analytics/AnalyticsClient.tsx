@@ -115,7 +115,7 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
                 className={`px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap ${
                   activeTab === tab
                     ? 'bg-gradient-to-br from-stone-800 to-black text-white shadow-[0_1px_3px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.12)]'
-                    : 'bg-stone-50 dark:bg-stone-900 text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]'
+                    : 'bg-stone-50  text-stone-500  dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]'
                 }`}
               >
                 {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -205,11 +205,11 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
                     <div key={service.serviceName} className="flex items-center justify-between py-3 border-b border-stone-100 dark:border-stone-800 last:border-0">
                       <div>
                         <p className="text-sm font-medium text-stone-900 dark:text-stone-100">{service.serviceName}</p>
-                        <p className="text-xs text-stone-500 dark:text-stone-400 dark:text-stone-500 mt-0.5">{service.category}</p>
+                        <p className="text-xs text-stone-500  dark:text-stone-500 mt-0.5">{service.category}</p>
                       </div>
                       <div className="text-right">
                         <p className="text-sm font-semibold text-stone-900 dark:text-stone-100">{service.bookings}</p>
-                        <p className="text-xs text-stone-500 dark:text-stone-400 dark:text-stone-500 mt-0.5">{formatCurrency(service.revenue)}</p>
+                        <p className="text-xs text-stone-500  dark:text-stone-500 mt-0.5">{formatCurrency(service.revenue)}</p>
                       </div>
                     </div>
                   ))}
@@ -227,7 +227,7 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
                     <div key={reservation.id} className="flex items-center gap-4 py-3 border-b border-stone-100 dark:border-stone-800 last:border-0">
                       <div className="flex-1">
                         <p className="text-sm font-medium text-stone-900 dark:text-stone-100">{reservation.serviceName}</p>
-                        <p className="text-xs text-stone-500 dark:text-stone-400 dark:text-stone-500 mt-0.5">
+                        <p className="text-xs text-stone-500  dark:text-stone-500 mt-0.5">
                           {reservation.user.name} • {formatDate(reservation.date)}
                         </p>
                       </div>
@@ -253,7 +253,7 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
                   {recentActivity.posts.slice(0, 5).map((post) => (
                     <div key={post.id} className="py-3 border-b border-stone-100 dark:border-stone-800 last:border-0">
                       <p className="text-sm text-stone-700 dark:text-stone-200 mb-2 line-clamp-2">{post.content}</p>
-                      <div className="flex items-center gap-4 text-xs text-stone-500 dark:text-stone-400 dark:text-stone-500">
+                      <div className="flex items-center gap-4 text-xs text-stone-500  dark:text-stone-500">
                         <span className="flex items-center gap-1">
                           <Heart size={12} />
                           {post.likes.length}
@@ -279,11 +279,11 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-stone-200 dark:border-stone-800">
-                    <th className="px-8 py-4 text-left text-xs font-semibold text-stone-500 dark:text-stone-400 dark:text-stone-500 tracking-tight">Listing</th>
-                    <th className="px-8 py-4 text-left text-xs font-semibold text-stone-500 dark:text-stone-400 dark:text-stone-500 tracking-tight">Category</th>
-                    <th className="px-8 py-4 text-left text-xs font-semibold text-stone-500 dark:text-stone-400 dark:text-stone-500 tracking-tight">Reservations</th>
-                    <th className="px-8 py-4 text-left text-xs font-semibold text-stone-500 dark:text-stone-400 dark:text-stone-500 tracking-tight">Revenue</th>
-                    <th className="px-8 py-4 text-left text-xs font-semibold text-stone-500 dark:text-stone-400 dark:text-stone-500 tracking-tight">Created</th>
+                    <th className="px-8 py-4 text-left text-xs font-semibold text-stone-500  dark:text-stone-500 tracking-tight">Listing</th>
+                    <th className="px-8 py-4 text-left text-xs font-semibold text-stone-500  dark:text-stone-500 tracking-tight">Category</th>
+                    <th className="px-8 py-4 text-left text-xs font-semibold text-stone-500  dark:text-stone-500 tracking-tight">Reservations</th>
+                    <th className="px-8 py-4 text-left text-xs font-semibold text-stone-500  dark:text-stone-500 tracking-tight">Revenue</th>
+                    <th className="px-8 py-4 text-left text-xs font-semibold text-stone-500  dark:text-stone-500 tracking-tight">Created</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -304,7 +304,7 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
                         <div className="text-sm font-semibold text-stone-900 dark:text-stone-100">{formatCurrency(listing.revenue)}</div>
                       </td>
                       <td className="px-8 py-4">
-                        <div className="text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500">{formatDate(listing.createdAt)}</div>
+                        <div className="text-sm text-stone-500  dark:text-stone-500">{formatDate(listing.createdAt)}</div>
                       </td>
                     </tr>
                   ))}
@@ -416,7 +416,7 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
           <div className="space-y-8">
             {/* Rating Overview */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-              <div className="group relative rounded-2xl border p-8 transition-all duration-300 bg-white dark:bg-stone-900 border-stone-200 dark:border-stone-800 hover:border-stone-300 dark:border-stone-700 hover:shadow-md">
+              <div className="group relative rounded-2xl border p-8 transition-all duration-300 bg-white dark:bg-stone-900 border-stone-200  hover:border-stone-300 dark:border-stone-700 hover:shadow-md">
                 <p className="text-xs font-semibold uppercase tracking-wider text-stone-400 dark:text-stone-500 mb-3">Average Rating</p>
                 <div className="flex items-baseline gap-2">
                   <span className="text-4xl font-semibold tracking-tight text-stone-900 dark:text-stone-100">
@@ -434,19 +434,19 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
                   ))}
                 </div>
               </div>
-              <div className="group relative rounded-2xl border p-8 transition-all duration-300 bg-white dark:bg-stone-900 border-stone-200 dark:border-stone-800 hover:border-stone-300 dark:border-stone-700 hover:shadow-md">
+              <div className="group relative rounded-2xl border p-8 transition-all duration-300 bg-white dark:bg-stone-900 border-stone-200  hover:border-stone-300 dark:border-stone-700 hover:shadow-md">
                 <p className="text-xs font-semibold uppercase tracking-wider text-stone-400 dark:text-stone-500 mb-3">Total Reviews</p>
                 <div className="text-4xl font-semibold tracking-tight text-stone-900 dark:text-stone-100">
                   {reviews.totalReviews}
                 </div>
-                <p className="text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500 mt-3">Reviews received</p>
+                <p className="text-sm text-stone-500  dark:text-stone-500 mt-3">Reviews received</p>
               </div>
-              <div className="group relative rounded-2xl border p-8 transition-all duration-300 bg-white dark:bg-stone-900 border-stone-200 dark:border-stone-800 hover:border-stone-300 dark:border-stone-700 hover:shadow-md">
+              <div className="group relative rounded-2xl border p-8 transition-all duration-300 bg-white dark:bg-stone-900 border-stone-200  hover:border-stone-300 dark:border-stone-700 hover:shadow-md">
                 <p className="text-xs font-semibold uppercase tracking-wider text-stone-400 dark:text-stone-500 mb-3">5-Star Reviews</p>
                 <div className="text-4xl font-semibold tracking-tight text-stone-900 dark:text-stone-100">
                   {reviews.ratingDistribution.find(r => r.rating === 5)?.count || 0}
                 </div>
-                <p className="text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500 mt-3">
+                <p className="text-sm text-stone-500  dark:text-stone-500 mt-3">
                   {reviews.totalReviews > 0
                     ? `${Math.round(((reviews.ratingDistribution.find(r => r.rating === 5)?.count || 0) / reviews.totalReviews) * 100)}% of total`
                     : 'No reviews yet'}
@@ -475,7 +475,7 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
                             style={{ width: `${percentage}%` }}
                           />
                         </div>
-                        <span className="text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500 w-12 text-right">{count}</span>
+                        <span className="text-sm text-stone-500  dark:text-stone-500 w-12 text-right">{count}</span>
                       </div>
                     );
                   })}
@@ -489,7 +489,7 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
                 {reviews.totalReviews === 0 ? (
                   <div className="text-center py-8">
                     <Star size={48} className="text-stone-200 mx-auto mb-4" />
-                    <p className="text-stone-500 dark:text-stone-400 dark:text-stone-500">No reviews yet</p>
+                    <p className="text-stone-500  dark:text-stone-500">No reviews yet</p>
                     <p className="text-sm text-stone-400 dark:text-stone-500 mt-2">Start collecting reviews to see your goal progress</p>
                   </div>
                 ) : reviews.averageRating >= 5 ? (
@@ -500,7 +500,7 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
                       ))}
                     </div>
                     <p className="text-xl font-semibold text-stone-900 dark:text-stone-100">Perfect 5-Star Rating!</p>
-                    <p className="text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500 mt-2">You&apos;ve achieved the highest possible rating</p>
+                    <p className="text-sm text-stone-500  dark:text-stone-500 mt-2">You&apos;ve achieved the highest possible rating</p>
                   </div>
                 ) : (
                   <div className="space-y-6">
@@ -518,7 +518,7 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
                             />
                           ))}
                         </div>
-                        <span className="text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500">from {reviews.totalReviews} reviews</span>
+                        <span className="text-sm text-stone-500  dark:text-stone-500">from {reviews.totalReviews} reviews</span>
                       </div>
                     </div>
 
@@ -540,7 +540,7 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
                               <div className="flex items-center gap-2">
                                 <span className="text-lg font-semibold text-stone-900 dark:text-stone-100">{target.toFixed(1)}</span>
                                 <Star size={16} className="text-yellow-400 fill-yellow-400" />
-                                <span className="text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500">rating goal</span>
+                                <span className="text-sm text-stone-500  dark:text-stone-500">rating goal</span>
                               </div>
                               {isAchieved ? (
                                 <span className="text-sm font-medium text-green-600 flex items-center gap-1">

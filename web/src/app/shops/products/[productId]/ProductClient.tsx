@@ -148,7 +148,7 @@ const ProductClient: React.FC<ProductClientProps> = ({
               {/* Back button - top left */}
               <button
                 onClick={() => router.back()}
-                className="absolute top-3 left-3 w-8 h-8 flex items-center justify-center text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 rounded-full transition-all z-20"
+                className="absolute top-3 left-3 w-8 h-8 flex items-center justify-center text-stone-400  hover:text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 rounded-full transition-all z-20"
                 type="button"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -178,7 +178,7 @@ const ProductClient: React.FC<ProductClientProps> = ({
                   {product.shop?.name && (
                     <button
                       onClick={() => router.push(`/shops/${product.shop.id}`)}
-                      className="text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300 transition-colors"
+                      className="text-stone-400  hover:text-stone-600 dark:text-stone-300 transition-colors"
                     >
                       {product.shop.name}
                     </button>
@@ -233,7 +233,7 @@ const ProductClient: React.FC<ProductClientProps> = ({
             {/* Description */}
             <div className="px-6 py-5">
               {product.description ? (
-                <p className="text-[13px] text-stone-500 dark:text-stone-400 dark:text-stone-500 leading-[1.7] line-clamp-4">
+                <p className="text-[13px] text-stone-500  dark:text-stone-500 leading-[1.7] line-clamp-4">
                   {product.description}
                 </p>
               ) : (
@@ -246,7 +246,7 @@ const ProductClient: React.FC<ProductClientProps> = ({
               <div className="flex items-center justify-center gap-4 mt-6 mb-2">
                 <button
                   onClick={handleShare}
-                  className="flex items-center gap-1.5 text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300 transition-colors"
+                  className="flex items-center gap-1.5 text-stone-400  hover:text-stone-600 dark:text-stone-300 transition-colors"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M10.0017 3C7.05534 3.03208 5.41096 3.21929 4.31838 4.31188C2.99988 5.63037 2.99988 7.75248 2.99988 11.9966C2.99988 16.2409 2.99988 18.363 4.31838 19.6815C5.63688 21 7.75899 21 12.0032 21C16.2474 21 18.3695 21 19.688 19.6815C20.7808 18.5887 20.9678 16.9438 20.9999 13.9963" />
@@ -272,7 +272,7 @@ const ProductClient: React.FC<ProductClientProps> = ({
                 <button
                   onClick={handleAddToCart}
                   disabled={!inStock}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-stone-50 dark:bg-stone-900 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 disabled:bg-stone-50 dark:bg-stone-900 disabled:text-stone-300 text-stone-700 dark:text-stone-200 rounded-xl text-[13px] font-medium transition-all border border-stone-200/60"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-stone-50  hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 disabled:bg-stone-50  disabled:text-stone-300 text-stone-700 dark:text-stone-200 rounded-xl text-[13px] font-medium transition-all border border-stone-200/60"
                   type="button"
                 >
                   Add to Cart
@@ -298,11 +298,11 @@ const ProductClient: React.FC<ProductClientProps> = ({
               </div>
               <div className="flex-1 min-w-0">
                 <h1 className="text-lg font-bold text-stone-900 dark:text-stone-100 truncate">{product.name}</h1>
-                <p className="text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500">{formatPrice(product.price)}</p>
+                <p className="text-sm text-stone-500  dark:text-stone-500">{formatPrice(product.price)}</p>
               </div>
               <button
                 onClick={() => setShowDropdown(!showDropdown)}
-                className="w-8 h-8 rounded-full flex items-center justify-center text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800"
+                className="w-8 h-8 rounded-full flex items-center justify-center text-stone-400  hover:text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800"
                 type="button"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -320,7 +320,7 @@ const ProductClient: React.FC<ProductClientProps> = ({
               <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-4">
                   <h3 className="text-xl font-semibold text-stone-900 dark:text-stone-100 tracking-tight">Photos</h3>
-                  <span className="text-[11px] font-medium text-stone-500 dark:text-stone-400 dark:text-stone-500 bg-stone-100 dark:bg-stone-800 px-2.5 py-1 rounded-full tabular-nums">{allImages.length}</span>
+                  <span className="text-[11px] font-medium text-stone-500  dark:text-stone-500 bg-stone-100 dark:bg-stone-800 px-2.5 py-1 rounded-full tabular-nums">{allImages.length}</span>
                 </div>
               </div>
               <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-0.5 overflow-hidden rounded-xl">
@@ -397,7 +397,7 @@ const ProductClient: React.FC<ProductClientProps> = ({
               <div className="inline-flex items-center border border-stone-200 dark:border-stone-800 rounded-xl overflow-hidden">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="w-12 h-12 flex items-center justify-center text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900 transition-colors"
+                  className="w-12 h-12 flex items-center justify-center text-stone-500  dark:text-stone-500 hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900 transition-colors"
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14" /></svg>
                 </button>
@@ -406,7 +406,7 @@ const ProductClient: React.FC<ProductClientProps> = ({
                 </span>
                 <button
                   onClick={() => setQuantity(Math.min(product.inventory, quantity + 1))}
-                  className="w-12 h-12 flex items-center justify-center text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900 transition-colors"
+                  className="w-12 h-12 flex items-center justify-center text-stone-500  dark:text-stone-500 hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900 transition-colors"
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 5v14M5 12h14" /></svg>
                 </button>
@@ -451,7 +451,7 @@ const ProductClient: React.FC<ProductClientProps> = ({
                   {product.tags.map((tag, idx) => (
                     <span
                       key={idx}
-                      className="text-[10px] font-medium text-stone-500 dark:text-stone-400 dark:text-stone-500 bg-stone-100 dark:bg-stone-800 px-2.5 py-1 rounded-full"
+                      className="text-[10px] font-medium text-stone-500  dark:text-stone-500 bg-stone-100 dark:bg-stone-800 px-2.5 py-1 rounded-full"
                     >
                       {tag}
                     </span>
@@ -470,7 +470,7 @@ const ProductClient: React.FC<ProductClientProps> = ({
                 </div>
                 <button
                   onClick={() => router.push(`/shops/${product.shop.id}`)}
-                  className="flex items-center gap-4 p-4 rounded-2xl bg-stone-50 dark:bg-stone-900 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border border-stone-100 dark:border-stone-800 hover:border-stone-200 dark:border-stone-800 transition-all w-full max-w-md text-left"
+                  className="flex items-center gap-4 p-4 rounded-2xl bg-stone-50  hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border border-stone-100 dark:border-stone-800 hover:border-stone-200  transition-all w-full max-w-md text-left"
                 >
                   <div className="w-12 h-12 rounded-xl overflow-hidden bg-stone-200 dark:bg-stone-700 flex-shrink-0">
                     {product.shop.logo && (
@@ -502,7 +502,7 @@ const ProductClient: React.FC<ProductClientProps> = ({
                 <div className="flex items-center justify-between mb-5">
                   <div className="flex items-center gap-4">
                     <h3 className="text-xl font-semibold text-stone-900 dark:text-stone-100 tracking-tight">More from {product.shop?.name}</h3>
-                    <span className="text-[11px] font-medium text-stone-500 dark:text-stone-400 dark:text-stone-500 bg-stone-100 dark:bg-stone-800 px-2.5 py-1 rounded-full tabular-nums">{relatedProducts.length}</span>
+                    <span className="text-[11px] font-medium text-stone-500  dark:text-stone-500 bg-stone-100 dark:bg-stone-800 px-2.5 py-1 rounded-full tabular-nums">{relatedProducts.length}</span>
                   </div>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-0.5 overflow-hidden rounded-xl">

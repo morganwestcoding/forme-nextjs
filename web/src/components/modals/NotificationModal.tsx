@@ -201,7 +201,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onMar
           }`}>
             {notification.content}
           </p>
-          <p className="text-[11.5px] text-stone-500 dark:text-stone-400 dark:text-stone-500 mt-1.5">
+          <p className="text-[11.5px] text-stone-500  dark:text-stone-500 mt-1.5">
             {formatTimeAgo(notification.createdAt)}
           </p>
         </div>
@@ -324,7 +324,7 @@ const NotificationsModal = () => {
             Notifications
           </h2>
           {unreadCount > 0 && (
-            <p className="text-[12px] text-stone-500 dark:text-stone-400 dark:text-stone-500 mt-1">
+            <p className="text-[12px] text-stone-500  dark:text-stone-500 mt-1">
               {unreadCount} unread
             </p>
           )}
@@ -359,7 +359,7 @@ const NotificationsModal = () => {
                 <h3 className="text-[13.5px] font-medium text-stone-900 dark:text-stone-100 mb-1">
                   No notifications
                 </h3>
-                <p className="text-stone-500 dark:text-stone-400 dark:text-stone-500 text-[12px] max-w-[240px] mx-auto leading-relaxed">
+                <p className="text-stone-500  dark:text-stone-500 text-[12px] max-w-[240px] mx-auto leading-relaxed">
                   When you receive notifications, they&apos;ll appear here
                 </p>
               </div>

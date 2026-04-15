@@ -136,9 +136,9 @@ const UserMenuModal: React.FC<UserMenuModalProps> = ({ currentUser }) => {
                 <button
                   key={item.label}
                   onClick={item.onClick}
-                  className="flex flex-col items-center gap-2.5 py-5 px-2 rounded-2xl bg-stone-50 dark:bg-stone-900 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border border-stone-100 dark:border-stone-800 hover:border-stone-200 dark:border-stone-800 transition-all"
+                  className="flex flex-col items-center gap-2.5 py-5 px-2 rounded-2xl bg-stone-50  hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border border-stone-100 dark:border-stone-800 hover:border-stone-200  transition-all"
                 >
-                  <item.icon className="w-[22px] h-[22px] text-stone-500 dark:text-stone-400 dark:text-stone-500" strokeWidth={1.5} />
+                  <item.icon className="w-[22px] h-[22px] text-stone-500  dark:text-stone-500" strokeWidth={1.5} />
                   <span className="text-[12px] font-medium text-stone-600 dark:text-stone-300">{item.label}</span>
                 </button>
               ))}
@@ -187,7 +187,7 @@ const UserMenuModal: React.FC<UserMenuModalProps> = ({ currentUser }) => {
           </Button>
           <button
             onClick={() => handleNavigate('/register')}
-            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-stone-50 dark:bg-stone-900 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 text-stone-700 dark:text-stone-200 border border-stone-200/60 text-[13px] font-medium transition-all"
+            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-stone-50  hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 text-stone-700 dark:text-stone-200 border border-stone-200/60 text-[13px] font-medium transition-all"
           >
             <UserAdd01Icon className="w-[16px] h-[16px]" strokeWidth={1.5} />
             Sign Up

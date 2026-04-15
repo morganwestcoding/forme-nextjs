@@ -258,7 +258,7 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
         htmlFor={id}
         className={`
           absolute text-sm duration-150 transform -translate-y-3 top-5 left-4 origin-[0] pointer-events-none
-          ${errors[id] ? 'text-rose-500' : 'text-stone-500 dark:text-stone-400 dark:text-stone-500'}
+          ${errors[id] ? 'text-rose-500' : 'text-stone-500  dark:text-stone-500'}
           peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0
           peer-focus:scale-75 peer-focus:-translate-y-4
         `}

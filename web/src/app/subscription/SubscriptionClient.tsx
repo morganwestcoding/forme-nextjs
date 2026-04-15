@@ -250,7 +250,7 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
               <div>
                 <p className="text-[11px] font-medium text-stone-400 dark:text-stone-500 uppercase tracking-wide mb-1">Current Plan</p>
                 <p className="text-xl font-bold text-stone-900 dark:text-stone-100">{currentPlanData?.name}</p>
-                <div className="flex flex-wrap gap-x-6 gap-y-1 mt-2 text-[13px] text-stone-500 dark:text-stone-400 dark:text-stone-500">
+                <div className="flex flex-wrap gap-x-6 gap-y-1 mt-2 text-[13px] text-stone-500  dark:text-stone-500">
                   {currentUser?.subscriptionBillingInterval && (
                     <span>Billed {currentUser.subscriptionBillingInterval === 'year' ? 'yearly' : 'monthly'}</span>
                   )}
@@ -286,7 +286,7 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
         {/* Billing toggle */}
         <div className="flex items-center gap-2 mb-8">
           {(["monthly", "yearly"] as const).map((b) => (
-            <button key={b} onClick={() => setBilling(b)} className={`px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap ${billing === b ? 'bg-gradient-to-br from-stone-800 to-black text-white shadow-[0_1px_3px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.12)]' : 'bg-stone-50 dark:bg-stone-900 text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]'}`}>
+            <button key={b} onClick={() => setBilling(b)} className={`px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap ${billing === b ? 'bg-gradient-to-br from-stone-800 to-black text-white shadow-[0_1px_3px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.12)]' : 'bg-stone-50  text-stone-500  dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]'}`}>
               {b === 'monthly' ? 'Monthly' : 'Yearly'}
             </button>
           ))}
@@ -373,19 +373,19 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
               </div>
               <h3 className="text-lg font-semibold text-stone-900 dark:text-stone-100">Cancel Subscription?</h3>
             </div>
-            <p className="text-[13px] text-stone-500 dark:text-stone-400 dark:text-stone-500 mb-2">
+            <p className="text-[13px] text-stone-500  dark:text-stone-500 mb-2">
               Your {currentPlanData?.name} plan will remain active until the end of your current billing period
               {currentUser?.currentPeriodEnd && (
                 <> ({new Date(currentUser.currentPeriodEnd).toLocaleDateString()})</>
               )}.
             </p>
-            <p className="text-[13px] text-stone-500 dark:text-stone-400 dark:text-stone-500 mb-6">
+            <p className="text-[13px] text-stone-500  dark:text-stone-500 mb-6">
               After that, you&apos;ll be downgraded to the Freemium plan and lose access to premium features like analytics and SEO tools.
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => setShowCancelConfirm(false)}
-                className="flex-1 py-3 rounded-xl text-[13px] font-medium bg-stone-50 dark:bg-stone-900 text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border border-stone-200/60 transition-all"
+                className="flex-1 py-3 rounded-xl text-[13px] font-medium bg-stone-50  text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border border-stone-200/60 transition-all"
               >
                 Keep Plan
               </button>
@@ -406,18 +406,18 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
         <div className="fixed inset-0 z-[9999] backdrop-blur-sm bg-stone-900/60 flex items-center justify-center p-4" onClick={() => setShowChangeConfirm(null)}>
           <div className="bg-white dark:bg-stone-900 rounded-2xl p-8 max-w-md w-full shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <h3 className="text-lg font-semibold text-stone-900 dark:text-stone-100 mb-2">Change Plan</h3>
-            <p className="text-[13px] text-stone-500 dark:text-stone-400 dark:text-stone-500 mb-2">
+            <p className="text-[13px] text-stone-500  dark:text-stone-500 mb-2">
               Switch from <span className="font-semibold text-stone-900 dark:text-stone-100">{currentPlanData?.name}</span> to{' '}
               <span className="font-semibold text-stone-900 dark:text-stone-100">{plans.find(p => p.id === showChangeConfirm.planId)?.name}</span>{' '}
               ({showChangeConfirm.interval})?
             </p>
-            <p className="text-[13px] text-stone-500 dark:text-stone-400 dark:text-stone-500 mb-6">
+            <p className="text-[13px] text-stone-500  dark:text-stone-500 mb-6">
               The price difference will be prorated to your current billing cycle. Your new plan starts immediately.
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => setShowChangeConfirm(null)}
-                className="flex-1 py-3 rounded-xl text-[13px] font-medium bg-stone-50 dark:bg-stone-900 text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border border-stone-200/60 transition-all"
+                className="flex-1 py-3 rounded-xl text-[13px] font-medium bg-stone-50  text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border border-stone-200/60 transition-all"
               >
                 Never Mind
               </button>

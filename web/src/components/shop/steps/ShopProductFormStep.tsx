@@ -272,7 +272,7 @@ export default function ShopProductFormStep({
               {sizes.map((size) => (
                 <div key={size} className="bg-stone-100 dark:bg-stone-800 px-3 py-1 rounded-full flex items-center gap-1.5 text-sm">
                   <span>{size}</span>
-                  <button type="button" onClick={() => setSizes(prev => prev.filter(s => s !== size))} className="text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300">
+                  <button type="button" onClick={() => setSizes(prev => prev.filter(s => s !== size))} className="text-stone-400  hover:text-stone-600 dark:text-stone-300">
                     <X className="w-3.5 h-3.5" />
                   </button>
                 </div>
@@ -287,7 +287,7 @@ export default function ShopProductFormStep({
       <button
         type="button"
         onClick={onBack}
-        className="fixed top-6 right-6 z-50 w-10 h-10 rounded-full flex items-center justify-center text-stone-400 dark:text-stone-500 hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 transition-all"
+        className="fixed top-6 right-6 z-50 w-10 h-10 rounded-full flex items-center justify-center text-stone-400  hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 transition-all"
       >
         <Cancel01Icon className="w-5 h-5" strokeWidth={1.5} />
       </button>
@@ -298,7 +298,7 @@ export default function ShopProductFormStep({
           <button
             type="button"
             onClick={onBack}
-            className="flex items-center gap-2 text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 transition-colors"
+            className="flex items-center gap-2 text-stone-500   hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             <span className="text-sm">Back</span>

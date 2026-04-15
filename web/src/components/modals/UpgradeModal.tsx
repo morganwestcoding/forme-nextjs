@@ -20,7 +20,7 @@ const UpgradeModal: React.FC = () => {
         <h3 className="text-lg font-semibold text-stone-900 dark:text-stone-100">
           Upgrade to Unlock {upgradeModal.feature}
         </h3>
-        <p className="text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500 mt-1.5 max-w-sm">
+        <p className="text-sm text-stone-500  dark:text-stone-500 mt-1.5 max-w-sm">
           {upgradeModal.feature} is available on the {upgradeModal.requiredTier} plan
           and above. Upgrade your subscription to access this feature.
         </p>

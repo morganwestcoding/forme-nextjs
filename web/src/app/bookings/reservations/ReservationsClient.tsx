@@ -208,7 +208,7 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
                   className={`flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap ${
                     active
                       ? 'bg-gradient-to-br from-stone-800 to-black text-white shadow-[0_1px_3px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.12)]'
-                      : 'bg-stone-50 dark:bg-stone-900 text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]'
+                      : 'bg-stone-50  text-stone-500  dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]'
                   }`}
                 >
                   {tab.label}
@@ -236,7 +236,7 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
                   ? 'Search by service, customer, place…'
                   : 'Search trips, shops, places…'
               }
-              className="w-full bg-stone-50 dark:bg-stone-900 dark:bg-stone-800/50 border border-stone-200 dark:border-stone-800 dark:border-stone-700/50 rounded-xl px-4 py-2.5 pr-11 text-[13px] text-stone-800 dark:text-stone-200 dark:text-white placeholder-stone-400 dark:placeholder-stone-500 outline-none focus:border-stone-300 dark:border-stone-700 dark:focus:border-stone-600 focus:bg-white dark:bg-stone-900 dark:focus:bg-stone-800 transition-all"
+              className="w-full bg-stone-50  dark:bg-stone-800/50 border border-stone-200   rounded-xl px-4 py-2.5 pr-11 text-[13px] text-stone-800 dark:text-stone-200 dark:text-white placeholder-stone-400 dark:placeholder-stone-500 outline-none focus:border-stone-300 dark:border-stone-700 dark:focus:border-stone-600 focus:bg-white  dark:focus:bg-stone-800 transition-all"
             />
             <div className="absolute right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-xl flex items-center justify-center text-stone-400 dark:text-stone-500">
               <Search className="w-4 h-4" strokeWidth={2} />
@@ -670,7 +670,7 @@ function BigAction({
 }) {
   const cls = `inline-flex flex-col items-center justify-center gap-1.5 rounded-xl text-[13px] font-semibold transition-all border ${
     primary
-      ? 'bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 border-white hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800'
+      ? 'bg-white  text-stone-900 dark:text-stone-100 border-white hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800'
       : 'bg-white/[0.04] text-white border-white/10 hover:bg-white/10 hover:border-white/20'
   } disabled:opacity-50`;
   if (href) {
@@ -858,7 +858,7 @@ function StackedAction({
 }) {
   const cls = `w-full inline-flex items-center ${compact ? 'justify-center' : 'justify-start'} gap-2 px-3.5 h-11 rounded-xl text-[13px] font-semibold whitespace-nowrap transition-all border ${
     primary
-      ? 'bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 border-white hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800'
+      ? 'bg-white  text-stone-900 dark:text-stone-100 border-white hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800'
       : danger
       ? 'bg-white/0 text-white/75 border-white/15 hover:bg-red-500/15 hover:text-red-200 hover:border-red-400/40'
       : 'bg-white/5 text-white border-white/15 hover:bg-white/15'
@@ -920,7 +920,7 @@ function NoUpcomingHero({
         {!isIncoming && (
           <button
             onClick={onBrowse}
-            className="mt-7 inline-flex items-center gap-2 px-5 h-11 rounded-full bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 text-[13px] font-semibold hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 transition-colors"
+            className="mt-7 inline-flex items-center gap-2 px-5 h-11 rounded-full bg-white  text-stone-900 dark:text-stone-100 text-[13px] font-semibold hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 transition-colors"
           >
             <Sparkles className="w-4 h-4" strokeWidth={2.2} />
             Discover services
@@ -1095,7 +1095,7 @@ function TripRow({
                 <h3 className="mt-1.5 text-[18px] font-semibold text-stone-900 dark:text-stone-100 tracking-[-0.015em] leading-tight truncate">
                   {reservation.serviceName}
                 </h3>
-                <p className="text-[12px] text-stone-500 dark:text-stone-400 dark:text-stone-500 truncate mt-0.5">
+                <p className="text-[12px] text-stone-500  dark:text-stone-500 truncate mt-0.5">
                   {isIncoming ? `${customerName} · ${listing.title}` : listing.title}
                 </p>
               </div>
@@ -1124,7 +1124,7 @@ function TripRow({
                   className={`object-cover ${past ? 'grayscale-[35%]' : ''}`}
                 />
               </div>
-              <div className="min-w-0 text-[12px] text-stone-500 dark:text-stone-400 dark:text-stone-500 truncate">
+              <div className="min-w-0 text-[12px] text-stone-500  dark:text-stone-500 truncate">
                 {!isIncoming && employeeName
                   ? <>with <span className="text-stone-700 dark:text-stone-200 font-medium">{employeeName}</span></>
                   : !isIncoming && listing.address
@@ -1185,7 +1185,7 @@ function ActionChip({
 }) {
   const cls = `inline-flex items-center gap-1.5 px-3.5 h-9 rounded-full text-[12px] font-semibold whitespace-nowrap transition-all backdrop-blur-md border ${
     primary
-      ? 'bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 border-white hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800'
+      ? 'bg-white  text-stone-900 dark:text-stone-100 border-white hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800'
       : danger
       ? 'bg-white/0 text-white/80 border-white/15 hover:bg-red-500/15 hover:text-red-200 hover:border-red-400/40'
       : 'bg-white/10 text-white border-white/15 hover:bg-white/20'
@@ -1237,7 +1237,7 @@ function RowAction({
       ? 'border-stone-900 bg-stone-900 text-white hover:bg-stone-800'
       : danger
       ? 'border-stone-200 dark:border-stone-800 text-stone-400 dark:text-stone-500 hover:text-red-600 hover:border-red-200 hover:bg-red-50'
-      : 'border-stone-200 dark:border-stone-800 text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 hover:border-stone-300 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900'
+      : 'border-stone-200  text-stone-500   hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 hover:border-stone-300 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900'
   } disabled:opacity-50`;
   if (href) {
     return (
@@ -1299,7 +1299,7 @@ function EmptyState({
       {hasQuery ? (
         <button
           onClick={onClear}
-          className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-200 text-[13px] font-medium hover:bg-stone-200 dark:bg-stone-700 transition-colors"
+          className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-stone-100  text-stone-700 dark:text-stone-200 text-[13px] font-medium hover:bg-stone-200 dark:bg-stone-700 transition-colors"
         >
           Clear search
         </button>
@@ -1341,7 +1341,7 @@ const STATUS_LABELS: Record<UiStatus, string> = {
 const ROW_TEXT_COLORS: Record<UiStatus, string> = {
   accepted: 'text-emerald-700',
   pending: 'text-amber-700',
-  declined: 'text-stone-500 dark:text-stone-400 dark:text-stone-500',
+  declined: 'text-stone-500  dark:text-stone-500',
   cancelled: 'text-stone-400 dark:text-stone-500',
 };
 

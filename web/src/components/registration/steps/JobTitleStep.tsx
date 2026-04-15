@@ -48,7 +48,7 @@ export default function JobTitleStep({ userType, isOwnerManager, onOwnerManagerC
               w-full flex items-center gap-4 p-5 rounded-xl border-2 text-left transition-colors duration-200
               ${isOwnerManager
                 ? 'border-stone-900 bg-stone-50 dark:bg-stone-900'
-                : 'border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 hover:border-stone-300 dark:border-stone-700'
+                : 'border-stone-200  bg-white dark:bg-stone-900 hover:border-stone-300 dark:border-stone-700'
               }
             `}
           >
@@ -64,7 +64,7 @@ export default function JobTitleStep({ userType, isOwnerManager, onOwnerManagerC
             </div>
             <div>
               <span className="font-medium text-stone-900 dark:text-stone-100">I&apos;m the owner or manager</span>
-              <p className="text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500 mt-0.5">You&apos;ll have full access to manage the business</p>
+              <p className="text-sm text-stone-500  dark:text-stone-500 mt-0.5">You&apos;ll have full access to manage the business</p>
             </div>
           </motion.button>
         )}

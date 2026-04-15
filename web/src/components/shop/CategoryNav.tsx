@@ -77,7 +77,7 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams }) => {
                   px-8 py-3.5 text-sm transition-all duration-200
                   ${isSelected
                     ? 'font-medium'
-                    : 'text-stone-500 dark:text-stone-400 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 dark:hover:text-stone-200'
+                    : 'text-stone-500     hover:text-stone-700  dark:text-stone-200 dark:hover:text-stone-200'
                   }
                 `}
                 style={isSelected ? { color: '#1c1917' } : undefined}

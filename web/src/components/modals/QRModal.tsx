@@ -96,7 +96,7 @@ const QRModal: React.FC<QRModalProps> = ({
           {displayTitle}
         </h4>
         {displaySubtitle && (
-          <p className="text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500">
+          <p className="text-sm text-stone-500  dark:text-stone-500">
             {displaySubtitle}
           </p>
         )}
@@ -116,7 +116,7 @@ const QRModal: React.FC<QRModalProps> = ({
       <div className="flex gap-3 w-full">
         <button
           onClick={handleCopyLink}
-          className="flex-1 bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:bg-stone-700 text-stone-700 dark:text-stone-200 py-2.5 px-4 rounded-xl transition-colors text-sm font-medium flex items-center justify-center gap-2"
+          className="flex-1 bg-stone-100  hover:bg-stone-200 dark:bg-stone-700 text-stone-700 dark:text-stone-200 py-2.5 px-4 rounded-xl transition-colors text-sm font-medium flex items-center justify-center gap-2"
           type="button"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -133,7 +133,7 @@ const QRModal: React.FC<QRModalProps> = ({
 
       {/* Instructions */}
       <div className="text-center">
-        <p className="text-xs text-stone-500 dark:text-stone-400 dark:text-stone-500">
+        <p className="text-xs text-stone-500  dark:text-stone-500">
           Scan this QR code with a phone camera to open the link
         </p>
       </div>

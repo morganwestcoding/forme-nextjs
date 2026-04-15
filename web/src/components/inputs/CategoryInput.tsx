@@ -63,7 +63,7 @@ const CategoryInputBase: React.FC<CategoryInputProps> = ({ label, selected, onCl
         focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2
         ${selected
           ? 'text-white border'
-          : 'bg-white dark:bg-stone-900 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 dark:border-stone-600 text-stone-600 dark:text-stone-300 dark:text-stone-300 hover:border-stone-400 hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 dark:hover:text-white'
+          : 'bg-white  dark:bg-stone-800 border border-stone-300  dark:border-stone-600 text-stone-600   hover:border-stone-400 hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 dark:hover:text-white'
         }
       `}
       style={{
@@ -80,7 +80,7 @@ const CategoryInputBase: React.FC<CategoryInputProps> = ({ label, selected, onCl
         <div
           className={`
             transition-all duration-300
-            ${selected ? 'text-white' : 'text-stone-500 dark:text-stone-400 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500'}
+            ${selected ? 'text-white' : 'text-stone-500  dark:text-stone-500  '}
           `}
           style={!selected ? undefined : undefined}
           onMouseEnter={(e) => {
@@ -104,7 +104,7 @@ const CategoryInputBase: React.FC<CategoryInputProps> = ({ label, selected, onCl
           className={`
             text-xs font-medium leading-tight
             transition-all duration-300 ease-out
-            ${selected ? 'text-white' : 'text-stone-700 dark:text-stone-200 dark:text-stone-300 group-hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 dark:group-hover:text-white'}
+            ${selected ? 'text-white' : 'text-stone-700   group-hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 dark:group-hover:text-white'}
             transform-gpu
           `}
         >

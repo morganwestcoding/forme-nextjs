@@ -86,7 +86,7 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
             className={`px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap border ${
               activeTab === 'upload'
                 ? 'bg-stone-900 text-white border-stone-900'
-                : 'bg-stone-50 dark:bg-stone-900 text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border-stone-200/60'
+                : 'bg-stone-50  text-stone-500  dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border-stone-200/60'
             }`}
           >
             I Have a License
@@ -96,7 +96,7 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
             className={`px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap border ${
               activeTab === 'training'
                 ? 'bg-stone-900 text-white border-stone-900'
-                : 'bg-stone-50 dark:bg-stone-900 text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border-stone-200/60'
+                : 'bg-stone-50  text-stone-500  dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border-stone-200/60'
             }`}
           >
             Need Training
@@ -118,7 +118,7 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
                           <Certificate01Icon size={22} color="#fff" strokeWidth={1.5} />
                         </div>
                         <p className="text-[13px] font-medium text-white">Ready</p>
-                        <p className="text-[11px] text-stone-500 dark:text-stone-400 dark:text-stone-500 group-hover:text-stone-400 dark:text-stone-500 transition-colors mt-0.5">Click to replace</p>
+                        <p className="text-[11px] text-stone-500  dark:text-stone-500 group-hover:text-stone-400  transition-colors mt-0.5">Click to replace</p>
                       </div>
                     ) : (
                       <button
@@ -126,8 +126,8 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
                         onClick={() => setLicensingImage('mock-image-url')}
                         className="group w-full h-full flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-stone-200 dark:border-stone-800 bg-stone-50/30 text-center hover:border-stone-900 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 transition-all duration-200"
                       >
-                        <div className="w-10 h-10 rounded-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 flex items-center justify-center mb-2 shadow-sm group-hover:border-stone-300 dark:border-stone-700 transition-all">
-                          <Plus className="w-5 h-5 text-stone-400 dark:text-stone-500 group-hover:text-stone-600 dark:text-stone-300 transition-colors" />
+                        <div className="w-10 h-10 rounded-full bg-white dark:bg-stone-900 border border-stone-200  flex items-center justify-center mb-2 shadow-sm group-hover:border-stone-300 dark:border-stone-700 transition-all">
+                          <Plus className="w-5 h-5 text-stone-400  group-hover:text-stone-600 dark:text-stone-300 transition-colors" />
                         </div>
                         <span className="text-[13px] font-medium text-stone-600 dark:text-stone-300">Add file</span>
                         <span className="text-[11px] text-stone-400 dark:text-stone-500 mt-0.5">PNG, JPG, PDF</span>
@@ -145,7 +145,7 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
                     </p>
                     <div className="flex flex-wrap gap-1.5 mb-5">
                       {['State licenses', 'Certifications', 'Diplomas', 'Insurance'].map((tag) => (
-                        <span key={tag} className="text-[11px] text-stone-500 dark:text-stone-400 dark:text-stone-500 bg-stone-50 dark:bg-stone-900 px-2.5 py-1 rounded-full border border-stone-100 dark:border-stone-800">
+                        <span key={tag} className="text-[11px] text-stone-500  dark:text-stone-500 bg-stone-50 dark:bg-stone-900 px-2.5 py-1 rounded-full border border-stone-100 dark:border-stone-800">
                           {tag}
                         </span>
                       ))}
@@ -162,7 +162,7 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
                     </Button>
                     <button
                       onClick={handleSkip}
-                      className="py-2.5 px-4 text-[13px] text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300 transition-colors"
+                      className="py-2.5 px-4 text-[13px] text-stone-400  hover:text-stone-600 dark:text-stone-300 transition-colors"
                     >
                       {isOnboarding ? "Skip" : "Back"}
                     </button>
@@ -266,7 +266,7 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
 
                     {/* Description */}
                     {academy.description && (
-                      <p className={`text-[13px] mb-5 ${isSelected ? 'text-stone-300' : 'text-stone-500 dark:text-stone-400 dark:text-stone-500'}`}>
+                      <p className={`text-[13px] mb-5 ${isSelected ? 'text-stone-300' : 'text-stone-500  dark:text-stone-500'}`}>
                         {academy.description}
                       </p>
                     )}
@@ -274,7 +274,7 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
                     {/* Courses */}
                     <ul className="space-y-2.5 mb-6">
                       {academy.courses.map((course, i) => (
-                        <li key={i} className={`flex items-start text-[13px] ${isSelected ? 'text-stone-300' : 'text-stone-500 dark:text-stone-400 dark:text-stone-500'}`}>
+                        <li key={i} className={`flex items-start text-[13px] ${isSelected ? 'text-stone-300' : 'text-stone-500  dark:text-stone-500'}`}>
                           <CheckmarkCircle02Icon size={14} color="#a8a29e" className="mr-2.5 flex-shrink-0 mt-0.5" strokeWidth={1.5} />
                           {course}
                         </li>
@@ -286,7 +286,7 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
                       onClick={(e) => { e.stopPropagation(); if (academy.website) window.open(academy.website, '_blank'); }}
                       className={`w-full py-3 px-5 rounded-xl font-medium text-[13px] transition-all duration-200 flex items-center justify-center gap-2 ${
                         isSelected
-                          ? 'bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900'
+                          ? 'bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 hover:bg-stone-50 dark:hover:bg-stone-800 '
                           : 'bg-stone-900 text-white hover:bg-stone-800'
                       }`}
                       style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.12)' }}

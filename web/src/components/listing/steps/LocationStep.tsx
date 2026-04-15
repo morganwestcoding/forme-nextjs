@@ -421,7 +421,7 @@ export default function LocationStep({
             </div>
             <div className="min-w-0">
               <p className="font-medium text-stone-900 dark:text-stone-100 text-sm truncate">{streetAddress}</p>
-              <p className="text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500">{city}, {selectedState} {zip}</p>
+              <p className="text-sm text-stone-500  dark:text-stone-500">{city}, {selectedState} {zip}</p>
             </div>
           </motion.div>
         )}

@@ -139,7 +139,7 @@ export default function AccountStep() {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300 transition-colors"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-stone-400  hover:text-stone-600 dark:text-stone-300 transition-colors"
             >
               {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
             </button>

@@ -81,12 +81,12 @@ export default function ServiceSelectStep({ selectedListingId, selectedServices,
                   p-4 rounded-xl border text-left transition-all duration-200
                   ${isSelected
                     ? 'border-stone-300 dark:border-stone-700 bg-stone-100 dark:bg-stone-800 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)]'
-                    : 'border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 hover:border-stone-300 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900'
+                    : 'border-stone-200  bg-white dark:bg-stone-900 hover:border-stone-300 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800 '
                   }
                 `}
               >
                 <span className="text-sm font-medium block truncate text-stone-900 dark:text-stone-100">{service.serviceName}</span>
-                <span className="text-xs mt-1 block text-stone-500 dark:text-stone-400 dark:text-stone-500">
+                <span className="text-xs mt-1 block text-stone-500  dark:text-stone-500">
                   ${service.price}
                 </span>
               </motion.button>
@@ -95,13 +95,13 @@ export default function ServiceSelectStep({ selectedListingId, selectedServices,
         </div>
       ) : (
         <div className="text-center py-8">
-          <p className="text-stone-500 dark:text-stone-400 dark:text-stone-500">No services found for this business</p>
+          <p className="text-stone-500  dark:text-stone-500">No services found for this business</p>
           <p className="text-sm text-stone-400 dark:text-stone-500 mt-1">You can add services later</p>
         </div>
       )}
 
       {selectedServices.length > 0 && (
-        <p className="text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500 text-center mt-6">
+        <p className="text-sm text-stone-500  dark:text-stone-500 text-center mt-6">
           {selectedServices.length} service{selectedServices.length !== 1 ? 's' : ''} selected
         </p>
       )}

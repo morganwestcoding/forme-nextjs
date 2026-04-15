@@ -148,14 +148,14 @@ const CreateModal = () => {
         {showNoShop ? (
           <div className="text-center py-6">
             <p className="text-sm font-medium text-stone-900 dark:text-stone-100 mb-1">You don&apos;t have a shop yet</p>
-            <p className="text-xs text-stone-500 dark:text-stone-400 dark:text-stone-500 mb-5">Create a shop first to start adding products</p>
+            <p className="text-xs text-stone-500  dark:text-stone-500 mb-5">Create a shop first to start adding products</p>
             <Button type="button" onClick={() => handleNavigate('/shop/new')}>
               Create a shop
             </Button>
             <button
               type="button"
               onClick={() => setShowNoShop(false)}
-              className="block mx-auto mt-3 text-xs text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300 transition-colors"
+              className="block mx-auto mt-3 text-xs text-stone-400  hover:text-stone-600 dark:text-stone-300 transition-colors"
             >
               Go back
             </button>
@@ -163,14 +163,14 @@ const CreateModal = () => {
         ) : showNoListing ? (
           <div className="text-center py-6">
             <p className="text-sm font-medium text-stone-900 dark:text-stone-100 mb-1">You don&apos;t have a listing yet</p>
-            <p className="text-xs text-stone-500 dark:text-stone-400 dark:text-stone-500 mb-5">Create a listing first to start adding team members</p>
+            <p className="text-xs text-stone-500  dark:text-stone-500 mb-5">Create a listing first to start adding team members</p>
             <Button type="button" onClick={() => handleNavigate('/listing/new')}>
               Create a listing
             </Button>
             <button
               type="button"
               onClick={() => setShowNoListing(false)}
-              className="block mx-auto mt-3 text-xs text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300 transition-colors"
+              className="block mx-auto mt-3 text-xs text-stone-400  hover:text-stone-600 dark:text-stone-300 transition-colors"
             >
               Go back
             </button>
@@ -182,12 +182,12 @@ const CreateModal = () => {
                 key={item.label}
                 onClick={item.onClick}
                 disabled={'loading' in item && item.loading}
-                className="flex flex-col items-center gap-2 py-5 px-2 rounded-2xl bg-stone-50 dark:bg-stone-900 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border border-stone-100 dark:border-stone-800 hover:border-stone-200 dark:border-stone-800 transition-all disabled:opacity-50"
+                className="flex flex-col items-center gap-2 py-5 px-2 rounded-2xl bg-stone-50  hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border border-stone-100 dark:border-stone-800 hover:border-stone-200  transition-all disabled:opacity-50"
               >
                 {'loading' in item && item.loading ? (
                   <div className="w-[22px] h-[22px] border-2 border-stone-200 dark:border-stone-800 border-t-stone-600 rounded-full animate-spin" />
                 ) : (
-                  <item.icon className="w-[22px] h-[22px] text-stone-500 dark:text-stone-400 dark:text-stone-500" strokeWidth={1.5} />
+                  <item.icon className="w-[22px] h-[22px] text-stone-500  dark:text-stone-500" strokeWidth={1.5} />
                 )}
                 <div className="text-center">
                   <span className="text-[12px] font-medium text-stone-600 dark:text-stone-300 block">{item.label}</span>

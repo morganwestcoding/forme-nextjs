@@ -38,7 +38,7 @@ const StatusBadge = ({ status }: { status: string }) => {
     processing: 'bg-stone-50 dark:bg-stone-900 text-stone-600 dark:text-stone-300',
   };
   return (
-    <span className={`text-[11px] font-medium px-2.5 py-1 rounded-full capitalize ${styles[status] || 'bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400 dark:text-stone-500'}`}>
+    <span className={`text-[11px] font-medium px-2.5 py-1 rounded-full capitalize ${styles[status] || 'bg-stone-100 dark:bg-stone-800 text-stone-500  dark:text-stone-500'}`}>
       {status}
     </span>
   );
@@ -441,7 +441,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
               className={`px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap flex items-center gap-1.5 ${
                 activeTab === tab.key
                   ? 'bg-gradient-to-br from-stone-800 to-black text-white shadow-[0_1px_3px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.12)]'
-                  : 'bg-stone-50 dark:bg-stone-900 text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]'
+                  : 'bg-stone-50  text-stone-500  dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]'
               }`}
             >
               {tab.label}
@@ -484,7 +484,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
                   <h2 className="text-lg font-semibold text-stone-900 dark:text-stone-100 tracking-tight">Today&apos;s Bookings</h2>
                   <button
                     onClick={() => setActiveTab('bookings')}
-                    className="text-[13px] text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300 transition-colors"
+                    className="text-[13px] text-stone-400  hover:text-stone-600 dark:text-stone-300 transition-colors"
                   >
                     View all
                   </button>
@@ -518,7 +518,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
                         {(member.user.image || member.user.imageSrc) ? (
                           <Image src={member.user.image || member.user.imageSrc || ''} alt={member.fullName} width={44} height={44} className="object-cover w-full h-full" />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-stone-500 dark:text-stone-400 dark:text-stone-500 text-[15px] font-semibold">
+                          <div className="w-full h-full flex items-center justify-center text-stone-500  dark:text-stone-500 text-[15px] font-semibold">
                             {member.fullName[0]}
                           </div>
                         )}
@@ -526,7 +526,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <p className="text-[14px] font-semibold text-stone-900 dark:text-stone-100">{member.fullName}</p>
-                          <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400 dark:text-stone-500 capitalize">{member.teamRole}</span>
+                          <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-500  dark:text-stone-500 capitalize">{member.teamRole}</span>
                         </div>
                         <p className="text-[12px] text-stone-400 dark:text-stone-500">{member.jobTitle || 'Team Member'}</p>
                       </div>
@@ -621,7 +621,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
                           <span className="text-[13px] font-medium text-stone-700 dark:text-stone-200 truncate block">{member.fullName.split(' ')[0]}</span>
                           <button
                             onClick={() => editingSchedule === member.id ? setEditingSchedule(null) : startEditSchedule(member)}
-                            className="text-[10px] text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300 transition-colors"
+                            className="text-[10px] text-stone-400  hover:text-stone-600 dark:text-stone-300 transition-colors"
                           >
                             {editingSchedule === member.id ? 'Cancel' : 'Edit'}
                           </button>
@@ -650,7 +650,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
                         <div className="grid grid-cols-7 gap-3 mb-4">
                           {DAYS.map((day) => (
                             <div key={day} className="space-y-2">
-                              <p className="text-[11px] font-medium text-stone-500 dark:text-stone-400 dark:text-stone-500 text-center">{DAY_SHORT[day]}</p>
+                              <p className="text-[11px] font-medium text-stone-500  dark:text-stone-500 text-center">{DAY_SHORT[day]}</p>
                               <label className="flex items-center justify-center gap-1.5 cursor-pointer">
                                 <input
                                   type="checkbox"
@@ -691,7 +691,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
                         <div className="flex justify-end gap-2">
                           <button
                             onClick={() => setEditingSchedule(null)}
-                            className="px-4 py-2 rounded-xl text-[13px] font-medium text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 transition-all"
+                            className="px-4 py-2 rounded-xl text-[13px] font-medium text-stone-500  dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 transition-all"
                           >
                             Cancel
                           </button>
@@ -872,7 +872,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
                           <p className="text-[11px] text-stone-400 dark:text-stone-500">spent</p>
                         </div>
                         <div>
-                          <p className="text-[12px] text-stone-500 dark:text-stone-400 dark:text-stone-500">{new Date(client.lastVisit).toLocaleDateString()}</p>
+                          <p className="text-[12px] text-stone-500  dark:text-stone-500">{new Date(client.lastVisit).toLocaleDateString()}</p>
                           <p className="text-[11px] text-stone-400 dark:text-stone-500">last visit</p>
                         </div>
                       </div>
@@ -883,7 +883,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
                       <div className="px-4 pb-3">
                         <div className="flex flex-wrap gap-1.5">
                           {client.recentBookings.slice(0, 3).map((b: any) => (
-                            <span key={b.id} className="text-[11px] px-2 py-0.5 rounded-full bg-stone-50 dark:bg-stone-900 text-stone-500 dark:text-stone-400 dark:text-stone-500">
+                            <span key={b.id} className="text-[11px] px-2 py-0.5 rounded-full bg-stone-50 dark:bg-stone-900 text-stone-500  dark:text-stone-500">
                               {b.serviceName}
                             </span>
                           ))}
@@ -1031,7 +1031,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
                   {allPayouts.length > 5 && (
                     <button
                       onClick={() => setShowAllPayouts(prev => ({ ...prev, [myEmployee.id]: !showAll }))}
-                      className="text-[12px] text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300 mt-3 transition-colors"
+                      className="text-[12px] text-stone-400  hover:text-stone-600 dark:text-stone-300 mt-3 transition-colors"
                     >
                       {showAll ? 'Show less' : `View all ${allPayouts.length} payouts`}
                     </button>
@@ -1069,7 +1069,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
                           {(member.user.image || member.user.imageSrc) ? (
                             <Image src={member.user.image || member.user.imageSrc || ''} alt="" width={40} height={40} className="object-cover w-full h-full" />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center text-stone-500 dark:text-stone-400 dark:text-stone-500 text-[14px] font-semibold">{member.fullName[0]}</div>
+                            <div className="w-full h-full flex items-center justify-center text-stone-500  dark:text-stone-500 text-[14px] font-semibold">{member.fullName[0]}</div>
                           )}
                         </div>
                         <div>
@@ -1099,7 +1099,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
                             setEditingAgreement(member.id);
                           }
                         }}
-                        className="text-[12px] text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300 transition-colors px-3 py-1.5 rounded-xl hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900"
+                        className="text-[12px] text-stone-400  hover:text-stone-600 dark:text-stone-300 transition-colors px-3 py-1.5 rounded-xl hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900"
                       >
                         {isEditing ? 'Cancel' : member.payAgreement ? 'Edit Agreement' : 'Set Up Pay'}
                       </button>
@@ -1114,7 +1114,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
                               key={type}
                               onClick={() => setAgreementForm((prev) => ({ ...prev, type }))}
                               className={`px-4 py-2 rounded-xl text-[13px] font-medium transition-all ${
-                                agreementForm.type === type ? 'bg-stone-900 text-white' : 'bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 text-stone-500 dark:text-stone-400 dark:text-stone-500'
+                                agreementForm.type === type ? 'bg-stone-900 text-white' : 'bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 text-stone-500  dark:text-stone-500'
                               }`}
                             >
                               {type === 'chair_rental' ? 'Chair Rental' : 'Commission Split'}
@@ -1203,7 +1203,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
                           <h4 className="text-[13px] font-semibold text-stone-900 dark:text-stone-100">Rental Fees</h4>
                           <button
                             onClick={() => generatePeriod(member.id)}
-                            className="text-[11px] text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300 px-2 py-1 rounded-xl hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900 transition-colors"
+                            className="text-[11px] text-stone-400  hover:text-stone-600 dark:text-stone-300 px-2 py-1 rounded-xl hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900 transition-colors"
                           >
                             + Generate Period
                           </button>
@@ -1237,7 +1237,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
                                     ) : (
                                       <button
                                         onClick={() => setWaivingPeriodId(period.id)}
-                                        className="text-[11px] text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300 transition-colors"
+                                        className="text-[11px] text-stone-400  hover:text-stone-600 dark:text-stone-300 transition-colors"
                                       >
                                         Waive
                                       </button>
@@ -1254,7 +1254,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
                         {memberPeriods.length > 5 && (
                           <button
                             onClick={() => setShowAllPeriods(prev => ({ ...prev, [member.id]: !prev[member.id] }))}
-                            className="text-[12px] text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300 mt-3 transition-colors"
+                            className="text-[12px] text-stone-400  hover:text-stone-600 dark:text-stone-300 mt-3 transition-colors"
                           >
                             {showAllPeriods[member.id] ? 'Show less' : `View all ${memberPeriods.length} periods`}
                           </button>
@@ -1315,7 +1315,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
                         {memberPayouts.length > 5 && (
                           <button
                             onClick={() => setShowAllPayouts(prev => ({ ...prev, [member.id]: !prev[member.id] }))}
-                            className="text-[12px] text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300 mt-3 transition-colors"
+                            className="text-[12px] text-stone-400  hover:text-stone-600 dark:text-stone-300 mt-3 transition-colors"
                           >
                             {showAllPayouts[member.id] ? 'Show less' : `View all ${memberPayouts.length} payouts`}
                           </button>

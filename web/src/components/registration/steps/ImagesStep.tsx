@@ -73,7 +73,7 @@ export default function ImagesStep({ userType }: ImagesStepProps) {
               <button
                 type="button"
                 onClick={() => profileProps?.open?.()}
-                className="w-20 h-20 rounded-full bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:bg-stone-700 shadow-md transition-colors relative overflow-hidden group flex-shrink-0"
+                className="w-20 h-20 rounded-full bg-stone-100  hover:bg-stone-200 dark:bg-stone-700 shadow-md transition-colors relative overflow-hidden group flex-shrink-0"
               >
                 {image ? (
                   <>
@@ -94,7 +94,7 @@ export default function ImagesStep({ userType }: ImagesStepProps) {
           {/* Name preview */}
           <div className="flex flex-col items-start">
             <h3 className="text-xl font-bold text-stone-900 dark:text-stone-100">{name || 'Your Name'}</h3>
-            <p className="text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500">{jobTitle || 'Your profession'}</p>
+            <p className="text-sm text-stone-500  dark:text-stone-500">{jobTitle || 'Your profession'}</p>
           </div>
         </div>
 

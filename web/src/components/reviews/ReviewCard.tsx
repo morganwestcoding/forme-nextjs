@@ -72,7 +72,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, currentUser }) => {
   const isVerified = review.user.verificationStatus === 'verified';
 
   return (
-    <div className="group max-w-[250px] h-[280px] bg-white dark:bg-stone-900 rounded-2xl p-4 border border-stone-100 dark:border-stone-800 hover:border-stone-200 dark:border-stone-800 hover:shadow-md hover:-translate-y-1 hover:scale-[1.01] transition-all duration-300 flex flex-col">
+    <div className="group max-w-[250px] h-[280px] bg-white dark:bg-stone-900 rounded-2xl p-4 border border-stone-100 dark:border-stone-800 hover:border-stone-200  hover:shadow-md hover:-translate-y-1 hover:scale-[1.01] transition-all duration-300 flex flex-col">
       {/* Header: Avatar + Name */}
       <div className="flex items-center gap-2 min-w-0">
         {/* Avatar */}
@@ -170,7 +170,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, currentUser }) => {
             inline-flex items-center gap-1.5 text-xs font-medium transition-colors
             ${hasVoted
               ? 'text-stone-600 dark:text-stone-300'
-              : 'text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300'
+              : 'text-stone-400  hover:text-stone-600 dark:text-stone-300'
             }
             ${(!currentUser || currentUser.id === review.userId) ? 'cursor-default' : 'cursor-pointer'}
           `}

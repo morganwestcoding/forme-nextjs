@@ -130,7 +130,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, isH
       onClick={(e) => e.stopPropagation()}
     >
       <button onClick={handleCopyLink} className={btnClass} type="button">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-stone-500 dark:text-stone-400 dark:text-stone-500">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-stone-500  dark:text-stone-500">
           <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
           <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
         </svg>
@@ -140,14 +140,14 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, isH
         <>
           <hr className="my-1 border-stone-200 dark:border-stone-800" />
           <button onClick={handleHide} className={btnClass} type="button">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-stone-500 dark:text-stone-400 dark:text-stone-500">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-stone-500  dark:text-stone-500">
               <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
               <line x1="1" y1="1" x2="23" y2="23" />
             </svg>
             Hide Post
           </button>
           <button onClick={handleReport} className={btnClass} type="button">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-stone-500 dark:text-stone-400 dark:text-stone-500">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-stone-500  dark:text-stone-500">
               <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
               <line x1="4" x2="4" y1="22" y2="15" />
             </svg>
@@ -186,7 +186,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, isH
     >
       {/* Media container */}
       <div
-        className="relative overflow-hidden bg-stone-100 dark:bg-stone-800 dark:bg-stone-800 transition-all duration-700 ease-out group-hover:scale-105"
+        className="relative overflow-hidden bg-stone-100 dark:bg-stone-800  transition-all duration-700 ease-out group-hover:scale-105"
         style={{ aspectRatio: isHero ? undefined : '5 / 6', height: isHero ? '100%' : undefined, boxShadow: 'inset 0 0 30px rgba(0,0,0,0.08), inset 0 0 6px rgba(0,0,0,0.04)' }}
       >
       {/* Text post */}
@@ -358,15 +358,15 @@ export const PostCardPreview: React.FC = () => {
   ];
 
   return (
-    <div className="p-8 bg-stone-50 dark:bg-stone-900 dark:bg-stone-950 min-h-screen">
+    <div className="p-8 bg-stone-50  dark:bg-stone-950 min-h-screen">
       <h2 className="text-2xl font-bold mb-2 text-stone-900 dark:text-stone-100 dark:text-white">Work Gallery</h2>
-      <p className="text-stone-500 dark:text-stone-400 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500 text-sm mb-8">Clean portfolio cards - tap to expand</p>
+      <p className="text-stone-500  dark:text-stone-500   text-sm mb-8">Clean portfolio cards - tap to expand</p>
 
       <div className="grid grid-cols-3 gap-3 max-w-[600px]">
         {placeholderPosts.map((post) => (
           <div
             key={post.id}
-            className="group cursor-pointer relative overflow-hidden rounded-2xl bg-stone-100 dark:bg-stone-800 dark:bg-stone-900 transition-all duration-300 ease-out"
+            className="group cursor-pointer relative overflow-hidden rounded-2xl bg-stone-100  dark:bg-stone-900 transition-all duration-300 ease-out"
             style={{ aspectRatio: '1' }}
           >
             <img
@@ -390,7 +390,7 @@ export const PostCardPreview: React.FC = () => {
       {/* Expanded state preview */}
       <div className="mt-12">
         <h3 className="text-lg font-semibold mb-4 text-stone-900 dark:text-stone-100 dark:text-white">Expanded View (on tap)</h3>
-        <div className="max-w-[400px] bg-white dark:bg-stone-900 dark:bg-stone-900 rounded-2xl overflow-hidden shadow-2xl">
+        <div className="max-w-[400px] bg-white dark:bg-stone-900  rounded-2xl overflow-hidden shadow-2xl">
           {/* Image */}
           <div className="relative aspect-square">
             <img
@@ -403,7 +403,7 @@ export const PostCardPreview: React.FC = () => {
           {/* Creator info */}
           <div className="p-5">
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-full bg-stone-200 dark:bg-stone-700 dark:bg-stone-700 overflow-hidden">
+              <div className="w-10 h-10 rounded-full bg-stone-200 dark:bg-stone-700  overflow-hidden">
                 <img
                   src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop"
                   alt=""
@@ -417,7 +417,7 @@ export const PostCardPreview: React.FC = () => {
                     <path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
                   </svg>
                 </div>
-                <p className="text-stone-500 dark:text-stone-400 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500 text-xs">Barber at Fresh Cuts</p>
+                <p className="text-stone-500  dark:text-stone-500   text-xs">Barber at Fresh Cuts</p>
               </div>
               <div className="flex items-center gap-1 text-amber-500">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
@@ -428,12 +428,12 @@ export const PostCardPreview: React.FC = () => {
             </div>
 
             {/* Caption */}
-            <p className="text-stone-700 dark:text-stone-200 dark:text-stone-300 text-sm mb-4">
+            <p className="text-stone-700  dark:text-stone-300 text-sm mb-4">
               Fresh fade for the summer. Book now while slots are available!
             </p>
 
             {/* Book CTA */}
-            <button className="w-full py-3 px-4 bg-stone-900 dark:bg-white dark:bg-stone-900 text-white dark:text-stone-900 dark:text-stone-100 rounded-xl font-medium text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+            <button className="w-full py-3 px-4 bg-stone-900 dark:bg-white dark:bg-stone-900 text-white  dark:text-stone-100 rounded-xl font-medium text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
               </svg>
@@ -441,26 +441,26 @@ export const PostCardPreview: React.FC = () => {
             </button>
 
             {/* Engagement - secondary */}
-            <div className="flex items-center gap-6 mt-4 pt-4 border-t border-stone-100 dark:border-stone-800 dark:border-stone-800">
-              <button className="flex items-center gap-1.5 text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:text-red-500 transition-colors">
+            <div className="flex items-center gap-6 mt-4 pt-4 border-t border-stone-100 dark:border-stone-800 ">
+              <button className="flex items-center gap-1.5 text-stone-500  dark:text-stone-500 hover:text-red-500 transition-colors">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                 </svg>
                 <span className="text-xs">24</span>
               </button>
-              <button className="flex items-center gap-1.5 text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:text-stone-500 dark:text-stone-400 dark:text-stone-500 transition-colors">
+              <button className="flex items-center gap-1.5 text-stone-500  dark:text-stone-500 hover:text-stone-500   transition-colors">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                 </svg>
                 <span className="text-xs">3</span>
               </button>
-              <button className="flex items-center gap-1.5 text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:text-amber-500 transition-colors">
+              <button className="flex items-center gap-1.5 text-stone-500  dark:text-stone-500 hover:text-amber-500 transition-colors">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
                 </svg>
               </button>
               <div className="flex-1" />
-              <button className="text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 dark:hover:text-stone-300 transition-colors">
+              <button className="text-stone-500   hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200  transition-colors">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <circle cx="18" cy="5" r="3"/>
                   <circle cx="6" cy="12" r="3"/>

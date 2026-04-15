@@ -87,7 +87,7 @@ const ReviewModal: React.FC = () => {
         <h2 className="text-xl font-bold text-stone-900 dark:text-stone-100">
           Review {targetName}
         </h2>
-        <p className="text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500 mt-1">
+        <p className="text-sm text-stone-500  dark:text-stone-500 mt-1">
           Share your experience to help others
         </p>
       </div>
@@ -151,7 +151,7 @@ const ReviewModal: React.FC = () => {
 
       {/* Guidelines */}
       <div className="bg-stone-50 dark:bg-stone-900 rounded-xl p-4">
-        <p className="text-xs text-stone-500 dark:text-stone-400 dark:text-stone-500 leading-relaxed">
+        <p className="text-xs text-stone-500  dark:text-stone-500 leading-relaxed">
           By submitting this review, you confirm that it represents your genuine experience.
           Reviews should be helpful, respectful, and relevant.
         </p>

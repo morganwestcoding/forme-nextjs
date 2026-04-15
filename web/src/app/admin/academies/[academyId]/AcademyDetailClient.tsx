@@ -184,7 +184,7 @@ export default function AcademyDetailClient({ academy, stripeReturnedSuccess }: 
             </span>
           )}
           {!academy.stripeConnectAccountId && (
-            <span className="inline-flex items-center text-[11px] font-medium text-stone-500 dark:text-stone-400 dark:text-stone-500 bg-stone-100 dark:bg-stone-800 ring-1 ring-stone-200 px-2.5 py-1 rounded-full">
+            <span className="inline-flex items-center text-[11px] font-medium text-stone-500  dark:text-stone-500 bg-stone-100 dark:bg-stone-800 ring-1 ring-stone-200 px-2.5 py-1 rounded-full">
               Not connected
             </span>
           )}
@@ -212,7 +212,7 @@ export default function AcademyDetailClient({ academy, stripeReturnedSuccess }: 
             <button
               type="button"
               onClick={refreshStatus}
-              className="py-2.5 px-4 text-[13px] text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 transition-colors"
+              className="py-2.5 px-4 text-[13px] text-stone-500   hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 transition-colors"
             >
               Refresh status
             </button>
@@ -223,11 +223,11 @@ export default function AcademyDetailClient({ academy, stripeReturnedSuccess }: 
           <div className="mt-4 grid grid-cols-2 gap-3 text-[12px]">
             <div className="flex items-center gap-2">
               <span className={`w-1.5 h-1.5 rounded-full ${academy.stripeConnectChargesEnabled ? "bg-emerald-500" : "bg-stone-300"}`} />
-              <span className="text-stone-500 dark:text-stone-400 dark:text-stone-500">Charges enabled</span>
+              <span className="text-stone-500  dark:text-stone-500">Charges enabled</span>
             </div>
             <div className="flex items-center gap-2">
               <span className={`w-1.5 h-1.5 rounded-full ${academy.stripeConnectPayoutsEnabled ? "bg-emerald-500" : "bg-stone-300"}`} />
-              <span className="text-stone-500 dark:text-stone-400 dark:text-stone-500">Payouts enabled</span>
+              <span className="text-stone-500  dark:text-stone-500">Payouts enabled</span>
             </div>
           </div>
         )}
@@ -281,7 +281,7 @@ export default function AcademyDetailClient({ academy, stripeReturnedSuccess }: 
           <div className="rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 p-4 mb-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
               <div className="md:col-span-2">
-                <label className="block text-[11px] text-stone-500 dark:text-stone-400 dark:text-stone-500 mb-1">Service name</label>
+                <label className="block text-[11px] text-stone-500  dark:text-stone-500 mb-1">Service name</label>
                 <input
                   type="text"
                   value={serviceName}
@@ -291,7 +291,7 @@ export default function AcademyDetailClient({ academy, stripeReturnedSuccess }: 
                 />
               </div>
               <div>
-                <label className="block text-[11px] text-stone-500 dark:text-stone-400 dark:text-stone-500 mb-1">Price (USD)</label>
+                <label className="block text-[11px] text-stone-500  dark:text-stone-500 mb-1">Price (USD)</label>
                 <input
                   type="number"
                   min={0}
@@ -302,7 +302,7 @@ export default function AcademyDetailClient({ academy, stripeReturnedSuccess }: 
                 />
               </div>
               <div className="md:col-span-3">
-                <label className="block text-[11px] text-stone-500 dark:text-stone-400 dark:text-stone-500 mb-1">Category</label>
+                <label className="block text-[11px] text-stone-500  dark:text-stone-500 mb-1">Category</label>
                 <select
                   value={serviceCategory}
                   onChange={(e) => setServiceCategory(e.target.value)}
@@ -323,7 +323,7 @@ export default function AcademyDetailClient({ academy, stripeReturnedSuccess }: 
               <button
                 type="button"
                 onClick={resetForm}
-                className="py-2 px-4 text-[13px] text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 transition-colors"
+                className="py-2 px-4 text-[13px] text-stone-500   hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 transition-colors"
               >
                 Cancel
               </button>
@@ -348,7 +348,7 @@ export default function AcademyDetailClient({ academy, stripeReturnedSuccess }: 
                   <button
                     type="button"
                     onClick={() => startEdit(svc)}
-                    className="text-[12px] text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 px-2 py-1 transition-colors"
+                    className="text-[12px] text-stone-500   hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 px-2 py-1 transition-colors"
                   >
                     Edit
                   </button>

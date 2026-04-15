@@ -531,7 +531,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                         className={`w-[100px] h-[100px] rounded-full overflow-hidden flex items-center justify-center bg-black transition-all duration-500 ease-out border-2 ${
                           isSelected
                             ? 'border-stone-900 dark:border-white shadow-lg'
-                            : 'border-stone-200 dark:border-stone-800 dark:border-stone-700 group-hover:border-stone-400 dark:group-hover:border-stone-500 group-hover:shadow-md'
+                            : 'border-stone-200  dark:border-stone-700 group-hover:border-stone-400 dark:group-hover:border-stone-500 group-hover:shadow-md'
                         }`}
                       >
                         {imageSrc && (
@@ -547,7 +547,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                       <span className={`text-sm transition-all duration-200 ${
                         isSelected
                           ? 'text-stone-900 dark:text-stone-100 dark:text-white font-medium'
-                          : 'text-stone-500 dark:text-stone-400 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500 group-hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 dark:group-hover:text-stone-300'
+                          : 'text-stone-500     group-hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 dark:group-hover:text-stone-300'
                       }`}>{cat.label}</span>
                     </button>
                   );
@@ -885,7 +885,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                 )}
               </>
             ) : (
-              <div className="px-8 pt-32 text-center text-stone-500 dark:text-stone-400 dark:text-stone-500">
+              <div className="px-8 pt-32 text-center text-stone-500  dark:text-stone-500">
                 No posts found. Try adjusting your filters.
               </div>
             )}

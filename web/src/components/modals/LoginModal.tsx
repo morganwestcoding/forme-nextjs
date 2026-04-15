@@ -91,7 +91,7 @@ const LoginModal = () => {
         <h1 className="text-2xl sm:text-3xl font-semibold text-stone-900 dark:text-stone-100 leading-tight">
           Welcome back
         </h1>
-        <p className="text-base text-stone-500 dark:text-stone-400 dark:text-stone-500 mt-2">
+        <p className="text-base text-stone-500  dark:text-stone-500 mt-2">
           Login to your account
         </p>
       </div>
@@ -136,7 +136,7 @@ const LoginModal = () => {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300 transition-colors"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-stone-400  hover:text-stone-600 dark:text-stone-300 transition-colors"
             >
               {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
             </button>
@@ -148,7 +148,7 @@ const LoginModal = () => {
 
         {/* Forgot password */}
         <div
-          className="text-right text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500 cursor-pointer hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 transition-colors"
+          className="text-right text-sm text-stone-500   cursor-pointer hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 transition-colors"
           onClick={onForgotPassword}
         >
           Forgot password?
@@ -161,7 +161,7 @@ const LoginModal = () => {
     <div className="flex flex-col gap-4 pt-2">
       <div className="h-px bg-stone-100 dark:bg-stone-800" />
       <div className="flex flex-row justify-center items-center gap-1.5 text-sm">
-        <span className="text-stone-500 dark:text-stone-400 dark:text-stone-500">First time using ForMe?</span>
+        <span className="text-stone-500  dark:text-stone-500">First time using ForMe?</span>
         <button
           type="button"
           onClick={onToggleToRegister}

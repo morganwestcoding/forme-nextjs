@@ -140,7 +140,7 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
           {searchQuery.length >= 2 && (
             <div className="absolute z-50 w-full mt-1 bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 rounded-xl shadow-lg max-h-60 overflow-y-auto">
               {isSearching ? (
-                <div className="p-4 text-center text-stone-500 dark:text-stone-400 dark:text-stone-500">Searching...</div>
+                <div className="p-4 text-center text-stone-500  dark:text-stone-500">Searching...</div>
               ) : searchResults.length > 0 ? (
                 searchResults.map((user) => (
                   <button
@@ -162,12 +162,12 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
                     </div>
                     <div>
                       <div className="font-medium text-black">{user.name || 'Unnamed User'}</div>
-                      <div className="text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500">{user.email}</div>
+                      <div className="text-sm text-stone-500  dark:text-stone-500">{user.email}</div>
                     </div>
                   </button>
                 ))
               ) : (
-                <div className="p-4 text-center text-stone-500 dark:text-stone-400 dark:text-stone-500">No users found</div>
+                <div className="p-4 text-center text-stone-500  dark:text-stone-500">No users found</div>
               )}
             </div>
           )}
@@ -193,7 +193,7 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
                 </div>
                 <div>
                   <div className="font-medium text-black">{employee.user?.name || 'Unnamed User'}</div>
-                  <div className="text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500">{employee.user?.email}</div>
+                  <div className="text-sm text-stone-500  dark:text-stone-500">{employee.user?.email}</div>
                 </div>
               </div>
               <button
@@ -218,7 +218,7 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
                 />
                 <label
                   htmlFor={`employee-job-title-${index}`}
-                  className="absolute text-sm duration-150 transform -translate-y-3 top-5 left-4 origin-[0] text-stone-500 dark:text-stone-400 dark:text-stone-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4"
+                  className="absolute text-sm duration-150 transform -translate-y-3 top-5 left-4 origin-[0] text-stone-500  dark:text-stone-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4"
                 >
                   Job Title (optional)
                 </label>
@@ -254,7 +254,7 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
       </div>
 
       {employees.length === 0 && (
-        <div className="text-center py-8 text-stone-500 dark:text-stone-400 dark:text-stone-500 bg-stone-50 dark:bg-stone-900 rounded-xl border border-stone-300 dark:border-stone-700">
+        <div className="text-center py-8 text-stone-500  dark:text-stone-500 bg-stone-50 dark:bg-stone-900 rounded-xl border border-stone-300 dark:border-stone-700">
           No employees added yet. Click &ldquo;Add Employee&ldquo; to get started.
         </div>
       )}

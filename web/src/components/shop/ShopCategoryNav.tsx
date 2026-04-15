@@ -38,7 +38,7 @@ const ShopCategoryNav: React.FC<ShopCategoryNavProps> = ({ activeTab, onTabChang
               relative px-3 sm:px-4 h-9 flex items-center text-[12px] sm:text-[13px] font-medium rounded-xl border transition-all duration-200 active:scale-[0.97] whitespace-nowrap
               ${isSelected
                 ? 'text-white border-transparent'
-                : 'border-stone-300/90 dark:border-stone-600/60 text-stone-500 dark:text-stone-400 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:border-stone-400 dark:hover:border-stone-500 hover:text-stone-600 dark:text-stone-300 dark:hover:text-stone-300'
+                : 'border-stone-300/90 dark:border-stone-600/60 text-stone-500     hover:border-stone-400 dark:hover:border-stone-500 hover:text-stone-600 dark:text-stone-300 dark:hover:text-stone-300'
               }
             `}
             style={isSelected ? {

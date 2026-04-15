@@ -135,17 +135,17 @@ export default function MessagesClient({ currentUser }: Props) {
       <div className="mt-8">
         <h1 className="text-2xl font-semibold text-stone-900 dark:text-stone-100 tracking-tight mb-6">Messages</h1>
 
-        <div className="flex border border-stone-200 dark:border-stone-800 dark:border-stone-700 rounded-2xl overflow-hidden bg-white dark:bg-stone-900 dark:bg-stone-900" style={{ height: 'calc(100vh - 220px)' }}>
+        <div className="flex border border-stone-200  dark:border-stone-700 rounded-2xl overflow-hidden bg-white dark:bg-stone-900 " style={{ height: 'calc(100vh - 220px)' }}>
           {/* Sidebar — conversation list */}
           <div className={`${activeConvoId ? 'hidden md:flex' : 'flex'} flex-col w-full md:w-[340px] border-r border-stone-200 dark:border-stone-800 dark:border-stone-700`}>
             {/* Search */}
-            <div className="p-4 border-b border-stone-100 dark:border-stone-800 dark:border-stone-800">
+            <div className="p-4 border-b border-stone-100 dark:border-stone-800 ">
               <input
                 type="text"
                 placeholder="Search conversations..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="w-full bg-stone-50 dark:bg-stone-900 dark:bg-stone-800 border border-stone-200 dark:border-stone-800 dark:border-stone-700 rounded-xl px-4 py-2.5 text-[14px] text-stone-900 dark:text-stone-100 dark:text-white placeholder-stone-400 outline-none focus:border-stone-300 dark:border-stone-700 transition-all"
+                className="w-full bg-stone-50  dark:bg-stone-800 border border-stone-200  dark:border-stone-700 rounded-xl px-4 py-2.5 text-[14px] text-stone-900 dark:text-stone-100 dark:text-white placeholder-stone-400 outline-none focus:border-stone-300  transition-all"
               />
             </div>
 
@@ -172,7 +172,7 @@ export default function MessagesClient({ currentUser }: Props) {
                       key={convo.id}
                       onClick={() => setActiveConvoId(convo.id)}
                       className={`w-full flex items-center gap-3 p-4 text-left transition-colors ${
-                        isActive ? 'bg-stone-100 dark:bg-stone-800 dark:bg-stone-800' : 'hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900 dark:hover:bg-stone-800/50'
+                        isActive ? 'bg-stone-100 dark:bg-stone-800 ' : 'hover:bg-stone-50  dark:bg-stone-900 dark:hover:bg-stone-800/50'
                       }`}
                     >
                       <Avatar src={convo.otherUser.image} name={convo.otherUser.name} size={44} />
@@ -204,10 +204,10 @@ export default function MessagesClient({ currentUser }: Props) {
             {activeConvo ? (
               <>
                 {/* Thread header */}
-                <div className="flex items-center gap-3 p-4 border-b border-stone-100 dark:border-stone-800 dark:border-stone-800">
+                <div className="flex items-center gap-3 p-4 border-b border-stone-100 dark:border-stone-800 ">
                   <button
                     onClick={() => setActiveConvoId(null)}
-                    className="md:hidden text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 mr-1"
+                    className="md:hidden text-stone-500   hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 mr-1"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
                   </button>
@@ -222,7 +222,7 @@ export default function MessagesClient({ currentUser }: Props) {
                   {groupedMessages.map(group => (
                     <div key={group.date}>
                       <div className="flex justify-center my-4">
-                        <span className="text-[11px] text-stone-400 dark:text-stone-500 bg-stone-100 dark:bg-stone-800 dark:bg-stone-800 px-3 py-1 rounded-full">{group.date}</span>
+                        <span className="text-[11px] text-stone-400 dark:text-stone-500 bg-stone-100 dark:bg-stone-800  px-3 py-1 rounded-full">{group.date}</span>
                       </div>
                       {group.messages.map(msg => {
                         const isOwn = msg.senderId === currentUser.id;
@@ -231,7 +231,7 @@ export default function MessagesClient({ currentUser }: Props) {
                             <div className={`max-w-[70%] px-4 py-2.5 rounded-2xl text-[14px] leading-relaxed ${
                               isOwn
                                 ? 'bg-stone-900 text-white rounded-br-md'
-                                : 'bg-stone-100 dark:bg-stone-800 dark:bg-stone-800 text-stone-900 dark:text-stone-100 dark:text-white rounded-bl-md'
+                                : 'bg-stone-100 dark:bg-stone-800  text-stone-900 dark:text-stone-100 dark:text-white rounded-bl-md'
                             }`}>
                               {msg.content}
                               <div className={`text-[10px] mt-1 ${isOwn ? 'text-stone-400 dark:text-stone-500' : 'text-stone-400 dark:text-stone-500'}`}>
@@ -247,7 +247,7 @@ export default function MessagesClient({ currentUser }: Props) {
                 </div>
 
                 {/* Input */}
-                <div className="p-4 border-t border-stone-100 dark:border-stone-800 dark:border-stone-800">
+                <div className="p-4 border-t border-stone-100 dark:border-stone-800 ">
                   <div className="flex items-center gap-2">
                     <input
                       type="text"
@@ -255,7 +255,7 @@ export default function MessagesClient({ currentUser }: Props) {
                       value={newMessage}
                       onChange={e => setNewMessage(e.target.value)}
                       onKeyDown={e => e.key === 'Enter' && !e.shiftKey && sendMessage()}
-                      className="flex-1 bg-stone-50 dark:bg-stone-900 dark:bg-stone-800 border border-stone-200 dark:border-stone-800 dark:border-stone-700 rounded-xl px-4 py-3 text-[14px] text-stone-900 dark:text-stone-100 dark:text-white placeholder-stone-400 outline-none focus:border-stone-300 dark:border-stone-700 transition-all"
+                      className="flex-1 bg-stone-50  dark:bg-stone-800 border border-stone-200  dark:border-stone-700 rounded-xl px-4 py-3 text-[14px] text-stone-900 dark:text-stone-100 dark:text-white placeholder-stone-400 outline-none focus:border-stone-300  transition-all"
                     />
                     <Button
                       onClick={sendMessage}

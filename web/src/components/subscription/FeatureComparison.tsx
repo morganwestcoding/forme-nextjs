@@ -86,7 +86,7 @@ const FeatureComparison: React.FC = () => {
               <React.Fragment key={category.category}>
                 <tr>
                   <td colSpan={4} className="py-4">
-                    <div className="text-xs font-semibold text-stone-500 dark:text-stone-400 dark:text-stone-500 uppercase tracking-wide">
+                    <div className="text-xs font-semibold text-stone-500  dark:text-stone-500 uppercase tracking-wide">
                       {category.category}
                     </div>
                   </td>
@@ -105,7 +105,7 @@ const FeatureComparison: React.FC = () => {
         </table>
       </div>
 
-      <div className="mt-6 text-center text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500">
+      <div className="mt-6 text-center text-sm text-stone-500  dark:text-stone-500">
         Freemium tiered fees: $0–$100 → 7%, $101–$199 → 5%, $200+ → 3%. Gold and Platinum waive transaction fees.
       </div>
     </div>

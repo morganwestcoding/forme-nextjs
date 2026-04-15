@@ -106,7 +106,7 @@ export default function VerificationQueue({ users }: { users: PendingUser[] }) {
               <div className="flex gap-2 mt-3">
                 <button
                   onClick={() => setShowReject(null)}
-                  className="text-[12px] font-medium px-4 py-2 rounded-xl text-stone-600 dark:text-stone-300 bg-white dark:bg-stone-900 border border-stone-200/60 hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900 transition-all"
+                  className="text-[12px] font-medium px-4 py-2 rounded-xl text-stone-600 dark:text-stone-300 bg-white dark:bg-stone-900 border border-stone-200/60 hover:bg-stone-50 dark:hover:bg-stone-800  transition-all"
                 >
                   Cancel
                 </button>

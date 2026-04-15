@@ -41,7 +41,7 @@ export default function EmployeeStep({
                 p-4 rounded-xl border text-left transition-all duration-200
                 ${isSelected
                   ? 'border-stone-300 dark:border-stone-700 bg-stone-100 dark:bg-stone-800 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)]'
-                  : 'border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 hover:border-stone-300 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900'
+                  : 'border-stone-200  bg-white dark:bg-stone-900 hover:border-stone-300 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800 '
                 }
               `}
             >
@@ -55,7 +55,7 @@ export default function EmployeeStep({
 
       {employeeOptions.length === 0 && (
         <div className="text-center py-10 bg-stone-50 dark:bg-stone-900 rounded-xl border border-stone-200 dark:border-stone-800">
-          <p className="text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500">No professionals available</p>
+          <p className="text-sm text-stone-500  dark:text-stone-500">No professionals available</p>
         </div>
       )}
     </div>

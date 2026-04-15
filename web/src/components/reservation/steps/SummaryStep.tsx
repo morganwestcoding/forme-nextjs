@@ -52,7 +52,7 @@ export default function SummaryStep({
           variants={itemVariants}
           className="p-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900"
         >
-          <p className="text-xs text-stone-500 dark:text-stone-400 dark:text-stone-500 mb-1">Date</p>
+          <p className="text-xs text-stone-500  dark:text-stone-500 mb-1">Date</p>
           <p className="text-sm font-medium text-stone-900 dark:text-stone-100">{formattedDate}</p>
         </motion.div>
 
@@ -61,7 +61,7 @@ export default function SummaryStep({
           variants={itemVariants}
           className="p-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900"
         >
-          <p className="text-xs text-stone-500 dark:text-stone-400 dark:text-stone-500 mb-1">Time</p>
+          <p className="text-xs text-stone-500  dark:text-stone-500 mb-1">Time</p>
           <p className="text-sm font-medium text-stone-900 dark:text-stone-100">{formattedTime}</p>
         </motion.div>
 
@@ -70,7 +70,7 @@ export default function SummaryStep({
           variants={itemVariants}
           className="p-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900"
         >
-          <p className="text-xs text-stone-500 dark:text-stone-400 dark:text-stone-500 mb-1">With</p>
+          <p className="text-xs text-stone-500  dark:text-stone-500 mb-1">With</p>
           <p className="text-sm font-medium text-stone-900 dark:text-stone-100 truncate">
             {selectedEmployee?.label || 'Any available'}
           </p>
@@ -81,7 +81,7 @@ export default function SummaryStep({
           variants={itemVariants}
           className="p-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900"
         >
-          <p className="text-xs text-stone-500 dark:text-stone-400 dark:text-stone-500 mb-1">At</p>
+          <p className="text-xs text-stone-500  dark:text-stone-500 mb-1">At</p>
           <p className="text-sm font-medium text-stone-900 dark:text-stone-100 truncate">{businessName}</p>
         </motion.div>
       </div>
@@ -91,7 +91,7 @@ export default function SummaryStep({
         variants={itemVariants}
         className="mb-6"
       >
-        <p className="text-xs text-stone-500 dark:text-stone-400 dark:text-stone-500 mb-3">Services</p>
+        <p className="text-xs text-stone-500  dark:text-stone-500 mb-3">Services</p>
         <div className="space-y-2">
           {selectedServices.map((service) => (
             <div key={service.value} className="flex justify-between items-center">

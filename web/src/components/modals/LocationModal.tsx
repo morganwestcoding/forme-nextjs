@@ -120,7 +120,7 @@ const LocationModal = () => {
             placeholder="Search cities..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl pl-10 pr-4 py-3 text-[14px] text-stone-900 dark:text-stone-100 placeholder-stone-400 outline-none focus:border-stone-300 dark:border-stone-700 focus:bg-white dark:bg-stone-900 transition-all"
+            className="w-full bg-stone-50 dark:bg-stone-900 border border-stone-200  rounded-xl pl-10 pr-4 py-3 text-[14px] text-stone-900 dark:text-stone-100 placeholder-stone-400 outline-none focus:border-stone-300 dark:border-stone-700 focus:bg-white  transition-all"
             autoFocus
           />
         </div>
@@ -172,7 +172,7 @@ const LocationModal = () => {
         <div className="px-6 pt-3 pb-1 border-t border-stone-100 dark:border-stone-800">
           <button
             onClick={handleClear}
-            className="w-full py-2.5 text-[13px] text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 transition-colors"
+            className="w-full py-2.5 text-[13px] text-stone-500   hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 transition-colors"
           >
             Clear location filter
           </button>

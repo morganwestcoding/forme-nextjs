@@ -222,7 +222,7 @@ const Input: React.FC<InputProps> = ({
               e.stopPropagation();
               setShowPassword(!showPassword);
             }}
-            className="absolute right-4 top-[20px] p-1 rounded-xl text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900 transition-all duration-200 z-10"
+            className="absolute right-4 top-[20px] p-1 rounded-xl text-stone-400  hover:text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900 transition-all duration-200 z-10"
             tabIndex={-1}
             aria-label={showPassword ? "Hide password" : "Show password"}
           >
@@ -239,7 +239,7 @@ const Input: React.FC<InputProps> = ({
               e.stopPropagation();
               setShowPasswordHelp(!showPasswordHelp);
             }}
-            className="absolute right-12 top-[20px] p-1 rounded-xl text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900 transition-all duration-200 z-10"
+            className="absolute right-12 top-[20px] p-1 rounded-xl text-stone-400  hover:text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900 transition-all duration-200 z-10"
             tabIndex={-1}
             aria-label="Password requirements"
             title="Show password requirements"
@@ -261,8 +261,8 @@ const Input: React.FC<InputProps> = ({
               ${errors?.[id]
                 ? 'text-rose-500 scale-75 -translate-y-4 top-5'
                 : isControlled && value
-                  ? 'text-stone-500 dark:text-stone-400 dark:text-stone-500 -translate-y-3 top-5 peer-focus:scale-75 peer-focus:-translate-y-4'
-                  : 'text-stone-500 dark:text-stone-400 dark:text-stone-500 -translate-y-3 top-5 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4'
+                  ? 'text-stone-500  dark:text-stone-500 -translate-y-3 top-5 peer-focus:scale-75 peer-focus:-translate-y-4'
+                  : 'text-stone-500  dark:text-stone-500 -translate-y-3 top-5 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4'
               }
             `}
           >
@@ -272,7 +272,7 @@ const Input: React.FC<InputProps> = ({
       </div>
 
       {maxLength && (
-        <span className="text-xs text-stone-500 dark:text-stone-400 dark:text-stone-500 text-right block mt-1">
+        <span className="text-xs text-stone-500  dark:text-stone-500 text-right block mt-1">
           {charCount}/{maxLength}
         </span>
       )}

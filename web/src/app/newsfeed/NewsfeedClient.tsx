@@ -396,7 +396,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
     { label: 'Settings', href: '/settings', icon: 'Se' },
   ];
 
-  const sidebarBtnClass = 'w-10 h-10 rounded-full flex items-center justify-center text-stone-400 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 dark:hover:bg-stone-800 transition-all duration-200';
+  const sidebarBtnClass = 'w-10 h-10 rounded-full flex items-center justify-center text-stone-400    hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800  transition-all duration-200';
 
   return (
     <ClientProviders>
@@ -408,7 +408,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
         }
       `}</style>
 
-      <div className="fixed inset-0 bg-white dark:bg-stone-900 dark:bg-stone-950 overflow-hidden">
+      <div className="fixed inset-0 bg-white  dark:bg-stone-950 overflow-hidden">
 
 
         {/* ===== LOGO — fades in with content, fades out when leaving ===== */}
@@ -445,7 +445,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                 <button
                   key={item.label}
                   onClick={() => handleNavAway(item.href)}
-                  className="h-9 px-4 rounded-xl flex items-center justify-center text-[14px] text-stone-500 dark:text-stone-400 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 dark:hover:bg-stone-800 transition-all duration-200"
+                  className="h-9 px-4 rounded-xl flex items-center justify-center text-[14px] text-stone-500     hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800  transition-all duration-200"
                   style={{
                     opacity: (isSettled && !isLeaving) ? 1 : 0,
                     transition: 'opacity 0.4s ease-out',
@@ -494,7 +494,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                   {currentUser?.image ? (
                     <Image src={currentUser.image} alt="Profile" width={48} height={48} className="object-cover w-full h-full" />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-stone-200 to-stone-300 dark:from-stone-600 dark:to-stone-700 flex items-center justify-center text-stone-600 dark:text-stone-300 dark:text-stone-300 text-sm font-medium">
+                    <div className="w-full h-full bg-gradient-to-br from-stone-200 to-stone-300 dark:from-stone-600 dark:to-stone-700 flex items-center justify-center text-stone-600 dark:text-stone-300  text-sm font-medium">
                       {currentUser?.name?.[0] || 'G'}
                     </div>
                   )}
@@ -568,7 +568,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                     {/* Post media */}
                     <div className="flex-1 h-full flex items-center justify-center">
                       <div
-                        className="relative overflow-hidden rounded-2xl bg-stone-100 dark:bg-stone-800 dark:bg-stone-900"
+                        className="relative overflow-hidden rounded-2xl bg-stone-100  dark:bg-stone-900"
                         style={{
                           aspectRatio: '9 / 16',
                           height: 'calc(100vh - 48px)',
@@ -685,16 +685,16 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                         <div className="flex-1 min-w-0">
                           <button
                             onClick={() => router.push(`/profile/${post.user.id}`)}
-                            className="text-[15px] font-semibold text-stone-900 dark:text-stone-100 dark:text-white hover:text-stone-600 dark:text-stone-300 dark:hover:text-stone-300 transition-colors block truncate"
+                            className="text-[15px] font-semibold text-stone-900  dark:text-white hover:text-stone-600 dark:text-stone-300 dark:hover:text-stone-300 transition-colors block truncate"
                           >
                             {post.user.name || 'Anonymous'}
                           </button>
-                          <p className="text-[12px] text-stone-400 dark:text-stone-500 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500 mt-0.5">{format(new Date(post.createdAt), 'PPP')}</p>
+                          <p className="text-[12px] text-stone-400   dark:text-stone-400  mt-0.5">{format(new Date(post.createdAt), 'PPP')}</p>
                         </div>
                         {isCurrent && (
                           <DropdownMenu>
                             <DropdownMenuTrigger
-                              className="shrink-0 w-8 h-8 flex items-center justify-center rounded-full text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 dark:hover:bg-stone-800 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500 dark:hover:text-stone-200 transition-all outline-none"
+                              className="shrink-0 w-8 h-8 flex items-center justify-center rounded-full text-stone-400  hover:text-stone-600  hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800   dark:text-stone-400  dark:hover:text-stone-200 transition-all outline-none"
                               aria-label="More options"
                             >
                               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -703,22 +703,22 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-48">
                               <DropdownMenuItem onClick={handleShare} className="gap-4">
-                                <Share08Icon className="w-4 h-4 text-stone-500 dark:text-stone-400 dark:text-stone-500" strokeWidth={1.5} />
+                                <Share08Icon className="w-4 h-4 text-stone-500  dark:text-stone-500" strokeWidth={1.5} />
                                 Share
                               </DropdownMenuItem>
                               <DropdownMenuItem onClick={handleCopyLink} className="gap-4">
-                                <Link01Icon className="w-4 h-4 text-stone-500 dark:text-stone-400 dark:text-stone-500" strokeWidth={1.5} />
+                                <Link01Icon className="w-4 h-4 text-stone-500  dark:text-stone-500" strokeWidth={1.5} />
                                 Copy Link
                               </DropdownMenuItem>
                               {currentUser && post.user.id !== currentUser.id && !isMasterUser(currentUser) && (
                                 <>
                                   <DropdownMenuSeparator />
                                   <DropdownMenuItem onClick={handleHidePost} className="gap-4">
-                                    <ViewOffIcon className="w-4 h-4 text-stone-500 dark:text-stone-400 dark:text-stone-500" strokeWidth={1.5} />
+                                    <ViewOffIcon className="w-4 h-4 text-stone-500  dark:text-stone-500" strokeWidth={1.5} />
                                     Hide Post
                                   </DropdownMenuItem>
                                   <DropdownMenuItem onClick={handleReportPost} className="gap-4">
-                                    <Flag03Icon className="w-4 h-4 text-stone-500 dark:text-stone-400 dark:text-stone-500" strokeWidth={1.5} />
+                                    <Flag03Icon className="w-4 h-4 text-stone-500  dark:text-stone-500" strokeWidth={1.5} />
                                     Report Post
                                   </DropdownMenuItem>
                                 </>
@@ -745,7 +745,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                         {(post.content?.length || 0) > 200 && (
                           <button
                             onClick={() => setShowFullCaption(!showFullCaption)}
-                            className="text-[12px] font-medium text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500 dark:hover:text-stone-300 mt-1.5 transition-colors"
+                            className="text-[12px] font-medium text-stone-400  hover:text-stone-600   dark:text-stone-400  dark:hover:text-stone-300 mt-1.5 transition-colors"
                           >
                             {isCurrent && showFullCaption ? 'less' : 'more'}
                           </button>
@@ -756,7 +756,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                       <div className="flex items-center gap-1 mb-5">
                         <button
                           onClick={isCurrent ? handleLike : undefined}
-                          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-stone-500 dark:text-stone-400 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900 dark:hover:bg-stone-800/50 transition-all"
+                          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-stone-500  dark:text-stone-500   hover:bg-stone-50  dark:bg-stone-900 dark:hover:bg-stone-800/50 transition-all"
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill={isCurrent && liked ? '#292524' : 'none'} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z" />
@@ -764,7 +764,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                           <span className="text-[13px] tabular-nums">{isCurrent ? likes.length : post.likes?.length || 0}</span>
                         </button>
 
-                        <button className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-stone-500 dark:text-stone-400 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900 dark:hover:bg-stone-800/50 transition-all">
+                        <button className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-stone-500  dark:text-stone-500   hover:bg-stone-50  dark:bg-stone-900 dark:hover:bg-stone-800/50 transition-all">
                           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24">
                             <path d="M8 13.5H16M8 8.5H12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                             <path d="M6.5 17.5C6.29454 18.5019 5.37769 20.6665 6.31569 21.3651C6.806 21.7218 7.58729 21.3408 9.14987 20.5789C10.2465 20.0441 11.3562 19.4309 12.5546 19.155C12.9931 19.0551 13.4395 19.0125 14 19C17.7712 19 19.6569 19 20.8284 17.8284C22 16.6569 22 14.7712 22 11V10.5C22 6.72876 22 4.84315 20.8284 3.67157C19.6569 2.5 17.7712 2.5 14 2.5H10C6.22876 2.5 4.34315 2.5 3.17157 3.67157C2 4.84315 2 6.72876 2 10.5V11C2 14.7712 2 16.6569 3.17157 17.8284C3.82475 18.4816 4.7987 18.8721 6.09881 19" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -774,7 +774,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
 
                         <button
                           onClick={isCurrent ? handleBookmark : undefined}
-                          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-stone-500 dark:text-stone-400 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900 dark:hover:bg-stone-800/50 transition-all"
+                          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-stone-500  dark:text-stone-500   hover:bg-stone-50  dark:bg-stone-900 dark:hover:bg-stone-800/50 transition-all"
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill={isCurrent && bookmarked ? '#292524' : 'none'} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z" />
@@ -785,13 +785,13 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                       </div>
 
                       {/* Divider */}
-                      <div className="h-px bg-stone-100 dark:bg-stone-800 dark:bg-stone-800/80 mb-5" />
+                      <div className="h-px bg-stone-100  dark:bg-stone-800/80 mb-5" />
 
                       {/* Comments */}
                       {isCurrent && (
                         <div className="flex-1 min-h-0">
                           <div className="flex items-center justify-between mb-3">
-                            <span className="text-[13px] font-medium text-stone-800 dark:text-stone-200 dark:text-stone-200">Comments</span>
+                            <span className="text-[13px] font-medium text-stone-800 dark:text-stone-200 ">Comments</span>
                             {commentsOverflow && (
                               <button
                                 type="button"
@@ -799,7 +799,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                                   const el = commentsScrollRef.current;
                                   if (el) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
                                 }}
-                                className="text-[12px] font-medium text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 dark:text-stone-400 dark:text-stone-500 dark:hover:text-white transition-colors"
+                                className="text-[12px] font-medium text-stone-500   hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100   dark:hover:text-white transition-colors"
                               >
                                 View all
                               </button>
@@ -809,7 +809,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                           <div ref={commentsScrollRef} className="max-h-[180px] overflow-y-auto space-y-4 pr-1 scrollbar-hide">
                             {comments.length === 0 ? (
                               <div className="py-6 text-center">
-                                <p className="text-[13px] text-stone-400 dark:text-stone-500 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500">Start the conversation</p>
+                                <p className="text-[13px] text-stone-400   dark:text-stone-400 ">Start the conversation</p>
                               </div>
                             ) : comments.map((c) => (
                               <div key={c.id} className="flex gap-2.5">
@@ -818,8 +818,8 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                                 </div>
                                 <div className="min-w-0 flex-1">
                                   <div className="flex items-baseline gap-2">
-                                    <span className="text-[13px] font-medium text-stone-700 dark:text-stone-200 dark:text-stone-300">{c.user.name}</span>
-                                    <span className="text-[11px] text-stone-300 dark:text-stone-600 dark:text-stone-300">
+                                    <span className="text-[13px] font-medium text-stone-700  dark:text-stone-300">{c.user.name}</span>
+                                    <span className="text-[11px] text-stone-300  dark:text-stone-300">
                                       {(() => {
                                         const d = new Date(c.createdAt);
                                         const now = new Date();
@@ -828,7 +828,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                                       })()}
                                     </span>
                                   </div>
-                                  <p className="text-[13px] text-stone-500 dark:text-stone-400 dark:text-stone-500 dark:text-stone-400 dark:text-stone-500 leading-relaxed mt-0.5">{c.content}</p>
+                                  <p className="text-[13px] text-stone-500  dark:text-stone-500   leading-relaxed mt-0.5">{c.content}</p>
                                 </div>
                               </div>
                             ))}
@@ -842,16 +842,16 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                               value={comment}
                               onChange={(e) => setComment(e.target.value)}
                               onKeyDown={(e) => { if (e.key === 'Enter' && !isSubmitting && comment.trim()) { e.preventDefault(); handleCommentSubmit(); } }}
-                              className="w-full bg-stone-50 dark:bg-stone-900 dark:bg-stone-800/50 border border-stone-200 dark:border-stone-800 dark:border-stone-700/50 rounded-xl px-4 py-2.5 pr-11 text-[13px] text-stone-800 dark:text-stone-200 dark:text-white placeholder-stone-400 dark:placeholder-stone-500 outline-none focus:border-stone-300 dark:border-stone-700 dark:focus:border-stone-600 focus:bg-white dark:bg-stone-900 dark:focus:bg-stone-800 transition-all"
+                              className="w-full bg-stone-50  dark:bg-stone-800/50 border border-stone-200   rounded-xl px-4 py-2.5 pr-11 text-[13px] text-stone-800 dark:text-stone-200 dark:text-white placeholder-stone-400 dark:placeholder-stone-500 outline-none focus:border-stone-300 dark:border-stone-700 dark:focus:border-stone-600 focus:bg-white  dark:focus:bg-stone-800 transition-all"
                               disabled={isSubmitting}
                             />
                             <button
                               onClick={handleCommentSubmit}
                               disabled={isSubmitting || !comment.trim()}
-                              className="absolute right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-xl flex items-center justify-center text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300 dark:hover:text-white disabled:opacity-20 transition-all"
+                              className="absolute right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-xl flex items-center justify-center text-stone-400  hover:text-stone-600 dark:text-stone-300 dark:hover:text-white disabled:opacity-20 transition-all"
                             >
                               {isSubmitting ? (
-                                <div className="w-3.5 h-3.5 border-[1.5px] border-stone-300 dark:border-stone-700 border-t-stone-600 dark:border-stone-600 dark:border-t-white rounded-full animate-spin" />
+                                <div className="w-3.5 h-3.5 border-[1.5px] border-stone-300  border-t-stone-600 dark:border-stone-600 dark:border-t-white rounded-full animate-spin" />
                               ) : (
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                   <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
@@ -881,7 +881,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
               type="button"
               onClick={() => navigatePost(-1)}
               aria-label="Previous post"
-              className="group w-10 h-10 rounded-full flex items-center justify-center text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 active:scale-[0.92] transition-all duration-200 dark:text-stone-400 dark:text-stone-500 dark:hover:text-white dark:hover:bg-stone-800"
+              className="group w-10 h-10 rounded-full flex items-center justify-center text-stone-500   hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 active:scale-[0.92] transition-all duration-200   dark:hover:text-white "
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M18 15l-6-6-6 6" />
@@ -891,7 +891,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
               type="button"
               onClick={() => navigatePost(1)}
               aria-label="Next post"
-              className="group w-10 h-10 rounded-full flex items-center justify-center text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 active:scale-[0.92] transition-all duration-200 dark:text-stone-400 dark:text-stone-500 dark:hover:text-white dark:hover:bg-stone-800"
+              className="group w-10 h-10 rounded-full flex items-center justify-center text-stone-500   hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 active:scale-[0.92] transition-all duration-200   dark:hover:text-white "
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M6 9l6 6 6-6" />

@@ -73,7 +73,7 @@ export default function SuccessPage() {
       <div className="min-h-screen bg-stone-50 dark:bg-stone-900 flex items-center justify-center px-4">
         <div className="flex flex-col items-center text-center">
           <div className="w-10 h-10 rounded-full border-2 border-stone-200 dark:border-stone-800 border-t-stone-900 animate-spin" />
-          <p className="mt-5 text-[14px] text-stone-500 dark:text-stone-400 dark:text-stone-500">Confirming your reservation…</p>
+          <p className="mt-5 text-[14px] text-stone-500  dark:text-stone-500">Confirming your reservation…</p>
         </div>
       </div>
     );
@@ -92,13 +92,13 @@ export default function SuccessPage() {
           <h1 className="text-[20px] font-semibold text-stone-900 dark:text-stone-100 tracking-tight">
             We couldn&apos;t verify your payment
           </h1>
-          <p className="text-[13px] text-stone-500 dark:text-stone-400 dark:text-stone-500 mt-2">
+          <p className="text-[13px] text-stone-500  dark:text-stone-500 mt-2">
             If you were charged, your booking will appear in My Trips shortly. Please contact support if it doesn&apos;t.
           </p>
           <div className="flex gap-2.5 mt-6">
             <Link
               href="/"
-              className="flex-1 py-3 rounded-2xl bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-200 text-[13px] font-medium hover:bg-stone-200 dark:bg-stone-700 transition-colors"
+              className="flex-1 py-3 rounded-2xl bg-stone-100  text-stone-700 dark:text-stone-200 text-[13px] font-medium hover:bg-stone-200 dark:bg-stone-700 transition-colors"
             >
               Go home
             </Link>
@@ -133,7 +133,7 @@ export default function SuccessPage() {
           <h1 className="mt-6 text-[26px] sm:text-[30px] font-semibold text-stone-900 dark:text-stone-100 tracking-tight">
             You&apos;re booked
           </h1>
-          <p className="text-[14px] text-stone-500 dark:text-stone-400 dark:text-stone-500 mt-2">
+          <p className="text-[14px] text-stone-500  dark:text-stone-500 mt-2">
             We&apos;ve sent a confirmation to your email.
           </p>
         </div>
@@ -155,7 +155,7 @@ export default function SuccessPage() {
                 <h2 className="text-[15px] font-semibold text-stone-900 dark:text-stone-100 leading-snug truncate">
                   {reservation.listing?.title || 'Your booking'}
                 </h2>
-                <p className="text-[12px] text-stone-500 dark:text-stone-400 dark:text-stone-500 mt-0.5 truncate">
+                <p className="text-[12px] text-stone-500  dark:text-stone-500 mt-0.5 truncate">
                   {reservation.serviceName}
                 </p>
               </div>
@@ -186,7 +186,7 @@ export default function SuccessPage() {
             </div>
 
             <div className="px-5 py-4 bg-stone-50/60 border-t border-stone-100 dark:border-stone-800 flex items-baseline justify-between">
-              <span className="text-[13px] text-stone-500 dark:text-stone-400 dark:text-stone-500">Total paid</span>
+              <span className="text-[13px] text-stone-500  dark:text-stone-500">Total paid</span>
               <span className="text-[18px] font-semibold text-stone-900 dark:text-stone-100 tabular-nums">
                 ${reservation.totalPrice ?? 0}
               </span>
@@ -236,7 +236,7 @@ function DetailRow({
 }) {
   return (
     <div className="flex items-start gap-3">
-      <div className="w-8 h-8 rounded-full bg-stone-50 dark:bg-stone-900 border border-stone-100 dark:border-stone-800 flex items-center justify-center text-stone-500 dark:text-stone-400 dark:text-stone-500 flex-shrink-0 mt-0.5">
+      <div className="w-8 h-8 rounded-full bg-stone-50 dark:bg-stone-900 border border-stone-100 dark:border-stone-800 flex items-center justify-center text-stone-500  dark:text-stone-500 flex-shrink-0 mt-0.5">
         {icon}
       </div>
       <div className="min-w-0 flex-1">

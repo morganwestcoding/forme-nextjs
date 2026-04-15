@@ -22,7 +22,7 @@ const BookingsSearch: React.FC<BookingsSearchProps> = ({
   };
 
   // Hero mode or normal mode button styles
-  const buttonBaseClasses = "bg-transparent border border-stone-300 dark:border-stone-700 hover:border-stone-400 text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200";
+  const buttonBaseClasses = "bg-transparent border border-stone-300 dark:border-stone-700 hover:border-stone-400 text-stone-500   hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200";
 
   return (
     <div className="min-h-0">

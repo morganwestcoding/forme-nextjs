@@ -156,7 +156,7 @@ const MediaStep: React.FC<MediaStepProps> = ({
           </div>
         )}
       </div>
-      <span className="text-xs font-medium text-stone-500 dark:text-stone-400 dark:text-stone-500">{label}</span>
+      <span className="text-xs font-medium text-stone-500  dark:text-stone-500">{label}</span>
     </div>
   );
 
@@ -236,7 +236,7 @@ const MediaStep: React.FC<MediaStepProps> = ({
         <button
           type="button"
           onClick={() => setShowBeforeAfter(!showBeforeAfter)}
-          className="flex items-center gap-3 text-sm text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 transition-colors"
+          className="flex items-center gap-3 text-sm text-stone-600  hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 transition-colors"
         >
           <div className={`w-5 h-5 rounded-lg border-2 flex items-center justify-center transition-all ${
             showBeforeAfter ? 'border-stone-900 bg-stone-900' : 'border-stone-300 dark:border-stone-700'

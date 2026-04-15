@@ -103,7 +103,7 @@ export default function BusinessSelectStep({ selectedListing, onListingChange, o
                   w-full flex items-center gap-4 p-4 rounded-xl border-2 text-left transition-all duration-200
                   ${selectedListing === listing.id
                     ? 'border-stone-900 bg-stone-50 dark:bg-stone-900'
-                    : 'border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 hover:border-stone-300 dark:border-stone-700'
+                    : 'border-stone-200  bg-white dark:bg-stone-900 hover:border-stone-300 dark:border-stone-700'
                   }
                 `}
               >
@@ -120,7 +120,7 @@ export default function BusinessSelectStep({ selectedListing, onListingChange, o
                 )}
                 <div className="flex-1 min-w-0">
                   <h3 className="font-medium text-stone-900 dark:text-stone-100 truncate">{listing.title}</h3>
-                  <p className="text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500 truncate">{listing.location || listing.category}</p>
+                  <p className="text-sm text-stone-500  dark:text-stone-500 truncate">{listing.location || listing.category}</p>
                 </div>
               </motion.button>
             ))}
@@ -130,7 +130,7 @@ export default function BusinessSelectStep({ selectedListing, onListingChange, o
         {/* No results */}
         {hasSearched && listings.length === 0 && searchQuery.length >= 2 && (
           <div className="text-center py-8">
-            <p className="text-stone-500 dark:text-stone-400 dark:text-stone-500">No businesses found</p>
+            <p className="text-stone-500  dark:text-stone-500">No businesses found</p>
             <p className="text-sm text-stone-400 dark:text-stone-500 mt-1">Try a different search term</p>
           </div>
         )}
@@ -140,7 +140,7 @@ export default function BusinessSelectStep({ selectedListing, onListingChange, o
           type="button"
           variants={itemVariants}
           onClick={onSkip}
-          className="w-full flex items-center justify-center gap-2 py-3 text-stone-500 dark:text-stone-400 dark:text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 transition-colors"
+          className="w-full flex items-center justify-center gap-2 py-3 text-stone-500   hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 transition-colors"
         >
           <span className="text-sm">Skip for now</span>
           <ArrowRight className="w-4 h-4" />

@@ -16,7 +16,7 @@ export default function TypeformHeading({ question, subtitle, stepNumber }: Type
         {question}
       </h1>
       {subtitle && (
-        <p className="text-base sm:text-lg text-stone-500 dark:text-stone-400 dark:text-stone-500 mt-3">
+        <p className="text-base sm:text-lg text-stone-500  dark:text-stone-500 mt-3">
           {subtitle}
         </p>
       )}

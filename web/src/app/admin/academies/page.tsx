@@ -21,7 +21,7 @@ export default async function AdminAcademiesPage() {
         <div className="mb-2">
           <Link
             href="/"
-            className="text-[12px] text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:text-stone-300 transition-colors"
+            className="text-[12px] text-stone-400  hover:text-stone-600 dark:text-stone-300 transition-colors"
           >
             ← Back to ForMe
           </Link>
@@ -58,7 +58,7 @@ export default async function AdminAcademiesPage() {
                         {a.name}
                       </h3>
                       {a.description && (
-                        <p className="text-[13px] text-stone-500 dark:text-stone-400 dark:text-stone-500 mt-1 line-clamp-2">
+                        <p className="text-[13px] text-stone-500  dark:text-stone-500 mt-1 line-clamp-2">
                           {a.description}
                         </p>
                       )}
@@ -90,7 +90,7 @@ export default async function AdminAcademiesPage() {
                         </span>
                       )}
                       {!a.stripeConnectAccountId && (
-                        <span className="inline-flex items-center text-[11px] font-medium text-stone-500 dark:text-stone-400 dark:text-stone-500 bg-stone-100 dark:bg-stone-800 ring-1 ring-stone-200 px-2.5 py-1 rounded-full">
+                        <span className="inline-flex items-center text-[11px] font-medium text-stone-500  dark:text-stone-500 bg-stone-100 dark:bg-stone-800 ring-1 ring-stone-200 px-2.5 py-1 rounded-full">
                           Not connected
                         </span>
                       )}

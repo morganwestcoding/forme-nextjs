@@ -76,7 +76,7 @@ export default function AdminUserList({ users, total, page, pageSize, query }: P
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search by name or email..."
-          className="w-full md:w-96 px-4 py-2.5 rounded-xl border border-stone-200 dark:border-stone-800 text-[13px] text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900/10 focus:border-stone-300 dark:border-stone-700"
+          className="w-full md:w-96 px-4 py-2.5 rounded-xl border border-stone-200  text-[13px] text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900/10 focus:border-stone-300 dark:border-stone-700"
         />
       </form>
 
@@ -85,12 +85,12 @@ export default function AdminUserList({ users, total, page, pageSize, query }: P
         <table className="w-full text-[13px]">
           <thead>
             <tr className="border-b border-stone-200/60 bg-stone-50/50">
-              <th className="text-left py-3 px-4 font-medium text-stone-500 dark:text-stone-400 dark:text-stone-500">User</th>
-              <th className="text-left py-3 px-4 font-medium text-stone-500 dark:text-stone-400 dark:text-stone-500">Role</th>
-              <th className="text-left py-3 px-4 font-medium text-stone-500 dark:text-stone-400 dark:text-stone-500">Tier</th>
-              <th className="text-left py-3 px-4 font-medium text-stone-500 dark:text-stone-400 dark:text-stone-500">Verification</th>
-              <th className="text-left py-3 px-4 font-medium text-stone-500 dark:text-stone-400 dark:text-stone-500">Joined</th>
-              <th className="text-right py-3 px-4 font-medium text-stone-500 dark:text-stone-400 dark:text-stone-500">Actions</th>
+              <th className="text-left py-3 px-4 font-medium text-stone-500  dark:text-stone-500">User</th>
+              <th className="text-left py-3 px-4 font-medium text-stone-500  dark:text-stone-500">Role</th>
+              <th className="text-left py-3 px-4 font-medium text-stone-500  dark:text-stone-500">Tier</th>
+              <th className="text-left py-3 px-4 font-medium text-stone-500  dark:text-stone-500">Verification</th>
+              <th className="text-left py-3 px-4 font-medium text-stone-500  dark:text-stone-500">Joined</th>
+              <th className="text-right py-3 px-4 font-medium text-stone-500  dark:text-stone-500">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -114,7 +114,7 @@ export default function AdminUserList({ users, total, page, pageSize, query }: P
                     {user.verificationStatus || 'none'}
                   </span>
                 </td>
-                <td className="py-3 px-4 text-stone-500 dark:text-stone-400 dark:text-stone-500">
+                <td className="py-3 px-4 text-stone-500  dark:text-stone-500">
                   {new Date(user.createdAt).toLocaleDateString()}
                 </td>
                 <td className="py-3 px-4 text-right">
@@ -144,7 +144,7 @@ export default function AdminUserList({ users, total, page, pageSize, query }: P
           {page > 1 && (
             <button
               onClick={() => router.push(`/admin/users?page=${page - 1}${query ? `&q=${query}` : ''}`)}
-              className="px-3 py-1.5 rounded-lg text-[12px] font-medium bg-stone-50 dark:bg-stone-900 text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border border-stone-200/60"
+              className="px-3 py-1.5 rounded-lg text-[12px] font-medium bg-stone-50  text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border border-stone-200/60"
             >
               Previous
             </button>
@@ -155,7 +155,7 @@ export default function AdminUserList({ users, total, page, pageSize, query }: P
           {page < totalPages && (
             <button
               onClick={() => router.push(`/admin/users?page=${page + 1}${query ? `&q=${query}` : ''}`)}
-              className="px-3 py-1.5 rounded-lg text-[12px] font-medium bg-stone-50 dark:bg-stone-900 text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border border-stone-200/60"
+              className="px-3 py-1.5 rounded-lg text-[12px] font-medium bg-stone-50  text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border border-stone-200/60"
             >
               Next
             </button>

@@ -260,7 +260,7 @@ export default function LocationStep({ location, onLocationChange }: LocationSte
               </div>
               <div>
                 <p className="font-medium text-stone-900 dark:text-stone-100">{city}, {selectedState}</p>
-                <p className="text-sm text-stone-500 dark:text-stone-400 dark:text-stone-500">Your location</p>
+                <p className="text-sm text-stone-500  dark:text-stone-500">Your location</p>
               </div>
             </motion.div>
           )}

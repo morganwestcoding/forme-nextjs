@@ -31,7 +31,7 @@ const TextContentStep: React.FC<TextContentStepProps> = ({ content, onContentCha
             onChange={(e) => onContentChange(e.target.value)}
             placeholder="Write something..."
             maxLength={280}
-            className="w-full h-[220px] p-4 rounded-2xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:text-stone-500 resize-none focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent text-sm leading-relaxed"
+            className="w-full h-[220px] p-4 rounded-2xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 text-stone-900  placeholder:text-stone-400 dark:text-stone-500 resize-none focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent text-sm leading-relaxed"
           />
 
           {/* Character count */}

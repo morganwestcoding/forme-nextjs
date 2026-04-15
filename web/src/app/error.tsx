@@ -23,7 +23,7 @@ export default function GlobalError({
         </svg>
       </div>
       <h2 className="text-[16px] font-semibold text-stone-900 dark:text-stone-100 mb-1">Something went wrong</h2>
-      <p className="text-[13px] text-stone-500 dark:text-stone-400 dark:text-stone-500 max-w-sm mb-6">
+      <p className="text-[13px] text-stone-500  dark:text-stone-500 max-w-sm mb-6">
         We hit a snag rendering this page. Try again, or head back home.
       </p>
       <div className="flex gap-2.5">
