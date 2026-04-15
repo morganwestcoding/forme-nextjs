@@ -8,7 +8,9 @@ import {
   CheckmarkCircle02Icon,
   ArrowRight01Icon,
   AlertCircleIcon,
+  Delete02Icon,
 } from "hugeicons-react";
+import { signOut } from "next-auth/react";
 import { SafeUser } from "@/app/types";
 import { useTheme } from "@/app/context/ThemeContext";
 import PageHeader from "@/components/PageHeader";
@@ -36,6 +38,8 @@ const SettingsClient = ({ currentUser, isEmployee }: SettingsClientProps) => {
 
   const [pendingDarkMode, setPendingDarkMode] = useState(isDarkMode);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   // Stripe Connect state
   const [connectStatus, setConnectStatus] = useState<ConnectStatus | null>(null);
@@ -104,6 +108,18 @@ const SettingsClient = ({ currentUser, isEmployee }: SettingsClientProps) => {
     setPendingDarkMode(false);
   };
 
+  const handleDeleteAccount = async () => {
+    setDeleting(true);
+    try {
+      await axios.delete(`/api/users/${currentUser.id}`);
+      toast.success('Account deleted');
+      await signOut({ callbackUrl: '/' });
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || 'Failed to delete account');
+      setDeleting(false);
+    }
+  };
+
   const [activeTab, setActiveTab] = useState<'appearance' | 'payments' | 'legal'>('appearance');
 
   const tabs = [
@@ -130,7 +146,7 @@ const SettingsClient = ({ currentUser, isEmployee }: SettingsClientProps) => {
               onClick={() => setActiveTab(tab.key)}
               className={`px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap ${
                 activeTab === tab.key
-                  ? 'bg-gradient-to-br from-stone-800 to-black text-white shadow-[0_1px_3px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.12)]'
+                  ? 'bg-gradient-to-br from-stone-800 to-black text-white shadow-[0_1px_3px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.12)] dark:from-stone-100 dark:to-white dark:text-stone-900 dark:shadow-[0_1px_3px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.8)]'
                   : 'bg-stone-50  text-stone-500  dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]'
               }`}
             >
@@ -142,7 +158,7 @@ const SettingsClient = ({ currentUser, isEmployee }: SettingsClientProps) => {
         <div className="min-h-[400px]">
         {/* ===== APPEARANCE ===== */}
         {activeTab === 'appearance' && (
-          <div className="space-y-6">
+          <div className="space-y-6 max-w-xl">
             {/* Dark Mode */}
             <Card padding="md">
               <div className="flex items-center justify-between">
@@ -160,9 +176,9 @@ const SettingsClient = ({ currentUser, isEmployee }: SettingsClientProps) => {
                 <button
                   type="button"
                   onClick={() => setPendingDarkMode(!pendingDarkMode)}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${pendingDarkMode ? 'bg-stone-900' : 'bg-stone-200 dark:bg-stone-700'}`}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${pendingDarkMode ? 'bg-stone-900 dark:bg-stone-100' : 'bg-stone-200 dark:bg-stone-700'}`}
                 >
-                  <span className={`inline-block h-4 w-4 transform rounded-full bg-white dark:bg-stone-900 shadow-sm transition-transform duration-200 ${pendingDarkMode ? 'translate-x-6' : 'translate-x-1'}`} />
+                  <span className={`inline-block h-4 w-4 transform rounded-full shadow-sm transition-transform duration-200 ${pendingDarkMode ? 'translate-x-6 bg-white dark:bg-stone-900' : 'translate-x-1 bg-white dark:bg-stone-300'}`} />
                 </button>
               </div>
             </Card>
@@ -172,6 +188,61 @@ const SettingsClient = ({ currentUser, isEmployee }: SettingsClientProps) => {
               <Button onClick={handleSave} disabled={!hasUnsavedChanges}>
                 {hasUnsavedChanges ? 'Save Changes' : 'No Changes'}
               </Button>
+            </div>
+
+            {/* Delete Account */}
+            <Card padding="md">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <Delete02Icon size={18} className="text-stone-400 dark:text-stone-500" strokeWidth={1.5} />
+                  <div>
+                    <h3 className="text-[14px] font-semibold text-stone-900 dark:text-stone-100">Delete Account</h3>
+                    <p className="text-[12px] text-stone-400 dark:text-stone-500 mt-0.5">Permanently delete your account and all data</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowDeleteConfirm(true)}
+                  disabled={deleting}
+                  className="px-4 py-2 rounded-xl text-[12px] font-medium bg-red-50 text-red-600 hover:bg-red-100 border border-red-200/60 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20 dark:border-red-500/20 transition-all whitespace-nowrap"
+                >
+                  Delete Account
+                </button>
+              </div>
+            </Card>
+          </div>
+        )}
+
+        {/* Delete Account confirmation */}
+        {showDeleteConfirm && (
+          <div className="fixed inset-0 z-[9999] backdrop-blur-sm bg-stone-900/60 flex items-center justify-center p-4" onClick={() => setShowDeleteConfirm(false)}>
+            <div className="bg-white dark:bg-stone-900 rounded-2xl p-8 max-w-md w-full shadow-2xl" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center">
+                  <Delete02Icon className="w-5 h-5 text-red-500" />
+                </div>
+                <h3 className="text-lg font-semibold text-stone-900 dark:text-stone-100">Delete Account?</h3>
+              </div>
+              <p className="text-[13px] text-stone-500 dark:text-stone-500 mb-2">
+                This will permanently delete your account, profile, and all associated data.
+              </p>
+              <p className="text-[13px] text-stone-500 dark:text-stone-500 mb-6">
+                This action cannot be undone. You&apos;ll be signed out immediately.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowDeleteConfirm(false)}
+                  className="flex-1 py-3 rounded-xl text-[13px] font-medium bg-stone-50 text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border border-stone-200/60 transition-all"
+                >
+                  Keep Account
+                </button>
+                <button
+                  onClick={handleDeleteAccount}
+                  disabled={deleting}
+                  className="flex-1 py-3 rounded-xl text-[13px] font-medium bg-red-600 text-white hover:bg-red-700 transition-all"
+                >
+                  {deleting ? 'Deleting...' : 'Delete Account'}
+                </button>
+              </div>
             </div>
           </div>
         )}
